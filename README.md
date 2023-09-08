@@ -1,2 +1,2 @@
-# enable-provider
-Based on the implementation of Spring, it is possible to automatically implement functions through enable class annotations. Give it a try!
+# assembly
+Java related componentization projects further encapsulate cumbersome tools or functions to gradually simplify their use. Using Java as a substrate and Spring related frameworks as assistance, component simplification development is carried out.
