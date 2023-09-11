@@ -20,7 +20,7 @@ import java.util.Set;
 /**
  * Timed task registrar, which relies on domestic Hutu {@code cn.hutool.Hutool} toolkit for implementation.
  * <p>
- * Thank you very much.
+ * {@link copy.cn.hutool.v_5819} copy from {@code cn.hutool.Hutool} with version 5.8.19. Hereby, thank you.
  *
  * @author zpf
  * @since 1.1.0
