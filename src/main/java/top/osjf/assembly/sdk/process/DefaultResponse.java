@@ -1,11 +1,11 @@
-package top.osjf.assembly.sdk.client;
+package top.osjf.assembly.sdk.process;
 
 
 /**
- * Default response impl for {@link Response}
+ * Default response impl for {@link Response}.
  *
  * @author zpf
- * @since 3.1.0
+ * @since 1.1.0
  */
 public class DefaultResponse extends AbstractResponse {
 
