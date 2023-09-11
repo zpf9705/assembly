@@ -4,8 +4,8 @@ import copy.cn.hutool.v_5819.core.util.ReflectUtil;
 import org.springframework.lang.NonNull;
 import top.osjf.assembly.sdk.client.AbstractClient;
 import top.osjf.assembly.sdk.client.Client;
-import top.osjf.assembly.sdk.client.Request;
-import top.osjf.assembly.sdk.client.Response;
+import top.osjf.assembly.sdk.process.Request;
+import top.osjf.assembly.sdk.process.Response;
 
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
