@@ -35,67 +35,68 @@ public final class HttpUtils {
     /**
      * Apache HTTP request for {@code Get}.
      *
-     * @param url     Request String url
-     * @param headers Header information
-     * @param params  Get Splice Request Parameters
+     * @param url          The actual request address,must not be {@literal null}.
+     * @param headers      Header information map.
+     * @param requestParam Request parameters.
      * @return The {@code String} type of the return value
      */
-    public static String get(String url, Map<String, String> headers, Map<String, Object> params) {
-        return doRequest(new HttpGet(getURIByUrlAndParams(url, params)), headers, null);
+    public static String get(String url, Map<String, String> headers, Object requestParam) {
+        return doRequest(new HttpGet(getUri(url, requestParam)), headers, requestParam);
     }
 
     /**
      * Apache HTTP request for {@code Post}.
      *
-     * @param url     Request String url
-     * @param json    JSON data input parameter
-     * @param headers Header information
+     * @param url          The actual request address,must not be {@literal null}.
+     * @param headers      Header information map.
+     * @param requestParam Request parameters.
      * @return The {@code String} type of the return value
      */
-    public static String post(String url, Map<String, String> headers, String json) {
-        return doRequest(new HttpPost(url), headers, json);
+    public static String post(String url, Map<String, String> headers, Object requestParam) {
+        return doRequest(new HttpPost(url), headers, requestParam);
     }
 
     /**
      * Apache HTTP request for {@code Put}.
      *
-     * @param url     Request String url
-     * @param headers Header information
-     * @param json    JSON data input parameter
+     * @param url          The actual request address,must not be {@literal null}.
+     * @param headers      Header information map.
+     * @param requestParam Request parameters.
      * @return The {@code String} type of the return value
      */
-    public static String put(String url, Map<String, String> headers, String json) {
-        return doRequest(new HttpPut(url), headers, json);
+    public static String put(String url, Map<String, String> headers, Object requestParam) {
+        return doRequest(new HttpPut(url), headers, requestParam);
     }
 
     /**
      * Apache HTTP request for {@code Delete}.
      *
-     * @param url     Request String url
-     * @param headers Header information
+     * @param url          The actual request address,must not be {@literal null}.
+     * @param headers      Header information map.
+     * @param requestParam Request parameters.
      * @return The {@code String} type of the return value
      */
-    public static String delete(String url, Map<String, String> headers) {
-        return doRequest(new HttpDelete(url), headers, null);
+    public static String delete(String url, Map<String, String> headers, Object requestParam) {
+        return doRequest(new HttpDelete(url), headers, requestParam);
     }
 
     /**
      * The HTTP request sending method includes the entire lifecycle of HTTP requests.
      *
-     * @param requestBase HTTP Public Request Class {@link HttpRequestBase}.
-     * @param headers     Header information map.
-     * @param json        JSON data input parameter
+     * @param requestBase  HTTP Public Request Class {@link HttpRequestBase}.
+     * @param headers      Header information map.
+     * @param requestParam Request parameters.
      * @return The {@code String} type of the return value
      */
     public static String doRequest(@NonNull HttpRequestBase requestBase,
                                    Map<String, String> headers,
-                                   String json) {
+                                   Object requestParam) {
         CloseableHttpClient client = HttpClients.custom().build();
         CloseableHttpResponse response = null;
         String result;
         try {
             addHeaders(headers, requestBase);
-            setEntity(json, requestBase, headers);
+            setEntity(requestParam, requestBase, headers);
             response = client.execute(requestBase);
             HttpEntity entity = response.getEntity();
             result = EntityUtils.toString(entity, StandardCharsets.UTF_8);
@@ -109,32 +110,34 @@ public final class HttpUtils {
     }
 
     /**
-     * Set {@link HttpEntity}.
+     * Set {@link HttpEntity} with a {@link StringEntity}.
      *
-     * @param json        JSON data input parameter
-     * @param requestBase HTTP Public Request Class {@link HttpRequestBase}
-     * @param header      Header information map.
+     * @param requestParam Request parameters.
+     * @param requestBase  HTTP Public Request Class {@link HttpRequestBase}
+     * @param headers      Header information map.
      */
-    private static void setEntity(String json, HttpRequestBase requestBase, Map<String, String> header) {
-        if (StrUtil.isNotBlank(json) && requestBase instanceof HttpEntityEnclosingRequestBase) {
-            StringEntity stringEntity;
-            if (CollectionUtil.isNotEmpty(header)) {
-                String value = header.get("Content-type");
-                if (StrUtil.isNotBlank(value)) {
-                    stringEntity = new StringEntity(json, StandardCharsets.UTF_8);
-                } else {
-                    stringEntity = new StringEntity(json, ContentType.APPLICATION_JSON);
-                }
-            } else {
-                stringEntity = new StringEntity(json, ContentType.APPLICATION_JSON);
-            }
-            HttpEntityEnclosingRequestBase base = (HttpEntityEnclosingRequestBase) requestBase;
-            base.setEntity(stringEntity);
+    private static void setEntity(Object requestParam, HttpRequestBase requestBase, Map<String, String> headers) {
+        if (requestParam == null || !(requestBase instanceof HttpEntityEnclosingRequestBase)) {
+            return;
         }
+        String paramOfString = requestParam.toString();
+        StringEntity stringEntity;
+        if (CollectionUtil.isNotEmpty(headers)) {
+            String value = headers.get("Content-type");
+            if (StrUtil.isNotBlank(value)) {
+                stringEntity = new StringEntity(requestParam.toString(), StandardCharsets.UTF_8);
+            } else {
+                stringEntity = new StringEntity(paramOfString, ContentType.APPLICATION_JSON);
+            }
+        } else {
+            stringEntity = new StringEntity(paramOfString, ContentType.APPLICATION_JSON);
+        }
+        HttpEntityEnclosingRequestBase base = (HttpEntityEnclosingRequestBase) requestBase;
+        base.setEntity(stringEntity);
     }
 
     /**
-     * Add this request body information body.
+     * Add header information for HTTP requests.
      *
      * @param headers     Header information map.
      * @param requestBase HTTP Public Request Class {@link HttpRequestBase}.
@@ -148,24 +151,30 @@ public final class HttpUtils {
     }
 
     /**
-     * Splice Get Request Address.
+     * The get request for building HTTP contains the construction object of {@link URI}.
      *
-     * @param url    Request URL address
-     * @param params ? Rear splicing parameters
-     * @return URL {@link URI}
+     * @param url          The actual request address.
+     * @param requestParam Request parameters.
+     * @return Uri object,Please pay attention to the format issue of the URL.
      */
-    private static URI getURIByUrlAndParams(String url, Map<String, Object> params) {
+    private static URI getUri(String url, Object requestParam) {
         URI uri;
         try {
             URIBuilder uriBuilder = new URIBuilder(url);
-            if (CollectionUtil.isNotEmpty(params)) {
-                for (String paramKey : params.keySet()) {
-                    uriBuilder.addParameter(paramKey, String.valueOf(params.get(paramKey)));
+            if (requestParam != null && !(requestParam instanceof String)) {
+                //If the type is a map concatenated after the address
+                if (requestParam instanceof Map) {
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> params = (Map<String, Object>) requestParam;
+                    for (String paramKey : params.keySet()) {
+                        uriBuilder.addParameter(paramKey, String.valueOf(params.get(paramKey)));
+                    }
                 }
             }
+            //If it is null or a string, it can be directly used as a paparazzi
             uri = uriBuilder.build();
         } catch (URISyntaxException e) {
-            throw new UtilException(url + " no a valid url");
+            throw new UtilException(url + " not a valid url");
         }
         return uri;
     }
