@@ -1,7 +1,9 @@
 package top.osjf.assembly.sdk.client;
 
+import top.osjf.assembly.sdk.process.Response;
+
 /**
- * Default Request Client impl for {@link Client}
+ * Default Request Client impl for {@link Client}.
  *
  * @author zpf
  * @since 1.1.0
@@ -18,6 +20,6 @@ public final class DefaultClient<T extends Response> extends AbstractClient<T> {
 
     @Override
     public T request() {
-        throw new UnsupportedOperationException("default client no operation");
+        throw new UnsupportedOperationException("Default client no operation");
     }
 }
