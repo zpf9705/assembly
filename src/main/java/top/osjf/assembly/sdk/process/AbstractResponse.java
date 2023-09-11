@@ -1,10 +1,10 @@
-package top.osjf.assembly.sdk.client;
+package top.osjf.assembly.sdk.process;
 
 
-import com.alibaba.fastjson.JSON;
+import org.apache.http.HttpStatus;
 
 /**
- * Response abstract node class, used to define common states, unknown error messages, success plans, etc
+ * Response abstract node class, used to define common states, unknown error messages, success plans, etc.
  *
  * @author zpf
  * @since 1.1.0
@@ -31,13 +31,8 @@ public abstract class AbstractResponse implements Response {
         return buildUnknownResponse(DEFAULT_MESSAGE).getMessage();
     }
 
-    @Override
-    public String toJson() {
-        return JSON.toJSONString(this);
-    }
-
-    public static DefaultResponse buildResponse(Integer code, String message) {
-        return new DefaultResponse(code, message);
+    public static DefaultResponse buildResponse(String message) {
+        return new DefaultResponse(HttpStatus.SC_BAD_REQUEST, message);
     }
 
     public static DefaultResponse buildUnknownResponse(String message) {
