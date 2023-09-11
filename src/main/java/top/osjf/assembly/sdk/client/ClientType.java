@@ -1,7 +1,8 @@
 package top.osjf.assembly.sdk.client;
 
 /**
- * Enumeration of planning request types
+ * The type of information enumeration from the request type.
+ * <p>Currently, please review {@link HttpClient} or {@link RpcClient}</p>
  *
  * @author zpf
  * @since 1.1.0
