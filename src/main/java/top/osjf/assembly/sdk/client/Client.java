@@ -1,15 +1,26 @@
 package top.osjf.assembly.sdk.client;
 
+import top.osjf.assembly.sdk.process.Response;
+
 import java.io.Closeable;
 import java.io.Serializable;
 
 /**
- * The request client interface includes planning for request issuance, special result conversion,
- * JSON interface serialization, and can be said to be a process throughout the entire request lifecycle.
+ * A client help interface created for the request process of SDK.
+ * <p>
+ * The execution input sequence is:
+ * <dl>
+ *     <dt>1、{@link RequestCore}Request Remote</dt>
+ *     <dt>2、{@link PreProcessingResponseHandler}Request data preprocessing</dt>
+ *     <dt>3、{@link ResponseConvert}Convert Unified Request Object</dt>
+ *     <dt>4、{@link Closeable}Clear memory parameters</dt>
+ * </dl>
+ * Each process has a corresponding interface method, which you can override to customize method conversion.
+ * <p>There are also well-defined abstract classes {@link AbstractClient} here to learn about.</p>
  *
  * @author zpf
  * @since 1.1.0
  */
-public interface Client<R extends Response> extends RequestCore<R>, SpecialResponseConvert<R>,
-        JSONDispose<R>, Closeable, Serializable {
+public interface Client<R extends Response> extends RequestCore<R>, PreProcessingResponseHandler<R>,
+        ResponseConvert<R>, Closeable, Serializable {
 }
