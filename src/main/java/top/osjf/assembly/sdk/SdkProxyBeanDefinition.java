@@ -1,10 +1,8 @@
 package top.osjf.assembly.sdk;
 
-import com.alibaba.fastjson.JSON;
 import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 import top.osjf.assembly.sdk.process.Request;
-import top.osjf.assembly.sdk.process.Response;
 
 import java.io.Serializable;
 
@@ -56,20 +54,10 @@ public class SdkProxyBeanDefinition<T> extends AbstractSdkProxyInvoker<T> implem
 
     @Override
     @NonNull
-    public Object doSdk(Request<?> request, String methodName, Class<?> responseType) throws SdkException {
-        //check no null
-        Assert.notNull(request, "requestParams no be null");
-        Assert.notNull(methodName, "name no be null");
-        Assert.notNull(responseType, "returnType no be null");
-        Response response;
-        try {
-            response = ClientUtils.execute(this.host, request);
-        } catch (Throwable e) {
-            /*
-             * Capture unknown exceptions and throw them in the form of {@link SdkException}
-             */
-            throw new SdkException(e.getMessage());
-        }
-        return JSON.parseObject(response.toJson(), responseType);
+    public Object doInvoke(Request<?> request, String methodName, Class<?> responseType) {
+        Assert.notNull(request, "RequestParams no be null");
+        Assert.notNull(methodName, "Method name no be null");
+        Assert.notNull(responseType, "ReturnType no be null");
+        return ClientUtils.execute(this.host, request);
     }
 }
