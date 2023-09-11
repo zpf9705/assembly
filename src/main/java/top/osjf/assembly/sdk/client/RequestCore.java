@@ -1,5 +1,7 @@
 package top.osjf.assembly.sdk.client;
 
+import top.osjf.assembly.sdk.process.Response;
+
 /**
  * The request method function interface, {@link #request()}, is the entry point for the request.
  * <p>
@@ -16,7 +18,7 @@ package top.osjf.assembly.sdk.client;
 public interface RequestCore<R extends Response> {
 
     /**
-     * Request Entry Function Method
+     * Request Entry Function Method.
      *
      * @return Extends for {@link Response}
      */
