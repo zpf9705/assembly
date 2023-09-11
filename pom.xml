@@ -52,6 +52,7 @@
         <spring.boot>2.5.6</spring.boot>
         <fastjson>2.0.10.graal</fastjson>
         <rxjava3>3.1.6</rxjava3>
+        <jsr>3.0.2</jsr>
     </properties>
     <!--Need to package dependency-->
     <dependencies>
@@ -63,6 +64,11 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>${jsr}</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>

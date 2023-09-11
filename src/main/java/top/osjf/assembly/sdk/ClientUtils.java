@@ -1,7 +1,7 @@
 package top.osjf.assembly.sdk;
 
-import com.sun.istack.internal.NotNull;
 import copy.cn.hutool.v_5819.core.util.ReflectUtil;
+import org.springframework.lang.NonNull;
 import top.osjf.assembly.sdk.client.AbstractClient;
 import top.osjf.assembly.sdk.client.Client;
 import top.osjf.assembly.sdk.client.Request;
@@ -38,7 +38,7 @@ public abstract class ClientUtils {
      * @param <R>     {@link Response}
      * @return {@link Response}
      */
-    public static <R extends Response> R execute(@NotNull Supplier<String> host, Request<R> request) {
+    public static <R extends Response> R execute(@NonNull Supplier<String> host, Request<R> request) {
         return execute(host.get(), request);
     }
 

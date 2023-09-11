@@ -3,10 +3,10 @@ package top.osjf.assembly.sdk.client;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONValidator;
-import com.sun.istack.internal.NotNull;
 import copy.cn.hutool.v_5819.core.collection.CollectionUtil;
 import copy.cn.hutool.v_5819.core.util.StrUtil;
 import org.springframework.core.NamedThreadLocal;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 import java.util.List;
@@ -149,7 +149,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
     }
 
     @Override
-    @NotNull
+    @NonNull
     public R JsonToConvertResponse(Request<R> request, String responseStr) {
         R response;
         JSONValidator jsonValidator = StrUtil.isBlank(responseStr) ? null : JSONValidator.from(responseStr);
