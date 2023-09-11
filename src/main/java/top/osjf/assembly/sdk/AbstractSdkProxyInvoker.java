@@ -26,7 +26,7 @@ public abstract class AbstractSdkProxyInvoker<T> extends AbstractJdkProxySupport
         Assert.isTrue((arg instanceof AbstractRequestParams),
                 "Sdk way [" + method.getName() + "]  args no qualified");
         //Execute call API
-        return doSdk((Request<?>) arg, method.getName(), method.getReturnType());
+        return doInvoke((Request<?>) arg, method.getName(), method.getReturnType());
     }
 
     /**
@@ -37,5 +37,5 @@ public abstract class AbstractSdkProxyInvoker<T> extends AbstractJdkProxySupport
      * @param responseType Final convert response class type
      * @return Sdk return value for {@link Response}
      */
-    public abstract Object doSdk(Request<?> request, String methodName, Class<?> responseType) throws SdkException;
+    public abstract Object doInvoke(Request<?> request, String methodName, Class<?> responseType);
 }
