@@ -6,7 +6,7 @@ import copy.cn.hutool.v_5819.core.util.ArrayUtil;
 import copy.cn.hutool.v_5819.core.util.ReflectUtil;
 import copy.cn.hutool.v_5819.cron.CronException;
 import copy.cn.hutool.v_5819.cron.CronUtil;
-import copy.cn.hutool.v_5819.log.StaticLog;
+import copy.cn.hutool.v_5819.logger.StaticLog;
 import org.springframework.scheduling.support.CronExpression;
 import top.osjf.assembly.cron.annotation.Cron;
 import top.osjf.assembly.utils.ScanUtils;

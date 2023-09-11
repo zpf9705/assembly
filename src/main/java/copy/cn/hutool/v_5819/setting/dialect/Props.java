@@ -16,7 +16,7 @@ import copy.cn.hutool.v_5819.core.map.MapUtil;
 import copy.cn.hutool.v_5819.core.util.CharsetUtil;
 import copy.cn.hutool.v_5819.core.util.ReflectUtil;
 import copy.cn.hutool.v_5819.core.util.StrUtil;
-import copy.cn.hutool.v_5819.log.StaticLog;
+import copy.cn.hutool.v_5819.logger.StaticLog;
 
 import java.io.BufferedReader;
 import java.io.File;

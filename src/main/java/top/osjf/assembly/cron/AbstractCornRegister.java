@@ -2,7 +2,7 @@ package top.osjf.assembly.cron;
 
 import copy.cn.hutool.v_5819.core.collection.CollectionUtil;
 import copy.cn.hutool.v_5819.core.util.ArrayUtil;
-import copy.cn.hutool.v_5819.log.StaticLog;
+import copy.cn.hutool.v_5819.logger.StaticLog;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.ApplicationArguments;

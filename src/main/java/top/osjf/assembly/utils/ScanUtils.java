@@ -3,7 +3,7 @@ package top.osjf.assembly.utils;
 import copy.cn.hutool.v_5819.core.collection.CollectionUtil;
 import copy.cn.hutool.v_5819.core.exceptions.UtilException;
 import copy.cn.hutool.v_5819.core.util.ArrayUtil;
-import copy.cn.hutool.v_5819.log.StaticLog;
+import copy.cn.hutool.v_5819.logger.StaticLog;
 import org.springframework.boot.SpringApplication;
 import org.springframework.lang.NonNull;
 

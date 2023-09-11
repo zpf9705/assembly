@@ -1,6 +1,6 @@
 package copy.cn.hutool.v_5819.cron.timingwheel;
 
-import copy.cn.hutool.v_5819.log.StaticLog;
+import copy.cn.hutool.v_5819.logger.StaticLog;
 
 import java.util.function.Consumer;
 

@@ -12,7 +12,7 @@ import copy.cn.hutool.v_5819.cron.pattern.CronPattern;
 import copy.cn.hutool.v_5819.cron.task.InvokeTask;
 import copy.cn.hutool.v_5819.cron.task.RunnableTask;
 import copy.cn.hutool.v_5819.cron.task.Task;
-import copy.cn.hutool.v_5819.log.StaticLog;
+import copy.cn.hutool.v_5819.logger.StaticLog;
 import copy.cn.hutool.v_5819.setting.Setting;
 
 import java.io.Serializable;

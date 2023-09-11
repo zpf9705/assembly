@@ -1,6 +1,6 @@
 package top.osjf.assembly.utils.rxjava;
 
-import copy.cn.hutool.v_5819.log.StaticLog;
+import copy.cn.hutool.v_5819.logger.StaticLog;
 import io.reactivex.rxjava3.disposables.Disposable;
 import org.springframework.lang.NonNull;
 import top.osjf.assembly.utils.SystemUtils;

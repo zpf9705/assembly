@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import copy.cn.hutool.v_5819.core.exceptions.ExceptionUtil;
 import copy.cn.hutool.v_5819.core.io.IoUtil;
 import copy.cn.hutool.v_5819.http.ContentType;
-import copy.cn.hutool.v_5819.log.StaticLog;
+import copy.cn.hutool.v_5819.logger.StaticLog;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StopWatch;
 import top.osjf.assembly.sdk.SdkException;

@@ -1,7 +1,7 @@
 package copy.cn.hutool.v_5819.cron.listener;
 
 import copy.cn.hutool.v_5819.cron.TaskExecutor;
-import copy.cn.hutool.v_5819.log.StaticLog;
+import copy.cn.hutool.v_5819.logger.StaticLog;
 
 import java.io.Serializable;
 import java.util.ArrayList;

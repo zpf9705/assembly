@@ -8,8 +8,8 @@ import copy.cn.hutool.v_5819.core.getter.OptNullBasicTypeFromStringGetter;
 import copy.cn.hutool.v_5819.core.util.ObjectUtil;
 import copy.cn.hutool.v_5819.core.util.ReflectUtil;
 import copy.cn.hutool.v_5819.core.util.StrUtil;
-import copy.cn.hutool.v_5819.log.Log;
-import copy.cn.hutool.v_5819.log.LogFactory;
+import copy.cn.hutool.v_5819.logger.Log;
+import copy.cn.hutool.v_5819.logger.LogFactory;
 
 import java.io.Serializable;
 import java.lang.reflect.Type;

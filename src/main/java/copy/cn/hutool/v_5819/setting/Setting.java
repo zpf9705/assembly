@@ -13,7 +13,7 @@ import copy.cn.hutool.v_5819.core.lang.Assert;
 import copy.cn.hutool.v_5819.core.util.CharUtil;
 import copy.cn.hutool.v_5819.core.util.CharsetUtil;
 import copy.cn.hutool.v_5819.core.util.StrUtil;
-import copy.cn.hutool.v_5819.log.StaticLog;
+import copy.cn.hutool.v_5819.logger.StaticLog;
 import copy.cn.hutool.v_5819.setting.dialect.Props;
 
 import java.io.File;
