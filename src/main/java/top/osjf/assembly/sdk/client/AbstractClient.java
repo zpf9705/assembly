@@ -8,6 +8,9 @@ import copy.cn.hutool.v_5819.core.util.StrUtil;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
+import top.osjf.assembly.sdk.process.DefaultResponse;
+import top.osjf.assembly.sdk.process.Request;
+import top.osjf.assembly.sdk.process.Response;
 
 import java.util.List;
 import java.util.Map;
@@ -16,17 +19,17 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 /**
- * Abstract client auxiliary class, where there are single instance clients cached
- * based on URL addresses to prevent memory consumption caused by duplicate object
- * creation, improve memory utilization, and some common method definitions
+ * The abstract class implementation of {@link Client} records some common processing and parameter
+ * operations, as well as default operations, including {} caching based on the request identifier
+ * (HTTP request form is the request URL, and the rest can be customized with a unique request identifier)
+ * (every time the request parameter is changed, it is cleared after the request, and {@link Client} can
+ * easily obtain the request data during the request process).
  *
  * @author zpf
  * @since 1.1.0
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class AbstractClient<R extends Response> implements Client<R> {
-
-    private static final long serialVersionUID = 8084820515803632476L;
 
     private static final Object lock = new Object();
 
@@ -42,6 +45,10 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
     //Requested remote interface address
     private final String url;
 
+    public String getUrl() {
+        return url;
+    }
+
     /* ******* Constructs ***********/
 
     public AbstractClient(String url) {
@@ -49,11 +56,14 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
         this.url = url;
     }
 
+    /* ******* Static ***********/
+
     /**
-     * Get Cache Client
+     * Get Cache for {@link Client}.
      *
-     * @param url Link Address
-     * @return {@link AbstractClient}
+     * @param url Cache link url.
+     * @param <R> Data Generics for {@link Response}.
+     * @return {@link Client} and maybe be {@link null}.
      */
     static <R extends Response> Client<R> getCacheClient(String url) {
         if (StrUtil.isBlank(url)) {
@@ -63,10 +73,10 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
     }
 
     /**
-     * Caching client objects
+     * Caching {@link Client} with sign url and real {@link Client}.
      *
-     * @param url    Link Address
-     * @param client {@link AbstractClient}
+     * @param url    Cache link url.
+     * @param client Real impl in {@link Client}.
      */
     static void cache(String url, Client client) {
         if (StrUtil.isBlank(url) || client == null) {
@@ -76,9 +86,10 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
     }
 
     /**
-     * Put the current requested parameters into thread private variable storage
+     * Put the current requested parameters into thread private variable storage.
      *
-     * @param request Current request parameters
+     * @param <R>     Data Generics for {@link Response}.
+     * @param request The parameter model of the current request is an implementation of {@link Request}.
      */
     static <R extends Response> void setCurrentParam(Request<R> request) {
         if (request == null) {
@@ -89,31 +100,30 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
     }
 
     /**
-     * Get the current thread variable
+     * Obtain the current request parameters, which is the implementation class of {@link Request}.
      *
-     * @param <R> Data Generics
-     * @return response data
+     * @param <R> Data Generics for {@link Response}.
+     * @return Actual {@link Request} implementation.
      */
-    public static <R extends Response> Request<R> getCurrentParam() {
+    public static <R extends Response> Request<R> getCurrentRequest() {
         return PARAM_NAMED_SAVER.get();
     }
 
     /**
-     * Obtain or initialize the client object
+     * Retrieve the cache implementation of {@link Client} from the cache {@link #CLIENT_CACHE}.
      *
-     * @param newClientSupplier New client provider
-     * @param request           Request Object Parameters
-     * @param host              Link host Address
-     * @param <R>               Object Generics
-     * @return Client singleton client
+     * @param newClientSupplier New client provider,if not found, add it directly.
+     * @param request           {@link Request} class model parameters of API.
+     * @param host              Request the host name to obtain the actual URL, please refer to
+     *                          {@link Request#formatUrl(String)} for details.
+     * @param <R>               Data Generics for {@link Response}.
+     * @return {@link Client} 's singleton object, persistently requesting.
      */
     public static <R extends Response> Client<R> getClient(Supplier<Client<R>> newClientSupplier,
                                                            Request<R> request,
                                                            String host) {
-        Assert.hasText(host,
-                "Api request host can not be null !");
-        Assert.notNull(request,
-                "Api request params can not be null !");
+        Assert.hasText(host, "Api request host can not be null !");
+        Assert.notNull(request, "Api request params can not be null !");
         setCurrentParam(request);
         String url = request.formatUrl(host);
         Client<R> client = getCacheClient(url);
@@ -129,28 +139,17 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
         return client;
     }
 
-    public String getUrl() {
-        return url;
-    }
+    /* ******* Default provider ***********/
 
     @Override
-    public String convert(Request<R> request, String responseStr) {
-        //Perform JSON conversion according to the return type, and the final processing item is JSON
-        if (!request.isrResponseJsonType()) {
-            if (request.isrResponseXmlType()) {
-                responseStr = request.xmlConvert().apply(responseStr);
-            }
-        }
-        //Special conversion requirements
-        if (request.specialConvert() != null) {
-            responseStr = request.specialConvert().apply(responseStr);
-        }
+    @NonNull
+    public String preResponseStrHandler(Request<R> request, String responseStr) {
         return responseStr;
     }
 
     @Override
     @NonNull
-    public R JsonToConvertResponse(Request<R> request, String responseStr) {
+    public R convertToResponse(Request<R> request, String responseStr) {
         R response;
         JSONValidator jsonValidator = StrUtil.isBlank(responseStr) ? null : JSONValidator.from(responseStr);
         if (Objects.isNull(jsonValidator) || !jsonValidator.validate()) {
