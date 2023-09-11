@@ -3,9 +3,8 @@ package top.osjf.assembly.sdk;
 import com.alibaba.fastjson.JSON;
 import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
-import top.osjf.assembly.sdk.client.AbstractResponse;
-import top.osjf.assembly.sdk.client.Request;
-import top.osjf.assembly.sdk.client.Response;
+import top.osjf.assembly.sdk.process.Request;
+import top.osjf.assembly.sdk.process.Response;
 
 import java.io.Serializable;
 
@@ -69,7 +68,7 @@ public class SdkProxyBeanDefinition<T> extends AbstractSdkProxyInvoker<T> implem
             /*
              * Capture unknown exceptions and throw them in the form of {@link SdkException}
              */
-            throw new SdkException(AbstractResponse.DATA_ERROR_CODE, e.getMessage());
+            throw new SdkException(e.getMessage());
         }
         return JSON.parseObject(response.toJson(), responseType);
     }
