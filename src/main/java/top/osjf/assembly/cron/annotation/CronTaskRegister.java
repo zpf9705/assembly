@@ -20,7 +20,7 @@ import top.osjf.assembly.utils.ScanUtils;
  * whether the calling object uses spring proxy or each instance invocation method through {@link Type} type
  *
  * @author zpf
- * @since 3.1.5
+ * @since 1.1.0
  */
 public class CronTaskRegister implements DeferredImportSelector {
 

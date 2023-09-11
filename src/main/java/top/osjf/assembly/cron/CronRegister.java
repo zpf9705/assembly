@@ -23,7 +23,7 @@ import java.util.Set;
  * Thank you very much.
  *
  * @author zpf
- * @since 3.1.5
+ * @since 1.1.0
  */
 public final class CronRegister {
 

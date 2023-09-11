@@ -4,7 +4,7 @@ package top.osjf.assembly.cron.annotation;
  * How to register the existence of timed task method running objects.
  *
  * @author zpf
- * @since 3.1.5
+ * @since 1.1.0
  */
 public enum Type {
 

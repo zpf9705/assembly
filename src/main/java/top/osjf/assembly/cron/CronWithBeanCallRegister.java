@@ -33,7 +33,7 @@ import java.util.function.Supplier;
  * the problem of calling the bean that cannot be found. If it cannot be found, an error prompt will be given
  *
  * @author zpf
- * @since 3.1.5
+ * @since 1.1.0
  */
 public class CronWithBeanCallRegister extends AbstractCornRegister {
 

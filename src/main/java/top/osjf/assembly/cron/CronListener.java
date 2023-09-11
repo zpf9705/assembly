@@ -8,7 +8,7 @@ import copy.cn.hutool.v_5819.cron.listener.TaskListener;
  * monitoring during startup.
  *
  * @author zpf
- * @since 3.2.2
+ * @since 1.1.0
  */
 public interface CronListener extends TaskListener {
 }

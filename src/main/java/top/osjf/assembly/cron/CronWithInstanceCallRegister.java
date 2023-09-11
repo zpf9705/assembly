@@ -11,7 +11,7 @@ import java.util.List;
  * and the object of the registration method needs to meet the null parameter construction {@link Class#newInstance()}
  *
  * @author zpf
- * @since 3.1.5
+ * @since 1.1.0
  */
 public class CronWithInstanceCallRegister extends AbstractCornRegister {
 

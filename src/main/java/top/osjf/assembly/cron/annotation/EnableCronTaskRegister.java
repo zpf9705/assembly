@@ -17,12 +17,12 @@ import java.lang.annotation.*;
  * Please pay attention to how to use it
  * <p>
  *
- * @author zpf
  * @see CronTaskRegister
  * @see AbstractCornRegister
  * @see org.springframework.context.ApplicationContext
  * @see org.springframework.core.env.Environment
- * @since 3.1.5
+ * @author zpf
+ * @since 1.1.0
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)

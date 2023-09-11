@@ -10,7 +10,7 @@ import java.lang.annotation.*;
  * Relying on {@link CronTaskRegister} to scan, obtain, and register corresponding annotation methods
  *
  * @author zpf
- * @since 3.1.5
+ * @since 1.1.0
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
