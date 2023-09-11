@@ -1,0 +1,23 @@
+package top.osjf.assembly.sdk.client;
+
+/**
+ * Default Request Client impl for {@link Client}
+ *
+ * @author zpf
+ * @since 1.1.0
+ */
+public final class DefaultClient<T extends Response> extends AbstractClient<T> {
+
+    private static final long serialVersionUID = -8853507311212423865L;
+
+    /* ******* super Constructs ***********/
+
+    DefaultClient(String url) {
+        super(url);
+    }
+
+    @Override
+    public T request() {
+        throw new UnsupportedOperationException("default client no operation");
+    }
+}
