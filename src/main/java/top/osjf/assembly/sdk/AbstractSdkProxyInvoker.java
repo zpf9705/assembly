@@ -1,8 +1,9 @@
 package top.osjf.assembly.sdk;
 
 import org.springframework.util.Assert;
-import top.osjf.assembly.sdk.client.AbstractRequestParams;
-import top.osjf.assembly.sdk.client.Request;
+import top.osjf.assembly.sdk.process.AbstractRequestParams;
+import top.osjf.assembly.sdk.process.Request;
+import top.osjf.assembly.sdk.process.Response;
 import top.osjf.assembly.support.AbstractJdkProxySupport;
 
 import java.lang.reflect.Method;
@@ -31,10 +32,10 @@ public abstract class AbstractSdkProxyInvoker<T> extends AbstractJdkProxySupport
     /**
      * Pass parameters to execute the API and provide the call method name (logging) and response type.
      *
-     * @param request      request parameters {@link Request}
-     * @param methodName   method Name {@link SdkEnum#name()}
-     * @param responseType final convert response class type
-     * @return Sdk return value for {@link top.osjf.assembly.sdk.client.Response}
+     * @param request      Request parameters {@link Request}
+     * @param methodName   Method Name {@link SdkEnum#name()}
+     * @param responseType Final convert response class type
+     * @return Sdk return value for {@link Response}
      */
     public abstract Object doSdk(Request<?> request, String methodName, Class<?> responseType) throws SdkException;
 }
