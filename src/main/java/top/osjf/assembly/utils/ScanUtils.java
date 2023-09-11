@@ -6,7 +6,6 @@ import copy.cn.hutool.v_5819.core.util.ArrayUtil;
 import copy.cn.hutool.v_5819.log.StaticLog;
 import org.springframework.boot.SpringApplication;
 import org.springframework.lang.NonNull;
-import org.springframework.util.CollectionUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -124,7 +123,7 @@ public abstract class ScanUtils {
                 //This annotation is standard on the class or interface
                 return finerClazz.getAnnotation(clazz) != null;
             });
-            if (!CollectionUtils.isEmpty(scan)) {
+            if (CollectionUtil.isNotEmpty(scan)) {
                 finder.addAll(scan);
             }
         }
@@ -146,7 +145,7 @@ public abstract class ScanUtils {
         Set<Method> finder = new HashSet<>();
         for (String packageName : packageNames) {
             Set<Class<T>> scan = scan(packageName, null);
-            if (!CollectionUtils.isEmpty(scan)) {
+            if (CollectionUtil.isNotEmpty(scan)) {
                 //First obtain the class object,
                 // and then obtain the corresponding annotation method from the class object
                 Set<Method> mes = scan.stream().map(cla -> {

@@ -1,6 +1,6 @@
 package top.osjf.assembly.support;
 
-
+import copy.cn.hutool.v_5819.core.collection.CollectionUtil;
 import copy.cn.hutool.v_5819.core.util.ArrayUtil;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -17,7 +17,6 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 import top.osjf.assembly.utils.ScanUtils;
 
 import java.lang.annotation.Annotation;
@@ -75,7 +74,7 @@ public abstract class AbstractProxyBeanInjectSupport<O extends Annotation, F ext
         //The class annotated by the subcontracting scanning target
         for (String basePackage : basePackages) {
             Set<BeanDefinition> beanDefinitions = classPathScan.findCandidateComponents(basePackage);
-            if (CollectionUtils.isEmpty(beanDefinitions)) {
+            if (CollectionUtil.isEmpty(beanDefinitions)) {
                 continue;
             }
             //Perform proxy registration for each bean

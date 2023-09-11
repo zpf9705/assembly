@@ -1,5 +1,6 @@
 package top.osjf.assembly.sdk.annotation;
 
+import copy.cn.hutool.v_5819.core.util.StrUtil;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
@@ -9,7 +10,6 @@ import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 import top.osjf.assembly.sdk.SdkProxyBeanDefinition;
 import top.osjf.assembly.support.AbstractProxyBeanInjectSupport;
 
@@ -68,7 +68,7 @@ public class SdkProxyBeanDefinitionRegister extends AbstractProxyBeanInjectSuppo
     private String getRequestHost(String hostProperty) {
         Assert.hasText(hostProperty, "HostProperty no be null");
         String host = getEnvironment().resolvePlaceholders(hostProperty);
-        if (!StringUtils.hasText(host)) {
+        if (StrUtil.isBlank(host)) {
             host = getEnvironment().getProperty(hostProperty);
         }
         Assert.hasText(host,

@@ -1,7 +1,6 @@
 package top.osjf.assembly.sdk.client;
 
-
-import com.sun.istack.internal.NotNull;
+import org.springframework.lang.NonNull;
 
 /**
  * Response object conversion processing after obtaining the requested JSON data
@@ -19,6 +18,6 @@ public interface JSONDispose<R extends Response> {
      * @param responseStr Request Response Data String
      * @return Converted response obj
      */
-    @NotNull
+    @NonNull
     R JsonToConvertResponse(Request<R> request, String responseStr);
 }

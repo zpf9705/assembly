@@ -4,10 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONValidator;
 import com.sun.istack.internal.NotNull;
+import copy.cn.hutool.v_5819.core.collection.CollectionUtil;
+import copy.cn.hutool.v_5819.core.util.StrUtil;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -56,7 +56,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
      * @return {@link AbstractClient}
      */
     static <R extends Response> Client<R> getCacheClient(String url) {
-        if (!StringUtils.hasText(url)) {
+        if (StrUtil.isBlank(url)) {
             return null;
         }
         return CLIENT_CACHE.get(url);
@@ -69,7 +69,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
      * @param client {@link AbstractClient}
      */
     static void cache(String url, Client client) {
-        if (!StringUtils.hasText(url) || client == null) {
+        if (StrUtil.isBlank(url) || client == null) {
             return;
         }
         CLIENT_CACHE.putIfAbsent(url, client);
@@ -152,13 +152,13 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
     @NotNull
     public R JsonToConvertResponse(Request<R> request, String responseStr) {
         R response;
-        JSONValidator jsonValidator = !StringUtils.hasText(responseStr) ? null : JSONValidator.from(responseStr);
+        JSONValidator jsonValidator = StrUtil.isBlank(responseStr) ? null : JSONValidator.from(responseStr);
         if (Objects.isNull(jsonValidator) || !jsonValidator.validate()) {
             String jsonData = JSON.toJSONString(DefaultResponse.buildDataErrorResponse(responseStr));
             response = JSON.parseObject(jsonData, request.getResponseCls());
         } else if (Objects.equals(JSONValidator.Type.Array, jsonValidator.getType())) {
             List<R> responses = JSONArray.parseArray(responseStr, request.getResponseCls());
-            if (CollectionUtils.isEmpty(responses)) {
+            if (CollectionUtil.isEmpty(responses)) {
                 response = responses.get(0);
             } else {
                 response = JSON.parseObject(empty_json, request.getResponseCls());

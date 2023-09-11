@@ -1,7 +1,9 @@
 package top.osjf.assembly.utils;
 
+import copy.cn.hutool.v_5819.core.collection.CollectionUtil;
 import copy.cn.hutool.v_5819.core.exceptions.UtilException;
 import copy.cn.hutool.v_5819.core.io.IoUtil;
+import copy.cn.hutool.v_5819.core.util.StrUtil;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.*;
 import org.apache.http.client.utils.URIBuilder;
@@ -11,8 +13,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.lang.NonNull;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -116,11 +116,11 @@ public final class HttpUtils {
      * @param header      Header information map.
      */
     private static void setEntity(String json, HttpRequestBase requestBase, Map<String, String> header) {
-        if (StringUtils.hasText(json) && requestBase instanceof HttpEntityEnclosingRequestBase) {
+        if (StrUtil.isNotBlank(json) && requestBase instanceof HttpEntityEnclosingRequestBase) {
             StringEntity stringEntity;
-            if (!CollectionUtils.isEmpty(header)) {
+            if (CollectionUtil.isNotEmpty(header)) {
                 String value = header.get("Content-type");
-                if (StringUtils.hasText(value)) {
+                if (StrUtil.isNotBlank(value)) {
                     stringEntity = new StringEntity(json, StandardCharsets.UTF_8);
                 } else {
                     stringEntity = new StringEntity(json, ContentType.APPLICATION_JSON);
@@ -140,7 +140,7 @@ public final class HttpUtils {
      * @param requestBase HTTP Public Request Class {@link HttpRequestBase}.
      */
     private static void addHeaders(Map<String, String> headers, HttpRequestBase requestBase) {
-        if (!CollectionUtils.isEmpty(headers)) {
+        if (CollectionUtil.isNotEmpty(headers)) {
             for (Map.Entry<String, String> header : headers.entrySet()) {
                 requestBase.addHeader(header.getKey(), header.getValue());
             }
@@ -158,7 +158,7 @@ public final class HttpUtils {
         URI uri;
         try {
             URIBuilder uriBuilder = new URIBuilder(url);
-            if (!CollectionUtils.isEmpty(params)) {
+            if (CollectionUtil.isNotEmpty(params)) {
                 for (String paramKey : params.keySet()) {
                     uriBuilder.addParameter(paramKey, String.valueOf(params.get(paramKey)));
                 }
