@@ -2,8 +2,8 @@ package top.osjf.assembly.utils;
 
 import copy.cn.hutool.v_5819.core.collection.CollectionUtil;
 import copy.cn.hutool.v_5819.core.exceptions.UtilException;
+import copy.cn.hutool.v_5819.core.lang.Console;
 import copy.cn.hutool.v_5819.core.util.ArrayUtil;
-import copy.cn.hutool.v_5819.logger.StaticLog;
 import org.springframework.boot.SpringApplication;
 import org.springframework.lang.NonNull;
 
@@ -290,7 +290,7 @@ public abstract class ScanUtils {
         File dir = new File(packagePath);
         // If it does not exist or is not a directory, return it directly
         if (!dir.exists() || !dir.isDirectory()) {
-            StaticLog.warn("User defined package name {} there are no files available below", packageName);
+            Console.log("User defined package name {} there are no files available below", packageName);
             return;
         }
         // If it exists, obtain all files under the package, including directories

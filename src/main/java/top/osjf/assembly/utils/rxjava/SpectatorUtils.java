@@ -1,7 +1,7 @@
 package top.osjf.assembly.utils.rxjava;
 
+import copy.cn.hutool.v_5819.core.lang.Console;
 import copy.cn.hutool.v_5819.core.util.ArrayUtil;
-import copy.cn.hutool.v_5819.logger.StaticLog;
 import io.reactivex.rxjava3.core.BackpressureStrategy;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Scheduler;
@@ -254,7 +254,7 @@ public abstract class SpectatorUtils {
                 return true;
             }
             try {
-                StaticLog.info("When retry there sleep {} millis ", exceptionRetryRestMill);
+                Console.log("When retry there sleep {} millis ", exceptionRetryRestMill);
                 //------------------------------------
                 TimeUnit.MILLISECONDS.sleep(exceptionRetryRestMill);
             } catch (InterruptedException ex) {

@@ -1,6 +1,6 @@
 package top.osjf.assembly.utils.rxjava;
 
-import copy.cn.hutool.v_5819.logger.StaticLog;
+import copy.cn.hutool.v_5819.core.lang.Console;
 import io.reactivex.rxjava3.disposables.Disposable;
 import org.springframework.lang.NonNull;
 import top.osjf.assembly.utils.SystemUtils;
@@ -71,7 +71,7 @@ public abstract class DisposableUtils {
         if (dis.isEmpty()) {
             return;
         }
-        StaticLog.info("start clean up disposable");
+        Console.log("start clean up disposable");
         //To prevent scheduled tasks from starting and clearing subscriptions that have not been completed,
         // add the currently completed subscriptions to a new list for execution first
         List<Disposable> solveDisposables = new CopyOnWriteArrayList<>(dis);
