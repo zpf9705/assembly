@@ -1,5 +1,10 @@
 package top.osjf.assembly.sdk;
 
+import org.springframework.lang.NonNull;
+import top.osjf.assembly.utils.HttpUtils;
+
+import java.util.Map;
+
 /**
  * SDK related attribute method definition interface,mainly including URL concatenation .
  * <p>
@@ -53,10 +58,35 @@ public interface SdkEnum {
         }
     }
 
+    interface DoAction {
+
+        String action(@NonNull String url, Map<String, String> headers, Object requestParam);
+    }
+
     /**
-     * Enumeration of currently supported types for HTTP
+     * Enumeration of currently supported types for HTTP.
      */
-    enum RequestMethod {
-        GET, PUT, POST, DELETE
+    enum RequestMethod implements DoAction {
+        GET {
+            @Override
+            public String action(@NonNull String url, Map<String, String> headers, Object requestParam) {
+                return HttpUtils.get(url, headers, requestParam);
+            }
+        }, POST {
+            @Override
+            public String action(@NonNull String url, Map<String, String> headers, Object requestParam) {
+                return HttpUtils.post(url, headers, requestParam);
+            }
+        }, PUT {
+            @Override
+            public String action(@NonNull String url, Map<String, String> headers, Object requestParam) {
+                return HttpUtils.put(url, headers, requestParam);
+            }
+        }, DELETE {
+            @Override
+            public String action(@NonNull String url, Map<String, String> headers, Object requestParam) {
+                return HttpUtils.delete(url, headers, requestParam);
+            }
+        };
     }
 }
