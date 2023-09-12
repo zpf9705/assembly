@@ -22,8 +22,6 @@ public abstract class SystemUtils {
 
     /**
      * The current main working directory of the user
-     *
-     * @since 1.1.5
      */
     public static final String PROJECT_HOME = "user.home";
 
@@ -45,7 +43,6 @@ public abstract class SystemUtils {
      * @param value must no be {@literal null}
      * @param <K>   generic of {@code key}
      * @param <V>   generic of {@code value}
-     * @since 1.1.5
      */
     public static <K, V> void setProperty(K key, V value) {
         if (key == null || value == null) {
@@ -59,7 +56,6 @@ public abstract class SystemUtils {
      *
      * @param key Value of {@code key}
      * @return You call parameter value of key value
-     * @since 1.1.5
      */
     public static String getProperty(String key) {
         if (key == null) {
@@ -76,7 +72,6 @@ public abstract class SystemUtils {
      * @param convert type
      * @param def     {@literal null} with default value
      * @return You call parameter value of key value
-     * @since 1.1.5
      */
     public static <C> C getPropertyWithConvert(String key, Function<String, C> convert, @Nullable C def) {
         if (key == null) {
