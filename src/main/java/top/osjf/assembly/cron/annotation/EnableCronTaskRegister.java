@@ -1,8 +1,6 @@
 package top.osjf.assembly.cron.annotation;
 
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.helpers.MarkerIgnoringBase;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AliasFor;
 import top.osjf.assembly.cron.AbstractCornRegister;
@@ -89,158 +87,53 @@ public @interface EnableCronTaskRegister {
     Class<? extends Logger> logger() default CronSlf4j.class;
 
 
-    class CronSlf4j extends MarkerIgnoringBase implements Logger {
+    interface Logger {
 
-        private static final Logger logger = LoggerFactory.getLogger(CronSlf4j.class);
+        void info(String var);
+
+        void info(String var1, Object... var2);
+
+        void info(String var1, Throwable var2);
+
+        void error(String var);
+
+        void error(String var1, Object... var2);
+
+        void error(String var1, Throwable var2);
+    }
+
+    class CronSlf4j implements Logger {
+
+        private static final org.slf4j.Logger logger = LoggerFactory.getLogger(CronSlf4j.class);
 
         @Override
-        public boolean isTraceEnabled() {
-            return logger.isTraceEnabled();
+        public void info(String var) {
+            logger.info(var);
         }
 
         @Override
-        public void trace(String s) {
-            logger.trace(s);
+        public void info(String var1, Object... var2) {
+            logger.info(var1, var2);
         }
 
         @Override
-        public void trace(String s, Object o) {
-            logger.trace(s, o);
+        public void info(String var1, Throwable var2) {
+            logger.info(var1, var2);
         }
 
         @Override
-        public void trace(String s, Object o, Object o1) {
-            logger.trace(s, o, o1);
+        public void error(String var) {
+            logger.info(var);
         }
 
         @Override
-        public void trace(String s, Object... objects) {
-            logger.trace(s, objects);
+        public void error(String var1, Object... var2) {
+            logger.info(var1, var2);
         }
 
         @Override
-        public void trace(String s, Throwable throwable) {
-            logger.trace(s, throwable);
-        }
-
-        @Override
-        public boolean isDebugEnabled() {
-            return logger.isDebugEnabled();
-        }
-
-        @Override
-        public void debug(String s) {
-            logger.debug(s);
-        }
-
-        @Override
-        public void debug(String s, Object o) {
-            logger.debug(s, o);
-        }
-
-        @Override
-        public void debug(String s, Object o, Object o1) {
-            logger.debug(s, o, o1);
-        }
-
-        @Override
-        public void debug(String s, Object... objects) {
-            logger.debug(s, objects);
-        }
-
-        @Override
-        public void debug(String s, Throwable throwable) {
-            logger.debug(s, throwable);
-        }
-
-        @Override
-        public boolean isInfoEnabled() {
-            return logger.isInfoEnabled();
-        }
-
-        @Override
-        public void info(String s) {
-            logger.info(s);
-        }
-
-        @Override
-        public void info(String s, Object o) {
-            logger.info(s, o);
-        }
-
-        @Override
-        public void info(String s, Object o, Object o1) {
-            logger.info(s, o, o1);
-        }
-
-        @Override
-        public void info(String s, Object... objects) {
-            logger.info(s, objects);
-        }
-
-        @Override
-        public void info(String s, Throwable throwable) {
-            logger.info(s, throwable);
-        }
-
-        @Override
-        public boolean isWarnEnabled() {
-            return logger.isWarnEnabled();
-        }
-
-        @Override
-        public void warn(String s) {
-            logger.warn(s);
-        }
-
-        @Override
-        public void warn(String s, Object o) {
-            logger.warn(s, o);
-        }
-
-        @Override
-        public void warn(String s, Object... objects) {
-            logger.warn(s, objects);
-        }
-
-        @Override
-        public void warn(String s, Object o, Object o1) {
-            logger.warn(s, o, o1);
-        }
-
-        @Override
-        public void warn(String s, Throwable throwable) {
-            logger.warn(s, throwable);
-        }
-
-        @Override
-        public boolean isErrorEnabled() {
-            return logger.isErrorEnabled();
-        }
-
-        @Override
-        public void error(String s) {
-            logger.error(s);
-        }
-
-        @Override
-        public void error(String s, Object o) {
-            logger.error(s, o);
-        }
-
-        @Override
-        public void error(String s, Object o, Object o1) {
-            logger.error(s, o, o1);
-        }
-
-        @Override
-        public void error(String s, Object... objects) {
-            logger.error(s, objects);
-        }
-
-        @Override
-        public void error(String s, Throwable throwable) {
-            logger.error(s, throwable);
+        public void error(String var1, Throwable var2) {
+            logger.info(var1, var2);
         }
     }
 }
