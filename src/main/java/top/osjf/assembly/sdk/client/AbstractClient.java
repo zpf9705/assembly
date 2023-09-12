@@ -65,7 +65,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
      *
      * @param url Cache link url.
      * @param <R> Data Generics for {@link Response}.
-     * @return {@link Client} and maybe be {@link null}.
+     * @return {@link Client} and maybe be {@literal  null}.
      */
     static <R extends Response> Client<R> getCacheClient(String url) {
         if (StrUtil.isBlank(url)) {
