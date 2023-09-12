@@ -51,7 +51,7 @@ import java.util.function.Supplier;
  * </pre>
  *
  * @author zpf
- * @since 3.1.0
+ * @since 1.1.0
  */
 public class Spectator<T> implements Observer<T>, Serializable {
 

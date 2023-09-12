@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Then this tool collects the subscription relationship {@link Disposable} and releases it regularly
  *
  * @author zpf
- * @since 3.1.4
+ * @since 1.1.0
  */
 public abstract class DisposableUtils {
 

@@ -11,7 +11,7 @@ import java.util.function.Function;
  * Here is some tips on some API support system of Java classes
  *
  * @author zpf
- * @since 1.1.4
+ * @since 1.1.0
  */
 public abstract class SystemUtils {
 

@@ -25,7 +25,7 @@ import java.util.function.Supplier;
  * <a href="https://www.dazhuanlan.com/unclebill/topics/1173554">BackpressureStrategy introduce</a>
  *
  * @author zpf
- * @since 3.1.0
+ * @since 1.1.0
  */
 public interface Observer<T> {
 

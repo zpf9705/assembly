@@ -37,7 +37,7 @@ import java.util.function.Supplier;
  * but can be combined arbitrarily through {@link #runWhile(Supplier, Class[], int, long, Executor, Executor, Class)}
  *
  * @author zpf
- * @since 3.1.2
+ * @since 1.1.0
  */
 public abstract class SpectatorUtils {
 
