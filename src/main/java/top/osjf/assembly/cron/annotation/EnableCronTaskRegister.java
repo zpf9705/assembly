@@ -20,11 +20,11 @@ import java.lang.annotation.*;
  * Please pay attention to how to use it
  * <p>
  *
- * @author zpf
  * @see CronTaskRegister
  * @see AbstractCornRegister
  * @see org.springframework.context.ApplicationContext
  * @see org.springframework.core.env.Environment
+ * @author zpf
  * @since 1.1.0
  */
 @Target({ElementType.TYPE})
