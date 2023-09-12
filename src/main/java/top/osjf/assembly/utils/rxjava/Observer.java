@@ -65,7 +65,6 @@ public interface Observer<T> {
      * </pre>
      *
      * @return can be {@literal null}
-     * @since 3.1.4
      */
     @Nullable
     default Executor subscribeExecutor() {
@@ -99,7 +98,6 @@ public interface Observer<T> {
      * </pre>
      *
      * @return can be {@literal null}
-     * @since 3.1.4
      */
     @Nullable
     default Executor observeExecutor() {
@@ -127,7 +125,6 @@ public interface Observer<T> {
      * Wait time for thread retry when an exception occurs
      *
      * @return wait times and Unit in milliseconds
-     * @since 3.1.2
      */
     long exceptionRetryRestTime();
 
@@ -187,7 +184,6 @@ public interface Observer<T> {
      *
      * @param e Exception thrown by method
      * @return if {@code true} retry or no retry
-     * @since 3.1.2
      */
     default boolean retryWhen(Throwable e) {
         return SpectatorUtils.specifyAnException(specialRetry(), exceptionRetryRestTime(), e.getClass());
