@@ -32,10 +32,10 @@ public abstract class AbstractSdkProxyInvoker<T> extends AbstractJdkProxySupport
     /**
      * Pass parameters to execute the API and provide the call method name (logging) and response type.
      *
-     * @param request      Request parameters {@link Request}
-     * @param methodName   Method Name {@link SdkEnum#name()}
-     * @param responseType Final convert response class type
-     * @return Sdk return value for {@link Response}
+     * @param request      Request parameters {@link Request}.
+     * @param methodName   Method Name {@link SdkEnum#name()}.
+     * @param responseType Final convert response class type.
+     * @return Sdk return value for {@link Response}.
      */
     public abstract Object doInvoke(Request<?> request, String methodName, Class<?> responseType);
 }

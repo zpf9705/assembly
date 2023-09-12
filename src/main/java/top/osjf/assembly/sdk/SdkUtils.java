@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public abstract class SdkUtils {
 
-    static final String named = "Content-Type";
+    public static final String named = "Content-Type";
 
     public static void checkContentType(Map<String, String> headers) {
         if (CollectionUtil.isEmpty(headers)) {

@@ -2,10 +2,9 @@ package top.osjf.assembly.sdk;
 
 
 /**
- * The exception thrown by the body parameter verification of SDK is usually the judgment
- * of business logic parameters, which is thrown during the request.
+ * The exception thrown by the body parameter verification of SDK is usually
+ * the judgment of business logic parameters, which is thrown during the request.
  *
- * @see top.osjf.assembly.sdk.process.Validated
  * @author zpf
  * @since 1.1.0
  */

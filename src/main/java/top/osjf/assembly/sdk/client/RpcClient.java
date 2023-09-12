@@ -3,7 +3,7 @@ package top.osjf.assembly.sdk.client;
 import top.osjf.assembly.sdk.process.Response;
 
 /**
- * RPC based request client and now no support , if necessary, support will be added in the future
+ * RPC based request client and now no support , if necessary, support will be added in the future.
  *
  * @author zpf
  * @since 1.1.0

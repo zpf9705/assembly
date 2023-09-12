@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import copy.cn.hutool.v_5819.core.exceptions.ExceptionUtil;
 import copy.cn.hutool.v_5819.core.io.IoUtil;
 import copy.cn.hutool.v_5819.logger.StaticLog;
-import org.springframework.lang.NonNull;
 import org.springframework.util.StopWatch;
 import top.osjf.assembly.sdk.SdkException;
 import top.osjf.assembly.sdk.SdkUtils;
@@ -33,8 +32,8 @@ public class HttpClient<R extends Response> extends AbstractClient<R> {
     @Override
     public R request() {
         Request<R> request = getCurrentRequest();
-        StopWatch stopWatch = new StopWatch();
         //Request Timer
+        StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         R response;
         String body = null;
@@ -49,7 +48,10 @@ public class HttpClient<R extends Response> extends AbstractClient<R> {
             //Get Request Header
             Map<String, String> headers = request.getHeadMap();
             //requested action
-            responseStr = doRequest(request, headers, requestParam);
+            SdkUtils.checkContentType(headers);
+            responseStr = request.matchSdk()
+                    .getRequestMethod()
+                    .action(getUrl(),headers,requestParam);
             /*
              * This step requires special conversion
              * requirements for response data Final shift to JSON data
@@ -96,19 +98,5 @@ public class HttpClient<R extends Response> extends AbstractClient<R> {
         //close and clear thread param info
         IoUtil.close(this);
         return response;
-    }
-
-    /**
-     * HTTP requests based on different methods.
-     *
-     * @param request      The actual request ,must not be {@literal null}.
-     * @param headers      Header information map.
-     * @param requestParam Request parameters.
-     * @return return value
-     */
-    public String doRequest(@NonNull Request<R> request, Map<String, String> headers, Object requestParam) {
-        //Check if there is a context type, if not, it defaults to JSON
-        SdkUtils.checkContentType(headers);
-        return request.matchSdk().getRequestMethod().action(getUrl(), headers, requestParam);
     }
 }
