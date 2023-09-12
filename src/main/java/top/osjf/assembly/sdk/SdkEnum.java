@@ -124,6 +124,6 @@ public interface SdkEnum {
             public String action(@NonNull String url, Map<String, String> headers, Object requestParam) {
                 return HttpUtils.delete(url, headers, requestParam);
             }
-        };
+        }
     }
 }
