@@ -1,7 +1,9 @@
 package top.osjf.assembly.cron.annotation;
 
 import copy.cn.hutool.v_5819.core.util.ArrayUtil;
+import copy.cn.hutool.v_5819.core.util.ReflectUtil;
 import copy.cn.hutool.v_5819.cron.CronException;
+import org.slf4j.Logger;
 import org.springframework.context.annotation.DeferredImportSelector;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -39,6 +41,10 @@ public class CronTaskRegister implements DeferredImportSelector {
             scanPackage = ScanUtils.findSpringApplicationPackageName();
         }
         noMethodDefaultStart = attributes.getBoolean("noMethodDefaultStart");
+        //instance logger
+        Class<? extends Logger> loggerClazz = attributes.getClass("logger");
+        logger = ReflectUtil.newInstance(loggerClazz);
+        //find type
         Type type = attributes.getEnum("type");
         //Load different configuration classes based on the survival method of object calls
         if (type == Type.PROXY) {
@@ -53,11 +59,20 @@ public class CronTaskRegister implements DeferredImportSelector {
 
     private static boolean noMethodDefaultStart;
 
+    private static Logger logger;
+
     public static String[] getScanPackage() {
         return scanPackage;
     }
 
     public static boolean isNoMethodDefaultStart() {
         return noMethodDefaultStart;
+    }
+
+    public static Logger getLogger() {
+        if (logger == null) {
+            logger = ReflectUtil.newInstance(EnableCronTaskRegister.CronSlf4j.class);
+        }
+        return logger;
     }
 }

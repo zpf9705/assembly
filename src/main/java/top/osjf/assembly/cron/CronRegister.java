@@ -6,9 +6,9 @@ import copy.cn.hutool.v_5819.core.util.ArrayUtil;
 import copy.cn.hutool.v_5819.core.util.ReflectUtil;
 import copy.cn.hutool.v_5819.cron.CronException;
 import copy.cn.hutool.v_5819.cron.CronUtil;
-import copy.cn.hutool.v_5819.logger.StaticLog;
 import org.springframework.scheduling.support.CronExpression;
 import top.osjf.assembly.cron.annotation.Cron;
+import top.osjf.assembly.cron.annotation.CronTaskRegister;
 import top.osjf.assembly.utils.ScanUtils;
 
 import java.lang.reflect.Method;
@@ -137,7 +137,7 @@ public final class CronRegister {
         //Configurable to set up daemon threads
         CronUtil.start(isDaemon);
         //register info log
-        StaticLog.info("Cron register success : success num : {}", CronUtil.getScheduler().size());
+        CronTaskRegister.getLogger().info("Cron register success : success num : {}", CronUtil.getScheduler().size());
     }
 
     public static void defaultStart() {
@@ -145,5 +145,6 @@ public final class CronRegister {
         CronUtil.setMatchSecond(true);
         //Configurable to set up daemon threads
         CronUtil.start();
+        CronTaskRegister.getLogger().info("Default to start cron");
     }
 }

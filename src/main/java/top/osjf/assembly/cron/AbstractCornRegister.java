@@ -59,7 +59,7 @@ public abstract class AbstractCornRegister implements InitializingBean, Environm
             if (CronTaskRegister.isNoMethodDefaultStart()) {
                 CronRegister.defaultStart();
             } else {
-                StaticLog.info("No scanned package paths found");
+                CronTaskRegister.getLogger().info("No scanned package paths found");
             }
             return;
         }
@@ -68,7 +68,7 @@ public abstract class AbstractCornRegister implements InitializingBean, Environm
             if (CronTaskRegister.isNoMethodDefaultStart()) {
                 CronRegister.defaultStart();
             } else {
-                StaticLog.info("No method for annotating @Cron was found");
+                CronTaskRegister.getLogger().info("No method for annotating @Cron was found");
             }
             return;
         }
