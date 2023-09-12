@@ -7,9 +7,9 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import top.osjf.assembly.utils.ScanUtils;
 
 /**
- * The implementation of information collection before the creation of the spring container here,
- * including the package path where the main class is started, plays a crucial role in the scalability of
- * the example package in the future.
+ * <p>The implementation of information collection before the creation of the
+ * spring container here,including the package path where the main class is started,
+ * plays a crucial role in the scalability of the example package in the future.</p>
  *
  * @author zpf
  * @since 1.1.0

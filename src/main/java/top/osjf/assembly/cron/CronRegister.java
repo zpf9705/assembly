@@ -6,16 +6,13 @@ import copy.cn.hutool.v_5819.core.util.ArrayUtil;
 import copy.cn.hutool.v_5819.core.util.ReflectUtil;
 import copy.cn.hutool.v_5819.cron.CronException;
 import copy.cn.hutool.v_5819.cron.CronUtil;
+import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.support.CronExpression;
 import top.osjf.assembly.cron.annotation.Cron;
-import top.osjf.assembly.cron.annotation.CronTaskRegister;
 import top.osjf.assembly.utils.ScanUtils;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Timed task registrar, which relies on domestic Hutu {@code cn.hutool.Hutool} toolkit for implementation.
@@ -31,7 +28,50 @@ public final class CronRegister {
 
     static final String thread_daemon_key = "cron.thread.daemon=";
 
+    static List<Method> cronTasks = new ArrayList<>();
+
     private CronRegister() {
+    }
+
+    public static void setPrepareCronList(List<Method> filterMethods) {
+        if (CollectionUtil.isEmpty(filterMethods)) {
+            return;
+        }
+        cronTasks.addAll(filterMethods);
+    }
+
+    public static void registerPrepareCronList(ApplicationContext context) {
+        if (CollectionUtil.isEmpty(cronTasks)) {
+            return;
+        }
+        Objects.requireNonNull(context, "ApplicationContext not be null");
+        Map<Class<?>, Object> map = new LinkedHashMap<>();
+        for (Method method : cronTasks) {
+            Class<?> declaringClass = method.getDeclaringClass();
+            Object target = map.get(declaringClass);
+            if (target == null) {
+                //Prioritize taking execution objects from the Spring container.
+                try {
+                    target = context.getBean(declaringClass);
+                } catch (Throwable e) {
+                    //Secondly, directly use empty construction to instantiate object execution methods.
+                    try {
+                        target = declaringClass.newInstance();
+                    } catch (InstantiationException e0) {
+                        throw new CronException("Class name {" + method.getDeclaringClass().getName() + "} not " +
+                                "found empty parameter construct cannot be instantiated");
+                    } catch (IllegalAccessException e01) {
+                        throw new CronException("Class name {" + method.getDeclaringClass().getName() + "} does " +
+                                "not have permission to use. Please check the permission modifier so that we can use this class");
+                    }
+                }
+                map.putIfAbsent(declaringClass, target);
+            }
+            Cron cron = method.getAnnotation(Cron.class);
+            Object finalTarget = target;
+            register(cron.express(), () -> ReflectUtil.invoke(finalTarget, method));
+        }
+        cronTasks = null;
     }
 
     public static void register(String express, Runnable runnable) {
@@ -66,17 +106,8 @@ public final class CronRegister {
         }
     }
 
-    public static void register(Object targetObj, Method method) {
-        if (targetObj == null || method == null) {
-            return;
-        }
-        Cron cron = method.getAnnotation(Cron.class);
-        if (!CronExpression.isValidExpression(cron.express())) {
-            throw new UtilException("Provider " + cron.express() + "no a valid cron express");
-        }
-        //Register scheduled tasks
-        CronUtil.schedule(cron.express(), (Runnable) () -> ReflectUtil.invoke(targetObj, method,
-                (Object) cron.args()));
+    public static void removeCornTask(String taskId){
+        CronUtil.remove(taskId);
     }
 
     public static List<Method> getScanMethodsWithCron(String... scanPackage) {
@@ -137,7 +168,8 @@ public final class CronRegister {
         //Configurable to set up daemon threads
         CronUtil.start(isDaemon);
         //register info log
-        CronTaskRegister.getLogger().info("Cron register success : success num : {}", CronUtil.getScheduler().size());
+        CronTaskRegisterImport.getLogger().info("Cron register success : success num : {}",
+                CronUtil.getScheduler().size());
     }
 
     public static void defaultStart() {
@@ -145,6 +177,6 @@ public final class CronRegister {
         CronUtil.setMatchSecond(true);
         //Configurable to set up daemon threads
         CronUtil.start();
-        CronTaskRegister.getLogger().info("Default to start cron");
+        CronTaskRegisterImport.getLogger().info("Default to start cron");
     }
 }
