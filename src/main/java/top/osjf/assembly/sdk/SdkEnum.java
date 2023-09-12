@@ -31,12 +31,10 @@ import java.util.Map;
  *
  * private final RequestMethod requestMethod;
  *
- * @Override
  * public String getUlr(String uri){
  * return String.format(this.url,this.apiProtocol.getPath(),uri,this.type.getType());
  * }
  *
- * @Override
  * public RequestMethod getRequestMethod(){
  * return this.requestMethod;
  * }
