@@ -10,6 +10,12 @@ import top.osjf.assembly.cron.CronTaskRegisterImport;
 import java.lang.annotation.*;
 
 /**
+ * Opening annotations for timed task registration.
+ * <p>
+ * This annotation will scan the methods that carry {@link CronTaskRegisterImport} through {@link Cron},
+ * register them with the timed thread pool using {}, and trigger these operations.
+ * <p>It only needs to be standardized in the class header of the spring container to be implemented.</p>
+ *
  * @author zpf
  * @since 1.1.0
  */
