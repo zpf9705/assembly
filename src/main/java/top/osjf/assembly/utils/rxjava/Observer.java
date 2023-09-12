@@ -111,7 +111,6 @@ public interface Observer<T> {
      *
      * @return {@link Consumer}
      */
-    @Nullable
     default Function<Throwable, String> formatThrowFunction() {
         return Throwable::getMessage;
     }
