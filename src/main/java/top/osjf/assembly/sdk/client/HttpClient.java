@@ -3,7 +3,6 @@ package top.osjf.assembly.sdk.client;
 import com.alibaba.fastjson.JSON;
 import copy.cn.hutool.v_5819.core.exceptions.ExceptionUtil;
 import copy.cn.hutool.v_5819.core.io.IoUtil;
-import copy.cn.hutool.v_5819.logger.StaticLog;
 import org.springframework.util.StopWatch;
 import top.osjf.assembly.sdk.SdkException;
 import top.osjf.assembly.sdk.SdkUtils;
@@ -12,6 +11,7 @@ import top.osjf.assembly.sdk.process.Request;
 import top.osjf.assembly.sdk.process.Response;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Implementation class of http mode for {@link Client}.
@@ -45,13 +45,15 @@ public class HttpClient<R extends Response> extends AbstractClient<R> {
             request.validate();
             //Obtain request body map
             Object requestParam = request.getRequestParam();
+            //give body
+            body = Objects.isNull(requestParam) ? "" : requestParam.toString();
             //Get Request Header
             Map<String, String> headers = request.getHeadMap();
             //requested action
             SdkUtils.checkContentType(headers);
             responseStr = request.matchSdk()
                     .getRequestMethod()
-                    .action(getUrl(),headers,requestParam);
+                    .action(getUrl(), headers, requestParam);
             /*
              * This step requires special conversion
              * requirements for response data Final shift to JSON data
@@ -66,15 +68,15 @@ public class HttpClient<R extends Response> extends AbstractClient<R> {
             response = this.convertToResponse(request, responseStr);
 
         } catch (SdkException e) {
-            StaticLog.error("Client request fail, apiName={}, error=[{}]",
-                    request.matchSdk().name(), ExceptionUtil.stacktraceToOneLineString(e));
+            sdkError().accept("Client request fail, apiName={}, error=[{}]",
+                    SdkUtils.toLoggerArray(request.matchSdk().name(), ExceptionUtil.stacktraceToOneLineString(e)));
             throwable = e;
             errorMsg = ExceptionUtil.stacktraceToOneLineString(throwable);
             String jsonData = JSON.toJSONString(DefaultResponse.buildResponse(e.getMessage()));
             response = JSON.parseObject(jsonData, request.getResponseCls());
         } catch (Exception e) {
-            StaticLog.error("Client request fail, apiName={}, error=[{}]",
-                    request.matchSdk().name(), ExceptionUtil.stacktraceToOneLineString(e));
+            otherError().accept("Client request fail, apiName={}, error=[{}]",
+                    SdkUtils.toLoggerArray(request.matchSdk().name(), ExceptionUtil.stacktraceToOneLineString(e)));
             throwable = e;
             errorMsg = ExceptionUtil.stacktraceToOneLineString(throwable);
             String jsonData = JSON.toJSONString(DefaultResponse.buildUnknownResponse(e.getMessage()));
@@ -86,15 +88,14 @@ public class HttpClient<R extends Response> extends AbstractClient<R> {
             //logger console
             if (throwable == null) {
                 String msgFormat = "Request end, name={}, request={}, response={}, time={}ms";
-                StaticLog.info(msgFormat, request.matchSdk().name(), body, responseStr,
-                        totalTimeMillis);
+                normal().accept(msgFormat,
+                        SdkUtils.toLoggerArray(request.matchSdk().name(), body, responseStr, totalTimeMillis));
             } else {
                 String msgFormat = "Request fail, name={}, request={}, response={}, error={}, time={}ms";
-                StaticLog.info(msgFormat, request.matchSdk().name(), body, responseStr,
-                        errorMsg, totalTimeMillis);
+                normal().accept(msgFormat,
+                        SdkUtils.toLoggerArray(request.matchSdk().name(), body, responseStr, errorMsg, totalTimeMillis));
             }
         }
-
         //close and clear thread param info
         IoUtil.close(this);
         return response;

@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONValidator;
 import copy.cn.hutool.v_5819.core.collection.CollectionUtil;
 import copy.cn.hutool.v_5819.core.util.StrUtil;
+import copy.cn.hutool.v_5819.logger.StaticLog;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 /**
@@ -166,6 +168,21 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
             response = JSON.parseObject(responseStr, request.getResponseCls());
         }
         return response;
+    }
+
+    @Override
+    public BiConsumer<String, Object[]> normal() {
+        return StaticLog::info;
+    }
+
+    @Override
+    public BiConsumer<String, Object[]> sdkError() {
+        return StaticLog::error;
+    }
+
+    @Override
+    public BiConsumer<String, Object[]> otherError() {
+        return StaticLog::error;
     }
 
     @Override

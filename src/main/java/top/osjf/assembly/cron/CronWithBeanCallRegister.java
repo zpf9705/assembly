@@ -49,7 +49,7 @@ public class CronWithBeanCallRegister extends AbstractCornRegister {
                             () -> getApplicationContext().getBean(method.getDeclaringClass()),
                             null,
                             5,
-                            1000);
+                            1500);
                     proxyMap.putIfAbsent(method.getDeclaringClass(), proxy);
                 } catch (BeansException e) {
                     throw new CronException("No beans corresponding to {" + method.getDeclaringClass() + "} " +

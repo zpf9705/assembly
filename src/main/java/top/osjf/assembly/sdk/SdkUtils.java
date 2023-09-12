@@ -25,4 +25,8 @@ public abstract class SdkUtils {
             headers.put(named, ContentType.JSON.getValue());
         }
     }
+
+    public static Object[] toLoggerArray(Object... args) {
+        return args;
+    }
 }

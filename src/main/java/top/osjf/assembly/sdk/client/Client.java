@@ -14,6 +14,7 @@ import java.io.Serializable;
  *     <dt>2、{@link PreProcessingResponseHandler}Request data preprocessing</dt>
  *     <dt>3、{@link ResponseConvert}Convert Unified Request Object</dt>
  *     <dt>4、{@link Closeable}Clear memory parameters</dt>
+ *     <dt>5、{@link LoggerConsumer}Define output log entries</dt>
  * </dl>
  * Each process has a corresponding interface method, which you can override to customize method conversion.
  * <p>There are also well-defined abstract classes {@link AbstractClient} here to learn about.</p>
@@ -22,5 +23,5 @@ import java.io.Serializable;
  * @since 1.1.0
  */
 public interface Client<R extends Response> extends RequestCore<R>, PreProcessingResponseHandler<R>,
-        ResponseConvert<R>, Closeable, Serializable {
+        ResponseConvert<R>, LoggerConsumer, Closeable, Serializable {
 }
