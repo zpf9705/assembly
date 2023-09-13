@@ -1,6 +1,7 @@
 package top.osjf.assembly.sdk.client;
 
 import org.springframework.lang.NonNull;
+import top.osjf.assembly.sdk.http.HttpClient;
 import top.osjf.assembly.sdk.process.Request;
 import top.osjf.assembly.sdk.process.Response;
 
