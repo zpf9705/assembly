@@ -8,8 +8,8 @@ import top.osjf.assembly.sdk.annotation.SdkProxyBeanDefinitionRegister;
 
 /**
  * When registering a proxy class to the spring container at the interface level,
- * the property fields placed in the host address acquisition interface are completed
- * in {@link SdkProxyBeanDefinitionRegister#beanRegister(AnnotationAttributes, BeanDefinitionRegistry, AnnotationMetadata)}.
+ * the property fields placed in the host address acquisition interface are completed in
+ * {@link SdkProxyBeanDefinitionRegister#beanRegister(AnnotationAttributes, BeanDefinitionRegistry, AnnotationMetadata)}.
  * <p>When dynamic SDK calls are made, they are retrieved at any time for calling operations.</p>
  *
  * @author zpf
