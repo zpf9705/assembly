@@ -1,8 +1,8 @@
 package top.osjf.assembly.sdk;
 
 import org.springframework.lang.NonNull;
-import org.springframework.util.Assert;
 import top.osjf.assembly.sdk.process.Request;
+import top.osjf.assembly.sdk.process.Response;
 
 import java.io.Serializable;
 
@@ -53,11 +53,7 @@ public class SdkProxyBeanDefinition<T> extends AbstractSdkProxyInvoker<T> implem
     }
 
     @Override
-    @NonNull
-    public Object doInvoke(Request<?> request, String methodName, Class<?> responseType) {
-        Assert.notNull(request, "RequestParams no be null");
-        Assert.notNull(methodName, "Method name no be null");
-        Assert.notNull(responseType, "ReturnType no be null");
+    public Response apply(@NonNull Request<?> request) {
         return ClientUtils.execute(this.host, request);
     }
 }
