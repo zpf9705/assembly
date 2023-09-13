@@ -22,9 +22,19 @@ import top.osjf.assembly.sdk.process.AbstractResponse;
  *     private List<Supplier> data;
  * }}
  * </pre>
+ * <p>Due to differences in encapsulation interfaces, public fields are not provided here.
+ * If you need to default, please refer to {@link top.osjf.assembly.sdk.process.DefaultResponse}
+ * <dl>
+ *     <dt>{@link top.osjf.assembly.sdk.process.DefaultResponse#buildSdkExceptionResponse(String)}</dt>
+ *     <dt>{@link top.osjf.assembly.sdk.process.DefaultResponse#buildUnknownResponse(String)}</dt>
+ *     <dt>{@link top.osjf.assembly.sdk.process.DefaultResponse#buildDataErrorResponse(String)}</dt>
+ * </dl>
+ * The prerequisite for use is to check if the field name is consistent with yours, otherwise the
+ * default information in {@link AbstractResponse} will be obtained.
+ * </p>
  *
  * @author zpf
- * @since 1.1.0
+ * @since 1.1.1
  */
 public abstract class AbstractHttpResponse extends AbstractResponse {
 }
