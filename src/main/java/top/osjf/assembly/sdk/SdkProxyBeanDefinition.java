@@ -1,8 +1,7 @@
 package top.osjf.assembly.sdk;
 
+import copy.cn.hutool.v_5819.core.util.StrUtil;
 import org.springframework.lang.NonNull;
-import top.osjf.assembly.sdk.process.Request;
-import top.osjf.assembly.sdk.process.Response;
 
 import java.io.Serializable;
 
@@ -34,26 +33,19 @@ public class SdkProxyBeanDefinition<T> extends AbstractSdkProxyInvoker<T> implem
     private String host;
 
     /**
-     * Obtain the current request host address
+     * Place the current request host address.
      *
-     * @return no be {@literal null}
-     */
-    @NonNull
-    public String getHost() {
-        return host;
-    }
-
-    /**
-     * Place the current request host address
-     *
-     * @param host host address no be {@literal null}
+     * @param host Host address no be {@literal null}.
      */
     public void setHost(String host) {
+        if (StrUtil.isBlank(host)) throw new IllegalArgumentException(
+                "The calling host address of the SDK proxy class cannot be empty");
         this.host = host;
     }
 
+    @NonNull
     @Override
-    public Response apply(@NonNull Request<?> request) {
-        return ClientUtils.execute(this.host, request);
+    public String getHost() {
+        return host;
     }
 }
