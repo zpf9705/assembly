@@ -3,11 +3,14 @@ package top.osjf.assembly.sdk;
 import copy.cn.hutool.v_5819.core.util.ArrayUtil;
 import copy.cn.hutool.v_5819.core.util.StrUtil;
 import org.springframework.lang.NonNull;
+import top.osjf.assembly.sdk.client.ClientShoulder;
 import top.osjf.assembly.sdk.process.HostCapable;
 import top.osjf.assembly.sdk.process.Request;
+import top.osjf.assembly.sdk.process.Response;
 import top.osjf.assembly.support.AbstractJdkProxySupport;
 
 import java.lang.reflect.Method;
+import java.util.function.BiFunction;
 
 /**
  * Inheriting {@link AbstractJdkProxySupport} implements handing over the object of the jdk dynamic proxy
@@ -17,8 +20,8 @@ import java.lang.reflect.Method;
  * <p>
  * This class takes on the common parameter processing and converts it into the parameters required for SDK execution.</p>
  * <p>
- * It can use the method case of reference {@link ClientUtils#execute(String, Request)} to inherit the
- * real processing object, such as {@link SdkProxyBeanDefinition}.
+ * The corresponding executor will be selected based on the full name of a single {@link top.osjf.assembly.sdk.client.Client},
+ * as shown in {@link Request#getClientCls()}.
  * <p>Simply obtain the host parameter from the corresponding proxy class entity to complete the SDK request.</p>
  *
  * @author zpf
@@ -42,7 +45,21 @@ public abstract class AbstractSdkProxyInvoker<T> extends AbstractJdkProxySupport
         if (!(arg instanceof Request)) throw new IllegalArgumentException(
                 StrUtil.format("You must encapsulate your SDK request class to inherit from top.osjf.assembly" +
                         ".sdk.process.Request"));
-        return ClientUtils.execute(getHost(), (Request<?>) arg);
+        return doNext((Request<?>) arg);
+    }
+
+    /**
+     * Use {@link top.osjf.assembly.sdk.client.Client} for the next name routing operation.
+     *
+     * @param request Think of {@link Request#getClientCls()}.
+     * @return The result set of this request is encapsulated in {@link Response}.
+     */
+    public Response doNext(@NonNull Request<?> request) {
+        BiFunction<String, Request<?>, Response> function = ClientShoulder.findClientConsumer(request.getClientCls());
+        if (function == null) {
+            throw new IllegalStateException("");
+        }
+        return function.apply(getHost(), request);
     }
 
     @Override
