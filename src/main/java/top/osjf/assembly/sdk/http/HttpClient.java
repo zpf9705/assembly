@@ -1,14 +1,14 @@
-package top.osjf.assembly.sdk.client;
+package top.osjf.assembly.sdk.http;
 
 import com.alibaba.fastjson.JSON;
 import copy.cn.hutool.v_5819.core.exceptions.ExceptionUtil;
 import copy.cn.hutool.v_5819.core.io.IoUtil;
+import io.reactivex.rxjava3.functions.Function3;
 import org.springframework.util.StopWatch;
 import top.osjf.assembly.sdk.SdkException;
 import top.osjf.assembly.sdk.SdkUtils;
+import top.osjf.assembly.sdk.client.Client;
 import top.osjf.assembly.sdk.process.DefaultResponse;
-import top.osjf.assembly.sdk.process.Request;
-import top.osjf.assembly.sdk.process.Response;
 
 import java.util.Map;
 import java.util.Objects;
@@ -19,9 +19,8 @@ import java.util.Objects;
  * @author zpf
  * @since 1.1.0
  */
-public class HttpClient<R extends Response> extends AbstractClient<R> {
-
-    private static final long serialVersionUID = -7155604086466276914L;
+public class HttpClient<R extends HttpResponse> extends AbstractHttpClient<R> implements Function3<HttpRequestMethod,
+        Map<String, String>, Object, String> {
 
     /* ******* super Constructs ***********/
 
@@ -31,7 +30,7 @@ public class HttpClient<R extends Response> extends AbstractClient<R> {
 
     @Override
     public R request() {
-        Request<R> request = getCurrentRequest();
+        HttpRequest<R> request = getCurrentHttpRequest();
         //Request Timer
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
@@ -50,10 +49,7 @@ public class HttpClient<R extends Response> extends AbstractClient<R> {
             //Get Request Header
             Map<String, String> headers = request.getHeadMap();
             //requested action
-            SdkUtils.checkContentType(headers);
-            responseStr = request.matchSdk()
-                    .getRequestMethod()
-                    .action(getUrl(), headers, requestParam);
+            responseStr = apply(request.matchHttpSdk().getRequestMethod(), headers, requestParam);
             /*
              * This step requires special conversion
              * requirements for response data Final shift to JSON data
@@ -69,14 +65,14 @@ public class HttpClient<R extends Response> extends AbstractClient<R> {
 
         } catch (SdkException e) {
             sdkError().accept("Client request fail, apiName={}, error=[{}]",
-                    SdkUtils.toLoggerArray(request.matchSdk().name(), ExceptionUtil.stacktraceToOneLineString(e)));
+                    SdkUtils.toLoggerArray(request.matchHttpSdk().name(), ExceptionUtil.stacktraceToOneLineString(e)));
             throwable = e;
             errorMsg = ExceptionUtil.stacktraceToOneLineString(throwable);
             String jsonData = JSON.toJSONString(DefaultResponse.buildResponse(e.getMessage()));
             response = JSON.parseObject(jsonData, request.getResponseCls());
         } catch (Exception e) {
             otherError().accept("Client request fail, apiName={}, error=[{}]",
-                    SdkUtils.toLoggerArray(request.matchSdk().name(), ExceptionUtil.stacktraceToOneLineString(e)));
+                    SdkUtils.toLoggerArray(request.matchHttpSdk().name(), ExceptionUtil.stacktraceToOneLineString(e)));
             throwable = e;
             errorMsg = ExceptionUtil.stacktraceToOneLineString(throwable);
             String jsonData = JSON.toJSONString(DefaultResponse.buildUnknownResponse(e.getMessage()));
@@ -89,15 +85,21 @@ public class HttpClient<R extends Response> extends AbstractClient<R> {
             if (throwable == null) {
                 String msgFormat = "Request end, name={}, request={}, response={}, time={}ms";
                 normal().accept(msgFormat,
-                        SdkUtils.toLoggerArray(request.matchSdk().name(), body, responseStr, totalTimeMillis));
+                        SdkUtils.toLoggerArray(request.matchHttpSdk().name(), body, responseStr, totalTimeMillis));
             } else {
                 String msgFormat = "Request fail, name={}, request={}, response={}, error={}, time={}ms";
                 normal().accept(msgFormat,
-                        SdkUtils.toLoggerArray(request.matchSdk().name(), body, responseStr, errorMsg, totalTimeMillis));
+                        SdkUtils.toLoggerArray(request.matchHttpSdk().name(), body, responseStr, errorMsg, totalTimeMillis));
             }
         }
         //close and clear thread param info
         IoUtil.close(this);
         return response;
+    }
+
+    @Override
+    public String apply(HttpRequestMethod httpRequestMethod, Map<String, String> headers, Object requestParam) {
+        SdkUtils.checkContentType(headers);
+        return httpRequestMethod.apply(getUrl(), headers, requestParam);
     }
 }
