@@ -21,7 +21,7 @@ import top.osjf.assembly.sdk.process.Request;
  * you defined for {@link #getResponseCls()}.
  *
  * @author zpf
- * @since 1.1.0
+ * @since 1.1.1
  */
 public interface HttpRequest<R extends HttpResponse> extends Request<R> {
 
