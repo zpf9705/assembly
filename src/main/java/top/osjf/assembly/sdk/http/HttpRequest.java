@@ -33,6 +33,15 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
     HttpSdkEnum matchHttpSdk();
 
     /**
+     * Do you want to concatenate the given {@link #getRequestParam()} parameters with rules after the URL.
+     * <p>The prerequisite is to provide parameters in the form of a map or JSON strings for key/value.</p>
+     *
+     * @return If true, it will concatenate the provided parameters for you, otherwise it will be determined
+     * based on the request header.
+     */
+    boolean montage();
+
+    /**
      * The manual URL concatenation method allows users to concatenate parameters on URLs
      * other than the {@link HttpSdkEnum#getRequestMethod()} request mode, which needs to be rewritten directly.
      * <p>The format should refer to the get request.</p>

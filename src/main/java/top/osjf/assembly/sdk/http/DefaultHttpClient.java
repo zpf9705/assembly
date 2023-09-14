@@ -3,7 +3,7 @@ package top.osjf.assembly.sdk.http;
 import com.alibaba.fastjson.JSON;
 import copy.cn.hutool.v_5819.core.exceptions.ExceptionUtil;
 import copy.cn.hutool.v_5819.core.io.IoUtil;
-import io.reactivex.rxjava3.functions.Function3;
+import io.reactivex.rxjava3.functions.Function4;
 import org.springframework.util.StopWatch;
 import top.osjf.assembly.sdk.SdkException;
 import top.osjf.assembly.sdk.SdkUtils;
@@ -15,12 +15,12 @@ import java.util.Objects;
 /**
  * The default client for the HTTP request mode of SDK.
  *
- * @see #request()
  * @author zpf
+ * @see #request()
  * @since 1.1.0
  */
 public class DefaultHttpClient<R extends HttpResponse> extends AbstractHttpClient<R> implements
-        Function3<HttpRequestMethod, Map<String, String>, Object, String> {
+        Function4<HttpRequestMethod, Map<String, String>, Object, Boolean, String> {
 
     /* ******* super Constructs ***********/
 
@@ -49,7 +49,8 @@ public class DefaultHttpClient<R extends HttpResponse> extends AbstractHttpClien
             //Get Request Header
             Map<String, String> headers = request.getHeadMap();
             //requested action
-            responseStr = apply(request.matchHttpSdk().getRequestMethod(), headers, requestParam);
+            responseStr = apply(request.matchHttpSdk().getRequestMethod(), headers, requestParam,
+                    request.montage());
             /*
              * This step requires special conversion
              * requirements for response data Final shift to JSON data
@@ -97,8 +98,9 @@ public class DefaultHttpClient<R extends HttpResponse> extends AbstractHttpClien
     }
 
     @Override
-    public String apply(HttpRequestMethod httpRequestMethod, Map<String, String> headers, Object requestParam) {
+    public String apply(HttpRequestMethod httpRequestMethod, Map<String, String> headers, Object requestParam,
+                        Boolean montage) {
         SdkUtils.checkContentType(headers);
-        return httpRequestMethod.apply(getUrl(), headers, requestParam);
+        return httpRequestMethod.apply(getUrl(), headers, requestParam, montage);
     }
 }

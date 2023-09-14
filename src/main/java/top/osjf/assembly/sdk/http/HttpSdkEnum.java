@@ -1,6 +1,6 @@
 package top.osjf.assembly.sdk.http;
 
-import io.reactivex.rxjava3.functions.Function3;
+import io.reactivex.rxjava3.functions.Function4;
 import top.osjf.assembly.sdk.SdkEnum;
 
 import java.util.Map;
@@ -54,9 +54,9 @@ public interface HttpSdkEnum extends SdkEnum {
      */
     HttpRequestMethod getRequestMethod();
 
-    interface Action extends Function3<String, Map<String, String>, Object, String> {
+    interface Action extends Function4<String, Map<String, String>, Object, Boolean, String> {
 
         @Override
-        String apply(String s, Map<String, String> stringStringMap, Object o);
+        String apply(String s, Map<String, String> stringStringMap, Object o, Boolean montage);
     }
 }

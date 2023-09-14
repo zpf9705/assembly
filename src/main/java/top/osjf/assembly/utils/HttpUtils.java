@@ -1,5 +1,8 @@
 package top.osjf.assembly.utils;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONValidator;
 import copy.cn.hutool.v_5819.core.collection.CollectionUtil;
 import copy.cn.hutool.v_5819.core.exceptions.UtilException;
 import copy.cn.hutool.v_5819.core.io.IoUtil;
@@ -38,10 +41,11 @@ public final class HttpUtils {
      * @param url          The actual request address,must not be {@literal null}.
      * @param headers      Header information map.
      * @param requestParam Request parameters.
+     * @param montage      Whether to concatenate urls as maps.
      * @return The {@code String} type of the return value
      */
-    public static String get(String url, Map<String, String> headers, Object requestParam) {
-        return doRequest(new HttpGet(getUri(url, requestParam)), headers, requestParam);
+    public static String get(String url, Map<String, String> headers, Object requestParam, boolean montage) {
+        return doRequest(new HttpGet(getUri(url, requestParam, montage)), headers, requestParam);
     }
 
     /**
@@ -50,10 +54,11 @@ public final class HttpUtils {
      * @param url          The actual request address,must not be {@literal null}.
      * @param headers      Header information map.
      * @param requestParam Request parameters.
+     * @param montage      Whether to concatenate urls as maps.
      * @return The {@code String} type of the return value
      */
-    public static String post(String url, Map<String, String> headers, Object requestParam) {
-        return doRequest(new HttpPost(url), headers, requestParam);
+    public static String post(String url, Map<String, String> headers, Object requestParam, boolean montage) {
+        return doRequest(new HttpPost(getUri(url, requestParam, montage)), headers, requestParam);
     }
 
     /**
@@ -62,10 +67,11 @@ public final class HttpUtils {
      * @param url          The actual request address,must not be {@literal null}.
      * @param headers      Header information map.
      * @param requestParam Request parameters.
+     * @param montage      Whether to concatenate urls as maps.
      * @return The {@code String} type of the return value
      */
-    public static String put(String url, Map<String, String> headers, Object requestParam) {
-        return doRequest(new HttpPut(url), headers, requestParam);
+    public static String put(String url, Map<String, String> headers, Object requestParam, boolean montage) {
+        return doRequest(new HttpPut(getUri(url, requestParam, montage)), headers, requestParam);
     }
 
     /**
@@ -74,10 +80,11 @@ public final class HttpUtils {
      * @param url          The actual request address,must not be {@literal null}.
      * @param headers      Header information map.
      * @param requestParam Request parameters.
+     * @param montage      Whether to concatenate urls as maps.
      * @return The {@code String} type of the return value
      */
-    public static String delete(String url, Map<String, String> headers, Object requestParam) {
-        return doRequest(new HttpDelete(url), headers, requestParam);
+    public static String delete(String url, Map<String, String> headers, Object requestParam, boolean montage) {
+        return doRequest(new HttpDelete(getUri(url, requestParam, montage)), headers, requestParam);
     }
 
     /**
@@ -155,17 +162,32 @@ public final class HttpUtils {
      *
      * @param url          The actual request address.
      * @param requestParam Request parameters.
+     * @param montage      Whether to concatenate urls as maps.
      * @return Uri object,Please pay attention to the format issue of the URL.
      */
-    private static URI getUri(String url, Object requestParam) {
+    @SuppressWarnings("unchecked")
+    private static URI getUri(String url, Object requestParam, boolean montage) {
         URI uri;
         try {
             URIBuilder uriBuilder = new URIBuilder(url);
-            if (requestParam != null && !(requestParam instanceof String)) {
+            if (montage && requestParam != null) {
+                if (!(requestParam instanceof Map)
+                        && !(requestParam instanceof String))
+                    throw new UtilException("If you need to concatenate parameters onto the URL, " +
+                            "please provide parameters of map type or JSON type of key/value " +
+                            "(which will automatically convert map concatenation). " +
+                            "If you provide a simple string type, then the URL parameter will be directly returned.");
                 //If the type is a map concatenated after the address
+                Map<String, Object> params = null;
                 if (requestParam instanceof Map) {
-                    @SuppressWarnings("unchecked")
-                    Map<String, Object> params = (Map<String, Object>) requestParam;
+                    params = (Map<String, Object>) requestParam;
+                } else {
+                    if (JSONValidator.from(requestParam.toString()).validate()) {
+                        JSONObject jsonObject = JSON.parseObject(requestParam.toString());
+                        params = jsonObject.getInnerMap();
+                    }
+                }
+                if (CollectionUtil.isNotEmpty(params)) {
                     for (String paramKey : params.keySet()) {
                         uriBuilder.addParameter(paramKey, String.valueOf(params.get(paramKey)));
                     }
@@ -174,7 +196,7 @@ public final class HttpUtils {
             //If it is null or a string, it can be directly used as a paparazzi
             uri = uriBuilder.build();
         } catch (URISyntaxException e) {
-            throw new UtilException(url + " not a valid url");
+            throw new UtilException(url + " Invalid URL.");
         }
         return uri;
     }
