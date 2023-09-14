@@ -37,5 +37,5 @@ import top.osjf.assembly.sdk.process.AbstractResponse;
  * @author zpf
  * @since 1.1.1
  */
-public abstract class AbstractHttpResponse extends AbstractResponse {
+public abstract class AbstractHttpResponse extends AbstractResponse implements HttpResponse {
 }
