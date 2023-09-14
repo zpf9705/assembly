@@ -7,24 +7,24 @@ import io.reactivex.rxjava3.functions.Function3;
 import org.springframework.util.StopWatch;
 import top.osjf.assembly.sdk.SdkException;
 import top.osjf.assembly.sdk.SdkUtils;
-import top.osjf.assembly.sdk.client.Client;
 import top.osjf.assembly.sdk.process.DefaultResponse;
 
 import java.util.Map;
 import java.util.Objects;
 
 /**
- * Implementation class of http mode for {@link Client}.
+ * The default client for the HTTP request mode of SDK.
  *
+ * @see #request()
  * @author zpf
  * @since 1.1.0
  */
-public class HttpClient<R extends HttpResponse> extends AbstractHttpClient<R> implements Function3<HttpRequestMethod,
-        Map<String, String>, Object, String> {
+public class DefaultHttpClient<R extends HttpResponse> extends AbstractHttpClient<R> implements
+        Function3<HttpRequestMethod, Map<String, String>, Object, String> {
 
     /* ******* super Constructs ***********/
 
-    public HttpClient(String url) {
+    public DefaultHttpClient(String url) {
         super(url);
     }
 
@@ -62,7 +62,6 @@ public class HttpClient<R extends HttpResponse> extends AbstractHttpClient<R> im
              * requirements of JSON return, or the innermost layer should be JSON data
              */
             response = this.convertToResponse(request, responseStr);
-
         } catch (SdkException e) {
             sdkError().accept("Client request fail, apiName={}, error=[{}]",
                     SdkUtils.toLoggerArray(request.matchHttpSdk().name(), ExceptionUtil.stacktraceToOneLineString(e)));
