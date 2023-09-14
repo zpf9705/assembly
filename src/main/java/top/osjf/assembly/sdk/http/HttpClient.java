@@ -68,7 +68,7 @@ public class HttpClient<R extends HttpResponse> extends AbstractHttpClient<R> im
                     SdkUtils.toLoggerArray(request.matchHttpSdk().name(), ExceptionUtil.stacktraceToOneLineString(e)));
             throwable = e;
             errorMsg = ExceptionUtil.stacktraceToOneLineString(throwable);
-            String jsonData = JSON.toJSONString(DefaultResponse.buildResponse(e.getMessage()));
+            String jsonData = JSON.toJSONString(DefaultResponse.buildSdkExceptionResponse(e.getMessage()));
             response = JSON.parseObject(jsonData, request.getResponseCls());
         } catch (Exception e) {
             otherError().accept("Client request fail, apiName={}, error=[{}]",
