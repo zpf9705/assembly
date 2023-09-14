@@ -13,7 +13,7 @@ import java.util.Map;
  * You can check the example code:
  * <pre>
  * {@code
- * public enum Sdk implements SdkEnum {
+ * public enum Sdk implements HttpSdkEnum {
  *
  * GET_SUPPLIER("***********", ApiProtocol.HTTP, ApiType.*, RequestMethod.POST),
  *
@@ -35,7 +35,7 @@ import java.util.Map;
  * return String.format(this.url,this.apiProtocol.getPath(),uri,this.type.getType());
  * }
  *
- * public RequestMethod getRequestMethod(){
+ * public HttpRequestMethod getHttpRequestMethod){
  * return this.requestMethod;
  * }
  * }}
