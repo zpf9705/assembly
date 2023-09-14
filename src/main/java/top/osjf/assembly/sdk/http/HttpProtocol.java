@@ -2,6 +2,9 @@ package top.osjf.assembly.sdk.http;
 
 /**
  * API Request Address HTTP Protocol Header Enumeration Selection.
+ *
+ * @author zpf
+ * @since 1.1.1
  */
 public enum HttpProtocol {
 
