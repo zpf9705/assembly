@@ -51,7 +51,7 @@ public interface Request<R extends Response> extends RequestParamCapable, Serial
     /**
      * Obtain the implementation class object of {@link Client} and you can define it yourself.
      * <p>
-     * Currently, there are {@link HttpClient} in HTTP format and
+     * Currently, there are {@link top.osjf.assembly.sdk.http.DefaultHttpClient} in HTTP format and
      * some default methods provided in {@link top.osjf.assembly.sdk.client.AbstractClient}.
      *
      * @return Implementation class of {@link Client}.
