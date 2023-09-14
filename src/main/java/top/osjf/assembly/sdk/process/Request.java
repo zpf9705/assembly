@@ -27,9 +27,10 @@ public interface Request<R extends Response> extends RequestParamCapable, Serial
 
     /**
      * Method for verifying request parameters, fixed throw {@link SdkException}.
-     * <p>Taking {@link DefaultHttpClient} as an example, you can take
-     * a look at its {@link DefaultHttpClient#request()} method. You need to throw {@link SdkException}
-     * for validation parameters in order to perform specialized exception capture.</p>
+     * <p>Taking {@link top.osjf.assembly.sdk.http.DefaultHttpClient} as an example, you can take
+     * a look at its {@link top.osjf.assembly.sdk.http.DefaultHttpClient#request()} method. You
+     * need to throw {@link SdkException} for validation parameters in order to perform specialized
+     * exception capture.</p>
      */
     void validate() throws SdkException;
 
