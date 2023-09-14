@@ -1,6 +1,6 @@
 package top.osjf.assembly.sdk.client;
 
-import top.osjf.assembly.sdk.http.HttpClient;
+import top.osjf.assembly.sdk.http.DefaultHttpClient;
 import top.osjf.assembly.sdk.http.HttpClientExecutor;
 import top.osjf.assembly.sdk.http.HttpRequest;
 import top.osjf.assembly.sdk.process.Request;
@@ -16,7 +16,7 @@ import java.util.function.BiFunction;
  */
 public class ClientShoulder {
 
-    static final String http = HttpClient.class.getName();
+    static final String http = DefaultHttpClient.class.getName();
 
     static final String rpc = RpcClient.class.getName();
 
