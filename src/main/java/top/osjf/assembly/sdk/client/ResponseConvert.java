@@ -1,7 +1,7 @@
 package top.osjf.assembly.sdk.client;
 
 import org.springframework.lang.NonNull;
-import top.osjf.assembly.sdk.http.HttpClient;
+import top.osjf.assembly.sdk.http.DefaultHttpClient;
 import top.osjf.assembly.sdk.process.Request;
 import top.osjf.assembly.sdk.process.Response;
 
@@ -19,7 +19,7 @@ public interface ResponseConvert<R extends Response> {
      * using the following custom method.
      * <p>
      * You can customize the conversion method based on the pre defined return values of the API.
-     * <p>{@link HttpClient#convertToResponse(Request, String)}Default to JSON format conversion.</p>
+     * <p>{@link DefaultHttpClient#convertToResponse(Request, String)}Default to JSON format conversion.</p>
      *
      * @param request     {@link Request} class model parameters of API.
      * @param responseStr String data for API response.
