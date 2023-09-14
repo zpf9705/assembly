@@ -15,7 +15,7 @@ import top.osjf.assembly.sdk.process.Request;
  * all parameter differences and be processed uniformly in the future, Through the {@link #getClientCls()}
  * method, you can customize the request process for {@link top.osjf.assembly.sdk.client.Client}.
  * <p>
- * Here is a written HTTP based client solution.{@link HttpClient}.
+ * Here is a written HTTP based client solution.{@link DefaultHttpClient}.
  * <p>
  * Of course, the final conversion is still the response implementation class {@link HttpRequest} that
  * you defined for {@link #getResponseCls()}.

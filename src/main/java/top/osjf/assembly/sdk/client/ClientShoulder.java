@@ -5,7 +5,7 @@ import top.osjf.assembly.sdk.http.HttpClientExecutor;
 import top.osjf.assembly.sdk.http.HttpRequest;
 import top.osjf.assembly.sdk.process.Request;
 import top.osjf.assembly.sdk.process.Response;
-import top.osjf.assembly.sdk.rpc.RpcClient;
+import top.osjf.assembly.sdk.rpc.DefaultRpcClient;
 
 import java.util.Objects;
 import java.util.function.BiFunction;
@@ -18,7 +18,7 @@ public class ClientShoulder {
 
     static final String http = DefaultHttpClient.class.getName();
 
-    static final String rpc = RpcClient.class.getName();
+    static final String rpc = DefaultRpcClient.class.getName();
 
     /**
      * Select the corresponding execution tool by providing the full name of the class object for {@link Client},
