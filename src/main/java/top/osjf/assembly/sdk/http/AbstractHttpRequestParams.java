@@ -61,7 +61,7 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
     @Override
     @SuppressWarnings("rawtypes")
     public Class<? extends Client> getClientCls() {
-        return HttpClient.class;
+        return DefaultHttpClient.class;
     }
 
     /**
