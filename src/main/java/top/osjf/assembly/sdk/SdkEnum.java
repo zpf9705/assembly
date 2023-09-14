@@ -1,45 +1,7 @@
 package top.osjf.assembly.sdk;
 
-import org.springframework.lang.NonNull;
-import top.osjf.assembly.utils.HttpUtils;
-
-import java.util.Map;
-
 /**
- * SDK related attribute method definition interface,mainly including URL concatenation .
- * <p>
- * Request scheme selection, and related custom enumeration names .
- * <p>
- * You can check the example code:
- * <pre>
- * {@code
- * public enum Sdk implements SdkEnum {
- *
- * GET_SUPPLIER("***********", ApiProtocol.HTTP, ApiType.*, RequestMethod.POST),
- *
- * UPDATE_REPORT_BACK("***********", ApiProtocol.HTTP, ApiType.*, RequestMethod.POST),
- *
- * UPDATE_SHIPMENT_STATUS("***********", ApiProtocol.HTTP, ApiType.*, RequestMethod.POST),
- *
- * SAVE_OR_REMOVE_ADD_SERVICE("***********", ApiProtocol.HTTP, ApiType.*, RequestMethod.POST),
- *
- * private final String url;
- *
- * private final ApiProtocol apiProtocol;
- *
- * private final ApiType type;
- *
- * private final RequestMethod requestMethod;
- *
- * public String getUlr(String uri){
- * return String.format(this.url,this.apiProtocol.getPath(),uri,this.type.getType());
- * }
- *
- * public RequestMethod getRequestMethod(){
- * return this.requestMethod;
- * }
- * }}
- * </pre>
+ * The encapsulated SDK related attributes are mainly used in {@link top.osjf.assembly.sdk.process.Request} calls.
  *
  * @author zpf
  * @since 1.1.0
@@ -47,7 +9,9 @@ import java.util.Map;
 public interface SdkEnum {
 
     /**
-     * Get request url , generally, string formatting is required.
+     * Obtain the true request address of the SDK, using HTTP as an example, which is
+     * an HTTP protocol address that can be curled.
+     * <p>For RPC, it is estimated to only be the server address and port number.</p>
      *
      * @param host The host name of the SDK.
      * @return The request address for the SDK.
@@ -55,73 +19,10 @@ public interface SdkEnum {
     String getUlr(String host);
 
     /**
-     * <p>Select the corresponding request scheme based on this enumeration identifier,
-     * currently supporting the type of HTTP</p>
+     * The name of the SDK request, which is a unique identifier name to distinguish
+     * between successful analysis or failure in the future, is not recommended to be {@literal null}.
      *
-     * @return {@link RequestMethod}.
-     */
-    RequestMethod getRequestMethod();
-
-    /**
-     * Get Enumeration Name.
-     *
-     * @return {@link Enum#name()}
+     * @return If it is an enumeration, simply rewrite {@link Enum#name()}, and the rest can be customized.
      */
     String name();
-
-    /**
-     * API Request Address HTTP Protocol Header Enumeration Selection.
-     */
-    enum ApiProtocol {
-
-        HTTPS("https:"),
-
-        HTTP("http:");
-
-        private final String path;
-
-        ApiProtocol(String path) {
-            this.path = path;
-        }
-
-        public String getPath() {
-            return path;
-        }
-    }
-
-    /**
-     * The interface used for defining HTTP request actions defines
-     * different request method use cases for each enumeration scheme.
-     */
-    interface DoAction {
-
-        String action(@NonNull String url, Map<String, String> headers, Object requestParam);
-    }
-
-    /**
-     * Enumeration of currently supported types for HTTP.
-     */
-    enum RequestMethod implements DoAction {
-        GET {
-            @Override
-            public String action(@NonNull String url, Map<String, String> headers, Object requestParam) {
-                return HttpUtils.get(url, headers, requestParam);
-            }
-        }, POST {
-            @Override
-            public String action(@NonNull String url, Map<String, String> headers, Object requestParam) {
-                return HttpUtils.post(url, headers, requestParam);
-            }
-        }, PUT {
-            @Override
-            public String action(@NonNull String url, Map<String, String> headers, Object requestParam) {
-                return HttpUtils.put(url, headers, requestParam);
-            }
-        }, DELETE {
-            @Override
-            public String action(@NonNull String url, Map<String, String> headers, Object requestParam) {
-                return HttpUtils.delete(url, headers, requestParam);
-            }
-        }
-    }
 }
