@@ -60,6 +60,11 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
     }
 
     @Override
+    public boolean montage() {
+        return false;
+    }
+
+    @Override
     @SuppressWarnings("rawtypes")
     public Class<? extends Client> getClientCls() {
         return DefaultHttpClient.class;
