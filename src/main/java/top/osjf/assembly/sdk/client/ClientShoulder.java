@@ -11,6 +11,8 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 
 /**
+ * {@link Client} Related selection help.
+ *
  * @author zpf
  * @since 1.1.1
  */
