@@ -26,7 +26,7 @@ import java.util.function.Supplier;
  * @author zpf
  * @since 1.1.0
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({"rawtypes", "unchecked", "serial"})
 public abstract class AbstractClient<R extends Response> implements Client<R> {
 
     private static final Object lock = new Object();
