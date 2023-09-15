@@ -57,6 +57,6 @@ public interface HttpSdkEnum extends SdkEnum {
     interface Action extends Function4<String, Map<String, String>, Object, Boolean, String> {
 
         @Override
-        String apply(String s, Map<String, String> stringStringMap, Object o, Boolean montage);
+        String apply(String s, Map<String, String> stringStringMap, Object o, Boolean montage) throws Exception;
     }
 }

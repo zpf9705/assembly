@@ -18,7 +18,6 @@ import org.apache.http.util.EntityUtils;
 import org.springframework.lang.NonNull;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
@@ -37,7 +36,8 @@ public abstract class HttpUtils {
 
     /**
      * Apache HTTP request for {@code Get}.
-     * <p>The default format is {@link CloseableHttpClient} in <pre>{@code HttpClients.custom().build()}</pre></p>
+     * <p>
+     * The default format is {@link CloseableHttpClient} in <pre>{@code HttpClients.custom().build()}</pre>
      *
      * @param url          The actual request address,must not be {@literal null}.
      * @param headers      Header information map.
@@ -45,13 +45,15 @@ public abstract class HttpUtils {
      * @param montage      Whether to concatenate urls as maps.
      * @return The {@code String} type of the return value
      */
-    public static String get(String url, Map<String, String> headers, Object requestParam, boolean montage) {
+    public static String get(String url, Map<String, String> headers, Object requestParam, boolean montage)
+            throws Exception {
         return doRequest(null, new HttpGet(getUri(url, requestParam, montage)), headers, requestParam);
     }
 
     /**
      * Apache HTTP request for {@code Post}.
-     * <p>The default format is {@link CloseableHttpClient} in <pre>{@code HttpClients.custom().build()}</pre></p>
+     * <p>
+     * The default format is {@link CloseableHttpClient} in <pre>{@code HttpClients.custom().build()}</pre>
      *
      * @param url          The actual request address,must not be {@literal null}.
      * @param headers      Header information map.
@@ -59,13 +61,15 @@ public abstract class HttpUtils {
      * @param montage      Whether to concatenate urls as maps.
      * @return The {@code String} type of the return value
      */
-    public static String post(String url, Map<String, String> headers, Object requestParam, boolean montage) {
+    public static String post(String url, Map<String, String> headers, Object requestParam, boolean montage)
+            throws Exception {
         return doRequest(null, new HttpPost(getUri(url, requestParam, montage)), headers, requestParam);
     }
 
     /**
      * Apache HTTP request for {@code Put}.
-     * <p>The default format is {@link CloseableHttpClient} in <pre>{@code HttpClients.custom().build()}</pre></p>
+     * <p>
+     * The default format is {@link CloseableHttpClient} in <pre>{@code HttpClients.custom().build()}</pre>
      *
      * @param url          The actual request address,must not be {@literal null}.
      * @param headers      Header information map.
@@ -73,13 +77,15 @@ public abstract class HttpUtils {
      * @param montage      Whether to concatenate urls as maps.
      * @return The {@code String} type of the return value
      */
-    public static String put(String url, Map<String, String> headers, Object requestParam, boolean montage) {
+    public static String put(String url, Map<String, String> headers, Object requestParam, boolean montage)
+            throws Exception {
         return doRequest(null, new HttpPut(getUri(url, requestParam, montage)), headers, requestParam);
     }
 
     /**
      * Apache HTTP request for {@code Delete}.
-     * <p>The default format is {@link CloseableHttpClient} in <pre>{@code HttpClients.custom().build()}</pre></p>
+     * <p>
+     * The default format is {@link CloseableHttpClient} in <pre>{@code HttpClients.custom().build()}</pre>
      *
      * @param url          The actual request address,must not be {@literal null}.
      * @param headers      Header information map.
@@ -87,7 +93,8 @@ public abstract class HttpUtils {
      * @param montage      Whether to concatenate urls as maps.
      * @return The {@code String} type of the return value
      */
-    public static String delete(String url, Map<String, String> headers, Object requestParam, boolean montage) {
+    public static String delete(String url, Map<String, String> headers, Object requestParam, boolean montage)
+            throws Exception {
         return doRequest(null, new HttpDelete(getUri(url, requestParam, montage)), headers, requestParam);
     }
 
@@ -103,7 +110,7 @@ public abstract class HttpUtils {
     public static String doRequest(CloseableHttpClient client,
                                    @NonNull HttpRequestBase requestBase,
                                    Map<String, String> headers,
-                                   Object requestParam) {
+                                   Object requestParam) throws Exception {
         if (client == null) {
             client = HttpClients.custom().build();
         }
@@ -115,8 +122,6 @@ public abstract class HttpUtils {
             response = client.execute(requestBase);
             HttpEntity entity = response.getEntity();
             result = EntityUtils.toString(entity, StandardCharsets.UTF_8);
-        } catch (Throwable e) {
-            throw new UtilException(e.getMessage());
         } finally {
             IoUtil.close(response);
             IoUtil.close(client);
@@ -174,38 +179,32 @@ public abstract class HttpUtils {
      * @return Uri object,Please pay attention to the format issue of the URL.
      */
     @SuppressWarnings("unchecked")
-    public static URI getUri(String url, Object requestParam, boolean montage) {
-        URI uri;
-        try {
-            URIBuilder uriBuilder = new URIBuilder(url);
-            if (montage && requestParam != null) {
-                if (!(requestParam instanceof Map)
-                        && !(requestParam instanceof String))
-                    throw new UtilException("If you need to concatenate parameters onto the URL, " +
-                            "please provide parameters of map type or JSON type of key/value " +
-                            "(which will automatically convert map concatenation). " +
-                            "If you provide a simple string type, then the URL parameter will be directly returned.");
-                //If the type is a map concatenated after the address
-                Map<String, Object> params = null;
-                if (requestParam instanceof Map) {
-                    params = (Map<String, Object>) requestParam;
-                } else {
-                    if (JSONValidator.from(requestParam.toString()).validate()) {
-                        JSONObject jsonObject = JSON.parseObject(requestParam.toString());
-                        params = jsonObject.getInnerMap();
-                    }
-                }
-                if (CollectionUtil.isNotEmpty(params)) {
-                    for (String paramKey : params.keySet()) {
-                        uriBuilder.addParameter(paramKey, String.valueOf(params.get(paramKey)));
-                    }
+    public static URI getUri(String url, Object requestParam, boolean montage) throws Exception {
+        URIBuilder uriBuilder = new URIBuilder(url);
+        if (montage && requestParam != null) {
+            if (!(requestParam instanceof Map)
+                    && !(requestParam instanceof String))
+                throw new UtilException("If you need to concatenate parameters onto the URL, " +
+                        "please provide parameters of map type or JSON type of key/value " +
+                        "(which will automatically convert map concatenation). " +
+                        "If you provide a simple string type, then the URL parameter will be directly returned.");
+            //If the type is a map concatenated after the address
+            Map<String, Object> params = null;
+            if (requestParam instanceof Map) {
+                params = (Map<String, Object>) requestParam;
+            } else {
+                if (JSONValidator.from(requestParam.toString()).validate()) {
+                    JSONObject jsonObject = JSON.parseObject(requestParam.toString());
+                    params = jsonObject.getInnerMap();
                 }
             }
-            //If it is null or a string, it can be directly used as a paparazzi
-            uri = uriBuilder.build();
-        } catch (URISyntaxException e) {
-            throw new UtilException(url + " Invalid URL.");
+            if (CollectionUtil.isNotEmpty(params)) {
+                for (String paramKey : params.keySet()) {
+                    uriBuilder.addParameter(paramKey, String.valueOf(params.get(paramKey)));
+                }
+            }
         }
-        return uri;
+        //If it is null or a string, it can be directly used as a paparazzi
+        return uriBuilder.build();
     }
 }

@@ -99,7 +99,7 @@ public class DefaultHttpClient<R extends HttpResponse> extends AbstractHttpClien
 
     @Override
     public String apply(HttpRequestMethod httpRequestMethod, Map<String, String> headers, Object requestParam,
-                        Boolean montage) {
+                        Boolean montage) throws Exception {
         SdkUtils.checkContentType(headers);
         return httpRequestMethod.apply(getUrl(), headers, requestParam, montage);
     }
