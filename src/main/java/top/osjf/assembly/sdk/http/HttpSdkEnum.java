@@ -54,9 +54,24 @@ public interface HttpSdkEnum extends SdkEnum {
      */
     HttpRequestMethod getRequestMethod();
 
+    /**
+     * SDK request action, directly requesting the real URL address.
+     */
     interface Action extends Function4<String, Map<String, String>, Object, Boolean, String> {
 
         @Override
-        String apply(String s, Map<String, String> stringStringMap, Object o, Boolean montage) throws Exception;
+        String apply(String url, Map<String, String> stringStringMap, Object requestParam, Boolean montage)
+                throws Exception;
+    }
+
+    /**
+     * <p>SDK request action, directly requesting {@link HttpRequestMethod} to route to
+     * {@link #apply(HttpRequestMethod, Map, Object, Boolean)} according to it.</p>
+     */
+    interface Action0 extends Function4<HttpRequestMethod, Map<String, String>, Object, Boolean, String> {
+
+        @Override
+        String apply(HttpRequestMethod requestMethod, Map<String, String> stringStringMap, Object requestParam,
+                     Boolean montage) throws Exception;
     }
 }

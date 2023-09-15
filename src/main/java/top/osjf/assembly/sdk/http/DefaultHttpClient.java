@@ -3,7 +3,6 @@ package top.osjf.assembly.sdk.http;
 import com.alibaba.fastjson.JSON;
 import copy.cn.hutool.v_5819.core.exceptions.ExceptionUtil;
 import copy.cn.hutool.v_5819.core.io.IoUtil;
-import io.reactivex.rxjava3.functions.Function4;
 import org.springframework.util.StopWatch;
 import top.osjf.assembly.sdk.SdkException;
 import top.osjf.assembly.sdk.SdkUtils;
@@ -25,8 +24,7 @@ import java.util.Map;
  * @since 1.1.0
  */
 @SuppressWarnings("serial")
-public class DefaultHttpClient<R extends HttpResponse> extends AbstractHttpClient<R> implements
-        Function4<HttpRequestMethod, Map<String, String>, Object, Boolean, String> {
+public class DefaultHttpClient<R extends HttpResponse> extends AbstractHttpClient<R> implements HttpSdkEnum.Action0 {
 
     /* ******* super Constructs ***********/
 
