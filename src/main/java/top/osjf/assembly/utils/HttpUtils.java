@@ -29,7 +29,7 @@ import java.util.Map;
  * @author zpf
  * @since 1.1.0
  */
-public final class HttpUtils {
+public abstract class HttpUtils {
 
     private HttpUtils() {
         super();
@@ -37,6 +37,7 @@ public final class HttpUtils {
 
     /**
      * Apache HTTP request for {@code Get}.
+     * <p>The default format is {@link CloseableHttpClient} in <pre>{@code HttpClients.custom().build()}</pre></p>
      *
      * @param url          The actual request address,must not be {@literal null}.
      * @param headers      Header information map.
@@ -45,11 +46,12 @@ public final class HttpUtils {
      * @return The {@code String} type of the return value
      */
     public static String get(String url, Map<String, String> headers, Object requestParam, boolean montage) {
-        return doRequest(new HttpGet(getUri(url, requestParam, montage)), headers, requestParam);
+        return doRequest(null, new HttpGet(getUri(url, requestParam, montage)), headers, requestParam);
     }
 
     /**
      * Apache HTTP request for {@code Post}.
+     * <p>The default format is {@link CloseableHttpClient} in <pre>{@code HttpClients.custom().build()}</pre></p>
      *
      * @param url          The actual request address,must not be {@literal null}.
      * @param headers      Header information map.
@@ -58,11 +60,12 @@ public final class HttpUtils {
      * @return The {@code String} type of the return value
      */
     public static String post(String url, Map<String, String> headers, Object requestParam, boolean montage) {
-        return doRequest(new HttpPost(getUri(url, requestParam, montage)), headers, requestParam);
+        return doRequest(null, new HttpPost(getUri(url, requestParam, montage)), headers, requestParam);
     }
 
     /**
      * Apache HTTP request for {@code Put}.
+     * <p>The default format is {@link CloseableHttpClient} in <pre>{@code HttpClients.custom().build()}</pre></p>
      *
      * @param url          The actual request address,must not be {@literal null}.
      * @param headers      Header information map.
@@ -71,11 +74,12 @@ public final class HttpUtils {
      * @return The {@code String} type of the return value
      */
     public static String put(String url, Map<String, String> headers, Object requestParam, boolean montage) {
-        return doRequest(new HttpPut(getUri(url, requestParam, montage)), headers, requestParam);
+        return doRequest(null, new HttpPut(getUri(url, requestParam, montage)), headers, requestParam);
     }
 
     /**
      * Apache HTTP request for {@code Delete}.
+     * <p>The default format is {@link CloseableHttpClient} in <pre>{@code HttpClients.custom().build()}</pre></p>
      *
      * @param url          The actual request address,must not be {@literal null}.
      * @param headers      Header information map.
@@ -84,21 +88,25 @@ public final class HttpUtils {
      * @return The {@code String} type of the return value
      */
     public static String delete(String url, Map<String, String> headers, Object requestParam, boolean montage) {
-        return doRequest(new HttpDelete(getUri(url, requestParam, montage)), headers, requestParam);
+        return doRequest(null, new HttpDelete(getUri(url, requestParam, montage)), headers, requestParam);
     }
 
     /**
      * The HTTP request sending method includes the entire lifecycle of HTTP requests.
      *
+     * @param client       Apache's HTTP request client.
      * @param requestBase  HTTP Public Request Class {@link HttpRequestBase}.
      * @param headers      Header information map.
      * @param requestParam Request parameters.
      * @return The {@code String} type of the return value
      */
-    public static String doRequest(@NonNull HttpRequestBase requestBase,
+    public static String doRequest(CloseableHttpClient client,
+                                   @NonNull HttpRequestBase requestBase,
                                    Map<String, String> headers,
                                    Object requestParam) {
-        CloseableHttpClient client = HttpClients.custom().build();
+        if (client == null) {
+            client = HttpClients.custom().build();
+        }
         CloseableHttpResponse response = null;
         String result;
         try {
@@ -123,7 +131,7 @@ public final class HttpUtils {
      * @param requestBase  HTTP Public Request Class {@link HttpRequestBase}
      * @param headers      Header information map.
      */
-    private static void setEntity(Object requestParam, HttpRequestBase requestBase, Map<String, String> headers) {
+    public static void setEntity(Object requestParam, HttpRequestBase requestBase, Map<String, String> headers) {
         if (requestParam == null || !(requestBase instanceof HttpEntityEnclosingRequestBase)) {
             return;
         }
@@ -149,7 +157,7 @@ public final class HttpUtils {
      * @param headers     Header information map.
      * @param requestBase HTTP Public Request Class {@link HttpRequestBase}.
      */
-    private static void addHeaders(Map<String, String> headers, HttpRequestBase requestBase) {
+    public static void addHeaders(Map<String, String> headers, HttpRequestBase requestBase) {
         if (CollectionUtil.isNotEmpty(headers)) {
             for (Map.Entry<String, String> header : headers.entrySet()) {
                 requestBase.addHeader(header.getKey(), header.getValue());
@@ -166,7 +174,7 @@ public final class HttpUtils {
      * @return Uri object,Please pay attention to the format issue of the URL.
      */
     @SuppressWarnings("unchecked")
-    private static URI getUri(String url, Object requestParam, boolean montage) {
+    public static URI getUri(String url, Object requestParam, boolean montage) {
         URI uri;
         try {
             URIBuilder uriBuilder = new URIBuilder(url);
