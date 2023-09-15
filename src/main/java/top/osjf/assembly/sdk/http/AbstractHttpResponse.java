@@ -24,11 +24,11 @@ import top.osjf.assembly.sdk.process.AbstractResponse;
  * </pre>
  * <p>
  * Due to differences in encapsulation interfaces, public fields are not provided here.
- * If you need to default, please refer to {@link top.osjf.assembly.sdk.process.DefaultResponse}
+ * If you need to default, please refer to {@link top.osjf.assembly.sdk.process.DefaultErrorResponse}
  * <dl>
- *     <dt>{@link top.osjf.assembly.sdk.process.DefaultResponse#buildSdkExceptionResponse(String)}</dt>
- *     <dt>{@link top.osjf.assembly.sdk.process.DefaultResponse#buildUnknownResponse(String)}</dt>
- *     <dt>{@link top.osjf.assembly.sdk.process.DefaultResponse#buildDataErrorResponse(String)}</dt>
+ *     <dt>{@link top.osjf.assembly.sdk.process.DefaultErrorResponse#buildSdkExceptionResponse(String)}</dt>
+ *     <dt>{@link top.osjf.assembly.sdk.process.DefaultErrorResponse#buildUnknownResponse(String)}</dt>
+ *     <dt>{@link top.osjf.assembly.sdk.process.DefaultErrorResponse#buildDataErrorResponse(String)}</dt>
  * </dl>
  * <p>
  * The prerequisite for use is to check if the field name is consistent with yours, otherwise the
