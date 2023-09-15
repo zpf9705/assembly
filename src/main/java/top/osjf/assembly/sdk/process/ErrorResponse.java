@@ -26,6 +26,8 @@ public interface ErrorResponse {
      *     you can focus on the {@link top.osjf.assembly.sdk.client.PreProcessingResponseHandler#preResponseStrHandler(Request, String)}
      *     or {@link top.osjf.assembly.sdk.client.ResponseConvert#convertToResponse(Request, String)} methods.</dt>
      * </dl>
+     * <p>When and only when the request fails, the success of the request can be determined based
+     * on whether this method sends data.</p>
      *
      * @param code Defined as an int type, it is fixed.
      */
@@ -35,6 +37,8 @@ public interface ErrorResponse {
      * The setting of abnormal conversion information, with the help of tool
      * {@link copy.cn.hutool.v_5819.core.exceptions.ExceptionUtil#stacktraceToOneLineString(Throwable)},
      * converts the abnormal information after conversion.
+     * <p>When and only when the request fails, the success of the request can be determined based
+     * on whether this method sends data.</p>
      *
      * @param errorMessage Real message stack of {@link Throwable}.
      */
