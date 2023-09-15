@@ -9,6 +9,7 @@ package top.osjf.assembly.sdk.process;
  * @author zpf
  * @since 1.1.0
  */
+@SuppressWarnings("serial")
 public abstract class AbstractResponse implements Response {
 
     private static final boolean DEFAULT_IS_SUCCESS = false;

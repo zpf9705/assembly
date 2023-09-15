@@ -29,6 +29,7 @@ import java.util.function.BiConsumer;
  * @author zpf
  * @since 1.1.1
  */
+@SuppressWarnings("serial")
 public abstract class AbstractHttpClient<R extends HttpResponse> extends AbstractClient<R> {
 
     //Requested remote interface address

@@ -13,6 +13,7 @@ import java.util.Map;
  * @author zpf
  * @since 1.1.0
  */
+@SuppressWarnings("serial")
 public abstract class AbstractRequestParams<R extends AbstractResponse> implements Request<R> {
 
     @Override

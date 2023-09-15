@@ -37,5 +37,6 @@ import top.osjf.assembly.sdk.process.AbstractResponse;
  * @author zpf
  * @since 1.1.1
  */
+@SuppressWarnings("serial")
 public abstract class AbstractHttpResponse extends AbstractResponse implements HttpResponse {
 }

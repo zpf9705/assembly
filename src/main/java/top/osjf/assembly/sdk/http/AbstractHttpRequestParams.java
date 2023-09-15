@@ -44,6 +44,7 @@ import top.osjf.assembly.sdk.process.AbstractRequestParams;
  * @author zpf
  * @since 1.1.1
  */
+@SuppressWarnings("serial")
 public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> extends AbstractRequestParams<R>
         implements HttpRequest<R> {
 

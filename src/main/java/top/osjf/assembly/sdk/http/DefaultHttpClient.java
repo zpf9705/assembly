@@ -24,6 +24,7 @@ import java.util.Map;
  * @author zpf
  * @since 1.1.0
  */
+@SuppressWarnings("serial")
 public class DefaultHttpClient<R extends HttpResponse> extends AbstractHttpClient<R> implements
         Function4<HttpRequestMethod, Map<String, String>, Object, Boolean, String> {
 
