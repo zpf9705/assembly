@@ -25,6 +25,11 @@ import top.osjf.assembly.sdk.process.Request;
  */
 public interface HttpRequest<R extends HttpResponse> extends Request<R> {
 
+    @Override
+    default String getUrl(String host){
+        return formatUrl(host);
+    }
+
     /**
      * Http sdk containing {@link HttpSdkEnum} implementation information.
      *

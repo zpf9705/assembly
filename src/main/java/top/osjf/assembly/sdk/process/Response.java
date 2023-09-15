@@ -17,7 +17,7 @@ import java.io.Serializable;
  * @author zpf
  * @since 1.1.0
  */
-public interface Response extends Serializable {
+public interface Response extends ErrorResponse, Serializable {
 
     /**
      * Verify this request whether successful.

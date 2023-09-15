@@ -1,12 +1,11 @@
 package top.osjf.assembly.sdk.http;
 
-import com.alibaba.fastjson.JSON;
 import copy.cn.hutool.v_5819.core.exceptions.ExceptionUtil;
 import copy.cn.hutool.v_5819.core.io.IoUtil;
 import org.springframework.util.StopWatch;
 import top.osjf.assembly.sdk.SdkException;
 import top.osjf.assembly.sdk.SdkUtils;
-import top.osjf.assembly.sdk.process.DefaultResponse;
+import top.osjf.assembly.sdk.process.DefaultErrorResponse;
 
 import java.util.Map;
 
@@ -67,15 +66,15 @@ public class DefaultHttpClient<R extends HttpResponse> extends AbstractHttpClien
             sdkErrorLog(request, e);
             throwable = e;
             errorMsg = ExceptionUtil.stacktraceToOneLineString(throwable);
-            String jsonData = JSON.toJSONString(DefaultResponse.buildSdkExceptionResponse(e.getMessage()));
-            response = JSON.parseObject(jsonData, request.getResponseCls());
+            response = DefaultErrorResponse.parseErrorResponse(errorMsg, DefaultErrorResponse.ErrorType.SDK,
+                    request.getResponseCls());
         } catch (Exception e) {
             //unKnow Exception catch
             unKnowErrorLog(request, e);
             throwable = e;
             errorMsg = ExceptionUtil.stacktraceToOneLineString(throwable);
-            String jsonData = JSON.toJSONString(DefaultResponse.buildUnknownResponse(e.getMessage()));
-            response = JSON.parseObject(jsonData, request.getResponseCls());
+            response = DefaultErrorResponse.parseErrorResponse(errorMsg, DefaultErrorResponse.ErrorType.UN_KNOWN,
+                    request.getResponseCls());
         } finally {
             //finally result input
             stopWatch.stop();

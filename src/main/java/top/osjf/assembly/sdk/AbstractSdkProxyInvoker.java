@@ -3,14 +3,13 @@ package top.osjf.assembly.sdk;
 import copy.cn.hutool.v_5819.core.util.ArrayUtil;
 import copy.cn.hutool.v_5819.core.util.StrUtil;
 import org.springframework.lang.NonNull;
-import top.osjf.assembly.sdk.client.ClientShoulder;
+import top.osjf.assembly.sdk.client.ClientExecutors;
 import top.osjf.assembly.sdk.process.HostCapable;
 import top.osjf.assembly.sdk.process.Request;
 import top.osjf.assembly.sdk.process.Response;
 import top.osjf.assembly.support.AbstractJdkProxySupport;
 
 import java.lang.reflect.Method;
-import java.util.function.BiFunction;
 
 /**
  * Inheriting {@link AbstractJdkProxySupport} implements handing over the object of the jdk dynamic proxy
@@ -55,11 +54,7 @@ public abstract class AbstractSdkProxyInvoker<T> extends AbstractJdkProxySupport
      * @return The result set of this request is encapsulated in {@link Response}.
      */
     public Response doNext(@NonNull Request<?> request) {
-        BiFunction<String, Request<?>, Response> function = ClientShoulder.findClientConsumer(request.getClientCls());
-        if (function == null) {
-            throw new IllegalStateException("");
-        }
-        return function.apply(getHost(), request);
+        return ClientExecutors.executeRequestClient(getHost(), request);
     }
 
     @Override

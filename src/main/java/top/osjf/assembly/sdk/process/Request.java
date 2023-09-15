@@ -22,6 +22,14 @@ import java.util.Map;
  */
 public interface Request<R extends Response> extends RequestParamCapable, Serializable {
 
+    /**
+     * Obtain the true address value of the request based on the given host name.
+     *
+     * @param host Host name, cannot be {@literal null}.
+     * @return Address at the time of request.
+     */
+    String getUrl(String host);
+
     @Override
     Object getRequestParam();
 

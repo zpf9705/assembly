@@ -8,7 +8,7 @@ import copy.cn.hutool.v_5819.core.util.StrUtil;
 import copy.cn.hutool.v_5819.logger.StaticLog;
 import org.springframework.lang.NonNull;
 import top.osjf.assembly.sdk.client.AbstractClient;
-import top.osjf.assembly.sdk.process.DefaultResponse;
+import top.osjf.assembly.sdk.process.DefaultErrorResponse;
 import top.osjf.assembly.sdk.process.Request;
 
 import java.util.List;
@@ -67,8 +67,8 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
         R response;
         JSONValidator jsonValidator = StrUtil.isBlank(responseStr) ? null : JSONValidator.from(responseStr);
         if (Objects.isNull(jsonValidator) || !jsonValidator.validate()) {
-            String jsonData = JSON.toJSONString(DefaultResponse.buildDataErrorResponse(responseStr));
-            response = JSON.parseObject(jsonData, request.getResponseCls());
+            response = DefaultErrorResponse.parseErrorResponse(responseStr, DefaultErrorResponse.ErrorType.DATA,
+                    request.getResponseCls());
         } else if (Objects.equals(JSONValidator.Type.Array, jsonValidator.getType())) {
             List<R> responses = JSONArray.parseArray(responseStr, request.getResponseCls());
             if (CollectionUtil.isEmpty(responses)) {

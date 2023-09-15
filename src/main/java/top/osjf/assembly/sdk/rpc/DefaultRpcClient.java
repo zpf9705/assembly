@@ -57,6 +57,8 @@ public class DefaultRpcClient<T extends Response> extends AbstractClient<T> {
 
     public static class DefaultRpcResponse implements Response {
 
+        private static final long serialVersionUID = 5606294990868314290L;
+
         @Override
         public boolean isSuccess() {
             return false;
@@ -65,6 +67,16 @@ public class DefaultRpcClient<T extends Response> extends AbstractClient<T> {
         @Override
         public String getMessage() {
             return null;
+        }
+
+        @Override
+        public void setErrorCode(Integer code) {
+            
+        }
+
+        @Override
+        public void setErrorMessage(String errorMessage) {
+
         }
     }
 }
