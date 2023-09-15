@@ -4,13 +4,15 @@ import top.osjf.assembly.sdk.ClientAccess;
 import top.osjf.assembly.sdk.process.Request;
 import top.osjf.assembly.sdk.process.Response;
 
+import java.util.function.Supplier;
+
 /**
  * Regarding the request executor of {@link Client}, instantiation is not allowed and only its
  * static methods can be called.
  *
+ * @author zpf
  * @see ClientAccess
  * @see AbstractClient
- * @author zpf
  * @since 1.1.1
  */
 public final class ClientExecutors extends ClientAccess {
@@ -18,12 +20,33 @@ public final class ClientExecutors extends ClientAccess {
     private ClientExecutors() {
     }
 
-    public static Response executeRequestClient(String host, Request<?> request) {
-        return cacheClientAndRequest(host, request);
+    /**
+     * The static method executed by SDK is executed through the host name and {@link Request} parameters.
+     *
+     * @param request {@link Request} class model parameters of API.
+     * @param host    The host name of the SDK.
+     * @param <R>     Data Generics for {@link Response}.
+     * @return Returns a defined {@link Response} class object.
+     */
+    public static <R extends Response> Response executeRequestClient(String host, Request<R> request) {
+        return cacheClientAndRequest(request.getUrl(host), request);
+    }
+
+    /**
+     * The static method executed by SDK is functionally placed in the host name {@link Supplier}
+     * and executed through the host name and {@link Request} parameters.
+     *
+     * @param request {@link Request} class model parameters of API.
+     * @param host    The host name of the SDK.
+     * @param <R>     Data Generics for {@link Response}.
+     * @return Returns a defined {@link Response} class object.
+     */
+    public static <R extends Response> Response executeRequestClient(Supplier<String> host, Request<R> request) {
+        return cacheClientAndRequest(request.getUrl(host.get()), request);
     }
 
     @SuppressWarnings("rawtypes")
-    private static Response cacheClientAndRequest(String key, Request<?> request) {
+    private static <R extends Response> Response cacheClientAndRequest(String key, Request<R> request) {
         Class<? extends Client> clientCls = request.getClientCls();
         if (clientCls == null) throw new IllegalArgumentException(
                 "The execution client of the client cannot be empty.");

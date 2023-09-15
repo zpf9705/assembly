@@ -21,7 +21,7 @@ import java.io.Serializable;
  * proxy, and the proxy objects are handed over to spring as the virtual implementation classes for these interfaces.
  * <p>
  * When these interfaces are called through the spring container, We will uniformly bring the parameters
- * to the proxy object and connect them to our {@link top.osjf.assembly.sdk.http.HttpClientExecutor}
+ * to the proxy object and connect them to our {@link top.osjf.assembly.sdk.client.ClientExecutors}
  * processing through this class.
  *
  * @author zpf
