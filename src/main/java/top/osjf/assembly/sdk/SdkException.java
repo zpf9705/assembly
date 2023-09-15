@@ -10,6 +10,8 @@ package top.osjf.assembly.sdk;
  */
 public class SdkException extends IllegalArgumentException {
 
+    private static final long serialVersionUID = -7204419580156052252L;
+
     public SdkException() {
         super();
     }
