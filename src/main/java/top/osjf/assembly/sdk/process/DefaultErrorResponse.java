@@ -70,7 +70,7 @@ public class DefaultErrorResponse extends AbstractResponse {
 
     public static <R extends Response> R parseErrorResponse(String error, ErrorType type, Class<R> clazz) {
         DefaultErrorResponse defaultErrorResponse = type.getMessageWithType(error);
-        String responseErrorStr = JSON.toJSONString(JSON.toJSONString(defaultErrorResponse));
+        String responseErrorStr = JSON.toJSONString(defaultErrorResponse);
         R r = JSON.parseObject(responseErrorStr, clazz);
         r.setErrorCode(defaultErrorResponse.getCode());
         r.setErrorMessage(defaultErrorResponse.getMessage());
