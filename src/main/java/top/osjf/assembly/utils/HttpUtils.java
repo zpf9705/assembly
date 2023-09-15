@@ -24,6 +24,8 @@ import java.util.Map;
 
 /**
  * The Apache HTTP client request tool class mainly includes four request methods: post, get, put, and del.
+ * <p>And other methods that can be customized with HTTP support, see {@link
+ * #doRequest(CloseableHttpClient, HttpRequestBase, Map, Object)}</p>
  *
  * @author zpf
  * @since 1.1.0
@@ -44,6 +46,7 @@ public abstract class HttpUtils {
      * @param requestParam Request parameters.
      * @param montage      Whether to concatenate urls as maps.
      * @return The {@code String} type of the return value
+     * @throws Exception unknown exception.
      */
     public static String get(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
@@ -60,6 +63,7 @@ public abstract class HttpUtils {
      * @param requestParam Request parameters.
      * @param montage      Whether to concatenate urls as maps.
      * @return The {@code String} type of the return value
+     * @throws Exception unknown exception.
      */
     public static String post(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
@@ -76,6 +80,7 @@ public abstract class HttpUtils {
      * @param requestParam Request parameters.
      * @param montage      Whether to concatenate urls as maps.
      * @return The {@code String} type of the return value
+     * @throws Exception unknown exception.
      */
     public static String put(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
@@ -91,7 +96,8 @@ public abstract class HttpUtils {
      * @param headers      Header information map.
      * @param requestParam Request parameters.
      * @param montage      Whether to concatenate urls as maps.
-     * @return The {@code String} type of the return value
+     * @return The {@code String} type of the return value.
+     * @throws Exception unknown exception.
      */
     public static String delete(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
@@ -106,6 +112,7 @@ public abstract class HttpUtils {
      * @param headers      Header information map.
      * @param requestParam Request parameters.
      * @return The {@code String} type of the return value
+     * @throws Exception unknown exception.
      */
     public static String doRequest(CloseableHttpClient client,
                                    @NonNull HttpRequestBase requestBase,
@@ -177,6 +184,7 @@ public abstract class HttpUtils {
      * @param requestParam Request parameters.
      * @param montage      Whether to concatenate urls as maps.
      * @return Uri object,Please pay attention to the format issue of the URL.
+     * @throws Exception unknown exception.
      */
     @SuppressWarnings("unchecked")
     public static URI getUri(String url, Object requestParam, boolean montage) throws Exception {

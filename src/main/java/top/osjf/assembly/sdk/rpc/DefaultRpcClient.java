@@ -38,7 +38,7 @@ public class DefaultRpcClient<T extends Response> extends AbstractClient<T> {
     }
 
     @Override
-    public BiConsumer<String, Object[]> otherError() {
+    public BiConsumer<String, Object[]> unKnowError() {
         return null;
     }
 

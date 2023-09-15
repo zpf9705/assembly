@@ -29,5 +29,5 @@ public interface LoggerConsumer {
      *
      * @return For example: {@link org.slf4j.Logger#error(String, Object...)}
      */
-    BiConsumer<String, Object[]> otherError();
+    BiConsumer<String, Object[]> unKnowError();
 }

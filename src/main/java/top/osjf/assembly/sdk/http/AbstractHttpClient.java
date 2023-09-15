@@ -87,7 +87,7 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
     }
 
     @Override
-    public BiConsumer<String, Object[]> otherError() {
+    public BiConsumer<String, Object[]> unKnowError() {
         return StaticLog::error;
     }
 }

@@ -11,11 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 /**
- * The abstract class implementation of {@link Client} records some common processing and parameter
- * operations, as well as default operations, including {} caching based on the request identifier
- * (HTTP request form is the request URL, and the rest can be customized with a unique request identifier)
- * (every time the request parameter is changed, it is cleared after the request, and {@link Client} can
- * easily obtain the request data during the request process).
+ *
  *
  * @author zpf
  * @since 1.1.0
