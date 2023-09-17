@@ -28,7 +28,7 @@ public final class ClientExecutors extends ClientAccess {
      * @return Returns a defined {@link Response} class object.
      */
     public static <R extends Response> R executeRequestClient(Supplier<String> host, Request<R> request) {
-        return executeRequestClient(request.getUrl(host.get()), request);
+        return executeRequestClient(host.get(), request);
     }
 
     /**
