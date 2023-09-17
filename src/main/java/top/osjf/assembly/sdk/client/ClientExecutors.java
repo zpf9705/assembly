@@ -1,6 +1,5 @@
 package top.osjf.assembly.sdk.client;
 
-import top.osjf.assembly.sdk.ClientAccess;
 import top.osjf.assembly.sdk.process.Request;
 import top.osjf.assembly.sdk.process.Response;
 
@@ -28,8 +27,8 @@ public final class ClientExecutors extends ClientAccess {
      * @param <R>     Data Generics for {@link Response}.
      * @return Returns a defined {@link Response} class object.
      */
-    public static <R extends Response> R executeRequestClient(String host, Request<R> request) {
-        return cacheClientAndRequest(request.getUrl(host), request);
+    public static <R extends Response> R executeRequestClient(Supplier<String> host, Request<R> request) {
+        return executeRequestClient(request.getUrl(host.get()), request);
     }
 
     /**
@@ -41,16 +40,7 @@ public final class ClientExecutors extends ClientAccess {
      * @param <R>     Data Generics for {@link Response}.
      * @return Returns a defined {@link Response} class object.
      */
-    public static <R extends Response> R executeRequestClient(Supplier<String> host, Request<R> request) {
-        return cacheClientAndRequest(request.getUrl(host.get()), request);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private static <R extends Response> R cacheClientAndRequest(String key, Request<R> request) {
-        Class<? extends Client> clientCls = request.getClientCls();
-        if (clientCls == null) throw new IllegalArgumentException(
-                "The execution client of the client cannot be empty.");
-        Client<R> andSetClient = getAndSetClient(key, request);
-        return andSetClient.request();
+    public static <R extends Response> R executeRequestClient(String host, Request<R> request) {
+        return getAndSetClient(request.getUrl(host), request).request();
     }
 }

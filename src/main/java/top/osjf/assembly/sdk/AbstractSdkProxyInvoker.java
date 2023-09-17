@@ -54,7 +54,7 @@ public abstract class AbstractSdkProxyInvoker<T> extends AbstractJdkProxySupport
      * @return The result set of this request is encapsulated in {@link Response}.
      */
     public Response doNext(@NonNull Request<?> request) {
-        return ClientExecutors.executeRequestClient(getHost(), request);
+        return ClientExecutors.executeRequestClient(this::getHost, request);
     }
 
     @Override

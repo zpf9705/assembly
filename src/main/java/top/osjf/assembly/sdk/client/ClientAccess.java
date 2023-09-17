@@ -1,8 +1,6 @@
-package top.osjf.assembly.sdk;
+package top.osjf.assembly.sdk.client;
 
 import copy.cn.hutool.v_5819.core.util.ReflectUtil;
-import top.osjf.assembly.sdk.client.AbstractClient;
-import top.osjf.assembly.sdk.client.Client;
 import top.osjf.assembly.sdk.process.Request;
 import top.osjf.assembly.sdk.process.Response;
 
