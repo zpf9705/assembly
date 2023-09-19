@@ -1,11 +1,9 @@
 package top.osjf.assembly.sdk.http;
 
-import top.osjf.assembly.utils.ApacheHttpUtils;
-
 import java.util.Map;
 
 /**
- * One of the implementation classes of {@link HttpMethod}, please refer to {@link ApacheHttpUtils} for implementation.
+ * One of the implementation classes of {@link HttpMethod}, please refer to {@link ApacheHttpSimpleRequestUtils} for implementation.
  *
  * @author zpf
  * @since 1.1.1
@@ -19,21 +17,21 @@ public class ApacheHttpMethod implements HttpMethod {
 
     @Override
     public String get(String url, Map<String, String> headers, Object requestParam, boolean montage) throws Exception {
-        return ApacheHttpUtils.get(url, headers, requestParam, montage);
+        return ApacheHttpSimpleRequestUtils.get(url, headers, requestParam, montage);
     }
 
     @Override
     public String post(String url, Map<String, String> headers, Object requestParam, boolean montage) throws Exception {
-        return ApacheHttpUtils.post(url, headers, requestParam, montage);
+        return ApacheHttpSimpleRequestUtils.post(url, headers, requestParam, montage);
     }
 
     @Override
     public String put(String url, Map<String, String> headers, Object requestParam, boolean montage) throws Exception {
-        return ApacheHttpUtils.put(url, headers, requestParam, montage);
+        return ApacheHttpSimpleRequestUtils.put(url, headers, requestParam, montage);
     }
 
     @Override
     public String delete(String url, Map<String, String> headers, Object requestParam, boolean montage) throws Exception {
-        return ApacheHttpUtils.delete(url, headers, requestParam, montage);
+        return ApacheHttpSimpleRequestUtils.delete(url, headers, requestParam, montage);
     }
 }
