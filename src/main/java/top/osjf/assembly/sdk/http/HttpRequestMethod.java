@@ -40,5 +40,10 @@ public enum HttpRequestMethod implements HttpSdkEnum.Action {
                                 Boolean montage) throws Exception {
             return type.getInstance().delete(url, headers, requestParam, montage);
         }
+    };
+
+    @Override
+    public String doRequest(String url, Map<String, String> headers, Object requestParam, Boolean montage) {
+        throw new UnsupportedOperationException();
     }
 }

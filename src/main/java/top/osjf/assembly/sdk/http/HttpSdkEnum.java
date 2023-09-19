@@ -60,8 +60,7 @@ public interface HttpSdkEnum extends SdkEnum {
     interface Action extends doRequestFun<String, Map<String, String>, Object, Boolean, String> {
 
         @Override
-        default String doRequest(String url, Map<String, String> headers, Object requestParam, Boolean montage)
-                throws Exception {
+        default String doRequest(String url, Map<String, String> headers, Object requestParam, Boolean montage) {
             return null;
         }
 
