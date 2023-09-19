@@ -10,6 +10,7 @@ import copy.cn.hutool.v_5819.core.util.StrUtil;
 import copy.cn.hutool.v_5819.http.ContentType;
 import okhttp3.OkHttpClient;
 import okhttp3.*;
+import okhttp3.internal.http.HttpMethod;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -178,7 +179,9 @@ public abstract class OkHttpSimpleRequestUtils {
             throw new IllegalArgumentException("Url is not valid");
         }
         HttpUrl.Builder urlBuilder = httpUrl.newBuilder();
+        boolean montageOn = false;
         if (montage && requestParam != null) {
+            montageOn = true;
             if (!(requestParam instanceof Map) && !(requestParam instanceof String))
                 throw new UtilException("If you need to concatenate parameters onto the HttpUrl.Builder to addQueryParameter, " +
                         "please provide parameters of map type or JSON type of key/value " +
@@ -201,6 +204,25 @@ public abstract class OkHttpSimpleRequestUtils {
             }
         }
         Request.Builder requestBuild = new Request.Builder().url(urlBuilder.build());
+        boolean permits = HttpMethod.requiresRequestBody(method.name());
+         // If the parameters have already been concatenated onto the URL, then this type of requirement does not
+         // allow for further setting of the request body.
+         // However, according to the okhttp specification,
+         // if {@link HttpMethod#requiresRequestBody(String)} is met, the request body must be required,
+         // so you need to weigh it at this point.
+        if (montageOn) {
+            if (permits) throw new IllegalStateException(
+                    "According to the specification requirements of OKHTTP, if you concatenate parameter " +
+                            "links, you must meet the current request type that does not require a body," +
+                            "which can be seen in the class [okhttp3.internal.http.HttpMethod]");
+        } else {
+            if (permits) {
+                if (requestParam == null) throw new IllegalStateException(
+                        "According to the specification requirements of okhttp, " +
+                                "the current request type must have a request body, which can be seen " +
+                                "in the class [okhttp3.internal.http.HttpMethod]");
+            }
+        }
         String value;
         if (CollectionUtil.isNotEmpty(headers)) {
             value = headers.get("Content-type");
