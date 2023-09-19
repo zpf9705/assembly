@@ -10,7 +10,6 @@ import java.util.Map;
  * @since 1.1.0
  */
 @SuppressWarnings("serial")
-@HttpClient(type = Type.APACHE_HTTP)
 public class ApacheHttpClient<R extends HttpResponse> extends CommonsHttpClient<R> {
 
     /* ******* super Constructs ***********/
@@ -23,6 +22,6 @@ public class ApacheHttpClient<R extends HttpResponse> extends CommonsHttpClient<
     public String doRequest(HttpRequestMethod method, Map<String, String> headers, Object requestParam,
                             Boolean montage) throws Exception {
         super.doRequest(method, headers, requestParam, montage);
-        return method.doRequest(getUrl(), headers, requestParam, montage);
+        return method.doRequest(Type.APACHE_HTTP, getUrl(), headers, requestParam, montage);
     }
 }

@@ -62,13 +62,7 @@ public interface HttpSdkEnum extends SdkEnum {
         @Override
         default String doRequest(String url, Map<String, String> headers, Object requestParam, Boolean montage)
                 throws Exception {
-            Class<? extends Action> clazz = this.getClass();
-            HttpClient client = clazz.getAnnotation(HttpClient.class);
-            if (client == null) {
-                throw new IllegalArgumentException(
-                        "No @HttpClient annotation detected, unable to obtain specific request type.");
-            }
-            return doRequest(client.type(), url, headers, requestParam, montage);
+            return null;
         }
 
         String doRequest(@NonNull Type type, @NonNull String url, Map<String, String> headers, Object requestParam,
@@ -82,7 +76,7 @@ public interface HttpSdkEnum extends SdkEnum {
     interface Action0 extends doRequestFun<HttpRequestMethod, Map<String, String>, Object, Boolean, String> {
 
         @Override
-        String doRequest(HttpRequestMethod requestMethod, Map<String, String> stringStringMap, Object requestParam,
+        String doRequest(HttpRequestMethod requestMethod, Map<String, String> headers, Object requestParam,
                          Boolean montage) throws Exception;
     }
 }

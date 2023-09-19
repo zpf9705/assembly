@@ -19,9 +19,9 @@ public class OkHttpClient<R extends HttpResponse> extends CommonsHttpClient<R> {
     }
 
     @Override
-    public String doRequest(HttpRequestMethod method, Map<String, String> headers,
-                            Object requestParam, Boolean montage) throws Exception {
+    public String doRequest(HttpRequestMethod method, Map<String, String> headers, Object requestParam,
+                            Boolean montage) throws Exception {
         super.doRequest(method, headers, requestParam, montage);
-        return method.doRequest(getUrl(), headers, requestParam, montage);
+        return method.doRequest(Type.OK_HTTP, getUrl(), headers, requestParam, montage);
     }
 }
