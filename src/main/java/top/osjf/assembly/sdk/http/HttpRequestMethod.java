@@ -1,7 +1,6 @@
 package top.osjf.assembly.sdk.http;
 
 import org.springframework.lang.NonNull;
-import top.osjf.assembly.utils.ApacheHttpUtils;
 
 import java.util.Map;
 
@@ -11,7 +10,8 @@ import java.util.Map;
  * <p>Implement the {@link HttpSdkEnum.Action} interface to define the action methods for each request method.</p>
  *
  * @author zpf
- * @see ApacheHttpUtils
+ * @see ApacheHttpSimpleRequestUtils
+ * @see OkHttpSimpleRequestUtils
  * @since 1.1.1
  */
 public enum HttpRequestMethod implements HttpSdkEnum.Action {
