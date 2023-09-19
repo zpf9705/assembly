@@ -11,7 +11,6 @@ import java.util.Map;
  * @since 1.1.1
  */
 @SuppressWarnings("serial")
-@HttpClient(type = Type.OK_HTTP)
 public class OkHttpClient<R extends HttpResponse> extends CommonsHttpClient<R> {
 
     public OkHttpClient(String url) {
