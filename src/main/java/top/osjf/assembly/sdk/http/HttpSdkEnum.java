@@ -1,6 +1,6 @@
 package top.osjf.assembly.sdk.http;
 
-import io.reactivex.rxjava3.functions.Function4;
+import org.springframework.lang.NonNull;
 import top.osjf.assembly.sdk.SdkEnum;
 
 import java.util.Map;
@@ -57,21 +57,32 @@ public interface HttpSdkEnum extends SdkEnum {
     /**
      * SDK request action, directly requesting the real URL address.
      */
-    interface Action extends Function4<String, Map<String, String>, Object, Boolean, String> {
+    interface Action extends doRequestFun<String, Map<String, String>, Object, Boolean, String> {
 
         @Override
-        String apply(String url, Map<String, String> stringStringMap, Object requestParam, Boolean montage)
-                throws Exception;
+        default String doRequest(String url, Map<String, String> headers, Object requestParam, Boolean montage)
+                throws Exception {
+            Class<? extends Action> clazz = this.getClass();
+            HttpClient client = clazz.getAnnotation(HttpClient.class);
+            if (client == null) {
+                throw new IllegalArgumentException(
+                        "No @HttpClient annotation detected, unable to obtain specific request type.");
+            }
+            return doRequest(client.type(), url, headers, requestParam, montage);
+        }
+
+        String doRequest(@NonNull Type type, @NonNull String url, Map<String, String> headers, Object requestParam,
+                         Boolean montage) throws Exception;
     }
 
     /**
      * <p>SDK request action, directly requesting {@link HttpRequestMethod} to route to
-     * {@link #apply(HttpRequestMethod, Map, Object, Boolean)} according to it.</p>
+     * {@link #doRequest(HttpRequestMethod, Map, Object, Boolean)} according to it.</p>
      */
-    interface Action0 extends Function4<HttpRequestMethod, Map<String, String>, Object, Boolean, String> {
+    interface Action0 extends doRequestFun<HttpRequestMethod, Map<String, String>, Object, Boolean, String> {
 
         @Override
-        String apply(HttpRequestMethod requestMethod, Map<String, String> stringStringMap, Object requestParam,
-                     Boolean montage) throws Exception;
+        String doRequest(HttpRequestMethod requestMethod, Map<String, String> stringStringMap, Object requestParam,
+                         Boolean montage) throws Exception;
     }
 }
