@@ -1,4 +1,4 @@
-package top.osjf.assembly.utils;
+package top.osjf.assembly.sdk.http;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -24,15 +24,24 @@ import java.util.Map;
 
 /**
  * The Apache HTTP client request tool class mainly includes four request methods: post, get, put, and del.
- * <p>And other methods that can be customized with HTTP support, see {@link
+ * <p>And other methods that can be customized with HTTP support, link to method {@link
  * #doRequest(CloseableHttpClient, HttpRequestBase, Map, Object)}</p>
+ * <p>
+ * This class is a simple request tool for {@link CloseableHttpClient} and does not provide any other special functions.
+ * <p>If necessary, please implement it yourself.</p>
+ * <p>Only suitable for use in this project.</p>
+ * <p>
+ * You need to note that the {@code montage} parameter determines whether parameters that are
+ * not {@literal null} need to be concatenated after the URL in the form of key/value,
+ * and you need to pay attention to the concatenation rules of the {@link #getUri(String, Object, boolean)}
+ * method and the format rules of the parameters when the parameter is <pre>{@code montage == true}</pre>.
  *
  * @author zpf
  * @since 1.1.0
  */
-public abstract class ApacheHttpUtils {
+public abstract class ApacheHttpSimpleRequestUtils {
 
-    private ApacheHttpUtils() {
+    private ApacheHttpSimpleRequestUtils() {
         super();
     }
 
@@ -46,7 +55,7 @@ public abstract class ApacheHttpUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value
-     * @throws Exception unknown exception.
+     * @throws Exception Unknown exception.
      */
     public static String get(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
@@ -63,7 +72,7 @@ public abstract class ApacheHttpUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value
-     * @throws Exception unknown exception.
+     * @throws Exception Unknown exception.
      */
     public static String post(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
@@ -80,7 +89,7 @@ public abstract class ApacheHttpUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value
-     * @throws Exception unknown exception.
+     * @throws Exception Unknown exception.
      */
     public static String put(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
@@ -97,7 +106,7 @@ public abstract class ApacheHttpUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value.
-     * @throws Exception unknown exception.
+     * @throws Exception Unknown exception.
      */
     public static String delete(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
@@ -112,7 +121,7 @@ public abstract class ApacheHttpUtils {
      * @param headers      Header information map,can be {@literal null}.
      * @param requestParam Request parameters,can be {@literal null}.
      * @return The {@code String} type of the return value
-     * @throws Exception unknown exception.
+     * @throws Exception Unknown exception.
      */
     public static String doRequest(CloseableHttpClient client,
                                    @NonNull HttpRequestBase requestBase,
@@ -180,7 +189,7 @@ public abstract class ApacheHttpUtils {
     /**
      * The get request for building HTTP contains the construction object of {@link URI}.
      *
-     * @param url          The actual request address.
+     * @param url          The actual request address,must not be {@literal null}.
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return Uri object,Please pay attention to the format issue of the URL.
