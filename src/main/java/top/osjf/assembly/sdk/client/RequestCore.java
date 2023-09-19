@@ -18,9 +18,9 @@ import top.osjf.assembly.sdk.process.Response;
 public interface RequestCore<R extends Response> {
 
     /**
-     * Request Entry Function Method.
+     * Can freely rewrite the method provided in the form of a request.
      *
-     * @return Extends for {@link Response}
+     * @return Class object implemented on {@link Response}.
      */
     R request();
 }

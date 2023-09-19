@@ -2,7 +2,9 @@ package top.osjf.assembly.sdk.process;
 
 
 import com.alibaba.fastjson.JSON;
+import copy.cn.hutool.v_5819.core.exceptions.ExceptionUtil;
 import org.apache.http.HttpStatus;
+import top.osjf.assembly.sdk.DataConvertException;
 
 import java.util.Objects;
 
@@ -69,6 +71,10 @@ public class DefaultErrorResponse extends AbstractResponse {
     }
 
     public static <R extends Response> R parseErrorResponse(String error, ErrorType type, Class<R> clazz) {
+        return parseErrorResponse(new DataConvertException(error), type, clazz);
+    }
+
+    public static <R extends Response> R parseErrorResponse(Throwable error, ErrorType type, Class<R> clazz) {
         DefaultErrorResponse defaultErrorResponse = type.getMessageWithType(error);
         String responseErrorStr = JSON.toJSONString(defaultErrorResponse);
         R r = JSON.parseObject(responseErrorStr, clazz);
@@ -77,25 +83,34 @@ public class DefaultErrorResponse extends AbstractResponse {
         return r;
     }
 
+
+    @FunctionalInterface
     interface MessageGetter {
-        DefaultErrorResponse getMessageWithType(String error);
+
+        DefaultErrorResponse getMessageWithType(Throwable error);
     }
 
     public enum ErrorType implements MessageGetter {
         SDK {
             @Override
-            public DefaultErrorResponse getMessageWithType(String error) {
-                return buildSdkExceptionResponse(error);
+            public DefaultErrorResponse getMessageWithType(Throwable error) {
+                return buildSdkExceptionResponse(
+                        ExceptionUtil.stacktraceToOneLineString(error, 1500)
+                );
             }
         }, UN_KNOWN {
             @Override
-            public DefaultErrorResponse getMessageWithType(String error) {
-                return buildUnknownResponse(error);
+            public DefaultErrorResponse getMessageWithType(Throwable error) {
+                return buildUnknownResponse(
+                        ExceptionUtil.stacktraceToOneLineString(error, 4500)
+                );
             }
         }, DATA {
             @Override
-            public DefaultErrorResponse getMessageWithType(String error) {
-                return buildDataErrorResponse(error);
+            public DefaultErrorResponse getMessageWithType(Throwable error) {
+                return buildDataErrorResponse(
+                        ExceptionUtil.stacktraceToOneLineString(error, 3000)
+                );
             }
         }
     }

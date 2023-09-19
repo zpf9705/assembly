@@ -1,6 +1,8 @@
 package top.osjf.assembly.sdk.process;
 
 
+import org.springframework.lang.Nullable;
+
 /**
  * Request parameter acquisition interface, uniformly return {@link Object}, compatible with all return values.
  *
@@ -12,5 +14,6 @@ public interface RequestParamCapable {
     /**
      * @return Return any of {@link Object}.
      */
+    @Nullable
     Object getRequestParam();
 }

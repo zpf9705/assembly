@@ -1,5 +1,6 @@
 package top.osjf.assembly.sdk.process;
 
+import org.springframework.lang.Nullable;
 import top.osjf.assembly.sdk.SdkException;
 import top.osjf.assembly.sdk.client.Client;
 
@@ -31,12 +32,13 @@ public interface Request<R extends Response> extends RequestParamCapable, Serial
     String getUrl(String host);
 
     @Override
+    @Nullable
     Object getRequestParam();
 
     /**
      * Method for verifying request parameters, fixed throw {@link SdkException}.
-     * <p>Taking {@link top.osjf.assembly.sdk.http.DefaultHttpClient} as an example, you can take
-     * a look at its {@link top.osjf.assembly.sdk.http.DefaultHttpClient#request()} method. You
+     * <p>Taking {@link top.osjf.assembly.sdk.http.ApacheHttpClient} as an example, you can take
+     * a look at its {@link top.osjf.assembly.sdk.http.ApacheHttpClient#request()} method. You
      * need to throw {@link SdkException} for validation parameters in order to perform specialized
      * exception capture.</p>
      */
@@ -59,7 +61,7 @@ public interface Request<R extends Response> extends RequestParamCapable, Serial
     /**
      * Obtain the implementation class object of {@link Client} and you can define it yourself.
      * <p>
-     * Currently, there are {@link top.osjf.assembly.sdk.http.DefaultHttpClient} in HTTP format and
+     * Currently, there are {@link top.osjf.assembly.sdk.http.ApacheHttpClient} in HTTP format and
      * some default methods provided in {@link top.osjf.assembly.sdk.client.AbstractClient}.
      *
      * @return Implementation class of {@link Client}.
