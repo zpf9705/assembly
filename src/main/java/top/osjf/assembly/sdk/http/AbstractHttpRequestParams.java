@@ -49,6 +49,7 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
         implements HttpRequest<R> {
 
     @Override
+    @Nullable
     public Object getRequestParam() {
         Object param = getParam();
         if (param == null) {
@@ -68,7 +69,7 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
     @Override
     @SuppressWarnings("rawtypes")
     public Class<? extends Client> getClientCls() {
-        return DefaultHttpClient.class;
+        return ApacheHttpClient.class;
     }
 
     /**
