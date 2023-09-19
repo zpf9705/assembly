@@ -10,52 +10,44 @@ import top.osjf.assembly.sdk.process.DefaultErrorResponse;
 import java.util.Map;
 
 /**
- * The default client for the HTTP request mode of SDK.
+ * The default client for the commons HTTP request mode of SDK.
  * <p>
  * It is also a step-by-step implementation process that involves verifying parameters, obtaining parameters,
  * HTTP type method requests, response preprocessing, and request transformation processing, including handling
  * {@link SdkException} exceptions and {@link Exception} unknown exceptions. Of course, there are also handling
  * of the final results, and common methods are placed. If this type is inherited, it can be rewritten.
  * <p>
- * Of course, you can define your request based on the {@link #apply(HttpRequestMethod, Map, Object, Boolean)} method.
+ * Of course, you can define your request based on the {@link #doRequest(HttpRequestMethod, Map, Object, Boolean)}
+ * method.
  *
  * @author zpf
- * @since 1.1.0
+ * @since 1.1.1
  */
 @SuppressWarnings("serial")
-public class DefaultHttpClient<R extends HttpResponse> extends AbstractHttpClient<R> implements HttpSdkEnum.Action0 {
+public class CommonsHttpClient<R extends HttpResponse> extends AbstractHttpClient<R> implements HttpSdkEnum.Action0,
+        HttpResultSolver {
 
-    /* ******* super Constructs ***********/
-
-    public DefaultHttpClient(String url) {
+    public CommonsHttpClient(String url) {
         super(url);
     }
 
     @Override
     public R request() {
-        return request0();
-    }
-
-    public R request0() {
         HttpRequest<R> request = getCurrentHttpRequest();
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
         R response;
-        String body = null;
         String responseStr = null;
-        String errorMsg = null;
         Throwable throwable = null;
+        StopWatch watch = new StopWatch();
         try {
             //Verification of necessary parameters
             request.validate();
+            watch.start();
             //Obtain request body map
             Object requestParam = request.getRequestParam();
-            //give body
-            body = requestParam == null ? "" : requestParam.toString();
             //Get Request Header
             Map<String, String> headers = request.getHeadMap();
             //requested action
-            responseStr = apply(request.matchHttpSdk().getRequestMethod(), headers, requestParam,
+            responseStr = doRequest(request.matchHttpSdk().getRequestMethod(), headers, requestParam,
                     request.montage());
             //pretreatment
             responseStr = preResponseStrHandler(request, responseStr);
@@ -63,22 +55,24 @@ public class DefaultHttpClient<R extends HttpResponse> extends AbstractHttpClien
             response = convertToResponse(request, responseStr);
         } catch (SdkException e) {
             //sdk Exception catch
-            sdkErrorLog(request, e);
+            handlerSdkError(request, e);
             throwable = e;
-            errorMsg = ExceptionUtil.stacktraceToOneLineString(throwable);
-            response = DefaultErrorResponse.parseErrorResponse(errorMsg, DefaultErrorResponse.ErrorType.SDK,
+            response = DefaultErrorResponse.parseErrorResponse(throwable, DefaultErrorResponse.ErrorType.SDK,
                     request.getResponseCls());
         } catch (Exception e) {
             //unKnow Exception catch
-            unKnowErrorLog(request, e);
+            handlerUnKnowError(request, e);
             throwable = e;
-            errorMsg = ExceptionUtil.stacktraceToOneLineString(throwable);
-            response = DefaultErrorResponse.parseErrorResponse(errorMsg, DefaultErrorResponse.ErrorType.UN_KNOWN,
+            response = DefaultErrorResponse.parseErrorResponse(throwable, DefaultErrorResponse.ErrorType.UN_KNOWN,
                     request.getResponseCls());
         } finally {
+            watch.stop();
             //finally result input
-            stopWatch.stop();
-            finallyPrintLog(stopWatch.getTotalTimeMillis(), throwable, request, body, responseStr, errorMsg);
+            finallyHandler(ExecuteInfoBuild.builder().requestAccess(request)
+                    .spend(watch.getTotalTimeMillis())
+                    .maybeError(throwable)
+                    .response(responseStr)
+                    .build());
         }
         //close and clear thread param info
         IoUtil.close(this);
@@ -86,33 +80,40 @@ public class DefaultHttpClient<R extends HttpResponse> extends AbstractHttpClien
     }
 
     @Override
-    public String apply(HttpRequestMethod httpRequestMethod, Map<String, String> headers, Object requestParam,
-                        Boolean montage) throws Exception {
+    public String doRequest(HttpRequestMethod method, Map<String, String> headers, Object requestParam,
+                            Boolean montage) throws Exception {
         SdkUtils.checkContentType(headers);
-        return httpRequestMethod.apply(getUrl(), headers, requestParam, montage);
+        return null;
     }
 
-    public void sdkErrorLog(HttpRequest<R> request, Throwable e) {
+    @Override
+    public void handlerSdkError(HttpRequest<?> request, SdkException e) {
         sdkError().accept("Client request fail, apiName={}, error=[{}]",
                 SdkUtils.toLoggerArray(request.matchHttpSdk().name(), ExceptionUtil.stacktraceToOneLineString(e)));
     }
 
-    public void unKnowErrorLog(HttpRequest<R> request, Throwable e) {
+    @Override
+    public void handlerUnKnowError(HttpRequest<?> request, Throwable e) {
         unKnowError().accept("Client request fail, apiName={}, error=[{}]",
                 SdkUtils.toLoggerArray(request.matchHttpSdk().name(), ExceptionUtil.stacktraceToOneLineString(e)));
     }
 
-    public void finallyPrintLog(long totalTimeMillis, Throwable throwable, HttpRequest<R> request, String body,
-                                String responseStr, String errorMsg) {
-        //logger console
-        if (throwable == null) {
+    @Override
+    public void finallyHandler(ExecuteInfo info) {
+        HttpRequest<?> httpRequest = info.getHttpRequest();
+        String name = httpRequest.matchHttpSdk().name();
+        Object requestParam = httpRequest.getRequestParam();
+        String body = requestParam != null ? requestParam.toString() : "";
+        String response = info.getResponse();
+        long spendTotalTimeMillis = info.getSpendTotalTimeMillis();
+        if (info.noHappenError().get()) {
             String msgFormat = "Request end, name={}, request={}, response={}, time={}ms";
             normal().accept(msgFormat,
-                    SdkUtils.toLoggerArray(request.matchHttpSdk().name(), body, responseStr, totalTimeMillis));
+                    SdkUtils.toLoggerArray(name, body, response, spendTotalTimeMillis));
         } else {
             String msgFormat = "Request fail, name={}, request={}, response={}, error={}, time={}ms";
             normal().accept(msgFormat,
-                    SdkUtils.toLoggerArray(request.matchHttpSdk().name(), body, responseStr, errorMsg, totalTimeMillis));
+                    SdkUtils.toLoggerArray(name, body, response, info.getErrorMessage(), spendTotalTimeMillis));
         }
     }
 }
