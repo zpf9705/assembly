@@ -10,7 +10,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
- * Program interface loader tool, mainly used for the set of query interface implementation class
+ * Program interface loader tool, mainly used for the set of query interface implementation class.
  *
  * @author zpf
  * @since 1.0.0
