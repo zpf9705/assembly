@@ -13,7 +13,7 @@ import java.util.function.Predicate;
  * Program interface loader tool, mainly used for the set of query interface implementation class
  *
  * @author zpf
- * @since 3.0.0
+ * @since 1.0.0
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public final class ServiceLoadUtils<T> {

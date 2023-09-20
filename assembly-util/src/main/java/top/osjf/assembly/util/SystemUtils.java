@@ -5,7 +5,7 @@ import top.osjf.assembly.util.annotation.CanNull;
 import java.util.function.Function;
 
 /**
- * Here is some tips on some API support system of Java classes
+ * Here is some tips on some API support system of Java classes.
  *
  * @author zpf
  * @since 1.0.0
@@ -16,13 +16,6 @@ public abstract class SystemUtils {
      * The current working directory of the user
      */
     public static final String PROJECT_PATH = "user.dir";
-
-    /**
-     * The current main working directory of the user
-     */
-    public static final String PROJECT_HOME = "user.home";
-
-    private static final String SLASH = "/";
 
     private static final String currentProjectPath;
 
@@ -36,10 +29,10 @@ public abstract class SystemUtils {
     /**
      * Set system key and value constant or configuration or cache value
      *
-     * @param key   must no be {@literal null}
-     * @param value must no be {@literal null}
-     * @param <K>   generic of {@code key}
-     * @param <V>   generic of {@code value}
+     * @param key   must no be {@literal null}.
+     * @param value must no be {@literal null}.
+     * @param <K>   generic of {@code key}.
+     * @param <V>   generic of {@code value}.
      */
     public static <K, V> void setProperty(K key, V value) {
         if (key == null || value == null) {
@@ -49,10 +42,10 @@ public abstract class SystemUtils {
     }
 
     /**
-     * Get system key and value constant or configuration or cache value
+     * Get system key and value constant or configuration or cache value.
      *
-     * @param key Value of {@code key}
-     * @return You call parameter value of key value
+     * @param key Value of {@code key}.
+     * @return You call parameter value of key value.
      */
     public static String getProperty(String key) {
         if (key == null) {
@@ -62,13 +55,13 @@ public abstract class SystemUtils {
     }
 
     /**
-     * Get system key and value constant or configuration or cache value with convert
+     * Get system key and value constant or configuration or cache value with convert.
      *
-     * @param key     value of {@code key}
-     * @param <C>     convert generic
-     * @param convert type
-     * @param def     {@literal null} with default value
-     * @return You call parameter value of key value
+     * @param key     Value of {@code key}.
+     * @param <C>     Convert generic.
+     * @param convert Convert need type.
+     * @param def     {@literal null} with default value.
+     * @return You call parameter value of key value.
      */
     public static <C> C getPropertyWithConvert(String key, Function<String, C> convert, @CanNull C def) {
         if (key == null) {
@@ -82,9 +75,9 @@ public abstract class SystemUtils {
     }
 
     /**
-     * Get current project path
+     * Get current project path.
      *
-     * @return path
+     * @return The startup path of the Java project.
      */
     public static String getCurrentProjectPath() {
         return currentProjectPath;

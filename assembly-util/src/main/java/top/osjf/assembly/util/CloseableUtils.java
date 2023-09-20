@@ -9,7 +9,7 @@ import java.io.Closeable;
  * For more methods on closing tools for {@link AutoCloseable}, you can follow {@link IoUtil}.
  *
  * @author zpf
- * @since 3.0.0
+ * @since 1.0.0
  */
 public final class CloseableUtils extends IoUtil {
 

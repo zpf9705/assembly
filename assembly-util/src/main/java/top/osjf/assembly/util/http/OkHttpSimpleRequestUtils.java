@@ -30,7 +30,7 @@ import java.util.Map;
  * format rules of the parameters when the parameter is <pre>{@code montage == true}</pre>.
  *
  * @author zpf
- * @since 1.1.1
+ * @since 2.0.0
  */
 public abstract class OkHttpSimpleRequestUtils {
 

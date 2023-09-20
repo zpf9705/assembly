@@ -37,7 +37,7 @@ import java.util.Map;
  * method and the format rules of the parameters when the parameter is <pre>{@code montage == true}</pre>.
  *
  * @author zpf
- * @since 1.1.0
+ * @since 2.0.0
  */
 public abstract class ApacheHttpSimpleRequestUtils {
 

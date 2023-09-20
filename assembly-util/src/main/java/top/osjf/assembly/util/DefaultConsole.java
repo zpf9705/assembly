@@ -2,7 +2,6 @@ package top.osjf.assembly.util;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import top.osjf.assembly.util.annotation.CanNull;
 
 import java.time.LocalDateTime;
 
@@ -14,6 +13,7 @@ import java.time.LocalDateTime;
  * @since 1.0.0
  */
 public final class DefaultConsole {
+
     private DefaultConsole() {
     }
 
@@ -225,21 +225,6 @@ public final class DefaultConsole {
         return String.format(formatJ,
                 LocalDateTime.now(),
                 consoleType,
-                getCurrentCallClassName(null));
-    }
-
-    /**
-     * Obtain the current console information for printing.{@link Class#getSimpleName()}
-     *
-     * @return Class noun.
-     */
-    private static String getCurrentCallClassName(@CanNull Class<?> zClass) {
-        String className;
-        if (zClass == null) {
-            className = DefaultConsole.class.getName();
-        } else {
-            className = zClass.getName();
-        }
-        return className;
+                DefaultConsole.class.getName());
     }
 }
