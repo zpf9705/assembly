@@ -1,8 +1,8 @@
 package top.osjf.assembly.cache.core.persistence;
 
-import top.osjf.assembly.cache.core.ExpiryInvocationTrace;
 import top.osjf.assembly.cache.core.Console;
-import top.osjf.assembly.util.ServiceLoadUtils;
+import top.osjf.assembly.cache.core.ExpiryInvocationTrace;
+import top.osjf.assembly.util.SpiLoads;
 import top.osjf.assembly.util.annotation.NotNull;
 
 /**
@@ -34,7 +34,7 @@ public class ExpirePersistenceProcessor<H> extends ExpiryInvocationTrace<H, Pers
             return;
         }
         //dispose proxyExec
-        PersistenceSolver solver = ServiceLoadUtils.load(PersistenceSolver.class)
+        PersistenceSolver solver = SpiLoads.findSpi(PersistenceSolver.class)
                 .getSpecifiedServiceBySubClass(proxyExec.shouldSolver());
         if (solver == null) {
             Console.warn("Provider Persistence [{}] shouldSolver load null", proxyExec.shouldSolver().getName());

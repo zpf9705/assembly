@@ -1,18 +1,17 @@
 package top.osjf.assembly.cache.core.persistence;
 
 import top.osjf.assembly.cache.util.AssertUtils;
-import top.osjf.assembly.util.ServiceLoadUtils;
+import top.osjf.assembly.util.SpiLoads;
 import top.osjf.assembly.util.annotation.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Persistent cache files to restore selector abstract class, through the collection of
- * <ul>
- *     <li>{@link ServiceLoader}</li>
- *     <li>{@link ServiceLoadUtils}</li>
- * </ul>
+ * Persistent cache files to restore selector abstract class, through the collection of.
+ * <p>
  * in the factory,according to the different implementations for recovery plant selection
  *
  * @author zpf
@@ -68,10 +67,7 @@ public abstract class ExpireGlobePersistenceRenewSelector {
             /*
              * @see ServiceLoadUtils
              */
-            Iterator<PersistenceRenewFactory> factoryIterator =
-                    ServiceLoadUtils.load(PersistenceRenewFactory.class).loadAllSubInstance();
-            if (factoryIterator != null)
-                factoryIterator.forEachRemaining(factory -> PERSISTENCE_FACTORIES.add(factory));
+            PERSISTENCE_FACTORIES = SpiLoads.findSpi(PersistenceRenewFactory.class).getSubInstances();
         }
 
         /**

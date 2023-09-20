@@ -8,7 +8,7 @@ import top.osjf.assembly.cache.core.persistence.ExpireBytesPersistenceSolver;
 import top.osjf.assembly.cache.core.persistence.PersistenceSolver;
 import top.osjf.assembly.cache.help.RecordActivationCenter;
 import top.osjf.assembly.cache.listener.MessageExpiryCapable;
-import top.osjf.assembly.util.ServiceLoadUtils;
+import top.osjf.assembly.util.SpiLoads;
 import top.osjf.assembly.util.annotation.NotNull;
 
 import java.util.concurrent.TimeUnit;
@@ -147,7 +147,7 @@ public final class ExpireMapCenter extends RecordActivationCenter<ExpireMapCente
         //Remove control information
         this.getContain().remove(capable.getByteKey(), capable.getByteValue());
         //Remove persistent cache
-        PersistenceSolver<byte[], byte[]> solver = ServiceLoadUtils.load(PersistenceSolver.class)
+        PersistenceSolver<byte[], byte[]> solver = SpiLoads.findSpi(PersistenceSolver.class)
                 .getSpecifiedServiceBySubClass(ExpireBytesPersistenceSolver.class);
         if (solver != null) {
             solver.removePersistence(capable.getByteKey(), capable.getByteValue());
