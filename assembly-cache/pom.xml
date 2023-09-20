@@ -16,6 +16,7 @@
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <expiringmap>0.5.10</expiringmap>
+        <util>1.0.0</util>
     </properties>
 
     <dependencies>
@@ -37,7 +38,7 @@
         <dependency>
             <groupId>top.osjf</groupId>
             <artifactId>assembly-util</artifactId>
-            <version>2.0.0</version>
+            <version>${util}</version>
         </dependency>
     </dependencies>
 </project>
