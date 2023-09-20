@@ -1,7 +1,7 @@
 package top.osjf.assembly.simplified.sdk;
 
 /**
- * The encapsulated SDK related attributes are mainly used in {@link top.osjf.assembly.sdk.process.Request} calls.
+ * The encapsulated SDK related attributes are mainly used in {@link top.osjf.assembly.simplified.sdk.process.Request} calls.
  *
  * @author zpf
  * @since 1.1.0

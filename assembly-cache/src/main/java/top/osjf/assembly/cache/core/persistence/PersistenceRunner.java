@@ -1,0 +1,81 @@
+package top.osjf.assembly.cache.core.persistence;
+
+import top.osjf.assembly.util.annotation.NotNull;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+
+/**
+ * Cache persistence methods of operation indicators, decided to take what kind of way to run
+ *
+ * @author zpf
+ * @since 3.0.0
+ */
+public abstract class PersistenceRunner implements MethodRunnableCapable {
+
+    private static final boolean async;
+
+    private static final Predicate<Throwable> EXCEPTION_PREDICATE = (e) -> e instanceof OnOpenPersistenceException;
+
+    private static volatile MethodRunnableCapable capable;
+
+    static {
+        async = Configuration.getConfiguration().getPersistenceAsync();
+    }
+
+    /**
+     * Get a Singleton {@code MethodRunnableCapable}
+     * <ul>
+     *     <li>{@link ASyncPersistenceRunner}</li>
+     *     <li>{@link SyncPersistenceRunner}</li>
+     * </ul>
+     *
+     * @return {@link MethodRunnableCapable}
+     */
+    public static MethodRunnableCapable getCapable() {
+        if (capable == null) {
+            synchronized (PersistenceRunner.class) {
+                if (capable == null) {
+                    if (async) {
+                        capable = new ASyncPersistenceRunner();
+                    } else {
+                        capable = new SyncPersistenceRunner();
+                    }
+                }
+            }
+        }
+        return capable;
+    }
+
+    public abstract void run(@NotNull Runnable runnable, @NotNull Consumer<String> errorLoggerConsumer);
+
+
+    /**
+     * Sync to run Persistence method
+     */
+    private static class SyncPersistenceRunner extends PersistenceRunner {
+
+        @Override
+        public void run(@NotNull Runnable runnable, @NotNull Consumer<String> errorLoggerConsumer) {
+            try {
+                runnable.run();
+            } catch (Throwable e) {
+                if (!EXCEPTION_PREDICATE.test(e)) errorLoggerConsumer.accept(e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * ASync to run Persistence method
+     */
+    private static class ASyncPersistenceRunner extends PersistenceRunner {
+
+        @Override
+        public void run(@NotNull Runnable runnable, @NotNull Consumer<String> errorLoggerConsumer) {
+            CompletableFuture.runAsync(runnable)
+                    .whenComplete((s, e) -> {
+                        if (!EXCEPTION_PREDICATE.test(e)) errorLoggerConsumer.accept(e.getMessage());});
+        }
+    }
+}

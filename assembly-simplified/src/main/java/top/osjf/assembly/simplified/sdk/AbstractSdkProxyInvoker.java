@@ -18,7 +18,8 @@ import java.lang.reflect.Method;
  * <p>
  * This class takes on the common parameter processing and converts it into the parameters required for SDK execution.</p>
  * <p>
- * The corresponding executor will be selected based on the full name of a single {@link top.osjf.assembly.sdk.client.Client},
+ * The corresponding executor will be selected based on the full name of a single
+ * {@link top.osjf.assembly.simplified.sdk.client.Client},
  * as shown in {@link Request#getClientCls()}.
  * <p>Simply obtain the host parameter from the corresponding proxy class entity to complete the SDK request.</p>
  *
