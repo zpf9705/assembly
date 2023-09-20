@@ -10,11 +10,14 @@
     </parent>
 
     <artifactId>assembly-simplified</artifactId>
-    <description></description>
+    <description>Easy to build packaging module, including scheduled tasks
+        for Hutu package, SDK packaging, etc.</description>
+
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <util>2.0.0</util>
     </properties>
 
     <dependencyManagement>
@@ -38,7 +41,7 @@
         <dependency>
             <groupId>top.osjf</groupId>
             <artifactId>assembly-util</artifactId>
-            <version>2.0.0</version>
+            <version>${util}</version>
         </dependency>
     </dependencies>
 </project>
