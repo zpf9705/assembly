@@ -1,6 +1,6 @@
 package top.osjf.assembly.util;
 
-import org.springframework.lang.Nullable;
+import top.osjf.assembly.util.annotation.CanNull;
 
 import java.util.function.Function;
 
@@ -70,7 +70,7 @@ public abstract class SystemUtils {
      * @param def     {@literal null} with default value
      * @return You call parameter value of key value
      */
-    public static <C> C getPropertyWithConvert(String key, Function<String, C> convert, @Nullable C def) {
+    public static <C> C getPropertyWithConvert(String key, Function<String, C> convert, @CanNull C def) {
         if (key == null) {
             return def;
         }

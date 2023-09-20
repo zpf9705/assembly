@@ -14,8 +14,8 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.springframework.lang.NonNull;
 import top.osjf.assembly.util.UtilException;
+import top.osjf.assembly.util.annotation.NotNull;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -124,7 +124,7 @@ public abstract class ApacheHttpSimpleRequestUtils {
      * @throws Exception Unknown exception.
      */
     public static String doRequest(CloseableHttpClient client,
-                                   @NonNull HttpRequestBase requestBase,
+                                   @NotNull HttpRequestBase requestBase,
                                    Map<String, String> headers,
                                    Object requestParam) throws Exception {
         if (client == null) {

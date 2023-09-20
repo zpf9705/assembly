@@ -3,10 +3,10 @@ package top.osjf.assembly.util.rxjava;
 import io.reactivex.rxjava3.core.BackpressureStrategy;
 import io.reactivex.rxjava3.core.Flowable;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import top.osjf.assembly.util.SystemUtils;
 import top.osjf.assembly.util.UtilException;
+import top.osjf.assembly.util.annotation.CanNull;
+import top.osjf.assembly.util.annotation.NotNull;
 
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
@@ -34,7 +34,7 @@ public interface Observer<T> {
      *
      * @return no be {@literal null}
      */
-    @NonNull
+    @NotNull
     BackpressureStrategy strategy();
 
     /**
@@ -66,7 +66,7 @@ public interface Observer<T> {
      *
      * @return can be {@literal null}
      */
-    @Nullable
+    @CanNull
     default Executor subscribeExecutor() {
         return null;
     }
@@ -99,7 +99,7 @@ public interface Observer<T> {
      *
      * @return can be {@literal null}
      */
-    @Nullable
+    @CanNull
     default Executor observeExecutor() {
         return null;
     }
@@ -134,7 +134,7 @@ public interface Observer<T> {
      * @return exception array
      * @since 3.1.2
      */
-    @Nullable
+    @CanNull
     Class<? extends Throwable>[] specialRetry();
 
     /**
@@ -149,7 +149,7 @@ public interface Observer<T> {
      * @param simpleMsgHandler Exception occurrence collection function
      * @return {@link Flowable}
      */
-    @NonNull
+    @NotNull
     default Flowable<T> run(Supplier<T> run, Class<T> type, Predicate<T> check, Function<T, String> simpleMsgHandler) {
         return Flowable.create(click -> {
                     click.onNext(checkValue(run, check, simpleMsgHandler));
