@@ -1,6 +1,6 @@
-package top.osjf.assembly.cache.core;
+package top.osjf.assembly.cache.operations;
 
-import top.osjf.assembly.cache.help.ExpireHelper;
+import top.osjf.assembly.cache.factory.CacheExecutor;
 import top.osjf.assembly.util.SerialUtils;
 
 import java.util.List;
@@ -8,15 +8,15 @@ import java.util.concurrent.TimeUnit;
 
 
 /**
- * The default value operations implementation class for {@link ValueOperations}
+ * The default value operations implementation class for {@link ValueOperations}.
  *
  * @author zpf
- * @since 1.1.0
+ * @since 1.0.0
  */
 public class DefaultValueOperations<K, V> extends AbstractOperations<K, V> implements ValueOperations<K, V> {
 
-    public DefaultValueOperations(ExpireTemplate<K, V> expireTemplate) {
-        super(expireTemplate);
+    public DefaultValueOperations(CacheTemplate<K, V> template) {
+        super(template);
     }
 
     /*
@@ -26,13 +26,13 @@ public class DefaultValueOperations<K, V> extends AbstractOperations<K, V> imple
     public void set(K key, V value) {
 
         final byte[] rawValue = this.rawValue(value);
-        this.execute(new AbstractOperations<K, V>.ValueDeserializingExpireCallback(key) {
+        this.execute(new AbstractOperations<K, V>.ValueDeserializingCacheCallback(key) {
             @Override
-            protected byte[] inExpire(byte[] rawKey, ExpireHelper helper) {
-                helper.set(rawKey, rawValue);
+            protected byte[] inExecutor(byte[] rawKey, CacheExecutor executor) {
+                executor.set(rawKey, rawValue);
                 return null;
             }
-        }, false);
+        });
     }
 
     /*
@@ -42,13 +42,13 @@ public class DefaultValueOperations<K, V> extends AbstractOperations<K, V> imple
     public void set(K key, V value, Long duration, TimeUnit unit) {
 
         final byte[] rawValue = this.rawValue(value);
-        this.execute(new AbstractOperations<K, V>.ValueDeserializingExpireCallback(key) {
+        this.execute(new AbstractOperations<K, V>.ValueDeserializingCacheCallback(key) {
             @Override
-            protected byte[] inExpire(byte[] rawKey, ExpireHelper helper) {
-                helper.setE(rawKey, rawValue, duration, unit);
+            protected byte[] inExecutor(byte[] rawKey, CacheExecutor executor) {
+                executor.setE(rawKey, rawValue, duration, unit);
                 return null;
             }
-        }, false);
+        });
     }
 
     /*
@@ -59,7 +59,7 @@ public class DefaultValueOperations<K, V> extends AbstractOperations<K, V> imple
     public Boolean setIfAbsent(K key, V value) {
         byte[] rawKey = this.rawKey(key);
         byte[] rawValue = this.rawValue(value);
-        return this.execute((helper) -> helper.setNX(rawKey, rawValue), true);
+        return this.execute((executor) -> executor.setNX(rawKey, rawValue));
     }
 
     /*
@@ -71,7 +71,7 @@ public class DefaultValueOperations<K, V> extends AbstractOperations<K, V> imple
 
         byte[] rawKey = this.rawKey(key);
         byte[] rawValue = this.rawValue(value);
-        return this.execute((helper) -> helper.setEX(rawKey, rawValue, duration, unit), true);
+        return this.execute((executor) -> executor.setEX(rawKey, rawValue, duration, unit));
     }
 
     /*
@@ -80,12 +80,12 @@ public class DefaultValueOperations<K, V> extends AbstractOperations<K, V> imple
      */
     public V get(K key) {
 
-        return this.execute(new ValueDeserializingExpireCallback(key) {
+        return this.execute(new ValueDeserializingCacheCallback(key) {
             @Override
-            protected byte[] inExpire(byte[] rawKey, ExpireHelper helper) {
-                return helper.get(rawKey);
+            protected byte[] inExecutor(byte[] rawKey, CacheExecutor executor) {
+                return executor.get(rawKey);
             }
-        }, true);
+        });
     }
 
     @Override
@@ -93,7 +93,7 @@ public class DefaultValueOperations<K, V> extends AbstractOperations<K, V> imple
     public List<K> getSimilarKeys(K key) {
 
         byte[] rawKey = this.rawKey(key);
-        List<byte[]> execute = this.execute((helper) -> helper.getSimilarKeys(rawKey), true);
+        List<byte[]> execute = this.execute((executor) -> executor.getSimilarKeys(rawKey));
         return (List<K>) SerialUtils.deserializeAny(execute);
     }
 
@@ -105,11 +105,11 @@ public class DefaultValueOperations<K, V> extends AbstractOperations<K, V> imple
     public V getAndSet(K key, V newValue) {
 
         final byte[] rawValue = this.rawValue(newValue);
-        return this.execute(new ValueDeserializingExpireCallback(key) {
+        return this.execute(new ValueDeserializingCacheCallback(key) {
             @Override
-            protected byte[] inExpire(byte[] rawKey, ExpireHelper helper) {
-                return helper.getAndSet(rawKey, rawValue);
+            protected byte[] inExecutor(byte[] rawKey, CacheExecutor executor) {
+                return executor.getAndSet(rawKey, rawValue);
             }
-        }, true);
+        });
     }
 }

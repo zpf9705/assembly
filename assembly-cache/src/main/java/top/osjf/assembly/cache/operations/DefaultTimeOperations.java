@@ -1,16 +1,16 @@
-package top.osjf.assembly.cache.core;
+package top.osjf.assembly.cache.operations;
 
 import java.util.concurrent.TimeUnit;
 
 /**
- * The default value operations implementation class for {@link ExpirationOperations}
+ * The default value operations implementation class for {@link TimeOperations}.
  *
  * @author zpf
- * @since 3.0.0
+ * @since 1.0.0
  */
-public class DefaultExpirationOperations<K, V> extends AbstractOperations<K, V> implements ExpirationOperations<K, V> {
+public class DefaultTimeOperations<K, V> extends AbstractOperations<K, V> implements TimeOperations<K, V> {
 
-    DefaultExpirationOperations(ExpireTemplate<K, V> expireTemplate) {
+    DefaultTimeOperations(CacheTemplate<K, V> expireTemplate) {
         super(expireTemplate);
     }
 
@@ -21,7 +21,7 @@ public class DefaultExpirationOperations<K, V> extends AbstractOperations<K, V> 
     @Override
     public Long getExpiration(K key) {
         byte[] rawKey = this.rawKey(key);
-        return this.execute((helper) -> helper.getExpiration(rawKey), true);
+        return this.execute((executor) -> executor.getExpiration(rawKey));
     }
 
     /*
@@ -31,7 +31,7 @@ public class DefaultExpirationOperations<K, V> extends AbstractOperations<K, V> 
     @Override
     public Long getExpiration(K key, TimeUnit unit) {
         byte[] rawKey = this.rawKey(key);
-        return this.execute((helper) -> helper.getExpiration(rawKey, unit), true);
+        return this.execute((executor) -> executor.getExpiration(rawKey, unit));
     }
 
     /*
@@ -41,7 +41,7 @@ public class DefaultExpirationOperations<K, V> extends AbstractOperations<K, V> 
     @Override
     public Long getExpectedExpiration(K key) {
         byte[] rawKey = this.rawKey(key);
-        return this.execute((helper) -> helper.getExpectedExpiration(rawKey), true);
+        return this.execute((executor) -> executor.getExpectedExpiration(rawKey));
     }
 
     /*
@@ -51,7 +51,7 @@ public class DefaultExpirationOperations<K, V> extends AbstractOperations<K, V> 
     @Override
     public Long getExpectedExpiration(K key, TimeUnit unit) {
         byte[] rawKey = this.rawKey(key);
-        return this.execute((helper) -> helper.getExpectedExpiration(rawKey, unit), true);
+        return this.execute((executor) -> executor.getExpectedExpiration(rawKey, unit));
     }
 
     /*
@@ -61,7 +61,7 @@ public class DefaultExpirationOperations<K, V> extends AbstractOperations<K, V> 
     @Override
     public Boolean setExpiration(K key, Long duration, TimeUnit unit) {
         byte[] rawKey = this.rawKey(key);
-        return this.execute((helper) -> helper.setExpiration(rawKey, duration, unit), true);
+        return this.execute((executor) -> executor.setExpiration(rawKey, duration, unit));
     }
 
     /*
@@ -71,6 +71,6 @@ public class DefaultExpirationOperations<K, V> extends AbstractOperations<K, V> 
     @Override
     public Boolean resetExpiration(K key) {
         byte[] rawKey = this.rawKey(key);
-        return this.execute((helper) -> helper.resetExpiration(rawKey), true);
+        return this.execute((executor) -> executor.resetExpiration(rawKey));
     }
 }

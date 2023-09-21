@@ -1,4 +1,4 @@
-package top.osjf.assembly.cache.core;
+package top.osjf.assembly.cache.operations;
 
 import top.osjf.assembly.util.annotation.CanNull;
 
@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Expiring operations for simple (or in Expiring terminology 'string' 'object') values.
+ * Cache operations for simple (or in Expiring terminology 'string' 'object') values.
  *
  * @author zpf
- * @since 1.1.0
+ * @since 1.0.0
  **/
 public interface ValueOperations<K, V> {
 
@@ -37,7 +37,8 @@ public interface ValueOperations<K, V> {
      *
      * @param key   must not be {@literal null}.
      * @param value must not be {@literal null}.
-     * @return {@literal null} If returns true, then add memory success, or false, indicates the key/value pair already exists
+     * @return {@literal null} If returns true, then add memory success, or false,
+     * indicates the key/value pair already exists.
      */
     @CanNull
     Boolean setIfAbsent(K key, V value);
@@ -49,7 +50,8 @@ public interface ValueOperations<K, V> {
      * @param value    must not be {@literal null}.
      * @param duration the key expiration timeout.
      * @param unit     must not be {@literal null}.
-     * @return {@literal null} If returns true, then add memory success, or false, indicates the key/value pair already exists
+     * @return {@literal null} If returns true, then add memory success, or false,
+     * indicates the key/value pair already exists.
      */
     @CanNull
     Boolean setIfAbsent(K key, V value, Long duration, TimeUnit unit);
@@ -87,5 +89,5 @@ public interface ValueOperations<K, V> {
      *
      * @return Expire Operations
      */
-    ExpireOperations<K, V> getOperations();
+    CacheCommonsOperations<K, V> getCommonsOperations();
 }

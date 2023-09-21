@@ -1,16 +1,16 @@
-package top.osjf.assembly.cache.core;
+package top.osjf.assembly.cache.operations;
 
 import top.osjf.assembly.util.annotation.CanNull;
 
 import java.util.concurrent.TimeUnit;
 
 /**
- * {@link ExpirationOperations} About some of the key {@code key} expiration time operations
+ * {@link TimeOperations} About some of the key {@code key} expiration time operations.
  *
  * @author zpf
- * @since 3.0.0
+ * @since 1.0.0
  */
-public interface ExpirationOperations<K, V> {
+public interface TimeOperations<K, V> {
 
     /**
      * Get the key {@code key} of the corresponding cache time : ms
@@ -73,5 +73,5 @@ public interface ExpirationOperations<K, V> {
      *
      * @return Expire Operations
      */
-    ExpireOperations<K, V> getOperations();
+    CacheCommonsOperations<K, V> getCommonsOperations();
 }

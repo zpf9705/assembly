@@ -1,15 +1,15 @@
-package top.osjf.assembly.cache.core;
+package top.osjf.assembly.cache.operations;
 
-import top.osjf.assembly.cache.core.serializer.ExpiringSerializer;
+import top.osjf.assembly.cache.serializer.PairSerializer;
 import top.osjf.assembly.util.annotation.CanNull;
 
 import java.util.Collection;
 import java.util.Map;
 
 /**
- * The direct method entry of the {@link ExpireTemplate} operation template, all additions, deletions,
+ * The direct method entry of the {@link CacheTemplate} operation template, all additions, deletions,
  * modifications, and queries related to caching, and the definition of methods should be aggregated
- * to this interface and implemented one by one in {@link ExpireTemplate}. Moreover, from the class
+ * to this interface and implemented one by one in {@link CacheTemplate}. Moreover, from the class
  * operation interface, such as {@link ValueOperations}, it needs to be accessible through this interface.
  * <p>
  * This can be seen as a summary of the overall API, which is the standardization of the template class.
@@ -18,21 +18,20 @@ import java.util.Map;
  * Alternatively, add and implement on top of this interface.
  *
  * @author zpf
- * @since 1.1.0
+ * @since 1.0.0
  **/
-public interface ExpireOperations<K, V> {
+public interface CacheCommonsOperations<K, V> {
 
     /**
-     * Expire Execute unified call solutions with {@link ExpireValueCallback}
+     * Expire Execute unified call solutions with {@link CacheValueCallback}
      * Used here connection factory used for uniform distribution
      *
-     * @param action           Expiry do action must not be {@literal null}.
-     * @param composeException {@literal true} Whether to merge exception
-     * @param <T>              return paradigm
+     * @param action Expiry do action must not be {@literal null}.
+     * @param <T>    return paradigm
      * @return return value be changed
      */
     @CanNull
-    <T> T execute(ExpireValueCallback<T> action, boolean composeException);
+    <T> T execute(CacheValueCallback<T> action);
 
     /**
      * Delete given {@code key}.
@@ -76,21 +75,21 @@ public interface ExpireOperations<K, V> {
     Boolean exist(K key);
 
     /**
-     * To obtain the key serialized way
+     * To obtain the key serialized way.
      *
-     * @return {@link ExpiringSerializer}
+     * @return {@link PairSerializer}
      */
-    ExpiringSerializer<K> getKeySerializer();
+    PairSerializer<K> getKeySerializer();
 
     /**
      * To obtain the value serialized way
      *
-     * @return {@link ExpiringSerializer}
+     * @return {@link PairSerializer}
      */
-    ExpiringSerializer<V> getValueSerializer();
+    PairSerializer<V> getValueSerializer();
 
     /**
-     * The implementation of {@link ValueOperations} is all based on {@link ExpireTemplate},
+     * The implementation of {@link ValueOperations} is all based on {@link CacheTemplate},
      * so a {@link ValueOperations} can be obtained through this standard interface.
      *
      * @return {@link ValueOperations}
@@ -98,10 +97,10 @@ public interface ExpireOperations<K, V> {
     ValueOperations<K, V> opsForValue();
 
     /**
-     * The implementation of {@link ExpirationOperations} is all based on {@link ExpireTemplate},
-     * so a {@link ExpirationOperations} can be obtained through this standard interface.
+     * The implementation of {@link TimeOperations} is all based on {@link CacheTemplate},
+     * so a {@link TimeOperations} can be obtained through this standard interface.
      *
-     * @return {@link ValueOperations}
+     * @return {@link TimeOperations}
      */
-    ExpirationOperations<K, V> opsExpirationOperations();
+    TimeOperations<K, V> opsForTime();
 }

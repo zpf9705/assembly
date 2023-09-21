@@ -1,10 +1,11 @@
-package top.osjf.assembly.cache.core;
+package top.osjf.assembly.cache.operations;
 
-import top.osjf.assembly.cache.command.ExpireKeyCommands;
-import top.osjf.assembly.cache.core.serializer.ExpiringSerializer;
-import top.osjf.assembly.cache.core.serializer.GenericStringExpiringSerializer;
-import top.osjf.assembly.cache.help.ExpireHelper;
-import top.osjf.assembly.cache.help.ExpireHelperFactory;
+import org.springframework.util.Assert;
+import top.osjf.assembly.cache.command.CacheKeyCommands;
+import top.osjf.assembly.cache.factory.CacheFactory;
+import top.osjf.assembly.cache.factory.CacheFactoryAccessor;
+import top.osjf.assembly.cache.serializer.PairSerializer;
+import top.osjf.assembly.cache.serializer.StringPairSerializer;
 import top.osjf.assembly.cache.util.AssertUtils;
 import top.osjf.assembly.util.annotation.CanNull;
 
@@ -13,15 +14,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 
 /**
- * Helper class that simplifies Expiry data access code.
+ * Helper class that simplifies Cache data access code.
  * <p>
  * Performs automatic serialization/deserialization between the given objects
  * and the underlying binary data in the expiry store. By default, it uses
- * Generic String serialization for its objects(through {@link GenericStringExpiringSerializer}).
- * For String intensive operations consider the dedicated {@link StringExpireTemplate}.
+ * Generic String serialization for its objects(through {@link StringPairSerializer}).
+ * For String intensive operations consider the dedicated {@link StringCacheTemplate}.
  * <p>
  * The Expiry of the template model , imitate expireTemplate encapsulation mode
  * The cache operation way to connect assembly simulation for the connection,
@@ -32,26 +32,26 @@ import java.util.function.Supplier;
  * <b>his is the central class in Expiry support</b>
  *
  * @author zpf
- * @since 1.1.0
+ * @since 1.0.0
  **/
-public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperations<K, V>, Serializable {
+public class CacheTemplate<K, V> extends CacheFactoryAccessor implements CacheCommonsOperations<K, V>, Serializable {
 
     private static final long serialVersionUID = -8020854200126293536L;
     @SuppressWarnings("rawtypes")
-    private @CanNull ExpiringSerializer defaultSerializer;
+    private @CanNull PairSerializer defaultSerializer;
     private boolean enableDefaultSerializer = true;
     private boolean initialized = false;
 
-    private ExpiringSerializer<K> keySerialize;
-    private ExpiringSerializer<V> valueSerialize;
+    private PairSerializer<K> keySerialize;
+    private PairSerializer<V> valueSerialize;
 
     private final ValueOperations<K, V> valueOperations = new DefaultValueOperations<>(this);
-    private final ExpirationOperations<K, V> expirationOperations = new DefaultExpirationOperations<>(this);
+    private final TimeOperations<K, V> timeOperations = new DefaultTimeOperations<>(this);
 
     /**
-     * Constructs a new <code>ExpireTemplate</code> instance.
+     * Constructs a new <code>CacheTemplate</code> instance.
      */
-    public ExpireTemplate() {
+    public CacheTemplate() {
     }
 
     @Override
@@ -62,7 +62,7 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
         boolean defaultUsed = false;
 
         if (this.defaultSerializer == null) {
-            this.defaultSerializer = new GenericStringExpiringSerializer();
+            this.defaultSerializer = new StringPairSerializer();
         }
 
         if (this.enableDefaultSerializer) {
@@ -85,59 +85,6 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
         this.initialized = true;
     }
 
-    @Override
-    public <T> T execute(ExpireValueCallback<T> action, boolean composeException) {
-        AssertUtils.Operation.isTrue(initialized, "Execute must before initialized");
-        return execute(action, getHelperFactory(), composeException);
-    }
-
-    /**
-     * Execute the plan had to adjust parameter calibration.
-     *
-     * @param action           Expiry do action
-     * @param factory          help factory
-     * @param composeException Whether to merge exception
-     * @param <T>              Return paradigm
-     * @return Return value be changed
-     */
-    public <T> T execute(ExpireValueCallback<T> action, ExpireHelperFactory factory, boolean composeException) {
-        AssertUtils.Operation.notNull(factory, "ExpireConnectionFactory no be null");
-        return execute(action, factory.getHelper(), composeException);
-    }
-
-    /**
-     * Unified execute callback scheme, using try catch and handle exception to perform process monitoring,
-     * once found to have abnormal situation a timely manner according to the number of times for a retry,
-     * if still cannot successfully after retries,will prompt is given.
-     *
-     * @param action           Expiry do action
-     * @param helper           Expiry helper
-     * @param composeException Whether to merge exception
-     * @param <T>              Return paradigm
-     * @return Return value be changed
-     */
-    public <T> T execute(ExpireValueCallback<T> action, ExpireHelper helper, boolean composeException) {
-        /*
-         * The callback encapsulation
-         */
-        Supplier<T> able = () -> action.doInExpire(helper);
-        T value;
-        try {
-            value = able.get();
-        } catch (Exception e) {
-            if (composeException) {
-                //Deviate from the custom exception thrown
-                if (e instanceof ExpiringException) {
-                    throw new OperationsException(e);
-                } else {
-                    throw new RuntimeException(e);
-                }
-            }
-            value = null;
-        }
-        return value;
-    }
-
     /**
      * Whether the default serializer should be used. If not, any serializers not explicitly
      * set will remain null and values will not be serialized or deserialized.
@@ -149,55 +96,59 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
     }
 
     /**
-     * Set the template key ExpiringSerializer
+     * Set the template key PairSerializer.
      *
-     * @param keySerializer key Serializer
+     * @param keySerializer key Serializer.
      */
-    public void setKeySerializer(ExpiringSerializer<K> keySerializer) {
+    public void setKeySerializer(PairSerializer<K> keySerializer) {
         AssertUtils.Operation.isTrue(this.keySerialize == null,
-                "kExpiringSerializer existing configuration values, please do not cover");
+                "kPairSerializer existing configuration values, please do not cover");
         this.keySerialize = keySerializer;
     }
 
     /**
-     * Set the template value ExpiringSerializer
+     * Set the template value PairSerializer.
      *
-     * @param valueSerializer value Serializer
+     * @param valueSerializer value Serializer.
      */
-    public void setValueSerializer(ExpiringSerializer<V> valueSerializer) {
+    public void setValueSerializer(PairSerializer<V> valueSerializer) {
         AssertUtils.Operation.isTrue(this.valueSerialize == null,
-                "vExpiringSerializer existing configuration values, please do not cover");
+                "vPairSerializer existing configuration values, please do not cover");
         this.valueSerialize = valueSerializer;
     }
 
     @Override
-    public ExpiringSerializer<K> getKeySerializer() {
+    public PairSerializer<K> getKeySerializer() {
         return this.keySerialize;
     }
 
     @Override
-    public ExpiringSerializer<V> getValueSerializer() {
+    public PairSerializer<V> getValueSerializer() {
         return this.valueSerialize;
     }
 
-    /**
-     * Access to the key value operator
-     *
-     * @return {@linkplain ValueOperations}
-     */
     @Override
     public ValueOperations<K, V> opsForValue() {
         return this.valueOperations;
     }
 
-    /**
-     * Access to the key value operator
-     *
-     * @return {@link  ExpirationOperations}
-     */
     @Override
-    public ExpirationOperations<K, V> opsExpirationOperations() {
-        return this.expirationOperations;
+    public TimeOperations<K, V> opsForTime() {
+        return this.timeOperations;
+    }
+
+
+    @Override
+    @CanNull
+    public <T> T execute(CacheValueCallback<T> action) {
+
+        Assert.isTrue(initialized, "Execute must before initialized");
+
+        CacheFactory factory = getCacheFactory();
+
+        Assert.notNull(factory, "CacheExecutorFactory must not be null");
+
+        return action.doInExecutor(factory.executor());
     }
 
     @CanNull
@@ -205,7 +156,7 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
     public Boolean delete(K key) {
         Long result = execute((connection) -> connection.delete(
                 this.rawKey(key)
-        ), true);
+        ));
         return result != null && result.intValue() == 1;
     }
 
@@ -217,7 +168,7 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
         }
         return this.execute((connection) -> connection.delete(
                 this.rawKeys(keys)
-        ), true);
+        ));
     }
 
     @Override
@@ -225,7 +176,7 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
 
         Map<byte[], byte[]> map = this.execute((connection) -> connection.deleteType(
                 this.rawKey(key)
-        ), true);
+        ));
 
         if (map == null || map.isEmpty()) {
             return Collections.emptyMap();
@@ -241,14 +192,14 @@ public class ExpireTemplate<K, V> extends ExpireAccessor implements ExpireOperat
 
     @Override
     public Boolean deleteAll() {
-        return this.execute(ExpireKeyCommands::deleteAll, true);
+        return this.execute(CacheKeyCommands::deleteAll);
     }
 
     @Override
     public Boolean exist(K key) {
         return this.execute((connection) -> connection.hasKey(
                 this.rawKey(key)
-        ), true);
+        ));
     }
 
     private byte[] rawKey(K key) {
