@@ -1,6 +1,6 @@
 package top.osjf.assembly.cache.listener;
 
-import top.osjf.assembly.cache.exceptions.OperationsException;
+import org.apache.commons.lang3.SerializationException;
 import top.osjf.assembly.util.SerialUtils;
 import top.osjf.assembly.util.annotation.NotNull;
 
@@ -65,7 +65,7 @@ public final class Message implements MessageCapable {
         try {
             message = new Message(key, value);
         } catch (Throwable e) {
-            throw new OperationsException("Message serial error with msg :[ " + e.getMessage() + " ]");
+            throw new SerializationException("Message serial error with msg :[ " + e.getMessage() + " ]");
         }
         return message;
     }
