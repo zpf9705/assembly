@@ -1,4 +1,4 @@
-package top.osjf.assembly.cache.core;
+package top.osjf.assembly.cache.logger;
 
 
 import org.slf4j.LoggerFactory;
@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
  * System log input class, using {@link org.slf4j.Logger}
  *
  * @author zpf
- * @since 1.1.0
+ * @since 1.0.0
  */
 public abstract class Console {
 
