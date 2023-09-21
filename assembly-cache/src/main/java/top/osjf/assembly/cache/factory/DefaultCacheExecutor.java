@@ -94,13 +94,13 @@ public interface DefaultCacheExecutor extends CacheExecutor {
 
     @Override
     default List<byte[]> getSimilarKeys(byte[] rawKey) {
-        return pairCommands().getSimilarKeys(rawKey);
+        return keyCommands().getSimilarKeys(rawKey);
     }
 
     @CanNull
     @Override
     default byte[] get(byte[] key) {
-        return pairCommands().get(key);
+        return keyCommands().get(key);
     }
 
     @CanNull
