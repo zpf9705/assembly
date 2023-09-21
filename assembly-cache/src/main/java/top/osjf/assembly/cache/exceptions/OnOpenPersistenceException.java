@@ -1,11 +1,8 @@
 package top.osjf.assembly.cache.exceptions;
 
-import top.osjf.assembly.cache.persistence.Configuration;
-
 /**
  * No open cache persistent exception.
  *
- * @see Configuration#getOpenPersistence().
  * @author zpf
  * @since 1.0.0
  */
