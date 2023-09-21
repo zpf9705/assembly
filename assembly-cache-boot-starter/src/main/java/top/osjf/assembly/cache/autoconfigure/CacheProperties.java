@@ -2,9 +2,10 @@ package top.osjf.assembly.cache.autoconfigure;
 
 import net.jodah.expiringmap.ExpirationPolicy;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import top.osjf.assembly.cache.core.persistence.Configuration;
-import top.osjf.assembly.cache.core.persistence.ExpireByteGlobePersistence;
-import top.osjf.assembly.cache.core.persistence.PersistenceRenewFactory;
+import top.osjf.assembly.cache.persistence.ByteCachePersistence;
+import top.osjf.assembly.cache.persistence.CachePersistenceReduction;
+import top.osjf.assembly.cache.persistence.Configuration;
+import top.osjf.assembly.cache.persistence.ListeningRecovery;
 import top.osjf.assembly.util.SystemUtils;
 
 import javax.annotation.PostConstruct;
@@ -18,7 +19,7 @@ import java.util.concurrent.TimeUnit;
  * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "assembly.cache")
-public class AssemblyCacheProperties {
+public class CacheProperties {
 
     /**
      * Whether to open the cache persistence.
@@ -35,9 +36,9 @@ public class AssemblyCacheProperties {
 
     /**
      * Persistence Renew factory class.
-     * <p>The default is {@link ExpireByteGlobePersistence}.</p>
+     * <p>The default is {@link ByteCachePersistence}.</p>
      */
-    private Class<? extends PersistenceRenewFactory> persistenceFactoryClass = ExpireByteGlobePersistence.class;
+    private Class<? extends CachePersistenceReduction> persistenceReductionClass = ByteCachePersistence.class;
 
     /**
      * Attention : If you offer the persistent path.<br>
@@ -48,7 +49,7 @@ public class AssemblyCacheProperties {
 
     /**
      * Monitor the path information of cache recovery and implement the class collection
-     * path of {@link top.osjf.assembly.cache.core.persistence.ListeningRecovery}.
+     * path of {@link ListeningRecovery}.
      */
     private String[] listeningRecoverySubPath = SourceEnvironmentPostProcessor.findSpringbootPrimarySourcesPackages();
 
@@ -103,12 +104,12 @@ public class AssemblyCacheProperties {
         this.persistenceAsync = persistenceAsync;
     }
 
-    public Class<? extends PersistenceRenewFactory> getPersistenceFactoryClass() {
-        return persistenceFactoryClass;
+    public Class<? extends CachePersistenceReduction> getPersistenceReductionClass() {
+        return persistenceReductionClass;
     }
 
-    public void setPersistenceFactoryClass(Class<? extends PersistenceRenewFactory> persistenceFactoryClass) {
-        this.persistenceFactoryClass = persistenceFactoryClass;
+    public void setPersistenceReductionClass(Class<? extends CachePersistenceReduction> persistenceReductionClass) {
+        this.persistenceReductionClass = persistenceReductionClass;
     }
 
     public String getPersistencePath() {

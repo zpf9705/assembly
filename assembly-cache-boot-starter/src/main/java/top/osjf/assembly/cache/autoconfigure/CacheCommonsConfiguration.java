@@ -4,17 +4,17 @@ package top.osjf.assembly.cache.autoconfigure;
  * Regarding the public configuration of {@code assembly cache}.
  *
  * @author zpf
- * @since 3.0.0
+ * @since 1.0.0
  */
 public class CacheCommonsConfiguration {
 
-    public final AssemblyCacheProperties properties;
+    public final CacheProperties properties;
 
-    public CacheCommonsConfiguration(AssemblyCacheProperties properties) {
+    public CacheCommonsConfiguration(CacheProperties properties) {
         this.properties = properties;
     }
 
-    public final AssemblyCacheProperties getProperties() {
+    public final CacheProperties getProperties() {
         return this.properties;
     }
 }

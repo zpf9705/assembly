@@ -7,7 +7,7 @@ package top.osjf.assembly.cache.autoconfigure;
  * @author zpf
  * @since 1.0.0
  */
-class AssemblyCacheStarterBanner implements StartUpBanner {
+class CacheStarterBanner implements StartUpBanner {
 
     private static final String BANNER = "" +
             "    _                           _     _                        _          \n" +

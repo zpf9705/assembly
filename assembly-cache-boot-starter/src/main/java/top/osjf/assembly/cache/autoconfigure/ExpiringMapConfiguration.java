@@ -14,13 +14,13 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import top.osjf.assembly.cache.help.ExpireHelperFactory;
-import top.osjf.assembly.cache.help.expiremap.ExpireMapClientConfiguration;
-import top.osjf.assembly.cache.help.expiremap.ExpireMapClientConfigurationCustomizer;
-import top.osjf.assembly.cache.help.expiremap.ExpireMapHelperFactory;
+import top.osjf.assembly.cache.config.expiringmap.ExpiringMapClients;
+import top.osjf.assembly.cache.config.expiringmap.ExpiringMapClientsCustomizer;
 import top.osjf.assembly.cache.core.Console;
-import top.osjf.assembly.cache.listener.AsyncListener;
-import top.osjf.assembly.cache.listener.SyncListener;
+import top.osjf.assembly.cache.factory.CacheFactory;
+import top.osjf.assembly.cache.factory.expiremap.*;
+import top.osjf.assembly.cache.listener.expiringmap.AsyncListener;
+import top.osjf.assembly.cache.listener.expiringmap.SyncListener;
 import top.osjf.assembly.util.DefaultConsole;
 import top.osjf.assembly.util.ScanUtils;
 import top.osjf.assembly.util.annotation.NotNull;
@@ -35,7 +35,7 @@ import java.util.function.Predicate;
  * One of the optional caches for this component {@link net.jodah.expiringmap.ExpiringMap}
  * <p>
  * The following is an explanation of important parameters<br>
- * <h3>{@link AssemblyCacheProperties#getExpiringMap()}.</h3><br>
+ * <h3>{@link CacheProperties#getExpiringMap()}.</h3><br>
  * {@code Max Size } : the maximum length of the map, add the 1001 th entry, can lead to the first expired
  * immediately (even if not to expiration time).<br>
  * {@code Expiration }: expiration time and expired unit, set the expiration time, is permanent.<br>
@@ -90,7 +90,7 @@ public class ExpiringMapConfiguration extends CacheCommonsConfiguration implemen
         }
     }
 
-    public ExpiringMapConfiguration(AssemblyCacheProperties properties) {
+    public ExpiringMapConfiguration(CacheProperties properties) {
         super(properties);
     }
 
@@ -99,7 +99,7 @@ public class ExpiringMapConfiguration extends CacheCommonsConfiguration implemen
         /*
          * print expire - map version and banner info
          */
-        ExpireStartUpBannerExecutor.printBanner(environment, getStartUpBanner(), sourceClass, out);
+        StartUpBannerExecutor.printBanner(environment, getStartUpBanner(), sourceClass, out);
     }
 
     @Override
@@ -125,27 +125,26 @@ public class ExpiringMapConfiguration extends CacheCommonsConfiguration implemen
         return new ExpiringMapBanner();
     }
 
-    @Bean
-    @ConditionalOnMissingBean({ExpireHelperFactory.class})
-    public ExpireHelperFactory expireMapConnectionFactory(
-            ObjectProvider<ExpireMapClientConfigurationCustomizer> buildCustomizer) {
-        ExpireMapClientConfiguration.ExpireMapClientConfigurationBuilder builder =
-                ExpireMapClientConfiguration.builder();
+    @Bean("expiringMap::cacheExecutorFactory")
+    @ConditionalOnMissingBean({CacheFactory.class})
+    public CacheFactory cacheExecutorFactory(
+            ObjectProvider<ExpiringMapClientsCustomizer> buildCustomizer) {
+        ExpiringMapClients.ExpiringMapClientsBuilder builder = ExpiringMapClients.builder();
         buildCustomizer.orderedStream()
                 .forEach((customizer) -> customizer.customize(builder));
-        return new ExpireMapHelperFactory(builder.build());
+        return new ExpiringMapCacheFactory(builder.build());
     }
 
-    @Bean("expireMap::expireMapClientCustomizer")
+    @Bean("expiringMap::expireMapClientCustomizer")
     @SuppressWarnings("rawtypes")
-    public ExpireMapClientConfigurationCustomizer expireMapClientCustomizer() {
-        AssemblyCacheProperties expireProperties = getProperties();
+    public ExpiringMapClientsCustomizer expireMapClientCustomizer() {
+        CacheProperties properties = getProperties();
         return c -> {
-            ExpireMapClientConfiguration.ExpireMapClientConfigurationBuilder builder =
-                    c.acquireMaxSize(expireProperties.getExpiringMap().getMaxSize())
-                            .acquireDefaultExpireTime(expireProperties.getDefaultExpireTime())
-                            .acquireDefaultExpireTimeUnit(expireProperties.getDefaultExpireTimeUnit())
-                            .acquireDefaultExpirationPolicy(expireProperties.getExpiringMap().getExpirationPolicy());
+            ExpiringMapClients.ExpiringMapClientsBuilder builder =
+                    c.acquireMaxSize(properties.getExpiringMap().getMaxSize())
+                            .acquireDefaultExpireTime(properties.getDefaultExpireTime())
+                            .acquireDefaultExpireTimeUnit(properties.getDefaultExpireTimeUnit())
+                            .acquireDefaultExpirationPolicy(properties.getExpiringMap().getExpirationPolicy());
             Map<String, List<ExpirationListener>> listenerMap = findExpirationListener();
             if (MapUtils.isNotEmpty(listenerMap)) {
                 List<ExpirationListener> sync = listenerMap.get(SYNC_SIGN);

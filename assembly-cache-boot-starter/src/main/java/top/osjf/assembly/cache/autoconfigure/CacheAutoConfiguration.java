@@ -14,61 +14,66 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
-import top.osjf.assembly.cache.core.*;
-import top.osjf.assembly.cache.core.persistence.ExpireGlobePersistenceRenewSelector;
-import top.osjf.assembly.cache.core.persistence.PersistenceRenewFactory;
-import top.osjf.assembly.cache.core.serializer.ExpiringSerializerAdapter;
-import top.osjf.assembly.cache.core.serializer.GenericStringExpiringSerializer;
-import top.osjf.assembly.cache.help.ExpireHelperFactory;
+import top.osjf.assembly.cache.factory.CacheFactory;
+import top.osjf.assembly.cache.operations.*;
+import top.osjf.assembly.cache.persistence.CachePersistenceReduction;
+import top.osjf.assembly.cache.persistence.CachePersistenceReductionSelector;
+import top.osjf.assembly.cache.serializer.SerializerAdapter;
+import top.osjf.assembly.cache.serializer.StringPairSerializer;
 import top.osjf.assembly.util.annotation.NotNull;
 
 import java.io.PrintStream;
 import java.util.List;
 
 /**
- * This configuration is dependent on the spring autowire mechanism of the boot
+ * This configuration is dependent on the spring autowire mechanism of the boot.
+ * <p>
  * The principle of the automatic assembly depends on spring mechanism of SPI
- * Specific performance for {@code resources/META-INF/spring.factories}
+ * specific performance for {@code resources/META-INF/spring.factories}
+ * <p>
  * Show the annotation {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration}
  * <p>
- * Automatic assembly paradigm for here
+ * Automatic assembly paradigm for here :
  * <pre>
- *        {@code ExpireTemplate<String, String> = new StringExpireTemplate()}
- *        {@code ExpireTemplate<String, Object> = new ExpireTemplate()}
+ *        {@code CacheTemplate<String, String> = new StringCacheTemplate()}
+ *        {@code CacheTemplate<String, Object> = new CacheTemplate()}
  * </pre>
- * You can go to see the specific class To learn more
- * Also provides Jane in operating interface {@link ValueOperations} to simple operations
+ * You can go to see the specific class To learn more.
+ * <p>
+ * Also provides Jane in operating interface {@link ValueOperations} to simple operations.
+ * <p>
  * At the same time you can use {@link ConfigurationCustomizer} to provide personalized
  * configuration expiring , but can be by  {@link ObjectProvider} use an array collection
- * mode faces interface configuration mode
+ * mode faces interface configuration mode.
  * <p>
- * Now according to Spring - the boot - starters - data - redis encapsulation mode
+ * Now according to Spring - the boot - starters - data - redis encapsulation mode.
+ * <p>
  * Open in the form of the client to build Expiring, each is implemented in the client.
- * Such as {@link top.osjf.assembly.cache.help.expiremap.ExpireMapClientConfiguration}
- * All the operation will be placed on the Helper and simulate the join operation
- * Such as {@link top.osjf.assembly.cache.help.ExpireHelper} .
- * This layer is {@link net.jodah.expiringmap.ExpiringMap}
- * Additional data on the bottom will adopt a byte type for storage in order to enhance
- * the cache restart recovery
+ * <p>
+ * Such as {@link top.osjf.assembly.cache.config.expiringmap.ExpiringMapClients}
+ * All the operation will be placed on the Helper and simulate the join operation such
+ * as {@link top.osjf.assembly.cache.factory.CacheExecutor}.<br>
+ * <p>This layer is {@link net.jodah.expiringmap.ExpiringMap}</p>
+ * Additional data on the bottom will adopt a byte type for storage in order to enhance the cache restart recovery.
  *
  * @author zpf
- * @since 1.1.0
+ * @since 1.0.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({ExpireOperations.class})
-@EnableConfigurationProperties({ExpireProperties.class})
-@Import(ExpireMapConfiguration.class)
-public class ExpireAutoConfiguration implements ExpireBannerDisplayDevice, EnvironmentAware {
+@ConditionalOnClass({CacheCommonsOperations.class})
+@EnableConfigurationProperties({CacheProperties.class})
+@Import(ExpiringMapConfiguration.class)
+public class CacheAutoConfiguration implements CacheBannerDisplayDevice, EnvironmentAware {
 
-    private final ExpireProperties expireProperties;
+    private final CacheProperties properties;
 
     private final List<ConfigurationCustomizer> configurationCustomizers;
 
     public Environment environment;
 
-    public ExpireAutoConfiguration(ExpireProperties expireProperties,
-                                   ObjectProvider<List<ConfigurationCustomizer>> customizerS) {
-        this.expireProperties = expireProperties;
+    public CacheAutoConfiguration(CacheProperties properties,
+                                          ObjectProvider<List<ConfigurationCustomizer>> customizerS) {
+        this.properties = properties;
         this.configurationCustomizers = customizerS.getIfAvailable();
     }
 
@@ -76,7 +81,7 @@ public class ExpireAutoConfiguration implements ExpireBannerDisplayDevice, Envir
     public void afterPropertiesSet() {
         this.printBanner(this.environment, getSourceClass(), System.out);
         if (CollectionUtils.isNotEmpty(configurationCustomizers)) {
-            configurationCustomizers.forEach(v -> v.customize(this.expireProperties));
+            configurationCustomizers.forEach(v -> v.customize(this.properties));
         }
     }
 
@@ -85,7 +90,7 @@ public class ExpireAutoConfiguration implements ExpireBannerDisplayDevice, Envir
         /*
          * print expire starters version and banner info
          */
-        ExpireStartUpBannerExecutor.printBanner(environment, getStartUpBanner(), sourceClass, out);
+        StartUpBannerExecutor.printBanner(environment, getStartUpBanner(), sourceClass, out);
     }
 
     @Override
@@ -101,31 +106,25 @@ public class ExpireAutoConfiguration implements ExpireBannerDisplayDevice, Envir
 
     @Override
     @NotNull
-    public Class<?> getSourceClass() {
-        return Version.class;
-    }
-
-    @Override
-    @NotNull
     public StartUpBanner getStartUpBanner() {
-        return new ExpireStarterBanner();
+        return new CacheStarterBanner();
     }
 
     @Bean(DEFAULT_SO_TEMPLATE)
     @ConditionalOnMissingBean(name = DEFAULT_SO_TEMPLATE)
-    public ExpireTemplate<String, Object> expireTemplate(ExpireHelperFactory helperFactory) {
-        ExpireTemplate<String, Object> template = new ExpireTemplate<>();
-        template.setHelperFactory(helperFactory);
-        template.setKeySerializer(new GenericStringExpiringSerializer());
-        template.setValueSerializer(new ExpiringSerializerAdapter<>(Object.class));
+    public CacheTemplate<String, Object> cacheTemplate(CacheFactory factory) {
+        CacheTemplate<String, Object> template = new CacheTemplate<>();
+        template.setCacheFactory(factory);
+        template.setKeySerializer(new StringPairSerializer());
+        template.setValueSerializer(new SerializerAdapter<>(Object.class));
         return template;
     }
 
     @Bean(DEFAULT_SS_TEMPLATE)
     @ConditionalOnMissingBean(name = DEFAULT_SS_TEMPLATE)
-    public StringExpireTemplate stringExpireTemplate(ExpireHelperFactory helperFactory) {
-        StringExpireTemplate template = new StringExpireTemplate();
-        template.setHelperFactory(helperFactory);
+    public StringCacheTemplate stringCacheTemplate(CacheFactory factory) {
+        StringCacheTemplate template = new StringCacheTemplate();
+        template.setCacheFactory(factory);
         return template;
     }
 
@@ -133,7 +132,7 @@ public class ExpireAutoConfiguration implements ExpireBannerDisplayDevice, Envir
     @ConditionalOnBean(name = DEFAULT_SO_TEMPLATE)
     @ConditionalOnMissingBean(name = DEFAULT_SO_TEMPLATE_OPERATION)
     public ValueOperations<String, Object> valueOperations(@Qualifier(DEFAULT_SO_TEMPLATE)
-                                                           ExpireTemplate<String, Object> template) {
+                                                           CacheTemplate<String, Object> template) {
         return template.opsForValue();
     }
 
@@ -141,41 +140,41 @@ public class ExpireAutoConfiguration implements ExpireBannerDisplayDevice, Envir
     @ConditionalOnBean(name = DEFAULT_SS_TEMPLATE)
     @ConditionalOnMissingBean(name = DEFAULT_SS_TEMPLATE_OPERATION)
     public ValueOperations<String, String> valueOperations(@Qualifier(DEFAULT_SS_TEMPLATE)
-                                                           StringExpireTemplate template) {
+                                                           StringCacheTemplate template) {
         return template.opsForValue();
     }
 
     @Bean(DEFAULT_SO_TEMPLATE_OPERATION_E)
     @ConditionalOnBean(name = DEFAULT_SO_TEMPLATE)
     @ConditionalOnMissingBean(name = DEFAULT_SO_TEMPLATE_OPERATION_E)
-    public ExpirationOperations<String, Object> expirationOperations(@Qualifier(DEFAULT_SO_TEMPLATE)
-                                                                     ExpireTemplate<String, Object> template) {
-        return template.opsExpirationOperations();
+    public TimeOperations<String, Object> timeOperations(@Qualifier(DEFAULT_SO_TEMPLATE)
+                                                                     CacheTemplate<String, Object> template) {
+        return template.opsForTime();
     }
 
     @Bean(DEFAULT_SS_TEMPLATE_OPERATION_E)
     @ConditionalOnBean(name = DEFAULT_SS_TEMPLATE)
     @ConditionalOnMissingBean(name = DEFAULT_SS_TEMPLATE_OPERATION_E)
-    public ExpirationOperations<String, String> expirationOperations(@Qualifier(DEFAULT_SS_TEMPLATE)
-                                                                     StringExpireTemplate template) {
-        return template.opsExpirationOperations();
+    public TimeOperations<String, String> timeOperations(@Qualifier(DEFAULT_SS_TEMPLATE)
+                                                                     StringCacheTemplate template) {
+        return template.opsForTime();
     }
 
-    @Bean("auto::persistenceRegain")
+    @Bean("auto::persistenceReduction")
     @ConditionalOnProperty(prefix = "spring.data.expiry", name = "open-persistence", havingValue = "true")
-    @ConditionalOnBean(ExpireTemplate.class)
-    public String persistenceRegain(@Value("${spring.data.expiry.persistence-path:default}") String path) {
-        Class<?> factoryClass = this.expireProperties.getPersistenceFactoryClass();
-        if (factoryClass == null) {
+    @ConditionalOnBean(CacheTemplate.class)
+    public String persistenceReduction(@Value("${spring.data.expiry.persistence-path:default}") String path) {
+        Class<?> reductionClass = this.properties.getPersistenceReductionClass();
+        if (reductionClass == null) {
             return "Open persistence now , but provider factoryClass is null so persistenceRegain failed";
         }
-        String clientName = factoryClass.getName();
-        PersistenceRenewFactory factory = ExpireGlobePersistenceRenewSelector.getPersistenceFRenewFactory(factoryClass);
-        if (factory == null) {
-            return "Client name [" + clientName + "] persistenceRegain failed";
+        String name = reductionClass.getName();
+        CachePersistenceReduction reduction = CachePersistenceReductionSelector.getReductionByClass(reductionClass);
+        if (reduction == null) {
+            return "Named [" + name + "] persistenceRegain failed";
         }
-        factory.deserializeWithPath(path);
-        return "Client name [" + clientName + "] persistenceRegain ok";
+        reduction.reductionUsePath(path);
+        return "Named [" + name + "] exec reduction yet";
     }
 
 
