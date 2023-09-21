@@ -15,15 +15,15 @@ import java.util.function.Function;
  */
 public final class Configuration {
 
-    public static final String open_persistence = "csp.expiry.openPersistence";
-    public static final String persistenceRunAsync = "csp.expiry.persistenceRunAsync";
-    public static final String persistence_path = "csp.expiry.persistencePath";
-    public static final String noPersistenceOfExpireTime = "csp.expiry.noPersistenceOfExpireTime";
-    public static final String noPersistenceOfExpireTimeUnit = "csp.expiry.noPersistenceOfExpireTimeUnit";
-    public static final String defaultExpireTime = "csp.expiry.defaultExpireTime";
-    public static final String defaultExpireTimeUnit = "csp.expiry.defaultExpireTimeUnit";
-    public static final String chooseClient = "csp.expiry.chooseClient";
-    public static final String listeningRecoverySubPath = "csp.expiry.listening.recovery.path";
+    public static final String open_persistence = "assembly.cache.openPersistence";
+    public static final String persistenceRunAsync = "assembly.cache.persistenceRunAsync";
+    public static final String persistence_path = "assembly.cache.persistencePath";
+    public static final String noPersistenceOfExpireTime = "assembly.cache.noPersistenceOfExpireTime";
+    public static final String noPersistenceOfExpireTimeUnit = "assembly.cache.noPersistenceOfExpireTimeUnit";
+    public static final String defaultExpireTime = "assembly.cache.defaultExpireTime";
+    public static final String defaultExpireTimeUnit = "assembly.cache.defaultExpireTimeUnit";
+    public static final String chooseClient = "assembly.cache.chooseClient";
+    public static final String listeningRecoverySubPath = "assembly.cache.listening.recovery.path";
     static final long defaultNoPersistenceExpireTimeExample = 10L;
     static final long defaultExpireTimeExample = 20L;
     static boolean defaultCompareWithExpirePersistence = false;
