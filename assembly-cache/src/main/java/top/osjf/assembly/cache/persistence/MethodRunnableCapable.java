@@ -1,4 +1,4 @@
-package top.osjf.assembly.cache.core.persistence;
+package top.osjf.assembly.cache.persistence;
 
 import top.osjf.assembly.util.annotation.NotNull;
 
@@ -8,7 +8,7 @@ import java.util.function.Consumer;
  * Method runnable choose for {@link Runnable}
  *
  * @author zpf
- * @since 3.0.0
+ * @since 1.0.0
  */
 public interface MethodRunnableCapable {
 
