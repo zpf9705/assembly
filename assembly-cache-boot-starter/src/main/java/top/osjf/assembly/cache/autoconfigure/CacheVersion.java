@@ -12,17 +12,17 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 
 /**
- * Version information acquisition tool class, currently without version comparison,
- * only adding corresponding version display when printing component logs
+ * Used to retrieve and obtain resource versions, there is currently no specific combination
+ * of dependent versions while maintaining the JDK version at 1.8.
  *
  * @author zpf
- * @since 2.2.2
+ * @since 1.0.0
  */
-public final class Version {
+public final class CacheVersion {
 
     public static final Attributes.Name BUNDLE_VERSION = new Attributes.Name("Bundle-Version");
 
-    private Version() {
+    private CacheVersion() {
     }
 
     public static String getVersion(Class<?> sourceClass) {
