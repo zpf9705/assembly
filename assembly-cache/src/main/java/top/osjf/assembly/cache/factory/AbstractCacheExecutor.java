@@ -1,20 +1,19 @@
-package top.osjf.assembly.cache.help;
+package top.osjf.assembly.cache.factory;
 
-import net.jodah.expiringmap.ExpiringMap;
-import top.osjf.assembly.cache.help.expiremap.ExpireMapByteContain;
 import top.osjf.assembly.cache.util.CodecUtils;
+import top.osjf.assembly.util.ByteContain;
 import top.osjf.assembly.util.annotation.NotNull;
 
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 /**
- * Abstract expiry helper classes , Link the abstract template for {@link ExpireHelper}
- * Provide some check on expiry the implementer, tips and some other help category .
+ * Abstract cache executor classes , link the abstract template for {@link CacheExecutor}.<br>
+ * Provide some check on cache the implementer, tips and some other help category.
  * <p>
- * To provide an interface can extend the cache class
- * And global unified configuration byte [] types of cache model
- * Can be by a specific method to obtain the corresponding help center
+ * To provide an interface can extend the cache class.<br>
+ * And global unified configuration byte [] types of cache model.<br>
+ * Can be by a specific method to obtain the corresponding help center.<br>
  * <ul>
  *     <li>{@link HelpCenter}</li>
  *     <li>{@link HelpCenter#getHelpCenter()}</li>
@@ -22,36 +21,26 @@ import java.util.function.Predicate;
  * </ul>
  *
  * @author zpf
- * @since 3.0.0
+ * @since 1.0.0
  */
-public abstract class AbstractExpireHelper<T> implements DefaultedExpireHelper {
+public abstract class AbstractCacheExecutor<T> implements DefaultCacheExecutor {
 
     private final HelpCenter<T> helpCenter;
 
-    public AbstractExpireHelper(@NotNull HelpCenter<T> helpCenter) {
+    public AbstractCacheExecutor(@NotNull HelpCenter<T> helpCenter) {
         this.helpCenter = helpCenter;
     }
 
-    /**
-     * Get a The cache helper for {@link HelpCenter}
-     *
-     * @return {@link HelpCenter}
-     */
     public T getHelpCenter() {
         return this.helpCenter.getHelpCenter();
     }
 
-    /**
-     * Get {@link ExpireMapByteContain} operation adapter
-     *
-     * @return {@link ExpiringMap}
-     */
-    public ExpireMapByteContain contain() {
+    public ByteContain contain() {
         return this.helpCenter.getContain();
     }
 
     /**
-     * Similar object {@code key} and object {@code value}  check function expression
+     * Similar object {@code key} and object {@code value}  check function expression.
      */
     private final BiFunction<Object, Object, Boolean> compare = (b, c) -> {
         if (b != null && c != null) {
@@ -64,7 +53,7 @@ public abstract class AbstractExpireHelper<T> implements DefaultedExpireHelper {
     };
 
     /**
-     * Compare with {@code byte[]} of similar
+     * Compare with {@code byte[]} of similar.
      *
      * @param compare  must not be {@literal null}.
      * @param compare_ must not be {@literal null}.
