@@ -1,4 +1,4 @@
-package top.osjf.assembly.cache.core.persistence;
+package top.osjf.assembly.cache.persistence;
 
 import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
@@ -10,49 +10,46 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * The cache persistence operation interface for {@link PersistenceSolver}
- * <ul>
- *     <li>{@link ExpireBytesPersistenceSolver}</li>
- *     <li>{@link ExpirePersistenceSolver}</li>
- * </ul>
+ * The post processing interface for cache persistence.
  *
  * @author zpf
- * @since 3.0.0
+ * @since 1.0.0
  */
 @SuppressWarnings("rawtypes")
 public interface Dispose {
 
     /**
-     * Rear cache persistence operations
+     * Processing method for caching persistent files: Use {@link PersistenceSolver} to process {@link DisposeVariable}
+     * parameters.
      *
-     * @param solver   must not be {@literal null}
-     * @param variable must not be {@literal null}
+     * @param solver   must not be {@literal null}.
+     * @param variable must not be {@literal null}.
      */
     void dispose(@NotNull PersistenceSolver solver, @NotNull DisposeVariable variable);
 
     /**
-     * Get enumerated type
+     * The execution method for cache files.
      *
-     * @return {@link PersistenceExecTypeEnum}
+     * @return {@link PersistenceExecTypeEnum}.
      */
     PersistenceExecTypeEnum getExecType();
 
     /**
-     * Default Rear cache persistence operations
+     * Default Rear cache persistence operations,the preprocessing of the parameter array is {@link DisposeVariable}.
      *
-     * @param solver must not be {@literal null}
-     * @param args   can be {@literal null}
+     * @param solver must not be {@literal null}.
+     * @param args   can be {@literal null}.
      */
     default void dispose(@NotNull PersistenceSolver solver, @CanNull Object[] args) {
         dispose(solver, convert(getExecType(), args));
     }
 
     /**
-     * Cut parameter conversion method by default
+     * Cut parameter conversion method by default.
      *
      * @param execTypeEnum The specified enumeration class
      * @param args         Need to transform the parameter set
-     * @return Transformation parameters object
+     * @return Transformation parameters object.
      */
     default DisposeVariable convert(PersistenceExecTypeEnum execTypeEnum, Object[] args) {
         DisposeVariable variable;
