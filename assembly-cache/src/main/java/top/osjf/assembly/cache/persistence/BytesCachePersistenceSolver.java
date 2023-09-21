@@ -26,7 +26,7 @@ public class BytesCachePersistenceSolver implements CachePersistenceSolver<byte[
                     ByteCachePersistence
                             .ofSetBytes(Entry.of(key, value, duration, timeUnit));
             //If repeated direct coverage
-            put.serial();
+            put.write();
         }, "BytesCachePersistenceSolver::putPersistence");
     }
 

@@ -582,7 +582,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
     }
 
     @Override
-    public void serial() {
+    public void write() {
         //write
         writeLock.lock();
         try {
@@ -619,7 +619,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
             entry.refreshOfExpire(duration, timeUnit);
             //Redefine the cache
             ofSet(getGlobePersistenceClass(), getPersistenceClass(), Entry.of(entry.getKey(), entry.getValue(),
-                    duration, timeUnit)).serial();
+                    duration, timeUnit)).write();
         } finally {
             writeLock.unlock();
         }
@@ -637,7 +637,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
             //Delete the old file to add a new key value no change don't need to delete the application cache
             this.delWithCurrentWritePath();
             //To write a cache file
-            ofSet(getGlobePersistenceClass(), getPersistenceClass(), per.getEntry()).serial();
+            ofSet(getGlobePersistenceClass(), getPersistenceClass(), per.getEntry()).write();
         } finally {
             writeLock.unlock();
         }
@@ -659,7 +659,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
             CACHE_MAP.remove(rawHash(entry.getKey(), entry.getValue()));
             //To write a cache file
             ofSet(getGlobePersistenceClass(), getPersistenceClass(),
-                    Entry.of(entry.getKey(), newValue, entry.getDuration(), entry.getTimeUnit())).serial();
+                    Entry.of(entry.getKey(), newValue, entry.getDuration(), entry.getTimeUnit())).write();
         } finally {
             writeLock.unlock();
         }
@@ -720,10 +720,12 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
         return this.persistence.getExpire() > System.currentTimeMillis();
     }
 
+    @Override
     public Entry<K, V> getEntry() {
         return this.persistence.getEntry();
     }
 
+    @Override
     public Persistence<K, V> getPersistence() {
         return this.persistence;
     }
