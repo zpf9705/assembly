@@ -15,20 +15,20 @@ import java.util.function.Function;
  */
 public final class Configuration {
 
-    public static final String open_persistence = "assembly.cache.openPersistence";
-    public static final String persistenceRunAsync = "assembly.cache.persistenceRunAsync";
-    public static final String persistence_path = "assembly.cache.persistencePath";
-    public static final String noPersistenceOfExpireTime = "assembly.cache.noPersistenceOfExpireTime";
-    public static final String noPersistenceOfExpireTimeUnit = "assembly.cache.noPersistenceOfExpireTimeUnit";
-    public static final String defaultExpireTime = "assembly.cache.defaultExpireTime";
-    public static final String defaultExpireTimeUnit = "assembly.cache.defaultExpireTimeUnit";
-    public static final String chooseClient = "assembly.cache.chooseClient";
+    public static final String open_persistence = "assembly.cache.open.persistence";
+    public static final String persistenceRunAsync = "assembly.cache.persistence.run.async";
+    public static final String persistence_path = "assembly.cache.persistence.path";
+    public static final String noPersistenceOfExpireTime = "assembly.cache.noPersistence.expire.time";
+    public static final String noPersistenceOfExpireTimeUnit = "assembly.cache.noPersistence.expire.timeUnit";
+    public static final String defaultExpireTime = "assembly.cache.default.expire.time";
+    public static final String defaultExpireTimeUnit = "assembly.cache.default.expire.timeUnit";
+    public static final String chooseClient = "assembly.cache.choose.client";
     public static final String listeningRecoverySubPath = "assembly.cache.listening.recovery.path";
-    static final long defaultNoPersistenceExpireTimeExample = 10L;
-    static final long defaultExpireTimeExample = 20L;
-    static boolean defaultCompareWithExpirePersistence = false;
-    static AtomicBoolean load = new AtomicBoolean(false);
-    static long defaultNoPersistenceExpireTimeToMille;
+    private static final long defaultNoPersistenceExpireTimeExample = 10L;
+    private static final long defaultExpireTimeExample = 20L;
+    private static boolean defaultCompareWithExpirePersistence = false;
+    private static final AtomicBoolean load = new AtomicBoolean(false);
+    private static long defaultNoPersistenceExpireTimeToMille;
     private static final Configuration CONFIGURATION = new Configuration();
 
     private Configuration() {
