@@ -8,6 +8,7 @@ import top.osjf.assembly.cache.serializer.PairSerializer;
 import top.osjf.assembly.cache.serializer.StringPairSerializer;
 import top.osjf.assembly.cache.util.AssertUtils;
 import top.osjf.assembly.util.annotation.CanNull;
+import top.osjf.assembly.util.annotation.NotNull;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -79,7 +80,8 @@ public class CacheTemplate<K, V> extends CacheFactoryAccessor implements CacheCo
         }
 
         if (this.enableDefaultSerializer && defaultUsed) {
-            AssertUtils.Operation.notNull(this.defaultSerializer, "defaultSerializer must initialized");
+
+            Assert.notNull(this.defaultSerializer, "defaultSerializer must initialized");
         }
 
         this.initialized = true;
@@ -118,11 +120,13 @@ public class CacheTemplate<K, V> extends CacheFactoryAccessor implements CacheCo
     }
 
     @Override
+    @NotNull
     public PairSerializer<K> getKeySerializer() {
         return this.keySerialize;
     }
 
     @Override
+    @NotNull
     public PairSerializer<V> getValueSerializer() {
         return this.valueSerialize;
     }

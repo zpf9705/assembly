@@ -2,6 +2,7 @@ package top.osjf.assembly.cache.operations;
 
 import top.osjf.assembly.cache.serializer.PairSerializer;
 import top.osjf.assembly.util.annotation.CanNull;
+import top.osjf.assembly.util.annotation.NotNull;
 
 import java.util.Collection;
 import java.util.Map;
@@ -23,15 +24,14 @@ import java.util.Map;
 public interface CacheCommonsOperations<K, V> {
 
     /**
-     * Expire Execute unified call solutions with {@link CacheValueCallback}
-     * Used here connection factory used for uniform distribution
+     * Execute cache scheme based on fallback interface {@link CacheValueCallback}.
      *
-     * @param action Expiry do action must not be {@literal null}.
-     * @param <T>    return paradigm
-     * @return return value be changed
+     * @param callback Callback action and must not be {@literal null}.
+     * @param <T>      Generics of returns a value object.
+     * @return Returns a value object.
      */
     @CanNull
-    <T> T execute(CacheValueCallback<T> action);
+    <T> T execute(CacheValueCallback<T> callback);
 
     /**
      * Delete given {@code key}.
@@ -46,13 +46,13 @@ public interface CacheCommonsOperations<K, V> {
      * Delete given {@code keys}.
      *
      * @param keys must not be {@literal null}.
-     * @return The number of keys that were removed. {@literal null}
+     * @return The number of keys that were removed.
      */
     @CanNull
     Long delete(Collection<K> keys);
 
     /**
-     * Delete given {@code keys} with this type [and end contains]
+     * Delete given {@code keys} with this type [and end contains].
      *
      * @param key must not be {@literal null}.
      * @return Be removed in the similar key of key/value pair
@@ -60,32 +60,34 @@ public interface CacheCommonsOperations<K, V> {
     Map<K, V> deleteType(K key);
 
     /**
-     * Remove all currently exist in the data in memory
+     * Remove all currently exist in the data in memory.
      *
      * @return Determine the results , If the is true the removal of success
      */
     Boolean deleteAll();
 
     /**
-     * Judge ths key {@code key} Whether exit
+     * Judge ths key {@code key} Whether exit.
      *
      * @param key must not be {@literal null}.
-     * @return Determine the results , If it is true is the existence and vice does not exist
+     * @return Determine the results , If it is true is the existence and vice does not exist.
      */
     Boolean exist(K key);
 
     /**
-     * To obtain the key serialized way.
+     * Obtain serialization support classes for {@code Key}.
      *
-     * @return {@link PairSerializer}
+     * @return {@link PairSerializer}.
      */
+    @NotNull
     PairSerializer<K> getKeySerializer();
 
     /**
-     * To obtain the value serialized way
+     * Obtain serialization support classes for {@code Value}.
      *
-     * @return {@link PairSerializer}
+     * @return {@link PairSerializer}.
      */
+    @NotNull
     PairSerializer<V> getValueSerializer();
 
     /**
