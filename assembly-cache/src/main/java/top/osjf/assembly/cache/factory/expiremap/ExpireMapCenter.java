@@ -1,22 +1,23 @@
-package top.osjf.assembly.cache.help.expiremap;
+package top.osjf.assembly.cache.factory.expiremap;
 
 import net.jodah.expiringmap.ExpirationListener;
 import net.jodah.expiringmap.ExpiringMap;
 import org.apache.commons.collections4.CollectionUtils;
-import top.osjf.assembly.cache.core.OperationsException;
-import top.osjf.assembly.cache.core.persistence.ExpireBytesPersistenceSolver;
-import top.osjf.assembly.cache.core.persistence.PersistenceSolver;
-import top.osjf.assembly.cache.help.RecordActivationCenter;
-import top.osjf.assembly.cache.listener.MessageExpiryCapable;
+import top.osjf.assembly.cache.config.expiringmap.ExpiringMapClients;
+import top.osjf.assembly.cache.factory.RecordActivationCenter;
+import top.osjf.assembly.cache.listener.MessageCapable;
+import top.osjf.assembly.cache.persistence.ExpireBytesPersistenceSolver;
+import top.osjf.assembly.cache.persistence.PersistenceSolver;
 import top.osjf.assembly.util.SpiLoads;
 import top.osjf.assembly.util.annotation.NotNull;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Cache center based on {@link ExpiringMap}.
  * <p>
- * This class will help implement the method of using {@link ExpireMapClientConfiguration}to configure .
+ * This class will help implement the method of using {@link ExpiringMapClients}to configure .
  * <p>
  * Singleton objects of {@link ExpiringMap} and placing them in {@link RecordActivationCenter},
  * as well as rewriting and caching information read through file recovery.
@@ -25,7 +26,7 @@ import java.util.concurrent.TimeUnit;
  * It must be done through the above method and always maintain a unique operand.
  *
  * @author zpf
- * @since 3.0.0
+ * @since 1.0.0
  */
 public final class ExpireMapCenter extends RecordActivationCenter<ExpireMapCenter, byte[], byte[]> {
 
@@ -59,14 +60,14 @@ public final class ExpireMapCenter extends RecordActivationCenter<ExpireMapCente
     /**
      * Singleton with {@code ExpireMapClientConfiguration}
      *
-     * @param configuration must no be {@literal null}
+     * @param clients must no be {@literal null}.
      * @return {@link net.jodah.expiringmap.ExpiringMap}
      */
-    public static ExpireMapCenter singletonWithConfiguration(@NotNull ExpireMapClientConfiguration configuration) {
+    public static ExpireMapCenter singletonWithConfiguration(@NotNull ExpiringMapClients clients) {
         if (expireMapCenter == null) {
             synchronized (ExpireMapCenter.class) {
                 if (expireMapCenter == null) {
-                    expireMapCenter = buildSingleton(configuration);
+                    expireMapCenter = buildSingleton(clients);
                     setSingletonCenter(expireMapCenter);
                 }
             }
@@ -80,9 +81,7 @@ public final class ExpireMapCenter extends RecordActivationCenter<ExpireMapCente
      * @return {@link ExpireMapCenter}
      */
     public static ExpireMapCenter getExpireMapCenter() {
-        if (expireMapCenter == null) {
-            throw new OperationsException("ExpireMapCenter need Initialize");
-        }
+        Objects.requireNonNull(expireMapCenter, "ExpireMapCenter no Initialize");
         return expireMapCenter;
     }
 
@@ -98,26 +97,26 @@ public final class ExpireMapCenter extends RecordActivationCenter<ExpireMapCente
     /**
      * Build Singleton with {@code ExpireMapClientConfiguration}.
      *
-     * @param configuration must no be {@literal null}
+     * @param clients must no be {@literal null}.
      * @return {@link ExpireMapCenter}
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private static ExpireMapCenter buildSingleton(@NotNull ExpireMapClientConfiguration configuration) {
+    private static ExpireMapCenter buildSingleton(@NotNull ExpiringMapClients clients) {
         ExpiringMap<byte[], byte[]> solveDifferentialGenericSingleton = ExpiringMap.builder()
-                .maxSize(configuration.getMaxSize())
-                .expiration(configuration.getDefaultExpireTime(), configuration.getDefaultExpireTimeUnit())
-                .expirationPolicy(configuration.getExpirationPolicy())
+                .maxSize(clients.getMaxSize())
+                .expiration(clients.getDefaultExpireTime(), clients.getDefaultExpireTimeUnit())
+                .expirationPolicy(clients.getExpirationPolicy())
                 .variableExpiration()
                 .build();
-        if (CollectionUtils.isNotEmpty(configuration.getSyncExpirationListeners())) {
-            for (ExpirationListener expirationListener : configuration.getSyncExpirationListeners()) {
+        if (CollectionUtils.isNotEmpty(clients.getSyncExpirationListeners())) {
+            for (ExpirationListener expirationListener : clients.getSyncExpirationListeners()) {
                 //sync
                 solveDifferentialGenericSingleton.addExpirationListener(expirationListener);
 
             }
         }
-        if (CollectionUtils.isNotEmpty(configuration.getASyncExpirationListeners())) {
-            for (ExpirationListener expirationListener : configuration.getASyncExpirationListeners()) {
+        if (CollectionUtils.isNotEmpty(clients.getASyncExpirationListeners())) {
+            for (ExpirationListener expirationListener : clients.getASyncExpirationListeners()) {
                 //async
                 solveDifferentialGenericSingleton.addAsyncExpirationListener(expirationListener);
 
@@ -143,7 +142,7 @@ public final class ExpireMapCenter extends RecordActivationCenter<ExpireMapCente
 
     @Override
     @SuppressWarnings("unchecked")
-    public void cleanSupportingElements(@NotNull MessageExpiryCapable capable) {
+    public void cleanSupportingElements(@NotNull MessageCapable capable) {
         //Remove control information
         this.getContain().remove(capable.getByteKey(), capable.getByteValue());
         //Remove persistent cache
