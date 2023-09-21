@@ -65,7 +65,7 @@ import java.util.function.Predicate;
         havingValue = "expire_map",
         matchIfMissing = true
 )
-public class ExpireMapConfiguration extends CacheCommonsConfiguration implements CacheBannerDisplayDevice,
+public class ExpiringMapConfiguration extends CacheCommonsConfiguration implements CacheBannerDisplayDevice,
         EnvironmentAware {
 
     private Environment environment;
@@ -90,7 +90,7 @@ public class ExpireMapConfiguration extends CacheCommonsConfiguration implements
         }
     }
 
-    public ExpireMapConfiguration(AssemblyCacheProperties properties) {
+    public ExpiringMapConfiguration(AssemblyCacheProperties properties) {
         super(properties);
     }
 
@@ -122,7 +122,7 @@ public class ExpireMapConfiguration extends CacheCommonsConfiguration implements
     @Override
     @NotNull
     public StartUpBanner getStartUpBanner() {
-        return new ExpireMapBanner();
+        return new ExpiringMapBanner();
     }
 
     @Bean

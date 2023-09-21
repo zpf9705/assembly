@@ -6,7 +6,7 @@ package top.osjf.assembly.cache.autoconfigure;
  * @author zpf
  * @since 1.0.0
  */
-class ExpireMapBanner implements StartUpBanner {
+class ExpiringMapBanner implements StartUpBanner {
 
     private static final String BANNER = "" +
             "                 _                                  \n" +
