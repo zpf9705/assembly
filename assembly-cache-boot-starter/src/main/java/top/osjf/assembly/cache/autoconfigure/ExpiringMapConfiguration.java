@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import top.osjf.assembly.cache.config.expiringmap.ExpiringMapClients;
 import top.osjf.assembly.cache.config.expiringmap.ExpiringMapClientsCustomizer;
-import top.osjf.assembly.cache.core.Console;
+import top.osjf.assembly.cache.logger.Console;
 import top.osjf.assembly.cache.factory.CacheFactory;
 import top.osjf.assembly.cache.factory.expiremap.*;
 import top.osjf.assembly.cache.listener.expiringmap.AsyncListener;

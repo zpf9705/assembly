@@ -8,7 +8,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 import top.osjf.assembly.cache.command.CacheInvocationHandler;
-import top.osjf.assembly.cache.core.Console;
+import top.osjf.assembly.cache.logger.Console;
 import top.osjf.assembly.cache.exceptions.CachePersistenceException;
 import top.osjf.assembly.cache.exceptions.OnOpenPersistenceException;
 import top.osjf.assembly.cache.factory.*;

@@ -1,7 +1,0 @@
-# Application Run Listener
-org.springframework.boot.SpringApplicationRunListener=\
-top.osjf.assembly.cron.CronTaskRegisterImport
-
-# Preparation before initialization
-org.springframework.boot.env.EnvironmentPostProcessor=\
-top.osjf.assembly.support.SourceEnvironmentPostProcessor

@@ -1,6 +1,6 @@
 package top.osjf.assembly.cache.command;
 
-import top.osjf.assembly.cache.core.Console;
+import top.osjf.assembly.cache.logger.Console;
 import top.osjf.assembly.cache.persistence.PersistenceExec;
 import top.osjf.assembly.cache.persistence.CachePersistenceSolver;
 import top.osjf.assembly.util.SpiLoads;

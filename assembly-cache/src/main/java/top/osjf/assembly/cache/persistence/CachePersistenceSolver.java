@@ -1,6 +1,6 @@
 package top.osjf.assembly.cache.persistence;
 
-import top.osjf.assembly.cache.core.Console;
+import top.osjf.assembly.cache.logger.Console;
 import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
 
