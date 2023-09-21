@@ -194,7 +194,8 @@ public class ExpiringMapConfiguration extends CacheCommonsConfiguration implemen
         List<ExpirationListener> async = new ArrayList<>();
         Map<String, List<ExpirationListener>> listenerMap = new HashMap<>();
         for (Class<? extends ExpirationListener> listenerClass : subTypesOf) {
-            if (Modifier.isAbstract(listenerClass.getModifiers())) {
+            if (Modifier.isAbstract(listenerClass.getModifiers())
+                    || Modifier.isInterface(listenerClass.getModifiers())) {
                 continue;
             }
             Method target;
