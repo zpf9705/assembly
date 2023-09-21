@@ -1,8 +1,8 @@
 package top.osjf.assembly.cache.operations;
 
+import org.springframework.util.Assert;
 import top.osjf.assembly.cache.factory.CacheExecutor;
 import top.osjf.assembly.cache.serializer.PairSerializer;
-import top.osjf.assembly.cache.util.AssertUtils;
 import top.osjf.assembly.util.annotation.CanNull;
 
 /**
@@ -58,7 +58,7 @@ public abstract class AbstractOperations<K, V> {
     }
 
     byte[] rawKey(K key) {
-        AssertUtils.Operation.notNull(key, "Non null key required");
+        Assert.notNull(key, "Non null key required");
         if (keySerializer() == null && key instanceof byte[]) {
             return (byte[]) key;
         }
@@ -66,7 +66,7 @@ public abstract class AbstractOperations<K, V> {
     }
 
     byte[] rawValue(V value) {
-        AssertUtils.Operation.notNull(value, "Non null key required");
+        Assert.notNull(value, "Non null key required");
         if (valueSerializer() == null && value instanceof byte[]) {
             return (byte[]) value;
         }
