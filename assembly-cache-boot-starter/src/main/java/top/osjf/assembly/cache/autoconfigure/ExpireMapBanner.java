@@ -1,23 +1,20 @@
 package top.osjf.assembly.cache.autoconfigure;
 
 /**
- * Print version information and custom log information about {@link net.jodah.expiringmap.ExpiringMap},
- * and copy the method to {@code org.springframework.boot.SpringBootBanner}
+ * {@link net.jodah.expiringmap.ExpiringMap} Print relevant information in the form of a logo to the console.
  *
  * @author zpf
- * @since 3.0.0
+ * @since 1.0.0
  */
-public class ExpireMapBanner implements StartUpBanner {
+class ExpireMapBanner implements StartUpBanner {
 
     private static final String BANNER = "" +
-            " ████████                 ██                  ████     ████                  \n" +
-            "░██░░░░░          ██████ ░░                  ░██░██   ██░██           ██████ \n" +
-            "░██       ██   ██░██░░░██ ██ ██████  █████   ░██░░██ ██ ░██  ██████  ░██░░░██\n" +
-            "░███████ ░░██ ██ ░██  ░██░██░░██░░█ ██░░░██  ░██ ░░███  ░██ ░░░░░░██ ░██  ░██\n" +
-            "░██░░░░   ░░███  ░██████ ░██ ░██ ░ ░███████  ░██  ░░█   ░██  ███████ ░██████ \n" +
-            "░██        ██░██ ░██░░░  ░██ ░██   ░██░░░░   ░██   ░    ░██ ██░░░░██ ░██░░░  \n" +
-            "░████████ ██ ░░██░██     ░██░███   ░░██████  ░██        ░██░░████████░██     \n" +
-            "░░░░░░░░ ░░   ░░ ░░      ░░ ░░░     ░░░░░░   ░░         ░░  ░░░░░░░░ ░░      ";
+            "                 _                                  \n" +
+            "  _____  ___ __ (_)_ __ ___   _ __ ___   __ _ _ __  \n" +
+            " / _ \\ \\/ / '_ \\| | '__/ _ \\ | '_ ` _ \\ / _` | '_ \\ \n" +
+            "|  __/>  <| |_) | | | |  __/ | | | | | | (_| | |_) |\n" +
+            " \\___/_/\\_\\ .__/|_|_|  \\___| |_| |_| |_|\\__,_| .__/ \n" +
+            "          |_|                                |_|    ";
 
 
     private static final String EXPIRE_MAP_SINE = " :: Expire Map :: ";
