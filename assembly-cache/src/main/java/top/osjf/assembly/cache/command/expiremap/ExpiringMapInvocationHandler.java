@@ -1,6 +1,7 @@
-package top.osjf.assembly.cache.factory.expiremap;
+package top.osjf.assembly.cache.command.expiremap;
 
-import top.osjf.assembly.cache.factory.CacheInvocationHandler;
+import top.osjf.assembly.cache.command.CacheInvocationHandler;
+import top.osjf.assembly.cache.factory.expiremap.ExpiringMapCacheExecutor;
 
 /**
  * Given target {@link ExpiringMapCacheExecutor} for {@link CacheInvocationHandler}.

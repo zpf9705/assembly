@@ -1,6 +1,7 @@
 package top.osjf.assembly.cache.factory.expiremap;
 
 import cn.hutool.aop.ProxyUtil;
+import top.osjf.assembly.cache.command.expiremap.ExpiringMapInvocationHandler;
 import top.osjf.assembly.cache.config.expiringmap.ExpiringMapClients;
 import top.osjf.assembly.cache.factory.CacheExecutor;
 import top.osjf.assembly.cache.factory.CacheFactory;

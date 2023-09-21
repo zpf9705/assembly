@@ -1,4 +1,4 @@
-package top.osjf.assembly.cache.help.expiremap;
+package top.osjf.assembly.util;
 
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -11,18 +11,18 @@ import java.util.concurrent.ConcurrentHashMap;
  * <p>
  * Serialize {@link Arrays#equals(Object[], Object[])} method by using the value passed.
  * <p>
- * In comparison with the cache serializable value to find the original value
+ * In comparison with the cache serializable value to find the original value.
  * <p>
- * During the comparison, thread safety operations were ensured, so {@link ConcurrentHashMap} was used
+ * During the comparison, thread safety operations were ensured, so {@link ConcurrentHashMap} was used.
  *
  * @author zpf
- * @since 3.0.0
+ * @since 1.0.0
  */
-public class ExpireMapByteContain extends ConcurrentHashMap<byte[], byte[]> {
+public class ByteContain extends ConcurrentHashMap<byte[], byte[]> {
 
     private static final long serialVersionUID = -851217802015189183L;
 
-    public ExpireMapByteContain(int initialCapacity) {
+    public ByteContain(int initialCapacity) {
         super(initialCapacity);
     }
 
@@ -49,10 +49,10 @@ public class ExpireMapByteContain extends ConcurrentHashMap<byte[], byte[]> {
     }
 
     /**
-     * Get similar key bytes for {@code newBytesKey}
+     * Get similar key bytes for {@code newBytesKey}.
      *
-     * @param newBytesKey new bytes for {@code object}
-     * @return bytes
+     * @param newBytesKey new bytes for {@code object}.
+     * @return byte array.
      */
     public byte[] getSimilarBytesForKey(byte[] newBytesKey) {
         if (newBytesKey == null) {
@@ -62,10 +62,10 @@ public class ExpireMapByteContain extends ConcurrentHashMap<byte[], byte[]> {
     }
 
     /**
-     * Get similar value bytes for {@code newBytesKey}
+     * Get similar value bytes for {@code newBytesKey}.
      *
-     * @param newBytesValue new bytes for {@code object}
-     * @return bytes
+     * @param newBytesValue new bytes for {@code object}.
+     * @return byte array.
      */
     public byte[] getSimilarBytesForValue(byte[] newBytesValue) {
         if (newBytesValue == null) {
@@ -75,31 +75,31 @@ public class ExpireMapByteContain extends ConcurrentHashMap<byte[], byte[]> {
     }
 
     /**
-     * Exit in key/value similar Bytes
+     * Exit in key/value similar Bytes.
      *
-     * @param bytes new bytes
-     * @return exist in cache bytes list
+     * @param bytes new bytes.
+     * @return exist in cache bytes list.
      */
     public boolean existKey(byte[] bytes) {
         return getSimilarBytesForKey(bytes) != null;
     }
 
     /**
-     * Exit in key/value similar Bytes
+     * Exit in key/value similar Bytes.
      *
-     * @param bytes new bytes
-     * @return exist in cache bytes list
+     * @param bytes new bytes.
+     * @return exist in cache bytes list.
      */
     public boolean existValue(byte[] bytes) {
         return getSimilarBytesForValue(bytes) != null;
     }
 
     /**
-     * Filter similar element in collection
+     * Filter similar element in collection.
      *
-     * @param collection must not be {@literal null}
-     * @param newBytes   must not be {@literal null}
-     * @return similar element
+     * @param collection must not be {@literal null}.
+     * @param newBytes   must not be {@literal null}.
+     * @return similar byte elements.
      */
     private byte[] filter(Collection<byte[]> collection, byte[] newBytes) {
         if (CollectionUtils.isEmpty(collection)) {

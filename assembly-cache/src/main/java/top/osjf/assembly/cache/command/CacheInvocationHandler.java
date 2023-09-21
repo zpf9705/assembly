@@ -1,4 +1,4 @@
-package top.osjf.assembly.cache.factory;
+package top.osjf.assembly.cache.command;
 
 import top.osjf.assembly.cache.core.Console;
 import top.osjf.assembly.cache.persistence.PersistenceExec;
