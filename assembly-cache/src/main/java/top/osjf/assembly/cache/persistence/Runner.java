@@ -1,5 +1,6 @@
-package top.osjf.assembly.cache.core.persistence;
+package top.osjf.assembly.cache.persistence;
 
+import top.osjf.assembly.cache.exceptions.OnOpenPersistenceException;
 import top.osjf.assembly.util.annotation.NotNull;
 
 import java.util.concurrent.CompletableFuture;
@@ -7,14 +8,16 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
- * Cache persistence methods of operation indicators, decided to take what kind of way to run
+ * Cache persistence methods of operation indicators, decided to take what kind of way to run.
  *
  * @author zpf
- * @since 3.0.0
+ * @since 1.0.0
  */
-public abstract class PersistenceRunner implements MethodRunnableCapable {
+public abstract class Runner implements MethodRunnableCapable {
 
     private static final boolean async;
+
+    private static final Object lock = new Object();
 
     private static final Predicate<Throwable> EXCEPTION_PREDICATE = (e) -> e instanceof OnOpenPersistenceException;
 
@@ -35,7 +38,7 @@ public abstract class PersistenceRunner implements MethodRunnableCapable {
      */
     public static MethodRunnableCapable getCapable() {
         if (capable == null) {
-            synchronized (PersistenceRunner.class) {
+            synchronized (lock) {
                 if (capable == null) {
                     if (async) {
                         capable = new ASyncPersistenceRunner();
@@ -54,7 +57,7 @@ public abstract class PersistenceRunner implements MethodRunnableCapable {
     /**
      * Sync to run Persistence method
      */
-    private static class SyncPersistenceRunner extends PersistenceRunner {
+    private static class SyncPersistenceRunner extends Runner {
 
         @Override
         public void run(@NotNull Runnable runnable, @NotNull Consumer<String> errorLoggerConsumer) {
@@ -69,7 +72,7 @@ public abstract class PersistenceRunner implements MethodRunnableCapable {
     /**
      * ASync to run Persistence method
      */
-    private static class ASyncPersistenceRunner extends PersistenceRunner {
+    private static class ASyncPersistenceRunner extends Runner {
 
         @Override
         public void run(@NotNull Runnable runnable, @NotNull Consumer<String> errorLoggerConsumer) {
