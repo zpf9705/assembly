@@ -14,9 +14,9 @@ import java.io.PrintStream;
  * @author zpf
  * @since 1.0.0
  */
-public final class ExpireStartUpBannerExecutor {
+public final class StartUpBannerExecutor {
 
-    private ExpireStartUpBannerExecutor() {
+    private StartUpBannerExecutor() {
     }
 
     public static void printBanner(@CanNull Environment environment,
