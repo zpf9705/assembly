@@ -1,4 +1,4 @@
-package top.osjf.assembly.cache.help.expiremap;
+package top.osjf.assembly.cache.config.expiringmap;
 
 import net.jodah.expiringmap.ExpirationListener;
 import net.jodah.expiringmap.ExpirationPolicy;
@@ -7,13 +7,13 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Default implementation for {@link ExpireMapClientConfiguration}
+ * Default implementation for {@link ExpiringMapClients}.
  *
  * @author zpf
- * @since 3.0.0
+ * @since 1.0.0
  */
 @SuppressWarnings("rawtypes")
-public class DefaultExpireMapClientConfiguration implements ExpireMapClientConfiguration {
+public class DefaultExpiringMapClients implements ExpiringMapClients {
 
     private final Integer maxSize;
     private final Long defaultExpireTime;
@@ -22,7 +22,7 @@ public class DefaultExpireMapClientConfiguration implements ExpireMapClientConfi
     private final List<ExpirationListener> syncExpirationListeners;
     private final List<ExpirationListener> asyncExpirationListeners;
 
-    public DefaultExpireMapClientConfiguration(Integer maxSize,
+    public DefaultExpiringMapClients(Integer maxSize,
                                                Long defaultExpireTime,
                                                TimeUnit defaultExpireTimeUnit,
                                                ExpirationPolicy expirationPolicy,

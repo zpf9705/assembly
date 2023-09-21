@@ -1,4 +1,4 @@
-package top.osjf.assembly.cache.factory.expiremap;
+package top.osjf.assembly.cache.config.expiringmap;
 
 import net.jodah.expiringmap.ExpirationListener;
 import net.jodah.expiringmap.ExpirationPolicy;
