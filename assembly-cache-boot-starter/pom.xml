@@ -10,6 +10,8 @@
     </parent>
 
     <artifactId>assembly-cache-boot-starter</artifactId>
+    <version>1.0.0</version>
+    <description>Automatic assembly of lightweight cache projects [assembly cache].</description>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -37,7 +39,7 @@
         <dependency>
             <groupId>top.osjf</groupId>
             <artifactId>assembly-cache</artifactId>
-            <version>2.0.0</version>
+            <version>1.0.0</version>
         </dependency>
     </dependencies>
 </project>
