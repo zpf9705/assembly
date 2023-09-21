@@ -1,11 +1,9 @@
 package top.osjf.assembly.cache.factory.expiremap;
 
-import top.osjf.assembly.cache.center.ExpireMapCenter;
-import top.osjf.assembly.cache.center.ExpiringMapCacheExecutor;
+import cn.hutool.aop.ProxyUtil;
 import top.osjf.assembly.cache.config.expiringmap.ExpiringMapClients;
 import top.osjf.assembly.cache.factory.CacheExecutor;
-import top.osjf.assembly.cache.factory.CacheExecutorFactory;
-import top.osjf.assembly.cache.util.JdkProxyUtils;
+import top.osjf.assembly.cache.factory.CacheFactory;
 import top.osjf.assembly.util.annotation.NotNull;
 
 /**
@@ -14,11 +12,11 @@ import top.osjf.assembly.util.annotation.NotNull;
  * @author zpf
  * @since 1.0.0
  */
-public class ExpiringMapCacheExecutorFactory implements CacheExecutorFactory {
+public class ExpiringMapCacheFactory implements CacheFactory {
 
     private final ExpiringMapCacheExecutor executor;
 
-    public ExpiringMapCacheExecutorFactory(@NotNull ExpiringMapClients clients) {
+    public ExpiringMapCacheFactory(@NotNull ExpiringMapClients clients) {
         this.executor = doCreateExpiringMapExecutor(clients);
     }
 
@@ -28,12 +26,14 @@ public class ExpiringMapCacheExecutorFactory implements CacheExecutorFactory {
         return this.executor;
     }
 
+
     public ExpiringMapCacheExecutor doCreateExpiringMapExecutor(ExpiringMapClients clients) {
         //Real object generated singleton operation
         ExpireMapCenter expireMapCenter = ExpireMapCenter.singletonWithConfiguration(clients);
         //To approach the processor
-        return JdkProxyUtils.createProxy(
-                new ExpiringMapPersistenceProcessor(new ExpiringMapCacheExecutorImpl(() -> expireMapCenter))
-        );
+        ExpiringMapInvocationHandler processor = new ExpiringMapInvocationHandler(
+                new ExpiringMapCacheExecutorImpl(() -> expireMapCenter));
+        //returns a jdk proxy object
+        return ProxyUtil.newProxyInstance(processor, processor.getTarget().getClass().getInterfaces());
     }
 }
