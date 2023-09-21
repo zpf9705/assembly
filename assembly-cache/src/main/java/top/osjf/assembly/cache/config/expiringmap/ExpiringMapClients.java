@@ -2,7 +2,7 @@ package top.osjf.assembly.cache.config.expiringmap;
 
 import net.jodah.expiringmap.ExpirationListener;
 import net.jodah.expiringmap.ExpirationPolicy;
-import top.osjf.assembly.cache.util.AssertUtils;
+import org.springframework.util.Assert;
 import top.osjf.assembly.util.annotation.CanNull;
 
 import java.util.ArrayList;
@@ -122,7 +122,7 @@ public interface ExpiringMapClients {
          * @return {@link ExpiringMapClientsBuilder}
          */
         public ExpiringMapClientsBuilder acquireMaxSize(Integer maxSize) {
-            AssertUtils.Operation.isTrue(this.maxSize == null,
+            Assert.isTrue(this.maxSize == null,
                     "MaxSize existing configuration values, please do not cover");
             this.maxSize = maxSize;
             return this;
@@ -135,7 +135,7 @@ public interface ExpiringMapClients {
          * @return {@link ExpiringMapClientsBuilder}
          */
         public ExpiringMapClientsBuilder acquireDefaultExpireTime(Long defaultExpireTime) {
-            AssertUtils.Operation.isTrue(this.defaultExpireTime == null,
+            Assert.isTrue(this.defaultExpireTime == null,
                     "DefaultExpireTime existing configuration values, please do not cover");
             this.defaultExpireTime = defaultExpireTime;
             return this;
@@ -148,7 +148,7 @@ public interface ExpiringMapClients {
          * @return {@link ExpiringMapClientsBuilder}
          */
         public ExpiringMapClientsBuilder acquireDefaultExpireTimeUnit(TimeUnit defaultExpireTimeUnit) {
-            AssertUtils.Operation.isTrue(this.defaultExpireTimeUnit == null,
+            Assert.isTrue(this.defaultExpireTimeUnit == null,
                     "DefaultExpireTimeUnit existing configuration values, please do not cover");
             this.defaultExpireTimeUnit = defaultExpireTimeUnit;
             return this;
@@ -161,7 +161,7 @@ public interface ExpiringMapClients {
          * @return {@link ExpiringMapClientsBuilder}
          */
         public ExpiringMapClientsBuilder acquireDefaultExpirationPolicy(ExpirationPolicy expirationPolicy) {
-            AssertUtils.Operation.isTrue(this.expirationPolicy == null,
+            Assert.isTrue(this.expirationPolicy == null,
                     "ExpirationPolicy existing configuration values, please do not cover");
             this.expirationPolicy = expirationPolicy;
             return this;
