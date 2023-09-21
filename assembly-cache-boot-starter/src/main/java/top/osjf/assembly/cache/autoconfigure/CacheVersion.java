@@ -22,6 +22,7 @@ public final class CacheVersion {
 
     private static final Attributes.Name[] other_version = {
             new Attributes.Name("Bundle-Version"),
+            new Attributes.Name("Manifest-Version"),
             new Attributes.Name("Archiver-Version")
     };
 
