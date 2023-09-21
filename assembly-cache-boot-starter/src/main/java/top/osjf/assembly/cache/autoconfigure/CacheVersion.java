@@ -20,7 +20,10 @@ import java.util.jar.JarFile;
  */
 public final class CacheVersion {
 
-    public static final Attributes.Name BUNDLE_VERSION = new Attributes.Name("Bundle-Version");
+    private static final Attributes.Name[] other_version = {
+            new Attributes.Name("Bundle-Version"),
+            new Attributes.Name("Archiver-Version")
+    };
 
     private CacheVersion() {
     }
@@ -57,7 +60,13 @@ public final class CacheVersion {
         Attributes attributes = jarFile.getManifest().getMainAttributes();
         String version = attributes.getValue(Attributes.Name.IMPLEMENTATION_VERSION);
         if (StringUtils.isBlank(version)) {
-            version = attributes.getValue(BUNDLE_VERSION);
+            for (Attributes.Name name : other_version) {
+                String value = attributes.getValue(name);
+                if (StringUtils.isNotBlank(value)){
+                    version = value;
+                    break;
+                }
+            }
         }
         return version;
     }
