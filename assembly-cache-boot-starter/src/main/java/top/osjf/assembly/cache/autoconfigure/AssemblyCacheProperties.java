@@ -12,71 +12,78 @@ import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Configuration properties for expiring
+ * Configuration properties for assembly-cache.
  *
  * @author zpf
- * @since 3.0.0
+ * @since 1.0.0
  */
-@ConfigurationProperties(prefix = "spring.data.expiry")
-public class ExpireProperties {
+@ConfigurationProperties(prefix = "assembly.cache")
+public class AssemblyCacheProperties {
 
     /**
-     * Whether to open the persistence
+     * Whether to open the cache persistence.
+     * <p>If setup this is {@code true} and will enable cache persistence and save the cache information
+     * to the disk path where {@link #persistencePath} is located. </p>
      */
     private Boolean openPersistence = false;
 
     /**
-     * Whether to run persistence async
+     * Whether to run cache persistence async.
+     * <p>If setup this is {@code true} and will be executed asynchronously during cache persistence.</p>
      */
     private Boolean persistenceAsync = false;
 
     /**
-     * Persistence Renew factory class
+     * Persistence Renew factory class.
+     * <p>The default is {@link ExpireByteGlobePersistence}.</p>
      */
     private Class<? extends PersistenceRenewFactory> persistenceFactoryClass = ExpireByteGlobePersistence.class;
 
     /**
-     * Attention : If you offer the persistent path ,
-     * Will automatically on your path to create persistent file ,
-     * If not we will create in the root of your project directory
-     *
-     * @since 1.1.4
+     * Attention : If you offer the persistent path.<br>
+     * Will automatically on your path to create persistent file.<br>
+     * If not we will create in the root of your project directory.<br>
      */
     private String persistencePath = SystemUtils.getCurrentProjectPath() + "/expire/";
 
     /**
      * Monitor the path information of cache recovery and implement the class collection
-     * path of {@link top.osjf.assembly.cache.core.persistence.ListeningRecovery}
+     * path of {@link top.osjf.assembly.cache.core.persistence.ListeningRecovery}.
      */
     private String[] listeningRecoverySubPath = SourceEnvironmentPostProcessor.findSpringbootPrimarySourcesPackages();
 
     /**
-     * No persistence time the most value (that is less than all of this time are not given persistent)
+     * No persistence time the most value (that is less than all of this time are not given persistent).
+     * <p>The default is {@code 20}.</p>
      */
     private Long noPersistenceOfExpireTime = 20L;
 
     /**
-     * No persistence unit of time the most value
+     * No persistence unit of time the most value.
+     * <p>The default is {@code TimeUnit.SECONDS}.</p>
      */
     private TimeUnit noPersistenceOfExpireTimeUnit = TimeUnit.SECONDS;
 
     /**
-     * Set a {@code defaultExpireTime} for default cache time
+     * Set a {@code defaultExpireTime} for default cache time.
+     * <p>The default is {@code 30L}.</p>
      */
     private Long defaultExpireTime = 30L;
 
     /**
-     * Set a {@code defaultExpireTimeUnit} for default cache time unit
+     * Set a {@code defaultExpireTimeUnit} for default cache time unit.
+     * <p>The default is {@code TimeUnit.SECONDS}.</p>
      */
     private TimeUnit defaultExpireTimeUnit = TimeUnit.SECONDS;
 
     /**
-     * Set a {@code client} for help source
+     * Set a {@code client} for help source.
+     * <p>The default is {@link  Client#EXPIRE_MAP}.</p>
      */
     private Client client = Client.EXPIRE_MAP;
 
     /**
-     * Expiry implement for {@link net.jodah.expiringmap.ExpiringMap}
+     * Expiry implement for {@link net.jodah.expiringmap.ExpiringMap}.
      */
     private ExpiringMap expiringMap = new ExpiringMap();
 
@@ -171,19 +178,22 @@ public class ExpireProperties {
     public static class ExpiringMap {
 
         /**
-         * Set a {@code maxsize} for map
+         * Set a {@code maxsize} for map.
+         * <p>The default is {@code 500}.</p>
          */
         private Integer maxSize = 500;
 
         /**
-         * Set a {@code expirationPolicy} for map
+         * Set a {@code expirationPolicy} for map.
+         * <p>The default is {@code ExpirationPolicy.ACCESSED}.</p>
          */
         private ExpirationPolicy expirationPolicy = ExpirationPolicy.ACCESSED;
 
         /**
-         * Set a {@code listening packages} for map
+         * Set a {@code listening packages} for map.
          * <p>
-         * If it is null, the default is to use springboot to start the package path where the main class is located
+         * If it is null, the default is to use springboot to start the package path where the main class is located.
+         * <p>{@link SourceEnvironmentPostProcessor}</p>
          */
         private String[] listeningPackages = SourceEnvironmentPostProcessor.findSpringbootPrimarySourcesPackages();
 
@@ -213,14 +223,14 @@ public class ExpireProperties {
     }
 
     /**
-     * Cache Client
+     * The underlying support type for caching.
      */
     public enum Client {
         EXPIRE_MAP
     }
 
     @PostConstruct
-    public void init() {
+    public void initForPersistenceConfiguration() {
         SystemUtils.setProperty(Configuration.open_persistence, this.openPersistence);
         SystemUtils.setProperty(Configuration.persistenceRunAsync, this.persistenceAsync);
         SystemUtils.setProperty(Configuration.persistence_path, this.persistencePath);
