@@ -1,24 +1,24 @@
 package top.osjf.assembly.cache.autoconfigure;
 
 /**
- * Component log printing characters and version number acquisition interface
+ * Launch the console logo input interface class to output the dynamic session component logo.
  *
  * @author zpf
- * @since 3.0.0
+ * @since 1.0.0
  */
 public interface StartUpBanner {
 
     /**
-     * Method for obtaining component log concatenated string
+     * Obtain the string layout of the logo text.
      *
-     * @return Using print banner
+     * @return Suggest not to use {@literal null}.
      */
     String getBanner();
 
     /**
-     * Method of obtaining component version number
+     * Obtain the component name identifier as the unique name of the modified component.
      *
-     * @return Using print version
+     * @return Suggest not to use {@literal null}.
      */
     String getLeftSign();
 }

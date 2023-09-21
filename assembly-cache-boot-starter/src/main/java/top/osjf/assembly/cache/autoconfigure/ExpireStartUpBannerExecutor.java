@@ -4,39 +4,33 @@ import org.springframework.boot.ansi.AnsiColor;
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiStyle;
 import org.springframework.core.env.Environment;
+import top.osjf.assembly.util.annotation.CanNull;
 
 import java.io.PrintStream;
 
 /**
- * Default Banner Executor which writes the special banner.
+ * Component logo input tool，based on Spring's logo output method.
  *
  * @author zpf
- * @since 2.2.2
+ * @since 1.0.0
  */
-class ExpireStartUpBannerExecutor {
+public final class ExpireStartUpBannerExecutor {
 
-    private static final int STRAP_LINE_SIZE = 42;
+    private ExpireStartUpBannerExecutor() {
+    }
 
-    /**
-     * Print the banner to the specified print stream.
-     *
-     * @param environment Spring environment
-     * @param banner      Startup banner for using
-     * @param sourceClass Using source class
-     * @param printStream Print type
-     */
-    public static void printBanner(Environment environment,
+    public static void printBanner(@CanNull Environment environment,
                                    StartUpBanner banner, Class<?> sourceClass,
                                    PrintStream printStream) {
         printStream.println(banner.getBanner());
-        String version = Version.getVersion(sourceClass);
+        String version = CacheVersion.getVersion(sourceClass);
         version = (version != null) ? " (v" + version + ")" : "";
         StringBuilder padding = new StringBuilder();
-        while (padding.length() < STRAP_LINE_SIZE - (version.length() + banner.getLeftSign().length())) {
+        while (padding.length() < 42 - (version.length() + banner.getLeftSign().length())) {
             padding.append(" ");
         }
-        printStream.println(AnsiOutput.toString(AnsiColor.GREEN, banner.getLeftSign(), AnsiColor.DEFAULT, padding.toString(),
-                AnsiStyle.FAINT, version));
+        printStream.println(AnsiOutput.toString(AnsiColor.GREEN, banner.getLeftSign(), AnsiColor.DEFAULT,
+                padding.toString(), AnsiStyle.FAINT, version));
         printStream.println();
     }
 }
