@@ -60,7 +60,7 @@ public abstract class ScanUtils {
                         // corresponding to object b. Simply understood, a and b are the same class or interface
                         clazz.isAssignableFrom(compareClazz);
             });
-            if (CollectionUtils.isEmpty(scan)) {
+            if (CollectionUtils.isNotEmpty(scan)) {
                 finder.addAll(scan);
             }
         }
