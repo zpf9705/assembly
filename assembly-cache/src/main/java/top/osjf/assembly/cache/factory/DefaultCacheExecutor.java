@@ -1,4 +1,4 @@
-package top.osjf.assembly.cache.help;
+package top.osjf.assembly.cache.factory;
 
 import top.osjf.assembly.util.annotation.CanNull;
 
@@ -7,10 +7,12 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * Default form {@link CacheExecutor} with interface.
+ *
  * @author zpf
- * @since 3.0.0
+ * @since 1.0.0
  */
-public interface DefaultedExpireHelper extends ExpireHelper {
+public interface DefaultCacheExecutor extends CacheExecutor {
 
     @CanNull
     @Override
@@ -70,45 +72,40 @@ public interface DefaultedExpireHelper extends ExpireHelper {
     @CanNull
     @Override
     default Boolean set(byte[] key, byte[] value) {
-        return stringCommands().set(key, value);
+        return pairCommands().set(key, value);
     }
 
     @Override
     default Boolean setE(byte[] key, byte[] value, Long duration, TimeUnit unit) {
-        return stringCommands().setE(key, value, duration, unit);
+        return pairCommands().setE(key, value, duration, unit);
     }
 
     @CanNull
     @Override
     default Boolean setNX(byte[] key, byte[] value) {
-        return stringCommands().setNX(key, value);
+        return pairCommands().setNX(key, value);
     }
 
     @CanNull
     @Override
     default Boolean setEX(byte[] key, byte[] value, Long duration, TimeUnit unit) {
-        return stringCommands().setEX(key, value, duration, unit);
+        return pairCommands().setEX(key, value, duration, unit);
     }
 
     @Override
     default List<byte[]> getSimilarKeys(byte[] rawKey) {
-        return stringCommands().getSimilarKeys(rawKey);
+        return pairCommands().getSimilarKeys(rawKey);
     }
 
     @CanNull
     @Override
     default byte[] get(byte[] key) {
-        return stringCommands().get(key);
+        return pairCommands().get(key);
     }
 
     @CanNull
     @Override
     default byte[] getAndSet(byte[] key, byte[] newValue) {
-        return stringCommands().getAndSet(key, newValue);
-    }
-
-    @Override
-    default void close() {
-        throw new UnsupportedOperationException();
+        return pairCommands().getAndSet(key, newValue);
     }
 }
