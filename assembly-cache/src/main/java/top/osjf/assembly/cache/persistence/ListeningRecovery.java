@@ -1,14 +1,14 @@
-package top.osjf.assembly.cache.core.persistence;
+package top.osjf.assembly.cache.persistence;
 
 import java.util.concurrent.TimeUnit;
 
 /**
  * The listener recovery interface needs to be implemented and combined with the path
  * where {@link Configuration#listeningRecoverySubPath} is placed, and uniformly called
- * after {@link ExpireSimpleGlobePersistence#deserializeWithString(StringBuilder)} recovery.
+ * after {@link AbstractCachePersistence#reductionUseString(StringBuilder)} recovery.
  *
  * @author zpf
- * @since 3.2.2
+ * @since 1.0.0
  */
 public interface ListeningRecovery {
 
