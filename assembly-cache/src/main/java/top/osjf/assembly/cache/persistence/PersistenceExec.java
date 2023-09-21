@@ -1,9 +1,6 @@
-package top.osjf.assembly.cache.core.persistence;
+package top.osjf.assembly.cache.persistence;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
@@ -13,14 +10,15 @@ import java.util.function.Predicate;
  * Persistent cache processing markup annotations are targeted at methods that can generate changes to
  * cache persistent files.
  * <p>
- * The parameters will define the class {@link PersistenceSolver} for cache processing,
+ * The parameters will define the class {@link CachePersistenceSolver} for cache processing,
  * as well as some validation of related expected values (such as cache execution results)
  *
  * @author zpf
- * @since 3.0.0
+ * @since 1.0.0
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
+@Documented
 public @interface PersistenceExec {
 
     /**
@@ -31,14 +29,14 @@ public @interface PersistenceExec {
     PersistenceExecTypeEnum value();
 
     /**
-     * The processing of execution annotation corresponding interface implementation class type
+     * The processing of execution annotation corresponding interface implementation class type.
      *
-     * @return {@link PersistenceSolver}
+     * @return Clazz of {@link CachePersistenceSolver}.
      */
-    Class<? extends PersistenceSolver> shouldSolver() default ExpireBytesPersistenceSolver.class;
+    Class<? extends CachePersistenceSolver> shouldSolver() default BytesCachePersistenceSolver.class;
 
     /**
-     * Perform expectations
+     * Perform enum within {@link ValueExpectations}.
      *
      * @return result value
      */
