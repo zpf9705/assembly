@@ -1,17 +1,18 @@
-package top.osjf.assembly.cache.core.persistence;
+package top.osjf.assembly.cache.persistence;
 
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ReflectUtil;
 import com.alibaba.fastjson.JSON;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.Assert;
 import top.osjf.assembly.cache.core.Console;
-import top.osjf.assembly.cache.core.PersistenceException;
-import top.osjf.assembly.cache.help.Center;
-import top.osjf.assembly.cache.help.RecordActivationCenter;
-import top.osjf.assembly.cache.util.AssertUtils;
+import top.osjf.assembly.cache.exceptions.CachePersistenceException;
+import top.osjf.assembly.cache.exceptions.OnOpenPersistenceException;
+import top.osjf.assembly.cache.factory.*;
+import top.osjf.assembly.cache.operations.ValueOperations;
 import top.osjf.assembly.cache.util.CodecUtils;
-import top.osjf.assembly.cache.util.TypeUtils;
 import top.osjf.assembly.util.CloseableUtils;
 import top.osjf.assembly.util.ScanUtils;
 import top.osjf.assembly.util.SerialUtils;
@@ -34,27 +35,27 @@ import java.util.stream.Collectors;
 /**
  * Helper for the persistent cache And restart the reply , And the only implementation
  * <ul>
- *     <li>{@link ExpireByteGlobePersistence}</li>
+ *     <li>{@link ByteCachePersistence}</li>
  * </ul>
  * Here about key match byte array , Mainly to block out the Java more generic data of differences
  * Here are about cache persistence of the whole process of life
  * He all methods of the realization of all rely on this method, the generic content {@code byte[]}
  * <ul>
- *     <li>{@link GlobePersistenceWriteProcess}</li>
- *     <li>{@link PersistenceRenewFactory}</li>
+ *     <li>{@link CachePersistenceWriteProcess}</li>
+ *     <li>{@link CachePersistenceReduction}</li>
  * </ul>
  * Briefly describes the implementation process :
  * <p>
  *  1、By manipulating the data into , Proxy objects method execution may step in cache persistence method
  *  <ul>
- *      <li>{@link top.osjf.assembly.cache.core.ValueOperations}</li>
+ *      <li>{@link ValueOperations}</li>
  *      <li>{@link PersistenceExec}</li>
- *      <li>{@link ExpirePersistenceProcessor}</li>
+ *      <li>{@link CacheInvocationHandler#persistenceExec(Object, PersistenceExec, Object[])}</li>
  *  </ul>
  *  And provides a cache persistence mode of operation , Asynchronous and synchronous
  *  <ul>
  *      <li>{@link MethodRunnableCapable#run(Runnable, Consumer)}</li>
- *      <li>{@link PersistenceRunner}</li>
+ *      <li>{@link Runner}</li>
  *  </ul>
  *  Its operation is completely thread-safe, because here is introduced into the read-write lock
  * <p>
@@ -66,9 +67,8 @@ import java.util.stream.Collectors;
  * <p>
  *  2、Will, depending on the type of execution method after different persistence API calls
  *  <ul>
- *      <li>{@link PersistenceSolver}</li>
- *      <li>{@link ExpirePersistenceSolver}</li>
- *      <li>{@link ExpireBytesPersistenceSolver}</li>
+ *      <li>{@link CachePersistenceSolver}</li>
+ *      <li>{@link BytesCachePersistenceSolver}</li>
  *  </ul>
  * <p>
  *  3、Persistent cache will be stored in the form of a particular file
@@ -83,34 +83,34 @@ import java.util.stream.Collectors;
  * <p>
  *  4、When attached project restart automatically read persistence file in memory
  *  <ul>
- *      <li>{@link PersistenceRenewFactory#deserializeWithString(StringBuilder)}</li>
- *      <li>{@link PersistenceRenewFactory#deserializeWithPath(String)}</li>
- *      <li>{@link PersistenceRenewFactory#deserializeWithFile(File)}</li>
+ *      <li>{@link CachePersistenceReduction#reductionUseString(StringBuilder)}</li>
+ *      <li>{@link CachePersistenceReduction#reductionUsePath(String)}</li>
+ *      <li>{@link CachePersistenceReduction#reductionUseFile(File)}</li>
  *  </ul>
  *  And provides asynchronous takes up the recovery of the main thread
  * <p>
  *  5、At final , on the analysis of unexpired value for recovery operations
- *  Mainly the {@link ExpireSimpleGlobePersistence} implementation class according to
+ *  Mainly the {@link AbstractCachePersistence} implementation class according to
  *  provide the name of the factory to obtain corresponding overloading interface classes
  * <p>
  *  The following help center helps to implement overloading and deletion in persistent caching
  *  <ul>
- *      <li>{@link top.osjf.assembly.cache.help.ReloadCenter}</li>
- *      <li>{@link top.osjf.assembly.cache.help.HelpCenter}</li>
+ *      <li>{@link ReloadCenter}</li>
+ *      <li>{@link HelpCenter}</li>
  *      <li>{@link Center}</li>
  *  </ul>
  *
  * @author zpf
- * @since 1.1.0
+ * @since 1.0.0
  */
-@SuppressWarnings({"unchecked", "rawtypes"})
-public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileManager implements
-        GlobePersistenceWriteProcess<K, V>, PersistenceRenewFactory, Serializable {
-
-    private static final long serialVersionUID = 7755214068683107950L;
+@SuppressWarnings({"unchecked", "rawtypes", "serial"})
+public abstract class AbstractCachePersistence<K, V> extends AbstractPersistenceFileManager implements
+        CachePersistenceWriteProcess<K, V>, CachePersistenceReduction, Serializable {
 
     //The system configuration
     private static Configuration configuration;
+
+    private static final Object lock = new Object();
 
     //The persistent file suffix
     public static final String PREFIX_BEFORE = ".aof";
@@ -125,7 +125,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
     private Persistence<K, V> persistence;
 
     //Implementation type object
-    private Class<? extends ExpireSimpleGlobePersistence> globePersistenceClass;
+    private Class<? extends AbstractCachePersistence> globePersistenceClass;
 
     //Realize persistent information type object
     private Class<? extends Persistence> persistenceClass;
@@ -136,16 +136,13 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
     private static boolean OPEN_PERSISTENCE;
 
     //Global information persistent cache
-    public static final Map<String, ExpireSimpleGlobePersistence> CACHE_MAP = new ConcurrentHashMap<>();
-
-    //Global removes single object
-    public static final ExpireSimpleGlobePersistence<Object, Object> INSTANCE = new ExpireSimpleGlobePersistence<>();
+    private static final Map<String, AbstractCachePersistence> CACHE_MAP = new ConcurrentHashMap<>();
 
     //Key values of the hash value of the cache object
-    public static final Map<String, String> KEY_VALUE_HASH = new ConcurrentHashMap<>();
+    private static final Map<String, String> KEY_VALUE_HASH = new ConcurrentHashMap<>();
 
     //The key  toSting cache object
-    public static final Map<String, Object> TO_STRING = new ConcurrentHashMap<>();
+    private static final Map<String, Object> TO_STRING = new ConcurrentHashMap<>();
 
     //Read-write lock
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
@@ -174,38 +171,37 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         }
     }
 
-    public ExpireSimpleGlobePersistence() {
+    public AbstractCachePersistence() {
     }
 
-    public ExpireSimpleGlobePersistence(Persistence<K, V> persistence, String writePath) {
+    public AbstractCachePersistence(Persistence<K, V> persistence, String writePath) {
         this.persistence = persistence;
         setWritePath(writePath);
     }
 
     /**
-     * Set in cache map and get an {@code ExpireByteGlobePersistence} with
-     * {@code Entry<K,V>} and {@code FactoryBeanName}
-     * whether you need to query in the cache
+     * Set in cache map and get an {@code ExpireByteGlobePersistence} with {@code Entry<K,V>}
+     * and {@code FactoryBeanName} whether you need to query in the cache.
      *
      * @param globePersistenceClass must not be {@literal null}
      * @param persistenceClass      must not be {@literal null}
      * @param entry                 must not be {@literal null}
-     * @param <G>                   Inherit generic
-     * @param <P>                   Inherit son generic
-     * @param <K>                   key generic
-     * @param <V>                   value generic
-     * @return {@link ExpireByteGlobePersistence}
+     * @param <G>                   Inherit generic.
+     * @param <P>                   Inherit son generic.
+     * @param <K>                   key generic.
+     * @param <V>                   value generic.
+     * @return Inherit instance classes from {@link AbstractCachePersistence}.
      */
-    public static <G extends ExpireSimpleGlobePersistence, P extends Persistence, K, V> G ofSet
+    public static <G extends AbstractCachePersistence, P extends Persistence, K, V> G ofSet
     (@NotNull Class<G> globePersistenceClass,
      @NotNull Class<P> persistenceClass,
      @NotNull Entry<K, V> entry) {
         checkOf(entry);
         String rawHash = rawHash(entry.getKey(), entry.getValue());
         String writePath = rawWritePath(entry.getKey());
-        ExpireSimpleGlobePersistence<K, V> persistence = CACHE_MAP.get(rawHash);
+        AbstractCachePersistence<K, V> persistence = CACHE_MAP.get(rawHash);
         if (persistence == null) {
-            synchronized (ExpireSimpleGlobePersistence.class) {
+            synchronized (lock) {
                 persistence = CACHE_MAP.get(rawHash);
                 if (persistence == null) {
                     persistence =
@@ -223,23 +219,22 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
     }
 
     /**
-     * Set in cache map and get an {@code extends ExpireSimpleGlobePersistence} with {@code extends Persistence}
-     * And extends ExpireSimpleGlobePersistence class type
-     * Don't query is in the cache
+     * Set in cache map and get an {@code extends AbstractCachePersistence} with {@code extends Persistence}
+     * And extends AbstractCachePersistence class type and don't query is in the cache.
      *
      * @param globePersistenceClass can be {@literal null}
      * @param persistence           must not be {@literal null}
      * @param <G>                   Inherit generic
      * @param <K>                   key generic
      * @param <V>                   value generic
-     * @return {@link ExpireByteGlobePersistence}
+     * @return Inherit instance classes from {@link AbstractCachePersistence}.
      */
-    public static <G extends ExpireSimpleGlobePersistence, K, V> G ofSetPersistence(
+    public static <G extends AbstractCachePersistence, K, V> G ofSetPersistence(
             @NotNull Class<G> globePersistenceClass,
             @NotNull Persistence<K, V> persistence) {
         checkPersistence(persistence);
         Entry<K, V> entry = persistence.entry;
-        ExpireSimpleGlobePersistence<K, V> globePersistence =
+        AbstractCachePersistence<K, V> globePersistence =
                 CACHE_MAP.computeIfAbsent(rawHash(entry.getKey(), entry.getValue()), v ->
                         reflectForInstance(globePersistenceClass, persistence, rawWritePath(entry.getKey())));
         /*
@@ -250,8 +245,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
 
     /**
      * Use a derived class of this object class object and made a reflection structure subclasses class
-     * object instantiation, build a singleton object cache
-     * Apply to cache the runtime phase
+     * object instantiation, build a singleton object cache and apply to cache the runtime phase.
      *
      * @param globePersistenceClass must not be {@literal null}
      * @param persistenceClass      must not be {@literal null}
@@ -262,9 +256,9 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * @param <P>                   Inherit son generic
      * @param <K>                   key generic
      * @param <V>                   value generic
-     * @return Inherit the instantiation singleton
+     * @return Inherit instance classes from {@link AbstractCachePersistence}.
      */
-    public static <G extends ExpireSimpleGlobePersistence, P extends Persistence, K, V> G reflectForInstance
+    public static <G extends AbstractCachePersistence, P extends Persistence, K, V> G reflectForInstance
     (@NotNull Class<G> globePersistenceClass,
      @NotNull Class<P> persistenceClass,
      @NotNull Entry<K, V> entry,
@@ -281,24 +275,23 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
             //record class GlobePersistenceClass type and persistenceClass
             globePersistence.recordCurrentType(globePersistenceClass, persistenceClass);
         } catch (Throwable e) {
-            throw new PersistenceException(e.getMessage());
+            throw new CachePersistenceException(e.getMessage());
         }
         return globePersistence;
     }
 
     /**
      * Use a derived class of this object class object and made a reflection structure subclasses class
-     * object instantiation, build a singleton object cache
-     * Apply to restart recovery stage
+     * object instantiation, build a singleton object cache and apply to restart recovery stage.
      *
      * @param globePersistenceClass can be {@literal null}
      * @param persistence           must not be {@literal null}
      * @param writePath             must not be {@literal null}
      * @param <G>                   Inherit generic
      * @param <P>                   Inherit son generic
-     * @return Inherit the instantiation singleton
+     * @return Inherit instance classes from {@link AbstractCachePersistence}.
      */
-    public static <G extends ExpireSimpleGlobePersistence, P extends Persistence> G reflectForInstance
+    public static <G extends AbstractCachePersistence, P extends Persistence> G reflectForInstance
     (@NotNull Class<G> globePersistenceClass, // construct have default value can nullable
      @NotNull P persistence,
      @NotNull String writePath) {
@@ -309,13 +302,13 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
             //record class GlobePersistenceClass type and persistenceClass
             globePersistence.recordCurrentType(globePersistenceClass, persistence.getClass());
         } catch (Throwable e) {
-            throw new PersistenceException(e.getMessage());
+            throw new CachePersistenceException(e.getMessage());
         }
         return globePersistence;
     }
 
     /**
-     * Get an {@code ExpireSimpleGlobePersistence<K,V>} in cache map with {@code key} and {@code value}
+     * Get an {@code AbstractCachePersistence<K,V>} in cache map with {@code key} and {@code value}.
      *
      * @param key                   must not be {@literal null}.
      * @param value                 can be {@literal null}.
@@ -323,49 +316,49 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * @param <K>                   key generic
      * @param <V>                   value generic
      * @param <G>                   Inherit generic
-     * @return {@link ExpireSimpleGlobePersistence}
+     * @return Inherit instance classes from {@link AbstractCachePersistence}.
      */
-    public static <G extends ExpireSimpleGlobePersistence, K, V> G ofGet(@NotNull K key, @CanNull V value,
-                                                                         @CanNull Class<G> globePersistenceClass) {
+    public static <G extends AbstractCachePersistence, K, V> G ofGet(@NotNull K key, @CanNull V value,
+                                                                     @CanNull Class<G> globePersistenceClass) {
         checkOpenPersistence();
-        AssertUtils.Persistence.notNull(key, "Key no be null");
+        Assert.notNull(key, "Key no be null");
         String persistenceKey;
         if (value == null) {
             String hashKey = CodecUtils.rawHashWithType(key);
             String hashValue = KEY_VALUE_HASH.getOrDefault(hashKey, null);
-            AssertUtils.Persistence.hasText(hashValue, "Key [" + key + "] no be hash value");
+            Assert.hasText(hashValue, "Key [" + key + "] no be hash value");
             persistenceKey = rawHashComb(hashKey, hashValue);
         } else {
             persistenceKey = rawHash(key, value);
         }
-        ExpireSimpleGlobePersistence<K, V> expireGlobePersistence = CACHE_MAP.get(persistenceKey);
+        AbstractCachePersistence<K, V> expireGlobePersistence = CACHE_MAP.get(persistenceKey);
         if (expireGlobePersistence == null) {
-            throw new PersistenceException("Key: [" + key + "] raw hash no found persistence");
+            throw new CachePersistenceException("Key: [" + key + "] raw hash no found persistence");
         }
         return convert(expireGlobePersistence, globePersistenceClass);
     }
 
     /**
-     * Get an {@code ExpireSimpleGlobePersistence<K,V>} in cache map with {@code key}
+     * Get an {@code AbstractCachePersistence<K,V>} in cache map with {@code key}.
      *
      * @param key must not be {@literal null}.
      * @param <K> key generic
      * @param <G> Inherit generic
-     * @return {@link ExpireSimpleGlobePersistence}
+     * @return Inherit instance classes from {@link AbstractCachePersistence}.
      */
-    public static <G extends ExpireSimpleGlobePersistence, K> G ofGet(@NotNull K key) {
+    public static <G extends AbstractCachePersistence, K> G ofGet(@NotNull K key) {
         return ofGet(key, null, null);
     }
 
     /**
-     * Get any {@code ExpireSimpleGlobePersistence<K,V>} in cache map with similar {@code key}
+     * Get any {@code AbstractCachePersistence<K,V>} in cache map with similar {@code key}.
      *
      * @param key must not be {@literal null}.
      * @param <K> key generic
      * @param <G> Inherit generic
-     * @return {@link ExpireSimpleGlobePersistence}
+     * @return Inherit instance classes from {@link AbstractCachePersistence}.
      */
-    public static <G extends ExpireSimpleGlobePersistence, K> List<G> ofGetSimilar(@NotNull K key) {
+    public static <G extends AbstractCachePersistence, K> List<G> ofGetSimilar(@NotNull K key) {
         checkOpenPersistence();
         String realKey = CodecUtils.toStingBeReal(key);
         List<String> similarElement = CodecUtils.findSimilarElement(TO_STRING.keySet(), realKey);
@@ -390,25 +383,25 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
     }
 
     /**
-     * Convert {@code ExpireSimpleGlobePersistence<K,V> simpleGlobePersistence} to provider globePersistenceClass
+     * Convert {@code AbstractCachePersistence<K,V> simpleGlobePersistence} to provider globePersistenceClass.
      *
      * @param expireGlobePersistence must not be {@literal null}
      * @param globePersistenceClass  can be {@literal null}
-     * @param <G>                    extend ExpireSimpleGlobePersistence class
+     * @param <G>                    Extend AbstractCachePersistence class generic
      * @param <K>                    key generic
      * @param <V>                    value generic
-     * @return extend ExpireSimpleGlobePersistence instance
+     * @return Inherit instance classes from {@link AbstractCachePersistence}.
      */
-    public static <G extends ExpireSimpleGlobePersistence, K, V> G convert(@NotNull ExpireSimpleGlobePersistence<K, V>
-                                                                                   expireGlobePersistence,
-                                                                           //can have no value and
-                                                                           // default value be this class
-                                                                           @CanNull Class<G> globePersistenceClass) {
+    public static <G extends AbstractCachePersistence, K, V> G convert(@NotNull AbstractCachePersistence<K, V>
+                                                                               expireGlobePersistence,
+                                                                       //can have no value and
+                                                                       // default value be this class
+                                                                       @CanNull Class<G> globePersistenceClass) {
         try {
             if (globePersistenceClass == null) return (G) expireGlobePersistence;
-            return TypeUtils.convert(expireGlobePersistence, globePersistenceClass);
+            return Convert.convert(globePersistenceClass, expireGlobePersistence);
         } catch (Throwable e) {
-            throw new PersistenceException(
+            throw new CachePersistenceException(
                     "Provider obj no instanceof" +
                             "Can visit the site to check the transformation of knowledge points down ：" +
                             "https://blog.csdn.net/listeningdu/article/details/127944496"
@@ -431,13 +424,13 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
             if (configuration.isDefaultCompareWithExpirePersistence()) {
                 return;
             }
-            throw new PersistenceException("Default setting no support be persisted");
+            throw new CachePersistenceException("Default setting no support be persisted");
         }
         if (entry.getTimeUnit().toMillis(entry.getDuration()) >=
                 configuration.getDefaultNoPersistenceExpireTimeToMille()) {
             return;
         }
-        throw new PersistenceException("Only more than or == " +
+        throw new CachePersistenceException("Only more than or == " +
                 configuration.getNoPersistenceOfExpireTime() + " " +
                 configuration.getNoPersistenceOfExpireTimeUnit() +
                 " can be persisted so key [" + entry.getKey() + "] value [" + entry.getValue() + "] no persisted ");
@@ -451,8 +444,8 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * @param <V>         value generic
      */
     static <V, K> void checkPersistence(@NotNull Persistence<K, V> persistence) {
-        AssertUtils.Persistence.notNull(persistence.getEntry(), "Persistence Entry no be null");
-        AssertUtils.Persistence.notNull(persistence.getExpire(), "Expire no be null");
+        Assert.notNull(persistence.getEntry(), "Persistence Entry no be null");
+        Assert.notNull(persistence.getExpire(), "Expire no be null");
         checkEntry(persistence.getEntry());
     }
 
@@ -464,8 +457,8 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
      * @param <V>   value generic
      */
     static <V, K> void checkEntry(@NotNull Entry<K, V> entry) {
-        AssertUtils.Persistence.notNull(entry.getKey(), "Key no be null");
-        AssertUtils.Persistence.notNull(entry.getValue(), "Value no be null");
+        Assert.notNull(entry.getKey(), "Key no be null");
+        Assert.notNull(entry.getValue(), "Value no be null");
     }
 
     /**
@@ -478,14 +471,14 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
     }
 
     /**
-     * Write the server file path combination
+     * Write the server file path combination.
      *
      * @param key must not be {@literal null}.
      * @param <K> key generic
      * @return final write path
      */
     static <K> String rawWritePath(@NotNull K key) {
-        AssertUtils.Persistence.notNull(key, "Key no be null ");
+        Assert.notNull(key, "Key no be null ");
         return configuration.getPersistencePath()
                 //md5 sign to prevent the file name is too long
                 + CodecUtils.md5Hex(key)
@@ -493,7 +486,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
     }
 
     /**
-     * Combination the hash mark of key/value
+     * Combination the hash mark of key/value.
      *
      * @param hashKey   must not be {@literal null}.
      * @param hashValue must not be {@literal null}.
@@ -504,7 +497,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
     }
 
     /**
-     * Calculate the hash mark of key/value
+     * Calculate the hash mark of key/value.
      *
      * @param key   must not be {@literal null}.
      * @param value must not be {@literal null}.
@@ -524,7 +517,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
     }
 
     /**
-     * Converts the String mark of key
+     * Converts the String mark of key.
      *
      * @param key must not be {@literal null}.
      * @param <K> key generic
@@ -535,28 +528,28 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
 
     /**
      * Record the current implementation of the class object type
-     * In order to facilitate the subsequent recovery
+     * In order to facilitate the subsequent recovery.
      *
      * @param globePersistenceClass {{@link #setGlobePersistenceClass(Class)}}
      * @param persistenceClass      {@link #setPersistenceClass(Class)}
      */
-    void recordCurrentType(@NotNull Class<? extends ExpireSimpleGlobePersistence> globePersistenceClass,
+    void recordCurrentType(@NotNull Class<? extends AbstractCachePersistence> globePersistenceClass,
                            @NotNull Class<? extends Persistence> persistenceClass) {
         setGlobePersistenceClass(globePersistenceClass);
         setPersistenceClass(persistenceClass);
     }
 
     /**
-     * Set a son for {@code ExpireSimpleGlobePersistence}
+     * Set a son for {@code AbstractCachePersistence}.
      *
-     * @param globePersistenceClass {@link ExpireSimpleGlobePersistence}
+     * @param globePersistenceClass {@link AbstractCachePersistence}
      */
-    public void setGlobePersistenceClass(Class<? extends ExpireSimpleGlobePersistence> globePersistenceClass) {
+    public void setGlobePersistenceClass(Class<? extends AbstractCachePersistence> globePersistenceClass) {
         this.globePersistenceClass = globePersistenceClass;
     }
 
     /**
-     * Set a son for {@code Persistence}
+     * Set a son for {@code Persistence}.
      *
      * @param persistenceClass {@link Persistence}
      */
@@ -565,19 +558,19 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
     }
 
     /**
-     * Get or default with ExpireSimpleGlobePersistence
+     * Get or default with AbstractCachePersistence.
      *
-     * @return {@link ExpireSimpleGlobePersistence}
+     * @return Clazz for {@link AbstractCachePersistence}.
      */
-    public Class<? extends ExpireSimpleGlobePersistence> getGlobePersistenceClass() {
+    public Class<? extends AbstractCachePersistence> getGlobePersistenceClass() {
         if (this.globePersistenceClass == null) {
-            return ExpireSimpleGlobePersistence.class;
+            return AbstractCachePersistence.class;
         }
         return this.globePersistenceClass;
     }
 
     /**
-     * Get or default with Persistence
+     * Get or default with Persistence.
      *
      * @return {@link Persistence}
      */
@@ -611,12 +604,12 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
 
     @Override
     public void setExpirationPersistence(Long duration, TimeUnit timeUnit) {
-        AssertUtils.Persistence.notNull(duration, "Duration no be null");
-        AssertUtils.Persistence.notNull(timeUnit, "TimeUnit no be null");
+        Assert.notNull(duration, "Duration no be null");
+        Assert.notNull(timeUnit, "TimeUnit no be null");
         Persistence<K, V> p = this.persistence;
         Entry<K, V> entry = p.getEntry();
         //Verify expiration
-        AssertUtils.Persistence.isTrue(expireOfCache(),
+        Assert.isTrue(expireOfCache(),
                 "Already expire key [" + entry.getKey() + "] value [" + entry.getValue() + "]");
         writeLock.lock();
         try {
@@ -636,7 +629,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
     public void resetExpirationPersistence() {
         Persistence<K, V> per = this.persistence;
         //验证是否过期
-        AssertUtils.Persistence.isTrue(expireOfCache(),
+        Assert.isTrue(expireOfCache(),
                 "Already expire key [" + per.getEntry().getKey() + "] value [" +
                         per.getEntry().getValue() + "]");
         writeLock.lock();
@@ -652,11 +645,11 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
 
     @Override
     public void replacePersistence(V newValue) {
-        AssertUtils.Persistence.notNull(newValue, "NewValue no be null");
+        Assert.notNull(newValue, "NewValue no be null");
         Persistence<K, V> per = this.persistence;
         Entry<K, V> entry = per.getEntry();
         //Verify expiration
-        AssertUtils.Persistence.isTrue(expireOfCache(),
+        Assert.isTrue(expireOfCache(),
                 "Already expire key [" + per.entry.getKey() + "] value [" + per.entry.getValue() + "]");
         writeLock.lock();
         try {
@@ -687,6 +680,22 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         }
     }
 
+    public static void cleanAllCacheFile() {
+        if (MapUtils.isEmpty(CACHE_MAP)) {
+            return;
+        }
+        try {
+            for (AbstractCachePersistence value : CACHE_MAP.values()) {
+                //del persistence
+                value.removePersistence();
+            }
+            CACHE_MAP.clear();
+            KEY_VALUE_HASH.clear();
+            TO_STRING.clear();
+        } catch (Exception ignored) {
+        }
+    }
+
     @Override
     public void removeAllPersistence() {
         if (MapUtils.isEmpty(CACHE_MAP)) {
@@ -694,7 +703,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         }
         writeLock.lock();
         try {
-            for (ExpireSimpleGlobePersistence value : CACHE_MAP.values()) {
+            for (AbstractCachePersistence value : CACHE_MAP.values()) {
                 //del persistence
                 value.removePersistence();
             }
@@ -711,23 +720,21 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         return this.persistence.getExpire() > System.currentTimeMillis();
     }
 
-    @Override
     public Entry<K, V> getEntry() {
         return this.persistence.getEntry();
     }
 
-    @Override
     public Persistence<K, V> getPersistence() {
         return this.persistence;
     }
 
     @Override
-    public String getRenewFactoryName() {
-        return ExpireSimpleGlobePersistence.class.getName();
+    public String getReduction() {
+        return AbstractCachePersistence.class.getName();
     }
 
     @Override
-    public void deserializeWithPath(@CanNull String path) {
+    public void reductionUsePath(@CanNull String path) {
         if (StringUtils.isBlank(path) || Objects.equals(path, DEFAULT_WRITE_PATH_SIGN)) {
             path = configuration.getPersistencePath();
         }
@@ -752,7 +759,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         //Start a new thread for file recovery operations
         new Thread(() -> finalFiles.forEach(v -> {
             try {
-                deserializeWithFile(v);
+                reductionUseFile(v);
             } catch (Throwable e) {
                 Console.warn("Restore cache file {}  error : {}", v.getName(), e.getMessage());
             }
@@ -760,8 +767,8 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
     }
 
     @Override
-    public void deserializeWithFile(@NotNull File file) {
-        AssertUtils.Persistence.notNull(file, "File no be null");
+    public void reductionUseFile(@NotNull File file) {
+        Assert.notNull(file, "File no be null");
         InputStream in = null;
         BufferedReader read = null;
         StringBuilder buffer = new StringBuilder();
@@ -780,28 +787,28 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
                 buffer.append(line);
             }
         } catch (Throwable e) {
-            throw new PersistenceException("Buff read cache error [" + e.getMessage() + "]");
+            throw new CachePersistenceException("Buff read cache error [" + e.getMessage() + "]");
         } finally {
             CloseableUtils.close(in, read);
         }
         //Perform follow-up supplement
-        deserializeWithString(buffer);
+        reductionUseString(buffer);
     }
 
     @Override
-    public void deserializeWithString(@NotNull StringBuilder buffer) {
+    public void reductionUseString(@NotNull StringBuilder buffer) {
         String json = buffer.toString();
         //check json
-        AssertUtils.Persistence.isTrue(JSON.isValid(json), "Buffer data [" + json + "] no a valid json");
+        Assert.isTrue(JSON.isValid(json), "Buffer data [" + json + "] no a valid json");
     }
 
     /**
-     * Using the {@code template } cache data check for the rest of removing, and recovery
+     * Using the {@code Center} cache data check for the rest of removing, and recovery.
      *
-     * @param t   must not be {@literal null}
-     * @param <T> extends for {@link ExpireSimpleGlobePersistence}
+     * @param t   must not be {@literal null}.
+     * @param <T> extends for {@link AbstractCachePersistence}.
      */
-    public <T extends ExpireSimpleGlobePersistence<K, V>> void deserializeWithEntry(@NotNull T t) {
+    public <T extends AbstractCachePersistence<K, V>> void deserializeWithEntry(@NotNull T t) {
         //current time
         long currentTimeMillis = System.currentTimeMillis();
         Persistence<K, V> persistence = t.getPersistence();
@@ -809,7 +816,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
         if (persistence.getExpire() == null || currentTimeMillis >= persistence.getExpire()) {
             //Delete the persistent file
             t.delWithCurrentWritePath();
-            throw new PersistenceException("File [" + t.getWritePath() + "] record time [" + persistence.getExpire() +
+            throw new CachePersistenceException("File [" + t.getWritePath() + "] record time [" + persistence.getExpire() +
                     "] before or equals now");
         }
         //save key/value with byte[]
@@ -843,7 +850,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
     }
 
     /**
-     * Calculating the cache recovery time remaining with {@code TimeUnit}
+     * Calculating the cache recovery time remaining with {@code TimeUnit}.
      *
      * @param now    must not be {@literal null}
      * @param expire must not be {@literal null}
@@ -856,7 +863,7 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
     }
 
     /**
-     * Calculate the expiration time
+     * Calculate the expiration time.
      *
      * @param entry must not be {@literal null}
      * @param <K>   key generic
@@ -891,36 +898,22 @@ public class ExpireSimpleGlobePersistence<K, V> extends AbstractPersistenceFileM
     }
 
     /**
-     * The persistent attribute model
+     * The persistent attribute model.
      *
      * @param <K> key generic
      * @param <V> value generic
      */
-    public static class Persistence<K, V> implements Serializable {
+    public abstract static class Persistence<K, V> implements Serializable {
         private static final long serialVersionUID = 5916681709307714445L;
         private Entry<K, V> entry;
         private Long expire;
         static final String FORMAT = AT + "\n" + "%s" + "\n" + AT;
 
         public Persistence() {
-            Console.warn("Persistence empty after construction, must undertake other variable initialization");
         }
 
         public Persistence(Entry<K, V> entry) {
             this.entry = entry;
-        }
-
-        public static <K, V> Persistence<K, V> of(Entry<K, V> entry) {
-            AssertUtils.Persistence.notNull(entry, "Entry no be null");
-            AssertUtils.Persistence.notNull(entry.getKey(), "Key no be null");
-            AssertUtils.Persistence.notNull(entry.getValue(), "Value no be null");
-            if (entry.getDuration() == null) {
-                entry.setDuration(configuration.getDefaultExpireTime());
-            }
-            if (entry.getTimeUnit() == null) {
-                entry.setTimeUnit(configuration.getDefaultExpireTimeUnit());
-            }
-            return new Persistence<>(entry);
         }
 
         public void setEntry(Entry<K, V> entry) {
