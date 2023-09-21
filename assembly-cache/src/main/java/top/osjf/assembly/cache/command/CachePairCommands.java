@@ -1,23 +1,18 @@
 package top.osjf.assembly.cache.command;
 
-import top.osjf.assembly.cache.core.persistence.PersistenceExec;
-import top.osjf.assembly.cache.core.persistence.PersistenceExecTypeEnum;
+import top.osjf.assembly.cache.persistence.PersistenceExec;
+import top.osjf.assembly.cache.persistence.PersistenceExecTypeEnum;
 import top.osjf.assembly.util.annotation.CanNull;
 
-import java.lang.annotation.Annotation;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Some operational methods for constructing domains, including element addition, atomic operations, and retrieval.
- * <p>
- * Some involve cache persistence operations, which are uniformly processed in the proxy method
- * {@link top.osjf.assembly.cache.core.ExpiryInvocationTrace#invokeSubsequent(Object, Annotation, Object[])}
+ * Execute {@code Key/Value} of the operator, listing memory placement, atomic operations, locks, etc.
  *
  * @author zpf
- * @since 3.0.0
+ * @since 1.0.0
  */
-public interface ExpireStringCommands {
+public interface CachePairCommands {
 
     /**
      * Set {@code value} for {@code key}.
@@ -65,24 +60,6 @@ public interface ExpireStringCommands {
     @CanNull
     @PersistenceExec(value = PersistenceExecTypeEnum.SET, expectValue = PersistenceExec.ValueExpectations.REALLY)
     Boolean setEX(byte[] key, byte[] value, Long duration, TimeUnit unit);
-
-    /**
-     * Get the value of {@code key}.
-     *
-     * @param key must not be {@literal null}.
-     * @return {@literal null}
-     */
-    @CanNull
-    byte[] get(byte[] key);
-
-    /**
-     * Get Similar keys of {@code key}.
-     *
-     * @param rawKey must not be {@literal null}.
-     * @return {@literal null}
-     */
-    @CanNull
-    List<byte[]> getSimilarKeys(byte[] rawKey);
 
     /**
      * Set {@code value} of {@code key} and return its old value.

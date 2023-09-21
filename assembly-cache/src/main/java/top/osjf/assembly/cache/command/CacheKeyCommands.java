@@ -1,23 +1,20 @@
 package top.osjf.assembly.cache.command;
 
-import top.osjf.assembly.cache.core.persistence.PersistenceExec;
-import top.osjf.assembly.cache.core.persistence.PersistenceExecTypeEnum;
+import top.osjf.assembly.cache.persistence.PersistenceExec;
+import top.osjf.assembly.cache.persistence.PersistenceExecTypeEnum;
 import top.osjf.assembly.util.annotation.CanNull;
 
-import java.lang.annotation.Annotation;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Some operation methods for key value domains include deletion, lookup, inclusion, and other key value operations.
- * <p>
- * Some involve cache persistence operations, which are uniformly processed in the proxy method
- * {@link top.osjf.assembly.cache.core.ExpiryInvocationTrace#invokeSubsequent(Object, Annotation, Object[])}
+ * Execute the {@code Key} operator and list some operation instructions based on the {@code Key} value.
  *
  * @author zpf
- * @since 3.0.0
+ * @since 1.0.0
  */
-public interface ExpireKeyCommands {
+public interface CacheKeyCommands {
 
     /**
      * Delete given {@code keys}.
@@ -48,6 +45,24 @@ public interface ExpireKeyCommands {
     @PersistenceExec(value = PersistenceExecTypeEnum.REMOVE_ALL,
             expectValue = PersistenceExec.ValueExpectations.REALLY)
     Boolean deleteAll();
+
+    /**
+     * Get the value of {@code key}.
+     *
+     * @param key must not be {@literal null}.
+     * @return {@literal null}
+     */
+    @CanNull
+    byte[] get(byte[] key);
+
+    /**
+     * Get Similar keys of {@code key}.
+     *
+     * @param rawKey must not be {@literal null}.
+     * @return {@literal null}
+     */
+    @CanNull
+    List<byte[]> getSimilarKeys(byte[] rawKey);
 
     /**
      * Determine if given {@code key} exists.

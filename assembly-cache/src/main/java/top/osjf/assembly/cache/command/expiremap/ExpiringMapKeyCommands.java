@@ -1,23 +1,24 @@
 package top.osjf.assembly.cache.command.expiremap;
 
-import top.osjf.assembly.cache.command.ExpireKeyCommands;
-import top.osjf.assembly.cache.help.expiremap.ExpireMapHelper;
+import top.osjf.assembly.cache.center.ExpiringMapCacheExecutor;
+import top.osjf.assembly.cache.command.CacheKeyCommands;
 import top.osjf.assembly.util.annotation.CanNull;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * About the key {@code key} operating instructions
+ * About the {@code Key} within {@link net.jodah.expiringmap.ExpiringMap} operating instructions.
  *
  * @author zpf
- * @since 3.0.0
+ * @since 1.0.0
  */
-public class ExpireMapKeyCommands implements ExpireKeyCommands {
+public class ExpiringMapKeyCommands implements CacheKeyCommands {
 
-    private final ExpireMapHelper delegate;
+    private final ExpiringMapCacheExecutor delegate;
 
-    public ExpireMapKeyCommands(ExpireMapHelper delegate) {
+    public ExpiringMapKeyCommands(ExpiringMapCacheExecutor delegate) {
         this.delegate = delegate;
     }
 
@@ -47,6 +48,24 @@ public class ExpireMapKeyCommands implements ExpireKeyCommands {
     @Override
     public Boolean deleteAll() {
         return this.delegate.reboot();
+    }
+
+    /*
+     * (non-Javadoc)
+     * io.github.zpf9705.expiring.command.ExpireStringCommands#get(Object)
+     */
+    @Override
+    public byte[] get(byte[] key) {
+        return this.delegate.getVal(key);
+    }
+
+    /*
+     * (non-Javadoc)
+     * io.github.zpf9705.expiring.command.ExpireStringCommands#getSimilarKeys(Object)
+     */
+    @Override
+    public List<byte[]> getSimilarKeys(byte[] rawKey) {
+        return this.delegate.getKeysByKeys(rawKey);
     }
 
     /*
