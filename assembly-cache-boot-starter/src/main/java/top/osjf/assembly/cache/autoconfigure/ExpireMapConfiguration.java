@@ -18,9 +18,9 @@ import top.osjf.assembly.cache.help.ExpireHelperFactory;
 import top.osjf.assembly.cache.help.expiremap.ExpireMapClientConfiguration;
 import top.osjf.assembly.cache.help.expiremap.ExpireMapClientConfigurationCustomizer;
 import top.osjf.assembly.cache.help.expiremap.ExpireMapHelperFactory;
-import top.osjf.assembly.cache.listener.ExpiringAsyncListener;
-import top.osjf.assembly.cache.listener.ExpiringSyncListener;
 import top.osjf.assembly.cache.core.Console;
+import top.osjf.assembly.cache.listener.AsyncListener;
+import top.osjf.assembly.cache.listener.SyncListener;
 import top.osjf.assembly.util.DefaultConsole;
 import top.osjf.assembly.util.ScanUtils;
 import top.osjf.assembly.util.annotation.NotNull;
@@ -34,46 +34,38 @@ import java.util.function.Predicate;
 /**
  * One of the optional caches for this component {@link net.jodah.expiringmap.ExpiringMap}
  * <p>
- * The following is an explanation of important parameters :
- * {@link ExpireProperties#getExpiringMap()}
- * <p>
+ * The following is an explanation of important parameters<br>
+ * <h3>{@link AssemblyCacheProperties#getExpiringMap()}.</h3><br>
  * {@code Max Size } : the maximum length of the map, add the 1001 th entry, can lead to the first expired
- * immediately (even if not to expiration time).
- * <p>
- * {@code Expiration }: expiration time and expired unit, set the expiration time, is permanent.
- * The use of expiration Policy: expiration policies.
- * <p>
- * {@code CREATED}: when each update element, the countdown reset date.
- * <p>
- * {@code ACCESSED }: in every visit elements, the countdown reset date.
- * <p>
- * {@code Variable Expiration }: allows you to update the Expiration time value, if not set variable Expiration.
+ * immediately (even if not to expiration time).<br>
+ * {@code Expiration }: expiration time and expired unit, set the expiration time, is permanent.<br>
+ * The use of expiration Policy: <h4>expiration policies.</h4><br>
+ * {@code CREATED}: when each update element, the countdown reset date.<br>
+ * {@code ACCESSED }: in every visit elements, the countdown reset date.<br>
+ * {@code Variable Expiration }: allows you to update the Expiration time value, if not set variable Expiration.<br>
  * Are not allowed to change the expiration time, once the executive change the expiration time
- * will throw an Unsupported Operation Exception.
- * <p>
+ * will throw an {@link UnsupportedOperationException}.<br>
  * {@code Expiration Listener }: Synchronous listener , Need to implement {@link ExpirationListener}
- * and annotate {@link ExpiringSyncListener} to achieve synchronous expiration notification
- * <p>
+ * and annotate {@link SyncListener} to achieve synchronous expiration notification.<br>
  * {@code Async Expiration Listener } : Asynchronous listener , Need to implement {@link ExpirationListener}
- * and annotate {@link ExpiringAsyncListener} to achieve synchronous expiration notification
- * <p>
+ * and annotate {@link AsyncListener} to achieve synchronous expiration notification.<br>
  * {@code Entry Loader } : lazy loading, if the key does not exist when calling the get method to create
- * the default value
+ * the default value.<br>
  * <p>
  * Provide a configuration for you to load relevant build configurations related to {@link ExpiringMap},
- * and select this cache configuration to load and use in the main assembly class by default
+ * and select this cache configuration to load and use in the main assembly class by default.
  *
  * @author zpf
- * @since 3.0.0
+ * @since 1.0.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ExpiringMap.class})
 @ConditionalOnProperty(
-        name = "spring.data.expiry.client",
+        name = "assembly.cache.client",
         havingValue = "expire_map",
         matchIfMissing = true
 )
-public class ExpireMapConfiguration extends ExpireHelperConfiguration implements ExpireBannerDisplayDevice,
+public class ExpireMapConfiguration extends CacheCommonsConfiguration implements CacheBannerDisplayDevice,
         EnvironmentAware {
 
     private Environment environment;
@@ -98,7 +90,7 @@ public class ExpireMapConfiguration extends ExpireHelperConfiguration implements
         }
     }
 
-    public ExpireMapConfiguration(ExpireProperties properties) {
+    public ExpireMapConfiguration(AssemblyCacheProperties properties) {
         super(properties);
     }
 
@@ -137,7 +129,8 @@ public class ExpireMapConfiguration extends ExpireHelperConfiguration implements
     @ConditionalOnMissingBean({ExpireHelperFactory.class})
     public ExpireHelperFactory expireMapConnectionFactory(
             ObjectProvider<ExpireMapClientConfigurationCustomizer> buildCustomizer) {
-        ExpireMapClientConfiguration.ExpireMapClientConfigurationBuilder builder = ExpireMapClientConfiguration.builder();
+        ExpireMapClientConfiguration.ExpireMapClientConfigurationBuilder builder =
+                ExpireMapClientConfiguration.builder();
         buildCustomizer.orderedStream()
                 .forEach((customizer) -> customizer.customize(builder));
         return new ExpireMapHelperFactory(builder.build());
@@ -146,7 +139,7 @@ public class ExpireMapConfiguration extends ExpireHelperConfiguration implements
     @Bean("expireMap::expireMapClientCustomizer")
     @SuppressWarnings("rawtypes")
     public ExpireMapClientConfigurationCustomizer expireMapClientCustomizer() {
-        ExpireProperties expireProperties = getProperties();
+        AssemblyCacheProperties expireProperties = getProperties();
         return c -> {
             ExpireMapClientConfiguration.ExpireMapClientConfigurationBuilder builder =
                     c.acquireMaxSize(expireProperties.getExpiringMap().getMaxSize())
@@ -167,6 +160,16 @@ public class ExpireMapConfiguration extends ExpireHelperConfiguration implements
         };
     }
 
+    /**
+     * Find a listening class that carries {@link SyncListener} or {@link AsyncListener} in the specified path,
+     * as it needs to be instantiated.
+     * <p>
+     * If an interface or abstract class is scanned, it will be scanned for its implementation self class.
+     * <p>
+     * If it is not, it will not be possible to add listening.
+     *
+     * @return Sync listeners and async listeners.
+     */
     @SuppressWarnings({"rawtypes"})
     public Map<String, List<ExpirationListener>> findExpirationListener() {
         //obtain listing packages path
@@ -214,9 +217,9 @@ public class ExpireMapConfiguration extends ExpireHelperConfiguration implements
                 continue;
             }
             //Synchronous monitoring is preferred
-            ExpiringSyncListener syncListener = listenerClass.getAnnotation(ExpiringSyncListener.class);
+            SyncListener syncListener = listenerClass.getAnnotation(SyncListener.class);
             if (syncListener == null) {
-                ExpiringAsyncListener asyncListener = listenerClass.getAnnotation(ExpiringAsyncListener.class);
+                AsyncListener asyncListener = listenerClass.getAnnotation(AsyncListener.class);
                 if (asyncListener != null) {
                     async.add(listener);
                 }
