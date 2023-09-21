@@ -1,15 +1,13 @@
-package top.osjf.assembly.cache.listener;
+package top.osjf.assembly.cache.listener.expiringmap;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+
+import java.lang.annotation.*;
 
 /**
- * Synchronous listener
+ * Asynchronous listener
  * <pre>
  *     {@code
- *     {@code @ExpiringSyncListener}
+ *     {@code AsyncListener}
  *     public class ExpiringListenerManager extends MessageExpiringContainer {
  *
  *     {@code @Override}
@@ -21,9 +19,10 @@ import java.lang.annotation.Target;
  * </pre>
  *
  * @author zpf
- * @since 1.1.0
- */
+ * @since 1.0.0
+ **/
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ExpiringSyncListener {
+@Documented
+public @interface AsyncListener {
 }

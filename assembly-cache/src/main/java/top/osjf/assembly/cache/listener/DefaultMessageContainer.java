@@ -7,13 +7,13 @@ import top.osjf.assembly.util.CloseableUtils;
  * Default abstract Expiring Load Listener container of key{@code  Object} and value {@code Object}
  *
  * @author zpf
- * @since 3.0.0
+ * @since 1.0.0
  */
-public abstract class MessageExpiringContainer implements ExpirationBytesBlocker {
+public abstract class DefaultMessageContainer implements ExpirationBytesBlocker {
 
     private static final long serialVersionUID = -3836350084112628115L;
 
-    private MessageExpiryCapable capable;
+    private MessageCapable capable;
 
     @Override
     public void expired(byte[] key, byte[] value) {
@@ -30,9 +30,10 @@ public abstract class MessageExpiringContainer implements ExpirationBytesBlocker
     }
 
     /**
-     * Will into a byte array to {@link Message}
+     * An abstract method for notifying expired messages, which can be implemented to
+     * obtain expired key/value cache values in a timely manner.
      *
-     * @param capable be a {@code message}
+     * @param capable A {@code message} implementation.
      */
-    public abstract void onMessage(MessageExpiryCapable capable);
+    public abstract void onMessage(MessageCapable capable);
 }

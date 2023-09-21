@@ -2,13 +2,14 @@ package top.osjf.assembly.cache.listener;
 
 import net.jodah.expiringmap.ExpirationListener;
 
+import java.io.Closeable;
 import java.io.Serializable;
 
 /**
- * Expiry blocker with {@link ExpirationListener} and auto close expiry source elements
+ * Cache blocker with {@link ExpirationListener} or other Listeners and auto close expiry source elements.
  *
  * @author zpf
- * @since 3.0.0
+ * @since 1.0.0
  */
-public interface ExpirationBytesBlocker extends ExpirationListener<byte[], byte[]>, AutoCloseable, Serializable {
+public interface ExpirationBytesBlocker extends ExpirationListener<byte[], byte[]>, Closeable, Serializable {
 }

@@ -4,15 +4,13 @@ import top.osjf.assembly.cache.core.OperationsException;
 import top.osjf.assembly.util.SerialUtils;
 import top.osjf.assembly.util.annotation.NotNull;
 
-import java.io.Serializable;
-
 /**
- * Deserialize objects with pair.
+ * When the expiration callback occurs, the relevant information of the key/value is stored.
  *
  * @author zpf
- * @since 3.0.0
+ * @since 1.0.0
  */
-public final class Message implements Serializable, MessageExpiryCapable {
+public final class Message implements MessageCapable {
 
     private static final long serialVersionUID = -8830456426162230361L;
 
@@ -56,7 +54,7 @@ public final class Message implements Serializable, MessageExpiryCapable {
     }
 
     /**
-     * The key value deserialization
+     * The key value deserialization.
      *
      * @param key   must not be {@literal null}
      * @param value must not be {@literal null}
