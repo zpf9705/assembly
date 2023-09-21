@@ -1,4 +1,4 @@
-package top.osjf.assembly.cache.core.persistence;
+package top.osjf.assembly.cache.persistence;
 
 import top.osjf.assembly.cache.core.Console;
 import top.osjf.assembly.util.annotation.CanNull;
@@ -12,9 +12,9 @@ import java.util.concurrent.TimeUnit;
  * Please refer to the implementation class for details.
  *
  * @author zpf
- * @since 3.0.0
+ * @since 1.0.0
  */
-public interface PersistenceSolver<K, V> {
+public interface CachePersistenceSolver<K, V> {
 
     /**
      * Put {@code key} and {@code value} and {@code duration} and {@code timeUnit} in to persistence
@@ -76,7 +76,7 @@ public interface PersistenceSolver<K, V> {
      * Remove all the cache files
      */
     default void removeAllPersistence() {
-        run(ExpireSimpleGlobePersistence.INSTANCE::removeAllPersistence, "removeAllPersistence");
+        run(AbstractCachePersistence::cleanAllCacheFile, "removeAllPersistence");
     }
 
     /**
@@ -86,7 +86,7 @@ public interface PersistenceSolver<K, V> {
      * @param method   method name
      */
     default void run(@NotNull Runnable runnable, @NotNull String method) {
-        MethodRunnableCapable capable = PersistenceRunner.getCapable();
+        MethodRunnableCapable capable = Runner.getCapable();
         capable.run(runnable,
                 esg -> Console.warn("Run the cache Persistence method [{}] An exception occurs [{}]", method, esg));
     }
