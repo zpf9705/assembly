@@ -6,8 +6,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import top.osjf.assembly.cache.config.expiringmap.ExpiringMapClients;
 import top.osjf.assembly.cache.factory.RecordActivationCenter;
 import top.osjf.assembly.cache.listener.MessageCapable;
-import top.osjf.assembly.cache.persistence.ExpireBytesPersistenceSolver;
-import top.osjf.assembly.cache.persistence.PersistenceSolver;
+import top.osjf.assembly.cache.persistence.BytesCachePersistenceSolver;
+import top.osjf.assembly.cache.persistence.CachePersistenceSolver;
 import top.osjf.assembly.util.SpiLoads;
 import top.osjf.assembly.util.annotation.NotNull;
 
@@ -146,8 +146,8 @@ public final class ExpireMapCenter extends RecordActivationCenter<ExpireMapCente
         //Remove control information
         this.getContain().remove(capable.getByteKey(), capable.getByteValue());
         //Remove persistent cache
-        PersistenceSolver<byte[], byte[]> solver = SpiLoads.findSpi(PersistenceSolver.class)
-                .getSpecifiedServiceBySubClass(ExpireBytesPersistenceSolver.class);
+        CachePersistenceSolver<byte[], byte[]> solver = SpiLoads.findSpi(CachePersistenceSolver.class)
+                .getSpecifiedServiceBySubClass(BytesCachePersistenceSolver.class);
         if (solver != null) {
             solver.removePersistence(capable.getByteKey(), capable.getByteValue());
         }
