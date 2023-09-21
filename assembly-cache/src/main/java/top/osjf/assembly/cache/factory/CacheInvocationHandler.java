@@ -2,7 +2,7 @@ package top.osjf.assembly.cache.factory;
 
 import top.osjf.assembly.cache.core.Console;
 import top.osjf.assembly.cache.persistence.PersistenceExec;
-import top.osjf.assembly.cache.persistence.PersistenceSolver;
+import top.osjf.assembly.cache.persistence.CachePersistenceSolver;
 import top.osjf.assembly.util.SpiLoads;
 import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
@@ -56,7 +56,7 @@ public class CacheInvocationHandler<T> implements InvocationHandler, Serializabl
         if (!exec.expectValue().test(result)) {
             return;
         }
-        PersistenceSolver solver = SpiLoads.findSpi(PersistenceSolver.class)
+        CachePersistenceSolver solver = SpiLoads.findSpi(CachePersistenceSolver.class)
                 .getSpecifiedServiceBySubClass(exec.shouldSolver());
         if (solver == null) {
             Console.warn("Provider Persistence [{}] shouldSolver load null", exec.shouldSolver().getName());
