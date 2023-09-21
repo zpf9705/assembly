@@ -28,7 +28,7 @@ public abstract class SerialUtils {
      * @return A byte array, on behalf of the moving object
      */
     @CanNull
-    public static byte[] serialize(@CanNull Object object) {
+    public static byte[] serialize(Object object) {
         if (object == null) {
             return null;
         }
