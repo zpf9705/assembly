@@ -13,19 +13,19 @@ import top.osjf.assembly.util.annotation.NotNull;
  */
 public class CacheFactoryAccessor implements InitializingBean {
 
-    private CacheExecutorFactory factory;
+    private CacheFactory factory;
 
     @Override
     public void afterPropertiesSet() {
-        Assert.isTrue(getCacheExecutorFactory() != null, "CacheExecutorFactory must not" +
+        Assert.isTrue(getCacheFactory() != null, "CacheExecutorFactory must not" +
                 "be null");
     }
 
-    public CacheExecutorFactory getCacheExecutorFactory() {
+    public CacheFactory getCacheFactory() {
         return this.factory;
     }
 
-    public void setCacheExecutorFactory(@NotNull CacheExecutorFactory factory) {
+    public void setCacheFactory(@NotNull CacheFactory factory) {
         this.factory = factory;
     }
 }
