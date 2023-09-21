@@ -11,6 +11,7 @@
 
     <artifactId>assembly-cache-boot-starter</artifactId>
     <version>1.0.0</version>
+    <packaging>jar</packaging>
     <description>Automatic assembly of lightweight cache projects [assembly cache].</description>
 
     <properties>

@@ -12,6 +12,7 @@
 
     <artifactId>assembly-cache</artifactId>
     <version>1.0.0</version>
+    <packaging>jar</packaging>
     <description>A lightweight caching component based on {net. jdah. expiringmap. ExpiringMap}.</description>
 
     <properties>

@@ -7,7 +7,7 @@ import java.io.IOException;
  * {@link okhttp3.OkHttpClient} for failed to throw ex to notify anything.
  *
  * @author zpf
- * @since 2.0.0
+ * @since 1.0.0
  */
 public class ResponseFailedException extends IOException {
 
