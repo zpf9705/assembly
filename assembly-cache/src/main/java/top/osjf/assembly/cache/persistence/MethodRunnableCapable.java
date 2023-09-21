@@ -5,7 +5,7 @@ import top.osjf.assembly.util.annotation.NotNull;
 import java.util.function.Consumer;
 
 /**
- * Method runnable choose for {@link Runnable}
+ * Method runnable choose for {@link Runnable}.
  *
  * @author zpf
  * @since 1.0.0
