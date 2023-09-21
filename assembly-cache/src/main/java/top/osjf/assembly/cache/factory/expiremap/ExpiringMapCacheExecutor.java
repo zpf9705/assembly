@@ -1,6 +1,6 @@
-package top.osjf.assembly.cache.help.expiremap;
+package top.osjf.assembly.cache.factory.expiremap;
 
-import top.osjf.assembly.cache.help.ExpireHelper;
+import top.osjf.assembly.cache.factory.CacheExecutor;
 import top.osjf.assembly.util.annotation.CanNull;
 
 import java.util.List;
@@ -8,13 +8,12 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * The expiry Helper broker interface map main to Convenient the JDK dynamic proxy approach to the operation
- * of the persistent object.
+ * {@link CacheExecutor} for {@link net.jodah.expiringmap.ExpiringMap}.
  *
  * @author zpf
- * @since 3.0.0
+ * @since 1.0.0
  */
-public interface ExpireMapHelper extends ExpireHelper {
+public interface ExpiringMapCacheExecutor extends CacheExecutor {
 
     /**
      * Proxy for {@link net.jodah.expiringmap.ExpiringMap#put(Object, Object)}
