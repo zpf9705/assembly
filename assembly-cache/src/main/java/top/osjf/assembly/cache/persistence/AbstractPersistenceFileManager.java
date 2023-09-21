@@ -1,8 +1,8 @@
-package top.osjf.assembly.cache.core.persistence;
+package top.osjf.assembly.cache.persistence;
 
 import cn.hutool.core.io.FileUtil;
 import org.apache.commons.lang3.StringUtils;
-import top.osjf.assembly.cache.util.AssertUtils;
+import org.springframework.util.Assert;
 import top.osjf.assembly.util.annotation.NotNull;
 
 import java.io.File;
@@ -29,7 +29,7 @@ import java.util.Collections;
  * Very useful file operations packaging tools {@link cn.hutool.Hutool}
  *
  * @author zpf
- * @since 1.1.0
+ * @since 1.0.0
  */
 public abstract class AbstractPersistenceFileManager extends FileUtil {
 
@@ -57,7 +57,7 @@ public abstract class AbstractPersistenceFileManager extends FileUtil {
      */
     public static void checkError(String persistencePath) {
         String[] pathArray = persistencePath.split("/");
-        AssertUtils.Persistence.notEmpty(pathArray,
+        Assert.notEmpty(pathArray,
                 "[" + persistencePath + "] no a path");
         String line = "";
         for (String path : pathArray) {
@@ -65,7 +65,7 @@ public abstract class AbstractPersistenceFileManager extends FileUtil {
                 continue;
             }
             line += "/" + path;
-            AssertUtils.Persistence.isTrue(isDirectory(line),
+            Assert.isTrue(isDirectory(line),
                     "[" + line + "] no a Directory for your file system");
         }
     }

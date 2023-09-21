@@ -1,4 +1,4 @@
-package top.osjf.assembly.cache.core.persistence;
+package top.osjf.assembly.cache.persistence;
 
 import org.apache.commons.lang3.StringUtils;
 import top.osjf.assembly.util.SystemUtils;
@@ -8,10 +8,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
 /**
- * Persistent files related configuration.
+ * Configuration property classes related to cache persistence.
  *
  * @author zpf
- * @since 3.0.0
+ * @since 1.0.0
  */
 public final class Configuration {
 
@@ -43,8 +43,8 @@ public final class Configuration {
     }
 
     /**
-     * Comparison when no input expiration time, the default Settings or default default
-     * expiration and default not persistent value of the size of the timestamp
+     * Comparison when no input expiration time, the default Settings or default
+     * expiration and default not persistent value of the size of the timestamp.
      */
     public static void compareDefaultCompareWithExpirePersistence() {
         if (!load.compareAndSet(false, true)) {
@@ -69,36 +69,36 @@ public final class Configuration {
     }
 
     /**
-     * For whether to open the cache persistent system configuration button
+     * For whether to open the cache persistent system configuration button.
      *
-     * @return if {@code true} will open
+     * @return if {@code true} will open.
      */
     public boolean getOpenPersistence() {
         return SystemUtils.getPropertyWithConvert(open_persistence, Boolean::parseBoolean, false);
     }
 
     /**
-     * For whether to open the cache persistence operation asynchronous execution system configuration
+     * For whether to open the cache persistence operation asynchronous execution system configuration.
      *
-     * @return if {@code true} will Async
+     * @return if {@code true} will Async.
      */
     public boolean getPersistenceAsync() {
         return SystemUtils.getPropertyWithConvert(persistenceRunAsync, Boolean::parseBoolean, false);
     }
 
     /**
-     * The persistent cache disk write path system configuration
+     * The persistent cache disk write path system configuration.
      *
-     * @return if not null {@code PersistencePath} will write this path
+     * @return if not null {@code PersistencePath} will write this path.
      */
     public String getPersistencePath() {
         return SystemUtils.getPropertyWithConvert(persistence_path, Function.identity(), null);
     }
 
     /**
-     * Obtain a maximum time of system configuration without persistence
+     * Obtain a maximum time of system configuration without persistence.
      *
-     * @return Below this time will not persistent
+     * @return Below this time will not persistent.
      */
     public long getNoPersistenceOfExpireTime() {
         return SystemUtils.getPropertyWithConvert(noPersistenceOfExpireTime, Long::parseLong,
@@ -106,45 +106,45 @@ public final class Configuration {
     }
 
     /**
-     * Obtain a maximum time unit of system configuration without persistence
+     * Obtain a maximum time unit of system configuration without persistence.
      *
-     * @return {@link #getNoPersistenceOfExpireTime()}
+     * @return {@link #getNoPersistenceOfExpireTime()}.
      */
     public TimeUnit getNoPersistenceOfExpireTimeUnit() {
         return SystemUtils.getPropertyWithConvert(noPersistenceOfExpireTimeUnit, TimeUnit::valueOf, null);
     }
 
     /**
-     * Get the default cache time system configuration
+     * Get the default cache time system configuration.
      *
-     * @return If you don't set the cache time, will use the configured
+     * @return If you don't set the cache time, will use the configured.
      */
     public long getDefaultExpireTime() {
         return SystemUtils.getPropertyWithConvert(defaultExpireTime, Long::parseLong, defaultExpireTimeExample);
     }
 
     /**
-     * Get the default cache time unit system configuration
+     * Get the default cache time unit system configuration.
      *
-     * @return {@link #getDefaultExpireTime()}
+     * @return {@link #getDefaultExpireTime()}.
      */
     public TimeUnit getDefaultExpireTimeUnit() {
         return SystemUtils.getPropertyWithConvert(defaultExpireTimeUnit, TimeUnit::valueOf, null);
     }
 
     /**
-     * Get choose cache client
+     * Get choose cache client.
      *
-     * @return choose client
+     * @return choose client.
      */
     public String getChooseClient() {
         return SystemUtils.getPropertyWithConvert(chooseClient, Function.identity(), null);
     }
 
     /**
-     * Get listening recovery path with finding sub for {@link ListeningRecovery}
+     * Get listening recovery path with finding sub for {@link ListeningRecovery}.
      *
-     * @return choose client
+     * @return choose client.
      */
     public String[] getListeningRecoverySubPath() {
         return SystemUtils.getPropertyWithConvert(listeningRecoverySubPath, Configuration::toStringArrayToConvertArray,
@@ -152,18 +152,18 @@ public final class Configuration {
     }
 
     /**
-     * Whether you need to obtain the default persistent identity
+     * Whether you need to obtain the default persistent identity.
      *
-     * @return if {@code true} persistence right
+     * @return if {@code true} persistence right.
      */
     public boolean isDefaultCompareWithExpirePersistence() {
         return defaultCompareWithExpirePersistence;
     }
 
     /**
-     * Get the default not persistent {@link TimeUnit#toMillis(long)} value
+     * Get the default not persistent {@link TimeUnit#toMillis(long)} value.
      *
-     * @return result
+     * @return result with long.
      */
     public long getDefaultNoPersistenceExpireTimeToMille() {
         return defaultNoPersistenceExpireTimeToMille;
