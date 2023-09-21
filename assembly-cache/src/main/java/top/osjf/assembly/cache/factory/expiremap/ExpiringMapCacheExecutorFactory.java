@@ -2,6 +2,7 @@ package top.osjf.assembly.cache.factory.expiremap;
 
 import top.osjf.assembly.cache.center.ExpireMapCenter;
 import top.osjf.assembly.cache.center.ExpiringMapCacheExecutor;
+import top.osjf.assembly.cache.config.expiringmap.ExpiringMapClients;
 import top.osjf.assembly.cache.factory.CacheExecutor;
 import top.osjf.assembly.cache.factory.CacheExecutorFactory;
 import top.osjf.assembly.cache.util.JdkProxyUtils;
