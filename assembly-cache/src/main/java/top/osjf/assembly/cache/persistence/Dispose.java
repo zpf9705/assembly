@@ -19,13 +19,13 @@ import java.util.concurrent.TimeUnit;
 public interface Dispose {
 
     /**
-     * Processing method for caching persistent files: Use {@link PersistenceSolver} to process {@link DisposeVariable}
+     * Processing method for caching persistent files: Use {@link CachePersistenceSolver} to process {@link DisposeVariable}
      * parameters.
      *
      * @param solver   must not be {@literal null}.
      * @param variable must not be {@literal null}.
      */
-    void dispose(@NotNull PersistenceSolver solver, @NotNull DisposeVariable variable);
+    void dispose(@NotNull CachePersistenceSolver solver, @NotNull DisposeVariable variable);
 
     /**
      * The execution method for cache files.
@@ -40,7 +40,7 @@ public interface Dispose {
      * @param solver must not be {@literal null}.
      * @param args   can be {@literal null}.
      */
-    default void dispose(@NotNull PersistenceSolver solver, @CanNull Object[] args) {
+    default void dispose(@NotNull CachePersistenceSolver solver, @CanNull Object[] args) {
         dispose(solver, convert(getExecType(), args));
     }
 
