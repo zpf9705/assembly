@@ -6,7 +6,6 @@ import top.osjf.assembly.cache.factory.CacheFactory;
 import top.osjf.assembly.cache.factory.CacheFactoryAccessor;
 import top.osjf.assembly.cache.serializer.PairSerializer;
 import top.osjf.assembly.cache.serializer.StringPairSerializer;
-import top.osjf.assembly.cache.util.AssertUtils;
 import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
 
@@ -103,7 +102,7 @@ public class CacheTemplate<K, V> extends CacheFactoryAccessor implements CacheCo
      * @param keySerializer key Serializer.
      */
     public void setKeySerializer(PairSerializer<K> keySerializer) {
-        AssertUtils.Operation.isTrue(this.keySerialize == null,
+        Assert.isTrue(this.keySerialize == null,
                 "kPairSerializer existing configuration values, please do not cover");
         this.keySerialize = keySerializer;
     }
@@ -114,7 +113,7 @@ public class CacheTemplate<K, V> extends CacheFactoryAccessor implements CacheCo
      * @param valueSerializer value Serializer.
      */
     public void setValueSerializer(PairSerializer<V> valueSerializer) {
-        AssertUtils.Operation.isTrue(this.valueSerialize == null,
+        Assert.isTrue(this.valueSerialize == null,
                 "vPairSerializer existing configuration values, please do not cover");
         this.valueSerialize = valueSerializer;
     }
@@ -207,7 +206,7 @@ public class CacheTemplate<K, V> extends CacheFactoryAccessor implements CacheCo
     }
 
     private byte[] rawKey(K key) {
-        AssertUtils.Operation.notNull(key, "Non null key required");
+        Assert.notNull(key, "Non null key required");
         byte[] v;
         if (this.keySerialize != null) {
             v = this.keySerialize.serialize(key);
@@ -231,7 +230,7 @@ public class CacheTemplate<K, V> extends CacheFactoryAccessor implements CacheCo
     }
 
     private byte[] rawValue(V value) {
-        AssertUtils.Operation.notNull(value, "Non null value required");
+        Assert.notNull(value, "Non null value required");
         byte[] v;
         if (this.valueSerialize != null) {
             v = this.valueSerialize.serialize(value);
