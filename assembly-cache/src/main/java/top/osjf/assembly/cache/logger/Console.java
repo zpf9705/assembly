@@ -19,7 +19,6 @@ public abstract class Console {
      *
      * @param format    the format string
      * @param arguments a list of arguments
-     * @since 2.3.0
      */
     public static void info(String format, Object... arguments) {
         logger.info(format, arguments);
@@ -31,7 +30,6 @@ public abstract class Console {
      *
      * @param msg the message accompanying the exception
      * @param e   the exception (throwable) to log
-     * @since 2.3.0
      */
     public static void info(String msg, Throwable e) {
         logger.info(msg, e);
@@ -43,7 +41,6 @@ public abstract class Console {
      *
      * @param format    the format string
      * @param arguments a list of arguments
-     * @since 2.3.0
      */
     public static void warn(String format, Object... arguments) {
         logger.warn(format, arguments);
@@ -55,7 +52,6 @@ public abstract class Console {
      *
      * @param msg the message accompanying the exception
      * @param e   the exception (throwable) to log
-     * @since 2.3.0
      */
     public static void warn(String msg, Throwable e) {
         logger.warn(msg, e);
@@ -67,7 +63,6 @@ public abstract class Console {
      *
      * @param format    the format string
      * @param arguments a list of arguments
-     * @since 2.3.0
      */
     public static void trace(String format, Object... arguments) {
         logger.trace(format, arguments);
@@ -79,7 +74,6 @@ public abstract class Console {
      *
      * @param msg the message accompanying the exception
      * @param e   the exception (throwable) to log
-     * @since 2.3.0
      */
     public static void trace(String msg, Throwable e) {
         logger.trace(msg, e);
@@ -91,7 +85,6 @@ public abstract class Console {
      *
      * @param format    the format string
      * @param arguments a list of arguments
-     * @since 2.3.0
      */
     public static void debug(String format, Object... arguments) {
         logger.debug(format, arguments);
@@ -103,7 +96,6 @@ public abstract class Console {
      *
      * @param msg the message accompanying the exception
      * @param e   the exception (throwable) to log
-     * @since 2.3.0
      */
     public static void debug(String msg, Throwable e) {
         logger.debug(msg, e);
@@ -115,7 +107,6 @@ public abstract class Console {
      *
      * @param format    the format string
      * @param arguments a list of arguments
-     * @since 2.3.0
      */
     public static void error(String format, Object... arguments) {
         logger.error(format, arguments);
@@ -127,7 +118,6 @@ public abstract class Console {
      *
      * @param msg the message accompanying the exception
      * @param e   the exception (throwable) to log
-     * @since 2.3.0
      */
     public static void error(String msg, Throwable e) {
         logger.error(msg, e);
