@@ -1,4 +1,4 @@
-package top.osjf.assembly.cache.help.expiremap;
+package top.osjf.assembly.cache.factory.expiremap;
 
 import net.jodah.expiringmap.ExpirationListener;
 import net.jodah.expiringmap.ExpirationPolicy;
@@ -17,10 +17,10 @@ import java.util.concurrent.TimeUnit;
  * Providing optional elements allows a more specific configuration of the client.
  *
  * @author zpf
- * @since 3.0.0
+ * @since 1.0.0
  */
 @SuppressWarnings("rawtypes")
-public interface ExpireMapClientConfiguration {
+public interface ExpiringMapClients {
 
     /**
      * Obtain the maximum number of additions for {@link net.jodah.expiringmap.ExpiringMap}
@@ -30,51 +30,51 @@ public interface ExpireMapClientConfiguration {
     Integer getMaxSize();
 
     /**
-     * Obtain the default cache time for {@link net.jodah.expiringmap.ExpiringMap}
+     * Obtain the default cache time for {@link net.jodah.expiringmap.ExpiringMap}.
      *
-     * @return {@literal Long} default expire time
+     * @return {@literal Long} default expire time.
      */
     Long getDefaultExpireTime();
 
     /**
-     * Obtain the default cache time unit of {@link #getDefaultExpireTime()}
+     * Obtain the default cache time unit of {@link #getDefaultExpireTime()}.
      *
-     * @return {@literal TimeUnit} default expire time unit
+     * @return {@literal TimeUnit} default expire time unit.
      */
     TimeUnit getDefaultExpireTimeUnit();
 
     /**
-     * For specific explanations, please refer to {@link ExpirationPolicy}
+     * For specific explanations, please refer to {@link ExpirationPolicy}.
      *
-     * @return {@literal ExpirationPolicy} default ExpirationPolicy
+     * @return {@literal ExpirationPolicy} default ExpirationPolicy.
      */
     ExpirationPolicy getExpirationPolicy();
 
     /**
-     * Get a collection of synchronization listeners
+     * Get a collection of synchronization listeners.
      *
-     * @return {@literal ExpirationPolicy} Cluster expired to monitor interface of sync
+     * @return {@literal ExpirationPolicy} Cluster expired to monitor interface of sync.
      */
     List<ExpirationListener> getSyncExpirationListeners();
 
     /**
-     * Get asynchronous listener collection
+     * Get asynchronous listener collection.
      *
-     * @return {@literal ExpirationPolicy} Cluster expired to monitor interface of async
+     * @return {@literal ExpirationPolicy} Cluster expired to monitor interface of async.
      */
     List<ExpirationListener> getASyncExpirationListeners();
 
     /**
-     * Create a new {@link ExpireMapClientConfigurationBuilder} to build {@link ExpireMapClientConfiguration} to be used
+     * Create a new {@link ExpiringMapClientsBuilder} to build {@link ExpiringMapClients} to be used.
      *
-     * @return a new {@link ExpireMapClientConfigurationBuilder} to build {@link ExpireMapClientConfiguration}
+     * @return a new {@link ExpiringMapClientsBuilder} to build {@link ExpiringMapClients}.
      */
-    static ExpireMapClientConfigurationBuilder builder() {
-        return new ExpireMapClientConfigurationBuilder();
+    static ExpiringMapClientsBuilder builder() {
+        return new ExpiringMapClientsBuilder();
     }
 
     /**
-     * Create a default new {@link ExpireMapClientConfigurationBuilder} to build {@link ExpireMapClientConfiguration}
+     * Create a default new {@link ExpiringMapClientsBuilder} to build {@link ExpiringMapClients}
      * <dl>
      *     <dt>max_size</dt>
      *     <dd>20*50</dd>
@@ -86,16 +86,16 @@ public interface ExpireMapClientConfiguration {
      *     <dd>ACCESSED</dd>
      * </dl>
      *
-     * @return a {@link ExpireMapClientConfiguration} with defaults.
+     * @return a {@link ExpiringMapClients} with defaults.
      */
-    static ExpireMapClientConfiguration defaultConfiguration() {
+    static ExpiringMapClients defaultConfiguration() {
         return builder().build();
     }
 
     /**
-     * Simple Construction Class of {@link ExpireMapClientConfiguration}
+     * Simple Construction Class of {@link ExpiringMapClients}
      */
-    class ExpireMapClientConfigurationBuilder {
+    class ExpiringMapClientsBuilder {
 
         @CanNull
         Integer maxSize;
@@ -112,16 +112,16 @@ public interface ExpireMapClientConfiguration {
         final List<ExpirationListener> syncExpirationListeners = new ArrayList<>();
         final List<ExpirationListener> asyncExpirationListeners = new ArrayList<>();
 
-        ExpireMapClientConfigurationBuilder() {
+        ExpiringMapClientsBuilder() {
         }
 
         /**
          * Given the map one of the biggest capacity
          *
          * @param maxSize The maximum capacity
-         * @return {@link ExpireMapClientConfigurationBuilder}
+         * @return {@link ExpiringMapClientsBuilder}
          */
-        public ExpireMapClientConfigurationBuilder acquireMaxSize(Integer maxSize) {
+        public ExpiringMapClientsBuilder acquireMaxSize(Integer maxSize) {
             AssertUtils.Operation.isTrue(this.maxSize == null,
                     "MaxSize existing configuration values, please do not cover");
             this.maxSize = maxSize;
@@ -132,9 +132,9 @@ public interface ExpireMapClientConfiguration {
          * Given the map of a default cache expiration time
          *
          * @param defaultExpireTime The default cache expiration time
-         * @return {@link ExpireMapClientConfigurationBuilder}
+         * @return {@link ExpiringMapClientsBuilder}
          */
-        public ExpireMapClientConfigurationBuilder acquireDefaultExpireTime(Long defaultExpireTime) {
+        public ExpiringMapClientsBuilder acquireDefaultExpireTime(Long defaultExpireTime) {
             AssertUtils.Operation.isTrue(this.defaultExpireTime == null,
                     "DefaultExpireTime existing configuration values, please do not cover");
             this.defaultExpireTime = defaultExpireTime;
@@ -145,9 +145,9 @@ public interface ExpireMapClientConfiguration {
          * Given the map of a default cache expiration time units
          *
          * @param defaultExpireTimeUnit The default cache expiration time units
-         * @return {@link ExpireMapClientConfigurationBuilder}
+         * @return {@link ExpiringMapClientsBuilder}
          */
-        public ExpireMapClientConfigurationBuilder acquireDefaultExpireTimeUnit(TimeUnit defaultExpireTimeUnit) {
+        public ExpiringMapClientsBuilder acquireDefaultExpireTimeUnit(TimeUnit defaultExpireTimeUnit) {
             AssertUtils.Operation.isTrue(this.defaultExpireTimeUnit == null,
                     "DefaultExpireTimeUnit existing configuration values, please do not cover");
             this.defaultExpireTimeUnit = defaultExpireTimeUnit;
@@ -158,9 +158,9 @@ public interface ExpireMapClientConfiguration {
          * Given the map of a default cache expiration expired strategy
          *
          * @param expirationPolicy The default cache expiration expired strategy
-         * @return {@link ExpireMapClientConfigurationBuilder}
+         * @return {@link ExpiringMapClientsBuilder}
          */
-        public ExpireMapClientConfigurationBuilder acquireDefaultExpirationPolicy(ExpirationPolicy expirationPolicy) {
+        public ExpiringMapClientsBuilder acquireDefaultExpirationPolicy(ExpirationPolicy expirationPolicy) {
             AssertUtils.Operation.isTrue(this.expirationPolicy == null,
                     "ExpirationPolicy existing configuration values, please do not cover");
             this.expirationPolicy = expirationPolicy;
@@ -190,11 +190,11 @@ public interface ExpireMapClientConfiguration {
         }
 
         /**
-         * Build the {@link ExpireMapClientConfiguration} with the configuration applied from this builder.
+         * Build the {@link ExpiringMapClients} with the configuration applied from this builder.
          *
-         * @return a new {@link ExpireMapClientConfiguration} implementation.
+         * @return a new {@link ExpiringMapClients} implementation.
          */
-        public ExpireMapClientConfiguration build() {
+        public DefaultExpiringMapClients build() {
             if (this.maxSize == null || this.maxSize == 0) {
                 this.maxSize = DEFAULT_MAX_SIZE;
             }
@@ -207,7 +207,7 @@ public interface ExpireMapClientConfiguration {
             if (this.expirationPolicy == null) {
                 this.expirationPolicy = DEFAULT_EXPIRATION_POLICY;
             }
-            return new DefaultExpireMapClientConfiguration(
+            return new DefaultExpiringMapClients(
                     this.maxSize,
                     this.defaultExpireTime,
                     this.defaultExpireTimeUnit,
