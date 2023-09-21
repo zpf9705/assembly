@@ -1,6 +1,6 @@
 package top.osjf.assembly.cache.listener;
 
-import top.osjf.assembly.cache.help.RecordActivationCenter;
+import top.osjf.assembly.cache.factory.RecordActivationCenter;
 import top.osjf.assembly.util.CloseableUtils;
 
 /**
