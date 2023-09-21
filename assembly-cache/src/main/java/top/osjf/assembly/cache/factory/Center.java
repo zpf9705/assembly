@@ -1,4 +1,4 @@
-package top.osjf.assembly.cache.help;
+package top.osjf.assembly.cache.factory;
 
 /**
  * This interface is the core interface for implementing caching methods and subsequent cache recovery and
@@ -8,7 +8,7 @@ package top.osjf.assembly.cache.help;
  * center (i.e. implementation of subsequent cache recovery methods) {@link ReloadCenter}
  *
  * @author zpf
- * @since 3.0.5
+ * @since 1.0.0
  */
 public interface Center<C, K, V> extends HelpCenter<C>, ReloadCenter<K, V> {
 }
