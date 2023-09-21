@@ -1,11 +1,11 @@
-package top.osjf.assembly.cache.help.expiremap;
+package top.osjf.assembly.cache.factory.expiremap;
 
-import top.osjf.assembly.cache.command.ExpireKeyCommands;
-import top.osjf.assembly.cache.command.ExpireStringCommands;
-import top.osjf.assembly.cache.command.expiremap.ExpireMapKeyCommands;
-import top.osjf.assembly.cache.command.expiremap.ExpireMapStringCommands;
-import top.osjf.assembly.cache.help.AbstractExpireHelper;
-import top.osjf.assembly.cache.help.HelpCenter;
+import top.osjf.assembly.cache.command.CacheKeyCommands;
+import top.osjf.assembly.cache.command.CachePairCommands;
+import top.osjf.assembly.cache.command.expiremap.ExpiringMapKeyCommands;
+import top.osjf.assembly.cache.command.expiremap.ExpiringMapPairCommands;
+import top.osjf.assembly.cache.factory.AbstractCacheExecutor;
+import top.osjf.assembly.cache.factory.HelpCenter;
 import top.osjf.assembly.util.annotation.CanNull;
 
 import java.util.*;
@@ -13,14 +13,16 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
- * {@code ExpireMapRealHelper} implementation of ExpireMapHelper.
+ * {@link net.jodah.expiringmap.ExpiringMap} The implementation class of the execution method
+ * interface for caching operations.
  *
  * @author zpf
- * @since 3.0.0
+ * @since 1.0.0
  */
-public class ExpireMapRealHelper extends AbstractExpireHelper<ExpireMapCenter> implements ExpireMapHelper {
+public class ExpiringMapCacheExecutorImpl extends AbstractCacheExecutor<ExpireMapCenter>
+        implements ExpiringMapCacheExecutor {
 
-    public ExpireMapRealHelper(HelpCenter<ExpireMapCenter> center) {
+    public ExpiringMapCacheExecutorImpl(HelpCenter<ExpireMapCenter> center) {
         super(center);
     }
 
@@ -29,8 +31,8 @@ public class ExpireMapRealHelper extends AbstractExpireHelper<ExpireMapCenter> i
      * @see io.github.zpf9705.expiring.connection.ExpireConnection#stringCommands()
      */
     @Override
-    public ExpireStringCommands stringCommands() {
-        return new ExpireMapStringCommands(this);
+    public CachePairCommands pairCommands() {
+        return new ExpiringMapPairCommands(this);
     }
 
     /*
@@ -38,8 +40,8 @@ public class ExpireMapRealHelper extends AbstractExpireHelper<ExpireMapCenter> i
      * @see io.github.zpf9705.expiring.connection.ExpireConnection#keyCommands()
      */
     @Override
-    public ExpireKeyCommands keyCommands() {
-        return new ExpireMapKeyCommands(this);
+    public CacheKeyCommands keyCommands() {
+        return new ExpiringMapKeyCommands(this);
     }
 
     /*
