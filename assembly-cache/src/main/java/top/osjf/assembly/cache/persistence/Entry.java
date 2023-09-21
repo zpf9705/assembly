@@ -1,4 +1,4 @@
-package top.osjf.assembly.cache.core.persistence;
+package top.osjf.assembly.cache.persistence;
 
 import top.osjf.assembly.util.annotation.NotNull;
 
@@ -6,10 +6,10 @@ import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Persistent cache category
+ * Cached indicator attribute class.
  *
  * @author zpf
- * @since 1.1.0
+ * @since 1.0.0
  **/
 public class Entry<K, V> implements Serializable {
 
