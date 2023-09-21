@@ -1,19 +1,19 @@
-package top.osjf.assembly.cache.core.persistence;
+package top.osjf.assembly.cache.persistence;
 
 import top.osjf.assembly.util.annotation.NotNull;
 
 /**
- * The cache persistence operation type
+ * The cache persistence operation type.
  *
  * @author zpf
- * @since 3.0.0
+ * @since 1.0.0
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public enum PersistenceExecTypeEnum implements Dispose {
 
     SET {
         @Override
-        public void dispose(@NotNull PersistenceSolver solver, @NotNull DisposeVariable variable) {
+        public void dispose(@NotNull CachePersistenceSolver solver, @NotNull DisposeVariable variable) {
             solver.putPersistence(variable.getKey(),
                     variable.getValue(),
                     variable.getDuration(),
@@ -21,37 +21,37 @@ public enum PersistenceExecTypeEnum implements Dispose {
         }
     }, REPLACE_VALUE {
         @Override
-        public void dispose(@NotNull PersistenceSolver solver, @NotNull DisposeVariable variable) {
+        public void dispose(@NotNull CachePersistenceSolver solver, @NotNull DisposeVariable variable) {
             solver.replaceValuePersistence(variable.getKey(),
                     variable.getNewValue());
         }
     }, REPLACE_DURATION {
         @Override
-        public void dispose(@NotNull PersistenceSolver solver, @NotNull DisposeVariable variable) {
+        public void dispose(@NotNull CachePersistenceSolver solver, @NotNull DisposeVariable variable) {
             solver.replaceDurationPersistence(variable.getKey(),
                     variable.getDuration(),
                     variable.getUnit());
         }
     }, REST_DURATION {
         @Override
-        public void dispose(@NotNull PersistenceSolver solver, @NotNull DisposeVariable variable) {
+        public void dispose(@NotNull CachePersistenceSolver solver, @NotNull DisposeVariable variable) {
             solver.restDurationPersistence(variable.getKey());
         }
     }, REMOVE_KEYS {
         @Override
-        public void dispose(@NotNull PersistenceSolver solver, @NotNull DisposeVariable variable) {
+        public void dispose(@NotNull CachePersistenceSolver solver, @NotNull DisposeVariable variable) {
             for (Object key : variable.getAnyKeys()) {
                 solver.removePersistenceWithKey(key);
             }
         }
     }, REMOVE_TYPE {
         @Override
-        public void dispose(@NotNull PersistenceSolver solver, @NotNull DisposeVariable variable) {
+        public void dispose(@NotNull CachePersistenceSolver solver, @NotNull DisposeVariable variable) {
             solver.removeSimilarKeyPersistence(variable.getKey());
         }
     }, REMOVE_ALL {
         @Override
-        public void dispose(@NotNull PersistenceSolver solver, @NotNull DisposeVariable variable) {
+        public void dispose(@NotNull CachePersistenceSolver solver, @NotNull DisposeVariable variable) {
             solver.removeAllPersistence();
         }
     };
