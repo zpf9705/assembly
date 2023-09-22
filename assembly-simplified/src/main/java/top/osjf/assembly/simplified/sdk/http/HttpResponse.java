@@ -4,6 +4,7 @@ import top.osjf.assembly.simplified.sdk.process.Response;
 
 /**
  * Occupy in HTTP mode, inherit {@link top.osjf.assembly.simplified.sdk.process.Response}.
+ *
  * <p>There are currently no extension methods available.</p>
  *
  * @author zpf

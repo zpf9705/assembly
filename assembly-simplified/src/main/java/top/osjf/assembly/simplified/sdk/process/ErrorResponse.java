@@ -3,11 +3,12 @@ package top.osjf.assembly.simplified.sdk.process;
 /**
  * When requesting an exception, a corresponding message is generated, and the corresponding
  * field is often not found through JSON conversion. At this point, this interface defines two standard methods.
- * <p>
- * In the event of an exception, the code and message are directly set through
+ *
+ * <p>In the event of an exception, the code and message are directly set through
  * {@link DefaultErrorResponse#parseErrorResponse(String, DefaultErrorResponse.ErrorType, Class)} conversion.
- * <p>
- * The user needs to rewrite these two methods to obtain the corresponding exception information.
+ *
+ * <p>The user needs to rewrite these two methods to obtain the corresponding exception information.
+ *
  * <p>The code is exclusively defined in {@link DefaultErrorResponse}.</p>
  *
  * @author zpf
@@ -27,6 +28,7 @@ public interface ErrorResponse {
      *     {@link top.osjf.assembly.simplified.sdk.client.PreProcessingResponseHandler#preResponseStrHandler(Request, String)}
      *     or {@link top.osjf.assembly.simplified.sdk.client.ResponseConvert#convertToResponse(Request, String)} methods.</dt>
      * </dl>
+     *
      * <p>When and only when the request fails, the success of the request can be determined based
      * on whether this method sends data.</p>
      *
@@ -38,6 +40,7 @@ public interface ErrorResponse {
      * The setting of abnormal conversion information, with the help of tool
      * {@link cn.hutool.core.exceptions.ExceptionUtil#stacktraceToOneLineString(Throwable)},
      * converts the abnormal information after conversion.
+     *
      * <p>When and only when the request fails, the success of the request can be determined based
      * on whether this method sends data.</p>
      *

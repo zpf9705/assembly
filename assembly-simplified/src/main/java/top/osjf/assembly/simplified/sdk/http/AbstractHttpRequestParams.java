@@ -7,8 +7,8 @@ import top.osjf.assembly.simplified.sdk.process.AbstractRequestParams;
 
 /**
  * Http request abstract node class, used to define the public parameters or methods of the real request parameter class.
- * <p>
- * You can check the example code:
+ *
+ * <p>You can check the example code:
  * <pre>
  * {@code
  * public class TestP extends AbstractHttpRequestParams<TestR> {

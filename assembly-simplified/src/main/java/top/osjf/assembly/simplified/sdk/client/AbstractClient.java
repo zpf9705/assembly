@@ -12,15 +12,15 @@ import java.util.function.Supplier;
 
 /**
  * The abstract auxiliary implementation class for {@link Client} holds public methods.
- * <p>
- * At the level of public method assistance, the main solution is to cache single instances {@link Client}
+ *
+ * <p>At the level of public method assistance, the main solution is to cache single instances {@link Client}
  * and periodic processing of parameters. Therefore, static {@link ConcurrentHashMap} and {@link NamedThreadLocal}
  * are introduced to achieve the above requirements, as well as some publicly available methods for obtaining
  * the above parameters, while ensuring thread safety.
- * <p>
- * You can directly inherit this class to achieve the above purpose.
- * <p>
- * If you do not need the above purpose, you can directly implement the {@link Client} interface to rewrite
+ *
+ * <p>You can directly inherit this class to achieve the above purpose.
+ *
+ * <p>If you do not need the above purpose, you can directly implement the {@link Client} interface to rewrite
  * the necessary methods.
  *
  * @author zpf

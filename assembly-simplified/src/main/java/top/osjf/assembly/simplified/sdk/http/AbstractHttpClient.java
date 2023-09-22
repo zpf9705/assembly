@@ -20,8 +20,8 @@ import java.util.function.BiConsumer;
  * SDK's HTTP request mode client abstract class inherits {@link AbstractClient} to implement the
  * client's caching for each request URL, defines the default conversion method for the HTTP request
  * process, as well as default log input, parameter thread acquisition, and so on.
- * <p>
- * Provide two default method rewrites.<br>
+ *
+ * <p>Provide two default method rewrites.<br>
  * {@link #preResponseStrHandler(Request, String)} The default response is in JSON form, without conversion,
  * and returns directly.<br>
  * {@link #convertToResponse(Request, String)} Directly converts the JSON form to the desired response type.<br>

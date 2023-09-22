@@ -7,10 +7,10 @@ import java.util.Map;
 
 /**
  * HTTP SDK related attribute method definition interface,mainly including URL concatenation .
- * <p>
- * Request scheme selection, and related custom enumeration names .
- * <p>
- * You can check the example code:
+ *
+ * <p>Request scheme selection, and related custom enumeration names .
+ *
+ * <p>You can check the example code:
  * <pre>
  * {@code
  * public enum Sdk implements HttpSdkEnum {

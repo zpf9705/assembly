@@ -5,6 +5,7 @@ import java.util.Map;
 
 /**
  * HTTP tool request client class based on Square's open-source products.
+ *
  * <p>Please refer to {@link CommonsHttpClient} for the specific request process.</p>
  *
  * @author zpf

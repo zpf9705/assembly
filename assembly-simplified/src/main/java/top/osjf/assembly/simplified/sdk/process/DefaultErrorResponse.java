@@ -9,6 +9,7 @@ import java.util.Objects;
 
 /**
  * Default response impl for {@link Response}.
+ *
  * <p>Used to handle exception requests.</p>
  *
  * @author zpf

@@ -13,14 +13,17 @@ import java.lang.reflect.Method;
 /**
  * Inheriting {@link AbstractJdkProxySupport} implements handing over the object of the jdk dynamic proxy
  * to the spring container for management.
+ *
  * <p>When this object is called, the {@link #invoke(Object, Method, Object[])} method will be executed
  * and passed to this abstract class.</p>
- * <p>
- * This class takes on the common parameter processing and converts it into the parameters required for SDK execution.</p>
- * <p>
- * The corresponding executor will be selected based on the full name of a single
+ *
+ * <p>This class takes on the common parameter processing and converts it into the parameters required for
+ * SDK execution.</p>
+ *
+ * <p>The corresponding executor will be selected based on the full name of a single
  * {@link top.osjf.assembly.simplified.sdk.client.Client},
  * as shown in {@link Request#getClientCls()}.
+ *
  * <p>Simply obtain the host parameter from the corresponding proxy class entity to complete the SDK request.</p>
  *
  * @author zpf

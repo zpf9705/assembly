@@ -9,12 +9,14 @@ import java.util.Map;
 
 /**
  * The definition method of the requested public node.
+ *
  * <p>It includes parameter acquisition {@link RequestParamCapable} required for the request,
  * parameter verification (intercepted in the form of {@link SdkException}), recording the
  * response body type for subsequent encapsulation conversion, and verifying the request header.</p>
- * <p>
- * The class object that can be rewritten to implement {@link Client} can be customized for logical
+ *
+ * <p>The class object that can be rewritten to implement {@link Client} can be customized for logical
  * implementation of methods in {@link Client}.
+ *
  * <p>On the basis of this interface, it can be extended, such as utilizing the request pattern
  * {@link top.osjf.assembly.simplified.sdk.http.HttpRequest} of HTTP to define special methods related to HTTP.</p>
  *

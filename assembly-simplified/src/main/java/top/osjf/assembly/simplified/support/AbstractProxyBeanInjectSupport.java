@@ -22,12 +22,23 @@ import java.lang.annotation.Annotation;
 import java.util.Set;
 
 /**
- * Abstract proxy bean defines Keygen,You can define your own switch annotations, scan representation annotations,
- * implement interface level automatic injection, and automatically create {@link BeanDefinition} implementation classes.
- * <ul>
- *     <li>{@code O} Enable proxy environment annotation{@link #getOpenClazz()}</li>
- *     <li>{@code F} Scanning Markup Class Annotations{@link #getFindClazz()}</li>
- * </ul>
+ * Manually register objects into the support classes of the Spring container.
+ *
+ * <p>With annotation usage as the core, the general process is to query and annotate
+ * an interface class for a certain annotation, construct a {@link BeanDefinition} based
+ * on the information, and inject it into the spring container.
+ *
+ * <p>This process can be enabled using an annotation switch.
+ *
+ * <p>For example, when the springboot program starts, if it detects that the container bean is
+ * wearing {@link top.osjf.assembly.simplified.sdk.annotation.EnableSdkProxyRegister} annotations,
+ * it will automatically search for the wearing annotation {@link top.osjf.assembly.simplified.sdk.annotation.Sdk}
+ * interface in this class and create an implementation class (refer to {@link AbstractJdkProxySupport}).
+ *
+ * <p>The implementation process depends on the bean's registrar interface {@link ImportBeanDefinitionRegistrar}.
+ *
+ * <p>The lookup of annotated interfaces depends on the interface {@link ResourceLoader} and
+ * {@link ClassPathScanningCandidateComponentProvider}.
  *
  * @author zpf
  * @since 1.1.0
@@ -62,7 +73,7 @@ public abstract class AbstractProxyBeanInjectSupport<O extends Annotation, F ext
                 .getName()));
         //AssertUtils to Analysis
         Assert.notNull(attributes, "Analysis " + getOpenClazz().getName() + " attribute encapsulation to " +
-                        "org.springframework.core.annotation.AnnotationAttributes failed");
+                "org.springframework.core.annotation.AnnotationAttributes failed");
         //Obtain Scan Path
         String[] basePackages = attributes.getStringArray(getPackagesSign());
         if (ArrayUtils.isEmpty(basePackages)) {
@@ -100,19 +111,19 @@ public abstract class AbstractProxyBeanInjectSupport<O extends Annotation, F ext
     }
 
     /**
-     * Register annotation association scanning class
+     * Register annotation association scanning class.
      *
-     * @param attributes Annotation Value Range
-     * @param registry   Bean Keygen
-     * @param meta       Associated annotation interface
+     * @param attributes Annotation value Range.
+     * @param registry   Bean Keygen.
+     * @param meta       Associated annotation interface.
      */
     public void beanRegister(AnnotationAttributes attributes, BeanDefinitionRegistry registry, AnnotationMetadata meta) {
     }
 
     /**
-     * Obtain a conditional class scanner based on the provided class object
+     * Provide a conditional class scanner based on the provided class object.
      *
-     * @return {@link ClassPathScanningCandidateComponentProvider}
+     * @return {@link ClassPathScanningCandidateComponentProvider}.
      */
     @NonNull
     public ClassPathScanningCandidateComponentProvider getClassPathScanUseAnnotationClass() {
@@ -131,25 +142,25 @@ public abstract class AbstractProxyBeanInjectSupport<O extends Annotation, F ext
     }
 
     /**
-     * Obtain the class object for opening class annotations
+     * Provide functionality to enable annotation class objects.
      *
-     * @return no be {@literal null}
+     * @return must not be {@literal null}.
      */
     @NonNull
     public abstract Class<O> getOpenClazz();
 
     /**
-     * Obtain the class object that identifies the class annotation
+     * Provide class objects for annotation of annotation classes.
      *
-     * @return no be {@literal null}
+     * @return must not be {@literal null}.
      */
     @NonNull
     public abstract Class<F> getFindClazz();
 
     /**
-     * Obtain path scan variable identification, default to {@code value}
+     * Provide path scan variable identification, default to {@code value}.
      *
-     * @return no be {@literal null}
+     * @return must not be {@literal null}.
      */
     @NonNull
     public String getPackagesSign() {
@@ -157,9 +168,9 @@ public abstract class AbstractProxyBeanInjectSupport<O extends Annotation, F ext
     }
 
     /**
-     * Get startup environment variables
+     * Get Spring startup environment variables.
      *
-     * @return {@link Environment}
+     * @return {@link Environment}.
      */
     @NonNull
     public Environment getEnvironment() {
