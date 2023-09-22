@@ -5,7 +5,7 @@ import top.osjf.assembly.util.annotation.NotNull;
 import java.io.Serializable;
 
 /**
- * Overdue message keys for interface
+ * Overdue message keys for interface.
  *
  * @author zpf
  * @since 1.0.0
