@@ -23,6 +23,7 @@ public class CacheProperties {
 
     /**
      * Whether to open the cache persistence.
+     *
      * <p>If setup this is {@code true} and will enable cache persistence and save the cache information
      * to the disk path where {@link #persistencePath} is located. </p>
      */
@@ -30,20 +31,24 @@ public class CacheProperties {
 
     /**
      * Whether to run cache persistence async.
+     *
      * <p>If setup this is {@code true} and will be executed asynchronously during cache persistence.</p>
      */
     private Boolean persistenceAsync = false;
 
     /**
      * Persistence Renew factory class.
+     *
      * <p>The default is {@link ByteCachePersistence}.</p>
      */
     private Class<? extends CachePersistenceReduction> persistenceReductionClass = ByteCachePersistence.class;
 
     /**
      * Attention : If you offer the persistent path.<br>
-     * Will automatically on your path to create persistent file.<br>
-     * If not we will create in the root of your project directory.<br>
+     *
+     * <p>Will automatically on your path to create persistent file.<br>
+     *
+     * <p>If not we will create in the root of your project directory.<br>
      */
     private String persistencePath = SystemUtils.getCurrentProjectPath() + "/expire/";
 
@@ -55,30 +60,35 @@ public class CacheProperties {
 
     /**
      * No persistence time the most value (that is less than all of this time are not given persistent).
+     *
      * <p>The default is {@code 20}.</p>
      */
     private Long noPersistenceOfExpireTime = 20L;
 
     /**
      * No persistence unit of time the most value.
+     *
      * <p>The default is {@code TimeUnit.SECONDS}.</p>
      */
     private TimeUnit noPersistenceOfExpireTimeUnit = TimeUnit.SECONDS;
 
     /**
      * Set a {@code defaultExpireTime} for default cache time.
+     *
      * <p>The default is {@code 30L}.</p>
      */
     private Long defaultExpireTime = 30L;
 
     /**
      * Set a {@code defaultExpireTimeUnit} for default cache time unit.
+     *
      * <p>The default is {@code TimeUnit.SECONDS}.</p>
      */
     private TimeUnit defaultExpireTimeUnit = TimeUnit.SECONDS;
 
     /**
      * Set a {@code client} for help source.
+     *
      * <p>The default is {@link  Client#EXPIRE_MAP}.</p>
      */
     private Client client = Client.EXPIRE_MAP;
@@ -180,20 +190,23 @@ public class CacheProperties {
 
         /**
          * Set a {@code maxsize} for map.
+         *
          * <p>The default is {@code 500}.</p>
          */
         private Integer maxSize = 500;
 
         /**
          * Set a {@code expirationPolicy} for map.
+         *
          * <p>The default is {@code ExpirationPolicy.ACCESSED}.</p>
          */
         private ExpirationPolicy expirationPolicy = ExpirationPolicy.ACCESSED;
 
         /**
          * Set a {@code listening packages} for map.
-         * <p>
-         * If it is null, the default is to use springboot to start the package path where the main class is located.
+         *
+         * <p>If it is null, the default is to use springboot to start the package path where the main class is located.
+         *
          * <p>{@link SourceEnvironmentPostProcessor}</p>
          */
         private String[] listeningPackages = SourceEnvironmentPostProcessor.findSpringbootPrimarySourcesPackages();
