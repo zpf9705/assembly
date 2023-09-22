@@ -38,6 +38,8 @@ public @interface Sdk {
      *
      * <p>Regarding the format of obtaining, there are currently two supported formats:
      * el expressions and regular dot separated (xxx. xxx).</p>
+     *
+     * @return Host configuration.
      */
     String hostProperty();
 }

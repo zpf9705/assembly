@@ -29,7 +29,7 @@ public class ExpiringMapCacheFactory implements CacheFactory {
      * Create a jdk proxy based {@link ExpiringMapCacheExecutor} object using its configuration
      * {@link ExpiringMapClients}.
      *
-     * @param clients The configuration interface for the Expiring map , must not be {@link null}.
+     * @param clients The configuration interface for the Expiring map , must not be {@literal null}.
      * @return The cache factory executor of the Expiring map.
      */
     public ExpiringMapCacheExecutor doCreateExpiringMapExecutor(ExpiringMapClients clients) {

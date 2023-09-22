@@ -12,7 +12,7 @@ package top.osjf.assembly.cache.factory;
 public interface HelpCenter<T> {
 
     /**
-     * Return a {@link HelpCenter} associated with this caching framework.
+     * @return A {@link HelpCenter} associated with this caching framework.
      */
     T getHelpCenter();
 }
