@@ -16,14 +16,17 @@ import java.util.Map;
 
 /**
  * The Square's HTTP client request tool class mainly includes four request methods: post, get, put, and del.
+ *
  * <p>And other methods that can be customized with HTTP support, link to method
  * {@link #doRequest(OkHttpClient, Request.Builder, Map)} }</p>
- * <p>
- * This class is a simple request tool for {@link OkHttpClient} and does not provide any other special functions.
+ *
+ * <p>This class is a simple request tool for {@link OkHttpClient} and does not provide any other special functions.
+ *
  * <p>If necessary, please implement it yourself.</p>
+ *
  * <p>Only suitable for use in this project.</p>
- * <p>
- * You need to note that the {@code montage} parameter determines whether parameters that are
+ *
+ * <p>You need to note that the {@code montage} parameter determines whether parameters that are
  * not {@literal null} need to be concatenated after the URL in the form of key/value,
  * and you need to pay attention to the concatenation rules of the
  * {@link #getRequestBuilder(String, Object, boolean, Map, String)}} method and the
