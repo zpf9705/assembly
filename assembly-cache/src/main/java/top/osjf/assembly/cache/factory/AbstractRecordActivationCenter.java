@@ -1,5 +1,6 @@
 package top.osjf.assembly.cache.factory;
 
+import org.springframework.util.Assert;
 import top.osjf.assembly.util.ByteContain;
 
 import java.io.Serializable;
@@ -12,7 +13,7 @@ import java.io.Serializable;
  * @since 1.0.0
  */
 @SuppressWarnings({"rawtypes", "serial"})
-public abstract class RecordActivationCenter<C, K, V> implements Center<C, K, V>, Serializable {
+public abstract class AbstractRecordActivationCenter<C, K, V> implements Center<C, K, V>, Serializable {
 
     protected static final ByteContain contain = new ByteContain(16);
 
@@ -24,7 +25,8 @@ public abstract class RecordActivationCenter<C, K, V> implements Center<C, K, V>
      * @param center Must not be {@literal null}.
      */
     public static synchronized void setSingletonCenter(Center center) {
-        if (center0 != null || center == null) {
+        Assert.notNull(center, "Center must not be null");
+        if (center0 != null) {
             return;
         }
         center0 = center;

@@ -4,7 +4,7 @@ import net.jodah.expiringmap.ExpirationListener;
 import net.jodah.expiringmap.ExpiringMap;
 import org.apache.commons.collections4.CollectionUtils;
 import top.osjf.assembly.cache.config.expiringmap.ExpiringMapClients;
-import top.osjf.assembly.cache.factory.RecordActivationCenter;
+import top.osjf.assembly.cache.factory.AbstractRecordActivationCenter;
 import top.osjf.assembly.cache.listener.MessageCapable;
 import top.osjf.assembly.cache.persistence.BytesCachePersistenceSolver;
 import top.osjf.assembly.cache.persistence.CachePersistenceSolver;
@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
  * <p>
  * This class will help implement the method of using {@link ExpiringMapClients}to configure .
  * <p>
- * Singleton objects of {@link ExpiringMap} and placing them in {@link RecordActivationCenter},
+ * Singleton objects of {@link ExpiringMap} and placing them in {@link AbstractRecordActivationCenter},
  * as well as rewriting and caching information read through file recovery.
  * <p>
  * Once this class is encapsulated, it is not allowed to instantiate empty constructs.
@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
  * @author zpf
  * @since 1.0.0
  */
-public final class ExpireMapCenter extends RecordActivationCenter<ExpireMapCenter, byte[], byte[]> {
+public final class ExpireMapCenter extends AbstractRecordActivationCenter<ExpireMapCenter, byte[], byte[]> {
 
     private static final long serialVersionUID = -7878806306402600655L;
 

@@ -26,6 +26,6 @@ public interface HelpCenter<T> {
      * @return {@link ByteContain}.
      */
     default ByteContain getContain() {
-        return RecordActivationCenter.contain;
+        return AbstractRecordActivationCenter.contain;
     }
 }

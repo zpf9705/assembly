@@ -1,6 +1,6 @@
 package top.osjf.assembly.cache.listener;
 
-import top.osjf.assembly.cache.factory.RecordActivationCenter;
+import top.osjf.assembly.cache.factory.AbstractRecordActivationCenter;
 import top.osjf.assembly.util.CloseableUtils;
 
 /**
@@ -26,7 +26,7 @@ public abstract class DefaultMessageContainer implements ExpirationBytesBlocker 
 
     @Override
     public void close() {
-        RecordActivationCenter.getSingletonCenter().cleanSupportingElements(capable);
+        AbstractRecordActivationCenter.getSingletonCenter().cleanSupportingElements(capable);
     }
 
     /**

@@ -829,7 +829,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
         //Calculate remaining time units
         Long condition = condition(currentTimeMillis, persistence.getExpire(), entry.getTimeUnit());
         //reload
-        RecordActivationCenter.getSingletonCenter().reload(entry.getKey(),
+        AbstractRecordActivationCenter.getSingletonCenter().reload(entry.getKey(),
                 entry.getValue(),
                 condition,
                 entry.getTimeUnit());
