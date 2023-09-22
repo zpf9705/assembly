@@ -162,10 +162,10 @@ public class ExpiringMapConfiguration extends CacheCommonsConfiguration implemen
     /**
      * Find a listening class that carries {@link SyncListener} or {@link AsyncListener} in the specified path,
      * as it needs to be instantiated.
-     * <p>
-     * If an interface or abstract class is scanned, it will be scanned for its implementation self class.
-     * <p>
-     * If it is not, it will not be possible to add listening.
+     *
+     * <p>If an interface or abstract class is scanned, it will be scanned for its implementation self class.
+     *
+     * <p>If it is not, it will not be possible to add listening.
      *
      * @return Sync listeners and async listeners.
      */
