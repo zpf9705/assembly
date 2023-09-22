@@ -1,6 +1,7 @@
 package top.osjf.assembly.cache.listener;
 
 import net.jodah.expiringmap.ExpirationListener;
+import top.osjf.assembly.util.data.ByteIdentify;
 
 import java.io.Closeable;
 import java.io.Serializable;
@@ -11,5 +12,5 @@ import java.io.Serializable;
  * @author zpf
  * @since 1.0.0
  */
-public interface ExpirationBytesBlocker extends ExpirationListener<byte[], byte[]>, Closeable, Serializable {
+public interface ExpirationBytesBlocker extends ExpirationListener<ByteIdentify, ByteIdentify>, Closeable, Serializable {
 }

@@ -2,6 +2,7 @@ package top.osjf.assembly.cache.listener;
 
 import top.osjf.assembly.cache.factory.AbstractRecordActivationCenter;
 import top.osjf.assembly.util.CloseableUtils;
+import top.osjf.assembly.util.data.ByteIdentify;
 
 /**
  * Default abstract Expiring Load Listener container of key{@code  Object} and value {@code Object}
@@ -16,8 +17,8 @@ public abstract class DefaultMessageContainer implements ExpirationBytesBlocker 
     private MessageCapable capable;
 
     @Override
-    public void expired(byte[] key, byte[] value) {
-        this.capable = Message.serial(key, value);
+    public void expired(ByteIdentify key, ByteIdentify value) {
+        this.capable = Message.serial(key.getVar(), value.getVar());
         //notify
         onMessage(this.capable);
         //clean Persistence with key and value
