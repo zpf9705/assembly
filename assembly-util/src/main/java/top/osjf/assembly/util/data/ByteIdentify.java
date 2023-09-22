@@ -9,8 +9,10 @@ import java.util.Arrays;
 /**
  * The authentication object of byte numbers mainly solves the problem of byte serialization address
  * values changing.<br>
+ *
  * Rewrite the {@link #hashCode()} method to mask address value verification and instead add byte
  * array values to obtain a new {@code hashCode} value.<br>
+ *
  * Rewritten the {@link #equals(Object)} method to determine that the value of {@link ByteIdentify}
  * remains consistent only when the tangent is lower than {@code hashcode}.
  *
