@@ -1,31 +1,18 @@
 package top.osjf.assembly.cache.factory;
 
-import top.osjf.assembly.cache.factory.expiremap.ExpireMapCenter;
-import top.osjf.assembly.util.ByteContain;
-
 /**
- * Core cache to help implement the interface , establish the cache help center.
- * <p>
- * Example:
- * <ul>
- *     <li>{@link ExpireMapCenter}</li>
- *     <li>...</li>
- * </ul>
+ * Interface indicating a component that contains and exposes an {@link HelpCenter} reference.
+ *
+ * <p>Obtain a fully configured cache framework component based on this interface and place it
+ * in its execution class to be called at runtime.</p>
  *
  * @author zpf
  * @since 1.0.0
  */
-@FunctionalInterface
 public interface HelpCenter<T> {
 
-    T getHelpCenter();
-
     /**
-     * Obtain a thread safe storage class for recording unique byte value ranges.
-     *
-     * @return {@link ByteContain}.
+     * Return a {@link HelpCenter} associated with this caching framework.
      */
-    default ByteContain getContain() {
-        return AbstractRecordActivationCenter.contain;
-    }
+    T getHelpCenter();
 }
