@@ -1,5 +1,6 @@
 package top.osjf.assembly.cache.operations;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.util.Assert;
 import top.osjf.assembly.cache.command.CacheKeyCommands;
 import top.osjf.assembly.cache.factory.CacheFactory;
@@ -166,7 +167,7 @@ public class CacheTemplate<K, V> extends CacheFactoryAccessor implements CacheCo
     @CanNull
     @Override
     public Long delete(Collection<K> keys) {
-        if (keys == null || keys.isEmpty()) {
+        if (CollectionUtils.isEmpty(keys)) {
             return 0L;
         }
         return this.execute((executor) -> executor.delete(
