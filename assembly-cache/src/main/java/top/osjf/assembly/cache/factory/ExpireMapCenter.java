@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
  * as well as rewriting and caching information read through file recovery.
  * <p>
  * Once this class is encapsulated, it is not allowed to instantiate empty constructs.
- * It must be done through the above method and always maintain a unique operand.
+ * <p>It must be done through the above method and always maintain a unique operand.</p>
  *
  * @author zpf
  * @since 1.0.0
@@ -58,10 +58,10 @@ public class ExpireMapCenter extends AbstractRecordActivationCenter<ExpireMapCen
     }
 
     /**
-     * Singleton with {@code ExpireMapClientConfiguration}
+     * Singleton with {@code ExpireMapClientConfiguration}.
      *
      * @param clients must no be {@literal null}.
-     * @return {@link net.jodah.expiringmap.ExpiringMap}
+     * @return A {@link net.jodah.expiringmap.ExpiringMap}.
      */
     protected static ExpireMapCenter singletonWithConfiguration(@NotNull ExpiringMapClients clients) {
         if (expireMapCenter == null) {
@@ -78,7 +78,7 @@ public class ExpireMapCenter extends AbstractRecordActivationCenter<ExpireMapCen
     /**
      * Get Singleton instance for {@code ExpireMapCenter}.
      *
-     * @return {@link ExpireMapCenter}.
+     * @return A {@link ExpireMapCenter}.
      */
     public static ExpireMapCenter getExpireMapCenter() {
         Objects.requireNonNull(expireMapCenter, "ExpireMapCenter no Initialize");
@@ -88,7 +88,7 @@ public class ExpireMapCenter extends AbstractRecordActivationCenter<ExpireMapCen
     /**
      * Get operation with a {@code ExpiringMap}.
      *
-     * @return {@link net.jodah.expiringmap.ExpiringMap}
+     * @return A {@link net.jodah.expiringmap.ExpiringMap}.
      */
     public ExpiringMap<ByteIdentify, ByteIdentify> getSingleton() {
         return this.singleton;
