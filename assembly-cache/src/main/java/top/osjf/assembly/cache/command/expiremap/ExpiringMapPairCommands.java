@@ -1,6 +1,6 @@
 package top.osjf.assembly.cache.command.expiremap;
 
-import top.osjf.assembly.cache.factory.expiremap.ExpiringMapCacheExecutor;
+import top.osjf.assembly.cache.factory.ExpiringMapCacheExecutor;
 import top.osjf.assembly.cache.command.CachePairCommands;
 
 import java.util.concurrent.TimeUnit;

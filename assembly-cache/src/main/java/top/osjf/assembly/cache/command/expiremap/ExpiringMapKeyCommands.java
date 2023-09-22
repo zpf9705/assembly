@@ -1,6 +1,6 @@
 package top.osjf.assembly.cache.command.expiremap;
 
-import top.osjf.assembly.cache.factory.expiremap.ExpiringMapCacheExecutor;
+import top.osjf.assembly.cache.factory.ExpiringMapCacheExecutor;
 import top.osjf.assembly.cache.command.CacheKeyCommands;
 import top.osjf.assembly.util.annotation.CanNull;
 
@@ -29,7 +29,7 @@ public class ExpiringMapKeyCommands implements CacheKeyCommands {
     @CanNull
     @Override
     public Long delete(byte[]... keys) {
-        return this.delegate.deleteReturnSuccessNum(keys);
+        return this.delegate.deleteByKeys(keys);
     }
 
     /*
@@ -65,7 +65,7 @@ public class ExpiringMapKeyCommands implements CacheKeyCommands {
      */
     @Override
     public List<byte[]> getSimilarKeys(byte[] rawKey) {
-        return this.delegate.getKeysByKeys(rawKey);
+        return this.delegate.findSimilarKeys(rawKey);
     }
 
     /*
