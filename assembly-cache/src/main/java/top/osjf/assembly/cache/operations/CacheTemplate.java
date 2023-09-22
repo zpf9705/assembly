@@ -24,8 +24,8 @@ import java.util.Map;
  * For String intensive operations consider the dedicated {@link StringCacheTemplate}.
  * <p>
  * The Expiry of the template model , imitate expireTemplate encapsulation mode
- * The cache operation way to connect assembly simulation for the connection,
- * and is equipped with a variety of connection factory
+ * The cache operation way to connect assembly simulation for the executor,
+ * and is equipped with a variety of executor factory
  * <p>
  * When the configuration is completed of this class are thread safe operation.
  * <p>
@@ -157,7 +157,7 @@ public class CacheTemplate<K, V> extends CacheFactoryAccessor implements CacheCo
     @CanNull
     @Override
     public Boolean delete(K key) {
-        Long result = execute((connection) -> connection.delete(
+        Long result = execute((executor) -> executor.delete(
                 this.rawKey(key)
         ));
         return result != null && result.intValue() == 1;
@@ -169,7 +169,7 @@ public class CacheTemplate<K, V> extends CacheFactoryAccessor implements CacheCo
         if (keys == null || keys.isEmpty()) {
             return 0L;
         }
-        return this.execute((connection) -> connection.delete(
+        return this.execute((executor) -> executor.delete(
                 this.rawKeys(keys)
         ));
     }
@@ -177,7 +177,7 @@ public class CacheTemplate<K, V> extends CacheFactoryAccessor implements CacheCo
     @Override
     public Map<K, V> deleteType(K key) {
 
-        Map<byte[], byte[]> map = this.execute((connection) -> connection.deleteType(
+        Map<byte[], byte[]> map = this.execute((executor) -> executor.deleteType(
                 this.rawKey(key)
         ));
 
@@ -200,7 +200,7 @@ public class CacheTemplate<K, V> extends CacheFactoryAccessor implements CacheCo
 
     @Override
     public Boolean exist(K key) {
-        return this.execute((connection) -> connection.hasKey(
+        return this.execute((executor) -> executor.hasKey(
                 this.rawKey(key)
         ));
     }
