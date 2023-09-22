@@ -14,10 +14,10 @@ import java.util.function.Supplier;
 
 /**
  * The implementation subject of the prosecutor mode method operation
- * <p>
- * The relevant operational parameter definitions for {@link Flowable} are completed here
- * <p>
- * The specific application method of the above parameters can be queried
+ *
+ * <p>The relevant operational parameter definitions for {@link Flowable} are completed here
+ *
+ * <p>The specific application method of the above parameters can be queried
  * {@link Observer#run(Supplier, Class, Predicate, Function)}
  * <pre>
  *     {@code

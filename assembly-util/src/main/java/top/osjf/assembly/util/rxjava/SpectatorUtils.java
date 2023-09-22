@@ -17,21 +17,21 @@ import java.util.function.Supplier;
 
 /**
  * This tool class is mainly designed to encapsulate the {@link Flowable} of rxJava3 .
- * <p>
- * Mainly for call schemes with return values, without any memory impact on subscription
+ *
+ * <p>Mainly for call schemes with return values, without any memory impact on subscription
  * relationships. For those without return values, please refer to {@link Spectator}.
  * For subscription relationship clearing and releasing, please refer to {@link DisposableUtils}
- * <p>
- * The main approach is to implement retry and method conversion during the process of
+ *
+ * <p>The main approach is to implement retry and method conversion during the process of
  * calling the method body, relying on its producer to call our runtime to produce data
  * and send it to consumers waiting for blocking to obtain the return value.
- * <p>
- * If an exception occurs during the process, it will be retried.
+ *
+ * <p>If an exception occurs during the process, it will be retried.
  * Additionally, a retry interval is provided, which can be set according to one's
  * own business needs. Here, only producers are planned to produce one data at a time,
  * so a single value is taken away.
- * <p>
- * Generally, in project interface calls, we often use {@link #runWhileTrampoline(Supplier, Class[], int, long, Class)}
+ *
+ * <p>Generally, in project interface calls, we often use {@link #runWhileTrampoline(Supplier, Class[], int, long, Class)}
  * to synchronize interface calls. This method effectively implements functions such as
  * abnormal retry and retry intermittency. In fact, the method API is not commonly used,
  * but can be combined arbitrarily through {@link #runWhile(Supplier, Class[], int, long, Executor, Executor, Class)}
