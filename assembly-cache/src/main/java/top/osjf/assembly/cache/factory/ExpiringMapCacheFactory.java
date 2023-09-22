@@ -1,10 +1,8 @@
-package top.osjf.assembly.cache.factory.expiremap;
+package top.osjf.assembly.cache.factory;
 
 import cn.hutool.aop.ProxyUtil;
 import top.osjf.assembly.cache.command.expiremap.ExpiringMapInvocationHandler;
 import top.osjf.assembly.cache.config.expiringmap.ExpiringMapClients;
-import top.osjf.assembly.cache.factory.CacheExecutor;
-import top.osjf.assembly.cache.factory.CacheFactory;
 import top.osjf.assembly.util.annotation.NotNull;
 
 /**
@@ -27,7 +25,13 @@ public class ExpiringMapCacheFactory implements CacheFactory {
         return this.executor;
     }
 
-
+    /**
+     * Create a jdk proxy based {@link ExpiringMapCacheExecutor} object using its configuration
+     * {@link ExpiringMapClients}.
+     *
+     * @param clients The configuration interface for the Expiring map , must not be {@link null}.
+     * @return The cache factory executor of the Expiring map.
+     */
     public ExpiringMapCacheExecutor doCreateExpiringMapExecutor(ExpiringMapClients clients) {
         //Real object generated singleton operation
         ExpireMapCenter expireMapCenter = ExpireMapCenter.singletonWithConfiguration(clients);
