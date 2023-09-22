@@ -1,6 +1,5 @@
-package top.osjf.assembly.cache.factory.expiremap;
+package top.osjf.assembly.cache.factory;
 
-import top.osjf.assembly.cache.factory.CacheExecutor;
 import top.osjf.assembly.util.annotation.CanNull;
 
 import java.util.List;
@@ -8,7 +7,12 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * {@link CacheExecutor} for {@link net.jodah.expiringmap.ExpiringMap}.
+ * The cache factory executor of the Expiring map.<br>
+ * Used to call one's own method.<br>
+ * <p>
+ * Here, we also list the instruction methods in reference
+ * {@link top.osjf.assembly.cache.command.CacheCommands} to provide the final implementation
+ * for the instruction methods.
  *
  * @author zpf
  * @since 1.0.0
@@ -69,7 +73,7 @@ public interface ExpiringMapCacheExecutor extends CacheExecutor {
      * @param key must not be {@literal null}
      * @return Returns result value.
      */
-    List<byte[]> getKeysByKeys(byte[] key);
+    List<byte[]> findSimilarKeys(byte[] key);
 
     /**
      * Execute on {@link net.jodah.expiringmap.ExpiringMap#replace(Object, Object)}.
@@ -87,7 +91,7 @@ public interface ExpiringMapCacheExecutor extends CacheExecutor {
      * @return Returns result value.
      */
     @CanNull
-    Long deleteReturnSuccessNum(byte[]... keys);
+    Long deleteByKeys(byte[]... keys);
 
     /**
      * Execute on {@link net.jodah.expiringmap.ExpiringMap#remove(Object)}}.
