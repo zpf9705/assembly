@@ -6,7 +6,14 @@ import top.osjf.assembly.cache.serializer.PairSerializer;
 import top.osjf.assembly.util.annotation.CanNull;
 
 /**
- * This abstract class is mainly described {@link CacheTemplate} some behavioral methods.
+ * In order to be compatible with all data types related to the Java language,
+ * this abstract class uniformly converts data into byte arrays and passes them to the cache center.
+ *
+ * <p>Introducing intermediate abstraction {@link ValueDeserializingCacheCallback},
+ * as not all methods require serialization of {@code Value} values, only {@code Key}
+ * serialization is listed here.
+ *
+ * <p>If there is a serialization requirement for {@code Value}, {@link #rawValue(Object)} can be called separately.
  *
  * @author zpf
  * @since 1.0.0
