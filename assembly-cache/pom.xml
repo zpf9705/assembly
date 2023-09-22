@@ -21,6 +21,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <expiringmap>0.5.10</expiringmap>
         <util>1.0.0</util>
+        <slf4j>1.7.32</slf4j>
     </properties>
 
     <dependencies>
@@ -37,7 +38,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.32</version>
+            <version>${slf4j}</version>
         </dependency>
         <dependency>
             <groupId>top.osjf</groupId>

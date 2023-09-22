@@ -4,7 +4,7 @@ package top.osjf.assembly.cache.logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * System log input class, using {@link org.slf4j.Logger}
+ * System log input class, using {@link org.slf4j.Logger}.
  *
  * @author zpf
  * @since 1.0.0

@@ -25,7 +25,7 @@ public interface ExpiringMapClients {
     /**
      * Obtain the maximum number of additions for {@link net.jodah.expiringmap.ExpiringMap}
      *
-     * @return {@literal Integer} map max save size
+     * @return {@literal Integer} map max save size.
      */
     Integer getMaxSize();
 
@@ -116,10 +116,10 @@ public interface ExpiringMapClients {
         }
 
         /**
-         * Given the map one of the biggest capacity
+         * Given the map one of the biggest capacity.
          *
-         * @param maxSize The maximum capacity
-         * @return {@link ExpiringMapClientsBuilder}
+         * @param maxSize The maximum capacity.
+         * @return {@link ExpiringMapClientsBuilder}.
          */
         public ExpiringMapClientsBuilder acquireMaxSize(Integer maxSize) {
             Assert.isTrue(this.maxSize == null,
@@ -129,10 +129,10 @@ public interface ExpiringMapClients {
         }
 
         /**
-         * Given the map of a default cache expiration time
+         * Given the map of a default cache expiration time.
          *
-         * @param defaultExpireTime The default cache expiration time
-         * @return {@link ExpiringMapClientsBuilder}
+         * @param defaultExpireTime The default cache expiration time.
+         * @return {@link ExpiringMapClientsBuilder}.
          */
         public ExpiringMapClientsBuilder acquireDefaultExpireTime(Long defaultExpireTime) {
             Assert.isTrue(this.defaultExpireTime == null,
@@ -142,10 +142,10 @@ public interface ExpiringMapClients {
         }
 
         /**
-         * Given the map of a default cache expiration time units
+         * Given the map of a default cache expiration time units.
          *
-         * @param defaultExpireTimeUnit The default cache expiration time units
-         * @return {@link ExpiringMapClientsBuilder}
+         * @param defaultExpireTimeUnit The default cache expiration time units.
+         * @return {@link ExpiringMapClientsBuilder}.
          */
         public ExpiringMapClientsBuilder acquireDefaultExpireTimeUnit(TimeUnit defaultExpireTimeUnit) {
             Assert.isTrue(this.defaultExpireTimeUnit == null,
@@ -155,10 +155,10 @@ public interface ExpiringMapClients {
         }
 
         /**
-         * Given the map of a default cache expiration expired strategy
+         * Given the map of a default cache expiration expired strategy.
          *
-         * @param expirationPolicy The default cache expiration expired strategy
-         * @return {@link ExpiringMapClientsBuilder}
+         * @param expirationPolicy The default cache expiration expired strategy.
+         * @return {@link ExpiringMapClientsBuilder}.
          */
         public ExpiringMapClientsBuilder acquireDefaultExpirationPolicy(ExpirationPolicy expirationPolicy) {
             Assert.isTrue(this.expirationPolicy == null,
@@ -168,9 +168,9 @@ public interface ExpiringMapClients {
         }
 
         /**
-         * Increase the sync expired listeners
+         * Increase the sync expired listeners.
          *
-         * @param expirationListener {@link ExpirationListener}
+         * @param expirationListener {@link ExpirationListener}.
          */
         public void addSyncExpiredListener(ExpirationListener expirationListener) {
             if (expirationListener != null) {
@@ -179,9 +179,9 @@ public interface ExpiringMapClients {
         }
 
         /**
-         * Increase the async expired listeners
+         * Increase the async expired listeners.
          *
-         * @param expirationListener {@link ExpirationListener}
+         * @param expirationListener {@link ExpirationListener}.
          */
         public void addASyncExpiredListener(ExpirationListener expirationListener) {
             if (expirationListener != null) {
