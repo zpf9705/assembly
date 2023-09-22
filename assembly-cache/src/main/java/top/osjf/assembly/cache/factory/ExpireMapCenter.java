@@ -1,13 +1,13 @@
-package top.osjf.assembly.cache.factory.expiremap;
+package top.osjf.assembly.cache.factory;
 
 import net.jodah.expiringmap.ExpirationListener;
 import net.jodah.expiringmap.ExpiringMap;
 import org.apache.commons.collections4.CollectionUtils;
 import top.osjf.assembly.cache.config.expiringmap.ExpiringMapClients;
-import top.osjf.assembly.cache.factory.AbstractRecordActivationCenter;
 import top.osjf.assembly.cache.listener.MessageCapable;
 import top.osjf.assembly.cache.persistence.BytesCachePersistenceSolver;
 import top.osjf.assembly.cache.persistence.CachePersistenceSolver;
+import top.osjf.assembly.util.data.ByteIdentify;
 import top.osjf.assembly.util.SpiLoads;
 import top.osjf.assembly.util.annotation.NotNull;
 
@@ -28,33 +28,33 @@ import java.util.concurrent.TimeUnit;
  * @author zpf
  * @since 1.0.0
  */
-public final class ExpireMapCenter extends AbstractRecordActivationCenter<ExpireMapCenter, byte[], byte[]> {
+public class ExpireMapCenter extends AbstractRecordActivationCenter<ExpireMapCenter, byte[], byte[]> {
 
     private static final long serialVersionUID = -7878806306402600655L;
 
     /**
-     * Singleton for {@link ExpireMapCenter}
+     * Singleton for {@link ExpireMapCenter}.
      */
     private static volatile ExpireMapCenter expireMapCenter;
 
     /**
-     * Core for cache client {@link ExpiringMap}
+     * Core for cache client {@link ExpiringMap}.
      */
-    private ExpiringMap<byte[], byte[]> solveDifferentialGenericSingleton;
+    private ExpiringMap<ByteIdentify, ByteIdentify> singleton;
 
     /**
-     * Do not instance for no args construct
+     * Do not instance for no args construct.
      */
     private ExpireMapCenter() {
     }
 
     /**
-     * Instance for {@link ExpiringMap}
+     * Instance for {@link ExpiringMap}.
      *
-     * @param solveDifferentialGenericSingleton not be {@literal null}
+     * @param singleton A singleton object with {@link ExpiringMap}.
      */
-    private ExpireMapCenter(ExpiringMap<byte[], byte[]> solveDifferentialGenericSingleton) {
-        this.solveDifferentialGenericSingleton = solveDifferentialGenericSingleton;
+    private ExpireMapCenter(ExpiringMap<ByteIdentify, ByteIdentify> singleton) {
+        this.singleton = singleton;
     }
 
     /**
@@ -63,7 +63,7 @@ public final class ExpireMapCenter extends AbstractRecordActivationCenter<Expire
      * @param clients must no be {@literal null}.
      * @return {@link net.jodah.expiringmap.ExpiringMap}
      */
-    public static ExpireMapCenter singletonWithConfiguration(@NotNull ExpiringMapClients clients) {
+    protected static ExpireMapCenter singletonWithConfiguration(@NotNull ExpiringMapClients clients) {
         if (expireMapCenter == null) {
             synchronized (ExpireMapCenter.class) {
                 if (expireMapCenter == null) {
@@ -76,9 +76,9 @@ public final class ExpireMapCenter extends AbstractRecordActivationCenter<Expire
     }
 
     /**
-     * Get Singleton instance for {@code ExpireMapCenter}
+     * Get Singleton instance for {@code ExpireMapCenter}.
      *
-     * @return {@link ExpireMapCenter}
+     * @return {@link ExpireMapCenter}.
      */
     public static ExpireMapCenter getExpireMapCenter() {
         Objects.requireNonNull(expireMapCenter, "ExpireMapCenter no Initialize");
@@ -86,23 +86,23 @@ public final class ExpireMapCenter extends AbstractRecordActivationCenter<Expire
     }
 
     /**
-     * Get operation with a {@code ExpiringMap}
+     * Get operation with a {@code ExpiringMap}.
      *
      * @return {@link net.jodah.expiringmap.ExpiringMap}
      */
-    public ExpiringMap<byte[], byte[]> getExpiringMap() {
-        return this.solveDifferentialGenericSingleton;
+    public ExpiringMap<ByteIdentify, ByteIdentify> getSingleton() {
+        return this.singleton;
     }
 
     /**
      * Build Singleton with {@code ExpireMapClientConfiguration}.
      *
-     * @param clients must no be {@literal null}.
-     * @return {@link ExpireMapCenter}
+     * @param clients must not be {@literal null}.
+     * @return {@link ExpireMapCenter}.
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     private static ExpireMapCenter buildSingleton(@NotNull ExpiringMapClients clients) {
-        ExpiringMap<byte[], byte[]> solveDifferentialGenericSingleton = ExpiringMap.builder()
+        ExpiringMap<ByteIdentify, ByteIdentify> singleton = ExpiringMap.builder()
                 .maxSize(clients.getMaxSize())
                 .expiration(clients.getDefaultExpireTime(), clients.getDefaultExpireTimeUnit())
                 .expirationPolicy(clients.getExpirationPolicy())
@@ -111,18 +111,18 @@ public final class ExpireMapCenter extends AbstractRecordActivationCenter<Expire
         if (CollectionUtils.isNotEmpty(clients.getSyncExpirationListeners())) {
             for (ExpirationListener expirationListener : clients.getSyncExpirationListeners()) {
                 //sync
-                solveDifferentialGenericSingleton.addExpirationListener(expirationListener);
+                singleton.addExpirationListener(expirationListener);
 
             }
         }
         if (CollectionUtils.isNotEmpty(clients.getASyncExpirationListeners())) {
             for (ExpirationListener expirationListener : clients.getASyncExpirationListeners()) {
                 //async
-                solveDifferentialGenericSingleton.addAsyncExpirationListener(expirationListener);
+                singleton.addAsyncExpirationListener(expirationListener);
 
             }
         }
-        return new ExpireMapCenter(solveDifferentialGenericSingleton);
+        return new ExpireMapCenter(singleton);
     }
 
     @Override
@@ -133,18 +133,15 @@ public final class ExpireMapCenter extends AbstractRecordActivationCenter<Expire
     @Override
     public void reload(@NotNull byte[] key, @NotNull byte[] value, @NotNull Long duration,
                        @NotNull TimeUnit unit) {
-        if (this.solveDifferentialGenericSingleton == null) {
+        if (this.singleton == null) {
             return;
         }
-        this.solveDifferentialGenericSingleton.put(key, value, duration, unit);
-        this.getContain().putIfAbsent(key, value);
+        this.singleton.put(new ByteIdentify(key), new ByteIdentify(value), duration, unit);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public void cleanSupportingElements(@NotNull MessageCapable capable) {
-        //Remove control information
-        this.getContain().remove(capable.getByteKey(), capable.getByteValue());
         //Remove persistent cache
         CachePersistenceSolver<byte[], byte[]> solver = SpiLoads.findSpi(CachePersistenceSolver.class)
                 .getSpecifiedServiceBySubClass(BytesCachePersistenceSolver.class);
