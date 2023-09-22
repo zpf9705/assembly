@@ -10,8 +10,9 @@ import java.io.PrintStream;
 
 /**
  * Define the method for caching component logo output, implement {@link Banner}, define relevant
- * execution parameter acquisition methods, and perform logo output after the initialization of
- * the corresponding bean is completed.
+ * execution parameter acquisition methods.
+ *
+ * <p>Perform logo output after the initialization of the corresponding bean is completed.
  *
  * @author zpf
  * @since 1.0.0
