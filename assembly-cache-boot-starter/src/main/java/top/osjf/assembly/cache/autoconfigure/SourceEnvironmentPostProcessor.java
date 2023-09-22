@@ -43,8 +43,8 @@ public class SourceEnvironmentPostProcessor implements EnvironmentPostProcessor,
 
     /**
      * Obtain the spring boot startup main class information in {@link SourceEnvironmentPostProcessor}.
-     * <p>
-     * Before initializing the spring boot container, please refer to {@link SourceEnvironmentPostProcessor} and
+     *
+     * <p>Before initializing the spring boot container, please refer to {@link SourceEnvironmentPostProcessor} and
      * learn about {@link EnvironmentPostProcessor}.
      *
      * @param source {@link SpringApplication#getAllSources()}
