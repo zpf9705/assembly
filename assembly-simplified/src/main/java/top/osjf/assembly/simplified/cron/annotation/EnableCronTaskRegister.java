@@ -10,10 +10,11 @@ import java.lang.annotation.*;
 
 /**
  * Opening annotations for timed task registration.
- * <p>
- * This annotation will scan the methods that carry {@link CronTaskRegisterImport} through {@link Cron},
+ *
+ * <p>This annotation will scan the methods that carry {@link CronTaskRegisterImport} through {@link Cron},
  * register them with the timed thread pool using {@link top.osjf.assembly.simplified.cron.CronRegister},
  * and trigger these operations.
+ *
  * <p>It only needs to be standardized in the class header of the spring container to be implemented.</p>
  *
  * @author zpf
@@ -27,12 +28,12 @@ public @interface EnableCronTaskRegister {
 
     /**
      * Carrying the path where the {@link Cron} class is located.
-     * <p>
-     * At the same time, task listeners can also be added to implement.
+     *
+     * <p>At the same time, task listeners can also be added to implement.
      * {@link CronListener} or
      * {@link AbstractCronListener}
-     * <p>
-     * If it is null, the default is to use springboot to start the package path where the main class is located.
+     *
+     * <p>If it is null, the default is to use springboot to start the package path where the main class is located.
      *
      * @return alias for {{@link #basePackages()}}
      */
@@ -41,12 +42,12 @@ public @interface EnableCronTaskRegister {
 
     /**
      * His value shifts to {@link #value()}, consistent with it.
-     * <p>
-     * At the same time, task listeners can also be added to implement.
+     *
+     * <p>At the same time, task listeners can also be added to implement.
      * {@link CronListener} or
      * {@link AbstractCronListener}
-     * <p>
-     * If it is null, the default is to use springboot to start the package path where the main class is located.
+     *
+     * <p>If it is null, the default is to use springboot to start the package path where the main class is located.
      *
      * @return alias for {{@link #value()}}
      */
@@ -55,8 +56,8 @@ public @interface EnableCronTaskRegister {
 
     /**
      * Choose whether to start the timed thread pool even if no registration method is found.
-     * <p>
-     * But I won't actively add listeners for {@link CronListener},
+     *
+     * <p>But I won't actively add listeners for {@link CronListener},
      * unless a timing method with {@link Cron} annotation is added.
      *
      * @return if {@code true} , defaults to enabled.
