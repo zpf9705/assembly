@@ -28,10 +28,6 @@ public interface ReloadCenter<K, V> {
 
     /**
      * Remove expired keys of auxiliary elements.
-     * <dl>
-     *     <dt>Contain</dt>
-     *     <dt>Persistence</dt>
-     * </dl>
      *
      * @param capable must not be {@literal null}.
      */
