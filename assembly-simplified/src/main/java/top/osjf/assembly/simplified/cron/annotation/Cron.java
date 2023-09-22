@@ -20,14 +20,14 @@ import java.lang.annotation.*;
 public @interface Cron {
 
     /**
-     * Fill in a planned cron expression that represents the frequency of task execution.
+     * Provide the correct formatted cron expression for timing.
      *
      * @return corn express , must no be {@literal null}.
      */
     String express();
 
     /**
-     * Limited spring startup environment parameters,only when registering the task in the specified environment.
+     * Specify the set of environment names for the spring framework to start and run for scheduled tasks.
      *
      * @return If left blank, register directly.
      */

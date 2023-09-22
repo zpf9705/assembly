@@ -19,20 +19,25 @@ import java.lang.annotation.*;
 public @interface Sdk {
 
     /**
-     * If [spring ioc bean alias] is not filled in, the interface name will be used as the bean name by default.
+     * The alias of the spring container bean, which can be used for bean lookup
+     * if provided, can also be left blank. The default method for creating SDK beans
+     * is to scan the full class name of the interface.
      *
-     * @return no be {@literal null}
+     * @return can be {@literal null}.
      */
     String alisa() default "";
 
     /**
-     * [host address configuration key] Support Type :
-     * <p>
-     * 1、El expression : ${xxx.xxx.xxx}
-     * <p>
-     * 2、Normal key format : xxx.xxx.xxx
+     * The host domain name that can be configured.
      *
-     * @return no be {@literal null}
+     * <p>If not only the host domain name is variable, but also the URL information
+     * needs to be variable, please configure it together into the spring configuration file.
+     *
+     * <p>The environment {@link org.springframework.core.env.Environment} will be used to
+     * dynamically obtain it, and it will be included in the bean's properties during dynamic creation.
+     *
+     * <p>Regarding the format of obtaining, there are currently two supported formats:
+     * el expressions and regular dot separated (xxx. xxx).</p>
      */
     String hostProperty();
 }
