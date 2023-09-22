@@ -1,5 +1,6 @@
 package top.osjf.assembly.util.data;
 
+import cn.hutool.core.lang.hash.CityHash;
 import top.osjf.assembly.util.annotation.NotNull;
 
 import java.io.Serializable;
@@ -39,11 +40,7 @@ public class ByteIdentify implements ComparableBool<ByteIdentify>, Serializable 
 
     @Override
     public int hashCode() {
-        int hashcode = 0;
-        for (byte b : var) {
-            hashcode += b;
-        }
-        return hashcode;
+        return CityHash.hash32(var);
     }
 
     @Override
