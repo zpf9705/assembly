@@ -27,32 +27,33 @@ import java.util.List;
 
 /**
  * This configuration is dependent on the spring autowire mechanism of the boot.
- * <p>
- * The principle of the automatic assembly depends on spring mechanism of SPI
+ *
+ * <p>The principle of the automatic assembly depends on spring mechanism of SPI
  * specific performance for {@code resources/META-INF/spring.factories}
- * <p>
- * Show the annotation {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration}
- * <p>
- * Automatic assembly paradigm for here :
+ *
+ * <p>Show the annotation {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration}
+ *
+ * <p>Automatic assembly paradigm for here :
  * <pre>
  *        {@code CacheTemplate<String, String> = new StringCacheTemplate()}
  *        {@code CacheTemplate<String, Object> = new CacheTemplate()}
  * </pre>
  * You can go to see the specific class To learn more.
- * <p>
- * Also provides Jane in operating interface {@link ValueOperations} to simple operations.
- * <p>
- * At the same time you can use {@link ConfigurationCustomizer} to provide personalized
+ *
+ * <p>Also provides Jane in operating interface {@link ValueOperations} to simple operations.
+ *
+ * <p>At the same time you can use {@link ConfigurationCustomizer} to provide personalized
  * configuration expiring , but can be by  {@link ObjectProvider} use an array collection
  * mode faces interface configuration mode.
- * <p>
- * Now according to Spring - the boot - starters - data - redis encapsulation mode.
- * <p>
- * Open in the form of the client to build Expiring, each is implemented in the client.
- * <p>
- * Such as {@link top.osjf.assembly.cache.config.expiringmap.ExpiringMapClients}
+ *
+ * <p>Now according to Spring - the boot - starters - data - redis encapsulation mode.
+ *
+ * <p>Open in the form of the client to build Expiring, each is implemented in the client.
+ *
+ * <p>Such as {@link top.osjf.assembly.cache.config.expiringmap.ExpiringMapClients}
  * All the operation will be placed on the Helper and simulate the join operation such
  * as {@link top.osjf.assembly.cache.factory.CacheExecutor}.<br>
+ *
  * <p>This layer is {@link net.jodah.expiringmap.ExpiringMap}</p>
  * Additional data on the bottom will adopt a byte type for storage in order to enhance the cache restart recovery.
  *
