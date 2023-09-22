@@ -5,7 +5,7 @@ package top.osjf.assembly.cache.factory;
  * deletion of persistent files.
  * <p>
  * Inherited the help center (i.e. cache operation entity) {@link HelpCenter} and recovery
- * center (i.e. implementation of subsequent cache recovery methods) {@link ReloadCenter}
+ * center (i.e. implementation of subsequent cache recovery methods) {@link ReloadCenter}.
  *
  * @author zpf
  * @since 1.0.0
