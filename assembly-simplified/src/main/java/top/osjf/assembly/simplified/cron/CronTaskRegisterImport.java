@@ -28,8 +28,8 @@ import java.util.stream.Collectors;
 
 /**
  * Registration help class for scheduled tasks.
- * <p>
- * Describe the general implementation process: Based on the relevant registration information
+ *
+ * <p>Describe the general implementation process: Based on the relevant registration information
  * provided by {@link EnableCronTaskRegister}, find the corresponding method for {@link Cron},
  * filter it, temporarily store the corresponding task method in {@link CronRegister}, wait for
  * the spring boot listener to call {@link SpringApplicationRunListener#starting(ConfigurableBootstrapContext)},
@@ -37,18 +37,18 @@ import java.util.stream.Collectors;
  * scheduled thread for executing the task, and after completion, wait for the spring boot listener
  * to call the {@link SpringApplicationRunListener#running(ConfigurableApplicationContext)} method
  * to officially start the scheduled task.
- * <p>
- * Reason for using {@link SpringApplicationRunListener}:
- * <p>
- * 1. There is a problem with the loading order of dependent beans.
+ *
+ * <p>Reason for using {@link SpringApplicationRunListener}:
+ *
+ * <p>1. There is a problem with the loading order of dependent beans.
  * If you directly load and use it, it may be that the method's beans cannot be registered due
  * to being loaded later.
- * <p>
- * 2. If spring container is not added, timing support needs to be added. If static
+ *
+ * <p>2. If spring container is not added, timing support needs to be added. If static
  * {@link org.springframework.context.ApplicationContext} is used to obtain beans in the method,
  * it is likely to cause null pointer exceptions {@link NullPointerException} during registration.
- * <p>
- * In order to perfectly solve the above problems, a startup listener was selected to register
+ *
+ * <p>In order to perfectly solve the above problems, a startup listener was selected to register
  * and start scheduled tasks in the start and run stages, respectively. At this time, all beans
  * have been registered in the container and there will be no loading order issues.
  *
