@@ -17,7 +17,6 @@ import top.osjf.assembly.cache.factory.HelpCenter;
 import top.osjf.assembly.cache.factory.ReloadCenter;
 import top.osjf.assembly.cache.logger.Console;
 import top.osjf.assembly.cache.operations.ValueOperations;
-import top.osjf.assembly.cache.util.CodecUtils;
 import top.osjf.assembly.util.CloseableUtils;
 import top.osjf.assembly.util.ScanUtils;
 import top.osjf.assembly.util.SerialUtils;
@@ -83,7 +82,6 @@ import java.util.stream.Collectors;
  * <p>
  *  3、Persistent cache will be stored in the form of a particular file
  *  The relevant configuration information will be cached in advance {@link #CACHE_MAP}
- *  Attached to the {@link CodecUtils}
  * <p>
  *  {@link #AT}
  * <p>
