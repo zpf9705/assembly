@@ -1,8 +1,10 @@
 package top.osjf.assembly.util.data;
 
+import top.osjf.assembly.util.SerialUtils;
 import top.osjf.assembly.util.annotation.NotNull;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * The generic type of {@link Identify} is the {@code byte[]} implementation class.
@@ -22,36 +24,37 @@ public class ByteIdentify extends Identify<byte[], ByteIdentify> {
     }
 
     @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public int compareTo(@NotNull ByteIdentify o) {
-        int compare;
-        String s0 = Arrays.toString(o.getData())
-                .replace("[", "")
-                .replace("]", "");
-        String s01 = Arrays.toString(getData())
-                .replace("[", "")
-                .replace("]", "");
-        int s0l = s0.length();
-        int s01l = s01.length();
-        if (s0.contains(s01)) {
-            if (s0l == s01l) {
-                compare = 0;
+        byte[] compare = o.getData();
+        byte[] byCompare = getData();
+        int compareTo;
+        boolean equals = Arrays.equals(compare, byCompare);
+        if (equals) {
+            compareTo = 0;
+        } else {
+            Object d0 = SerialUtils.deserialize(compare);
+            Object d0by = SerialUtils.deserialize(byCompare);
+            if (d0by == null || d0 == null) {
+                compareTo = -1;
             } else {
-                if (s0l > s01l) {
-                    compare = 1;
+                if (!Objects.equals(d0by.getClass().getName(), d0.getClass().getName())) {
+                    compareTo = -1;
                 } else {
-                    compare = 2;
+                    if (d0by instanceof Comparable) {
+                        compareTo = ((Comparable) d0by).compareTo(d0);
+                    } else {
+                        compareTo = -1;
+                    }
                 }
             }
-        } else {
-            compare = -1;
         }
-        return compare;
+        return compareTo;
     }
 
     @Override
     public String toString() {
-        return "ByteContain{" +
-                "var=" + Arrays.toString(getData()) +
-                '}';
+        return String.format("Byte array = %s , real value = %s", Arrays.toString(getData()),
+                SerialUtils.deserialize(getData()));
     }
 }

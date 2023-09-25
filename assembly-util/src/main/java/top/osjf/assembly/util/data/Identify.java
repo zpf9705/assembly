@@ -54,6 +54,7 @@ public abstract class Identify<T, SELF> implements ComparableBool<SELF>, Seriali
         } else {
             bytes = SerialUtils.serialize(data);
         }
+        Objects.requireNonNull(bytes, "Hash bytes not be null");
         return CityHash.hash32(bytes);
     }
 
