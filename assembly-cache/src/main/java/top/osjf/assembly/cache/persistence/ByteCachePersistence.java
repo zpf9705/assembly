@@ -18,6 +18,10 @@ public class ByteCachePersistence extends AbstractCachePersistence<byte[], byte[
 
     private static final long serialVersionUID = 5518995337588214891L;
 
+    public ByteCachePersistence() {
+        super();
+    }
+
     public ByteCachePersistence(BytePersistence persistence, String writePath) {
         super(persistence, writePath);
     }
@@ -84,7 +88,7 @@ public class ByteCachePersistence extends AbstractCachePersistence<byte[], byte[
         //No cache in the cache
         ByteCachePersistence globePersistence = ofSetPersistence(ByteCachePersistence.class, persistence);
         Assert.notNull(globePersistence, "GlobePersistence no be null");
-        this.deserializeWithEntry(globePersistence);
+        this.reductionUseEntry(globePersistence);
     }
 
     public static class BytePersistence extends AbstractPersistenceStore<byte[], byte[]> {

@@ -160,9 +160,51 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
         }
     }
 
-    private final AbstractPersistenceStore<K, V> store;
+    private AbstractPersistenceStore<K, V> store;
 
     //**************** help classes ************************//
+
+    /**
+     * Cache persistent attribute storage model.
+     *
+     * @param <K> the type of keys maintained by this cache.
+     * @param <V> the type of cache values.
+     */
+    public abstract static class AbstractPersistenceStore<K, V> implements Serializable {
+        private static final long serialVersionUID = 5916681709307714445L;
+        private Entry<K, V> entry;
+        private Long expire;
+        static final String FORMAT = AT + "\n" + "%s" + "\n" + AT;
+
+        public AbstractPersistenceStore() {
+        }
+
+        public AbstractPersistenceStore(Entry<K, V> entry) {
+            this.entry = entry;
+        }
+
+        public void setEntry(Entry<K, V> entry) {
+            this.entry = entry;
+        }
+
+        public Entry<K, V> getEntry() {
+            return entry;
+        }
+
+
+        public void setExpire(@NotNull Long expire) {
+            this.expire = expire;
+        }
+
+        public Long getExpire() {
+            return expire;
+        }
+
+        @Override
+        public String toString() {
+            return String.format(FORMAT, JSON.toJSONString(this));
+        }
+    }
 
     /**
      * Store persistent file names (MD5 encryption) and persistent cache models.
@@ -229,6 +271,9 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
     }
 
     //************* constructs *********************//
+
+    public AbstractCachePersistence() {
+    }
 
     public AbstractCachePersistence(AbstractPersistenceStore<K, V> store, String writePath) {
         this.store = store;
@@ -532,14 +577,80 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
     }
 
     /**
+     * Clear all cached files.
+     */
+    public static void cleanAllCacheFile() {
+        if (MapUtils.isEmpty(CACHE_MAP)) {
+            return;
+        }
+        try {
+            for (PersistenceObj obj : CACHE_MAP.values()) {
+                AbstractCachePersistence value = obj.getPersistence();
+                if (value != null) {
+                    //del persistence
+                    value.removePersistence();
+                }
+            }
+            CACHE_MAP.clear();
+        } catch (Exception ignored) {
+        }
+    }
+
+    /**
+     * Calculate the expiration time.
+     *
+     * @param entry must not be {@literal null}.
+     * @param <K>   the type of keys maintained by this cache.
+     * @param <V>   the type of cache values.
+     * @return long result.
+     */
+    private static <V, K> Long expired(@NotNull Entry<K, V> entry) {
+        Long expired;
+        if (entry.haveDuration()) {
+            expired = plusCurrent(entry.getDuration(), entry.getTimeUnit());
+        } else {
+            expired = plusCurrent(null, null);
+        }
+        return expired;
+    }
+
+    /**
+     * Calculate the expiration time with {@code plus}.
+     *
+     * @param duration can be {@literal null}.
+     * @param timeUnit can be {@literal null}.
+     * @return long result.
+     */
+    private static Long plusCurrent(@CanNull Long duration, @CanNull TimeUnit timeUnit) {
+        if (duration == null) {
+            duration = configuration.getDefaultExpireTime();
+        }
+        if (timeUnit == null) {
+            timeUnit = configuration.getDefaultExpireTimeUnit();
+        }
+        return System.currentTimeMillis() + timeUnit.toMillis(duration);
+    }
+
+    //******************** public instance methods ******************//
+
+    /**
+     * Set an {@link AbstractPersistenceStore} subclass.
+     *
+     * @param store Cached attribute storage model.
+     */
+    public void setStore(@NotNull AbstractPersistenceStore<K, V> store) {
+        this.store = store;
+    }
+
+    /**
      * Record the current implementation of the class object type.
      * <p>In order to facilitate the subsequent recovery.</p>
      *
      * @param globePersistenceClass must not be {@literal null}.
      * @param persistenceClass      must not be {@literal null}.
      */
-    void recordCurrentType(@NotNull Class<? extends AbstractCachePersistence> globePersistenceClass,
-                           @NotNull Class<? extends AbstractPersistenceStore> persistenceClass) {
+    public void recordCurrentType(@NotNull Class<? extends AbstractCachePersistence> globePersistenceClass,
+                                  @NotNull Class<? extends AbstractPersistenceStore> persistenceClass) {
         setGlobePersistenceClass(globePersistenceClass);
         setPersistenceClass(persistenceClass);
     }
@@ -549,7 +660,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
      *
      * @param globePersistenceClass must not be {@literal null}.
      */
-    public void setGlobePersistenceClass(Class<? extends AbstractCachePersistence> globePersistenceClass) {
+    public void setGlobePersistenceClass(@NotNull Class<? extends AbstractCachePersistence> globePersistenceClass) {
         this.globePersistenceClass = globePersistenceClass;
     }
 
@@ -558,7 +669,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
      *
      * @param persistenceClass must not be {@literal null}.
      */
-    public void setPersistenceClass(Class<? extends AbstractPersistenceStore> persistenceClass) {
+    public void setPersistenceClass(@NotNull Class<? extends AbstractPersistenceStore> persistenceClass) {
         this.persistenceClass = persistenceClass;
     }
 
@@ -587,6 +698,8 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
         }
         return persistenceClass;
     }
+
+    //************************ Implementation methods *******************//
 
     @Override
     public void write() {
@@ -683,23 +796,6 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
             CACHE_MAP.remove(new ObjectIdentify(entry.getKey()));
         } finally {
             writeLock.unlock();
-        }
-    }
-
-    public static void cleanAllCacheFile() {
-        if (MapUtils.isEmpty(CACHE_MAP)) {
-            return;
-        }
-        try {
-            for (PersistenceObj obj : CACHE_MAP.values()) {
-                AbstractCachePersistence value = obj.getPersistence();
-                if (value != null) {
-                    //del persistence
-                    value.removePersistence();
-                }
-            }
-            CACHE_MAP.clear();
-        } catch (Exception ignored) {
         }
     }
 
@@ -819,7 +915,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
      * @param t   must not be {@literal null}.
      * @param <T> generics of subclasses of {@link AbstractCachePersistence}.
      */
-    public <T extends AbstractCachePersistence<K, V>> void deserializeWithEntry(@NotNull T t) {
+    public <T extends AbstractCachePersistence<K, V>> void reductionUseEntry(@NotNull T t) {
         //current time
         long currentTimeMillis = System.currentTimeMillis();
         AbstractPersistenceStore<K, V> persistence = getAttributeStore();
@@ -871,82 +967,5 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
     public Long condition(@NotNull Long now, @NotNull Long expire, @NotNull TimeUnit unit) {
         long difference = expire - now;
         return unit.convert(difference, TimeUnit.MILLISECONDS);
-    }
-
-    /**
-     * Calculate the expiration time.
-     *
-     * @param entry must not be {@literal null}.
-     * @param <K>   the type of keys maintained by this cache.
-     * @param <V>   the type of cache values.
-     * @return long result.
-     */
-    private static <V, K> Long expired(@NotNull Entry<K, V> entry) {
-        Long expired;
-        if (entry.haveDuration()) {
-            expired = plusCurrent(entry.getDuration(), entry.getTimeUnit());
-        } else {
-            expired = plusCurrent(null, null);
-        }
-        return expired;
-    }
-
-    /**
-     * Calculate the expiration time with {@code plus}.
-     *
-     * @param duration can be {@literal null}.
-     * @param timeUnit can be {@literal null}.
-     * @return long result.
-     */
-    private static Long plusCurrent(@CanNull Long duration, @CanNull TimeUnit timeUnit) {
-        if (duration == null) {
-            duration = configuration.getDefaultExpireTime();
-        }
-        if (timeUnit == null) {
-            timeUnit = configuration.getDefaultExpireTimeUnit();
-        }
-        return System.currentTimeMillis() + timeUnit.toMillis(duration);
-    }
-
-    /**
-     * Cache persistent attribute storage model.
-     *
-     * @param <K> the type of keys maintained by this cache.
-     * @param <V> the type of cache values.
-     */
-    public abstract static class AbstractPersistenceStore<K, V> implements Serializable {
-        private static final long serialVersionUID = 5916681709307714445L;
-        private Entry<K, V> entry;
-        private Long expire;
-        static final String FORMAT = AT + "\n" + "%s" + "\n" + AT;
-
-        public AbstractPersistenceStore() {
-        }
-
-        public AbstractPersistenceStore(Entry<K, V> entry) {
-            this.entry = entry;
-        }
-
-        public void setEntry(Entry<K, V> entry) {
-            this.entry = entry;
-        }
-
-        public Entry<K, V> getEntry() {
-            return entry;
-        }
-
-
-        public void setExpire(@NotNull Long expire) {
-            this.expire = expire;
-        }
-
-        public Long getExpire() {
-            return expire;
-        }
-
-        @Override
-        public String toString() {
-            return String.format(FORMAT, JSON.toJSONString(this));
-        }
     }
 }
