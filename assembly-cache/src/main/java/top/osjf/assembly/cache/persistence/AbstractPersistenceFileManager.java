@@ -112,7 +112,7 @@ public abstract class AbstractPersistenceFileManager extends FileUtil {
     }
 
     /**
-     * Delete a file within fileName
+     * Delete a file within fileName.
      *
      * @return If the real path to the file del , and does fail
      */
