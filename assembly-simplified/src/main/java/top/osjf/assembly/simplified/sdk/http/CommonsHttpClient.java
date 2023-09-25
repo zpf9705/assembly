@@ -38,10 +38,11 @@ public class CommonsHttpClient<R extends HttpResponse> extends AbstractHttpClien
         String responseStr = null;
         Throwable throwable = null;
         StopWatch watch = new StopWatch();
+        //try start at watch start
+        watch.start();
         try {
             //Verification of necessary parameters
             request.validate();
-            watch.start();
             //Obtain request body map
             Object requestParam = request.getRequestParam();
             //Get Request Header
