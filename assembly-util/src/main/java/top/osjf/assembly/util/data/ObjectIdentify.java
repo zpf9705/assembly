@@ -8,6 +8,8 @@ import top.osjf.assembly.util.annotation.NotNull;
  * <p>Rewritten {@link #compareTo(ObjectIdentify)} method requires consistent class and
  * requires {@link Comparable} to be implemented, calling its own method to rewrite logic.
  *
+ * <p>The {@link String} type is handled by a separate API.</p>
+ *
  * @author zpf
  * @since 1.0.0
  */

@@ -12,6 +12,8 @@ import java.util.Objects;
  * <p>The authentication object of byte numbers mainly solves the problem of byte
  * serialization address values changing.
  *
+ * <p>After deserialization, use a separate API for handling {@link String} types.</p>
+ *
  * @author zpf
  * @since 1.0.0
  */
