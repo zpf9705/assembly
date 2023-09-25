@@ -162,9 +162,9 @@ public class CacheAutoConfiguration implements CacheBannerDisplayDevice, Environ
     }
 
     @Bean("auto::persistenceReduction")
-    @ConditionalOnProperty(prefix = "spring.data.expiry", name = "open-persistence", havingValue = "true")
+    @ConditionalOnProperty(prefix = "assembly.cache", name = "open-persistence", havingValue = "true")
     @ConditionalOnBean(CacheTemplate.class)
-    public String persistenceReduction(@Value("${spring.data.expiry.persistence-path:default}") String path) {
+    public String persistenceReduction(@Value("${assembly.cache.persistence-path:default}") String path) {
         Class<?> reductionClass = this.properties.getPersistenceReductionClass();
         if (reductionClass == null) {
             return "Open persistence now , but provider factoryClass is null so persistenceRegain failed";
