@@ -35,16 +35,16 @@ public class ObjectIdentify<T> extends Identify<T, ObjectIdentify<T>> {
                     String d0s = (String) compare;
                     String d0bys = (String) byCompare;
                     // %% / %- / -%
-                    if (d0bys.startsWith(d0s)
-                            || d0bys.endsWith(d0s)
-                            || d0bys.contains(d0s)) {
+                    if (d0s.startsWith(d0bys)
+                            || d0s.endsWith(d0bys)
+                            || d0s.contains(d0bys)) {
                         compareValue = 1;
                     } else {
                         compareValue = -1;
                     }
                 } else {
                     if (compare instanceof Comparable) {
-                        compareValue = ((Comparable) byCompare).compareTo(compare);
+                        compareValue = ((Comparable) compare).compareTo(byCompare);
                     } else {
                         compareValue = -1;
                     }

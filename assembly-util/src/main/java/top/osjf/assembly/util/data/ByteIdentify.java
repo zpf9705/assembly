@@ -27,7 +27,7 @@ public class ByteIdentify extends Identify<byte[], ByteIdentify> {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public int compareTo(@NotNull ByteIdentify o) {
         byte[] compare = o.getData();
-        byte[] byCompare = getData();
+        byte[] byCompare = this.getData();
         int compareTo;
         boolean equals = Arrays.equals(compare, byCompare);
         if (equals) {
@@ -45,15 +45,15 @@ public class ByteIdentify extends Identify<byte[], ByteIdentify> {
                         if (!(d0by instanceof Comparable)) {
                             compareTo = -1;
                         } else {
-                            compareTo = ((Comparable) d0by).compareTo(d0);
+                            compareTo = ((Comparable) d0).compareTo(d0by);
                         }
                     } else {
                         String d0s = (String) d0;
                         String d0bys = (String) d0by;
                         // %% / %- / -%
-                        if (d0bys.startsWith(d0s)
-                                || d0bys.endsWith(d0s)
-                                || d0bys.contains(d0s)) {
+                        if (d0s.startsWith(d0bys)
+                                || d0s.endsWith(d0bys)
+                                || d0s.contains(d0bys)) {
                             compareTo = 1;
                         } else {
                             compareTo = -1;
