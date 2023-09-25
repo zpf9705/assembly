@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>assembly-cache-boot-starter</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <packaging>jar</packaging>
     <description>Automatic assembly of lightweight cache projects [assembly cache].</description>
 
