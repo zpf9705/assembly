@@ -140,8 +140,7 @@ public class ExpiringMapCacheExecutorImpl extends AbstractCacheExecutor<ExpireMa
             public List<byte[]> inHelp(ByteIdentify keyByteIdentify, ExpireMapCenter helpCenter) {
                 return helpCenter.getSingleton().keySet()
                         .stream()
-                        .filter(identify -> keyByteIdentify.equals(identify) ||
-                                keyByteIdentify.compareToReturnsBool(identify))
+                        .filter(keyByteIdentify::compareToReturnsBool)
                         .map(ByteIdentify::getData)
                         .collect(Collectors.toList());
             }
