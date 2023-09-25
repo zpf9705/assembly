@@ -918,11 +918,11 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
     public <T extends AbstractCachePersistence<K, V>> void reductionUseEntry(@NotNull T t) {
         //current time
         long currentTimeMillis = System.currentTimeMillis();
-        AbstractPersistenceStore<K, V> persistence = getAttributeStore();
+        AbstractPersistenceStore<K, V> persistence = t.getAttributeStore();
         //When the time is equal to or judged failure after now in record time
         if (persistence.getExpire() == null || currentTimeMillis >= persistence.getExpire()) {
             //Delete the persistent file
-            t.delWithCurrentWritePath();
+            t.removePersistence();
             throw new CachePersistenceException("File [" + t.getWritePath() + "] record time [" + persistence.getExpire() +
                     "] before or equals now");
         }
