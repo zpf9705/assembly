@@ -22,18 +22,34 @@ public class ObjectIdentify<T> extends Identify<T, ObjectIdentify<T>> {
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
     public int compareTo(@NotNull ObjectIdentify<T> o) {
-        T byCompare = o.getData();
-        T compare = getData();
-        if (!compare.getClass().getName().equals(byCompare.getClass().getName())) {
-            return -1;
-        }
+        T compare = o.getData();
+        T byCompare = getData();
         int compareValue;
-        if (compare instanceof Comparable) {
-            compareValue = ((Comparable) byCompare).compareTo(compare);
-        } else if (compare instanceof byte[]) {
-            throw new UnsupportedOperationException("Please refer to top.osjf.assembly.util.data.ByteIdentify");
+        if (!compare.getClass().getName().equals(byCompare.getClass().getName())) {
+            compareValue = -1;
         } else {
-            throw new UnsupportedOperationException("Unsupported data type");
+            if (byCompare instanceof byte[]) {
+                throw new UnsupportedOperationException("Please refer to top.osjf.assembly.util.data.ByteIdentify");
+            } else {
+                if (compare instanceof String) {
+                    String d0s = (String) compare;
+                    String d0bys = (String) byCompare;
+                    // %% / %- / -%
+                    if (d0bys.startsWith(d0s)
+                            || d0bys.endsWith(d0s)
+                            || d0bys.contains(d0s)) {
+                        compareValue = 1;
+                    } else {
+                        compareValue = -1;
+                    }
+                } else {
+                    if (compare instanceof Comparable) {
+                        compareValue = ((Comparable) byCompare).compareTo(compare);
+                    } else {
+                        compareValue = -1;
+                    }
+                }
+            }
         }
         return compareValue;
     }

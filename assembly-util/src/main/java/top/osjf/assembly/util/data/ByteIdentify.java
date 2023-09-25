@@ -41,10 +41,23 @@ public class ByteIdentify extends Identify<byte[], ByteIdentify> {
                 if (!Objects.equals(d0by.getClass().getName(), d0.getClass().getName())) {
                     compareTo = -1;
                 } else {
-                    if (d0by instanceof Comparable) {
-                        compareTo = ((Comparable) d0by).compareTo(d0);
+                    if (!(d0by instanceof String)) {
+                        if (!(d0by instanceof Comparable)) {
+                            compareTo = -1;
+                        } else {
+                            compareTo = ((Comparable) d0by).compareTo(d0);
+                        }
                     } else {
-                        compareTo = -1;
+                        String d0s = (String) d0;
+                        String d0bys = (String) d0by;
+                        // %% / %- / -%
+                        if (d0bys.startsWith(d0s)
+                                || d0bys.endsWith(d0s)
+                                || d0bys.contains(d0s)) {
+                            compareTo = 1;
+                        } else {
+                            compareTo = -1;
+                        }
                     }
                 }
             }

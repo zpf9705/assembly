@@ -3,7 +3,6 @@ package top.osjf.assembly.util.data;
 import cn.hutool.core.lang.hash.CityHash;
 import cn.hutool.core.util.ReflectUtil;
 import top.osjf.assembly.util.SerialUtils;
-import top.osjf.assembly.util.annotation.NotNull;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -11,15 +10,13 @@ import java.util.Objects;
 
 /**
  * <h3>Hashcode Rewrite rule:</h3>
- *
  * <p>Rewrite the {@link #hashCode()} method to mask address value verification and instead add byte
  * array values to obtain a new {@code hashCode} value.<br>
  *
  * <p>Prioritize using self rewritten {@link #hashCode()} methods.<br>
  *
  * <p>If not rewritten, use {@link CityHash#hash32(byte[])} for hashcode calculation.
- *
- * <p><h3>Equals Rewrite rule:</h3>
+ * <h3>Equals Rewrite rule:</h3>
  *
  * <p>Rewritten the {@link #equals(Object)} method, requiring the class class to
  * be {@link Identify} or its subclasses in order to perform {@code hashcode} calculations,
@@ -46,7 +43,9 @@ public abstract class Identify<T, SELF> implements ComparableBool<SELF>, Seriali
     public int hashCode() {
         Method method = ReflectUtil.getMethod(data.getClass(), "hashCode");
         if (method != null) {
-            return data.hashCode();
+            if (!method.getDeclaringClass().getName().equals("java.lang.Object")) {
+                return data.hashCode();
+            }
         }
         byte[] bytes;
         if (data instanceof byte[]) {
@@ -67,10 +66,5 @@ public abstract class Identify<T, SELF> implements ComparableBool<SELF>, Seriali
             return false;
         }
         return this.hashCode() == obj.hashCode();
-    }
-
-    @Override
-    public int compareTo(@NotNull SELF o) {
-        return 0;
     }
 }
