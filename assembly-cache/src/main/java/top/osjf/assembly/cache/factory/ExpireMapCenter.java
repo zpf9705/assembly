@@ -146,7 +146,7 @@ public class ExpireMapCenter extends AbstractRecordActivationCenter<ExpireMapCen
         CachePersistenceSolver<byte[], byte[]> solver = SpiLoads.findSpi(CachePersistenceSolver.class)
                 .getSpecifiedServiceBySubClass(BytesCachePersistenceSolver.class);
         if (solver != null) {
-            solver.removePersistence(capable.getByteKey(), capable.getByteValue());
+            solver.removePersistenceWithKey(capable.getByteKey());
         }
     }
 }

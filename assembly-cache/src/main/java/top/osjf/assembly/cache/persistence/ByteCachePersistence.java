@@ -9,7 +9,7 @@ import top.osjf.assembly.util.annotation.NotNull;
 import java.util.List;
 
 /**
- * The only Special extend for {@link AbstractCachePersistence} with generic {@code byte[]}
+ * The only Special extend for {@link AbstractCachePersistence} with generic {@code byte[]}.
  *
  * @author zpf
  * @since 1.0.0
@@ -17,10 +17,6 @@ import java.util.List;
 public class ByteCachePersistence extends AbstractCachePersistence<byte[], byte[]> {
 
     private static final long serialVersionUID = 5518995337588214891L;
-
-    public ByteCachePersistence() {
-        super();
-    }
 
     public ByteCachePersistence(BytePersistence persistence, String writePath) {
         super(persistence, writePath);
@@ -49,24 +45,13 @@ public class ByteCachePersistence extends AbstractCachePersistence<byte[], byte[
     }
 
     /**
-     * Get an {@code ByteCachePersistence} with {@code key} and {@code value} in cache map.
-     *
-     * @param key   must not be {@literal null}.
-     * @param value must not be {@literal null}.
-     * @return {@link ByteCachePersistence}
-     */
-    public static ByteCachePersistence ofGetBytes(byte[] key, byte[] value) {
-        return ofGet(key, value, ByteCachePersistence.class);
-    }
-
-    /**
      * Get an {@code ByteCachePersistence} with {@code key}  in cache map.
      *
      * @param key must not be {@literal null}.
-     * @return {@link ByteCachePersistence}.
+     * @return {@link ByteCachePersistence}
      */
     public static ByteCachePersistence ofGetBytes(byte[] key) {
-        return ofGet(key);
+        return ofGet(key, ByteCachePersistence.class);
     }
 
     /**
@@ -97,12 +82,12 @@ public class ByteCachePersistence extends AbstractCachePersistence<byte[], byte[
                     "[" + e.getMessage() + "]");
         }
         //No cache in the cache
-        ByteCachePersistence globePersistence = ofSetPersistence(this.getClass(), persistence);
+        ByteCachePersistence globePersistence = ofSetPersistence(ByteCachePersistence.class, persistence);
         Assert.notNull(globePersistence, "GlobePersistence no be null");
         this.deserializeWithEntry(globePersistence);
     }
 
-    public static class BytePersistence extends Persistence<byte[], byte[]> {
+    public static class BytePersistence extends AbstractPersistenceStore<byte[], byte[]> {
 
         private static final long serialVersionUID = -368192386828860022L;
 

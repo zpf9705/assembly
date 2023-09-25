@@ -59,15 +59,6 @@ public class BytesCachePersistenceSolver implements CachePersistenceSolver<byte[
     }
 
     @Override
-    public void removePersistence(@NotNull byte[] key, @NotNull byte[] value) {
-        run(() -> {
-            ByteCachePersistence remove = ByteCachePersistence.ofGetBytes(key, value);
-            Assert.isTrue(remove.persistenceExist(), "Persistence no exist, no repeat del");
-            remove.removePersistence();
-        }, "BytesCachePersistenceSolver::removePersistence");
-    }
-
-    @Override
     public void removePersistenceWithKey(@NotNull byte[] key) {
         run(() -> {
             ByteCachePersistence remove = ByteCachePersistence.ofGetBytes(key);

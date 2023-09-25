@@ -61,7 +61,17 @@ public interface CachePersistenceWriteProcess<K, V> {
      */
     boolean expireOfCache();
 
-    Entry<K, V> getEntry();
+    /**
+     * Obtain a storage variable model for cache persistence.
+     *
+     * @return Should be a subclass of the abstract model.
+     */
+    AbstractCachePersistence.AbstractPersistenceStore<K, V> getAttributeStore();
 
-    AbstractCachePersistence.Persistence<K, V> getPersistence();
+    /**
+     * Obtain the specific value of the cache attribute value.
+     *
+     * @return Please check the specific class {@link Entry}.
+     */
+    Entry<K, V> getEntry();
 }

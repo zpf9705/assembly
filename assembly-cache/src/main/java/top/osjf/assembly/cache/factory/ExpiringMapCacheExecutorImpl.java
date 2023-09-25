@@ -128,7 +128,7 @@ public class ExpiringMapCacheExecutorImpl extends AbstractCacheExecutor<ExpireMa
     public byte[] getVal(byte[] key) {
         ByteIdentify identify = this.execute((center) ->
                 center.getHelpCenter().getSingleton().get(identifyByteArray(key)));
-        return identify == null ? null : identify.getVar();
+        return identify == null ? null : identify.getData();
     }
 
     @Override
@@ -142,7 +142,7 @@ public class ExpiringMapCacheExecutorImpl extends AbstractCacheExecutor<ExpireMa
                         .stream()
                         .filter(identify -> keyByteIdentify.equals(identify) ||
                                 keyByteIdentify.compareToReturnsBool(identify))
-                        .map(ByteIdentify::getVar)
+                        .map(ByteIdentify::getData)
                         .collect(Collectors.toList());
             }
         });
@@ -162,7 +162,7 @@ public class ExpiringMapCacheExecutorImpl extends AbstractCacheExecutor<ExpireMa
             public byte[] inHelp(ByteIdentify keyByteIdentify, ExpireMapCenter helpCenter) {
                 ByteIdentify identify = helpCenter.getSingleton().replace(keyByteIdentify, valueByteIdentify);
                 if (identify != null) {
-                    identify.getVar();
+                    return identify.getData();
                 }
                 return null;
             }
@@ -204,7 +204,7 @@ public class ExpiringMapCacheExecutorImpl extends AbstractCacheExecutor<ExpireMa
                     .remove(identifyByteArray(key)));
 
             if (removed != null) {
-                delMap.put(_key, removed.getVar());
+                delMap.put(_key, removed.getData());
             }
         }
         return delMap;

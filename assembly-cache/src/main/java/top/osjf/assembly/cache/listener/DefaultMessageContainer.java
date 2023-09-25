@@ -18,7 +18,7 @@ public abstract class DefaultMessageContainer implements ExpirationBytesBlocker 
 
     @Override
     public void expired(ByteIdentify key, ByteIdentify value) {
-        this.capable = Message.serial(key.getVar(), value.getVar());
+        this.capable = Message.serial(key.getData(), value.getData());
         //notify
         onMessage(this.capable);
         //clean Persistence with key and value

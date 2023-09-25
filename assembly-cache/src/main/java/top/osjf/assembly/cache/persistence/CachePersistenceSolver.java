@@ -53,14 +53,6 @@ public interface CachePersistenceSolver<K, V> {
     /**
      * Remove a {@code key} and {@code value} persistence record
      *
-     * @param key   must not be {@literal null}.
-     * @param value must not be {@literal null}.
-     */
-    void removePersistence(@NotNull K key, @NotNull V value);
-
-    /**
-     * Remove a {@code key} and {@code value} persistence record
-     *
      * @param key must not be {@literal null}.
      */
     void removePersistenceWithKey(@NotNull K key);
