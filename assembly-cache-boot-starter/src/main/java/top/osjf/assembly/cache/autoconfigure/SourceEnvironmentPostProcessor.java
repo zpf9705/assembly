@@ -28,7 +28,7 @@ public class SourceEnvironmentPostProcessor implements EnvironmentPostProcessor,
 
     @Override
     public int getOrder() {
-        return Integer.MIN_VALUE + 10;
+        return Integer.MIN_VALUE + 13;
     }
 
     /**
