@@ -5,14 +5,17 @@ import cn.hutool.cron.CronException;
 import cn.hutool.cron.CronUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.boot.ApplicationArguments;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.support.CronExpression;
 import top.osjf.assembly.simplified.cron.annotation.Cron;
 import top.osjf.assembly.util.DefaultConsole;
 import top.osjf.assembly.util.ScanUtils;
+import top.osjf.assembly.util.annotation.NotNull;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Timed task registrar, which relies on domestic Hutu {@code cn.hutool.Hutool} toolkit for implementation.
@@ -26,25 +29,133 @@ public final class CronRegister {
 
     static final String thread_daemon_key = "cron.thread.daemon=";
 
-    static List<Method> cronTasks = new ArrayList<>();
-
     private CronRegister() {
     }
 
-    public static void setPrepareCronList(List<Method> filterMethods) {
-        if (CollectionUtils.isEmpty(filterMethods)) {
-            return;
+    //************************** Help class ******************************//
+
+    /**
+     * @since 2.0.3
+     */
+    protected static class Actuator {
+
+        protected static List<String> _profiles;
+
+        /**
+         * Scan path.
+         */
+        protected static String[] _scanPackages;
+
+        /**
+         * The collection of methods that currently need to be registered as a scheduled task.
+         */
+        protected static List<Method> _cronMethods;
+
+        /**
+         * Is there currently a scheduled task method that needs to be registered.
+         * {@code true} representing existence and {@code false} representing does not exist.
+         */
+        protected static boolean _noRegisterCron;
+
+        /**
+         * When <pre>{@code noRegisterCron == true} </pre> is mentioned above, whether to start the
+         * scheduled thread pool can be dynamically registered for scheduled tasks in the future.
+         * <p>And when dynamically registering scheduled tasks, there is no need to manually start them.</p>
+         */
+        protected static boolean _noMethodDefaultStart;
+
+        public static void setDefaultScannerPath(Class<?> clazz) {
+            if (clazz == null) {
+                return;
+            }
+            if (_scanPackages == null) _scanPackages = new String[]{clazz.getPackage().getName()};
         }
-        cronTasks.addAll(filterMethods);
+
+        protected static void setProfiles(String[] profiles) {
+            _profiles = Arrays.asList(profiles);
+        }
+
+        protected static void setScanPackages(String[] scanPackages) {
+            if (scanPackages != null) _scanPackages = scanPackages;
+            scanAndFilterCronWithProfiles();
+        }
+
+        protected static void setNoMethodDefaultStart(boolean noMethodDefaultStart) {
+            _noMethodDefaultStart = noMethodDefaultStart;
+        }
+
+        private static void scanAndFilterCronWithProfiles() {
+            //scanner with path
+            List<Method> methods = CronRegister.getScanMethodsWithCron(_scanPackages);
+            //Filter methods based on the current spring startup environment and
+            // the environment provided by the annotations.
+            if (CollectionUtils.isNotEmpty(_profiles)) {
+                _cronMethods = methods.stream().filter(
+                        m -> {
+                            Cron cron = m.getAnnotation(Cron.class);
+                            if (ArrayUtils.isNotEmpty(cron.profiles())) {
+                                return Arrays.stream(cron.profiles()).anyMatch(_profiles::contains);
+                            }
+                            //no profile args direct register
+                            return true;
+                        }
+                ).collect(Collectors.toList());
+            }
+            _noRegisterCron = CollectionUtils.isEmpty(_cronMethods);
+        }
+
+        protected static void start(@NotNull ApplicationContext context) {
+            //The first step is to add a scheduled task.
+            CronRegister.registerPrepareCronWithSpringContextOrNew(context, _cronMethods);
+            //The second step is to add listeners for scheduled task execution and exceptions.
+            //Scan Package Limitation Sentence: The package where the scheduled task is located.
+            // If you do not want to use this package, you can manually add listeners through
+            // the {top.osjf.assembly.simplified.cron.CronRegister#addListener(CronListener...)} method
+            CronRegister.addListenerWithPackages(_scanPackages);
+        }
+
+        protected static void running(@NotNull ApplicationContext context) {
+            //If the provided package path does not scan for the timing method that needs to be
+            // registered, then the decision to continue starting is based on whether to default
+            // to the startup parameters.
+            if (_noRegisterCron) {
+                if (_noMethodDefaultStart) {
+                    //Start with the parameters of the main method.
+                    CronRegister.start(context.getBean(ApplicationArguments.class).getSourceArgs());
+                    DefaultConsole.info("The default start of the timing method was not " +
+                            "found based on the given path.");
+                } else {
+                    DefaultConsole.info("The component did not help you start the scheduled task. " +
+                            "If you need to start the thread pool after the program starts, please call " +
+                            "{top.osjf.assembly.simplified.cron.CronRegister#start(String...)}." +
+                            "The premise is that you did not manually call {@CronUtil} of the Hutu package " +
+                            "for manual startup.");
+                }
+            } else {
+                //Start with the parameters of the main method.
+                //Start immediately if there is a registration method available.
+                CronRegister.start(context.getBean(ApplicationArguments.class).getSourceArgs());
+            }
+            clear();
+        }
+
+        protected static void clear() {
+            _profiles = null;
+            _scanPackages = null;
+            _cronMethods = null;
+            _noRegisterCron = false;
+            _noMethodDefaultStart = false;
+        }
     }
 
-    public static void registerPrepareCronList(ApplicationContext context) {
-        if (CollectionUtils.isEmpty(cronTasks)) {
+    public static void registerPrepareCronWithSpringContextOrNew(@NotNull ApplicationContext context,
+                                                                 List<Method> cronMethods) {
+        if (CollectionUtils.isEmpty(cronMethods)) {
             return;
         }
         Objects.requireNonNull(context, "ApplicationContext not be null");
         Map<Class<?>, Object> map = new LinkedHashMap<>();
-        for (Method method : cronTasks) {
+        for (Method method : cronMethods) {
             Class<?> declaringClass = method.getDeclaringClass();
             Object target = map.get(declaringClass);
             if (target == null) {
@@ -60,7 +171,8 @@ public final class CronRegister {
                                 "found empty parameter construct cannot be instantiated");
                     } catch (IllegalAccessException e01) {
                         throw new CronException("Class name {" + method.getDeclaringClass().getName() + "} does " +
-                                "not have permission to use. Please check the permission modifier so that we can use this class");
+                                "not have permission to use. Please check the permission modifier so that we can " +
+                                "use this class");
                     }
                 }
                 map.putIfAbsent(declaringClass, target);
@@ -69,7 +181,6 @@ public final class CronRegister {
             Object finalTarget = target;
             register(cron.express(), () -> ReflectUtil.invoke(finalTarget, method));
         }
-        cronTasks = null;
     }
 
     public static void register(String express, Runnable runnable) {
@@ -160,20 +271,12 @@ public final class CronRegister {
         }
     }
 
-    public static void start(boolean isMatchSecond, boolean isDaemon) {
+    private static void start(boolean isMatchSecond, boolean isDaemon) {
         //Second matching support
         CronUtil.setMatchSecond(isMatchSecond);
         //Configurable to set up daemon threads
         CronUtil.start(isDaemon);
         //register info log
-        DefaultConsole.info("Cron register success : success num : {}", CronUtil.getScheduler().size());
-    }
-
-    public static void defaultStart() {
-        //Second matching support
-        CronUtil.setMatchSecond(true);
-        //Configurable to set up daemon threads
-        CronUtil.start();
-        DefaultConsole.info("Default to start cron");
+        DefaultConsole.info("Cron register success : success task num : {}", CronUtil.getScheduler().size());
     }
 }
