@@ -8,7 +8,7 @@ import java.lang.annotation.*;
 /**
  * This annotation is mainly annotated on the class where the Spring injection class annotation is located, which
  * can implement the interface class with automatic injection annotation {@link Sdk} and automatically create
- * the implementation class,it mainly relies on {@link SdkProxyBeanDefinitionRegister}
+ * the implementation class,it mainly relies on {@link SdkProxyBeanDefinitionProcessor}.
  * <p>
  *
  * @see top.osjf.assembly.simplified.support.AbstractProxyBeanInjectSupport
@@ -21,7 +21,7 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import({SdkProxyBeanDefinitionRegister.class})
+@Import({SdkProxyBeanDefinitionProcessor.class})
 public @interface EnableSdkProxyRegister {
 
     /**
