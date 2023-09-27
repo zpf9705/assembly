@@ -1,8 +1,8 @@
 package top.osjf.assembly.simplified.sdk.client;
 
-import org.springframework.lang.NonNull;
 import top.osjf.assembly.simplified.sdk.process.Request;
 import top.osjf.assembly.simplified.sdk.process.Response;
+import top.osjf.assembly.util.annotation.NotNull;
 
 /**
  * A custom processing scheme for response string conversion {@link Response}.
@@ -25,6 +25,6 @@ public interface ResponseConvert<R extends Response> {
      * @param responseStr String data for API response.
      * @return The converted response model data is implemented in {@link Response} and cannot be {@literal null}.
      */
-    @NonNull
+    @NotNull
     R convertToResponse(Request<R> request, String responseStr);
 }
