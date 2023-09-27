@@ -4,14 +4,14 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AliasFor;
 import top.osjf.assembly.simplified.cron.AbstractCronListener;
 import top.osjf.assembly.simplified.cron.CronListener;
-import top.osjf.assembly.simplified.cron.CronTaskRegisterImport;
+import top.osjf.assembly.simplified.cron.CronTaskRegisterBootProcessor;
 
 import java.lang.annotation.*;
 
 /**
  * Opening annotations for timed task registration.
  *
- * <p>This annotation will scan the methods that carry {@link CronTaskRegisterImport} through {@link Cron},
+ * <p>This annotation will scan the methods that carry {@link CronTaskRegisterBootProcessor} through {@link Cron},
  * register them with the timed thread pool using {@link top.osjf.assembly.simplified.cron.CronRegister},
  * and trigger these operations.
  *
@@ -23,7 +23,7 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import({CronTaskRegisterImport.class})
+@Import({CronTaskRegisterBootProcessor.class})
 public @interface EnableCronTaskRegister {
 
     /**
