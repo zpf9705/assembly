@@ -8,13 +8,13 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 import top.osjf.assembly.simplified.sdk.SdkProxyBeanDefinition;
 import top.osjf.assembly.simplified.support.AbstractProxyBeanInjectSupport;
+import top.osjf.assembly.util.annotation.NotNull;
 
 /**
- * The proxy registration class of SDK scans the relevant interface classes carrying {@link EnableSdkProxyRegister}
+ * The proxy registration class of SDK scans the relevant interface classes carrying {@link EnableSdkProxyRegister}.
  *
  * <p>Annotations based on the switch {@link Sdk}, automatically equips the proxy implementation class ,
  * and calls the method of unified direction {@link SdkProxyBeanDefinition} to achieve unified deployment
@@ -27,16 +27,16 @@ import top.osjf.assembly.simplified.support.AbstractProxyBeanInjectSupport;
  * @author zpf
  * @since 1.1.0
  */
-public class SdkProxyBeanDefinitionRegister extends AbstractProxyBeanInjectSupport<EnableSdkProxyRegister, Sdk> {
+public class SdkProxyBeanDefinitionProcessor extends AbstractProxyBeanInjectSupport<EnableSdkProxyRegister, Sdk> {
 
     @Override
-    @NonNull
+    @NotNull
     public Class<EnableSdkProxyRegister> getOpenClazz() {
         return EnableSdkProxyRegister.class;
     }
 
     @Override
-    @NonNull
+    @NotNull
     public Class<Sdk> getFindClazz() {
         return Sdk.class;
     }
@@ -54,16 +54,16 @@ public class SdkProxyBeanDefinitionRegister extends AbstractProxyBeanInjectSuppo
     }
 
     @Override
-    @NonNull
+    @NotNull
     public String getPackagesSign() {
         return "basePackages";
     }
 
     /**
-     * Obtain host configuration parameters,According to the startup environment of spring
+     * Obtain host configuration parameters,According to the startup environment of spring.
      *
-     * @param hostProperty Host configuration key
-     * @return host address
+     * @param hostProperty Host configuration key.
+     * @return Real host address.
      */
     private String getRequestHost(String hostProperty) {
         Assert.hasText(hostProperty, "HostProperty no be null");
