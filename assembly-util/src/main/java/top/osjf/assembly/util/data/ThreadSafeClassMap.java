@@ -35,15 +35,6 @@ public class ThreadSafeClassMap<K, V> extends Hashtable<K, V> implements ClassMa
     }
 
     @Override
-    public synchronized <T> T getValueOnClass(K key, Class<T> clazz) {
-        V v;
-        if (key == null || clazz == null || (v = this.get(key)) == null) {
-            return null;
-        }
-        return Convert.convert(clazz, v);
-    }
-
-    @Override
     public synchronized void mergeMaps(Map<? extends K, ? extends V>... maps) {
         if (ArrayUtils.isEmpty(maps)) {
             return;
@@ -51,5 +42,14 @@ public class ThreadSafeClassMap<K, V> extends Hashtable<K, V> implements ClassMa
         for (Map<? extends K, ? extends V> map : maps) {
             this.putAll(map);
         }
+    }
+
+    @Override
+    public synchronized <T> T getValueOnClass(K key, Class<T> clazz) {
+        V v;
+        if (key == null || clazz == null || (v = this.get(key)) == null) {
+            return null;
+        }
+        return Convert.convert(clazz, v);
     }
 }
