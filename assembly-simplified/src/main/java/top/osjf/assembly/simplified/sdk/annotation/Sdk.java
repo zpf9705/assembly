@@ -4,7 +4,7 @@ import java.lang.annotation.*;
 
 /**
  * Dynamic injection of Spring container annotations, which only need to be annotated on the interface class
- * that needs dynamic injection, can be scanned by {@link SdkProxyBeanDefinitionRegister} and automatically
+ * that needs dynamic injection, can be scanned by {@link SdkProxyBeanDefinitionProcessor} and automatically
  * create proxy objects based on annotation properties .
  *
  * <p>The class that wears this annotation can be injected and used in the container environment of the spring boot
