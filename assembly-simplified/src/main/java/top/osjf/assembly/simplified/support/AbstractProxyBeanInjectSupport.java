@@ -6,16 +6,20 @@ import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
-import org.springframework.lang.NonNull;
+import top.osjf.assembly.util.annotation.NotNull;
 import org.springframework.util.Assert;
 
 import java.lang.annotation.Annotation;
@@ -40,34 +44,53 @@ import java.util.Set;
  * <p>The lookup of annotated interfaces depends on the interface {@link ResourceLoader} and
  * {@link ClassPathScanningCandidateComponentProvider}.
  *
+ * <p>Implementation {@link EnvironmentPostProcessor} provides task methods to scan the application
+ * default when the package path is not provided.{@link Class#getPackage()}</p>
+ *
  * @author zpf
  * @since 1.1.0
  */
 public abstract class AbstractProxyBeanInjectSupport<O extends Annotation, F extends Annotation>
-        implements ImportBeanDefinitionRegistrar, EnvironmentAware, ResourceLoaderAware {
+        implements EnvironmentPostProcessor, ImportBeanDefinitionRegistrar, EnvironmentAware,
+        ResourceLoaderAware, Ordered {
 
     private Environment environment;
 
     private ResourceLoader resourceLoader;
 
+    private static String applicationScanPath;
+
     @Override
-    public void setEnvironment(@NonNull Environment environment) {
+    public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
+        Class<?> mainApplicationClass = application.getMainApplicationClass();
+        if (mainApplicationClass != null) {
+            applicationScanPath = mainApplicationClass.getPackage().getName();
+        }
+    }
+
+    @Override
+    public void setEnvironment(@NotNull Environment environment) {
         this.environment = environment;
     }
 
     @Override
-    public void setResourceLoader(@NonNull ResourceLoader resourceLoader) {
+    public void setResourceLoader(@NotNull ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
     }
 
     @Override
-    public void registerBeanDefinitions(@NonNull AnnotationMetadata metadata, @NonNull BeanDefinitionRegistry registry,
-                                        @NonNull BeanNameGenerator importBeanNameGenerator) {
+    public int getOrder() {
+        return Integer.MIN_VALUE + 11;
+    }
+
+    @Override
+    public void registerBeanDefinitions(@NotNull AnnotationMetadata metadata, @NotNull BeanDefinitionRegistry registry,
+                                        @NotNull BeanNameGenerator importBeanNameGenerator) {
         this.registerBeanDefinitions(metadata, registry);
     }
 
     @Override
-    public void registerBeanDefinitions(AnnotationMetadata metadata, @NonNull BeanDefinitionRegistry registry) {
+    public void registerBeanDefinitions(AnnotationMetadata metadata, @NotNull BeanDefinitionRegistry registry) {
         //Obtain the annotation value for opening
         AnnotationAttributes attributes = AnnotationAttributes.fromMap(metadata.getAnnotationAttributes(getOpenClazz()
                 .getName()));
@@ -77,7 +100,7 @@ public abstract class AbstractProxyBeanInjectSupport<O extends Annotation, F ext
         //Obtain Scan Path
         String[] basePackages = attributes.getStringArray(getPackagesSign());
         if (ArrayUtils.isEmpty(basePackages)) {
-            basePackages = SourceEnvironmentPostProcessor.findSpringbootPrimarySourcesPackages();
+            basePackages = new String[]{applicationScanPath};
         }
         //Obtain Path Scan Provider
         ClassPathScanningCandidateComponentProvider classPathScan = this.getClassPathScanUseAnnotationClass();
@@ -111,7 +134,7 @@ public abstract class AbstractProxyBeanInjectSupport<O extends Annotation, F ext
     }
 
     /**
-     * Register annotation association scanning class.
+     * Define the registration behavior of beans based on all attributes.
      *
      * @param attributes Annotation value Range.
      * @param registry   Bean Keygen.
@@ -125,7 +148,7 @@ public abstract class AbstractProxyBeanInjectSupport<O extends Annotation, F ext
      *
      * @return {@link ClassPathScanningCandidateComponentProvider}.
      */
-    @NonNull
+    @NotNull
     public ClassPathScanningCandidateComponentProvider getClassPathScanUseAnnotationClass() {
         ClassPathScanningCandidateComponentProvider classPathScan =
                 new ClassPathScanningCandidateComponentProvider(false, this.environment) {
@@ -146,7 +169,7 @@ public abstract class AbstractProxyBeanInjectSupport<O extends Annotation, F ext
      *
      * @return must not be {@literal null}.
      */
-    @NonNull
+    @NotNull
     public abstract Class<O> getOpenClazz();
 
     /**
@@ -154,7 +177,7 @@ public abstract class AbstractProxyBeanInjectSupport<O extends Annotation, F ext
      *
      * @return must not be {@literal null}.
      */
-    @NonNull
+    @NotNull
     public abstract Class<F> getFindClazz();
 
     /**
@@ -162,7 +185,7 @@ public abstract class AbstractProxyBeanInjectSupport<O extends Annotation, F ext
      *
      * @return must not be {@literal null}.
      */
-    @NonNull
+    @NotNull
     public String getPackagesSign() {
         return "value";
     }
@@ -172,7 +195,7 @@ public abstract class AbstractProxyBeanInjectSupport<O extends Annotation, F ext
      *
      * @return {@link Environment}.
      */
-    @NonNull
+    @NotNull
     public Environment getEnvironment() {
         return this.environment;
     }
