@@ -1,6 +1,7 @@
 package top.osjf.assembly.util.data;
 
 import cn.hutool.core.convert.Convert;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Hashtable;
 import java.util.Map;
@@ -40,5 +41,15 @@ public class ThreadSafeClassMap<K, V> extends Hashtable<K, V> implements ClassMa
             return null;
         }
         return Convert.convert(clazz, v);
+    }
+
+    @Override
+    public synchronized void mergeMaps(Map<? extends K, ? extends V>... maps) {
+        if (ArrayUtils.isEmpty(maps)) {
+            return;
+        }
+        for (Map<? extends K, ? extends V> map : maps) {
+            this.putAll(map);
+        }
     }
 }

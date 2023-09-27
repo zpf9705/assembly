@@ -15,10 +15,19 @@ import java.util.Map;
 public interface ClassMap<K, V> extends Map<K, V> {
 
     /**
+     * Obtain value based on the key and convert it to the corresponding type.
+     *
      * @param key   key with which the specified value is to be associated.
      * @param clazz The type class object that needs to convert value to.
      * @param <T>   Value converts object generics.
      * @return The converted object value.
      */
     <T> T getValueOnClass(K key, Class<T> clazz);
+
+    /**
+     * Merge the map array into this map.
+     *
+     * @param maps Multiple maps.
+     */
+    void mergeMaps(Map<? extends K, ? extends V>... maps);
 }
