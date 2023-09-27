@@ -1,7 +1,7 @@
 package top.osjf.assembly.simplified.sdk;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.springframework.lang.NonNull;
+import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.simplified.sdk.client.ClientExecutors;
 import top.osjf.assembly.simplified.sdk.process.HostCapable;
 import top.osjf.assembly.simplified.sdk.process.Request;
@@ -56,11 +56,11 @@ public abstract class AbstractSdkProxyInvoker<T> extends AbstractJdkProxySupport
      * @param request Think of {@link Request#getClientCls()}.
      * @return The result set of this request is encapsulated in {@link Response}.
      */
-    public Response doNext(@NonNull Request<?> request) {
+    public Response doNext(@NotNull Request<?> request) {
         return ClientExecutors.executeRequestClient(this::getHost, request);
     }
 
     @Override
-    @NonNull
+    @NotNull
     public abstract String getHost();
 }
