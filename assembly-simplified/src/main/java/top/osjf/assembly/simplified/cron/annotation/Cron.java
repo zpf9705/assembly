@@ -1,7 +1,5 @@
 package top.osjf.assembly.simplified.cron.annotation;
 
-import top.osjf.assembly.simplified.cron.CronTaskRegisterImport;
-
 import java.lang.annotation.*;
 
 /**
@@ -9,7 +7,8 @@ import java.lang.annotation.*;
  * supports spring specified environment {@link org.springframework.core.env.Environment}registration,
  * and provides fixed initialization parameters.
  *
- * <p>Relying on {@link CronTaskRegisterImport} to scan, obtain, and register corresponding annotation methods.
+ * <p>Relying on {@link top.osjf.assembly.simplified.cron.CronTaskRegisterBootProcessor} to scan,
+ * obtain, and register corresponding annotation methods.
  *
  * @author zpf
  * @since 1.1.0
