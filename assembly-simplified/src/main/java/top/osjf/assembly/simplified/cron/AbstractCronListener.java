@@ -1,7 +1,7 @@
 package top.osjf.assembly.simplified.cron;
 
 import cn.hutool.cron.TaskExecutor;
-import org.springframework.lang.NonNull;
+import top.osjf.assembly.util.annotation.NotNull;
 
 /**
  * For abstract classes implemented by exception methods, the signals for startup and success can be selectively rewritten.
@@ -26,15 +26,15 @@ public abstract class AbstractCronListener implements CronListener {
         onFailedSetSchedulerId(executor.getCronTask().getId(), exception);
     }
 
-    public void onStartSetSchedulerId(@NonNull String SchedulerId) {
+    public void onStartSetSchedulerId(@NotNull String SchedulerId) {
 
     }
 
-    public void onSucceededSetSchedulerId(@NonNull String SchedulerId) {
+    public void onSucceededSetSchedulerId(@NotNull String SchedulerId) {
 
     }
 
-    public void onFailedSetSchedulerId(@NonNull String SchedulerId, Throwable exception) {
+    public void onFailedSetSchedulerId(@NotNull String SchedulerId, Throwable exception) {
 
     }
 }
