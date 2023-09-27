@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.lang.NonNull;
+import top.osjf.assembly.util.annotation.NotNull;
 
 import java.util.Objects;
 import java.util.Set;
@@ -49,7 +49,7 @@ public class SourceEnvironmentPostProcessor implements EnvironmentPostProcessor,
      *
      * @param source {@link SpringApplication#getAllSources()}
      */
-    private void applicationSource(@NonNull Set<Object> source) {
+    private void applicationSource(@NotNull Set<Object> source) {
         if (source.isEmpty()) {
             throw new IllegalArgumentException("No detection of the existence of the startup main class");
         }
