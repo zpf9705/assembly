@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import org.springframework.util.Assert;
 import top.osjf.assembly.cache.exceptions.CachePersistenceException;
+import top.osjf.assembly.util.SerialUtils;
 import top.osjf.assembly.util.annotation.NotNull;
 
 import java.util.List;
@@ -89,6 +90,16 @@ public class ByteCachePersistence extends AbstractCachePersistence<byte[], byte[
         ByteCachePersistence globePersistence = ofSetPersistence(ByteCachePersistence.class, persistence);
         Assert.notNull(globePersistence, "GlobePersistence no be null");
         this.reductionUseEntry(globePersistence);
+    }
+
+    @Override
+    public Object recoveryDeserializeKey(byte[] key) {
+        return SerialUtils.deserialize(key);
+    }
+
+    @Override
+    public Object recoveryDeserializeValue(byte[] value) {
+        return SerialUtils.deserialize(value);
     }
 
     public static class BytePersistence extends AbstractPersistenceStore<byte[], byte[]> {

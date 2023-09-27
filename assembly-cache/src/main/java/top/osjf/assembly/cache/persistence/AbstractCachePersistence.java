@@ -870,7 +870,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
             } catch (Throwable e) {
                 Console.warn("Restore cache file {}  error : {}", v.getName(), e.getMessage());
             }
-        }), "Expiry-Record-Cache-Thread").start();
+        }), "Assembly-Cache-Reduction-Thread").start();
     }
 
     @Override
@@ -946,8 +946,8 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
                 try {
                     recovery = ReflectUtil.newInstance(clazz);
                     recovery.recovery(
-                            SerialUtils.deserialize((byte[]) entry.getKey()),
-                            SerialUtils.deserialize((byte[]) entry.getValue()));
+                            recoveryDeserializeKey(entry.getKey()),
+                            recoveryDeserializeValue(entry.getKey()));
                     recovery.expired(condition, entry.getTimeUnit());
                 } catch (Exception e) {
                     Console.info("Cache recovery callback exception , throw an error : {}", e.getMessage());
@@ -955,6 +955,22 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
             });
         }
     }
+
+    /**
+     * Deserialization requires restoring the cached {@code key} value.
+     *
+     * @param key The current persistent read {@code key} value.
+     * @return Deserialize the object.
+     */
+    public abstract Object recoveryDeserializeKey(K key);
+
+    /**
+     * Deserialization requires restoring the cached {@code value} value.
+     *
+     * @param value The current persistent read {@code value} value.
+     * @return Deserialize the object.
+     */
+    public abstract Object recoveryDeserializeValue(K value);
 
     /**
      * Calculating the cache recovery time remaining with {@code TimeUnit}.
