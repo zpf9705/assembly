@@ -1,7 +1,7 @@
 package top.osjf.assembly.simplified.sdk;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.lang.NonNull;
+import top.osjf.assembly.util.annotation.NotNull;
 
 import java.io.Serializable;
 
@@ -44,7 +44,7 @@ public class SdkProxyBeanDefinition<T> extends AbstractSdkProxyInvoker<T> implem
         this.host = host;
     }
 
-    @NonNull
+    @NotNull
     @Override
     public String getHost() {
         return host;
