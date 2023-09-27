@@ -12,9 +12,9 @@ import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.lang.NonNull;
 import top.osjf.assembly.simplified.cron.annotation.Cron;
 import top.osjf.assembly.simplified.cron.annotation.EnableCronTaskRegister;
+import top.osjf.assembly.util.annotation.NotNull;
 
 import java.util.Objects;
 
@@ -74,14 +74,13 @@ public class CronTaskRegisterBootProcessor implements EnvironmentPostProcessor, 
     }
 
     @Override
-    public void setEnvironment(@NonNull Environment environment) {
+    public void setEnvironment(@NotNull Environment environment) {
         CronRegister.Actuator.setProfiles(environment.getActiveProfiles());
     }
 
     @Override
-    @NonNull
-    public String[] selectImports(@NonNull AnnotationMetadata metadata) {
-        //get Attributes for EnableCronTaskRegister
+    @NotNull
+    public String[] selectImports(@NotNull AnnotationMetadata metadata) {
         AnnotationAttributes attributes =
                 AnnotationAttributes.fromMap(metadata.getAnnotationAttributes(EnableCronTaskRegister.class.getName()));
         Objects.requireNonNull(attributes, EnableCronTaskRegister.class.getName() + " analysis failed.");
