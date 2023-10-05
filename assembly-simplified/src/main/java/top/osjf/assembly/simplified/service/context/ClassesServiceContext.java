@@ -104,12 +104,20 @@ public class ClassesServiceContext implements ServiceContext, SpringApplicationR
     }
 
     @Override
-    public Object getService(String serviceName) {
-        return contextMap.get(serviceName);
+    public Object getService(String serviceName) throws NoSuchServiceException {
+        Object service = contextMap.get(serviceName);
+        if (service == null) {
+            throw new NoSuchServiceException("No service named " + serviceName + " was found from the service context");
+        }
+        return service;
     }
 
     @Override
-    public <S> S getService(String serviceName, Class<S> clazz) {
-        return contextMap.getValueOnClass(serviceName, clazz);
+    public <S> S getService(String serviceName, Class<S> requiredType) throws NoSuchServiceException {
+        S service = contextMap.getValueOnClass(serviceName, requiredType);
+        if (service == null) {
+            throw new NoSuchServiceException("No service named " + serviceName + " was found from the service context");
+        }
+        return service;
     }
 }
