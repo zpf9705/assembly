@@ -1,5 +1,7 @@
 package top.osjf.assembly.simplified.service.context;
 
+import java.io.Closeable;
+
 /**
  * The central interface for obtaining service context configuration.
  *
@@ -9,7 +11,7 @@ package top.osjf.assembly.simplified.service.context;
  * @author zpf
  * @since 2.0.4
  */
-public interface ServiceContext {
+public interface ServiceContext extends Closeable {
 
     /**
      * Returns a service with a specified name, which can be shared or independent.
@@ -33,8 +35,20 @@ public interface ServiceContext {
      *
      * @param serviceName  the name of the service to retrieve.
      * @param requiredType type the bean must match; can be an interface or superclass.
+     * @param <S>          types of required.
      * @return an instance of the service.
      * @throws NoSuchServiceException if there is no such service.
      */
     <S> S getService(String serviceName, Class<S> requiredType) throws NoSuchServiceException;
+
+
+    /**
+     * Reloading the service context is generally used to respond to dynamic changes in the scanning path.
+     *
+     * @param packages Scan path array.
+     */
+    void reloadWithScanPackages(String... packages);
+
+    @Override
+    void close();
 }

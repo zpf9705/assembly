@@ -4,15 +4,17 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationRunListener;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import top.osjf.assembly.simplified.service.annotation.ServiceCollection;
 import top.osjf.assembly.util.ScanUtils;
+import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.data.ClassMap;
 import top.osjf.assembly.util.data.ThreadSafeClassMap;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -51,13 +53,16 @@ import java.util.Set;
  * @author zpf
  * @since 2.0.4
  */
-public class ClassesServiceContext implements ServiceContext, SpringApplicationRunListener {
+public class ClassesServiceContext implements ServiceContext, ApplicationContextAware,
+        SpringApplicationRunListener {
 
     private final ClassMap<String, Object> contextMap = new ThreadSafeClassMap<>(4);
 
     public static final String CLASSES_SERVICE_CONTENT_BEAN = "CLASSES_SERVICE_CONTENT_BEAN";
 
-    private String applicationPath;
+    private String[] scanPackages;
+
+    private ApplicationContext context;
 
     /**
      * The empty structure here is mainly used for configuration purposes.
@@ -72,35 +77,46 @@ public class ClassesServiceContext implements ServiceContext, SpringApplicationR
      * @param args        The startup parameters for the application startup class of Spring.
      */
     public ClassesServiceContext(SpringApplication application, String[] args) {
-        this.applicationPath = application.getMainApplicationClass().getPackage().getName();
+        scanPackages = new String[]{
+                application.getMainApplicationClass().getPackage().getName()
+        };
+    }
+
+    @Override
+    public void setApplicationContext(@NotNull ApplicationContext context) throws BeansException {
+        this.context = context;
+    }
+
+    /**
+     * Set the scan package path for the service.
+     *
+     * @param packages Scanning packages , must not be {@literal null}.
+     */
+    private void setScanPackages(String... packages) {
+        Objects.requireNonNull(packages, "Setting scanPackages no be null");
+        this.scanPackages = packages;
+    }
+
+    /**
+     * Add a non null service name map.
+     *
+     * @param contextMap Service name map , must not be {@literal null}.
+     */
+    @SuppressWarnings("unchecked")
+    public void addContextMap(Map<String, Object> contextMap) {
+        Objects.requireNonNull(contextMap, "Setting contextMap no be null");
+        this.contextMap.mergeMaps(contextMap);
     }
 
     //This method is called by an object created by the SPI mechanism, not a container object.
     @Override
-    @SuppressWarnings("unchecked")
     public void started(ConfigurableApplicationContext context) {
-        Set<Class<Object>> serviceClasses = ScanUtils.getTypesAnnotatedWith(ServiceCollection.class,
-                //Only query the interface or abstract class of the package path where the startup is located.
-                applicationPath);
-        if (CollectionUtils.isEmpty(serviceClasses)) {
-            return;
-        }
-        List<Map<String, Object>> beanMaps = new ArrayList<>();
-        for (Class<Object> serviceClass : serviceClasses) {
-            Map<String, Object> beansMap;
-            try {
-                beansMap = context.getBeansOfType(serviceClass);
-            } catch (BeansException ignored) {
-                continue;
-            }
-            beanMaps.add(beansMap);
-        }
-        if (CollectionUtils.isEmpty(beanMaps)) {
-            return;
-        }
         //Find the previously prepared implementation class object and assign a value to the forwarding service map.
         ClassesServiceContext contextBean = context.getBean(CLASSES_SERVICE_CONTENT_BEAN, ClassesServiceContext.class);
-        contextBean.contextMap.mergeMaps(beanMaps.toArray(new Map[]{}));
+        //Place the scan path without overloading.
+        contextBean.setScanPackages(scanPackages);
+        //Load the service context map.
+        load(contextBean, context);
     }
 
     @Override
@@ -119,5 +135,35 @@ public class ClassesServiceContext implements ServiceContext, SpringApplicationR
             throw new NoSuchServiceException("No service named " + serviceName + " was found from the service context");
         }
         return service;
+    }
+
+    @Override
+    public void reloadWithScanPackages(String... packages) {
+        close();
+        setScanPackages(packages);
+        load(this, context);
+    }
+
+    @Override
+    public void close() {
+        contextMap.clear();
+        scanPackages = null;
+    }
+
+    private void load(ClassesServiceContext contextBean, ApplicationContext context) {
+        Set<Class<Object>> serviceClasses = ScanUtils.getTypesAnnotatedWith(ServiceCollection.class,
+                scanPackages);
+        if (CollectionUtils.isEmpty(serviceClasses)) {
+            return;
+        }
+        for (Class<Object> serviceClass : serviceClasses) {
+            Map<String, Object> beansMap;
+            try {
+                beansMap = context.getBeansOfType(serviceClass);
+            } catch (BeansException ignored) {
+                continue;
+            }
+            contextBean.addContextMap(beansMap);
+        }
     }
 }
