@@ -1,9 +1,9 @@
 # Application Run Listener
 org.springframework.boot.SpringApplicationRunListener=\
-top.osjf.assembly.simplified.cron.CronTaskRegisterBootProcessor,\
+top.osjf.assembly.simplified.cron.CronTaskRegister,\
 top.osjf.assembly.simplified.service.context.ClassesServiceContext
 
 # Preparation before initialization
 org.springframework.boot.env.EnvironmentPostProcessor=\
-top.osjf.assembly.simplified.cron.CronTaskRegisterBootProcessor,\
-top.osjf.assembly.simplified.sdk.annotation.SdkProxyBeanDefinitionProcessor
+top.osjf.assembly.simplified.cron.CronTaskRegister,\
+top.osjf.assembly.simplified.sdk.annotation.SdkProxyBeanRegister
