@@ -6,10 +6,11 @@ import org.springframework.core.annotation.AliasFor;
 import java.lang.annotation.*;
 
 /**
- * This annotation is mainly annotated on the class where the Spring injection class annotation is located, which
- * can implement the interface class with automatic injection annotation {@link Sdk} and automatically create
- * the implementation class,it mainly relies on {@link SdkProxyBeanDefinitionProcessor}.
- * <p>
+ * This annotation is mainly annotated on the class where the
+ * Spring injection class annotation is located, which can implement
+ * the interface class with automatic injection annotation {@link Sdk}
+ * and automatically create the implementation class, it mainly relies
+ * on {@link SdkProxyBeanRegister}.
  *
  * @see top.osjf.assembly.simplified.support.AbstractProxyBeanInjectSupport
  * @see org.springframework.context.annotation.ImportBeanDefinitionRegistrar
@@ -21,27 +22,25 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import({SdkProxyBeanDefinitionProcessor.class})
+@Import({SdkProxyBeanRegister.class})
 public @interface EnableSdkProxyRegister {
 
     /**
      * Carrying the path where the {@link Sdk} class is located.
-     * <p>
-     * If it is null, the default is to use springboot to start
+     * <p>If it is null, the default is to use springboot to start
      * the package path where the main class is located.
      *
-     * @return alias for {{@link #basePackages()}}
+     * @return Alias for {{@link #basePackages()}}.
      */
     @AliasFor("basePackages")
     String[] value() default {};
 
     /**
      * His value shifts to {@link #value()}, consistent with it.
-     * <p>
-     * If it is null, the default is to use springboot to start
+     * <p>If it is null, the default is to use springboot to start
      * the package path where the main class is located.
      *
-     * @return alias for {{@link #value()}}
+     * @return Alias for {{@link #value()}}.
      */
     @AliasFor("value")
     String[] basePackages() default {};
