@@ -13,20 +13,23 @@ import top.osjf.assembly.simplified.support.AbstractProxyBeanInjectSupport;
 import top.osjf.assembly.util.annotation.NotNull;
 
 /**
- * The proxy registration class of SDK scans the relevant interface classes carrying {@link EnableSdkProxyRegister}.
+ * The proxy registration class of SDK scans the relevant interface
+ * classes carrying {@link EnableSdkProxyRegister}.
  *
- * <p>Annotations based on the switch {@link Sdk}, automatically equips the proxy implementation class ,
- * and calls the method of unified direction {@link SdkProxyBeanDefinition} to achieve unified deployment
- * of SDK proxy encapsulation.
+ * <p>Annotations based on the switch {@link Sdk}, automatically equips
+ * the proxy implementation class , and calls the method of unified direction
+ * {@link SdkProxyBeanDefinition} to achieve unified deployment of SDK proxy
+ * encapsulation.
  *
- * <p>It mainly defines beans through {@link BeanDefinitionBuilder}, with variables including
- * obtaining host addresses through spring's environment variables, class objects of proxy
- * interfaces, class aliases, and scanning path names (from value or basePackages).
+ * <p>It mainly defines beans through {@link BeanDefinitionBuilder},
+ * with variables including obtaining host addresses through spring's
+ * environment variables, class objects of proxy interfaces, class aliases,
+ * and scanning path names (from value or basePackages).
  *
  * @author zpf
  * @since 1.1.0
  */
-public class SdkProxyBeanDefinitionProcessor extends AbstractProxyBeanInjectSupport<EnableSdkProxyRegister, Sdk> {
+public class SdkProxyBeanRegister extends AbstractProxyBeanInjectSupport<EnableSdkProxyRegister, Sdk> {
 
     @Override
     @NotNull
