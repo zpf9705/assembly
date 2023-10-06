@@ -48,7 +48,7 @@ public interface ErrorResponse {
      * <p>When and only when the request fails, the success of the request can be determined based
      * on whether this method sends data.</p>
      *
-     * @param errorMessage Real message stack of {@link Throwable}.
+     * @param message Real message stack of {@link Throwable}.
      */
-    void setErrorMessage(String errorMessage);
+    void setErrorMessage(String message);
 }

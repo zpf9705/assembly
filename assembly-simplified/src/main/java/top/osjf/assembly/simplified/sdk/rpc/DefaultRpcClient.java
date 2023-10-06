@@ -75,7 +75,7 @@ public class DefaultRpcClient<T extends Response> extends AbstractClient<T> {
         }
 
         @Override
-        public void setErrorMessage(String errorMessage) {
+        public void setErrorMessage(String message) {
 
         }
     }

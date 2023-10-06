@@ -33,6 +33,6 @@ public abstract class AbstractResponse implements Response {
     }
 
     @Override
-    public void setErrorMessage(String errorMessage) {
+    public void setErrorMessage(String message) {
     }
 }
