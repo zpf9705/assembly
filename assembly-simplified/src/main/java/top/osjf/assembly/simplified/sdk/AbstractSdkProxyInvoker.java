@@ -1,30 +1,31 @@
 package top.osjf.assembly.simplified.sdk;
 
 import org.apache.commons.lang3.ArrayUtils;
-import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.simplified.sdk.client.ClientExecutors;
 import top.osjf.assembly.simplified.sdk.process.HostCapable;
 import top.osjf.assembly.simplified.sdk.process.Request;
 import top.osjf.assembly.simplified.sdk.process.Response;
 import top.osjf.assembly.simplified.support.AbstractJdkProxySupport;
+import top.osjf.assembly.util.annotation.NotNull;
 
 import java.lang.reflect.Method;
 
 /**
- * Inheriting {@link AbstractJdkProxySupport} implements handing over the object of the jdk dynamic proxy
- * to the spring container for management.
+ * Inheriting {@link AbstractJdkProxySupport} implements handing over
+ * the object of the jdk dynamic proxy to the spring container for management.
  *
- * <p>When this object is called, the {@link #invoke(Object, Method, Object[])} method will be executed
- * and passed to this abstract class.</p>
+ * <p>When this object is called, the {@link #invoke(Object, Method, Object[])}
+ * method will be executed and passed to this abstract class.
  *
- * <p>This class takes on the common parameter processing and converts it into the parameters required for
- * SDK execution.</p>
+ * <p>This class takes on the common parameter processing and converts
+ * it into the parameters required for SDK execution.
  *
- * <p>The corresponding executor will be selected based on the full name of a single
- * {@link top.osjf.assembly.simplified.sdk.client.Client},
+ * <p>The corresponding executor will be selected based on the full name
+ * of a single {@link top.osjf.assembly.simplified.sdk.client.Client},
  * as shown in {@link Request#getClientCls()}.
  *
- * <p>Simply obtain the host parameter from the corresponding proxy class entity to complete the SDK request.</p>
+ * <p>Simply obtain the host parameter from the corresponding proxy class
+ * entity to complete the SDK request.
  *
  * @author zpf
  * @since 1.1.0
@@ -36,27 +37,40 @@ public abstract class AbstractSdkProxyInvoker<T> extends AbstractJdkProxySupport
         return invoke0(proxy, method, args);
     }
 
-    public Object invoke0(Object proxy, Method method, Object[] args) {
-        //Request parameters must be passed.
-        if (ArrayUtils.isEmpty(args)) throw new IllegalArgumentException(
-                String.format("The method %s of proxy class %s must pass the request parameter " +
-                        "when executing the sdk option.", proxy.getClass().getName(), method.getName()));
-        //Specify that only one request parameter of the encapsulation type is passed.
-        Object arg = args[0];
-        //Determine if it is of type AbstractRequestParams
-        if (!(arg instanceof Request)) throw new IllegalArgumentException(
-                "You must encapsulate your SDK request class to inherit from top.osjf.assembly" +
-                        ".sdk.process.Request");
-        return doNext((Request<?>) arg);
+    public Object invoke0(@SuppressWarnings("unused") Object proxy, Method method, Object[] args) {
+        //The method of the parent class Object is not given
+        Class<T> clazz = getClazz();
+        if (!clazz.getName().equals(method.getDeclaringClass().getName())) {
+            throw new UnsupportedOperationException(
+                    "Only methods defined by class " + clazz.getName() + " are supported.");
+        }
+        //The request parameter encapsulation must exist.
+        if (ArrayUtils.isEmpty(args)) {
+            throw new IllegalArgumentException(
+                    "The input parameter of the SDK encapsulation class call method cannot be empty."
+            );
+        }
+        //And all encapsulated as one parameter.
+        Object param = args[0];
+        //Determine whether it is a request parameter and whether the
+        //class object that returns the value is a subclass of response.
+        if (!(param instanceof Request) || !Response.class.isAssignableFrom(method.getReturnType())) {
+            throw new IllegalArgumentException(
+                    "Determine whether it is a request parameter and whether the" +
+                            "class object that returns the value is a subclass of response"
+            );
+        }
+        return doNext((Request<?>) param);
     }
 
     /**
-     * Use {@link top.osjf.assembly.simplified.sdk.client.Client} for the next name routing operation.
+     * Use {@link top.osjf.assembly.simplified.sdk.client.Client} for the
+     * next name routing operation.
      *
      * @param request Think of {@link Request#getClientCls()}.
      * @return The result set of this request is encapsulated in {@link Response}.
      */
-    public Response doNext(@NotNull Request<?> request) {
+    private Response doNext(@NotNull Request<?> request) {
         return ClientExecutors.executeRequestClient(this::getHost, request);
     }
 
