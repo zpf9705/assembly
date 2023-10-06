@@ -68,7 +68,8 @@ public class SdkProxyBeanRegister extends AbstractProxyBeanInjectSupport<EnableS
     }
 
     /**
-     * Obtain host configuration parameters,According to the startup environment of spring.
+     * Obtain host configuration parameters,according to the startup
+     * environment of spring.
      *
      * @param hostProperty Host configuration key.
      * @return Real host address.
