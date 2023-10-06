@@ -1,5 +1,9 @@
 package top.osjf.assembly.simplified.sdk.process;
 
+import top.osjf.assembly.simplified.sdk.SdkException;
+import top.osjf.assembly.simplified.sdk.client.PreProcessingResponseHandler;
+import top.osjf.assembly.simplified.sdk.client.ResponseConvert;
+
 /**
  * When requesting an exception, a corresponding message is generated, and the corresponding
  * field is often not found through JSON conversion. At this point, this interface defines two standard methods.
@@ -19,14 +23,14 @@ public interface ErrorResponse {
     /**
      * There are three fixed types defined here:
      * <dl>
-     *     <dt>{@link DefaultErrorResponse#SDK_ERROR_CODE}Sent {@link top.osjf.assembly.simplified.sdk.SdkException}
+     *     <dt>{@link DefaultErrorResponse#SDK_ERROR_CODE}Sent {@link SdkException}
      *     when SDK is abnormal.</dt>
      *     <dt>{@link DefaultErrorResponse#DATA_ERROR_CODE}Unknown, inherited from {@link Exception}
      *     when an exception is sent, rather than a known exception.</dt>
      *     <dt>{@link DefaultErrorResponse#UNKNOWN_ERROR_CODE}When there are exceptions during data conversion,
      *     you can focus on the
-     *     {@link top.osjf.assembly.simplified.sdk.client.PreProcessingResponseHandler#preResponseStrHandler(Request, String)}
-     *     or {@link top.osjf.assembly.simplified.sdk.client.ResponseConvert#convertToResponse(Request, String)} methods.</dt>
+     *     {@link PreProcessingResponseHandler#preResponseStrHandler(Request, String)}
+     *     or {@link ResponseConvert#convertToResponse(Request, String)} methods.</dt>
      * </dl>
      *
      * <p>When and only when the request fails, the success of the request can be determined based
