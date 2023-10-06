@@ -50,13 +50,13 @@ import java.util.Objects;
  * @author zpf
  * @since 1.1.0
  */
-public class CronTaskRegisterBootProcessor implements EnvironmentPostProcessor, EnvironmentAware, ImportSelector,
+public class CronTaskRegister implements EnvironmentPostProcessor, EnvironmentAware, ImportSelector,
         SpringApplicationRunListener, Ordered {
 
     /**
      * The empty structure here is mainly used for configuration purposes.
      */
-    public CronTaskRegisterBootProcessor() {
+    public CronTaskRegister() {
     }
 
     /**
@@ -65,7 +65,7 @@ public class CronTaskRegisterBootProcessor implements EnvironmentPostProcessor, 
      * @param application Spring's application startup class.
      * @param args        The startup parameters for the application startup class of Spring.
      */
-    public CronTaskRegisterBootProcessor(SpringApplication application, String[] args) {
+    public CronTaskRegister(SpringApplication application, String[] args) {
     }
 
     @Override
