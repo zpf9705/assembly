@@ -5,7 +5,6 @@ import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.Assert;
@@ -47,9 +46,15 @@ public class SdkProxyBeanDefinitionProcessor extends AbstractProxyBeanInjectSupp
         BeanDefinitionBuilder definition = BeanDefinitionBuilder.genericBeanDefinition(SdkProxyBeanDefinition.class);
         definition.addPropertyValue("host", getRequestHost(attributes.getString("hostProperty")));
         definition.addPropertyValue("clazz", className);
-        definition.setAutowireMode(GenericBeanDefinition.AUTOWIRE_BY_TYPE);
-        BeanDefinitionHolder holder = new BeanDefinitionHolder(definition.getBeanDefinition(),
-                className, new String[]{attributes.getString("alisa")});
+        AnnotationAttributes attributes0 = attributes.getAnnotation("attributes");
+        String beanName = attributes0.getString("beanName");
+        String[] alisa = attributes0.getStringArray("alisa");
+        String scope = attributes0.getString("scope");
+        Number autowireMode = attributes0.getNumber("autowireMode");
+        if (StringUtils.isBlank(beanName)) beanName = className;
+        definition.setScope(scope);
+        definition.setAutowireMode(autowireMode.intValue());
+        BeanDefinitionHolder holder = new BeanDefinitionHolder(definition.getBeanDefinition(), beanName, alisa);
         BeanDefinitionReaderUtils.registerBeanDefinition(holder, registry);
     }
 

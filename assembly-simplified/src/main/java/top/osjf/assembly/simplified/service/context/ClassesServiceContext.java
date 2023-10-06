@@ -16,6 +16,7 @@ import top.osjf.assembly.util.data.ThreadSafeClassMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * Support implementation class for service context {@link ServiceContext}.
@@ -121,20 +122,12 @@ public class ClassesServiceContext implements ServiceContext, ApplicationContext
 
     @Override
     public Object getService(String serviceName) throws NoSuchServiceException {
-        Object service = contextMap.get(serviceName);
-        if (service == null) {
-            throw new NoSuchServiceException("No service named " + serviceName + " was found from the service context");
-        }
-        return service;
+        return getService(s -> contextMap.get(serviceName), serviceName);
     }
 
     @Override
     public <S> S getService(String serviceName, Class<S> requiredType) throws NoSuchServiceException {
-        S service = contextMap.getValueOnClass(serviceName, requiredType);
-        if (service == null) {
-            throw new NoSuchServiceException("No service named " + serviceName + " was found from the service context");
-        }
-        return service;
+        return getService(s -> contextMap.getValueOnClass(serviceName, requiredType), serviceName);
     }
 
     @Override
@@ -148,6 +141,23 @@ public class ClassesServiceContext implements ServiceContext, ApplicationContext
     public void close() {
         contextMap.clear();
         scanPackages = null;
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> T getService(Function<String, T> serviceGetFun, String serviceName) {
+        //Default primary name resolution
+        T service = serviceGetFun.apply(serviceName);
+        if (service == null) {
+            try {
+                //The primary name cannot be found. Use the spring context to query using an alias.
+                service = (T) context.getBean(serviceName);
+            } catch (BeansException e) {
+                //Throw an exception that cannot be found.
+                throw new NoSuchServiceException("No service named " + serviceName + " was found " +
+                        "from the service context");
+            }
+        }
+        return service;
     }
 
     private void load(ClassesServiceContext contextBean, ApplicationContext context) {

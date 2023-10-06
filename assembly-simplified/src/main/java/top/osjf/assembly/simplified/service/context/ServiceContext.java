@@ -43,7 +43,8 @@ public interface ServiceContext extends Closeable {
 
 
     /**
-     * Reloading the service context is generally used to respond to dynamic changes in the scanning path.
+     * By default, the package path where the springboot startup class is located is collected,
+     * but this method can be used to dynamically change the collection path.
      *
      * @param packages Scan path array.
      */

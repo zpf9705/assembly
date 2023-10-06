@@ -1,14 +1,26 @@
 package top.osjf.assembly.simplified.sdk.annotation;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanDefinitionHolder;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.GenericBeanDefinition;
+
 import java.lang.annotation.*;
 
 /**
- * Dynamic injection of Spring container annotations, which only need to be annotated on the interface class
- * that needs dynamic injection, can be scanned by {@link SdkProxyBeanDefinitionProcessor} and automatically
- * create proxy objects based on annotation properties .
+ * Dynamic injection of Spring container annotations, which only need to be annotated on the
+ * interface class that needs dynamic injection, can be scanned by {@link SdkProxyBeanDefinitionProcessor}
+ * and automatically create proxy objects based on annotation properties.
  *
- * <p>The class that wears this annotation can be injected and used in the container environment of the spring boot
- * project through {@link org.springframework.beans.factory.annotation.Autowired}, constructors, or set methods
+ * <p>The class that wears this annotation can be injected and used in the container environment
+ * of the spring boot project through {@link org.springframework.beans.factory.annotation.Autowired},
+ * constructors, or set methods
+ *
+ * <p>Annotate properties based on viewing {@link BeanDefinitionBuilder}, and here only the
+ * names, aliases, and injection modes of beans are listed, as mentioned above regarding the
+ * bean injection properties of Spring.
  *
  * @author zpf
  * @since 1.1.0
@@ -17,15 +29,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Sdk {
-
-    /**
-     * The alias of the spring container bean, which can be used for bean lookup
-     * if provided, can also be left blank. The default method for creating SDK beans
-     * is to scan the full class name of the interface.
-     *
-     * @return can be {@literal null}.
-     */
-    String alisa() default "";
 
     /**
      * The host domain name that can be configured.
@@ -42,4 +45,57 @@ public @interface Sdk {
      * @return Host configuration.
      */
     String hostProperty();
+
+    /**
+     * When dynamically registering spring beans, encapsulate them as an annotation based
+     * on certain properties that are required and can be reasonably set for this project.
+     *
+     * <p>Refer to the registration class {@link BeanDefinitionBuilder}.
+     *
+     * @return Annotation attribute encapsulation.
+     */
+    BeanAttributes attributes();
+
+
+    @interface BeanAttributes {
+
+        /**
+         * The unique ID of the spring container bean. If it is empty, it defaults to
+         * the full path name of the registered class.
+         *
+         * @return Register the unique ID of the bean.
+         * @see BeanDefinitionHolder#BeanDefinitionHolder(BeanDefinition, String, String[])
+         */
+        String beanName() default "";
+
+        /**
+         * The access aliases for spring container beans can be set multiple times and can be empty.
+         *
+         * @return Register the alisa array of the bean.
+         * @see BeanDefinitionHolder#BeanDefinitionHolder(BeanDefinition, String, String[])
+         */
+        String[] alisa() default {};
+
+        /**
+         * The scope of the spring container bean.
+         * The default is {@link AbstractBeanDefinition#SCOPE_DEFAULT},Equivalent to
+         * {@link AbstractBeanDefinition#SCOPE_SINGLETON}
+         *
+         * @return Returns the scope range.
+         * @see BeanDefinitionBuilder#setScope(String)
+         * @see ConfigurableBeanFactory#SCOPE_PROTOTYPE
+         * @see ConfigurableBeanFactory#SCOPE_SINGLETON
+         */
+        String scope() default AbstractBeanDefinition.SCOPE_DEFAULT;
+
+        /**
+         * Spring's bean injection method selection defaults to assembly by type.
+         *
+         * @return Returns the injection method.
+         * @see GenericBeanDefinition#AUTOWIRE_BY_NAME
+         * @see GenericBeanDefinition#AUTOWIRE_BY_TYPE
+         * @see GenericBeanDefinition#AUTOWIRE_CONSTRUCTOR
+         */
+        int autowireMode() default GenericBeanDefinition.AUTOWIRE_BY_TYPE;
+    }
 }
