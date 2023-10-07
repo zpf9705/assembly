@@ -1,7 +1,7 @@
 package top.osjf.assembly.cache.listener;
 
 import org.apache.commons.lang3.SerializationException;
-import top.osjf.assembly.util.SerialUtils;
+import top.osjf.assembly.util.serial.SerialUtils;
 import top.osjf.assembly.util.annotation.NotNull;
 
 /**

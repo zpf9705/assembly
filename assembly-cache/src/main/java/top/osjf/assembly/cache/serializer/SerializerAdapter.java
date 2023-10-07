@@ -1,7 +1,7 @@
 package top.osjf.assembly.cache.serializer;
 
 import cn.hutool.core.convert.Convert;
-import top.osjf.assembly.util.SerialUtils;
+import top.osjf.assembly.util.serial.SerialUtils;
 
 /**
  * Key/value pairs serialized adapter , direct implementation {@link PairSerializer}.

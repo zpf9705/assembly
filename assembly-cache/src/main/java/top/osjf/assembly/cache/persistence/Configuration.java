@@ -1,7 +1,7 @@
 package top.osjf.assembly.cache.persistence;
 
 import org.apache.commons.lang3.StringUtils;
-import top.osjf.assembly.util.SystemUtils;
+import top.osjf.assembly.util.system.SystemUtils;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;

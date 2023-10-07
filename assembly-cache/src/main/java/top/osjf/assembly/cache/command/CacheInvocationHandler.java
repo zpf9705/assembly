@@ -3,7 +3,7 @@ package top.osjf.assembly.cache.command;
 import top.osjf.assembly.cache.logger.Console;
 import top.osjf.assembly.cache.persistence.PersistenceExec;
 import top.osjf.assembly.cache.persistence.CachePersistenceSolver;
-import top.osjf.assembly.util.SpiLoads;
+import top.osjf.assembly.util.spi.SpiLoads;
 import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
 

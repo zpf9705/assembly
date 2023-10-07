@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import org.springframework.util.Assert;
 import top.osjf.assembly.cache.exceptions.CachePersistenceException;
-import top.osjf.assembly.util.SerialUtils;
+import top.osjf.assembly.util.serial.SerialUtils;
 import top.osjf.assembly.util.annotation.NotNull;
 
 import java.util.List;

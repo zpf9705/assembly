@@ -10,8 +10,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class DefaultTimeOperations<K, V> extends AbstractOperations<K, V> implements TimeOperations<K, V> {
 
-    DefaultTimeOperations(CacheTemplate<K, V> expireTemplate) {
-        super(expireTemplate);
+    DefaultTimeOperations(CacheTemplate<K, V> template) {
+        super(template);
     }
 
     /*

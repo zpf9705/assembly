@@ -8,7 +8,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import top.osjf.assembly.simplified.service.annotation.ServiceCollection;
-import top.osjf.assembly.util.ScanUtils;
+import top.osjf.assembly.util.io.ScanUtils;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.data.ClassMap;
 import top.osjf.assembly.util.data.ThreadSafeClassMap;

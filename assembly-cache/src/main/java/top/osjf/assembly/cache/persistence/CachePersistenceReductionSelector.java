@@ -1,7 +1,7 @@
 package top.osjf.assembly.cache.persistence;
 
 import org.springframework.util.Assert;
-import top.osjf.assembly.util.SpiLoads;
+import top.osjf.assembly.util.spi.SpiLoads;
 
 /**
  * Use {@link SpiLoads} to provide query services for the {@link CachePersistenceReduction} interface.

@@ -8,7 +8,7 @@ import top.osjf.assembly.cache.listener.MessageCapable;
 import top.osjf.assembly.cache.persistence.BytesCachePersistenceSolver;
 import top.osjf.assembly.cache.persistence.CachePersistenceSolver;
 import top.osjf.assembly.util.data.ByteIdentify;
-import top.osjf.assembly.util.SpiLoads;
+import top.osjf.assembly.util.spi.SpiLoads;
 import top.osjf.assembly.util.annotation.NotNull;
 
 import java.util.Objects;

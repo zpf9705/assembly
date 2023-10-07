@@ -3,6 +3,7 @@ package top.osjf.assembly.cache.factory;
 import top.osjf.assembly.cache.command.CacheCommands;
 import top.osjf.assembly.cache.command.CacheKeyCommands;
 import top.osjf.assembly.cache.command.CachePairCommands;
+import top.osjf.assembly.util.serial.SerialUtils;
 
 /**
  * As the name suggests, it is a cache executor interface that provides the implementation of cache methods.
@@ -11,7 +12,7 @@ import top.osjf.assembly.cache.command.CachePairCommands;
  * type in the form of a unified {@link Byte} array of data, commonly known as serialization. <br>
  * When taking out the data, the {@link Byte} array is deserialized into real objects,
  * which are the values of key and value.
- * <p>{@link top.osjf.assembly.util.SerialUtils}</p>
+ * <p>{@link SerialUtils}</p>
  *
  * @author zpf
  * @since 1.0.0
