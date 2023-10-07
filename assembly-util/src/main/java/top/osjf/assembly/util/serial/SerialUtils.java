@@ -1,4 +1,4 @@
-package top.osjf.assembly.util;
+package top.osjf.assembly.util.serial;
 
 import org.apache.commons.lang3.SerializationException;
 import top.osjf.assembly.util.annotation.CanNull;

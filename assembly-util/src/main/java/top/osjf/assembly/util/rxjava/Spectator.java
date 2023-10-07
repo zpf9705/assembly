@@ -4,7 +4,7 @@ import io.reactivex.rxjava3.core.BackpressureStrategy;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Consumer;
-import top.osjf.assembly.util.SystemUtils;
+import top.osjf.assembly.util.system.SystemUtils;
 import top.osjf.assembly.util.annotation.NotNull;
 
 import java.io.Serializable;

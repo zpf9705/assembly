@@ -1,8 +1,8 @@
 package top.osjf.assembly.util.rxjava;
 
 import io.reactivex.rxjava3.disposables.Disposable;
-import top.osjf.assembly.util.DefaultConsole;
-import top.osjf.assembly.util.SystemUtils;
+import top.osjf.assembly.util.system.DefaultConsole;
+import top.osjf.assembly.util.system.SystemUtils;
 import top.osjf.assembly.util.annotation.NotNull;
 
 import java.util.List;

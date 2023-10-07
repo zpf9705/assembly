@@ -3,7 +3,7 @@ package top.osjf.assembly.util.rxjava;
 import io.reactivex.rxjava3.core.BackpressureStrategy;
 import io.reactivex.rxjava3.core.Flowable;
 import org.apache.commons.lang3.StringUtils;
-import top.osjf.assembly.util.SystemUtils;
+import top.osjf.assembly.util.system.SystemUtils;
 import top.osjf.assembly.util.UtilException;
 import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;

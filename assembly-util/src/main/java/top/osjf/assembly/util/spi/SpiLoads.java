@@ -1,4 +1,4 @@
-package top.osjf.assembly.util;
+package top.osjf.assembly.util.spi;
 
 import org.apache.commons.collections4.IteratorUtils;
 import top.osjf.assembly.util.annotation.NotNull;

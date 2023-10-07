@@ -1,4 +1,4 @@
-package top.osjf.assembly.util;
+package top.osjf.assembly.util.system;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;

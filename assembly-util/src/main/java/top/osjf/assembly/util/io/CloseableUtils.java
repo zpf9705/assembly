@@ -1,4 +1,4 @@
-package top.osjf.assembly.util;
+package top.osjf.assembly.util.io;
 
 import cn.hutool.core.io.IoUtil;
 import org.apache.commons.lang3.ArrayUtils;

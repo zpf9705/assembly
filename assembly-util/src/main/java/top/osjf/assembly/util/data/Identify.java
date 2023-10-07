@@ -2,7 +2,7 @@ package top.osjf.assembly.util.data;
 
 import cn.hutool.core.lang.hash.CityHash;
 import cn.hutool.core.util.ReflectUtil;
-import top.osjf.assembly.util.SerialUtils;
+import top.osjf.assembly.util.serial.SerialUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
