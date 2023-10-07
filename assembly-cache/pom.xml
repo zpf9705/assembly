@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>assembly-cache</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
     <packaging>jar</packaging>
     <description>A lightweight caching component based on {net. jdah. expiringmap. ExpiringMap}.</description>
 
@@ -20,7 +20,7 @@
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <expiringmap>0.5.10</expiringmap>
-        <util>1.0.2</util>
+        <util>1.0.3</util>
         <slf4j>1.7.32</slf4j>
         <beans>5.3.12</beans>
     </properties>
