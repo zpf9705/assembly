@@ -20,9 +20,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public abstract class DisposableUtils {
 
-    protected static final List<Disposable> dis = new CopyOnWriteArrayList<>();
+    private static final List<Disposable> dis = new CopyOnWriteArrayList<>();
 
-    protected static final ThreadFactory default_thread_factory = new ThreadFactory() {
+    private static final ThreadFactory default_thread_factory = new ThreadFactory() {
 
         private final ThreadFactory defaultFactory = Executors.defaultThreadFactory();
         private final AtomicInteger threadNumber = new AtomicInteger(0);
@@ -42,7 +42,7 @@ public abstract class DisposableUtils {
 
     public static final String timeunit = "disposable.clear.start.timeunit";
 
-    public static final ScheduledExecutorService service;
+    private static final ScheduledExecutorService service;
 
     static {
         //ScheduledExecutor init
@@ -67,7 +67,7 @@ public abstract class DisposableUtils {
     /**
      * Clear the subscription relationship, free the occupied memory, and avoid Memory leak.
      */
-    protected static void clearDisposable() {
+    private static void clearDisposable() {
         if (dis.isEmpty()) {
             return;
         }
