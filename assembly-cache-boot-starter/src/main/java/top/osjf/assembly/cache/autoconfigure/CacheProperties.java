@@ -6,7 +6,7 @@ import top.osjf.assembly.cache.persistence.ByteCachePersistence;
 import top.osjf.assembly.cache.persistence.CachePersistenceReduction;
 import top.osjf.assembly.cache.persistence.Configuration;
 import top.osjf.assembly.cache.persistence.ListeningRecovery;
-import top.osjf.assembly.util.SystemUtils;
+import top.osjf.assembly.util.system.SystemUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.Arrays;

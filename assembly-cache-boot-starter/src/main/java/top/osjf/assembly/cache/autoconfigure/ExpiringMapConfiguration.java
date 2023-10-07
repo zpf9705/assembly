@@ -21,8 +21,8 @@ import top.osjf.assembly.cache.logger.Console;
 import top.osjf.assembly.cache.factory.CacheFactory;
 import top.osjf.assembly.cache.listener.expiringmap.AsyncListener;
 import top.osjf.assembly.cache.listener.expiringmap.SyncListener;
-import top.osjf.assembly.util.DefaultConsole;
-import top.osjf.assembly.util.ScanUtils;
+import top.osjf.assembly.util.system.DefaultConsole;
+import top.osjf.assembly.util.io.ScanUtils;
 import top.osjf.assembly.util.annotation.NotNull;
 
 import java.io.PrintStream;
