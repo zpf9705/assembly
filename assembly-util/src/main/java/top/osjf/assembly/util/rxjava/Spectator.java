@@ -13,12 +13,12 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
- * The implementation subject of the prosecutor mode method operation
+ * The implementation subject of the prosecutor mode method operation.
  *
- * <p>The relevant operational parameter definitions for {@link Flowable} are completed here
+ * <p>The relevant operational parameter definitions for {@link Flowable} are completed here.
  *
  * <p>The specific application method of the above parameters can be queried
- * {@link Observer#run(Supplier, Class, Predicate, Function)}
+ * {@link Observer#run(Supplier, Class, Predicate, Function)}.
  * <pre>
  *     {@code
  *      Spectator.prepare(new Supplier<Integer>() {
@@ -82,12 +82,12 @@ public class Spectator<T> implements Observer<T>, Serializable {
     }
 
     /**
-     * On the Construction Method of Important Necessary Parameters
+     * On the Construction Method of Important Necessary Parameters.
      *
-     * @param run              Run Method Provider
-     * @param type             Success condition assertion
-     * @param check            Operational condition assertion
-     * @param simpleMsgHandler Exception occurrence collection function
+     * @param run              Run Method Provider.
+     * @param type             Success condition assertion.
+     * @param check            Operational condition assertion.
+     * @param simpleMsgHandler Exception occurrence collection function.
      */
     public Spectator(@NotNull Supplier<T> run,
                      @NotNull Class<T> type,
@@ -100,14 +100,14 @@ public class Spectator<T> implements Observer<T>, Serializable {
     }
 
     /**
-     * Provide static methods for constructing important necessary parameters
+     * Provide static methods for constructing important necessary parameters.
      *
-     * @param run              Run Method Provider
-     * @param type             Success condition assertion
-     * @param check            Operational condition assertion
-     * @param simpleMsgHandler Exception occurrence collection function
-     * @param <T>              Parameter Generics
-     * @return return parameters
+     * @param run              Run Method Provider.
+     * @param type             Success condition assertion.
+     * @param check            Operational condition assertion.
+     * @param simpleMsgHandler Exception occurrence collection function.
+     * @param <T>              Parameter Generics.
+     * @return This initialization object.
      */
     public static <T> Spectator<T> prepare(Supplier<T> run,
                                            Class<T> type,
@@ -117,11 +117,10 @@ public class Spectator<T> implements Observer<T>, Serializable {
     }
 
     /**
-     * Interval rest time setting for abnormal retries
+     * Interval rest time setting for abnormal retries.
      *
-     * @param exceptionRetryRestTime Enrichment call gap with exception
-     * @return {@literal Spectator of return parameters}
-     * @since 3.1.2
+     * @param exceptionRetryRestTime Enrichment call gap with exception.
+     * @return This initialization object.
      */
     public Spectator<T> exceptionRetryTime(Long exceptionRetryRestTime) {
         this.exceptionRetryRestTime = exceptionRetryRestTime;
@@ -129,11 +128,10 @@ public class Spectator<T> implements Observer<T>, Serializable {
     }
 
     /**
-     * Special retry exception class object set setting
+     * Special retry exception class object set setting.
      *
-     * @param specialRetry Retrying the specified exception group
-     * @return {@literal Spectator of return parameters}
-     * @since 3.1.2
+     * @param specialRetry Retrying the specified exception group.
+     * @return This initialization object.
      */
     public Spectator<T> specialRetry(Class<? extends Throwable>[] specialRetry) {
         this.specialRetry = specialRetry;
@@ -141,9 +139,9 @@ public class Spectator<T> implements Observer<T>, Serializable {
     }
 
     /**
-     * Conduct a method inspection run based on important necessary parameters
+     * Conduct a method inspection run based on important necessary parameters.
      *
-     * @return {@literal Spectator of return parameters}
+     * @return This initialization object.
      */
     public Spectator<T> run() {
         this.flowable = run(run, type, check, simpleMsgHandler);
@@ -151,10 +149,10 @@ public class Spectator<T> implements Observer<T>, Serializable {
     }
 
     /**
-     * Arrange functions for normal and abnormal consumers
+     * Arrange functions for normal and abnormal consumers.
      *
-     * @param consumer   Normal consumers
-     * @param exConsumer Abnormal consumers
+     * @param consumer   Normal consumers.
+     * @param exConsumer Abnormal consumers.
      */
     public void accept(Consumer<T> consumer, Consumer<? super Throwable> exConsumer) {
         Disposable subscribe = this.flowable.subscribe(consumer, exConsumer);

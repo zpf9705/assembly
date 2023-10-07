@@ -27,7 +27,7 @@ public abstract class SystemUtils {
     }
 
     /**
-     * Set system key and value constant or configuration or cache value
+     * Set system key and value constant or configuration or cache value.
      *
      * @param key   must no be {@literal null}.
      * @param value must no be {@literal null}.

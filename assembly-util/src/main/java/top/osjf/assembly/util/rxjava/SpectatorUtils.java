@@ -31,10 +31,11 @@ import java.util.function.Supplier;
  * own business needs. Here, only producers are planned to produce one data at a time,
  * so a single value is taken away.
  *
- * <p>Generally, in project interface calls, we often use {@link #runWhileTrampoline(Supplier, Class[], int, long, Class)}
- * to synchronize interface calls. This method effectively implements functions such as
- * abnormal retry and retry intermittency. In fact, the method API is not commonly used,
- * but can be combined arbitrarily through {@link #runWhile(Supplier, Class[], int, long, Executor, Executor, Class)}
+ * <p>Generally, in project interface calls, we often use {@link #runWhileTrampoline(
+ * Supplier, Class[], int, long, Class)} to synchronize interface calls.This method effectively
+ * implements functions such as abnormal retry and retry intermittency. In fact, the
+ * method API is not commonly used, but can be combined arbitrarily through {@link #runWhile(
+ * Supplier, Class[], int, long, Executor, Executor, Class)}.
  *
  * @author zpf
  * @since 1.0.0
@@ -45,15 +46,15 @@ public abstract class SpectatorUtils {
     }
 
     /**
-     * {@link #runWhileTrampoline(Supplier, Class[], int, long, Class)}no convert type clazz
+     * {@link #runWhileTrampoline(Supplier, Class[], int, long, Class)}no convert type clazz.
      *
-     * @param able                   Method Run Function , must no be {@literal null}
-     * @param retryTimes             retry count default to {@code 1}
-     * @param exceptionRetryRestMill Abnormal retry interval millisecond value default to {@code 0}
-     * @param exceptionClasses       Specify retry exception collection . If null, all exceptions will be caught
-     * @param <T>                    Specify Generics
-     *                               The default is the type of value returned by the method
-     * @return Specify conversion type object
+     * @param able                   Method Run Function , must not be {@literal null}.
+     * @param retryTimes             retry count default to {@code 1}.
+     * @param exceptionRetryRestMill Abnormal retry interval millisecond value default to {@code 0}.
+     * @param exceptionClasses       Specify retry exception collection . If null, all exceptions will be caught.
+     * @param <T>                    Specify Generics.
+     *                               The default is the type of value returned by the method.
+     * @return Specify conversion type object.
      */
     public static <T> T runWhileTrampolineNoConvert(Supplier<T> able,
                                                     Class<? extends Throwable>[] exceptionClasses,
@@ -65,16 +66,16 @@ public abstract class SpectatorUtils {
     /**
      * This method enables the producer and consumer to execute synchronously on the
      * same thread and is the current main thread, because this method does not set
-     * the scheduling Thread pool for consumers and producers
+     * the scheduling Thread pool for consumers and producers.
      *
-     * @param able                   Method Run Function , must no be {@literal null}
-     * @param retryTimes             retry count default to {@code 1}
-     * @param exceptionRetryRestMill Abnormal retry interval millisecond value default to {@code 0}
-     * @param exceptionClasses       Specify retry exception collection . If null, all exceptions will be caught
-     * @param <T>                    Specify Generics
+     * @param able                   Method Run Function , must not be {@literal null}.
+     * @param retryTimes             retry count default to {@code 1}.
+     * @param exceptionRetryRestMill Abnormal retry interval millisecond value default to {@code 0}.
+     * @param exceptionClasses       Specify retry exception collection . If null, all exceptions will be caught.
+     * @param <T>                    Specify Generics.
      * @param clazz                  Return value conversion clazz object ,
-     *                               The default is the type of value returned by the method
-     * @return Specify conversion type object
+     *                               The default is the type of value returned by the method.
+     * @return Specify conversion type object.
      */
     public static <T> T runWhileTrampoline(Supplier<T> able,
                                            Class<? extends Throwable>[] exceptionClasses,
@@ -88,7 +89,7 @@ public abstract class SpectatorUtils {
     /**
      * This method is provided to the producer to schedule the Thread pool.
      * <p>
-     * No matter whether it is null or not, consumers follow the producer's Thread pool to consume
+     * No matter whether it is null or not, consumers follow the producer's Thread pool to consume.
      * <pre>
      *     {@code
      *     System.out.println(Thread.currentThread().getName());
@@ -110,16 +111,16 @@ public abstract class SpectatorUtils {
      *         System.out.println("--------");}
      * </pre>
      *
-     * @param able                   Method Run Function , must no be {@literal null}
-     * @param retryTimes             retry count default to {@code 1}
-     * @param exceptionRetryRestMill Abnormal retry interval millisecond value default to {@code 0}
-     * @param exceptionClasses       Specify retry exception collection. If null, all exceptions will be caught
-     * @param <T>                    Specify Generics
+     * @param able                   Method Run Function , must not be {@literal null}.
+     * @param retryTimes             retry count default to {@code 1}.
+     * @param exceptionRetryRestMill Abnormal retry interval millisecond value default to {@code 0}.
+     * @param exceptionClasses       Specify retry exception collection. If null, all exceptions will be caught.
+     * @param <T>                    Specify Generics.
      * @param subscribeExecutor      The Thread pool that is scheduled by the producer's production data.
-     *                               If it is null, the current thread is scheduled by default
+     *                               If it is null, the current thread is scheduled by default.
      * @param clazz                  Return value conversion clazz object ,
-     *                               The default is the type of value returned by the method
-     * @return Specify conversion type object
+     *                               The default is the type of value returned by the method.
+     * @return Specify conversion type object.
      */
     public static <T> T runWhileProducerDispatch(Supplier<T> able,
                                                  Class<? extends Throwable>[] exceptionClasses,
@@ -136,7 +137,7 @@ public abstract class SpectatorUtils {
      * <p>
      * If it is null, it will consume along with the producer thread.
      * <p>
-     * Otherwise, it will use the provided Thread pool for scheduling
+     * Otherwise, it will use the provided Thread pool for scheduling.
      * <pre>
      *   {@code
      *   System.out.println(Thread.currentThread().getName());
@@ -158,16 +159,16 @@ public abstract class SpectatorUtils {
      *         System.out.println("--------");}
      * </pre>
      *
-     * @param able                   Method Run Function , must no be {@literal null}
-     * @param retryTimes             retry count default to {@code 1}
-     * @param exceptionRetryRestMill Abnormal retry interval millisecond value default to {@code 0}
-     * @param exceptionClasses       Specify retry exception collection . If null, all exceptions will be caught
-     * @param <T>                    Specify Generics
+     * @param able                   Method Run Function , must not be {@literal null}.
+     * @param retryTimes             retry count default to {@code 1}.
+     * @param exceptionRetryRestMill Abnormal retry interval millisecond value default to {@code 0}.
+     * @param exceptionClasses       Specify retry exception collection . If null, all exceptions will be caught.
+     * @param <T>                    Specify Generics.
      * @param observeExecutor        The Thread pool that the consumer consumes and schedules. If it is null,
-     *                               the Thread pool that the producer schedules will be used by default
+     *                               the Thread pool that the producer schedules will be used by default.
      * @param clazz                  Return value conversion clazz object ,
-     *                               The default is the type of value returned by the method
-     * @return Specify conversion type object
+     *                               The default is the type of value returned by the method.
+     * @return Specify conversion type object.
      */
     public static <T> T runWhileConsumerDispatch(Supplier<T> able,
                                                  Class<? extends Throwable>[] exceptionClasses,
@@ -182,20 +183,20 @@ public abstract class SpectatorUtils {
     /**
      * Provide the specified exception judgment and retry the specified number of times
      * during method operation, including thread switching based on incoming parameters
-     * and ultimately returning the desired generics
+     * and ultimately returning the desired generics.
      *
-     * @param able                   Method Run Function , must no be {@literal null}
-     * @param retryTimes             Retry count default to {@code 1}
-     * @param exceptionRetryRestMill Abnormal retry interval millisecond value default to {@code 0}
-     * @param exceptionClasses       Specify retry exception collection . If null, all exceptions will be caught
-     * @param <T>                    Specify Generics
+     * @param able                   Method Run Function , must not be {@literal null}.
+     * @param retryTimes             Retry count default to {@code 1}.
+     * @param exceptionRetryRestMill Abnormal retry interval millisecond value default to {@code 0}.
+     * @param exceptionClasses       Specify retry exception collection . If null, all exceptions will be caught.
+     * @param <T>                    Specify Generics.
      * @param subscribeExecutor      The Thread pool that is scheduled by the producer's production data.
-     *                               If it is null, the current thread is scheduled by default
+     *                               If it is null, the current thread is scheduled by default.
      * @param observeExecutor        The Thread pool that the consumer consumes and schedules. If it is null,
-     *                               the Thread pool that the producer schedules will be used by default
+     *                               the Thread pool that the producer schedules will be used by default.
      * @param clazz                  Return value conversion clazz object ,
-     *                               The default is the type of value returned by the method
-     * @return Specify conversion type object
+     *                               The default is the type of value returned by the method.
+     * @return Specify conversion type object.
      */
     @SuppressWarnings("unchecked")
     public static <T> T runWhile(Supplier<T> able,
@@ -205,7 +206,6 @@ public abstract class SpectatorUtils {
                                  Executor subscribeExecutor,
                                  Executor observeExecutor,
                                  Class<T> clazz) {
-        //must of able and clazz
         if (able == null) {
             return null;
         }
@@ -229,12 +229,12 @@ public abstract class SpectatorUtils {
 
     /**
      * Verify if the thrown exception is in the specified exception group ,
-     * And can set the interval rest millisecond value for abnormal retries
+     * And can set the interval rest millisecond value for abnormal retries.
      *
-     * @param exceptionClasses       Specify retry exception collection
-     * @param exceptionRetryRestMill Abnormal retry interval millisecond value
-     * @param specifyClazz           Throw an exception class object
-     * @return {@code  True} retry {@code false} non retry
+     * @param exceptionClasses       Specify retry exception collection.
+     * @param exceptionRetryRestMill Abnormal retry interval millisecond value.
+     * @param specifyClazz           Throw an exception class object.
+     * @return {@code True} retry {@code false} non retry.
      */
     protected static boolean specifyAnException(Class<? extends Throwable>[] exceptionClasses,
                                                 long exceptionRetryRestMill,
@@ -268,11 +268,13 @@ public abstract class SpectatorUtils {
 
     /**
      * Switch between main thread and self thread according to whether the main thread
-     * pool execution parameter is used {@link Schedulers} {@link Scheduler}
+     * pool execution parameter is used {@link Schedulers} {@link Scheduler}.
      *
-     * @param trampoline Whether to run on the main thread
-     * @param executor   The Thread pool provided for the self thread must be threaded when the self thread runs
-     * @return {@code Scheduler} default to {@link Schedulers#trampoline()} if no executor default to {@link ForkJoinPool}
+     * @param trampoline Whether to run on the main thread.
+     * @param executor   The Thread pool provided for the self thread must be
+     *                   threaded when the self thread runs.
+     * @return {@code Scheduler} default to {@link Schedulers#trampoline()} if no
+     * executor default to {@link ForkJoinPool}.
      */
     protected static Scheduler getSchedulers(boolean trampoline, Executor executor) {
         Scheduler scheduler;

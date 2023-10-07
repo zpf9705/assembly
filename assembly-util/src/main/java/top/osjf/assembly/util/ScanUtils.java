@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  *     <li>annotation class objects{@link #getTypesAnnotatedWith(Class, String...)}</li>
  *     <li>method annotation objects{@link #getMethodsAnnotatedWith(Class, String...)}</li>
  * </ul>
- * etc., extensions can be made according to {@link #scan(String, Predicate)}
+ * etc., extensions can be made according to {@link #scan(String, Predicate)}.
  *
  * @author zpf
  * @since 1.0.0

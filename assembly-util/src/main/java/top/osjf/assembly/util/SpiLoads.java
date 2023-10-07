@@ -70,37 +70,37 @@ public final class SpiLoads<T> {
     /**
      * To load all the program interface implementation class be a class map.
      *
-     * @return {@link Iterator}
+     * @return {@link Iterator}.
      */
     public Map<Class<?>, T> withClassMap() {
         return this.subInstances.stream().collect(Collectors.toMap(T::getClass, Function.identity(), (k1, k2) -> k1));
     }
 
     /**
-     * By class type for the specified type of interface implementation class type
+     * By class type for the specified type of interface implementation class type.
      *
-     * @param subClass specified type
-     * @return specified sub
+     * @param subClass specified type.
+     * @return Specified subtype.
      */
     public T getSpecifiedServiceBySubClass(Class<? extends T> subClass) {
         return findBySubPredict(t -> t.getClass() == subClass);
     }
 
     /**
-     * By class type for the specified type of interface implementation class name
+     * By class type for the specified type of interface implementation class name.
      *
-     * @param className specified type
-     * @return specified sub
+     * @param className specified type.
+     * @return Specified subtype.
      */
     public T getSpecifiedServiceBySubClassName(String className) {
         return findBySubPredict(t -> t.getClass().getName().equals(className));
     }
 
     /**
-     * Under conditions of assertions
+     * Under conditions of assertions.
      *
-     * @param predicate {@link Predicate}
-     * @return result
+     * @param predicate {@link Predicate}.
+     * @return Result object.
      */
     private T findBySubPredict(Predicate<T> predicate) {
         for (T instance : this.subInstances) {

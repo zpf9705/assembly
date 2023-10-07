@@ -24,8 +24,8 @@ public abstract class SerialUtils {
     /**
      * A given object serialization to a byte array.
      *
-     * @param object the object to serialize
-     * @return A byte array, on behalf of the moving object
+     * @param object the object to serialize.
+     * @return A byte array, on behalf of the moving object.
      */
     @CanNull
     public static byte[] serialize(Object object) {
@@ -45,8 +45,8 @@ public abstract class SerialUtils {
     /**
      * Deserialized object into a byte array.
      *
-     * @param bytes a serialized object
-     * @return The results of the deserialization bytes
+     * @param bytes a serialized object.
+     * @return The results of the deserialization bytes.
      */
     @CanNull
     public static Object deserialize(@CanNull byte[] bytes) {
@@ -63,8 +63,8 @@ public abstract class SerialUtils {
     /**
      * Deserialized object into any byte array.
      *
-     * @param bytesList any serialized object
-     * @return The results of the deserialization bytes
+     * @param bytesList any serialized object.
+     * @return The results of the deserialization bytes.
      */
     public static List<?> deserializeAny(@CanNull List<byte[]> bytesList) {
         if (bytesList == null || bytesList.isEmpty()) {
