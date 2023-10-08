@@ -8,15 +8,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import top.osjf.assembly.simplified.service.annotation.ServiceCollection;
-import top.osjf.assembly.util.io.ScanUtils;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.data.ClassMap;
 import top.osjf.assembly.util.data.ThreadSafeClassMap;
+import top.osjf.assembly.util.io.ScanUtils;
 
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Function;
 
 /**
  * Support implementation class for service context {@link ServiceContext}.
@@ -60,6 +59,8 @@ public class ClassesServiceContext implements ServiceContext, ApplicationContext
     private final ClassMap<String, Object> contextMap = new ThreadSafeClassMap<>(4);
 
     public static final String CLASSES_SERVICE_CONTENT_BEAN = "CLASSES_SERVICE_CONTENT_BEAN";
+
+    public static final String COMMA = " : ";
 
     private String[] scanPackages;
 
@@ -121,13 +122,23 @@ public class ClassesServiceContext implements ServiceContext, ApplicationContext
     }
 
     @Override
-    public Object getService(String serviceName) throws NoSuchServiceException {
-        return getService(s -> contextMap.get(serviceName), serviceName);
-    }
-
-    @Override
     public <S> S getService(String serviceName, Class<S> requiredType) throws NoSuchServiceException {
-        return getService(s -> contextMap.getValueOnClass(serviceName, requiredType), serviceName);
+        //Prevent potential duplicate service names.
+        serviceName = requiredType.getName() + COMMA + serviceName;
+        S service = contextMap.getValueOnClass(serviceName, requiredType);
+        if (service == null) {
+            try {
+                //If the collected beans are not found,
+                //Using spring's context lookup may be based on aliases.
+                //However, when using aliases, please be aware of potential bean name duplication errors.
+                service = context.getBean(serviceName, requiredType);
+            } catch (BeansException e) {
+                //Throw an exception that cannot be found.
+                throw new NoSuchServiceException("No service named " + serviceName + " was found " +
+                        "from the service context");
+            }
+        }
+        return service;
     }
 
     @Override
@@ -138,26 +149,14 @@ public class ClassesServiceContext implements ServiceContext, ApplicationContext
     }
 
     @Override
+    public ApplicationContext getApplicationContext() {
+        return this.context;
+    }
+
+    @Override
     public void close() {
         contextMap.clear();
         scanPackages = null;
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T> T getService(Function<String, T> serviceGetFun, String serviceName) {
-        //Default primary name resolution
-        T service = serviceGetFun.apply(serviceName);
-        if (service == null) {
-            try {
-                //The primary name cannot be found. Use the spring context to query using an alias.
-                service = (T) context.getBean(serviceName);
-            } catch (BeansException e) {
-                //Throw an exception that cannot be found.
-                throw new NoSuchServiceException("No service named " + serviceName + " was found " +
-                        "from the service context");
-            }
-        }
-        return service;
     }
 
     private void load(ClassesServiceContext contextBean, ApplicationContext context) {
