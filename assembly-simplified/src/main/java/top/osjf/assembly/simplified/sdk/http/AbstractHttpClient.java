@@ -1,18 +1,14 @@
 package top.osjf.assembly.simplified.sdk.http;
 
-import cn.hutool.log.StaticLog;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONValidator;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import top.osjf.assembly.simplified.sdk.client.AbstractClient;
 import top.osjf.assembly.simplified.sdk.process.DefaultErrorResponse;
 import top.osjf.assembly.simplified.sdk.process.Request;
 import top.osjf.assembly.util.annotation.NotNull;
+import top.osjf.assembly.util.lang.Collections;
+import top.osjf.assembly.util.lang.Jsons;
+import top.osjf.assembly.util.logger.Console;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.function.BiConsumer;
 
 
@@ -65,35 +61,34 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
     @NotNull
     public R convertToResponse(Request<R> request, String responseStr) {
         R response;
-        JSONValidator jsonValidator = StringUtils.isBlank(responseStr) ? null : JSONValidator.from(responseStr);
-        if (Objects.isNull(jsonValidator) || !jsonValidator.validate()) {
+        if (!Jsons.isValid(responseStr)) {
             response = DefaultErrorResponse.parseErrorResponse(responseStr, DefaultErrorResponse.ErrorType.DATA,
                     request.getResponseCls());
-        } else if (Objects.equals(JSONValidator.Type.Array, jsonValidator.getType())) {
-            List<R> responses = JSONArray.parseArray(responseStr, request.getResponseCls());
-            if (CollectionUtils.isEmpty(responses)) {
+        } else if (Jsons.isArray(responseStr)) {
+            List<R> responses = Jsons.parseArray(responseStr, request.getResponseCls());
+            if (Collections.isEmpty(responses)) {
                 response = responses.get(0);
             } else {
-                response = JSON.parseObject("{}", request.getResponseCls());
+                response = Jsons.parseObject("{}", request.getResponseCls());
             }
         } else {
-            response = JSON.parseObject(responseStr, request.getResponseCls());
+            response = Jsons.parseObject(responseStr, request.getResponseCls());
         }
         return response;
     }
 
     @Override
     public BiConsumer<String, Object[]> normal() {
-        return StaticLog::info;
+        return Console::info;
     }
 
     @Override
     public BiConsumer<String, Object[]> sdkError() {
-        return StaticLog::error;
+        return Console::error;
     }
 
     @Override
     public BiConsumer<String, Object[]> unKnowError() {
-        return StaticLog::error;
+        return Console::error;
     }
 }

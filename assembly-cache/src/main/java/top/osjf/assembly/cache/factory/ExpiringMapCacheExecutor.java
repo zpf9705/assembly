@@ -1,5 +1,6 @@
 package top.osjf.assembly.cache.factory;
 
+import top.osjf.assembly.cache.net.jodah.expiringmap.ExpiringMap;
 import top.osjf.assembly.util.annotation.CanNull;
 
 import java.util.List;
@@ -20,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 public interface ExpiringMapCacheExecutor extends CacheExecutor {
 
     /**
-     * Execute on {@link net.jodah.expiringmap.ExpiringMap#put(Object, Object)}.
+     * Execute on {@link ExpiringMap#put(Object, Object)}.
      *
      * @param key   must not be {@literal null}
      * @param value must not be {@literal null}
@@ -29,7 +30,7 @@ public interface ExpiringMapCacheExecutor extends CacheExecutor {
     Boolean put(byte[] key, byte[] value);
 
     /**
-     * Execute on {@link net.jodah.expiringmap.ExpiringMap#put(Object, Object, long, TimeUnit)}}.
+     * Execute on {@link ExpiringMap#put(Object, Object, long, TimeUnit)}}.
      *
      * @param key      must not be {@literal null}
      * @param value    must not be {@literal null}
@@ -40,7 +41,7 @@ public interface ExpiringMapCacheExecutor extends CacheExecutor {
     Boolean putDuration(byte[] key, byte[] value, Long duration, TimeUnit unit);
 
     /**
-     * Execute on {@link net.jodah.expiringmap.ExpiringMap#putIfAbsent(Object, Object)}}.
+     * Execute on {@link ExpiringMap#putIfAbsent(Object, Object)}}.
      *
      * @param key   must not be {@literal null}
      * @param value must not be {@literal null}
@@ -49,7 +50,7 @@ public interface ExpiringMapCacheExecutor extends CacheExecutor {
     Boolean putIfAbsent(byte[] key, byte[] value);
 
     /**
-     * Execute on {@link net.jodah.expiringmap.ExpiringMap#put(Object, Object, long, TimeUnit)}}.
+     * Execute on {@link ExpiringMap#put(Object, Object, long, TimeUnit)}}.
      *
      * @param key      must not be {@literal null}
      * @param value    must not be {@literal null}
@@ -60,7 +61,7 @@ public interface ExpiringMapCacheExecutor extends CacheExecutor {
     Boolean putIfAbsentDuration(byte[] key, byte[] value, Long duration, TimeUnit unit);
 
     /**
-     * Execute on {@link net.jodah.expiringmap.ExpiringMap#get(Object)}.
+     * Execute on {@link ExpiringMap#get(Object)}.
      *
      * @param key must not be {@literal null}
      * @return Returns result value.
@@ -68,7 +69,7 @@ public interface ExpiringMapCacheExecutor extends CacheExecutor {
     byte[] getVal(byte[] key);
 
     /**
-     * Execute on {@link net.jodah.expiringmap.ExpiringMap#get(Object)}.
+     * Execute on {@link ExpiringMap#get(Object)}.
      *
      * @param key must not be {@literal null}
      * @return Returns result value.
@@ -76,7 +77,7 @@ public interface ExpiringMapCacheExecutor extends CacheExecutor {
     List<byte[]> findSimilarKeys(byte[] key);
 
     /**
-     * Execute on {@link net.jodah.expiringmap.ExpiringMap#replace(Object, Object)}.
+     * Execute on {@link ExpiringMap#replace(Object, Object)}.
      *
      * @param key      must not be {@literal null}
      * @param newValue must not be {@literal null}
@@ -85,7 +86,7 @@ public interface ExpiringMapCacheExecutor extends CacheExecutor {
     byte[] replace(byte[] key, byte[] newValue);
 
     /**
-     * Execute on {@link net.jodah.expiringmap.ExpiringMap#remove(Object)}.
+     * Execute on {@link ExpiringMap#remove(Object)}.
      *
      * @param keys must not be {@literal null}
      * @return Returns result value.
@@ -94,7 +95,7 @@ public interface ExpiringMapCacheExecutor extends CacheExecutor {
     Long deleteByKeys(byte[]... keys);
 
     /**
-     * Execute on {@link net.jodah.expiringmap.ExpiringMap#remove(Object)}}.
+     * Execute on {@link ExpiringMap#remove(Object)}}.
      *
      * @param key must not be {@literal null}
      * @return Returns result value.
@@ -102,14 +103,14 @@ public interface ExpiringMapCacheExecutor extends CacheExecutor {
     Map<byte[], byte[]> deleteSimilarKey(byte[] key);
 
     /**
-     * Execute on {@link net.jodah.expiringmap.ExpiringMap#clear()}.
+     * Execute on {@link ExpiringMap#clear()}.
      *
      * @return Returns result value.
      */
     Boolean reboot();
 
     /**
-     * Execute on {@link net.jodah.expiringmap.ExpiringMap#containsKey(Object)}.
+     * Execute on {@link ExpiringMap#containsKey(Object)}.
      *
      * @param key must not be {@literal null}
      * @return Returns result value.
@@ -117,7 +118,7 @@ public interface ExpiringMapCacheExecutor extends CacheExecutor {
     Boolean containsKey(byte[] key);
 
     /**
-     * Execute on {@link net.jodah.expiringmap.ExpiringMap#containsValue(Object)}}.
+     * Execute on {@link ExpiringMap#containsValue(Object)}}.
      *
      * @param value must not be {@literal null}
      * @return contains result
@@ -125,7 +126,7 @@ public interface ExpiringMapCacheExecutor extends CacheExecutor {
     Boolean containsValue(byte[] value);
 
     /**
-     * Execute on {@link net.jodah.expiringmap.ExpiringMap#getExpiration(Object)}.
+     * Execute on {@link ExpiringMap#getExpiration(Object)}.
      *
      * @param key must not be {@literal null}
      * @return Returns result value.
@@ -133,7 +134,7 @@ public interface ExpiringMapCacheExecutor extends CacheExecutor {
     Long getExpirationWithKey(byte[] key);
 
     /**
-     * Execute on {@link net.jodah.expiringmap.ExpiringMap#getExpiration(Object)}}.
+     * Execute on {@link ExpiringMap#getExpiration(Object)}}.
      *
      * @param key  must not be {@literal null}
      * @param unit must not be {@literal null}
@@ -142,7 +143,7 @@ public interface ExpiringMapCacheExecutor extends CacheExecutor {
     Long getExpirationWithUnit(byte[] key, TimeUnit unit);
 
     /**
-     * Execute on {@link net.jodah.expiringmap.ExpiringMap#getExpectedExpiration(Object)}}.
+     * Execute on {@link ExpiringMap#getExpectedExpiration(Object)}}.
      *
      * @param key must not be {@literal null}
      * @return Returns result value.
@@ -150,7 +151,7 @@ public interface ExpiringMapCacheExecutor extends CacheExecutor {
     Long getExpectedExpirationWithKey(byte[] key);
 
     /**
-     * Execute on {@link net.jodah.expiringmap.ExpiringMap#getExpectedExpiration(Object)}}.
+     * Execute on {@link ExpiringMap#getExpectedExpiration(Object)}}.
      *
      * @param key  must not be {@literal null}
      * @param unit must not be {@literal null}
@@ -159,7 +160,7 @@ public interface ExpiringMapCacheExecutor extends CacheExecutor {
     Long getExpectedExpirationWithUnit(byte[] key, TimeUnit unit);
 
     /**
-     * Execute on {@link net.jodah.expiringmap.ExpiringMap#setExpiration(Object, long, TimeUnit)}.
+     * Execute on {@link ExpiringMap#setExpiration(Object, long, TimeUnit)}.
      *
      * @param key      must not be {@literal null}
      * @param duration must not be {@literal null}
@@ -169,7 +170,7 @@ public interface ExpiringMapCacheExecutor extends CacheExecutor {
     Boolean setExpirationDuration(byte[] key, Long duration, TimeUnit timeUnit);
 
     /**
-     * Execute on {@link net.jodah.expiringmap.ExpiringMap#resetExpiration(Object)}.
+     * Execute on {@link ExpiringMap#resetExpiration(Object)}.
      *
      * @param key must not be {@literal null}
      * @return Returns result value.

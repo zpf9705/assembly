@@ -1,6 +1,6 @@
 package top.osjf.assembly.cache.persistence;
 
-import org.apache.commons.lang3.StringUtils;
+import top.osjf.assembly.util.lang.Strings;
 import top.osjf.assembly.util.system.SystemUtils;
 
 import java.util.concurrent.TimeUnit;
@@ -177,7 +177,7 @@ public final class Configuration {
      * @return Convert Array.
      */
     private static String[] toStringArrayToConvertArray(String toString) {
-        if (StringUtils.isBlank(toString)) {
+        if (Strings.isBlank(toString)) {
             return new String[0];
         }
         if (!(toString.startsWith("[") && toString.endsWith("]"))) {

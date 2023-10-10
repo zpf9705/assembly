@@ -1,7 +1,8 @@
 package top.osjf.assembly.cache.autoconfigure;
 
 /**
- * {@link net.jodah.expiringmap.ExpiringMap} Print relevant information in the form of a logo to the console.
+ * {@link top.osjf.assembly.cache.autoconfigure.CacheProperties.ExpiringMap} Print relevant information
+ * in the form of a logo to the console.
  *
  * @author zpf
  * @since 1.0.0

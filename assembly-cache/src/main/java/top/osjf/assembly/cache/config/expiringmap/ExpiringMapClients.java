@@ -1,16 +1,17 @@
 package top.osjf.assembly.cache.config.expiringmap;
 
-import net.jodah.expiringmap.ExpirationListener;
-import net.jodah.expiringmap.ExpirationPolicy;
-import org.springframework.util.Assert;
+import top.osjf.assembly.cache.net.jodah.expiringmap.ExpirationListener;
+import top.osjf.assembly.cache.net.jodah.expiringmap.ExpirationPolicy;
+import top.osjf.assembly.cache.net.jodah.expiringmap.ExpiringMap;
 import top.osjf.assembly.util.annotation.CanNull;
+import top.osjf.assembly.util.lang.Asserts;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Here is about {@link net.jodah.expiringmap.ExpiringMap} client configuration interface.
+ * Here is about {@link ExpiringMap} client configuration interface.
  * <p>
  * Provides the function of the configuration and obtain.
  * <p>
@@ -23,14 +24,14 @@ import java.util.concurrent.TimeUnit;
 public interface ExpiringMapClients {
 
     /**
-     * Obtain the maximum number of additions for {@link net.jodah.expiringmap.ExpiringMap}
+     * Obtain the maximum number of additions for {@link ExpiringMap}
      *
      * @return {@literal Integer} map max save size.
      */
     Integer getMaxSize();
 
     /**
-     * Obtain the default cache time for {@link net.jodah.expiringmap.ExpiringMap}.
+     * Obtain the default cache time for {@link ExpiringMap}.
      *
      * @return {@literal Long} default expire time.
      */
@@ -122,7 +123,7 @@ public interface ExpiringMapClients {
          * @return {@link ExpiringMapClientsBuilder}.
          */
         public ExpiringMapClientsBuilder acquireMaxSize(Integer maxSize) {
-            Assert.isTrue(this.maxSize == null,
+            Asserts.isTrue(this.maxSize == null,
                     "MaxSize existing configuration values, please do not cover");
             this.maxSize = maxSize;
             return this;
@@ -135,7 +136,7 @@ public interface ExpiringMapClients {
          * @return {@link ExpiringMapClientsBuilder}.
          */
         public ExpiringMapClientsBuilder acquireDefaultExpireTime(Long defaultExpireTime) {
-            Assert.isTrue(this.defaultExpireTime == null,
+            Asserts.isTrue(this.defaultExpireTime == null,
                     "DefaultExpireTime existing configuration values, please do not cover");
             this.defaultExpireTime = defaultExpireTime;
             return this;
@@ -148,7 +149,7 @@ public interface ExpiringMapClients {
          * @return {@link ExpiringMapClientsBuilder}.
          */
         public ExpiringMapClientsBuilder acquireDefaultExpireTimeUnit(TimeUnit defaultExpireTimeUnit) {
-            Assert.isTrue(this.defaultExpireTimeUnit == null,
+            Asserts.isTrue(this.defaultExpireTimeUnit == null,
                     "DefaultExpireTimeUnit existing configuration values, please do not cover");
             this.defaultExpireTimeUnit = defaultExpireTimeUnit;
             return this;
@@ -161,7 +162,7 @@ public interface ExpiringMapClients {
          * @return {@link ExpiringMapClientsBuilder}.
          */
         public ExpiringMapClientsBuilder acquireDefaultExpirationPolicy(ExpirationPolicy expirationPolicy) {
-            Assert.isTrue(this.expirationPolicy == null,
+            Asserts.isTrue(this.expirationPolicy == null,
                     "ExpirationPolicy existing configuration values, please do not cover");
             this.expirationPolicy = expirationPolicy;
             return this;

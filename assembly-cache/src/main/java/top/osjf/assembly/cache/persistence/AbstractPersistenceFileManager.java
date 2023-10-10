@@ -1,9 +1,9 @@
 package top.osjf.assembly.cache.persistence;
 
-import cn.hutool.core.io.FileUtil;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.Assert;
 import top.osjf.assembly.util.annotation.NotNull;
+import top.osjf.assembly.util.io.FileManager;
+import top.osjf.assembly.util.lang.Asserts;
+import top.osjf.assembly.util.lang.Strings;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -20,18 +20,18 @@ import java.util.Collections;
  * </ul>
  * And some related about storage paths suitable method of file operations
  * <dl>
- *     <dt>{@link FileUtil}</dt>
- *     <dd>{@link FileUtil#touch(String)}</dd>
- *     <dd>{@link FileUtil#exist(String)}</dd>
- *     <dd>{@link FileUtil#del(String)}</dd>
- *     <dd>{@link FileUtil#appendLines(Collection, File, String)}</dd>
+ *     <dt>{@link FileManager}</dt>
+ *     <dd>{@link FileManager#touch(String)}</dd>
+ *     <dd>{@link FileManager#exist(String)}</dd>
+ *     <dd>{@link FileManager#del(String)}</dd>
+ *     <dd>{@link FileManager#appendLines(Collection, File, String)}</dd>
  * </dl>
  * Very useful file operations packaging tools {@link cn.hutool.Hutool}
  *
  * @author zpf
  * @since 1.0.0
  */
-public abstract class AbstractPersistenceFileManager extends FileUtil {
+public abstract class AbstractPersistenceFileManager extends FileManager {
 
     /**
      * Check provider persistence path
@@ -39,7 +39,7 @@ public abstract class AbstractPersistenceFileManager extends FileUtil {
      * @param persistencePath setting write path
      */
     public static void checkDirectory(@NotNull String persistencePath) {
-        if (StringUtils.isNotBlank(persistencePath)) {
+        if (Strings.isNotBlank(persistencePath)) {
             //Determine whether to native folders and whether the folder
             if (!isDirectory(persistencePath)) {
                 File directory = mkdir(persistencePath);
@@ -57,15 +57,15 @@ public abstract class AbstractPersistenceFileManager extends FileUtil {
      */
     public static void checkError(String persistencePath) {
         String[] pathArray = persistencePath.split("/");
-        Assert.notEmpty(pathArray,
+        Asserts.notEmpty(pathArray,
                 "[" + persistencePath + "] no a path");
         String line = "";
         for (String path : pathArray) {
-            if (StringUtils.isBlank(path)) {
+            if (Strings.isBlank(path)) {
                 continue;
             }
             line += "/" + path;
-            Assert.isTrue(isDirectory(line),
+            Asserts.isTrue(isDirectory(line),
                     "[" + line + "] no a Directory for your file system");
         }
     }
@@ -130,7 +130,7 @@ public abstract class AbstractPersistenceFileManager extends FileUtil {
      * @param json write context
      */
     public void writeSingleFileLine(String json) {
-        if (StringUtils.isBlank(json)) {
+        if (Strings.isBlank(json)) {
             return;
         }
         File file = touchWritePath();

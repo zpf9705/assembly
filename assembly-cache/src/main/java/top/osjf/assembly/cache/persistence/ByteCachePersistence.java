@@ -1,11 +1,10 @@
 package top.osjf.assembly.cache.persistence;
 
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
-import org.springframework.util.Assert;
 import top.osjf.assembly.cache.exceptions.CachePersistenceException;
-import top.osjf.assembly.util.serial.SerialUtils;
 import top.osjf.assembly.util.annotation.NotNull;
+import top.osjf.assembly.util.lang.Asserts;
+import top.osjf.assembly.util.lang.Jsons;
+import top.osjf.assembly.util.serial.SerialUtils;
 
 import java.util.List;
 
@@ -80,7 +79,7 @@ public class ByteCachePersistence extends AbstractCachePersistence<byte[], byte[
         //parse json
         BytePersistence persistence;
         try {
-            persistence = JSONObject.parseObject(buffer.toString(), new TypeReference<BytePersistence>() {
+            persistence = Jsons.parseObject(buffer.toString(), new Jsons.TypeReferences<BytePersistence>() {
             });
         } catch (Exception e) {
             throw new CachePersistenceException("Buffer data [" + buffer + " ] parse Persistence error " +
@@ -88,7 +87,7 @@ public class ByteCachePersistence extends AbstractCachePersistence<byte[], byte[
         }
         //No cache in the cache
         ByteCachePersistence globePersistence = ofSetPersistence(ByteCachePersistence.class, persistence);
-        Assert.notNull(globePersistence, "GlobePersistence no be null");
+        Asserts.notNull(globePersistence, "GlobePersistence no be null");
         this.reductionUseEntry(globePersistence);
     }
 

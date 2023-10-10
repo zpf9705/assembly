@@ -1,7 +1,7 @@
 package top.osjf.assembly.simplified.sdk;
 
-import org.apache.commons.lang3.StringUtils;
 import top.osjf.assembly.util.annotation.NotNull;
+import top.osjf.assembly.util.lang.Strings;
 
 import java.io.Serializable;
 
@@ -39,7 +39,7 @@ public class SdkProxyBeanDefinition<T> extends AbstractSdkProxyInvoker<T> implem
      * @param host Host address no be {@literal null}.
      */
     public void setHost(String host) {
-        if (StringUtils.isBlank(host)) throw new IllegalArgumentException(
+        if (Strings.isBlank(host)) throw new IllegalArgumentException(
                 "The calling host address of the SDK proxy class cannot be empty");
         this.host = host;
     }

@@ -1,9 +1,9 @@
 package top.osjf.assembly.simplified.sdk.process;
 
-import cn.hutool.core.exceptions.ExceptionUtil;
-import com.alibaba.fastjson.JSON;
 import org.apache.http.HttpStatus;
 import top.osjf.assembly.simplified.sdk.DataConvertException;
+import top.osjf.assembly.util.exceptions.Exceptions;
+import top.osjf.assembly.util.lang.Jsons;
 
 import java.util.Objects;
 
@@ -76,8 +76,8 @@ public class DefaultErrorResponse extends AbstractResponse {
 
     public static <R extends Response> R parseErrorResponse(Throwable error, ErrorType type, Class<R> clazz) {
         DefaultErrorResponse defaultErrorResponse = type.getMessageWithType(error);
-        String responseErrorStr = JSON.toJSONString(defaultErrorResponse);
-        R r = JSON.parseObject(responseErrorStr, clazz);
+        String responseErrorStr = Jsons.toJSONString(defaultErrorResponse);
+        R r = Jsons.parseObject(responseErrorStr, clazz);
         r.setErrorCode(defaultErrorResponse.getCode());
         r.setErrorMessage(defaultErrorResponse.getMessage());
         return r;
@@ -95,21 +95,21 @@ public class DefaultErrorResponse extends AbstractResponse {
             @Override
             public DefaultErrorResponse getMessageWithType(Throwable error) {
                 return buildSdkExceptionResponse(
-                        ExceptionUtil.stacktraceToOneLineString(error, 1500)
+                        Exceptions.stacktraceToOneLineString(error, 1500)
                 );
             }
         }, UN_KNOWN {
             @Override
             public DefaultErrorResponse getMessageWithType(Throwable error) {
                 return buildUnknownResponse(
-                        ExceptionUtil.stacktraceToOneLineString(error, 4500)
+                        Exceptions.stacktraceToOneLineString(error, 4500)
                 );
             }
         }, DATA {
             @Override
             public DefaultErrorResponse getMessageWithType(Throwable error) {
                 return buildDataErrorResponse(
-                        ExceptionUtil.stacktraceToOneLineString(error, 3000)
+                        Exceptions.stacktraceToOneLineString(error, 3000)
                 );
             }
         }

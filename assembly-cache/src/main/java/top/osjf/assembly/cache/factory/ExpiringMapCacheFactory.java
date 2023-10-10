@@ -1,12 +1,13 @@
 package top.osjf.assembly.cache.factory;
 
-import cn.hutool.aop.ProxyUtil;
 import top.osjf.assembly.cache.command.expiremap.ExpiringMapInvocationHandler;
 import top.osjf.assembly.cache.config.expiringmap.ExpiringMapClients;
+import top.osjf.assembly.cache.net.jodah.expiringmap.ExpiringMap;
 import top.osjf.assembly.util.annotation.NotNull;
+import top.osjf.assembly.util.lang.Reflects;
 
 /**
- * The creation class of the cache execution factory for {@link net.jodah.expiringmap.ExpiringMap}.
+ * The creation class of the cache execution factory for {@link ExpiringMap}.
  *
  * @author zpf
  * @since 1.0.0
@@ -39,6 +40,6 @@ public class ExpiringMapCacheFactory implements CacheFactory {
         ExpiringMapInvocationHandler processor = new ExpiringMapInvocationHandler(
                 new ExpiringMapCacheExecutorImpl(() -> expireMapCenter));
         //returns a jdk proxy object
-        return ProxyUtil.newProxyInstance(processor, processor.getTarget().getClass().getInterfaces());
+        return Reflects.newProxyInstance(processor, processor.getTarget().getClass().getInterfaces());
     }
 }

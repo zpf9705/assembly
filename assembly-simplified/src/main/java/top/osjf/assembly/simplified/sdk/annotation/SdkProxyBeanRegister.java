@@ -1,6 +1,5 @@
 package top.osjf.assembly.simplified.sdk.annotation;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
@@ -11,6 +10,7 @@ import org.springframework.util.Assert;
 import top.osjf.assembly.simplified.sdk.SdkProxyBeanDefinition;
 import top.osjf.assembly.simplified.support.AbstractProxyBeanInjectSupport;
 import top.osjf.assembly.util.annotation.NotNull;
+import top.osjf.assembly.util.lang.Strings;
 
 /**
  * The proxy registration class of SDK scans the relevant interface
@@ -54,7 +54,7 @@ public class SdkProxyBeanRegister extends AbstractProxyBeanInjectSupport<EnableS
         String[] alisa = attributes0.getStringArray("alisa");
         String scope = attributes0.getString("scope");
         Number autowireMode = attributes0.getNumber("autowireMode");
-        if (StringUtils.isBlank(beanName)) beanName = className;
+        if (Strings.isBlank(beanName)) beanName = className;
         definition.setScope(scope);
         definition.setAutowireMode(autowireMode.intValue());
         BeanDefinitionHolder holder = new BeanDefinitionHolder(definition.getBeanDefinition(), beanName, alisa);
@@ -77,7 +77,7 @@ public class SdkProxyBeanRegister extends AbstractProxyBeanInjectSupport<EnableS
     private String getRequestHost(String hostProperty) {
         Assert.hasText(hostProperty, "HostProperty no be null");
         String host = getEnvironment().resolvePlaceholders(hostProperty);
-        if (StringUtils.isBlank(host)) {
+        if (Strings.isBlank(host)) {
             host = getEnvironment().getProperty(hostProperty);
         }
         Assert.hasText(host,

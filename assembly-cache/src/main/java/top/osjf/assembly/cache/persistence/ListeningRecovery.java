@@ -21,12 +21,14 @@ public interface ListeningRecovery {
     void recovery(Object key, Object value);
 
     /**
-     * Remaining time and initial units.
+     * Provide renewal time after recovery based on {@link #recovery(Object, Object)}.
      *
+     * @param key      must not be {@literal null}.
+     * @param value    must not be {@literal null}.
      * @param time     must not be {@literal null}.
      * @param timeUnit must not be {@literal null}.
      */
-    default void expired(Long time, TimeUnit timeUnit) {
+    default void recovery(Object key, Object value, Long time, TimeUnit timeUnit) {
 
     }
 }

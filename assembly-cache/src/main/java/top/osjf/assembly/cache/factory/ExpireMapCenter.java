@@ -1,15 +1,15 @@
 package top.osjf.assembly.cache.factory;
 
-import net.jodah.expiringmap.ExpirationListener;
-import net.jodah.expiringmap.ExpiringMap;
-import org.apache.commons.collections4.CollectionUtils;
 import top.osjf.assembly.cache.config.expiringmap.ExpiringMapClients;
 import top.osjf.assembly.cache.listener.MessageCapable;
+import top.osjf.assembly.cache.net.jodah.expiringmap.ExpirationListener;
+import top.osjf.assembly.cache.net.jodah.expiringmap.ExpiringMap;
 import top.osjf.assembly.cache.persistence.BytesCachePersistenceSolver;
 import top.osjf.assembly.cache.persistence.CachePersistenceSolver;
-import top.osjf.assembly.util.data.ByteIdentify;
-import top.osjf.assembly.util.spi.SpiLoads;
 import top.osjf.assembly.util.annotation.NotNull;
+import top.osjf.assembly.util.data.ByteIdentify;
+import top.osjf.assembly.util.lang.Collections;
+import top.osjf.assembly.util.spi.SpiLoads;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -61,7 +61,7 @@ public class ExpireMapCenter extends AbstractRecordActivationCenter<ExpireMapCen
      * Singleton with {@code ExpireMapClientConfiguration}.
      *
      * @param clients must no be {@literal null}.
-     * @return A {@link net.jodah.expiringmap.ExpiringMap}.
+     * @return A {@link ExpiringMap}.
      */
     protected static ExpireMapCenter singletonWithConfiguration(@NotNull ExpiringMapClients clients) {
         if (expireMapCenter == null) {
@@ -88,7 +88,7 @@ public class ExpireMapCenter extends AbstractRecordActivationCenter<ExpireMapCen
     /**
      * Get operation with a {@code ExpiringMap}.
      *
-     * @return A {@link net.jodah.expiringmap.ExpiringMap}.
+     * @return A {@link ExpiringMap}.
      */
     public ExpiringMap<ByteIdentify, ByteIdentify> getSingleton() {
         return this.singleton;
@@ -108,14 +108,14 @@ public class ExpireMapCenter extends AbstractRecordActivationCenter<ExpireMapCen
                 .expirationPolicy(clients.getExpirationPolicy())
                 .variableExpiration()
                 .build();
-        if (CollectionUtils.isNotEmpty(clients.getSyncExpirationListeners())) {
+        if (Collections.isNotEmpty(clients.getSyncExpirationListeners())) {
             for (ExpirationListener expirationListener : clients.getSyncExpirationListeners()) {
                 //sync
                 singleton.addExpirationListener(expirationListener);
 
             }
         }
-        if (CollectionUtils.isNotEmpty(clients.getASyncExpirationListeners())) {
+        if (Collections.isNotEmpty(clients.getASyncExpirationListeners())) {
             for (ExpirationListener expirationListener : clients.getASyncExpirationListeners()) {
                 //async
                 singleton.addAsyncExpirationListener(expirationListener);

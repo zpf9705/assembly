@@ -1,9 +1,9 @@
 package top.osjf.assembly.simplified.sdk.http;
 
-import com.alibaba.fastjson.JSON;
 import org.springframework.lang.Nullable;
 import top.osjf.assembly.simplified.sdk.client.Client;
 import top.osjf.assembly.simplified.sdk.process.AbstractRequestParams;
+import top.osjf.assembly.util.lang.Jsons;
 
 /**
  * Http request abstract node class, used to define the public parameters or methods of the real request parameter class.
@@ -55,7 +55,7 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
             return null;
         }
         if (defaultToJson()) {
-            param = JSON.toJSONString(param);
+            param = Jsons.toJSONString(param);
         }
         return param;
     }

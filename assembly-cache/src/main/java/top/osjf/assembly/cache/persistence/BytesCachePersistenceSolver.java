@@ -1,6 +1,6 @@
 package top.osjf.assembly.cache.persistence;
 
-import org.springframework.util.Assert;
+import top.osjf.assembly.util.lang.Asserts;
 import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
 
@@ -34,7 +34,7 @@ public class BytesCachePersistenceSolver implements CachePersistenceSolver<byte[
     public void replaceValuePersistence(@NotNull byte[] key, @NotNull byte[] newValue) {
         run(() -> {
             ByteCachePersistence replace = ByteCachePersistence.ofGetBytes(key);
-            Assert.isTrue(replace.persistenceExist(), "persistence no exist");
+            Asserts.isTrue(replace.persistenceExist(), "persistence no exist");
             replace.replacePersistence(newValue);
         }, "BytesCachePersistenceSolver::replacePersistence");
     }
@@ -44,7 +44,7 @@ public class BytesCachePersistenceSolver implements CachePersistenceSolver<byte[
                                            @NotNull TimeUnit timeUnit) {
         run(() -> {
             ByteCachePersistence replaceDuration = ByteCachePersistence.ofGetBytes(key);
-            Assert.isTrue(replaceDuration.persistenceExist(), "persistence no exist");
+            Asserts.isTrue(replaceDuration.persistenceExist(), "persistence no exist");
             replaceDuration.setExpirationPersistence(duration, timeUnit);
         }, "BytesCachePersistenceSolver::setEPersistence");
     }
@@ -53,7 +53,7 @@ public class BytesCachePersistenceSolver implements CachePersistenceSolver<byte[
     public void restDurationPersistence(@NotNull byte[] key) {
         run(() -> {
             ByteCachePersistence reset = ByteCachePersistence.ofGetBytes(key);
-            Assert.isTrue(reset.persistenceExist(), "persistence no exist");
+            Asserts.isTrue(reset.persistenceExist(), "persistence no exist");
             reset.resetExpirationPersistence();
         }, "BytesCachePersistenceSolver::restPersistence");
     }
@@ -62,7 +62,7 @@ public class BytesCachePersistenceSolver implements CachePersistenceSolver<byte[
     public void removePersistenceWithKey(@NotNull byte[] key) {
         run(() -> {
             ByteCachePersistence remove = ByteCachePersistence.ofGetBytes(key);
-            Assert.isTrue(remove.persistenceExist(), "Persistence no exist, no repeat del");
+            Asserts.isTrue(remove.persistenceExist(), "Persistence no exist, no repeat del");
             remove.removePersistence();
         }, "BytesCachePersistenceSolver::removePersistenceWithKey");
     }
@@ -70,9 +70,9 @@ public class BytesCachePersistenceSolver implements CachePersistenceSolver<byte[
     @Override
     public void removeSimilarKeyPersistence(@NotNull byte[] key) {
         run(() -> {
-            Assert.notNull(key, "key no be null");
+            Asserts.notNull(key, "key no be null");
             List<ByteCachePersistence> similar = ByteCachePersistence.ofGetSimilarBytes(key);
-            Assert.notEmpty(similar,
+            Asserts.notEmpty(similar,
                     "No found key [" + Arrays.toString(key) + "] similar persistence");
             similar.forEach(s -> {
                 if (s.persistenceExist()) {

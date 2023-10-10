@@ -1,13 +1,5 @@
 package top.osjf.assembly.cache.persistence;
 
-import cn.hutool.core.convert.Convert;
-import cn.hutool.core.util.ReflectUtil;
-import com.alibaba.fastjson.JSON;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.Assert;
 import top.osjf.assembly.cache.command.CacheInvocationHandler;
 import top.osjf.assembly.cache.exceptions.CachePersistenceException;
 import top.osjf.assembly.cache.exceptions.OnOpenPersistenceException;
@@ -15,14 +7,15 @@ import top.osjf.assembly.cache.factory.AbstractRecordActivationCenter;
 import top.osjf.assembly.cache.factory.Center;
 import top.osjf.assembly.cache.factory.HelpCenter;
 import top.osjf.assembly.cache.factory.ReloadCenter;
-import top.osjf.assembly.cache.logger.Console;
 import top.osjf.assembly.cache.operations.ValueOperations;
-import top.osjf.assembly.util.io.CloseableUtils;
-import top.osjf.assembly.util.io.ScanUtils;
-import top.osjf.assembly.util.serial.SerialUtils;
 import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.data.ObjectIdentify;
+import top.osjf.assembly.util.io.CloseableUtils;
+import top.osjf.assembly.util.io.ScanUtils;
+import top.osjf.assembly.util.lang.*;
+import top.osjf.assembly.util.logger.Console;
+import top.osjf.assembly.util.serial.SerialUtils;
 
 import java.io.*;
 import java.net.URL;
@@ -202,7 +195,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
 
         @Override
         public String toString() {
-            return String.format(FORMAT, JSON.toJSONString(this));
+            return String.format(FORMAT, Jsons.toJSONString(this));
         }
     }
 
@@ -376,11 +369,11 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
         G globePersistence;
         try {
             //instance for persistenceClass
-            P persistence = ReflectUtil.newInstance(persistenceClass, entry);
+            P persistence = Reflects.newInstance(persistenceClass, entry);
             //set expired timestamp
             persistence.setExpire(expired);
             //instance for globePersistenceClass
-            globePersistence = ReflectUtil.newInstance(globePersistenceClass, persistence, writePath);
+            globePersistence = Reflects.newInstance(globePersistenceClass, persistence, writePath);
             //record class GlobePersistenceClass type and persistenceClass
             globePersistence.recordCurrentType(globePersistenceClass, persistenceClass);
         } catch (Throwable e) {
@@ -407,7 +400,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
         G globePersistence;
         try {
             //instance for globePersistenceClass
-            globePersistence = ReflectUtil.newInstance(globePersistenceClass, persistence, writePath);
+            globePersistence = Reflects.newInstance(globePersistenceClass, persistence, writePath);
             //record class GlobePersistenceClass type and persistenceClass
             globePersistence.recordCurrentType(globePersistenceClass, persistence.getClass());
         } catch (Throwable e) {
@@ -454,7 +447,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
         List<PersistenceObj> identifies = CACHE_MAP.filterValuesByKeys(objectIdentify -> {
             return objectIdentify.compareToReturnsBool(new ObjectIdentify<>(key));
         });
-        if (CollectionUtils.isEmpty(identifies))
+        if (top.osjf.assembly.util.lang.Collections.isEmpty(identifies))
             throw new CachePersistenceException("Key: [" + key + "] no exist similar cache persistence");
 
         return (List<G>) identifies.stream().map(PersistenceObj::getPersistence).collect(Collectors.toList());
@@ -474,7 +467,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
                                                                                cachePersistence,
                                                                        @NotNull Class<G> globePersistenceClass) {
         try {
-            return Convert.convert(globePersistenceClass, cachePersistence);
+            return Converts.convert(globePersistenceClass, cachePersistence);
         } catch (Throwable e) {
             throw new CachePersistenceException(
                     "Provider obj no instanceof" +
@@ -519,8 +512,8 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
      * @param <V>         the type of cache values.
      */
     static <V, K> void checkPersistence(@NotNull AbstractPersistenceStore<K, V> persistence) {
-        Assert.notNull(persistence.getEntry(), "Persistence Entry no be null");
-        Assert.notNull(persistence.getExpire(), "Expire no be null");
+        Asserts.notNull(persistence.getEntry(), "Persistence Entry no be null");
+        Asserts.notNull(persistence.getExpire(), "Expire no be null");
         checkEntry(persistence.getEntry());
     }
 
@@ -532,8 +525,8 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
      * @param <V>   the type of cache values.
      */
     static <V, K> void checkEntry(@NotNull Entry<K, V> entry) {
-        Assert.notNull(entry.getKey(), "Key no be null");
-        Assert.notNull(entry.getValue(), "Value no be null");
+        Asserts.notNull(entry.getKey(), "Key no be null");
+        Asserts.notNull(entry.getValue(), "Value no be null");
     }
 
     /**
@@ -552,7 +545,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
      * @return Final write path.
      */
     static String rawWritePath(@NotNull String persistenceFileName) {
-        Assert.notNull(persistenceFileName, "PersistenceFileName no be null ");
+        Asserts.notNull(persistenceFileName, "PersistenceFileName no be null ");
         return configuration.getPersistencePath()
                 //md5 sign to prevent the file name is too long
                 + persistenceFileName
@@ -573,14 +566,14 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
         } else {
             content = SerialUtils.serialize(key);
         }
-        return DEALT + DigestUtils.md5Hex(content);
+        return DEALT + Digests.md5Hex(content);
     }
 
     /**
      * Clear all cached files.
      */
     public static void cleanAllCacheFile() {
-        if (MapUtils.isEmpty(CACHE_MAP)) {
+        if (Maps.isEmpty(CACHE_MAP)) {
             return;
         }
         try {
@@ -724,12 +717,12 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
 
     @Override
     public void setExpirationPersistence(Long duration, TimeUnit timeUnit) {
-        Assert.notNull(duration, "Duration no be null");
-        Assert.notNull(timeUnit, "TimeUnit no be null");
+        Asserts.notNull(duration, "Duration no be null");
+        Asserts.notNull(timeUnit, "TimeUnit no be null");
         AbstractPersistenceStore<K, V> store = this.store;
         Entry<K, V> entry = store.getEntry();
         //Verify expiration
-        Assert.isTrue(expireOfCache(),
+        Asserts.isTrue(expireOfCache(),
                 "Already expire key [" + entry.getKey() + "] value [" + entry.getValue() + "]");
         writeLock.lock();
         try {
@@ -749,7 +742,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
     public void resetExpirationPersistence() {
         AbstractPersistenceStore<K, V> store = this.store;
         //验证是否过期
-        Assert.isTrue(expireOfCache(),
+        Asserts.isTrue(expireOfCache(),
                 "Already expire key [" + store.getEntry().getKey() + "] value [" +
                         store.getEntry().getValue() + "]");
         writeLock.lock();
@@ -765,11 +758,11 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
 
     @Override
     public void replacePersistence(V newValue) {
-        Assert.notNull(newValue, "NewValue no be null");
+        Asserts.notNull(newValue, "NewValue no be null");
         AbstractPersistenceStore<K, V> store = this.store;
         Entry<K, V> entry = store.getEntry();
         //Verify expiration
-        Assert.isTrue(expireOfCache(),
+        Asserts.isTrue(expireOfCache(),
                 "Already expire key [" + store.entry.getKey() + "] value [" + store.entry.getValue() + "]");
         writeLock.lock();
         try {
@@ -801,7 +794,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
 
     @Override
     public void removeAllPersistence() {
-        if (MapUtils.isEmpty(CACHE_MAP)) {
+        if (Maps.isEmpty(CACHE_MAP)) {
             return;
         }
         writeLock.lock();
@@ -842,23 +835,23 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
 
     @Override
     public void reductionUsePath(@CanNull String path) {
-        if (StringUtils.isBlank(path) || Objects.equals(path, DEFAULT_WRITE_PATH_SIGN)) {
+        if (Strings.isBlank(path) || Objects.equals(path, DEFAULT_WRITE_PATH_SIGN)) {
             path = configuration.getPersistencePath();
         }
         List<File> files = null;
-        if (StringUtils.isBlank(path)) {
+        if (Strings.isBlank(path)) {
             Console.info("Path no be blank , but you provide null");
         } else {
             if (!isDirectory(path)) {
                 Console.info("This path [{}] belong file no a directory", path);
             } else {
                 files = loopFiles(path, v -> v.isFile() && v.getName().endsWith(PREFIX_BEFORE));
-                if (CollectionUtils.isEmpty(files)) {
+                if (top.osjf.assembly.util.lang.Collections.isEmpty(files)) {
                     Console.info("This path [{}] no found files", path);
                 }
             }
         }
-        if (CollectionUtils.isEmpty(files)) {
+        if (top.osjf.assembly.util.lang.Collections.isEmpty(files)) {
             return;
         }
         //Loop back
@@ -875,7 +868,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
 
     @Override
     public void reductionUseFile(@NotNull File file) {
-        Assert.notNull(file, "File no be null");
+        Asserts.notNull(file, "File no be null");
         InputStream in = null;
         BufferedReader read = null;
         StringBuilder buffer = new StringBuilder();
@@ -906,7 +899,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
     public void reductionUseString(@NotNull StringBuilder buffer) {
         String json = buffer.toString();
         //check json
-        Assert.isTrue(JSON.isValid(json), "Buffer data [" + json + "] no a valid json");
+        Asserts.isTrue(Jsons.isValid(json), "Buffer data [" + json + "] no a valid json");
     }
 
     /**
@@ -940,15 +933,15 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
         //Callback for restoring cached keys and values
         Set<Class<ListeningRecovery>> subTypesOf =
                 ScanUtils.getSubTypesOf(ListeningRecovery.class, configuration.getListeningRecoverySubPath());
-        if (CollectionUtils.isNotEmpty(subTypesOf)) {
+        if (top.osjf.assembly.util.lang.Collections.isNotEmpty(subTypesOf)) {
             subTypesOf.forEach(clazz -> {
                 ListeningRecovery recovery;
                 try {
-                    recovery = ReflectUtil.newInstance(clazz);
-                    recovery.recovery(
-                            recoveryDeserializeKey(entry.getKey()),
-                            recoveryDeserializeValue(entry.getKey()));
-                    recovery.expired(condition, entry.getTimeUnit());
+                    recovery = Reflects.newInstance(clazz);
+                    Object key = recoveryDeserializeKey(entry.getKey());
+                    Object value = recoveryDeserializeValue(entry.getKey());
+                    recovery.recovery(key, value);
+                    recovery.recovery(key, value, condition, entry.getTimeUnit());
                 } catch (Exception e) {
                     Console.info("Cache recovery callback exception , throw an error : {}", e.getMessage());
                 }

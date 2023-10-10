@@ -1,12 +1,13 @@
 package top.osjf.assembly.cache.command.expiremap;
 
-import top.osjf.assembly.cache.factory.ExpiringMapCacheExecutor;
 import top.osjf.assembly.cache.command.CachePairCommands;
+import top.osjf.assembly.cache.factory.ExpiringMapCacheExecutor;
+import top.osjf.assembly.cache.net.jodah.expiringmap.ExpiringMap;
 
 import java.util.concurrent.TimeUnit;
 
 /**
- * About the {@code Pair} within {@link net.jodah.expiringmap.ExpiringMap} operating instructions.
+ * About the {@code Pair} within {@link ExpiringMap} operating instructions.
  *
  * @author zpf
  * @since 1.0.0

@@ -1,7 +1,8 @@
 package top.osjf.assembly.cache.command.expiremap;
 
-import top.osjf.assembly.cache.factory.ExpiringMapCacheExecutor;
 import top.osjf.assembly.cache.command.CacheKeyCommands;
+import top.osjf.assembly.cache.factory.ExpiringMapCacheExecutor;
+import top.osjf.assembly.cache.net.jodah.expiringmap.ExpiringMap;
 import top.osjf.assembly.util.annotation.CanNull;
 
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * About the {@code Key} within {@link net.jodah.expiringmap.ExpiringMap} operating instructions.
+ * About the {@code Key} within {@link ExpiringMap} operating instructions.
  *
  * @author zpf
  * @since 1.0.0

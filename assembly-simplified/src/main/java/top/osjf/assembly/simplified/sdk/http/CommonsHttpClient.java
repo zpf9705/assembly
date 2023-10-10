@@ -1,11 +1,11 @@
 package top.osjf.assembly.simplified.sdk.http;
 
-import cn.hutool.core.exceptions.ExceptionUtil;
-import cn.hutool.core.io.IoUtil;
 import org.springframework.util.StopWatch;
 import top.osjf.assembly.simplified.sdk.SdkException;
 import top.osjf.assembly.simplified.sdk.SdkUtils;
 import top.osjf.assembly.simplified.sdk.process.DefaultErrorResponse;
+import top.osjf.assembly.util.exceptions.Exceptions;
+import top.osjf.assembly.util.io.CloseableUtils;
 
 import java.util.Map;
 
@@ -76,7 +76,7 @@ public class CommonsHttpClient<R extends HttpResponse> extends AbstractHttpClien
                     .build());
         }
         //close and clear thread param info
-        IoUtil.close(this);
+        CloseableUtils.close(this);
         return response;
     }
 
@@ -90,13 +90,13 @@ public class CommonsHttpClient<R extends HttpResponse> extends AbstractHttpClien
     @Override
     public void handlerSdkError(HttpRequest<?> request, SdkException e) {
         sdkError().accept("Client request fail, apiName={}, error=[{}]",
-                SdkUtils.toLoggerArray(request.matchHttpSdk().name(), ExceptionUtil.stacktraceToOneLineString(e)));
+                SdkUtils.toLoggerArray(request.matchHttpSdk().name(), Exceptions.stacktraceToOneLineString(e)));
     }
 
     @Override
     public void handlerUnKnowError(HttpRequest<?> request, Throwable e) {
         unKnowError().accept("Client request fail, apiName={}, error=[{}]",
-                SdkUtils.toLoggerArray(request.matchHttpSdk().name(), ExceptionUtil.stacktraceToOneLineString(e)));
+                SdkUtils.toLoggerArray(request.matchHttpSdk().name(), Exceptions.stacktraceToOneLineString(e)));
     }
 
     @Override

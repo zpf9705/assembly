@@ -1,11 +1,5 @@
 package top.osjf.assembly.cache.autoconfigure;
 
-import cn.hutool.core.util.ReflectUtil;
-import net.jodah.expiringmap.ExpirationListener;
-import net.jodah.expiringmap.ExpiringMap;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -16,14 +10,18 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import top.osjf.assembly.cache.config.expiringmap.ExpiringMapClients;
 import top.osjf.assembly.cache.config.expiringmap.ExpiringMapClientsCustomizer;
-import top.osjf.assembly.cache.factory.ExpiringMapCacheFactory;
-import top.osjf.assembly.cache.logger.Console;
 import top.osjf.assembly.cache.factory.CacheFactory;
+import top.osjf.assembly.cache.factory.ExpiringMapCacheFactory;
 import top.osjf.assembly.cache.listener.expiringmap.AsyncListener;
 import top.osjf.assembly.cache.listener.expiringmap.SyncListener;
-import top.osjf.assembly.util.system.DefaultConsole;
-import top.osjf.assembly.util.io.ScanUtils;
+import top.osjf.assembly.cache.net.jodah.expiringmap.ExpirationListener;
+import top.osjf.assembly.cache.net.jodah.expiringmap.ExpiringMap;
 import top.osjf.assembly.util.annotation.NotNull;
+import top.osjf.assembly.util.io.ScanUtils;
+import top.osjf.assembly.util.lang.Maps;
+import top.osjf.assembly.util.lang.Reflects;
+import top.osjf.assembly.util.logger.Console;
+import top.osjf.assembly.util.system.DefaultConsole;
 
 import java.io.PrintStream;
 import java.lang.reflect.Method;
@@ -32,7 +30,7 @@ import java.util.*;
 import java.util.function.Predicate;
 
 /**
- * One of the optional caches for this component {@link net.jodah.expiringmap.ExpiringMap}
+ * One of the optional caches for this component {@link ExpiringMap}.
  * <p>
  * The following is an explanation of important parameters<br>
  * <h3>{@link CacheProperties#getExpiringMap()}.</h3><br>
@@ -83,7 +81,7 @@ public class ExpiringMapConfiguration extends CacheCommonsConfiguration implemen
          * Take the default Expiration Listener the class name of the first method
          */
         Method[] methods = ExpirationListener.class.getMethods();
-        if (ArrayUtils.isNotEmpty(methods)) {
+        if (top.osjf.assembly.util.lang.Arrays.isNotEmpty(methods)) {
             EXPIRED_METHOD_NAME = methods[0].getName();
             //Matching assertion method static load
             METHOD_PREDICATE = (s) -> EXPIRED_METHOD_NAME.equals(s.getName());
@@ -146,13 +144,13 @@ public class ExpiringMapConfiguration extends CacheCommonsConfiguration implemen
                             .acquireDefaultExpireTimeUnit(properties.getDefaultExpireTimeUnit())
                             .acquireDefaultExpirationPolicy(properties.getExpiringMap().getExpirationPolicy());
             Map<String, List<ExpirationListener>> listenerMap = findExpirationListener();
-            if (MapUtils.isNotEmpty(listenerMap)) {
+            if (Maps.isNotEmpty(listenerMap)) {
                 List<ExpirationListener> sync = listenerMap.get(SYNC_SIGN);
-                if (CollectionUtils.isNotEmpty(sync)) {
+                if (top.osjf.assembly.util.lang.Collections.isNotEmpty(sync)) {
                     sync.forEach(builder::addSyncExpiredListener);
                 }
                 List<ExpirationListener> async = listenerMap.get(ASYNC_SIGN);
-                if (CollectionUtils.isNotEmpty(async)) {
+                if (top.osjf.assembly.util.lang.Collections.isNotEmpty(async)) {
                     async.forEach(builder::addASyncExpiredListener);
                 }
             }
@@ -173,7 +171,7 @@ public class ExpiringMapConfiguration extends CacheCommonsConfiguration implemen
     public Map<String, List<ExpirationListener>> findExpirationListener() {
         //obtain listing packages path
         String[] listeningPackages = getProperties().getExpiringMap().getListeningPackages();
-        if (ArrayUtils.isEmpty(listeningPackages)) {
+        if (top.osjf.assembly.util.lang.Arrays.isEmpty(listeningPackages)) {
             DefaultConsole.info(
                     "no provider listening scan path ," +
                             "so ec no can provider binding Expiration Listener !"
@@ -183,7 +181,7 @@ public class ExpiringMapConfiguration extends CacheCommonsConfiguration implemen
         //reflection find packages
         Set<Class<ExpirationListener>> subTypesOf =
                 ScanUtils.getSubTypesOf(ExpirationListener.class, listeningPackages);
-        if (CollectionUtils.isEmpty(subTypesOf)) {
+        if (top.osjf.assembly.util.lang.Collections.isEmpty(subTypesOf)) {
             DefaultConsole.info(
                     "No provider implementation ExpiringLoadListener class ," +
                             "so ec no can provider binding Expiration Listener"
@@ -211,7 +209,7 @@ public class ExpiringMapConfiguration extends CacheCommonsConfiguration implemen
             }
             ExpirationListener listener;
             try {
-                listener = ReflectUtil.newInstance(listenerClass);
+                listener = Reflects.newInstance(listenerClass);
             } catch (Throwable e) {
                 Console.warn("[" + listenerClass.getName() + "] newInstanceForNoArgs failed : [" + e.getMessage() + "]");
                 continue;

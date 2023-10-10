@@ -1,7 +1,5 @@
 package top.osjf.assembly.cache.operations;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.util.Assert;
 import top.osjf.assembly.cache.command.CacheKeyCommands;
 import top.osjf.assembly.cache.factory.CacheFactory;
 import top.osjf.assembly.cache.factory.CacheFactoryAccessor;
@@ -9,6 +7,7 @@ import top.osjf.assembly.cache.serializer.PairSerializer;
 import top.osjf.assembly.cache.serializer.StringPairSerializer;
 import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
+import top.osjf.assembly.util.lang.Asserts;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -38,63 +37,41 @@ import java.util.Map;
 public class CacheTemplate<K, V> extends CacheFactoryAccessor implements CacheCommonsOperations<K, V>, Serializable {
 
     private static final long serialVersionUID = -8020854200126293536L;
-    @SuppressWarnings("rawtypes")
-    private @CanNull PairSerializer defaultSerializer;
-    private boolean enableDefaultSerializer = true;
-    private boolean initialized = false;
 
     private PairSerializer<K> keySerialize;
+
     private PairSerializer<V> valueSerialize;
 
     private final ValueOperations<K, V> valueOperations = new DefaultValueOperations<>(this);
+
     private final TimeOperations<K, V> timeOperations = new DefaultTimeOperations<>(this);
 
-    /**
-     * Constructs a new <code>CacheTemplate</code> instance.
-     */
     public CacheTemplate() {
+        this(null);
     }
 
-    @Override
+    public CacheTemplate(CacheFactory cacheFactory) {
+        this(cacheFactory, null, null);
+    }
+
     @SuppressWarnings("unchecked")
-    public void afterPropertiesSet() {
-        super.afterPropertiesSet();
-
-        boolean defaultUsed = false;
-
-        if (this.defaultSerializer == null) {
-            this.defaultSerializer = new StringPairSerializer();
+    public CacheTemplate(CacheFactory cacheFactory,
+                         PairSerializer<K> keySerialize,
+                         PairSerializer<V> valueSerialize) {
+        super(cacheFactory);
+        //if null refer to string
+        @SuppressWarnings("rawtypes")
+        PairSerializer defaultSerializer = new StringPairSerializer();
+        if (keySerialize == null) {
+            this.keySerialize = defaultSerializer;
+        } else {
+            this.keySerialize = keySerialize;
         }
-
-        if (this.enableDefaultSerializer) {
-
-            if (this.keySerialize == null) {
-                this.keySerialize = defaultSerializer;
-                defaultUsed = true;
-            }
-
-            if (this.valueSerialize == null) {
-                this.valueSerialize = defaultSerializer;
-                defaultUsed = true;
-            }
+        if (valueSerialize == null) {
+            this.valueSerialize = defaultSerializer;
+        } else {
+            this.valueSerialize = valueSerialize;
         }
-
-        if (this.enableDefaultSerializer && defaultUsed) {
-
-            Assert.notNull(this.defaultSerializer, "defaultSerializer must initialized");
-        }
-
-        this.initialized = true;
-    }
-
-    /**
-     * Whether the default serializer should be used. If not, any serializers not explicitly
-     * set will remain null and values will not be serialized or deserialized.
-     *
-     * @param enableDefaultSerializer The above
-     */
-    public void setEnableDefaultSerializer(boolean enableDefaultSerializer) {
-        this.enableDefaultSerializer = enableDefaultSerializer;
     }
 
     /**
@@ -103,8 +80,8 @@ public class CacheTemplate<K, V> extends CacheFactoryAccessor implements CacheCo
      * @param keySerializer key Serializer.
      */
     public void setKeySerializer(PairSerializer<K> keySerializer) {
-        Assert.isTrue(this.keySerialize == null,
-                "kPairSerializer existing configuration values, please do not cover");
+        Asserts.notNull(keySerializer,
+                "Please provide a non null key serialization.");
         this.keySerialize = keySerializer;
     }
 
@@ -114,8 +91,8 @@ public class CacheTemplate<K, V> extends CacheFactoryAccessor implements CacheCo
      * @param valueSerializer value Serializer.
      */
     public void setValueSerializer(PairSerializer<V> valueSerializer) {
-        Assert.isTrue(this.valueSerialize == null,
-                "vPairSerializer existing configuration values, please do not cover");
+        Asserts.notNull(valueSerializer,
+                "Please provide a non null value serialization.");
         this.valueSerialize = valueSerializer;
     }
 
@@ -146,11 +123,9 @@ public class CacheTemplate<K, V> extends CacheFactoryAccessor implements CacheCo
     @CanNull
     public <T> T execute(CacheValueCallback<T> action) {
 
-        Assert.isTrue(initialized, "Execute must before initialized");
-
         CacheFactory factory = getCacheFactory();
 
-        Assert.notNull(factory, "CacheExecutorFactory must not be null");
+        Asserts.notNull(factory, "There are no available cache factories.");
 
         return action.doInExecutor(factory.executor());
     }
@@ -167,7 +142,7 @@ public class CacheTemplate<K, V> extends CacheFactoryAccessor implements CacheCo
     @CanNull
     @Override
     public Long delete(Collection<K> keys) {
-        if (CollectionUtils.isEmpty(keys)) {
+        if (top.osjf.assembly.util.lang.Collections.isEmpty(keys)) {
             return 0L;
         }
         return this.execute((executor) -> executor.delete(
@@ -207,7 +182,7 @@ public class CacheTemplate<K, V> extends CacheFactoryAccessor implements CacheCo
     }
 
     private byte[] rawKey(K key) {
-        Assert.notNull(key, "Non null key required");
+        Asserts.notNull(key, "Non null key required");
         byte[] v;
         if (this.keySerialize != null) {
             v = this.keySerialize.serialize(key);
@@ -231,7 +206,7 @@ public class CacheTemplate<K, V> extends CacheFactoryAccessor implements CacheCo
     }
 
     private byte[] rawValue(V value) {
-        Assert.notNull(value, "Non null value required");
+        Asserts.notNull(value, "Non null value required");
         byte[] v;
         if (this.valueSerialize != null) {
             v = this.valueSerialize.serialize(value);

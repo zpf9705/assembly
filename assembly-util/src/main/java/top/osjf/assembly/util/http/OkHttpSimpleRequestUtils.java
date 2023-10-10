@@ -1,6 +1,5 @@
 package top.osjf.assembly.util.http;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONValidator;
 import com.alibaba.fastjson2.util.IOUtils;
@@ -10,6 +9,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.ContentType;
 import top.osjf.assembly.util.UtilException;
+import top.osjf.assembly.util.lang.Jsons;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -195,7 +195,7 @@ public abstract class OkHttpSimpleRequestUtils {
             } else {
                 String var = requestParam.toString();
                 if (JSONValidator.from(var).validate()) {
-                    JSONObject jsonObject = JSON.parseObject(var);
+                    JSONObject jsonObject = Jsons.parseObject(var);
                     params.putAll(jsonObject.getInnerMap());
                 }
             }

@@ -1,6 +1,5 @@
 package top.osjf.assembly.cache.autoconfigure;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +20,7 @@ import top.osjf.assembly.cache.persistence.CachePersistenceReductionSelector;
 import top.osjf.assembly.cache.serializer.SerializerAdapter;
 import top.osjf.assembly.cache.serializer.StringPairSerializer;
 import top.osjf.assembly.util.annotation.NotNull;
+import top.osjf.assembly.util.lang.Collections;
 
 import java.io.PrintStream;
 import java.util.List;
@@ -54,7 +54,7 @@ import java.util.List;
  * All the operation will be placed on the Helper and simulate the join operation such
  * as {@link top.osjf.assembly.cache.factory.CacheExecutor}.<br>
  *
- * <p>This layer is {@link net.jodah.expiringmap.ExpiringMap}</p>
+ * <p>This layer is {@link top.osjf.assembly.cache.net.jodah.expiringmap.ExpiringMap}</p>
  * Additional data on the bottom will adopt a byte type for storage in order to enhance the cache restart recovery.
  *
  * @author zpf
@@ -81,7 +81,7 @@ public class CacheAutoConfiguration implements CacheBannerDisplayDevice, Environ
     @Override
     public void afterPropertiesSet() {
         this.printBanner(this.environment, getSourceClass(), System.out);
-        if (CollectionUtils.isNotEmpty(configurationCustomizers)) {
+        if (Collections.isNotEmpty(configurationCustomizers)) {
             configurationCustomizers.forEach(v -> v.customize(this.properties));
         }
     }

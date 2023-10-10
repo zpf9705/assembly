@@ -1,12 +1,12 @@
 package top.osjf.assembly.simplified.sdk;
 
-import org.apache.commons.lang3.ArrayUtils;
 import top.osjf.assembly.simplified.sdk.client.ClientExecutors;
 import top.osjf.assembly.simplified.sdk.process.HostCapable;
 import top.osjf.assembly.simplified.sdk.process.Request;
 import top.osjf.assembly.simplified.sdk.process.Response;
 import top.osjf.assembly.simplified.support.AbstractJdkProxySupport;
 import top.osjf.assembly.util.annotation.NotNull;
+import top.osjf.assembly.util.lang.Arrays;
 
 import java.lang.reflect.Method;
 
@@ -45,7 +45,7 @@ public abstract class AbstractSdkProxyInvoker<T> extends AbstractJdkProxySupport
                     "Only methods defined by class " + clazz.getName() + " are supported.");
         }
         //The request parameter encapsulation must exist.
-        if (ArrayUtils.isEmpty(args)) {
+        if (Arrays.isEmpty(args)) {
             throw new IllegalArgumentException(
                     "The input parameter of the SDK encapsulation class call method cannot be empty."
             );

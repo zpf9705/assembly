@@ -1,8 +1,8 @@
 package top.osjf.assembly.simplified.sdk.client;
 
-import cn.hutool.core.util.ReflectUtil;
 import top.osjf.assembly.simplified.sdk.process.Request;
 import top.osjf.assembly.simplified.sdk.process.Response;
+import top.osjf.assembly.util.lang.Reflects;
 
 /**
  * Some access operations related to {@link Client}.
@@ -24,7 +24,7 @@ public abstract class ClientAccess {
     public static <R extends Response> Client<R> getAndSetClient(String key, Request<R> request) {
         return AbstractClient.getAndSetClient(() -> {
             //Building client objects through reflection based on client type (provided that they are not cached)
-            return ReflectUtil.newInstance(request.getClientCls(), key);
+            return Reflects.newInstance(request.getClientCls(), key);
         }, request, key);
     }
 }

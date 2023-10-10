@@ -3,7 +3,6 @@ package top.osjf.assembly.util.http;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.StrUtil;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONValidator;
 import org.apache.http.HttpEntity;
@@ -16,6 +15,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import top.osjf.assembly.util.UtilException;
 import top.osjf.assembly.util.annotation.NotNull;
+import top.osjf.assembly.util.lang.Jsons;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -215,7 +215,7 @@ public abstract class ApacheHttpSimpleRequestUtils {
                 params = (Map<String, Object>) requestParam;
             } else {
                 if (JSONValidator.from(requestParam.toString()).validate()) {
-                    JSONObject jsonObject = JSON.parseObject(requestParam.toString());
+                    JSONObject jsonObject = Jsons.parseObject(requestParam.toString());
                     params = jsonObject.getInnerMap();
                 }
             }

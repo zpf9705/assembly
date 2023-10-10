@@ -1,6 +1,6 @@
 package top.osjf.assembly.cache.serializer;
 
-import cn.hutool.core.convert.Convert;
+import top.osjf.assembly.util.lang.Converts;
 import top.osjf.assembly.util.serial.SerialUtils;
 
 /**
@@ -27,7 +27,7 @@ public class SerializerAdapter<T> implements PairSerializer<T> {
         T t = null;
         Object deserialize = SerialUtils.deserialize(bytes);
         if (deserialize != null) {
-            t = Convert.convert(this.type, deserialize);
+            t = Converts.convert(this.type, deserialize);
         }
         return t;
     }

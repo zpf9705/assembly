@@ -1,10 +1,10 @@
 package top.osjf.assembly.simplified.sdk.client;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.util.Assert;
 import top.osjf.assembly.simplified.sdk.process.Request;
 import top.osjf.assembly.simplified.sdk.process.Response;
+import top.osjf.assembly.util.lang.Strings;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -51,7 +51,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
      * @param client Real impl in {@link Client}.
      */
     void cache(String url, Client client) {
-        if (StringUtils.isBlank(url) || client == null) {
+        if (Strings.isBlank(url) || client == null) {
             return;
         }
         CLIENT_CACHE.putIfAbsent(url, client);

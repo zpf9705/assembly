@@ -1,6 +1,6 @@
 package top.osjf.assembly.cache.factory;
 
-import org.springframework.util.Assert;
+import top.osjf.assembly.util.lang.Asserts;
 
 import java.io.Serializable;
 
@@ -21,7 +21,7 @@ public abstract class AbstractRecordActivationCenter<C, K, V> implements Center<
      * @param center Must not be {@literal null}.
      */
     public static synchronized void setSingletonCenter(Center center) {
-        Assert.notNull(center, "Center must not be null");
+        Asserts.notNull(center, "Center must not be null");
         if (center0 != null) {
             return;
         }

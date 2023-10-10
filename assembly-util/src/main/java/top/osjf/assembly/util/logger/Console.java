@@ -1,5 +1,4 @@
-package top.osjf.assembly.cache.logger;
-
+package top.osjf.assembly.util.logger;
 
 import org.slf4j.LoggerFactory;
 

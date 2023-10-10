@@ -1,6 +1,6 @@
 package top.osjf.assembly.cache.listener;
 
-import net.jodah.expiringmap.ExpirationListener;
+import top.osjf.assembly.cache.net.jodah.expiringmap.ExpirationListener;
 import top.osjf.assembly.util.data.ByteIdentify;
 
 import java.io.Closeable;

@@ -1,8 +1,7 @@
 package top.osjf.assembly.cache.listener;
 
-import org.apache.commons.lang3.SerializationException;
-import top.osjf.assembly.util.serial.SerialUtils;
 import top.osjf.assembly.util.annotation.NotNull;
+import top.osjf.assembly.util.serial.SerialUtils;
 
 /**
  * When the expiration callback occurs, the relevant information of the key/value is stored.
@@ -61,12 +60,6 @@ public final class Message implements MessageCapable {
      * @return {@link Message}
      */
     public static Message serial(@NotNull byte[] key, @NotNull byte[] value) {
-        Message message;
-        try {
-            message = new Message(key, value);
-        } catch (Throwable e) {
-            throw new SerializationException("Message serial error with msg :[ " + e.getMessage() + " ]");
-        }
-        return message;
+        return new Message(key, value);
     }
 }
