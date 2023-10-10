@@ -94,7 +94,7 @@ public class CacheProperties {
     private Client client = Client.EXPIRE_MAP;
 
     /**
-     * Expiry implement for {@link net.jodah.expiringmap.ExpiringMap}.
+     * Expiry implement for {@link top.osjf.assembly.cache.net.jodah.expiringmap.ExpiringMap}.
      */
     private ExpiringMap expiringMap = new ExpiringMap();
 
