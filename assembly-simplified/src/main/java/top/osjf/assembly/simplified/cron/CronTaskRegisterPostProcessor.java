@@ -6,8 +6,10 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.Ordered;
+import org.springframework.core.env.Environment;
 import top.osjf.assembly.simplified.cron.annotation.Cron;
 import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
@@ -31,19 +33,26 @@ import top.osjf.assembly.util.annotation.NotNull;
  * @since 2.0.6
  */
 public class CronTaskRegisterPostProcessor implements BeanPostProcessor, ApplicationListener<ContextRefreshedEvent>,
-        ApplicationContextAware, Ordered {
+        ApplicationContextAware, EnvironmentAware, Ordered {
 
     private ApplicationContext context;
+
+    private Environment environment;
 
     @Override
     public void setApplicationContext(@NotNull ApplicationContext context) throws BeansException {
         this.context = context;
     }
 
+    @Override
+    public void setEnvironment(@NotNull Environment environment) {
+        this.environment = environment;
+    }
+
     @CanNull
     @Override
     public Object postProcessAfterInitialization(@NotNull Object bean, @NotNull String beanName) throws BeansException {
-        CronRegister.registerWthBean(bean);
+        CronRegister.registerWthBean(bean, environment);
         return bean;
     }
 

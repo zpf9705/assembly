@@ -4,6 +4,7 @@ import cn.hutool.cron.CronException;
 import cn.hutool.cron.CronUtil;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.support.CronExpression;
 import top.osjf.assembly.simplified.cron.annotation.Cron;
 import top.osjf.assembly.util.annotation.NotNull;
@@ -185,7 +186,7 @@ public final class CronRegister {
         }
     }
 
-    public static void registerWthBean(Object bean) {
+    public static void registerWthBean(Object bean, Environment environment) {
         if (bean == null) {
             return;
         }
@@ -195,9 +196,21 @@ public final class CronRegister {
         for (Method method : methods) {
             Cron cron = method.getAnnotation(Cron.class);
             if (cron != null) {
-                CronRegister.register(cron.express(), () -> ReflectUtils.invoke(bean, method));
+                if (profilesCheck(cron.profiles(), environment.getActiveProfiles())) {
+                    CronRegister.register(cron.express(), () -> ReflectUtils.invoke(bean, method));
+                }
             }
         }
+    }
+
+    private static boolean profilesCheck(String[] providerProfiles, String[] startUpProfiles) {
+        if (ArrayUtils.isEmpty(startUpProfiles)) {
+            throw new CronException("No startup env profiles");
+        }
+        if (ArrayUtils.isEmpty(providerProfiles)) {
+            return true;
+        }
+        return Arrays.stream(providerProfiles).anyMatch(p -> Arrays.asList(startUpProfiles).contains(p));
     }
 
     public static void register(String express, Runnable runnable) {
