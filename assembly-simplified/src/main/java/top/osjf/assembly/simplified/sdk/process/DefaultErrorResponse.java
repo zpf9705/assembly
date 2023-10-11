@@ -3,7 +3,7 @@ package top.osjf.assembly.simplified.sdk.process;
 import org.apache.http.HttpStatus;
 import top.osjf.assembly.simplified.sdk.DataConvertException;
 import top.osjf.assembly.util.exceptions.Exceptions;
-import top.osjf.assembly.util.lang.Jsons;
+import top.osjf.assembly.util.lang.FastJsonUtils;
 
 import java.util.Objects;
 
@@ -76,8 +76,7 @@ public class DefaultErrorResponse extends AbstractResponse {
 
     public static <R extends Response> R parseErrorResponse(Throwable error, ErrorType type, Class<R> clazz) {
         DefaultErrorResponse defaultErrorResponse = type.getMessageWithType(error);
-        String responseErrorStr = Jsons.toJSONString(defaultErrorResponse);
-        R r = Jsons.parseObject(responseErrorStr, clazz);
+        R r = FastJsonUtils.parseObject(defaultErrorResponse, clazz);
         r.setErrorCode(defaultErrorResponse.getCode());
         r.setErrorMessage(defaultErrorResponse.getMessage());
         return r;

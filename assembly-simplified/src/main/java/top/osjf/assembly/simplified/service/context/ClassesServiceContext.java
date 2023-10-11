@@ -11,7 +11,7 @@ import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.data.ClassMap;
 import top.osjf.assembly.util.data.ThreadSafeClassMap;
 import top.osjf.assembly.util.io.ScanUtils;
-import top.osjf.assembly.util.lang.Collections;
+import top.osjf.assembly.util.lang.CollectionUtils;
 
 import java.util.Map;
 import java.util.Objects;
@@ -162,7 +162,7 @@ public class ClassesServiceContext implements ServiceContext, ApplicationContext
     private void load(ClassesServiceContext contextBean, ApplicationContext context) {
         Set<Class<Object>> serviceClasses = ScanUtils.getTypesAnnotatedWith(ServiceCollection.class,
                 scanPackages);
-        if (Collections.isEmpty(serviceClasses)) {
+        if (CollectionUtils.isEmpty(serviceClasses)) {
             return;
         }
         for (Class<Object> serviceClass : serviceClasses) {

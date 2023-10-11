@@ -15,7 +15,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import top.osjf.assembly.util.UtilException;
 import top.osjf.assembly.util.annotation.NotNull;
-import top.osjf.assembly.util.lang.Jsons;
+import top.osjf.assembly.util.lang.FastJsonUtils;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -215,7 +215,7 @@ public abstract class ApacheHttpSimpleRequestUtils {
                 params = (Map<String, Object>) requestParam;
             } else {
                 if (JSONValidator.from(requestParam.toString()).validate()) {
-                    JSONObject jsonObject = Jsons.parseObject(requestParam.toString());
+                    JSONObject jsonObject = FastJsonUtils.parseObject(requestParam.toString());
                     params = jsonObject.getInnerMap();
                 }
             }

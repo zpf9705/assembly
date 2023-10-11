@@ -7,13 +7,14 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 
 /**
- * Reflection tool class function implementation in  {@link ReflectUtil}.
+ * Reflect utils from {@link ReflectUtil}, and this category points out the expansion function.
  *
  * @author zpf
- * @since 1.0.3
+ * @since 1.0.4
  */
-public final class Reflects extends ReflectUtil {
-    private Reflects() {
+public final class ReflectUtils extends ReflectUtil {
+
+    private ReflectUtils() {
     }
 
     //**************************************** Extends Proxy ***********************************************

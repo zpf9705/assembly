@@ -1,6 +1,6 @@
 package top.osjf.assembly.cache.autoconfigure;
 
-import top.osjf.assembly.util.lang.Strings;
+import top.osjf.assembly.util.lang.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -60,10 +60,10 @@ public final class CacheVersion {
     private static String getImplementationVersion(JarFile jarFile) throws IOException {
         Attributes attributes = jarFile.getManifest().getMainAttributes();
         String version = attributes.getValue(Attributes.Name.IMPLEMENTATION_VERSION);
-        if (Strings.isBlank(version)) {
+        if (StringUtils.isBlank(version)) {
             for (Attributes.Name name : other_version) {
                 String value = attributes.getValue(name);
-                if (Strings.isNotBlank(value)){
+                if (StringUtils.isNotBlank(value)){
                     version = value;
                     break;
                 }

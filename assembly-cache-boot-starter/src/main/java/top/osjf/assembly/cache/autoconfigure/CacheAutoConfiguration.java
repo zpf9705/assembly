@@ -20,7 +20,7 @@ import top.osjf.assembly.cache.persistence.CachePersistenceReductionSelector;
 import top.osjf.assembly.cache.serializer.SerializerAdapter;
 import top.osjf.assembly.cache.serializer.StringPairSerializer;
 import top.osjf.assembly.util.annotation.NotNull;
-import top.osjf.assembly.util.lang.Collections;
+import top.osjf.assembly.util.lang.CollectionUtils;
 
 import java.io.PrintStream;
 import java.util.List;
@@ -81,7 +81,7 @@ public class CacheAutoConfiguration implements CacheBannerDisplayDevice, Environ
     @Override
     public void afterPropertiesSet() {
         this.printBanner(this.environment, getSourceClass(), System.out);
-        if (Collections.isNotEmpty(configurationCustomizers)) {
+        if (CollectionUtils.isNotEmpty(configurationCustomizers)) {
             configurationCustomizers.forEach(v -> v.customize(this.properties));
         }
     }

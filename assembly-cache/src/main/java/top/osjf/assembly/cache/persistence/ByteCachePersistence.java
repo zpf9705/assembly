@@ -3,7 +3,7 @@ package top.osjf.assembly.cache.persistence;
 import top.osjf.assembly.cache.exceptions.CachePersistenceException;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.lang.Asserts;
-import top.osjf.assembly.util.lang.Jsons;
+import top.osjf.assembly.util.lang.FastJsonUtils;
 import top.osjf.assembly.util.serial.SerialUtils;
 
 import java.util.List;
@@ -79,8 +79,8 @@ public class ByteCachePersistence extends AbstractCachePersistence<byte[], byte[
         //parse json
         BytePersistence persistence;
         try {
-            persistence = Jsons.parseObject(buffer.toString(), new Jsons.TypeReferences<BytePersistence>() {
-            });
+            persistence = FastJsonUtils.parseObject(buffer.toString(), new FastJsonUtils
+                    .TypeReferences<BytePersistence>() {});
         } catch (Exception e) {
             throw new CachePersistenceException("Buffer data [" + buffer + " ] parse Persistence error " +
                     "[" + e.getMessage() + "]");

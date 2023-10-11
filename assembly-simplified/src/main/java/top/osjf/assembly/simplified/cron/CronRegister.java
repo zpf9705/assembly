@@ -8,7 +8,9 @@ import org.springframework.scheduling.support.CronExpression;
 import top.osjf.assembly.simplified.cron.annotation.Cron;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.io.ScanUtils;
-import top.osjf.assembly.util.lang.Reflects;
+import top.osjf.assembly.util.lang.ArrayUtils;
+import top.osjf.assembly.util.lang.CollectionUtils;
+import top.osjf.assembly.util.lang.ReflectUtils;
 import top.osjf.assembly.util.system.DefaultConsole;
 
 import java.lang.reflect.Method;
@@ -87,11 +89,11 @@ public final class CronRegister {
             List<Method> methods = CronRegister.getScanMethodsWithCron(_scanPackages);
             //Filter methods based on the current spring startup environment and
             // the environment provided by the annotations.
-            if (top.osjf.assembly.util.lang.Collections.isNotEmpty(_profiles)) {
+            if (CollectionUtils.isNotEmpty(_profiles)) {
                 _cronMethods = methods.stream().filter(
                         m -> {
                             Cron cron = m.getAnnotation(Cron.class);
-                            if (top.osjf.assembly.util.lang.Arrays.isNotEmpty(cron.profiles())) {
+                            if (ArrayUtils.isNotEmpty(cron.profiles())) {
                                 return Arrays.stream(cron.profiles()).anyMatch(_profiles::contains);
                             }
                             //no profile args direct register
@@ -99,7 +101,7 @@ public final class CronRegister {
                         }
                 ).collect(Collectors.toList());
             }
-            _noRegisterCron = top.osjf.assembly.util.lang.Collections.isEmpty(_cronMethods);
+            _noRegisterCron = CollectionUtils.isEmpty(_cronMethods);
         }
 
         protected static void start(@NotNull ApplicationContext context) {
@@ -148,7 +150,7 @@ public final class CronRegister {
 
     public static void registerPrepareCronWithSpringContextOrNew(@NotNull ApplicationContext context,
                                                                  List<Method> cronMethods) {
-        if (top.osjf.assembly.util.lang.Collections.isEmpty(cronMethods)) {
+        if (CollectionUtils.isEmpty(cronMethods)) {
             return;
         }
         Objects.requireNonNull(context, "ApplicationContext not be null");
@@ -177,7 +179,7 @@ public final class CronRegister {
             }
             Cron cron = method.getAnnotation(Cron.class);
             Object finalTarget = target;
-            register(cron.express(), () -> Reflects.invoke(finalTarget, method));
+            register(cron.express(), () -> ReflectUtils.invoke(finalTarget, method));
         }
     }
 
@@ -193,18 +195,18 @@ public final class CronRegister {
     }
 
     public static void addListenerWithPackages(String[] scanPackage) {
-        if (top.osjf.assembly.util.lang.Arrays.isEmpty(scanPackage)) {
+        if (ArrayUtils.isEmpty(scanPackage)) {
             return;
         }
         Set<Class<CronListener>> classes = ScanUtils.getSubTypesOf(CronListener.class, scanPackage);
-        if (top.osjf.assembly.util.lang.Collections.isEmpty(classes)) {
+        if (CollectionUtils.isEmpty(classes)) {
             return;
         }
-        classes.forEach(c -> addListener(Reflects.newInstance(c)));
+        classes.forEach(c -> addListener(ReflectUtils.newInstance(c)));
     }
 
     public static void addListener(CronListener... cronListeners) {
-        if (top.osjf.assembly.util.lang.Arrays.isEmpty(cronListeners)) {
+        if (ArrayUtils.isEmpty(cronListeners)) {
             return;
         }
         for (CronListener cronListener : cronListeners) {
@@ -218,7 +220,7 @@ public final class CronRegister {
     }
 
     public static List<Method> getScanMethodsWithCron(String... scanPackage) {
-        if (top.osjf.assembly.util.lang.Arrays.isEmpty(scanPackage)) {
+        if (ArrayUtils.isEmpty(scanPackage)) {
             return Collections.emptyList();
         }
         return new ArrayList<>(ScanUtils.getMethodsAnnotatedWith(Cron.class, scanPackage));
@@ -246,7 +248,7 @@ public final class CronRegister {
             throw new CronException("The start switch of cn.hutool.cron.CronUtil has been turned on before," +
                     " please check");
         }
-        if (top.osjf.assembly.util.lang.Arrays.isEmpty(args)) {
+        if (ArrayUtils.isEmpty(args)) {
             //empty args direct to matchSecond and thread daemon
             start(true, false);
         } else {

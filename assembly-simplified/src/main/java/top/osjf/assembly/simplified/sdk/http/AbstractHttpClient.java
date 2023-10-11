@@ -4,8 +4,8 @@ import top.osjf.assembly.simplified.sdk.client.AbstractClient;
 import top.osjf.assembly.simplified.sdk.process.DefaultErrorResponse;
 import top.osjf.assembly.simplified.sdk.process.Request;
 import top.osjf.assembly.util.annotation.NotNull;
-import top.osjf.assembly.util.lang.Collections;
-import top.osjf.assembly.util.lang.Jsons;
+import top.osjf.assembly.util.lang.CollectionUtils;
+import top.osjf.assembly.util.lang.FastJsonUtils;
 import top.osjf.assembly.util.logger.Console;
 
 import java.util.List;
@@ -61,18 +61,18 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
     @NotNull
     public R convertToResponse(Request<R> request, String responseStr) {
         R response;
-        if (!Jsons.isValid(responseStr)) {
+        if (!FastJsonUtils.isValid(responseStr)) {
             response = DefaultErrorResponse.parseErrorResponse(responseStr, DefaultErrorResponse.ErrorType.DATA,
                     request.getResponseCls());
-        } else if (Jsons.isArray(responseStr)) {
-            List<R> responses = Jsons.parseArray(responseStr, request.getResponseCls());
-            if (Collections.isEmpty(responses)) {
+        } else if (FastJsonUtils.isArray(responseStr)) {
+            List<R> responses = FastJsonUtils.parseArray(responseStr, request.getResponseCls());
+            if (CollectionUtils.isEmpty(responses)) {
                 response = responses.get(0);
             } else {
-                response = Jsons.parseObject("{}", request.getResponseCls());
+                response = FastJsonUtils.parseEmptyObject(request.getResponseCls());
             }
         } else {
-            response = Jsons.parseObject(responseStr, request.getResponseCls());
+            response = FastJsonUtils.parseObject(responseStr, request.getResponseCls());
         }
         return response;
     }

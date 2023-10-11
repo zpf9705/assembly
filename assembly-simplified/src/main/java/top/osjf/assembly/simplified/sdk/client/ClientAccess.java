@@ -2,7 +2,7 @@ package top.osjf.assembly.simplified.sdk.client;
 
 import top.osjf.assembly.simplified.sdk.process.Request;
 import top.osjf.assembly.simplified.sdk.process.Response;
-import top.osjf.assembly.util.lang.Reflects;
+import top.osjf.assembly.util.lang.ReflectUtils;
 
 /**
  * Some access operations related to {@link Client}.
@@ -24,7 +24,7 @@ public abstract class ClientAccess {
     public static <R extends Response> Client<R> getAndSetClient(String key, Request<R> request) {
         return AbstractClient.getAndSetClient(() -> {
             //Building client objects through reflection based on client type (provided that they are not cached)
-            return Reflects.newInstance(request.getClientCls(), key);
+            return ReflectUtils.newInstance(request.getClientCls(), key);
         }, request, key);
     }
 }

@@ -4,7 +4,7 @@ import top.osjf.assembly.cache.command.expiremap.ExpiringMapInvocationHandler;
 import top.osjf.assembly.cache.config.expiringmap.ExpiringMapClients;
 import top.osjf.assembly.cache.net.jodah.expiringmap.ExpiringMap;
 import top.osjf.assembly.util.annotation.NotNull;
-import top.osjf.assembly.util.lang.Reflects;
+import top.osjf.assembly.util.lang.ReflectUtils;
 
 /**
  * The creation class of the cache execution factory for {@link ExpiringMap}.
@@ -40,6 +40,6 @@ public class ExpiringMapCacheFactory implements CacheFactory {
         ExpiringMapInvocationHandler processor = new ExpiringMapInvocationHandler(
                 new ExpiringMapCacheExecutorImpl(() -> expireMapCenter));
         //returns a jdk proxy object
-        return Reflects.newProxyInstance(processor, processor.getTarget().getClass().getInterfaces());
+        return ReflectUtils.newProxyInstance(processor, processor.getTarget().getClass().getInterfaces());
     }
 }

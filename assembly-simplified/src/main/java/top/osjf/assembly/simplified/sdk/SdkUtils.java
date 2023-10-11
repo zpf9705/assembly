@@ -1,7 +1,7 @@
 package top.osjf.assembly.simplified.sdk;
 
 import org.apache.http.entity.ContentType;
-import top.osjf.assembly.util.lang.Maps;
+import top.osjf.assembly.util.lang.MapUtils;
 
 import java.util.Map;
 
@@ -16,7 +16,7 @@ public abstract class SdkUtils {
     public static final String named = "Content-Type";
 
     public static void checkContentType(Map<String, String> headers) {
-        if (Maps.isEmpty(headers)) {
+        if (MapUtils.isEmpty(headers)) {
             return;
         }
         //if no Content-Type

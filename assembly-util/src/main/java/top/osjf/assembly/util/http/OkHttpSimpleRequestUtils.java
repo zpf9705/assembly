@@ -9,7 +9,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.ContentType;
 import top.osjf.assembly.util.UtilException;
-import top.osjf.assembly.util.lang.Jsons;
+import top.osjf.assembly.util.lang.FastJsonUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -195,7 +195,7 @@ public abstract class OkHttpSimpleRequestUtils {
             } else {
                 String var = requestParam.toString();
                 if (JSONValidator.from(var).validate()) {
-                    JSONObject jsonObject = Jsons.parseObject(var);
+                    JSONObject jsonObject = FastJsonUtils.parseObject(var);
                     params.putAll(jsonObject.getInnerMap());
                 }
             }

@@ -8,7 +8,7 @@ import top.osjf.assembly.cache.persistence.BytesCachePersistenceSolver;
 import top.osjf.assembly.cache.persistence.CachePersistenceSolver;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.data.ByteIdentify;
-import top.osjf.assembly.util.lang.Collections;
+import top.osjf.assembly.util.lang.CollectionUtils;
 import top.osjf.assembly.util.spi.SpiLoads;
 
 import java.util.Objects;
@@ -108,14 +108,14 @@ public class ExpireMapCenter extends AbstractRecordActivationCenter<ExpireMapCen
                 .expirationPolicy(clients.getExpirationPolicy())
                 .variableExpiration()
                 .build();
-        if (Collections.isNotEmpty(clients.getSyncExpirationListeners())) {
+        if (CollectionUtils.isNotEmpty(clients.getSyncExpirationListeners())) {
             for (ExpirationListener expirationListener : clients.getSyncExpirationListeners()) {
                 //sync
                 singleton.addExpirationListener(expirationListener);
 
             }
         }
-        if (Collections.isNotEmpty(clients.getASyncExpirationListeners())) {
+        if (CollectionUtils.isNotEmpty(clients.getASyncExpirationListeners())) {
             for (ExpirationListener expirationListener : clients.getASyncExpirationListeners()) {
                 //async
                 singleton.addAsyncExpirationListener(expirationListener);

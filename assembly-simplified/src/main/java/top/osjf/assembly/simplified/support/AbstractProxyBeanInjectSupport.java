@@ -19,8 +19,8 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.util.Assert;
 import top.osjf.assembly.util.annotation.NotNull;
-import top.osjf.assembly.util.lang.Arrays;
-import top.osjf.assembly.util.lang.Collections;
+import top.osjf.assembly.util.lang.ArrayUtils;
+import top.osjf.assembly.util.lang.CollectionUtils;
 
 import java.lang.annotation.Annotation;
 import java.util.Set;
@@ -99,7 +99,7 @@ public abstract class AbstractProxyBeanInjectSupport<O extends Annotation, F ext
                 "org.springframework.core.annotation.AnnotationAttributes failed");
         //Obtain Scan Path
         String[] basePackages = attributes.getStringArray(getPackagesSign());
-        if (Arrays.isEmpty(basePackages)) {
+        if (ArrayUtils.isEmpty(basePackages)) {
             basePackages = new String[]{applicationScanPath};
         }
         //Obtain Path Scan Provider
@@ -107,7 +107,7 @@ public abstract class AbstractProxyBeanInjectSupport<O extends Annotation, F ext
         //The class annotated by the subcontracting scanning target
         for (String basePackage : basePackages) {
             Set<BeanDefinition> beanDefinitions = classPathScan.findCandidateComponents(basePackage);
-            if (Collections.isEmpty(beanDefinitions)) {
+            if (CollectionUtils.isEmpty(beanDefinitions)) {
                 continue;
             }
             //Perform proxy registration for each bean

@@ -1,7 +1,7 @@
 package top.osjf.assembly.simplified.support;
 
 import org.springframework.beans.factory.FactoryBean;
-import top.osjf.assembly.util.lang.Reflects;
+import top.osjf.assembly.util.lang.ReflectUtils;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -38,7 +38,7 @@ public abstract class AbstractJdkProxySupport<T> implements InvocationHandler, F
 
     @Override
     public T getObject() {
-        return Reflects.newProxyInstance(this, this.clazz);
+        return ReflectUtils.newProxyInstance(this, this.clazz);
     }
 
     @Override

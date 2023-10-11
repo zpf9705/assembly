@@ -8,6 +8,7 @@ import top.osjf.assembly.cache.serializer.StringPairSerializer;
 import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.lang.Asserts;
+import top.osjf.assembly.util.lang.CollectionUtils;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -142,7 +143,7 @@ public class CacheTemplate<K, V> extends CacheFactoryAccessor implements CacheCo
     @CanNull
     @Override
     public Long delete(Collection<K> keys) {
-        if (top.osjf.assembly.util.lang.Collections.isEmpty(keys)) {
+        if (CollectionUtils.isEmpty(keys)) {
             return 0L;
         }
         return this.execute((executor) -> executor.delete(

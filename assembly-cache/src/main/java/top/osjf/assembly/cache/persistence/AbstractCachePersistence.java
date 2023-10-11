@@ -195,7 +195,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
 
         @Override
         public String toString() {
-            return String.format(FORMAT, Jsons.toJSONString(this));
+            return String.format(FORMAT, FastJsonUtils.toJSONString(this));
         }
     }
 
@@ -369,11 +369,11 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
         G globePersistence;
         try {
             //instance for persistenceClass
-            P persistence = Reflects.newInstance(persistenceClass, entry);
+            P persistence = ReflectUtils.newInstance(persistenceClass, entry);
             //set expired timestamp
             persistence.setExpire(expired);
             //instance for globePersistenceClass
-            globePersistence = Reflects.newInstance(globePersistenceClass, persistence, writePath);
+            globePersistence = ReflectUtils.newInstance(globePersistenceClass, persistence, writePath);
             //record class GlobePersistenceClass type and persistenceClass
             globePersistence.recordCurrentType(globePersistenceClass, persistenceClass);
         } catch (Throwable e) {
@@ -400,7 +400,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
         G globePersistence;
         try {
             //instance for globePersistenceClass
-            globePersistence = Reflects.newInstance(globePersistenceClass, persistence, writePath);
+            globePersistence = ReflectUtils.newInstance(globePersistenceClass, persistence, writePath);
             //record class GlobePersistenceClass type and persistenceClass
             globePersistence.recordCurrentType(globePersistenceClass, persistence.getClass());
         } catch (Throwable e) {
@@ -447,7 +447,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
         List<PersistenceObj> identifies = CACHE_MAP.filterValuesByKeys(objectIdentify -> {
             return objectIdentify.compareToReturnsBool(new ObjectIdentify<>(key));
         });
-        if (top.osjf.assembly.util.lang.Collections.isEmpty(identifies))
+        if (CollectionUtils.isEmpty(identifies))
             throw new CachePersistenceException("Key: [" + key + "] no exist similar cache persistence");
 
         return (List<G>) identifies.stream().map(PersistenceObj::getPersistence).collect(Collectors.toList());
@@ -467,7 +467,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
                                                                                cachePersistence,
                                                                        @NotNull Class<G> globePersistenceClass) {
         try {
-            return Converts.convert(globePersistenceClass, cachePersistence);
+            return ConvertUtils.convert(globePersistenceClass, cachePersistence);
         } catch (Throwable e) {
             throw new CachePersistenceException(
                     "Provider obj no instanceof" +
@@ -566,14 +566,14 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
         } else {
             content = SerialUtils.serialize(key);
         }
-        return DEALT + Digests.md5Hex(content);
+        return DEALT + DigestUtils.md5Hex(content);
     }
 
     /**
      * Clear all cached files.
      */
     public static void cleanAllCacheFile() {
-        if (Maps.isEmpty(CACHE_MAP)) {
+        if (MapUtils.isEmpty(CACHE_MAP)) {
             return;
         }
         try {
@@ -794,7 +794,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
 
     @Override
     public void removeAllPersistence() {
-        if (Maps.isEmpty(CACHE_MAP)) {
+        if (MapUtils.isEmpty(CACHE_MAP)) {
             return;
         }
         writeLock.lock();
@@ -835,23 +835,23 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
 
     @Override
     public void reductionUsePath(@CanNull String path) {
-        if (Strings.isBlank(path) || Objects.equals(path, DEFAULT_WRITE_PATH_SIGN)) {
+        if (StringUtils.isBlank(path) || Objects.equals(path, DEFAULT_WRITE_PATH_SIGN)) {
             path = configuration.getPersistencePath();
         }
         List<File> files = null;
-        if (Strings.isBlank(path)) {
+        if (StringUtils.isBlank(path)) {
             Console.info("Path no be blank , but you provide null");
         } else {
             if (!isDirectory(path)) {
                 Console.info("This path [{}] belong file no a directory", path);
             } else {
                 files = loopFiles(path, v -> v.isFile() && v.getName().endsWith(PREFIX_BEFORE));
-                if (top.osjf.assembly.util.lang.Collections.isEmpty(files)) {
+                if (CollectionUtils.isEmpty(files)) {
                     Console.info("This path [{}] no found files", path);
                 }
             }
         }
-        if (top.osjf.assembly.util.lang.Collections.isEmpty(files)) {
+        if (CollectionUtils.isEmpty(files)) {
             return;
         }
         //Loop back
@@ -899,7 +899,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
     public void reductionUseString(@NotNull StringBuilder buffer) {
         String json = buffer.toString();
         //check json
-        Asserts.isTrue(Jsons.isValid(json), "Buffer data [" + json + "] no a valid json");
+        Asserts.isTrue(FastJsonUtils.isValid(json), "Buffer data [" + json + "] no a valid json");
     }
 
     /**
@@ -933,11 +933,11 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
         //Callback for restoring cached keys and values
         Set<Class<ListeningRecovery>> subTypesOf =
                 ScanUtils.getSubTypesOf(ListeningRecovery.class, configuration.getListeningRecoverySubPath());
-        if (top.osjf.assembly.util.lang.Collections.isNotEmpty(subTypesOf)) {
+        if (CollectionUtils.isNotEmpty(subTypesOf)) {
             subTypesOf.forEach(clazz -> {
                 ListeningRecovery recovery;
                 try {
-                    recovery = Reflects.newInstance(clazz);
+                    recovery = ReflectUtils.newInstance(clazz);
                     Object key = recoveryDeserializeKey(entry.getKey());
                     Object value = recoveryDeserializeValue(entry.getKey());
                     recovery.recovery(key, value);

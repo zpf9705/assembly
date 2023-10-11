@@ -3,10 +3,10 @@ package top.osjf.assembly.util.io;
 import cn.hutool.core.io.FileUtil;
 
 /**
- * File manager class function implementation in {@link FileUtil}.
+ * File manager comes from {@link FileUtil}, and this category points out the expansion function.
  *
  * @author zpf
- * @since 1.0.3
+ * @since 1.0.4
  */
 public abstract class FileManager extends FileUtil {
 }

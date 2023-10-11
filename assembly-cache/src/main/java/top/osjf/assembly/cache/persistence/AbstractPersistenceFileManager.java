@@ -3,7 +3,7 @@ package top.osjf.assembly.cache.persistence;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.io.FileManager;
 import top.osjf.assembly.util.lang.Asserts;
-import top.osjf.assembly.util.lang.Strings;
+import top.osjf.assembly.util.lang.StringUtils;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -39,7 +39,7 @@ public abstract class AbstractPersistenceFileManager extends FileManager {
      * @param persistencePath setting write path
      */
     public static void checkDirectory(@NotNull String persistencePath) {
-        if (Strings.isNotBlank(persistencePath)) {
+        if (StringUtils.isNotBlank(persistencePath)) {
             //Determine whether to native folders and whether the folder
             if (!isDirectory(persistencePath)) {
                 File directory = mkdir(persistencePath);
@@ -61,7 +61,7 @@ public abstract class AbstractPersistenceFileManager extends FileManager {
                 "[" + persistencePath + "] no a path");
         String line = "";
         for (String path : pathArray) {
-            if (Strings.isBlank(path)) {
+            if (StringUtils.isBlank(path)) {
                 continue;
             }
             line += "/" + path;
@@ -130,7 +130,7 @@ public abstract class AbstractPersistenceFileManager extends FileManager {
      * @param json write context
      */
     public void writeSingleFileLine(String json) {
-        if (Strings.isBlank(json)) {
+        if (StringUtils.isBlank(json)) {
             return;
         }
         File file = touchWritePath();
