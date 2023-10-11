@@ -26,8 +26,6 @@ import java.util.stream.Collectors;
  */
 public final class CronRegister {
 
-    static boolean register;
-
     static final String second_match_key = "cron.match.second=";
 
     static final String thread_daemon_key = "cron.thread.daemon=";
@@ -41,6 +39,8 @@ public final class CronRegister {
      * @since 2.0.3
      */
     protected static class Actuator {
+
+        protected static boolean enable;
 
         protected static List<String> _profiles;
 
@@ -66,6 +66,10 @@ public final class CronRegister {
          * <p>And when dynamically registering scheduled tasks, there is no need to manually start them.</p>
          */
         protected static boolean _noMethodDefaultStart;
+
+        public static void enableActuator() {
+            enable = true;
+        }
 
         public static void setDefaultScannerPath(Class<?> clazz) {
             if (clazz == null) {
@@ -108,6 +112,9 @@ public final class CronRegister {
         }
 
         protected static void start(@NotNull ApplicationContext context) {
+            if (!enable){
+                return;
+            }
             //The first step is to add a scheduled task.
             CronRegister.registerPrepareCronWithSpringContextOrNew(context, _cronMethods);
             //The second step is to add listeners for scheduled task execution and exceptions.
@@ -118,6 +125,10 @@ public final class CronRegister {
         }
 
         protected static void running(@NotNull ApplicationContext context) {
+            if (!enable){
+                clear();
+                return;
+            }
             //If the provided package path does not scan for the timing method that needs to be
             // registered, then the decision to continue starting is based on whether to default
             // to the startup parameters.

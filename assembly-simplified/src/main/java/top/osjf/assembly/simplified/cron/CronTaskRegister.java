@@ -84,6 +84,7 @@ public class CronTaskRegister implements EnvironmentPostProcessor, EnvironmentAw
         AnnotationAttributes attributes =
                 AnnotationAttributes.fromMap(metadata.getAnnotationAttributes(EnableCronTaskRegister.class.getName()));
         Objects.requireNonNull(attributes, EnableCronTaskRegister.class.getName() + " analysis failed.");
+        CronRegister.Actuator.enableActuator();
         CronRegister.Actuator.setScanPackages(attributes.getStringArray("basePackages"));
         CronRegister.Actuator.setNoMethodDefaultStart(attributes.getBoolean("noMethodDefaultStart"));
         return new String[0];
