@@ -187,13 +187,12 @@ public final class CronRegister {
     }
 
     public static void registerWthBean(Object bean, Environment environment) {
-        if (bean == null) {
+        if (bean == null
+                || ArrayUtils.isEmpty(bean.getClass().getMethods())
+                || Arrays.stream(bean.getClass().getMethods()).allMatch(m -> m.getAnnotation(Cron.class) == null)) {
             return;
         }
-        Class<?> clazz = bean.getClass();
-        Method[] methods = clazz.getMethods();
-        if (ArrayUtils.isEmpty(methods)) return;
-        for (Method method : methods) {
+        for (Method method : bean.getClass().getMethods()) {
             Cron cron = method.getAnnotation(Cron.class);
             if (cron != null) {
                 if (profilesCheck(cron.profiles(), environment.getActiveProfiles())) {
