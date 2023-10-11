@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
  */
 public final class CronRegister {
 
+    static boolean register;
+
     static final String second_match_key = "cron.match.second=";
 
     static final String thread_daemon_key = "cron.thread.daemon=";
@@ -180,6 +182,21 @@ public final class CronRegister {
             Cron cron = method.getAnnotation(Cron.class);
             Object finalTarget = target;
             register(cron.express(), () -> ReflectUtils.invoke(finalTarget, method));
+        }
+    }
+
+    public static void registerWthBean(Object bean) {
+        if (bean == null) {
+            return;
+        }
+        Class<?> clazz = bean.getClass();
+        Method[] methods = clazz.getMethods();
+        if (ArrayUtils.isEmpty(methods)) return;
+        for (Method method : methods) {
+            Cron cron = method.getAnnotation(Cron.class);
+            if (cron != null) {
+                CronRegister.register(cron.express(), () -> ReflectUtils.invoke(bean, method));
+            }
         }
     }
 
