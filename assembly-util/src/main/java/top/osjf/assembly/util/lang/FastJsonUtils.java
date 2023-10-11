@@ -1,9 +1,6 @@
 package top.osjf.assembly.util.lang;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONValidator;
-import com.alibaba.fastjson.TypeReference;
+import com.alibaba.fastjson.*;
 
 import java.util.Objects;
 
@@ -22,14 +19,13 @@ public final class FastJsonUtils extends JSON {
 
     /*Is it a valid JSON.*/
     public static boolean isValid(String jsonStr) {
-        if (StringUtils.isBlank(jsonStr)) {
-            return false;
-        }
+        if (StringUtils.isBlank(jsonStr)) return false;
         return JSONValidator.from(jsonStr).validate();
     }
 
     /*Is it a valid JSONArray.*/
     public static boolean isArray(String jsonStr) {
+        if (StringUtils.isBlank(jsonStr)) return false;
         return Objects.equals(JSONValidator.Type.Array, JSONValidator.from(jsonStr).getType());
     }
 
@@ -39,7 +35,28 @@ public final class FastJsonUtils extends JSON {
 
     /*Parse empty entity.*/
     public static <T> T parseEmptyObject(Class<T> clazz) {
+        if (clazz == null) return null;
         return parseObject("{}", clazz);
+    }
+
+    /*Parse pojo jsonObject.*/
+    public static JSONObject parseObject(Object arg) {
+        if (arg == null) return null;
+        JSONObject obj;
+        if (arg instanceof JSONObject) {
+            obj = (JSONObject) arg;
+        } else {
+            if (arg instanceof String) {
+                if (isValid((String) arg)) {
+                    obj = parseObject((String) arg);
+                } else {
+                    throw new JSONException("Not a valid json String");
+                }
+            } else {
+                obj = parseObject(toJSONString(arg));
+            }
+        }
+        return obj;
     }
 
     /*Parse pojo object.*/
