@@ -49,12 +49,12 @@ import java.util.Set;
  * <p>It should be noted that the objects created by Spring's spi mechanism are not container objects.
  * These objects are configured {@link SpringApplicationRunListener} in [/META INF/spring. factories],
  * and for extension notifications, it is important to pay attention.
- * <p>
- * <h3>Service avoids the combination of duplicate beans:</h3>
- * <code>
+ *<h3>Service avoids the combination of duplicate beans:</h3>
+ * <pre>
  * top.osjf.assembly.simplified.service.context.ClassesServiceContext(example) :
  * ClassesServiceContextProvider(example)
- * </code>
+ * </pre>
+ *
  * <p>The configuration to trigger this type can be selected as {@link EnableServiceCollection}
  * or {@link EnableServiceCollection2}.<pre>&#064;EnableServiceCollection2@type=CLASSES</pre>
  *

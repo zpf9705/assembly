@@ -37,11 +37,10 @@ import java.util.stream.Collectors;
  * <p>The basic requirement for service collection is to wear an annotated
  * {@link ServiceCollection} interface or abstract class, and satisfy such a
  * bean to be collected by the service.
- * <p>
  * <h3>Service avoids the combination of duplicate beans:</h3>
- * <code>
- * ServiceNameProvider(example) ===> SimpleServiceContext(example)
- * </code>
+ * <pre>
+ * ServiceNameProvider(example) {@link #POINT} SimpleServiceContext(example)
+ * </pre>
  *
  * <p>The collection of this service configuration can only rely on
  * <pre>&#064;EnableServiceCollection2@type=SIMPLE.</pre>
