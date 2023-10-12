@@ -1,7 +1,6 @@
 package top.osjf.assembly.simplified.cron.annotation;
 
 import org.springframework.context.annotation.Import;
-import top.osjf.assembly.simplified.cron.CronTaskRegisterConfiguration;
 
 import java.lang.annotation.*;
 
@@ -17,8 +16,8 @@ import java.lang.annotation.*;
  * default startup. When changing the annotation configuration to default task
  * less registration, it will also start the timed thread.
  *
+ * @see CronTaskRegisterPostProcessor
  * @author zpf
- * @see top.osjf.assembly.simplified.cron.CronTaskRegisterPostProcessor
  * @since 2.0.6
  */
 @Target({ElementType.TYPE})
