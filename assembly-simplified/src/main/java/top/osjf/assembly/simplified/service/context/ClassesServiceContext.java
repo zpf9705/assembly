@@ -49,7 +49,7 @@ import java.util.Set;
  * <p>It should be noted that the objects created by Spring's spi mechanism are not container objects.
  * These objects are configured {@link SpringApplicationRunListener} in [/META INF/spring. factories],
  * and for extension notifications, it is important to pay attention.
- *<h3>Service avoids the combination of duplicate beans:</h3>
+ * <h3>Service avoids the combination of duplicate beans:</h3>
  * <pre>
  * top.osjf.assembly.simplified.service.context.ClassesServiceContext(example) :
  * ClassesServiceContextProvider(example)
@@ -133,8 +133,13 @@ public class ClassesServiceContext extends AbstractServiceContext implements Spr
         ClassesServiceContext contextBean;
         try {
             contextBean = context.getBean(CLASSES_SERVICE_CONTENT_BEAN, ClassesServiceContext.class);
-        } catch (BeansException ignored) {
-            return;
+        } catch (BeansException e) {
+            try {
+                contextBean = context.getBean(ClassesServiceContext.class.getName(),
+                        ClassesServiceContext.class);
+            } catch (BeansException e0) {
+                return;
+            }
         }
         //Place the scan path without overloading.
         contextBean.setScanPackages(scanPackages);
