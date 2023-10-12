@@ -49,7 +49,12 @@ import java.util.Set;
  * <p>It should be noted that the objects created by Spring's spi mechanism are not container objects.
  * These objects are configured {@link SpringApplicationRunListener} in [/META INF/spring. factories],
  * and for extension notifications, it is important to pay attention.
- *
+ * <p>
+ * <h3>Service avoids the combination of duplicate beans:</h3>
+ * <code>
+ * top.osjf.assembly.simplified.service.context.ClassesServiceContext(example) :
+ * ClassesServiceContextProvider(example)
+ * </code>
  * <p>The configuration to trigger this type can be selected as {@link EnableServiceCollection}
  * or {@link EnableServiceCollection2}.<pre>&#064;EnableServiceCollection2@type=CLASSES</pre>
  *
@@ -58,7 +63,7 @@ import java.util.Set;
  */
 public class ClassesServiceContext extends AbstractServiceContext implements SpringApplicationRunListener {
 
-    private final ClassMap<String, Object> contextMap = new ThreadSafeClassMap<>(4);
+    private final ClassMap<String, Object> contextMap = new ThreadSafeClassMap<>(16);
 
     public static final String CLASSES_SERVICE_CONTENT_BEAN = "CLASSES_SERVICE_CONTENT_BEAN";
 
@@ -108,12 +113,14 @@ public class ClassesServiceContext extends AbstractServiceContext implements Spr
 
     @Override
     public <S> S getService(String serviceName, Class<S> requiredType) throws NoSuchServiceException {
+        //alisa prepare
+        final String serviceName0 = serviceName;
         //Prevent potential duplicate service names.
         //org.example.Text : ServiceName
         serviceName = requiredType.getName() + COMMA + serviceName;
         S service = contextMap.getValueOnClass(serviceName, requiredType);
         if (service == null) {
-            service = super.getService(serviceName, requiredType);
+            service = super.getService(serviceName0, requiredType);
         }
         return service;
     }
