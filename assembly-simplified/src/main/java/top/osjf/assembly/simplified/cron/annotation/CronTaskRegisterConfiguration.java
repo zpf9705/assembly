@@ -1,4 +1,4 @@
-package top.osjf.assembly.simplified.cron;
+package top.osjf.assembly.simplified.cron.annotation;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Role;
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 public class CronTaskRegisterConfiguration {
 
-    @Bean
+    @Bean(CronTaskRegisterPostProcessor.NAME)
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     public CronTaskRegisterPostProcessor cronTaskRegisterPostProcessor() {
         return new CronTaskRegisterPostProcessor();
