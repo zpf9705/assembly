@@ -1,4 +1,4 @@
-package top.osjf.assembly.simplified.cron;
+package top.osjf.assembly.simplified.cron.annotation;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -10,24 +10,23 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
-import top.osjf.assembly.simplified.cron.annotation.Cron;
+import top.osjf.assembly.simplified.cron.CronRegister;
 import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
 
 /**
  * Create a post processor for custom bean elements.
  *
- * <p>This post processor mainly monitors each step of obtaining
- * the container object that has already been created, and determines
- * whether it contains a method to wear {@link Cron} annotations.
+ * <p>This post processor mainly monitors each step of obtaining the container
+ * object that has already been created, and determines whether it contains a
+ * method to wear {@link Cron} annotations.
  * If so, actively register a {@link Runnable} and skip it.
  *
  * <p>The end of execution of {@link #postProcessAfterInitialization(Object, String)}
- * also indicates that the spring container has been refreshed, and all
- * container beans have been placed properly.
- * At this time, it receives the notification of the refreshed event sent
- * by {@link ContextRefreshedEvent} to start the thread operation of the
- * scheduled task.
+ * also indicates that the spring container has been refreshed, and all container beans
+ * have been placed properly.
+ * At this time, it receives the notification of the refreshed event sent by {@link
+ * ContextRefreshedEvent} to start the thread operation of the scheduled task.
  *
  * @author zpf
  * @since 2.0.6
@@ -38,6 +37,8 @@ public class CronTaskRegisterPostProcessor implements BeanPostProcessor, Applica
     private ApplicationContext context;
 
     private Environment environment;
+
+    protected static final String NAME = "Simplified-CronTaskRegisterPostProcessor";
 
     @Override
     public void setApplicationContext(@NotNull ApplicationContext context) throws BeansException {
