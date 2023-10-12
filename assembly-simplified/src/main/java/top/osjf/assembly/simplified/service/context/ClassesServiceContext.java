@@ -4,10 +4,10 @@ import org.springframework.beans.BeansException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationRunListener;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
+import top.osjf.assembly.simplified.service.annotation.EnableServiceCollection;
+import top.osjf.assembly.simplified.service.annotation.EnableServiceCollection2;
 import top.osjf.assembly.simplified.service.annotation.ServiceCollection;
-import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.data.ClassMap;
 import top.osjf.assembly.util.data.ThreadSafeClassMap;
 import top.osjf.assembly.util.io.ScanUtils;
@@ -50,21 +50,21 @@ import java.util.Set;
  * These objects are configured {@link SpringApplicationRunListener} in [/META INF/spring. factories],
  * and for extension notifications, it is important to pay attention.
  *
+ * <p>The configuration to trigger this type can be selected as {@link EnableServiceCollection}
+ * or {@link EnableServiceCollection2}.<pre>&#064;EnableServiceCollection2@type=CLASSES</pre>
+ *
  * @author zpf
  * @since 2.0.4
  */
-public class ClassesServiceContext implements ServiceContext, ApplicationContextAware,
-        SpringApplicationRunListener {
+public class ClassesServiceContext extends AbstractServiceContext implements SpringApplicationRunListener {
 
     private final ClassMap<String, Object> contextMap = new ThreadSafeClassMap<>(4);
 
     public static final String CLASSES_SERVICE_CONTENT_BEAN = "CLASSES_SERVICE_CONTENT_BEAN";
 
-    public static final String COMMA = " : ";
-
     private String[] scanPackages;
 
-    private ApplicationContext context;
+    public static final String COMMA = " : ";
 
     /**
      * The empty structure here is mainly used for configuration purposes.
@@ -74,6 +74,7 @@ public class ClassesServiceContext implements ServiceContext, ApplicationContext
 
     /**
      * The necessary constructor for using {@link SpringApplicationRunListener}.
+     * <p>Is the same object as calling {@link #started(ConfigurableApplicationContext)}.
      *
      * @param application Spring's application startup class.
      * @param args        The startup parameters for the application startup class of Spring.
@@ -82,11 +83,6 @@ public class ClassesServiceContext implements ServiceContext, ApplicationContext
         scanPackages = new String[]{
                 application.getMainApplicationClass().getPackage().getName()
         };
-    }
-
-    @Override
-    public void setApplicationContext(@NotNull ApplicationContext context) throws BeansException {
-        this.context = context;
     }
 
     /**
@@ -110,47 +106,41 @@ public class ClassesServiceContext implements ServiceContext, ApplicationContext
         this.contextMap.mergeMaps(contextMap);
     }
 
+    @Override
+    public <S> S getService(String serviceName, Class<S> requiredType) throws NoSuchServiceException {
+        //Prevent potential duplicate service names.
+        //org.example.Text : ServiceName
+        serviceName = requiredType.getName() + COMMA + serviceName;
+        S service = contextMap.getValueOnClass(serviceName, requiredType);
+        if (service == null) {
+            service = super.getService(serviceName, requiredType);
+        }
+        return service;
+    }
+
     //This method is called by an object created by the SPI mechanism, not a container object.
+    //Same object for call constructor {#ClassesServiceContext(SpringApplication application, String[] args)}
     @Override
     public void started(ConfigurableApplicationContext context) {
         //Find the previously prepared implementation class object and assign a value to the forwarding service map.
-        ClassesServiceContext contextBean = context.getBean(CLASSES_SERVICE_CONTENT_BEAN, ClassesServiceContext.class);
+        ClassesServiceContext contextBean;
+        try {
+            contextBean = context.getBean(CLASSES_SERVICE_CONTENT_BEAN, ClassesServiceContext.class);
+        } catch (BeansException ignored) {
+            return;
+        }
         //Place the scan path without overloading.
         contextBean.setScanPackages(scanPackages);
         //Load the service context map.
         load(contextBean, context);
     }
 
-    @Override
-    public <S> S getService(String serviceName, Class<S> requiredType) throws NoSuchServiceException {
-        //Prevent potential duplicate service names.
-        serviceName = requiredType.getName() + COMMA + serviceName;
-        S service = contextMap.getValueOnClass(serviceName, requiredType);
-        if (service == null) {
-            try {
-                //If the collected beans are not found,
-                //Using spring's context lookup may be based on aliases.
-                //However, when using aliases, please be aware of potential bean name duplication errors.
-                service = context.getBean(serviceName, requiredType);
-            } catch (BeansException e) {
-                //Throw an exception that cannot be found.
-                throw new NoSuchServiceException("No service named " + serviceName + " was found " +
-                        "from the service context");
-            }
-        }
-        return service;
-    }
 
     @Override
     public void reloadWithScanPackages(String... packages) {
         close();
         setScanPackages(packages);
-        load(this, context);
-    }
-
-    @Override
-    public ApplicationContext getApplicationContext() {
-        return this.context;
+        load(this, getApplicationContext());
     }
 
     @Override
