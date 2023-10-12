@@ -31,5 +31,5 @@ public @interface EnableServiceCollection2 {
      *
      * @return Refer to {@link Type}.
      */
-    Type type() default Type.SIMPLE;
+    Type type() default Type.CLASSES;
 }
