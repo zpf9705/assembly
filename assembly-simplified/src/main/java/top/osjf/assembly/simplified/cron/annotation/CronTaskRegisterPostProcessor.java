@@ -1,18 +1,26 @@
 package top.osjf.assembly.simplified.cron.annotation;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.EnvironmentAware;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportAware;
+import org.springframework.context.annotation.Role;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
+import org.springframework.core.type.AnnotationMetadata;
 import top.osjf.assembly.simplified.cron.CronRegister;
 import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
+
+import java.util.Objects;
 
 /**
  * Create a post processor for custom bean elements.
@@ -31,14 +39,12 @@ import top.osjf.assembly.util.annotation.NotNull;
  * @author zpf
  * @since 2.0.6
  */
-public class CronTaskRegisterPostProcessor implements BeanPostProcessor, ApplicationListener<ContextRefreshedEvent>,
-        ApplicationContextAware, EnvironmentAware, Ordered {
+@Configuration(proxyBeanMethods = false)
+@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+public class CronTaskRegisterPostProcessor implements BeanPostProcessor, ApplicationContextAware, EnvironmentAware,
+        ImportAware, ApplicationListener<ContextRefreshedEvent>, Ordered {
 
-    private final boolean noMethodDefaultStart;
-
-    public CronTaskRegisterPostProcessor(boolean noMethodDefaultStart) {
-        this.noMethodDefaultStart = noMethodDefaultStart;
-    }
+    private boolean noMethodDefaultStart;
 
     private ApplicationContext context;
 
@@ -54,6 +60,16 @@ public class CronTaskRegisterPostProcessor implements BeanPostProcessor, Applica
     @Override
     public void setEnvironment(@NotNull Environment environment) {
         this.environment = environment;
+    }
+
+    @Override
+    public void setImportMetadata(@NotNull AnnotationMetadata metadata) {
+        AnnotationAttributes attributes =
+                AnnotationAttributes.fromMap(metadata
+                        .getAnnotationAttributes(EnableCronTaskRegister2.class.getName()));
+        Objects.requireNonNull(attributes, EnableCronTaskRegister2.class.getName()
+                + " analysis failed.");
+        noMethodDefaultStart = attributes.getBoolean("noMethodDefaultStart");
     }
 
     @CanNull

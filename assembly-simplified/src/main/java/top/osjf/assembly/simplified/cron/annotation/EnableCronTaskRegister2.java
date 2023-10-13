@@ -24,10 +24,7 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import({//Obtain annotation properties.
-        CronTaskRegisterConfiguration.Selector.class,
-        //Start registration configuration.
-        CronTaskRegisterConfiguration.class})
+@Import({CronTaskRegisterPostProcessor.class})
 public @interface EnableCronTaskRegister2 {
 
     /**
