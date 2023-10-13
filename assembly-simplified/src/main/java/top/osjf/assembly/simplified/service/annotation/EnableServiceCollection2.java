@@ -23,10 +23,7 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import({//First, obtain the annotation properties.
-        ServiceContextSelectorConfiguration.Selector.class,
-        //Then configure the context object.
-        ServiceContextSelectorConfiguration.class})
+@Import({ServiceContextSelectorConfiguration.class})
 public @interface EnableServiceCollection2 {
 
     /**
