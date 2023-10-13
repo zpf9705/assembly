@@ -183,11 +183,11 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
                             mainApplicationPackage).size() >= 1;
         }
 
-        protected static String getMainApplicationPackage() {
+        public static String getMainApplicationPackage() {
             return mainApplicationPackage;
         }
 
-        protected static ConfigurableApplicationContext getContext() {
+        public static ConfigurableApplicationContext getContext() {
             return context;
         }
 
@@ -228,7 +228,7 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
     public <S> S getService(String serviceName, Class<S> requiredType) throws NoSuchServiceException {
         final String serviceName0 = serviceName;
         try {
-            serviceName = ServiceContextUtils.getBeanName(requiredType, serviceName, context.getApplicationName());
+            serviceName = ServiceContextUtils.getBeanName(requiredType, serviceName, context.getId());
         } catch (ClassNotFoundException e) {
             //Throw an exception that cannot be found.
             throw new NoSuchServiceException(e.getMessage());
@@ -268,8 +268,12 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
         return context;
     }
 
-    protected ClassMap<String, Object> getContextMap() {
+    public ClassMap<String, Object> getContextMap() {
         return contextMap;
+    }
+
+    public ConfigurableApplicationContext getConfigurableApplicationContext(){
+        return ServiceContextRunListener.getContext();
     }
 
     @Override

@@ -2,6 +2,7 @@ package top.osjf.assembly.simplified.service.context;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.core.Ordered;
 import top.osjf.assembly.simplified.service.annotation.ServiceCollection;
 import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
@@ -36,13 +37,24 @@ import java.util.Map;
  * @author zpf
  * @since 2.0.6
  */
-public class SimpleServiceContext extends AbstractServiceContext implements BeanPostProcessor {
+public class SimpleServiceContext extends AbstractServiceContext implements BeanPostProcessor, Ordered {
 
     @CanNull
     @Override
     public Object postProcessAfterInitialization(@NotNull Object bean, @NotNull String beanName) throws BeansException {
         preServiceCollection(bean, beanName);
         return bean;
+    }
+
+    @Override
+    public int getOrder() {
+        return Integer.MIN_VALUE + 17;
+    }
+
+    public void addBeanPostProcessor(){
+        getConfigurableApplicationContext()
+                .getBeanFactory()
+                .addBeanPostProcessor(this);
     }
 
     private void preServiceCollection(Object bean, String beanName) {
