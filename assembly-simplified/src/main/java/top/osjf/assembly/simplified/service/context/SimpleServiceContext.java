@@ -38,8 +38,6 @@ import java.util.Map;
  */
 public class SimpleServiceContext extends AbstractServiceContext implements BeanPostProcessor {
 
-    protected static final String CONFIG_BEAN_NAME = "SIMPLE_SERVICE_CONTENT_BEAN";
-
     @CanNull
     @Override
     public Object postProcessAfterInitialization(@NotNull Object bean, @NotNull String beanName) throws BeansException {
