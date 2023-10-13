@@ -50,8 +50,6 @@ public class CronTaskRegisterPostProcessor implements BeanPostProcessor, Applica
 
     private Environment environment;
 
-    protected static final String NAME = "Simplified-CronTaskRegisterPostProcessor";
-
     @Override
     public void setApplicationContext(@NotNull ApplicationContext context) throws BeansException {
         this.context = context;
