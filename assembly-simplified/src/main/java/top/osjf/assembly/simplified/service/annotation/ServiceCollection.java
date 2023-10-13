@@ -18,4 +18,10 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface ServiceCollection {
+
+    /**
+     * @return Service name prefix,the default is {@link Class#getName()}.
+     * @since 2.0.6
+     */
+    String prefix() default "";
 }
