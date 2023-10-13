@@ -10,6 +10,6 @@ package top.osjf.assembly.util.lang;
  */
 public final class StringUtils extends org.apache.commons.lang3.StringUtils {
 
-    public StringUtils() {
+    private StringUtils() {
     }
 }

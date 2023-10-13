@@ -6,5 +6,7 @@ package top.osjf.assembly.util.lang;
  * @author zpf
  * @since 1.0.4
  */
-public class ClassUtils extends org.apache.commons.lang3.ClassUtils {
+public final class ClassUtils extends org.apache.commons.lang3.ClassUtils {
+    private ClassUtils() {
+    }
 }
