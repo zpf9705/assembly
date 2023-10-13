@@ -34,6 +34,12 @@ import top.osjf.assembly.util.annotation.NotNull;
 public class CronTaskRegisterPostProcessor implements BeanPostProcessor, ApplicationListener<ContextRefreshedEvent>,
         ApplicationContextAware, EnvironmentAware, Ordered {
 
+    private final boolean noMethodDefaultStart;
+
+    public CronTaskRegisterPostProcessor(boolean noMethodDefaultStart) {
+        this.noMethodDefaultStart = noMethodDefaultStart;
+    }
+
     private ApplicationContext context;
 
     private Environment environment;
@@ -60,7 +66,14 @@ public class CronTaskRegisterPostProcessor implements BeanPostProcessor, Applica
     @Override
     public void onApplicationEvent(@NotNull ContextRefreshedEvent event) {
         if (context == event.getApplicationContext()) {
-            CronRegister.start(context.getBean(ApplicationArguments.class).getSourceArgs());
+            String[] sourceArgs = context.getBean(ApplicationArguments.class).getSourceArgs();
+            if (CronRegister.registerZero()) {
+                if (noMethodDefaultStart) {
+                    CronRegister.start(sourceArgs);
+                }
+            } else {
+                CronRegister.start(sourceArgs);
+            }
         }
     }
 

@@ -266,6 +266,10 @@ public final class CronRegister {
         return new ArrayList<>(ScanUtils.getMethodsAnnotatedWith(Cron.class, scanPackage));
     }
 
+    public static boolean registerZero() {
+        return CronUtil.getScheduler().isEmpty();
+    }
+
     /**
      * Notify the system of the startup parameters passed in by the main method to
      * determine the second configuration {@link #second_match_key} for scheduled task startup
