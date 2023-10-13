@@ -1,11 +1,9 @@
-package top.osjf.assembly.simplified.service;
+package top.osjf.assembly.simplified.service.context;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
-import top.osjf.assembly.simplified.service.context.ClassesServiceContext;
-import top.osjf.assembly.simplified.service.context.ServiceContext;
 
 /**
  * Service context configuration class.
@@ -17,6 +15,8 @@ import top.osjf.assembly.simplified.service.context.ServiceContext;
  * <p>Configure a {@link ServiceContext} container singleton object for {@link ClassesServiceContext},
  * which can be used by users.</p>
  *
+ * <p>Apply to {@link top.osjf.assembly.simplified.service.annotation.EnableServiceCollection}.
+ *
  * @author zpf
  * @since 2.0.4
  */
@@ -24,7 +24,7 @@ import top.osjf.assembly.simplified.service.context.ServiceContext;
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 public class ServiceContextConfiguration {
 
-    @Bean(ClassesServiceContext.CLASSES_SERVICE_CONTENT_BEAN)
+    @Bean(ClassesServiceContext.CONFIG_BEAN_NAME)
     public ServiceContext serviceContext() {
         return new ClassesServiceContext();
     }
