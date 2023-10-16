@@ -26,7 +26,7 @@ import top.osjf.assembly.util.annotation.NotNull;
  * @author zpf
  * @since 2.0.6
  */
-interface SpringApplicationListeners extends ApplicationListener<SpringApplicationEvent> {
+public interface SpringApplicationListeners extends ApplicationListener<SpringApplicationEvent> {
 
     @Override
     default void onApplicationEvent(@NotNull SpringApplicationEvent event){
