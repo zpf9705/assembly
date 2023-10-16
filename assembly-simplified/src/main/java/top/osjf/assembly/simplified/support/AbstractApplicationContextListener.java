@@ -1,43 +1,23 @@
 package top.osjf.assembly.simplified.support;
 
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.event.*;
-import top.osjf.assembly.util.annotation.NotNull;
+import org.springframework.context.event.ContextClosedEvent;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.ContextStartedEvent;
+import org.springframework.context.event.ContextStoppedEvent;
 
 /**
- * Abstract help class for spring context time notification.
- * <p>Distinguish between the following four stages: context refresh completion,
- * start, stop, and close.
- * <p>Simply inherit this class and rewrite the corresponding stage's methods to
- * obtain the notification given after the corresponding event is executed.
- *
- * @see ContextRefreshedEvent {@code AbstractApplicationContext#finishRefresh()}
- * @see ContextStartedEvent   {@link ConfigurableApplicationContext#start()}}
- * @see ContextStoppedEvent   {@link ConfigurableApplicationContext#stop()}
- * @see ContextClosedEvent    {@code AbstractApplicationContext#doClose()}
+ * Abstract impl for {@link ApplicationContextListeners}.
+ * @see ApplicationContextListeners
  * @author zpf
  * @since 2.0.6
  */
-public abstract class AbstractApplicationContextListener implements ApplicationListener<ApplicationContextEvent> {
-
-    @Override
-    public void onApplicationEvent(@NotNull ApplicationContextEvent event) {
-        if (event instanceof ContextRefreshedEvent) {
-            onApplicationEvent((ContextRefreshedEvent) event);
-        } else if (event instanceof ContextClosedEvent) {
-            onApplicationEvent((ContextClosedEvent) event);
-        } else if (event instanceof ContextStartedEvent) {
-            onApplicationEvent((ContextStartedEvent) event);
-        } else if (event instanceof ContextStoppedEvent) {
-            onApplicationEvent((ContextStoppedEvent) event);
-        }
-    }
+public abstract class AbstractApplicationContextListener implements ApplicationContextListeners {
 
     /**
      * Handle a Context Refreshed application event.
      * @param event the event to respond to.
      */
+    @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
     }
 
@@ -45,6 +25,7 @@ public abstract class AbstractApplicationContextListener implements ApplicationL
      * Handle a Context Closed application event.
      * @param event the event to respond to.
      */
+    @Override
     public void onApplicationEvent(ContextClosedEvent event) {
     }
 
@@ -52,6 +33,7 @@ public abstract class AbstractApplicationContextListener implements ApplicationL
      * Handle a Context Started application event.
      * @param event the event to respond to.
      */
+    @Override
     public void onApplicationEvent(ContextStartedEvent event) {
     }
 
@@ -59,6 +41,7 @@ public abstract class AbstractApplicationContextListener implements ApplicationL
      * Handle a Context Stopped application event.
      * @param event the event to respond to.
      */
+    @Override
     public void onApplicationEvent(ContextStoppedEvent event) {
     }
 }
