@@ -81,6 +81,12 @@ public class ClassesServiceContext extends AbstractServiceContext {
         load(this, getApplicationContext());
     }
 
+    @Override
+    public void close() {
+        super.close();
+        this.scanPackages = null;
+    }
+
     private void load(ClassesServiceContext contextBean, ApplicationContext context) {
         Set<Class<Object>> serviceClasses = ScanUtils
                 .getTypesAnnotatedWith(ServiceCollection.class, contextBean.scanPackages);
