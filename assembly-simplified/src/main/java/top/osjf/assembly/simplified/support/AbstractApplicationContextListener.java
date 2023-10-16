@@ -1,24 +1,25 @@
 package top.osjf.assembly.simplified.support;
 
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.*;
 import top.osjf.assembly.util.annotation.NotNull;
 
 /**
  * Abstract help class for spring context time notification.
- * <p>Distinguish between the following four stages: container refresh completion,
+ * <p>Distinguish between the following four stages: context refresh completion,
  * start, stop, and close.
  * <p>Simply inherit this class and rewrite the corresponding stage's methods to
  * obtain the notification given after the corresponding event is executed.
  *
- * @see ContextRefreshedEvent
- * @see ContextStartedEvent
- * @see ContextStoppedEvent
- * @see ContextClosedEvent
+ * @see ContextRefreshedEvent {@code AbstractApplicationContext#finishRefresh()}
+ * @see ContextStartedEvent   {@link ConfigurableApplicationContext#start()}}
+ * @see ContextStoppedEvent   {@link ConfigurableApplicationContext#stop()}
+ * @see ContextClosedEvent    {@code AbstractApplicationContext#doClose()}
  * @author zpf
  * @since 2.0.6
  */
-public abstract class AbstractApplicationListener implements ApplicationListener<ApplicationContextEvent> {
+public abstract class AbstractApplicationContextListener implements ApplicationListener<ApplicationContextEvent> {
 
     @Override
     public void onApplicationEvent(@NotNull ApplicationContextEvent event) {
