@@ -1,9 +1,12 @@
-package top.osjf.assembly.simplified.service.context;
+package top.osjf.assembly.simplified.service.annotation;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
+import top.osjf.assembly.simplified.service.context.ClassesServiceContext;
+import top.osjf.assembly.simplified.service.context.ServiceContext;
+import top.osjf.assembly.simplified.service.ServiceContextUtils;
 
 /**
  * Service context configuration class.
@@ -24,7 +27,7 @@ import org.springframework.context.annotation.Role;
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 public class ServiceContextConfiguration {
 
-    @Bean(ClassesServiceContext.CONFIG_BEAN_NAME)
+    @Bean(ServiceContextUtils.CONFIG_BEAN_NAME)
     public ServiceContext serviceContext() {
         return new ClassesServiceContext();
     }
