@@ -1,23 +1,45 @@
-package top.osjf.assembly.simplified.service.context;
+package top.osjf.assembly.simplified.service;
 
 import top.osjf.assembly.simplified.service.annotation.ServiceCollection;
+import top.osjf.assembly.simplified.service.annotation.Type;
+import top.osjf.assembly.simplified.service.context.AbstractServiceContext;
+import top.osjf.assembly.simplified.service.context.ClassesServiceContext;
+import top.osjf.assembly.simplified.service.context.ServiceContext;
 import top.osjf.assembly.util.lang.*;
 
 import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
+ * Help class on context collection tools.
+ *
  * @author zpf
  * @since 2.0.6
  */
 public final class ServiceContextUtils {
 
+    /** Name separator.*/
     private static final String ARROW = " -> ";
 
+    /** Select the name of the service context object based on the type enumeration.*/
+    public static final String SERVICE_CONTEXT_NAME = "TYPE-CHOOSE-SERVICE_CONTEXT";
+
+    /** The name collected in the default class mode.*/
+    public static final String CONFIG_BEAN_NAME = "CLASSES_SERVICE_CONTENT_BEAN";
+
     private ServiceContextUtils() {
+
+    }
+
+    //If the type is empty or class, select the class mode, and for the rest,
+    // select the already initialized simple mode
+    public static ServiceContext newOrDefault(Type type, ServiceContext context) {
+        if (type == null || Objects.equals(type, Type.CLASSES)) return new ClassesServiceContext();
+        return context;
     }
 
     //Obtain the class object based on the class name.
@@ -81,6 +103,8 @@ public final class ServiceContextUtils {
     //Obtain bean services based on the abbreviation.
     public static String getBeanName(Class<?> parent, String serviceName, String applicationName) throws
             ClassNotFoundException {
+        //Ensure that your input service name is the class in
+        // the path where the project is located.
         Class<?> clazz = getClass(serviceName);
         if (clazz == null) {
             clazz = getClass(parent.getPackage().getName() +
