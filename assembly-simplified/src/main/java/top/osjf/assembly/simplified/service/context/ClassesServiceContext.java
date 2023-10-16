@@ -3,6 +3,7 @@ package top.osjf.assembly.simplified.service.context;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
+import top.osjf.assembly.simplified.service.ServiceContextUtils;
 import top.osjf.assembly.simplified.service.annotation.EnableServiceCollection;
 import top.osjf.assembly.simplified.service.annotation.EnableServiceCollection2;
 import top.osjf.assembly.simplified.service.annotation.ServiceCollection;
@@ -17,7 +18,7 @@ import java.util.Set;
  * Support implementation class for service context {@link ServiceContext}.
  *
  * <p>The implementation process is as follows.
- * <p>Register a bean with the name {@link #CONFIG_BEAN_NAME} first, and after
+ * <p>Register a bean with the name {@link ServiceContextUtils#CONFIG_BEAN_NAME} first, and after
  * the container is refreshed, notify {@link #onApplicationEvent(ContextRefreshedEvent)}
  * for unified service collection.
  * <p> The collected path is the springboot startup class.
@@ -32,8 +33,6 @@ import java.util.Set;
  * @since 2.0.4
  */
 public class ClassesServiceContext extends AbstractServiceContext {
-
-    protected static final String CONFIG_BEAN_NAME = "CLASSES_SERVICE_CONTENT_BEAN";
 
     private String[] scanPackages;
 
@@ -65,7 +64,7 @@ public class ClassesServiceContext extends AbstractServiceContext {
         ApplicationContext context = event.getApplicationContext();
         ClassesServiceContext contextBean;
         try {
-            contextBean = context.getBean(CONFIG_BEAN_NAME, ClassesServiceContext.class);
+            contextBean = context.getBean(ServiceContextUtils.CONFIG_BEAN_NAME, ClassesServiceContext.class);
         } catch (BeansException e) {
             return;
         }
