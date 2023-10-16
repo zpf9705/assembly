@@ -10,20 +10,21 @@ import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWeb
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationBeanNameGenerator;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
+import top.osjf.assembly.simplified.service.ServiceContextUtils;
 import top.osjf.assembly.simplified.service.annotation.EnableServiceCollection;
 import top.osjf.assembly.simplified.service.annotation.EnableServiceCollection2;
+import top.osjf.assembly.simplified.support.AbstractApplicationContextListener;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.data.ClassMap;
 import top.osjf.assembly.util.data.ThreadSafeClassMap;
 import top.osjf.assembly.util.io.ScanUtils;
+import top.osjf.assembly.util.lang.Asserts;
 import top.osjf.assembly.util.lang.CollectionUtils;
 import top.osjf.assembly.util.lang.StringUtils;
-import top.osjf.assembly.util.logger.Console;
 
 import java.util.List;
 
@@ -62,8 +63,8 @@ import java.util.List;
  * @author zpf
  * @since 2.0.6
  */
-public abstract class AbstractServiceContext implements ServiceContext, ApplicationContextAware,
-        ApplicationListener<ContextRefreshedEvent> {
+public abstract class AbstractServiceContext extends AbstractApplicationContextListener implements ServiceContext,
+        ApplicationContextAware {
 
     private ApplicationContext context;
 
@@ -199,7 +200,7 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
         @Override
         public void contextPrepared(ConfigurableApplicationContext context) {
             ServiceContextRunListener.context = context;
-            if (!enableServiceCollection){
+            if (!enableServiceCollection) {
                 return;
             }
             BeanNameGenerator generator = ServiceContextBeanNameGenerator.getInstance(context.getId());
@@ -251,11 +252,8 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        if (getApplicationContext() == event.getApplicationContext()) {
-            Console.info("{} ====> Service collection finish", this.getClass().getName());
-        } else {
-            throw new IllegalStateException("Startup application no same");
-        }
+        Asserts.state(getApplicationContext() == event.getApplicationContext(),
+                "Startup application no same");
     }
 
     @Override
@@ -272,7 +270,7 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
         return contextMap;
     }
 
-    public ConfigurableApplicationContext getConfigurableApplicationContext(){
+    public ConfigurableApplicationContext getConfigurableApplicationContext() {
         return ServiceContextRunListener.getContext();
     }
 
