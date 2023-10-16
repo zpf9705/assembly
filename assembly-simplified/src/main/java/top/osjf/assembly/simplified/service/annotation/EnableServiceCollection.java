@@ -1,7 +1,6 @@
 package top.osjf.assembly.simplified.service.annotation;
 
 import org.springframework.context.annotation.Import;
-import top.osjf.assembly.simplified.service.context.ServiceContextConfiguration;
 
 import java.lang.annotation.*;
 
