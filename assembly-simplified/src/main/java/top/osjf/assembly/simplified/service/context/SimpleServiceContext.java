@@ -4,22 +4,14 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.support.MergedBeanDefinitionPostProcessor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.Ordered;
 import top.osjf.assembly.simplified.service.ServiceContextUtils;
 import top.osjf.assembly.simplified.service.annotation.ServiceCollection;
 import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
-import top.osjf.assembly.util.data.ClassMap;
-import top.osjf.assembly.util.lang.CollectionUtils;
-import top.osjf.assembly.util.lang.StringUtils;
-import top.osjf.assembly.util.logger.Console;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import top.osjf.assembly.util.lang.ArrayUtils;
 
 /**
  * Support implementation class for service context {@link ServiceContext}.
@@ -45,8 +37,6 @@ import java.util.stream.Collectors;
  * @since 2.0.6
  */
 public class SimpleServiceContext extends AbstractServiceContext implements MergedBeanDefinitionPostProcessor, Ordered {
-
-    private final Map<String, String> loaded = new HashMap<>();
 
     public SimpleServiceContext() {
         //Manually add to the post processor collection of the bean.
@@ -78,53 +68,21 @@ public class SimpleServiceContext extends AbstractServiceContext implements Merg
     @Override
     public void close() {
         super.close();
-        this.loaded.clear();
     }
 
     private void preServiceCollection(Object bean, String beanName) {
-        ClassMap<String, Object> contextMap = getContextMap();
-        // loaded direct return
-        if (contextMap.containsKey(beanName)) {
-            return;
+        ApplicationContext context = getApplicationContext();
+        if (context == null){
+            context = getConfigurableApplicationContext();
         }
-        List<Class<?>> classes = new ArrayList<>();
-        Class<?> dela = bean.getClass();
-        //If this bean directly contains service collection annotations and satisfies
-        // the requirements of an interface or abstract class, then service collection
-        // is directly carried out.
-        if (loadCheck(dela.getName())
-                &&
-                ServiceContextUtils.isServiceCollectionParent(dela)) {
-            classes.add(dela);
-        } else {
-            //Collect the interface collection and inheritance classes of this bean,
-            // and search for service collection identification annotations.
-            classes = ServiceContextUtils.getFilterServices(dela);
-        }
-        if (CollectionUtils.isEmpty(classes)) return;
-        //Avoid repeated loading.
-        classes = classes.stream()
-                .filter(c -> loadCheck(c.getName())).collect(Collectors.toList());
-        if (CollectionUtils.isEmpty(classes)) return;
-        Console.info("Service collection : {}", classes);
-        for (Class<?> clazz : classes) {
-            Map<String, ?> beansMap;
-            try {
-                //The collection of final services still relies on contextual objects.
-                beansMap = getApplicationContext().getBeansOfType(clazz);
-            } catch (BeansException e) {
-                return;
+        if (ServiceContextUtils.isCollectionService(beanName, context.getId())) {
+            getContextMap().putIfAbsent(beanName, bean);
+            String[] aliases = getBeanDefinitionRegistry().getAliases(beanName);
+            if (ArrayUtils.isNotEmpty(aliases)) {
+                for (String alias : aliases) {
+                    getContextMap().putIfAbsent(alias, bean);
+                }
             }
-            beansMap.forEach(contextMap::putIfAbsent);
-            loadSet(clazz.getName());
         }
-    }
-
-    private void loadSet(String name) {
-        loaded.putIfAbsent(name, name);
-    }
-
-    private boolean loadCheck(String name) {
-        return StringUtils.isBlank(loaded.get(name));
     }
 }

@@ -1,18 +1,23 @@
 package top.osjf.assembly.simplified.service;
 
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 import top.osjf.assembly.simplified.service.annotation.ServiceCollection;
 import top.osjf.assembly.simplified.service.annotation.Type;
-import top.osjf.assembly.simplified.service.context.AbstractServiceContext;
 import top.osjf.assembly.simplified.service.context.ClassesServiceContext;
 import top.osjf.assembly.simplified.service.context.ServiceContext;
+import top.osjf.assembly.util.io.ScanUtils;
 import top.osjf.assembly.util.lang.*;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Help class on context collection tools.
@@ -22,17 +27,95 @@ import java.util.stream.Collectors;
  */
 public final class ServiceContextUtils {
 
-    /** Name separator.*/
+    /**
+     * Name separator.
+     */
     private static final String ARROW = " -> ";
 
-    /** Select the name of the service context object based on the type enumeration.*/
+    /**
+     * Select the name of the service context object based on the type enumeration.
+     */
     public static final String SERVICE_CONTEXT_NAME = "TYPE-CHOOSE-SERVICE_CONTEXT";
 
-    /** The name collected in the default class mode.*/
+    /**
+     * The name collected in the default class mode.
+     */
     public static final String CONFIG_BEAN_NAME = "CLASSES_SERVICE_CONTENT_BEAN";
+
 
     private ServiceContextUtils() {
 
+    }
+
+    public static <S> S getService(String serviceName, Class<S> requiredType,
+                                   String applicationId, String defaultApplicationPackage,
+                                   Function<String, S> getFun) {
+        if (StringUtils.isBlank(serviceName) || requiredType == null || getFun == null ||
+                StringUtils.isBlank(applicationId) || StringUtils.isBlank(defaultApplicationPackage)) {
+            return null;
+        }
+
+        //Try encoding directly to obtain.
+        String encodeName = encodeNameFromElements(requiredType, serviceName, applicationId);
+
+        S service = getFun.apply(encodeName);
+
+        if (service != null) return service;
+
+        //Parent class package path.
+        NamedContext context = getBeanNameUseParentOrMainPackageName(requiredType, serviceName, applicationId,
+                defaultApplicationPackage);
+
+        if (context.hasValue()) {
+
+            for (String name : context.getValue()) {
+                service = getFun.apply(name);
+                if (service != null) {
+                    return service;
+                }
+            }
+        }
+
+        //Full path of oneself.
+        Set<Class<S>> scan = ScanUtils.scan(defaultApplicationPackage, clazz -> Objects.equals(clazz.getSimpleName(),
+                serviceName.substring(0, 1).toUpperCase() + serviceName.substring(1)));
+
+        if (CollectionUtils.isNotEmpty(scan)) {
+
+            Class<S> clazz = CollectionUtils.get(scan, 0);
+
+            String encodeName0 = encodeNameFromElements(requiredType, clazz.getName(), applicationId);
+
+            service = getFun.apply(encodeName0);
+
+            if (service == null) {
+
+                Annotation[] annotations = clazz.getAnnotations();
+
+                if (ArrayUtils.isNotEmpty(annotations)) {
+
+                    Annotation annotation = Arrays.stream(annotations).filter(an -> {
+                        Class<? extends Annotation> annotationType = an.annotationType();
+                        return Component.class == annotationType
+                                || Repository.class == annotationType
+                                || Service.class == annotationType
+                                || Controller.class == annotationType;
+                    }).findFirst().orElse(null);
+
+                    if (annotation != null) {
+
+                        Object fieldValue = ReflectUtils.getFieldValue(annotation, "value");
+
+                        encodeName0 = encodeNameFromElements(requiredType, fieldValue.toString(), applicationId);
+
+                        service = getFun.apply(encodeName0);
+                    }
+
+                    return service;
+                }
+            }
+        }
+        return null;
     }
 
     //If the type is empty or class, select the class mode, and for the rest,
@@ -59,22 +142,74 @@ public final class ServiceContextUtils {
         if (clazz == null) {
             return null;
         }
-        List<Class<?>> allSuperclasses = ClassUtils.getAllSuperclasses(clazz);
-        List<Class<?>> allInterfaces = ClassUtils.getAllInterfaces(clazz);
-        allInterfaces.addAll(allSuperclasses);
-        if (CollectionUtils.isEmpty(allInterfaces)) {
-            return Collections.emptyList();
+        LinkedList<Class<?>> sortServices = new LinkedList<>();
+
+        //Interface directly implemented by class
+        Class<?>[] ourSee = clazz.getInterfaces();
+
+        //If the interface directly implemented by the class does not exist, query the inherited class.
+        if (ArrayUtils.isEmpty(ourSee)) {
+            Class<?> superclass = clazz.getSuperclass();
+            //It cannot be an Object .
+            if ("java.lang.Object".equals(superclass.getName())) {
+                //No interface, no parent class, directly returning null.
+                return null;
+            } else {
+                //must comply with annotation requirements.
+                if (isServiceCollectionTarget(superclass)) {
+                    sortServices.add(superclass);
+                }
+            }
+        } else {
+            Class<?> clazz0 = Arrays.stream(ourSee).filter(isServiceCollectionTarget())
+                    .findFirst().orElse(null);
+            //For interfaces, use any one of the current IDs, and take the first one here.
+            if (clazz0 != null) {
+                sortServices.add(clazz0);
+            }
         }
-        return allInterfaces.stream().filter(isServiceCollectionParent()).collect(Collectors.toList());
+
+        //get all super classes
+        List<Class<?>> supers = ClassUtils.getAllSuperclasses(clazz);
+        supers.remove(Object.class);
+        supers = supers.stream().filter(isServiceCollectionTarget()).collect(Collectors.toList());
+
+        //get all interfaces
+        List<Class<?>> interfaces = ClassUtils.getAllInterfaces(clazz);
+        interfaces = interfaces.stream().filter(isServiceCollectionTarget()).collect(Collectors.toList());
+
+        //If the first element is not yet present at this point,
+        // take the first one from all filtered parent and interface classes.
+        if (sortServices.isEmpty()) {
+            if (!interfaces.isEmpty()) {
+                sortServices.add(interfaces.get(0));
+            } else {
+                if (!supers.isEmpty()) {
+                    sortServices.add(supers.get(0));
+                }
+            }
+        }
+
+        //If it is still empty, return null directly.
+        if (CollectionUtils.isEmpty(sortServices)) return null;
+
+        interfaces.addAll(supers);
+
+        interfaces.removeAll(sortServices);
+
+        //After removing the duplicate from the first position, add it directly.
+        sortServices.addAll(interfaces);
+
+        return sortServices;
     }
 
     //Interface or abstract class, and annotate the service to collect annotations.
-    public static Predicate<Class<?>> isServiceCollectionParent() {
-        return ServiceContextUtils::isServiceCollectionParent;
+    public static Predicate<Class<?>> isServiceCollectionTarget() {
+        return ServiceContextUtils::isServiceCollectionTarget;
     }
 
     //Interface or abstract class, and annotate the service to collect annotations.
-    public static boolean isServiceCollectionParent(Class<?> clazz) {
+    public static boolean isServiceCollectionTarget(Class<?> clazz) {
         return (clazz.isInterface()
                 ||
                 Modifier.isAbstract(clazz.getModifiers()))
@@ -82,51 +217,80 @@ public final class ServiceContextUtils {
                 clazz.getAnnotation(ServiceCollection.class) != null;
     }
 
+    public static boolean isCollectionService(String beanName, String applicationId) {
+        if (StringUtils.isBlank(applicationId) || StringUtils.isBlank(beanName)) {
+            return false;
+        }
+        return beanName.startsWith(applicationId + ARROW);
+    }
+
     //A custom generation scheme for bean names.
-    public static String customGenerationOfBeanName(Class<?> parent, Class<?> clazz, String applicationName) {
-        if (parent == null || clazz == null || StringUtils.isBlank(applicationName)) {
+    public static String encodeNameFromElements(Class<?> parent, String suffix, String applicationId) {
+        if (parent == null || StringUtils.isBlank(suffix) || StringUtils.isBlank(applicationId)) {
             return null;
         }
         //id
-        String id =
+        return
                 //Project name.
-                applicationName
-                        + ARROW
-                        //Possible service collection prefixes.
-                        + getServiceCollectionPrefix(parent)
-                        + ARROW
-                        //Avoid using the same name and obtain the package path.
-                        + clazz.getName();
-        return DigestUtils.md5Hex(id);
+                applicationId
+                        + ARROW +
+                        DigestUtils.md5Hex(
+                                //Possible service collection prefixes.
+                                getServiceCollectionPrefix(parent)
+                                        + ARROW
+                                        //Avoid using the same name and obtain the package path.
+                                        + suffix);
+    }
+
+    public interface NamedContext {
+
+        boolean hasValue();
+
+        List<String> getValue();
     }
 
     //Obtain bean services based on the abbreviation.
-    public static String getBeanName(Class<?> parent, String serviceName, String applicationName) throws
-            ClassNotFoundException {
-        //Ensure that your input service name is the class in
-        // the path where the project is located.
-        Class<?> clazz = getClass(serviceName);
-        if (clazz == null) {
-            clazz = getClass(parent.getPackage().getName() +
-                    "." + serviceName);
-            if (clazz == null) {
-                clazz = getClass(AbstractServiceContext.ServiceContextRunListener
-                        .getMainApplicationPackage() + "." + serviceName);
-                if (clazz == null) {
-                    throw new ClassNotFoundException(
-                            String.format(
-                                    "No class corresponding to [%s] [%s] [%s] was found in the main project [%s]." +
-                                            "It is recommended to provide a more detailed package path.",
-                                    serviceName,
-                                    parent.getPackage().getName() + "." + serviceName,
-                                    AbstractServiceContext.ServiceContextRunListener.getMainApplicationPackage() +
-                                            "." + serviceName,
-                                    applicationName)
-                    );
+    public static NamedContext getBeanNameUseParentOrMainPackageName(Class<?> parent, String serviceName,
+                                                                     String applicationId,
+                                                                     String defaultApplicationPackage) {
+        String parentPackageMontageName = null;
+        String defaultApplicationPackageMontageName = null;
+        if (parent != null && StringUtils.isNotBlank(serviceName)
+                && StringUtils.isNotBlank(defaultApplicationPackage)) {
+            if (!serviceName.startsWith(parent.getPackage().getName())
+                    || !serviceName.contains(parent.getPackage().getName())) {
+                if (!serviceName.startsWith(".")) {
+                    serviceName = "." + serviceName;
                 }
+                //It needs to be in the same package as the parent class/interface.
+                parentPackageMontageName = parent.getPackage().getName() + serviceName;
+            }
+            if (!serviceName.startsWith(defaultApplicationPackage)
+                    || !serviceName.contains(defaultApplicationPackage)) {
+                if (!serviceName.startsWith(".")) {
+                    serviceName = "." + serviceName;
+                }
+                defaultApplicationPackageMontageName = defaultApplicationPackage + serviceName;
             }
         }
-        return customGenerationOfBeanName(parent, clazz, applicationName);
+        String parentPackageMontageNameEc = encodeNameFromElements(parent, parentPackageMontageName, applicationId);
+        String defaultApplicationPackageMontageNameEc =
+                encodeNameFromElements(parent, defaultApplicationPackageMontageName, applicationId);
+
+        List<String> values = Stream.of(parentPackageMontageNameEc, defaultApplicationPackageMontageNameEc)
+                .collect(Collectors.toList());
+        return new NamedContext() {
+
+            @Override
+            public boolean hasValue() {
+                return CollectionUtils.isNotEmpty(values);
+            }
+
+            @Override
+            public List<String> getValue() {
+                return values;
+            }
+        };
     }
 
     private static String getServiceCollectionPrefix(Class<?> parent) {

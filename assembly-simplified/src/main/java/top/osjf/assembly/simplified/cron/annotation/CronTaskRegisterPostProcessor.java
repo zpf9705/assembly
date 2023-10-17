@@ -17,7 +17,7 @@ import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
 import top.osjf.assembly.simplified.cron.CronRegister;
-import top.osjf.assembly.simplified.support.AbstractApplicationContextListener;
+import top.osjf.assembly.simplified.support.SmartContextRefreshed;
 import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
 
@@ -45,7 +45,7 @@ import java.util.Objects;
  */
 @Configuration(proxyBeanMethods = false)
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-public class CronTaskRegisterPostProcessor extends AbstractApplicationContextListener implements ImportAware,
+public class CronTaskRegisterPostProcessor extends SmartContextRefreshed implements ImportAware,
         MergedBeanDefinitionPostProcessor, ApplicationContextAware, EnvironmentAware, Ordered {
 
     private ApplicationContext context;
@@ -88,16 +88,20 @@ public class CronTaskRegisterPostProcessor extends AbstractApplicationContextLis
 
     @Override
     public void onApplicationEvent(@NotNull ContextRefreshedEvent event) {
-        if (context == event.getApplicationContext()) {
-            String[] sourceArgs = context.getBean(ApplicationArguments.class).getSourceArgs();
-            if (CronRegister.registerZero()) {
-                if (noMethodDefaultStart) {
-                    CronRegister.start(sourceArgs);
-                }
-            } else {
+        String[] sourceArgs = context.getBean(ApplicationArguments.class).getSourceArgs();
+        if (CronRegister.registerZero()) {
+            if (noMethodDefaultStart) {
                 CronRegister.start(sourceArgs);
             }
+        } else {
+            CronRegister.start(sourceArgs);
         }
+    }
+
+    @NotNull
+    @Override
+    public ApplicationContext nowApplicationContext() {
+        return context;
     }
 
     @Override

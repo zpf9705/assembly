@@ -1,6 +1,7 @@
 package top.osjf.assembly.simplified.service.context;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
@@ -13,16 +14,14 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationBeanNameGenerator;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.event.ContextRefreshedEvent;
 import top.osjf.assembly.simplified.service.ServiceContextUtils;
 import top.osjf.assembly.simplified.service.annotation.EnableServiceCollection;
 import top.osjf.assembly.simplified.service.annotation.EnableServiceCollection2;
-import top.osjf.assembly.simplified.support.AbstractApplicationContextListener;
+import top.osjf.assembly.simplified.support.SmartContextRefreshed;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.data.ClassMap;
 import top.osjf.assembly.util.data.ThreadSafeClassMap;
 import top.osjf.assembly.util.io.ScanUtils;
-import top.osjf.assembly.util.lang.Asserts;
 import top.osjf.assembly.util.lang.CollectionUtils;
 import top.osjf.assembly.util.lang.StringUtils;
 
@@ -51,7 +50,7 @@ import java.util.List;
  * <p>Next is the default implementation of the service acquisition
  * method {@link #getService(String, Class)}.
  * This method will convert the type based on the provided service name, encode it through
- * {@link ServiceContextUtils#customGenerationOfBeanName(Class, Class, String)} to obtain
+ * {@link ServiceContextUtils#encodeNameFromElements(Class, String, String)} to obtain
  * the real bean name, and then obtain the real service class from the cached {@link #contextMap}.
  * Of course, if it is not obtained, it will directly retrieve the incoming service name
  * and obtain it through the spring context {@link ApplicationContext#getBean(String, Class)}.
@@ -63,7 +62,7 @@ import java.util.List;
  * @author zpf
  * @since 2.0.6
  */
-public abstract class AbstractServiceContext extends AbstractApplicationContextListener implements ServiceContext,
+public abstract class AbstractServiceContext extends SmartContextRefreshed implements ServiceContext,
         ApplicationContextAware {
 
     private ApplicationContext context;
@@ -90,7 +89,7 @@ public abstract class AbstractServiceContext extends AbstractApplicationContextL
      * and determine whether there are service collection annotations. Only one class
      * can contain service annotations, and multiple will throw exceptions
      * {@link IllegalArgumentException} to remind. The specific custom bean name
-     * policy can be viewed in {@link ServiceContextUtils#customGenerationOfBeanName(Class, Class, String)}.
+     * policy can be viewed in {@link ServiceContextUtils#encodeNameFromElements(Class, String, String)}.
      */
     public static class ServiceContextBeanNameGenerator extends AnnotationBeanNameGenerator implements BeanNameGenerator {
 
@@ -123,16 +122,23 @@ public abstract class AbstractServiceContext extends AbstractApplicationContextL
                 if (CollectionUtils.isEmpty(filterServices)) {
                     beanName = super.generateBeanName(definition, registry);
                 } else {
-                    if (filterServices.size() > 1) {
-                        throw new IllegalArgumentException("Only one parent class and interface of service collection " +
-                                "is allowed to carry service collection annotations, but the number of related parent " +
-                                "classes and interfaces worn by " + beanClassName + " is greater than 1.");
+                    String componentValue;
+                    if (definition instanceof AnnotatedBeanDefinition) {
+                        componentValue = determineBeanNameFromAnnotation((AnnotatedBeanDefinition) definition);
+                        if (StringUtils.isBlank(componentValue)){
+                            componentValue = clazz.getName();
+                        }
                     } else {
-                        beanName = ServiceContextUtils.customGenerationOfBeanName(filterServices.get(0),
-                                clazz,
-                                applicationName);
-                        if (StringUtils.isBlank(beanName)) {
-                            beanName = super.generateBeanName(definition, registry);
+                        componentValue = clazz.getName();
+                    }
+                    beanName = ServiceContextUtils.encodeNameFromElements(filterServices.get(0),
+                            componentValue, applicationName);
+                    filterServices.remove(0);
+                    if (CollectionUtils.isNotEmpty(filterServices)) {
+                        for (Class<?> filterService : filterServices) {
+                            String alias = ServiceContextUtils.encodeNameFromElements(filterService,
+                                    componentValue, applicationName);
+                            registry.registerAlias(beanName, alias);
                         }
                     }
                 }
@@ -227,20 +233,15 @@ public abstract class AbstractServiceContext extends AbstractApplicationContextL
 
     @Override
     public <S> S getService(String serviceName, Class<S> requiredType) throws NoSuchServiceException {
-        final String serviceName0 = serviceName;
-        try {
-            serviceName = ServiceContextUtils.getBeanName(requiredType, serviceName, context.getId());
-        } catch (ClassNotFoundException e) {
-            //Throw an exception that cannot be found.
-            throw new NoSuchServiceException(e.getMessage());
-        }
-        S service = contextMap.getValueOnClass(serviceName, requiredType);
+        S service = ServiceContextUtils.getService(serviceName, requiredType, context.getId(),
+                ServiceContextRunListener.getMainApplicationPackage(),
+                encodeServiceName -> contextMap.getValueOnClass(encodeServiceName, requiredType));
         if (service == null) {
             try {
                 //If the collected beans are not found,
                 //Using spring's context lookup may be based on aliases.
                 //However, when using aliases, please be aware of potential bean name duplication errors.
-                service = context.getBean(serviceName0, requiredType);
+                service = context.getBean(serviceName, requiredType);
             } catch (BeansException e) {
                 //Throw an exception that cannot be found.
                 throw new NoSuchServiceException("No service named " + serviceName + " was found " +
@@ -250,10 +251,10 @@ public abstract class AbstractServiceContext extends AbstractApplicationContextL
         return service;
     }
 
+    @NotNull
     @Override
-    public void onApplicationEvent(ContextRefreshedEvent event) {
-        Asserts.state(getApplicationContext() == event.getApplicationContext(),
-                "Startup application no same");
+    public ApplicationContext nowApplicationContext() {
+        return getApplicationContext();
     }
 
     @Override
@@ -264,6 +265,10 @@ public abstract class AbstractServiceContext extends AbstractApplicationContextL
     @Override
     public ApplicationContext getApplicationContext() {
         return context;
+    }
+
+    public BeanDefinitionRegistry getBeanDefinitionRegistry(){
+        return (BeanDefinitionRegistry) context;
     }
 
     public ClassMap<String, Object> getContextMap() {
