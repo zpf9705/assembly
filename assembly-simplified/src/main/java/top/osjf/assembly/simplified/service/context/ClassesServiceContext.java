@@ -13,6 +13,7 @@ import top.osjf.assembly.util.io.ScanUtils;
 import top.osjf.assembly.util.lang.ArrayUtils;
 import top.osjf.assembly.util.lang.CollectionUtils;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -63,18 +64,8 @@ public class ClassesServiceContext extends AbstractServiceContext {
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         super.onApplicationEvent(event);
-        //Wait for the container to refresh and proceed with service collection.
-        ApplicationContext context = event.getApplicationContext();
-        ClassesServiceContext contextBean;
-        try {
-            contextBean = context.getBean(ServiceContextUtils.CONFIG_BEAN_NAME, ClassesServiceContext.class);
-        } catch (BeansException e) {
-            return;
-        }
-        //Place the scan path without overloading.
-        contextBean.setScanPackages(ServiceContextRunListener.getMainApplicationPackage());
-        //Load the service context map.
-        load(contextBean, context);
+        setScanPackages(getApplicationPackage());
+        load(this, event.getApplicationContext());
     }
 
     @Override
@@ -106,16 +97,18 @@ public class ClassesServiceContext extends AbstractServiceContext {
             }
             contextBean.addContextMap(beansMap);
         }
+        Map<String, Object> temporary = new HashMap<>();
         ClassMap<String, Object> contextMap = contextBean.getContextMap();
-        if (CollectionUtils.isNotEmpty(contextMap)){
+        if (CollectionUtils.isNotEmpty(contextMap)) {
             contextMap.forEach((name, bean) -> {
                 String[] aliases = registry.getAliases(name);
                 if (ArrayUtils.isNotEmpty(aliases)) {
                     for (String alias : aliases) {
-                        contextMap.putIfAbsent(alias, bean);
+                        temporary.putIfAbsent(alias, bean);
                     }
                 }
             });
+            contextMap.putAll(temporary);
         }
     }
 }

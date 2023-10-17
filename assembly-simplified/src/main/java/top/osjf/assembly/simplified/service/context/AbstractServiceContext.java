@@ -203,11 +203,11 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
                             mainApplicationPackage).size() >= 1;
         }
 
-        public static String getMainApplicationPackage() {
+        protected static String getMainApplicationPackage() {
             return mainApplicationPackage;
         }
 
-        public static ConfigurableApplicationContext getContext() {
+        protected static ConfigurableApplicationContext getContext() {
             return context;
         }
 
@@ -270,6 +270,10 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
     @Override
     public ApplicationContext getApplicationContext() {
         return context;
+    }
+
+    public String getApplicationPackage(){
+        return ServiceContextRunListener.getMainApplicationPackage();
     }
 
     public BeanDefinitionRegistry getBeanDefinitionRegistry() {
