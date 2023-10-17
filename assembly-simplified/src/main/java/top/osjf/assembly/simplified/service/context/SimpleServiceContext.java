@@ -4,7 +4,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.support.MergedBeanDefinitionPostProcessor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.Ordered;
 import top.osjf.assembly.simplified.service.ServiceContextUtils;
@@ -71,11 +70,7 @@ public class SimpleServiceContext extends AbstractServiceContext implements Merg
     }
 
     private void preServiceCollection(Object bean, String beanName) {
-        ApplicationContext context = getApplicationContext();
-        if (context == null){
-            context = getConfigurableApplicationContext();
-        }
-        if (ServiceContextUtils.isCollectionService(beanName, context.getId())) {
+        if (ServiceContextUtils.isCollectionService(beanName)) {
             getContextMap().putIfAbsent(beanName, bean);
             String[] aliases = getBeanDefinitionRegistry().getAliases(beanName);
             if (ArrayUtils.isNotEmpty(aliases)) {

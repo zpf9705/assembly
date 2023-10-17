@@ -1,13 +1,16 @@
 package top.osjf.assembly.simplified.service.context;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import top.osjf.assembly.simplified.service.ServiceContextUtils;
 import top.osjf.assembly.simplified.service.annotation.EnableServiceCollection;
 import top.osjf.assembly.simplified.service.annotation.EnableServiceCollection2;
 import top.osjf.assembly.simplified.service.annotation.ServiceCollection;
+import top.osjf.assembly.util.data.ClassMap;
 import top.osjf.assembly.util.io.ScanUtils;
+import top.osjf.assembly.util.lang.ArrayUtils;
 import top.osjf.assembly.util.lang.CollectionUtils;
 
 import java.util.Map;
@@ -93,6 +96,7 @@ public class ClassesServiceContext extends AbstractServiceContext {
         if (CollectionUtils.isEmpty(serviceClasses)) {
             return;
         }
+        BeanDefinitionRegistry registry = (BeanDefinitionRegistry) context;
         for (Class<Object> serviceClass : serviceClasses) {
             Map<String, Object> beansMap;
             try {
@@ -101,6 +105,17 @@ public class ClassesServiceContext extends AbstractServiceContext {
                 continue;
             }
             contextBean.addContextMap(beansMap);
+        }
+        ClassMap<String, Object> contextMap = contextBean.getContextMap();
+        if (CollectionUtils.isNotEmpty(contextMap)){
+            contextMap.forEach((name, bean) -> {
+                String[] aliases = registry.getAliases(name);
+                if (ArrayUtils.isNotEmpty(aliases)) {
+                    for (String alias : aliases) {
+                        contextMap.putIfAbsent(alias, bean);
+                    }
+                }
+            });
         }
     }
 }

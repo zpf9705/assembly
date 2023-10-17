@@ -1,17 +1,11 @@
 package top.osjf.assembly.simplified.service;
 
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 import top.osjf.assembly.simplified.service.annotation.ServiceCollection;
 import top.osjf.assembly.simplified.service.annotation.Type;
 import top.osjf.assembly.simplified.service.context.ClassesServiceContext;
 import top.osjf.assembly.simplified.service.context.ServiceContext;
-import top.osjf.assembly.util.io.ScanUtils;
 import top.osjf.assembly.util.lang.*;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.function.Function;
@@ -27,95 +21,42 @@ import java.util.stream.Stream;
  */
 public final class ServiceContextUtils {
 
-    /**
-     * Name separator.
-     */
+    /*** Name separator.*/
     private static final String ARROW = " -> ";
 
-    /**
-     * Select the name of the service context object based on the type enumeration.
-     */
+    /*** Select the name of the service context object based on the type enumeration.*/
     public static final String SERVICE_CONTEXT_NAME = "TYPE-CHOOSE-SERVICE_CONTEXT";
 
-    /**
-     * The name collected in the default class mode.
-     */
+    /*** The name collected in the default class mode.*/
     public static final String CONFIG_BEAN_NAME = "CLASSES_SERVICE_CONTENT_BEAN";
 
+    /*** The name identification suffix of this service management proxy class.*/
+    private static final String SERVICE_COLLECTION_BEAN_SIGNS = "@a.s.proxy";
 
     private ServiceContextUtils() {
 
     }
 
+    //Obtain service objects based on the provided elements.
     public static <S> S getService(String serviceName, Class<S> requiredType,
-                                   String applicationId, String defaultApplicationPackage,
-                                   Function<String, S> getFun) {
+                                   String applicationId, Function<String, S> getFun) {
         if (StringUtils.isBlank(serviceName) || requiredType == null || getFun == null ||
-                StringUtils.isBlank(applicationId) || StringUtils.isBlank(defaultApplicationPackage)) {
+                StringUtils.isBlank(applicationId)) {
             return null;
         }
-
-        //Try encoding directly to obtain.
-        String encodeName = encodeNameFromElements(requiredType, serviceName, applicationId);
-
-        S service = getFun.apply(encodeName);
-
-        if (service != null) return service;
-
-        //Parent class package path.
-        NamedContext context = getBeanNameUseParentOrMainPackageName(requiredType, serviceName, applicationId,
-                defaultApplicationPackage);
-
-        if (context.hasValue()) {
-
-            for (String name : context.getValue()) {
-                service = getFun.apply(name);
-                if (service != null) {
-                    return service;
-                }
-            }
-        }
-
-        //Full path of oneself.
-        Set<Class<S>> scan = ScanUtils.scan(defaultApplicationPackage, clazz -> Objects.equals(clazz.getSimpleName(),
-                serviceName.substring(0, 1).toUpperCase() + serviceName.substring(1)));
-
-        if (CollectionUtils.isNotEmpty(scan)) {
-
-            Class<S> clazz = CollectionUtils.get(scan, 0);
-
-            String encodeName0 = encodeNameFromElements(requiredType, clazz.getName(), applicationId);
-
-            service = getFun.apply(encodeName0);
-
+        //Priority is given to direct queries.
+        S service = getFun.apply(serviceName);
+        if (service == null) {
+            //Next, encode the ID.
+            String id = formatId(requiredType, serviceName, applicationId);
+            service = getFun.apply(id);
             if (service == null) {
-
-                Annotation[] annotations = clazz.getAnnotations();
-
-                if (ArrayUtils.isNotEmpty(annotations)) {
-
-                    Annotation annotation = Arrays.stream(annotations).filter(an -> {
-                        Class<? extends Annotation> annotationType = an.annotationType();
-                        return Component.class == annotationType
-                                || Repository.class == annotationType
-                                || Service.class == annotationType
-                                || Controller.class == annotationType;
-                    }).findFirst().orElse(null);
-
-                    if (annotation != null) {
-
-                        Object fieldValue = ReflectUtils.getFieldValue(annotation, "value");
-
-                        encodeName0 = encodeNameFromElements(requiredType, fieldValue.toString(), applicationId);
-
-                        service = getFun.apply(encodeName0);
-                    }
-
-                    return service;
-                }
+                //Finally, encode the alias.
+                String alisa = formatAlisa(requiredType, serviceName, applicationId);
+                service = getFun.apply(alisa);
             }
         }
-        return null;
+        return service;
     }
 
     //If the type is empty or class, select the class mode, and for the rest,
@@ -217,29 +158,59 @@ public final class ServiceContextUtils {
                 clazz.getAnnotation(ServiceCollection.class) != null;
     }
 
-    public static boolean isCollectionService(String beanName, String applicationId) {
-        if (StringUtils.isBlank(applicationId) || StringUtils.isBlank(beanName)) {
+    public static boolean isCollectionService(String beanName) {
+        if (StringUtils.isBlank(beanName)) {
             return false;
         }
-        return beanName.startsWith(applicationId + ARROW);
+        return beanName.endsWith(SERVICE_COLLECTION_BEAN_SIGNS);
     }
 
     //A custom generation scheme for bean names.
-    public static String encodeNameFromElements(Class<?> parent, String suffix, String applicationId) {
+    public static String formatId(Class<?> parent, String suffix, String applicationId) {
         if (parent == null || StringUtils.isBlank(suffix) || StringUtils.isBlank(applicationId)) {
             return null;
         }
         //id
-        return
+        return DigestUtils.md5Hex(
                 //Project name.
                 applicationId
-                        + ARROW +
-                        DigestUtils.md5Hex(
-                                //Possible service collection prefixes.
-                                getServiceCollectionPrefix(parent)
-                                        + ARROW
-                                        //Avoid using the same name and obtain the package path.
-                                        + suffix);
+                        + ARROW
+                        //Possible service collection prefixes.
+                        + getServiceCollectionPrefix(parent)
+                        + ARROW
+                        //Avoid using the same name and obtain the package path.
+                        + suffix) + SERVICE_COLLECTION_BEAN_SIGNS;
+    }
+
+    //A custom generation scheme for bean names.
+    public static String formatAlisa(Class<?> parent, String suffix, String applicationId) {
+        if (parent == null || StringUtils.isBlank(suffix) || StringUtils.isBlank(applicationId)) {
+            return null;
+        }
+        //id
+        return DigestUtils.md5Hex(
+                //Project name.
+                applicationId
+                        + ARROW
+                        //Possible service collection prefixes.
+                        + getServiceCollectionPrefix(parent)
+                        + ARROW
+                        //Avoid using the same name and obtain the package path.
+                        + suffix);
+    }
+
+    public static List<String> analyzeClassAlias(Class<?> clazz, boolean ignoredFullName) {
+        if (clazz == null) {
+            return Collections.emptyList();
+        }
+        List<String> alisa = new ArrayList<>();
+        String simpleName = clazz.getSimpleName();
+        alisa.add(simpleName);
+        alisa.add(simpleName.substring(0, 1).toLowerCase() + simpleName.substring(1));
+        if (!ignoredFullName) {
+            alisa.add(clazz.getName());
+        }
+        return alisa;
     }
 
     public interface NamedContext {
@@ -273,9 +244,9 @@ public final class ServiceContextUtils {
                 defaultApplicationPackageMontageName = defaultApplicationPackage + serviceName;
             }
         }
-        String parentPackageMontageNameEc = encodeNameFromElements(parent, parentPackageMontageName, applicationId);
+        String parentPackageMontageNameEc = formatId(parent, parentPackageMontageName, applicationId);
         String defaultApplicationPackageMontageNameEc =
-                encodeNameFromElements(parent, defaultApplicationPackageMontageName, applicationId);
+                formatId(parent, defaultApplicationPackageMontageName, applicationId);
 
         List<String> values = Stream.of(parentPackageMontageNameEc, defaultApplicationPackageMontageNameEc)
                 .collect(Collectors.toList());

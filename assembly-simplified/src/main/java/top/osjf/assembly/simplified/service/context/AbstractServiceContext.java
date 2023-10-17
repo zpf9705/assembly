@@ -50,8 +50,8 @@ import java.util.List;
  * <p>Next is the default implementation of the service acquisition
  * method {@link #getService(String, Class)}.
  * This method will convert the type based on the provided service name, encode it through
- * {@link ServiceContextUtils#encodeNameFromElements(Class, String, String)} to obtain
- * the real bean name, and then obtain the real service class from the cached {@link #contextMap}.
+ * {@link ServiceContextUtils#formatId(Class, String, String)} to obtain the real bean name,
+ * and then obtain the real service class from the cached {@link #contextMap}.
  * Of course, if it is not obtained, it will directly retrieve the incoming service name
  * and obtain it through the spring context {@link ApplicationContext#getBean(String, Class)}.
  * If the second method still does not obtain it, it will throw {@link NoSuchServiceException},
@@ -89,7 +89,7 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
      * and determine whether there are service collection annotations. Only one class
      * can contain service annotations, and multiple will throw exceptions
      * {@link IllegalArgumentException} to remind. The specific custom bean name
-     * policy can be viewed in {@link ServiceContextUtils#encodeNameFromElements(Class, String, String)}.
+     * policy can be viewed in {@link ServiceContextUtils#formatId(Class, String, String)}.
      */
     public static class ServiceContextBeanNameGenerator extends AnnotationBeanNameGenerator implements BeanNameGenerator {
 
@@ -122,23 +122,36 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
                 if (CollectionUtils.isEmpty(filterServices)) {
                     beanName = super.generateBeanName(definition, registry);
                 } else {
-                    String componentValue;
+                    String value;
+                    List<String> classAlisa;
                     if (definition instanceof AnnotatedBeanDefinition) {
-                        componentValue = determineBeanNameFromAnnotation((AnnotatedBeanDefinition) definition);
-                        if (StringUtils.isBlank(componentValue)){
-                            componentValue = clazz.getName();
+                        value = determineBeanNameFromAnnotation((AnnotatedBeanDefinition) definition);
+                        if (StringUtils.isBlank(value)) {
+                            value = clazz.getName();
+                            classAlisa = ServiceContextUtils.analyzeClassAlias(clazz, true);
+                        } else {
+                            classAlisa = ServiceContextUtils.analyzeClassAlias(clazz, false);
                         }
                     } else {
-                        componentValue = clazz.getName();
+                        value = clazz.getName();
+                        classAlisa = ServiceContextUtils.analyzeClassAlias(clazz, true);
                     }
-                    beanName = ServiceContextUtils.encodeNameFromElements(filterServices.get(0),
-                            componentValue, applicationName);
+                    //Normal name.
+                    beanName = ServiceContextUtils.formatId(filterServices.get(0),
+                            value, applicationName);
+                    //The alias constructed by the first superior class object.
+                    classAlisa.forEach(alisa -> registry.registerAlias(beanName,
+                            ServiceContextUtils.formatAlisa(filterServices.get(0),
+                                    alisa, applicationName)));
+                    //Build a parent alias.
                     filterServices.remove(0);
                     if (CollectionUtils.isNotEmpty(filterServices)) {
                         for (Class<?> filterService : filterServices) {
-                            String alias = ServiceContextUtils.encodeNameFromElements(filterService,
-                                    componentValue, applicationName);
-                            registry.registerAlias(beanName, alias);
+                            registry.registerAlias(beanName, ServiceContextUtils.formatAlisa(filterService,
+                                    value, applicationName));
+                            classAlisa.forEach(alias0 -> registry.registerAlias(beanName,
+                                    ServiceContextUtils.formatAlisa(filterService,
+                                            alias0, applicationName)));
                         }
                     }
                 }
@@ -234,19 +247,11 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
     @Override
     public <S> S getService(String serviceName, Class<S> requiredType) throws NoSuchServiceException {
         S service = ServiceContextUtils.getService(serviceName, requiredType, context.getId(),
-                ServiceContextRunListener.getMainApplicationPackage(),
                 encodeServiceName -> contextMap.getValueOnClass(encodeServiceName, requiredType));
         if (service == null) {
-            try {
-                //If the collected beans are not found,
-                //Using spring's context lookup may be based on aliases.
-                //However, when using aliases, please be aware of potential bean name duplication errors.
-                service = context.getBean(serviceName, requiredType);
-            } catch (BeansException e) {
-                //Throw an exception that cannot be found.
-                throw new NoSuchServiceException("No service named " + serviceName + " was found " +
-                        "from the service context");
-            }
+            //Throw an exception that cannot be found.
+            throw new NoSuchServiceException("No service named " + serviceName + " was found " +
+                    "from the service context");
         }
         return service;
     }
@@ -267,7 +272,7 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
         return context;
     }
 
-    public BeanDefinitionRegistry getBeanDefinitionRegistry(){
+    public BeanDefinitionRegistry getBeanDefinitionRegistry() {
         return (BeanDefinitionRegistry) context;
     }
 
