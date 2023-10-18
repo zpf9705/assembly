@@ -3,7 +3,7 @@ package top.osjf.assembly.simplified.sdk.http;
 import org.springframework.lang.Nullable;
 import top.osjf.assembly.simplified.sdk.client.Client;
 import top.osjf.assembly.simplified.sdk.process.AbstractRequestParams;
-import top.osjf.assembly.util.lang.FastJsonUtils;
+import top.osjf.assembly.util.json.FastJsonUtils;
 
 /**
  * Http request abstract node class, used to define the public parameters or methods of the real request parameter class.

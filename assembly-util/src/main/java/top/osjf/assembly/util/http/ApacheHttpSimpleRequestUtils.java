@@ -15,7 +15,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import top.osjf.assembly.util.UtilException;
 import top.osjf.assembly.util.annotation.NotNull;
-import top.osjf.assembly.util.lang.FastJsonUtils;
+import top.osjf.assembly.util.json.FastJsonUtils;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;

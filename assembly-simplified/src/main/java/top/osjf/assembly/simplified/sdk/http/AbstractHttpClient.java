@@ -5,7 +5,7 @@ import top.osjf.assembly.simplified.sdk.process.DefaultErrorResponse;
 import top.osjf.assembly.simplified.sdk.process.Request;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.lang.CollectionUtils;
-import top.osjf.assembly.util.lang.FastJsonUtils;
+import top.osjf.assembly.util.json.FastJsonUtils;
 import top.osjf.assembly.util.logger.Console;
 
 import java.util.List;
@@ -64,12 +64,12 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
         if (!FastJsonUtils.isValid(responseStr)) {
             response = DefaultErrorResponse.parseErrorResponse(responseStr, DefaultErrorResponse.ErrorType.DATA,
                     request.getResponseCls());
-        } else if (FastJsonUtils.isArray(responseStr)) {
+        } else if (FastJsonUtils.isValidArray(responseStr)) {
             List<R> responses = FastJsonUtils.parseArray(responseStr, request.getResponseCls());
             if (CollectionUtils.isEmpty(responses)) {
                 response = responses.get(0);
             } else {
-                response = FastJsonUtils.parseEmptyObject(request.getResponseCls());
+                response = FastJsonUtils.toEmptyObj(request.getResponseCls());
             }
         } else {
             response = FastJsonUtils.parseObject(responseStr, request.getResponseCls());
