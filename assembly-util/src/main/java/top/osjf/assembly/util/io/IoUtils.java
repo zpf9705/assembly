@@ -12,6 +12,8 @@ import java.io.Closeable;
  * @since 1.0.0
  */
 public final class IoUtils extends IoUtil {
+    private IoUtils() {
+    }
 
     /**
      * Close any resource with {@link Closeable}.
