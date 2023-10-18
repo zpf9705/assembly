@@ -1,4 +1,4 @@
-package top.osjf.assembly.util.lang;
+package top.osjf.assembly.util.encode;
 
 import java.security.MessageDigest;
 

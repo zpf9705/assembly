@@ -4,6 +4,7 @@ import top.osjf.assembly.simplified.service.annotation.ServiceCollection;
 import top.osjf.assembly.simplified.service.annotation.Type;
 import top.osjf.assembly.simplified.service.context.ClassesServiceContext;
 import top.osjf.assembly.simplified.service.context.ServiceContext;
+import top.osjf.assembly.util.encode.DigestUtils;
 import top.osjf.assembly.util.lang.*;
 
 import java.lang.reflect.Modifier;
