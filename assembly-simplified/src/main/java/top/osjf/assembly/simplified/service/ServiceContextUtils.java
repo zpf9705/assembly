@@ -159,6 +159,7 @@ public final class ServiceContextUtils {
                 clazz.getAnnotation(ServiceCollection.class) != null;
     }
 
+    //Whether to collect services for the target.
     public static boolean isCollectionService(String beanName) {
         if (StringUtils.isBlank(beanName)) {
             return false;
@@ -166,29 +167,21 @@ public final class ServiceContextUtils {
         return beanName.endsWith(SERVICE_COLLECTION_BEAN_SIGNS);
     }
 
-    //A custom generation scheme for bean names.
+    //A custom generation scheme for bean name.
     public static String formatId(Class<?> parent, String suffix, String applicationId) {
-        if (parent == null || StringUtils.isBlank(suffix) || StringUtils.isBlank(applicationId)) {
-            return null;
-        }
-        //id
-        return DigestUtils.md5Hex(
-                //Project name.
-                applicationId
-                        + ARROW
-                        //Possible service collection prefixes.
-                        + getServiceCollectionPrefix(parent)
-                        + ARROW
-                        //Avoid using the same name and obtain the package path.
-                        + suffix) + SERVICE_COLLECTION_BEAN_SIGNS;
+        return encodeName(parent, suffix, applicationId, SERVICE_COLLECTION_BEAN_SIGNS);
     }
 
-    //A custom generation scheme for bean names.
+    //A custom generation scheme for bean alisa name.
     public static String formatAlisa(Class<?> parent, String suffix, String applicationId) {
+        return encodeName(parent, suffix, applicationId, null);
+    }
+
+    //Encrypted bean name definition.
+    private static String encodeName(Class<?> parent, String suffix, String applicationId, String idSign) {
         if (parent == null || StringUtils.isBlank(suffix) || StringUtils.isBlank(applicationId)) {
             return null;
         }
-        //id
         return DigestUtils.md5Hex(
                 //Project name.
                 applicationId
@@ -197,9 +190,11 @@ public final class ServiceContextUtils {
                         + getServiceCollectionPrefix(parent)
                         + ARROW
                         //Avoid using the same name and obtain the package path.
-                        + suffix);
+                        + suffix) +
+                (StringUtils.isNotBlank(idSign) ? idSign : "");
     }
 
+    //Analyze the remaining class names based on their applicability.
     public static List<String> analyzeClassAlias(Class<?> clazz, boolean ignoredFullName) {
         if (clazz == null) {
             return Collections.emptyList();
@@ -214,6 +209,21 @@ public final class ServiceContextUtils {
         return alisa;
     }
 
+    private static String getServiceCollectionPrefix(Class<?> parent) {
+        if (parent == null) {
+            return "";
+        }
+        ServiceCollection collection = parent.getAnnotation(ServiceCollection.class);
+        Asserts.notNull(collection,
+                "Not a service collection class");
+        String value = collection.prefix();
+        if (StringUtils.isBlank(value)) {
+            value = parent.getName();
+        }
+        return value;
+    }
+
+    @Deprecated
     public interface NamedContext {
 
         boolean hasValue();
@@ -221,6 +231,7 @@ public final class ServiceContextUtils {
         List<String> getValue();
     }
 
+    @Deprecated
     //Obtain bean services based on the abbreviation.
     public static NamedContext getBeanNameUseParentOrMainPackageName(Class<?> parent, String serviceName,
                                                                      String applicationId,
@@ -263,19 +274,5 @@ public final class ServiceContextUtils {
                 return values;
             }
         };
-    }
-
-    private static String getServiceCollectionPrefix(Class<?> parent) {
-        if (parent == null) {
-            return "";
-        }
-        ServiceCollection collection = parent.getAnnotation(ServiceCollection.class);
-        Asserts.notNull(collection,
-                "Not a service collection class");
-        String value = collection.prefix();
-        if (StringUtils.isBlank(value)) {
-            value = parent.getName();
-        }
-        return value;
     }
 }
