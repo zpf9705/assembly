@@ -61,6 +61,9 @@ public final class MD5Utils {
 
     /**
      * Convert a byte array into a visible string.
+     *
+     * @param bytes byte arrays
+     * @return MD5 hex string of input
      */
     public static String encodeHexString(byte[] bytes) {
         int l = bytes.length;

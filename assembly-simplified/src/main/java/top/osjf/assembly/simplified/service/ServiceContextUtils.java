@@ -209,6 +209,7 @@ public final class ServiceContextUtils {
         return alisa;
     }
 
+    //Obtain the service name prefix.
     private static String getServiceCollectionPrefix(Class<?> parent) {
         if (parent == null) {
             return "";
