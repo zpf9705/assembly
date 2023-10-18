@@ -4,7 +4,7 @@ import org.springframework.util.StopWatch;
 import top.osjf.assembly.simplified.sdk.SdkException;
 import top.osjf.assembly.simplified.sdk.SdkUtils;
 import top.osjf.assembly.simplified.sdk.process.DefaultErrorResponse;
-import top.osjf.assembly.util.exceptions.Exceptions;
+import top.osjf.assembly.util.exceptions.ExceptionUtils;
 import top.osjf.assembly.util.io.CloseableUtils;
 
 import java.util.Map;
@@ -90,13 +90,13 @@ public class CommonsHttpClient<R extends HttpResponse> extends AbstractHttpClien
     @Override
     public void handlerSdkError(HttpRequest<?> request, SdkException e) {
         sdkError().accept("Client request fail, apiName={}, error=[{}]",
-                SdkUtils.toLoggerArray(request.matchHttpSdk().name(), Exceptions.stacktraceToOneLineString(e)));
+                SdkUtils.toLoggerArray(request.matchHttpSdk().name(), ExceptionUtils.stacktraceToOneLineString(e)));
     }
 
     @Override
     public void handlerUnKnowError(HttpRequest<?> request, Throwable e) {
         unKnowError().accept("Client request fail, apiName={}, error=[{}]",
-                SdkUtils.toLoggerArray(request.matchHttpSdk().name(), Exceptions.stacktraceToOneLineString(e)));
+                SdkUtils.toLoggerArray(request.matchHttpSdk().name(), ExceptionUtils.stacktraceToOneLineString(e)));
     }
 
     @Override

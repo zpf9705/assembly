@@ -1,6 +1,6 @@
 package top.osjf.assembly.simplified.sdk.http;
 
-import top.osjf.assembly.util.exceptions.Exceptions;
+import top.osjf.assembly.util.exceptions.ExceptionUtils;
 
 import java.util.function.Supplier;
 
@@ -50,6 +50,6 @@ public class DefaultExecuteInfo implements HttpResultSolver.ExecuteInfo {
 
     @Override
     public String getErrorMessage() {
-        return error == null ? null : Exceptions.stacktraceToOneLineString(error);
+        return error == null ? null : ExceptionUtils.stacktraceToOneLineString(error);
     }
 }

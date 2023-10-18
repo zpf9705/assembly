@@ -2,7 +2,7 @@ package top.osjf.assembly.simplified.sdk.process;
 
 import org.apache.http.HttpStatus;
 import top.osjf.assembly.simplified.sdk.DataConvertException;
-import top.osjf.assembly.util.exceptions.Exceptions;
+import top.osjf.assembly.util.exceptions.ExceptionUtils;
 import top.osjf.assembly.util.lang.FastJsonUtils;
 
 import java.util.Objects;
@@ -94,21 +94,21 @@ public class DefaultErrorResponse extends AbstractResponse {
             @Override
             public DefaultErrorResponse getMessageWithType(Throwable error) {
                 return buildSdkExceptionResponse(
-                        Exceptions.stacktraceToOneLineString(error, 1500)
+                        ExceptionUtils.stacktraceToOneLineString(error, 1500)
                 );
             }
         }, UN_KNOWN {
             @Override
             public DefaultErrorResponse getMessageWithType(Throwable error) {
                 return buildUnknownResponse(
-                        Exceptions.stacktraceToOneLineString(error, 4500)
+                        ExceptionUtils.stacktraceToOneLineString(error, 4500)
                 );
             }
         }, DATA {
             @Override
             public DefaultErrorResponse getMessageWithType(Throwable error) {
                 return buildDataErrorResponse(
-                        Exceptions.stacktraceToOneLineString(error, 3000)
+                        ExceptionUtils.stacktraceToOneLineString(error, 3000)
                 );
             }
         }
