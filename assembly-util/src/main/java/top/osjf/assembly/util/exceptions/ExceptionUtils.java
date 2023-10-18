@@ -8,7 +8,7 @@ import cn.hutool.core.exceptions.ExceptionUtil;
  * @author zpf
  * @since 1.0.3
  */
-public final class Exceptions extends ExceptionUtil {
-    private Exceptions() {
+public final class ExceptionUtils extends ExceptionUtil {
+    private ExceptionUtils() {
     }
 }
