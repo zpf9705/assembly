@@ -6,19 +6,19 @@ import org.apache.commons.lang3.ArrayUtils;
 import java.io.Closeable;
 
 /**
- * For more methods on closing tools for {@link AutoCloseable}, you can follow {@link IoUtil}.
+ * IO related tools, thanks to {@link IoUtil}.
  *
  * @author zpf
  * @since 1.0.0
  */
-public final class CloseableUtils extends IoUtil {
+public final class IoUtils extends IoUtil {
 
     /**
      * Close any resource with {@link Closeable}.
      *
      * @param closeables {@link Closeable}
      */
-    public static void close(Closeable... closeables) {
+    public static void closeAny(Closeable... closeables) {
         if (ArrayUtils.isEmpty(closeables)) {
             return;
         }
@@ -32,7 +32,7 @@ public final class CloseableUtils extends IoUtil {
      *
      * @param closeables {@link AutoCloseable}
      */
-    public static void close(AutoCloseable... closeables) {
+    public static void closeAny(AutoCloseable... closeables) {
         if (ArrayUtils.isEmpty(closeables)) {
             return;
         }

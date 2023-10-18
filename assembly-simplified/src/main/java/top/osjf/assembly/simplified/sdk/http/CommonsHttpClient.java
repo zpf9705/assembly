@@ -5,7 +5,7 @@ import top.osjf.assembly.simplified.sdk.SdkException;
 import top.osjf.assembly.simplified.sdk.SdkUtils;
 import top.osjf.assembly.simplified.sdk.process.DefaultErrorResponse;
 import top.osjf.assembly.util.exceptions.ExceptionUtils;
-import top.osjf.assembly.util.io.CloseableUtils;
+import top.osjf.assembly.util.io.IoUtils;
 
 import java.util.Map;
 
@@ -76,7 +76,7 @@ public class CommonsHttpClient<R extends HttpResponse> extends AbstractHttpClien
                     .build());
         }
         //close and clear thread param info
-        CloseableUtils.close(this);
+        IoUtils.close(this);
         return response;
     }
 

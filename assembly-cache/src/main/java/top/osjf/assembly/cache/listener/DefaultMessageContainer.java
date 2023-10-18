@@ -1,8 +1,8 @@
 package top.osjf.assembly.cache.listener;
 
 import top.osjf.assembly.cache.factory.AbstractRecordActivationCenter;
-import top.osjf.assembly.util.io.CloseableUtils;
 import top.osjf.assembly.util.data.ByteIdentify;
+import top.osjf.assembly.util.io.IoUtils;
 
 /**
  * Default abstract Expiring Load Listener container of key{@code  Object} and value {@code Object}
@@ -22,7 +22,7 @@ public abstract class DefaultMessageContainer implements ExpirationBytesBlocker 
         //notify
         onMessage(this.capable);
         //clean Persistence with key and value
-        CloseableUtils.close(this);
+        IoUtils.close(this);
     }
 
     @Override

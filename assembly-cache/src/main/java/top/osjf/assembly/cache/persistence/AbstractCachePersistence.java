@@ -11,7 +11,7 @@ import top.osjf.assembly.cache.operations.ValueOperations;
 import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.data.ObjectIdentify;
-import top.osjf.assembly.util.io.CloseableUtils;
+import top.osjf.assembly.util.io.IoUtils;
 import top.osjf.assembly.util.io.ScanUtils;
 import top.osjf.assembly.util.json.FastJsonUtils;
 import top.osjf.assembly.util.lang.*;
@@ -890,7 +890,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
         } catch (Throwable e) {
             throw new CachePersistenceException("Buff read cache error [" + e.getMessage() + "]");
         } finally {
-            CloseableUtils.close(in, read);
+            IoUtils.closeAny(in, read);
         }
         //Perform follow-up supplement
         reductionUseString(buffer);
