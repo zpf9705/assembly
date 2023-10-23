@@ -13,5 +13,9 @@ public interface EntityConsumer<T extends TreeEntity, E extends TreeData<E>> ext
     @Override
     void accept(Node<T, E> teNode);
 
+    /**
+     * Convert tree data ,the specific structure satisfies {@link TreeData}.
+     * @return Object types.
+     */
     E toTreeData();
 }
