@@ -13,6 +13,27 @@ import java.util.stream.Collectors;
  * <p>Suitable for displaying and constructing tree menu structures,
  * such as menu business, department business, etc.
  *
+ * <pre>
+ *  public final class MenuTrees extends EntityTree<SysMenu, ResourceVO>{
+ *     public MenuTrees(Collection<SysMenu> data) {
+ *         super(data);
+ *     }
+ *     public ResourceVO toUserMenuVO() {
+ *         return this.toTreeData();
+ *     }
+ *     &#064;Override
+ *     public Function<SysMenu, ResourceVO> getConverter() {
+ *         return menu -> {
+ *             ResourceVO vo = BeanConvert.convert(menu, ResourceVO.class);
+ *             return vo;
+ *         };
+ *     }
+ *  }
+ * </pre>
+ * @see TreeEntity
+ * @see Node
+ * @see EntityConsumer
+ * @see TreeData
  * @author zpf
  * @since 1.0.4
  */

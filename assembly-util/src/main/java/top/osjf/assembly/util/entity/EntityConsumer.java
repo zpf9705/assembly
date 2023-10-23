@@ -5,6 +5,10 @@ import java.util.function.Consumer;
 /**
  * Entity Attribute building consumers.
  *
+ * @see TreeEntity
+ * @see Node
+ * @see EntityTree
+ * @see TreeData
  * @author zpf
  * @since 1.0.4
  */

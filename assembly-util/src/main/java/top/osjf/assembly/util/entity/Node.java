@@ -11,6 +11,10 @@ import java.util.function.Function;
  * A tree structured leaf node data model that records the parent and
  * child information of the current node.
  *
+ * @see TreeEntity
+ * @see EntityTree
+ * @see EntityConsumer
+ * @see TreeData
  * @author zpf
  * @since 1.0.4
  */
