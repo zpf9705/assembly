@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 
+import java.util.Map;
+
 /**
  * Fastjson utils from {@link JSON}, and this category points out the expansion function.
  *
@@ -25,6 +27,13 @@ public final class FastJsonUtils extends JSON {
 
     public static <T> T toEmptyObj(Class<T> clazz) {
         return JSON.parseObject("{}", clazz);
+    }
+
+    public static Map<String,Object> getInnerMapByJsonStr(String str){
+        if (isValid(str)){
+            return parseObject(str).getInnerMap();
+        }
+        return null;
     }
 
     public static JSONObject toObj(Object arg) {

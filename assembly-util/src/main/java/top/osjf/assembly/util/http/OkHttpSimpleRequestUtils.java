@@ -1,15 +1,14 @@
 package top.osjf.assembly.util.http;
 
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.JSONValidator;
-import com.alibaba.fastjson2.util.IOUtils;
 import okhttp3.*;
 import okhttp3.internal.http.HttpMethod;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.ContentType;
 import top.osjf.assembly.util.UtilException;
+import top.osjf.assembly.util.io.IoUtils;
 import top.osjf.assembly.util.json.FastJsonUtils;
+import top.osjf.assembly.util.lang.CollectionUtils;
+import top.osjf.assembly.util.lang.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -143,7 +142,7 @@ public abstract class OkHttpSimpleRequestUtils {
                 throw new ResponseFailedException(response.message());
             }
         } finally {
-            IOUtils.close(response);
+            IoUtils.close(response);
         }
         return result;
     }
@@ -193,10 +192,11 @@ public abstract class OkHttpSimpleRequestUtils {
             if (requestParam instanceof Map) {
                 params.putAll((Map<String, Object>) requestParam);
             } else {
-                String var = requestParam.toString();
-                if (JSONValidator.from(var).validate()) {
-                    JSONObject jsonObject = FastJsonUtils.parseObject(var);
-                    params.putAll(jsonObject.getInnerMap());
+                //if a valid json will return param map
+                Map<String, Object> param = FastJsonUtils
+                        .getInnerMapByJsonStr(requestParam.toString());
+                if (CollectionUtils.isNotEmpty(param)) {
+                    params.putAll(param);
                 }
             }
             if (MapUtils.isNotEmpty(params)) {

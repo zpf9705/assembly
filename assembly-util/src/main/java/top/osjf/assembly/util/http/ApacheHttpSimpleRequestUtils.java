@@ -1,10 +1,5 @@
 package top.osjf.assembly.util.http;
 
-import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.io.IoUtil;
-import cn.hutool.core.util.StrUtil;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.JSONValidator;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.*;
 import org.apache.http.client.utils.URIBuilder;
@@ -15,7 +10,10 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import top.osjf.assembly.util.UtilException;
 import top.osjf.assembly.util.annotation.NotNull;
+import top.osjf.assembly.util.io.IoUtils;
 import top.osjf.assembly.util.json.FastJsonUtils;
+import top.osjf.assembly.util.lang.CollectionUtils;
+import top.osjf.assembly.util.lang.StringUtils;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -143,8 +141,8 @@ public abstract class ApacheHttpSimpleRequestUtils {
             HttpEntity entity = response.getEntity();
             result = EntityUtils.toString(entity, StandardCharsets.UTF_8);
         } finally {
-            IoUtil.close(response);
-            IoUtil.close(client);
+            IoUtils.close(response);
+            IoUtils.close(client);
         }
         return result;
     }
@@ -162,9 +160,9 @@ public abstract class ApacheHttpSimpleRequestUtils {
         }
         String paramOfString = requestParam.toString();
         StringEntity stringEntity;
-        if (CollectionUtil.isNotEmpty(headers)) {
+        if (CollectionUtils.isNotEmpty(headers)) {
             String value = headers.get("Content-type");
-            if (StrUtil.isNotBlank(value)) {
+            if (StringUtils.isNotBlank(value)) {
                 stringEntity = new StringEntity(requestParam.toString(), StandardCharsets.UTF_8);
             } else {
                 stringEntity = new StringEntity(paramOfString, ContentType.APPLICATION_JSON);
@@ -183,7 +181,7 @@ public abstract class ApacheHttpSimpleRequestUtils {
      * @param requestBase HTTP Public Request Class {@link HttpRequestBase}.
      */
     public static void addHeaders(Map<String, String> headers, HttpRequestBase requestBase) {
-        if (CollectionUtil.isNotEmpty(headers)) {
+        if (CollectionUtils.isNotEmpty(headers)) {
             for (Map.Entry<String, String> header : headers.entrySet()) {
                 requestBase.addHeader(header.getKey(), header.getValue());
             }
@@ -214,12 +212,12 @@ public abstract class ApacheHttpSimpleRequestUtils {
             if (requestParam instanceof Map) {
                 params = (Map<String, Object>) requestParam;
             } else {
-                if (JSONValidator.from(requestParam.toString()).validate()) {
-                    JSONObject jsonObject = FastJsonUtils.parseObject(requestParam.toString());
-                    params = jsonObject.getInnerMap();
+                String jsonStr = requestParam.toString();
+                if (FastJsonUtils.isValid(jsonStr)) {
+                    params = FastJsonUtils.getInnerMapByJsonStr(jsonStr);
                 }
             }
-            if (CollectionUtil.isNotEmpty(params)) {
+            if (CollectionUtils.isNotEmpty(params)) {
                 for (String paramKey : params.keySet()) {
                     uriBuilder.addParameter(paramKey, String.valueOf(params.get(paramKey)));
                 }

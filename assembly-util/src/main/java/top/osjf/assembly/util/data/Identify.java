@@ -1,7 +1,7 @@
 package top.osjf.assembly.util.data;
 
 import cn.hutool.core.lang.hash.CityHash;
-import cn.hutool.core.util.ReflectUtil;
+import top.osjf.assembly.util.lang.ReflectUtils;
 import top.osjf.assembly.util.serial.SerialUtils;
 
 import java.io.Serializable;
@@ -41,7 +41,7 @@ public abstract class Identify<T, SELF> implements ComparableBool<SELF>, Seriali
 
     @Override
     public int hashCode() {
-        Method method = ReflectUtil.getMethod(data.getClass(), "hashCode");
+        Method method = ReflectUtils.getMethod(data.getClass(), "hashCode");
         if (method != null) {
             if (!method.getDeclaringClass().getName().equals("java.lang.Object")) {
                 return data.hashCode();

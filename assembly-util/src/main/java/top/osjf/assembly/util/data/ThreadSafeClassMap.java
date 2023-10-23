@@ -1,7 +1,7 @@
 package top.osjf.assembly.util.data;
 
-import cn.hutool.core.convert.Convert;
-import org.apache.commons.lang3.ArrayUtils;
+import top.osjf.assembly.util.lang.ArrayUtils;
+import top.osjf.assembly.util.lang.ConvertUtils;
 
 import java.util.Hashtable;
 import java.util.Map;
@@ -50,6 +50,6 @@ public class ThreadSafeClassMap<K, V> extends Hashtable<K, V> implements ClassMa
         if (key == null || clazz == null || (v = this.get(key)) == null) {
             return null;
         }
-        return Convert.convert(clazz, v);
+        return ConvertUtils.convert(clazz, v);
     }
 }

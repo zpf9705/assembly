@@ -4,7 +4,7 @@ import io.reactivex.rxjava3.core.BackpressureStrategy;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.schedulers.Schedulers;
-import org.apache.commons.lang3.ArrayUtils;
+import top.osjf.assembly.util.lang.ArrayUtils;
 import top.osjf.assembly.util.system.DefaultConsole;
 import top.osjf.assembly.util.annotation.NotNull;
 

@@ -1,7 +1,7 @@
 package top.osjf.assembly.util.system;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
+import top.osjf.assembly.util.lang.ArrayUtils;
+import top.osjf.assembly.util.lang.StringUtils;
 
 import java.time.LocalDateTime;
 
