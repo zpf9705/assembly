@@ -14,16 +14,16 @@ import java.util.stream.Collectors;
  * such as menu business, department business, etc.
  *
  * <pre>
- *  public final class MenuTrees extends EntityTree<SysMenu, ResourceVO>{
- *     public MenuTrees(Collection<SysMenu> data) {
+ *  public final class MenuTrees extends EntityTree&lt;SysMenu, ResourceVO&gt;{
+ *     public MenuTrees(Collection&lt;SysMenu&gt; data) {
  *         super(data);
  *     }
  *     public ResourceVO toUserMenuVO() {
  *         return this.toTreeData();
  *     }
  *     &#064;Override
- *     public Function<SysMenu, ResourceVO> getConverter() {
- *         return menu -> {
+ *     public Function&lt;SysMenu,ResourceVO&gt; getConverter() {
+ *         return menu -&gt; {
  *             ResourceVO vo = BeanConvert.convert(menu, ResourceVO.class);
  *             return vo;
  *         };

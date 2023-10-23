@@ -7,10 +7,10 @@ import java.util.List;
  * Tree node subclass obtains interface.
  *
  * <pre>
- *  public class ResourceVO implements TreeData<ResourceVO>, Serializable{
- *     private List<ResourceVO> children = new ArrayList<>();
+ *  public class ResourceVO implements TreeData&lt;ResourceVO&gt;, Serializable{
+ *     private List&lt;ResourceVO&gt; children = new ArrayList&lt;&gt;();
  *     &#064;Override
- *     public List<ResourceVO> getChildren() {
+ *     public List&lt;ResourceVO&gt; getChildren() {
  *         return children;
  *     }
  *  }
