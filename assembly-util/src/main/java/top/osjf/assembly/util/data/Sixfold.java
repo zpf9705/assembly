@@ -2,7 +2,14 @@ package top.osjf.assembly.util.data;
 
 /**
  * The encapsulation mode of six objects.
+ * @param <V1> One parameter.
+ * @param <V2> Two parameter.
+ * @param <V3> Three parameter.
+ * @param <V4> Four parameter.
+ * @param <V5> Five parameter.
+ * @param <V6> Six parameter.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
+ * @since 1.0.4
  */
 public class Sixfold<V1, V2, V3, V4, V5, V6> extends Fivefold<V1, V2, V3, V4, V5> {
 
