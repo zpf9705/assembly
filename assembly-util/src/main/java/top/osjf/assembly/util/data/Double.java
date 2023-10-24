@@ -2,6 +2,8 @@ package top.osjf.assembly.util.data;
 
 /**
  * Double object encapsulation mode.
+ * @param <V1> One parameter.
+ * @param <V2> Two parameter.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
