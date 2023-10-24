@@ -39,7 +39,7 @@ public interface EnumValidate<E extends Enum<E> , T> {
     String getDesc();
 
     /**
-     * Obtain the class of the enumeration class,targeting enum class.
+     * Obtain the classes object of the enumeration itself.
      * @return Class object.
      */
     @NotNull
