@@ -39,4 +39,20 @@ public class Triple<V1, V2, V3> extends Double<V1, V2> {
     public void setV3(V3 v3) {
         this.v3 = v3;
     }
+
+    public boolean isNotNull() {
+        return v3 != null;
+    }
+
+    public Double<V1, V2> getDouble() {
+        return this;
+    }
+
+    public static <V1, V2, V3> Triple<V1, V2, V3> emptyTriple() {
+        return new Triple<>();
+    }
+
+    public static <V1, V2, V3> Triple<V1, V2, V3> ofTriple(V1 v1, V2 v2, V3 v3) {
+        return new Triple<>(v1, v2, v3);
+    }
 }

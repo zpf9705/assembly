@@ -45,4 +45,20 @@ public class Quadruple<V1, V2, V3, V4> extends Triple<V1, V2, V3> {
     public void setV4(V4 v4) {
         this.v4 = v4;
     }
+
+    public boolean isNotNull() {
+        return v4 != null;
+    }
+
+    public Triple<V1, V2, V3> getTriple() {
+        return this;
+    }
+
+    public static <V1, V2, V3, V4> Quadruple<V1, V2, V3, V4> emptyQuadruple() {
+        return new Quadruple<>();
+    }
+
+    public static <V1, V2, V3, V4> Quadruple<V1, V2, V3, V4> ofQuadruple(V1 v1, V2 v2, V3 v3, V4 v4) {
+        return new Quadruple<>(v1, v2, v3, v4);
+    }
 }

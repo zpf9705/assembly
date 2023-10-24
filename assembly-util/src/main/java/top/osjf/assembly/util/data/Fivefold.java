@@ -51,4 +51,20 @@ public class Fivefold<V1, V2, V3, V4, V5> extends Quadruple<V1, V2, V3, V4> {
     public void setV5(V5 v5) {
         this.v5 = v5;
     }
+
+    public boolean isNotNull() {
+        return v5 != null;
+    }
+
+    public Quadruple<V1, V2, V3, V4> getQuadruple() {
+        return this;
+    }
+
+    public static <V1, V2, V3, V4, V5> Fivefold<V1, V2, V3, V4, V5> emptyFivefold() {
+        return new Fivefold<>();
+    }
+
+    public static <V1, V2, V3, V4, V5> Fivefold<V1, V2, V3, V4, V5> ofFivefold(V1 v1, V2 v2, V3 v3, V4 v4, V5 v5) {
+        return new Fivefold<>(v1, v2, v3, v4, v5);
+    }
 }

@@ -28,4 +28,16 @@ public class Single<V1> implements Serializable {
     public void setV1(V1 v1) {
         this.v1 = v1;
     }
+
+    public boolean isNotNull(){
+        return v1 != null;
+    }
+
+    public static <V1> Single<V1> emptySingle() {
+        return new Single<>();
+    }
+
+    public static <V1> Single<V1> ofSingle(V1 v1) {
+        return new Single<>(v1);
+    }
 }

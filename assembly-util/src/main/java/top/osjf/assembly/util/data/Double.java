@@ -33,4 +33,20 @@ public class Double<V1, V2> extends Single<V1> {
     public void setV2(V2 v2) {
         this.v2 = v2;
     }
+
+    public boolean isNotNull(){
+        return v2 != null;
+    }
+
+    public Single<V1> getSingle() {
+        return this;
+    }
+
+    public static <V1, V2> Double<V1, V2> emptyDouble() {
+        return new Double<>();
+    }
+
+    public static <V1, V2> Double<V1, V2> ofDouble(V1 v1, V2 v2) {
+        return new Double<>(v1, v2);
+    }
 }
