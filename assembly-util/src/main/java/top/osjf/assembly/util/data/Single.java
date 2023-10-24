@@ -4,8 +4,8 @@ import java.io.Serializable;
 
 /**
  * The encapsulation mode of a single object.
- * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @param <V1> One parameter.
+ * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
 public class Single<V1> implements Serializable {
