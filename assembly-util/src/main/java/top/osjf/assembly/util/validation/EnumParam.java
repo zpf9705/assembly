@@ -25,16 +25,14 @@ public @interface EnumParam {
     /**
      * A class object that enumerates objects.
      * <p>And it is necessary to implement {@link EnumValidate} and define some plans.
-     *
      * @return Must be filled in.
      * @see EnumValidate
      */
-    Class<? extends EnumValidate<? extends Enum<?>>> value();
+    Class<? extends EnumValidate<? extends Enum<?>, ?>> value();
 
     /**
      * Format language templates.
      * <p>Only when {@link #message()} is empty will its template be used.
-     *
      * @return {@link Language}.
      */
     Language language() default Language.CHINESE;
@@ -57,11 +55,13 @@ public @interface EnumParam {
             this.template = template;
         }
 
-        public String format(EnumValidate<? extends Enum<?>>[] rules) {
+        public String format(EnumValidate<? extends Enum<?>, ?>[] rules) {
             if (ArrayUtils.isEmpty(rules)) {
                 return null;
             }
-            return String.format(this.template, rules[0].getMean(),
+            return String.format(this.template,
+                    //Retrieve the enumeration object value by taking 1.
+                    rules[0].getMean(),
                     Arrays.stream(rules).map(rule -> rule.getSign() + " : " + rule.getDesc())
                             .collect(Collectors.joining(" ")));
         }
