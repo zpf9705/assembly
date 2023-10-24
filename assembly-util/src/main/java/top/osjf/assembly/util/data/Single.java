@@ -42,11 +42,11 @@ public class Single<V1> implements Serializable {
     }
 
     @SafeVarargs
-    public final <S, T> String toString0(T... args) {
+    protected final <T> String toString0(T... args) {
         StringBuilder builder = new StringBuilder(this.getClass().getSimpleName() + " : ");
         int index = 1;
         for (T arg : args) {
-            builder.append("V").append(index).append(" = ").append(arg).append(" ");
+            builder.append("V").append(index).append(" = ").append(arg).append(" | ");
             index++;
         }
         return builder.toString();
