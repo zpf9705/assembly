@@ -67,4 +67,9 @@ public class Fivefold<V1, V2, V3, V4, V5> extends Quadruple<V1, V2, V3, V4> {
     public static <V1, V2, V3, V4, V5> Fivefold<V1, V2, V3, V4, V5> ofFivefold(V1 v1, V2 v2, V3 v3, V4 v4, V5 v5) {
         return new Fivefold<>(v1, v2, v3, v4, v5);
     }
+
+    @Override
+    public String toString() {
+        return toString0(getV1(), getV2(), getV3(), getV4(), v5);
+    }
 }

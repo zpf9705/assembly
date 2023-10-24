@@ -29,7 +29,7 @@ public class Single<V1> implements Serializable {
         this.v1 = v1;
     }
 
-    public boolean isNotNull(){
+    public boolean isNotNull() {
         return v1 != null;
     }
 
@@ -39,5 +39,21 @@ public class Single<V1> implements Serializable {
 
     public static <V1> Single<V1> ofSingle(V1 v1) {
         return new Single<>(v1);
+    }
+
+    @SafeVarargs
+    public final <S, T> String toString0(T... args) {
+        StringBuilder builder = new StringBuilder(this.getClass().getSimpleName() + " : ");
+        int index = 1;
+        for (T arg : args) {
+            builder.append("V").append(index).append(" = ").append(arg).append(" ");
+            index++;
+        }
+        return builder.toString();
+    }
+
+    @Override
+    public String toString() {
+        return toString0(v1);
     }
 }

@@ -73,4 +73,9 @@ public class Sixfold<V1, V2, V3, V4, V5, V6> extends Fivefold<V1, V2, V3, V4, V5
                                                                                       V6 v6) {
         return new Sixfold<>(v1, v2, v3, v4, v5, v6);
     }
+
+    @Override
+    public String toString() {
+        return toString0(getV1(), getV2(), getV3(), getV4(), getV5(), v6);
+    }
 }

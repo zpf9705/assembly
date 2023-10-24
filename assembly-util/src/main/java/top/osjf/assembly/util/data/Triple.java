@@ -55,4 +55,9 @@ public class Triple<V1, V2, V3> extends Double<V1, V2> {
     public static <V1, V2, V3> Triple<V1, V2, V3> ofTriple(V1 v1, V2 v2, V3 v3) {
         return new Triple<>(v1, v2, v3);
     }
+
+    @Override
+    public String toString() {
+        return toString0(getV1(), getV2(), v3);
+    }
 }

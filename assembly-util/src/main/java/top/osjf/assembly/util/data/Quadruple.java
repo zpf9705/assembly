@@ -61,4 +61,9 @@ public class Quadruple<V1, V2, V3, V4> extends Triple<V1, V2, V3> {
     public static <V1, V2, V3, V4> Quadruple<V1, V2, V3, V4> ofQuadruple(V1 v1, V2 v2, V3 v3, V4 v4) {
         return new Quadruple<>(v1, v2, v3, v4);
     }
+
+    @Override
+    public String toString() {
+        return toString0(getV1(), getV2(), getV3(), v4);
+    }
 }

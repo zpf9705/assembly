@@ -34,7 +34,7 @@ public class Double<V1, V2> extends Single<V1> {
         this.v2 = v2;
     }
 
-    public boolean isNotNull(){
+    public boolean isNotNull() {
         return v2 != null;
     }
 
@@ -48,5 +48,10 @@ public class Double<V1, V2> extends Single<V1> {
 
     public static <V1, V2> Double<V1, V2> ofDouble(V1 v1, V2 v2) {
         return new Double<>(v1, v2);
+    }
+
+    @Override
+    public String toString() {
+        return toString0(getV1(), v2);
     }
 }
