@@ -6,7 +6,9 @@ package top.osjf.assembly.cache.factory;
  * <p>
  * Inherited the help center (i.e. cache operation entity) {@link HelpCenter} and recovery
  * center (i.e. implementation of subsequent cache recovery methods) {@link ReloadCenter}.
- *
+ * @param <C> The type of help center.
+ * @param <K> The type of key.
+ * @param <V> The type of value.
  * @author zpf
  * @since 1.0.0
  */

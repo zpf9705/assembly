@@ -5,7 +5,7 @@ package top.osjf.assembly.cache.factory;
  *
  * <p>Obtain a fully configured cache framework component based on this interface and place it
  * in its execution class to be called at runtime.</p>
- *
+ * @param <T> The type of help center.
  * @author zpf
  * @since 1.0.0
  */

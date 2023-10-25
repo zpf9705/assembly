@@ -8,7 +8,8 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Mainly applied to restart will persist the value of the recovery by using the method of the interface.
- *
+ * @param <K> The type of key.
+ * @param <V> The type of value.
  * @author zpf
  * @since 1.0.0
  */

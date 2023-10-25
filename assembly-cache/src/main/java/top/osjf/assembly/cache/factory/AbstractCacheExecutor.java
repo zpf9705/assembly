@@ -11,7 +11,7 @@ import top.osjf.assembly.util.annotation.NotNull;
  *
  * <p>The above approach is to achieve code simplification, clarity, and avoid byte
  * address changes (see {@link ByteIdentify} for details).
- *
+ * @param <T> The type of help center.
  * @author zpf
  * @since 1.0.0
  */
