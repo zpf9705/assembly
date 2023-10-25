@@ -43,18 +43,14 @@ public class EnumParamConstraintValidator implements ConstraintValidator<EnumPar
             //A single match is considered successful.
             return true;
         }
+        //If there is default information, throw the default information directly.
+        if (StringUtils.isNotBlank(enumParam.message())){
+            return false;
+        }
         // If the verification fails, assemble the prompt statement based on the language type.
         context.disableDefaultConstraintViolation(); // Disable default message values.
-        String failedMessage;
-        if (StringUtils.isNotBlank(enumParam.message())) {
-            //Prioritize using default messages.
-            failedMessage = enumParam.message();
-        } else {
-            //Secondly, format the template using language.
-            failedMessage = enumParam.language().format(validates);
-        }
         // Add error prompt statement again.
-        context.buildConstraintViolationWithTemplate(failedMessage)
+        context.buildConstraintViolationWithTemplate(enumParam.language().format(validates))
                 .addConstraintViolation();
         return false;
     }
