@@ -19,7 +19,7 @@ import java.util.Map;
  *
  * <p>On the basis of this interface, it can be extended, such as utilizing the request pattern
  * {@link top.osjf.assembly.simplified.sdk.http.HttpRequest} of HTTP to define special methods related to HTTP.</p>
- *
+ * @param <R> Implement a unified response class data type.
  * @author zpf
  * @since 1.1.0
  */
