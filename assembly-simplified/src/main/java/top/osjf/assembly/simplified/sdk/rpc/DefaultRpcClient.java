@@ -9,7 +9,7 @@ import java.util.function.BiConsumer;
 
 /**
  * RPC based request client and now no support , if necessary, support will be added in the future.
- *
+ * @param <T> Implement a unified response class data type.
  * @author zpf
  * @since 1.1.0
  */
