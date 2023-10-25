@@ -5,7 +5,7 @@ import top.osjf.assembly.util.annotation.NotNull;
 /**
  * Expand the functionality of interface {@link Comparable} to convert results greater than
  * {@code 0} to {@code true} output, and results less than {@code 0} to {@code false} output.
- *
+ * @param <T> Compare the types of data.
  * @author zpf
  * @since 1.0.0
  */

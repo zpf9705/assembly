@@ -21,7 +21,8 @@ import java.util.Objects;
  * <p>Rewritten the {@link #equals(Object)} method, requiring the class class to
  * be {@link Identify} or its subclasses in order to perform {@code hashcode} calculations,
  * and requiring equality.
- *
+ * @param <T> The type of packaging data.
+ * @param <SELF> Compare the types of data.
  * @author zpf
  * @since 1.0.0
  */
