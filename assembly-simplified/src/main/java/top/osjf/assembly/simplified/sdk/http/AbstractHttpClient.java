@@ -21,7 +21,7 @@ import java.util.function.BiConsumer;
  * {@link #preResponseStrHandler(Request, String)} The default response is in JSON form, without conversion,
  * and returns directly.<br>
  * {@link #convertToResponse(Request, String)} Directly converts the JSON form to the desired response type.<br>
- *
+ * @param <R> Implement a unified response class data type.
  * @author zpf
  * @since 1.1.1
  */

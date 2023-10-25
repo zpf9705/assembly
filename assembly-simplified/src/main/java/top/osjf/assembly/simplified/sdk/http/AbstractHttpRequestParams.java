@@ -39,7 +39,7 @@ import top.osjf.assembly.util.json.FastJsonUtils;
  *     }
  * }}
  * </pre>
- *
+ * @param <R> Implement a unified response class data type.
  * @author zpf
  * @since 1.1.1
  */

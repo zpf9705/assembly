@@ -20,7 +20,7 @@ import top.osjf.assembly.simplified.sdk.process.Request;
  *
  * <p>Of course, the final conversion is still the response implementation class {@link HttpRequest} that
  * you defined for {@link #getResponseCls()}.
- *
+ * @param <R> Implement a unified response class data type.
  * @author zpf
  * @since 1.1.1
  */

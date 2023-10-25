@@ -19,7 +19,7 @@ import java.util.Map;
  *
  * <p>Of course, you can define your request based on the {@link #doRequest(HttpRequestMethod, Map, Object, Boolean)}
  * method.
- *
+ * @param <R> Implement a unified response class data type.
  * @author zpf
  * @since 1.1.1
  */
