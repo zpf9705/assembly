@@ -22,7 +22,7 @@ import java.util.function.Supplier;
  *
  * <p>If you do not need the above purpose, you can directly implement the {@link Client} interface to rewrite
  * the necessary methods.
- *
+ * @param <R> Implement a unified response class data type.
  * @author zpf
  * @since 1.1.0
  */

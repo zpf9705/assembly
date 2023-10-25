@@ -10,7 +10,7 @@ import top.osjf.assembly.simplified.sdk.process.Response;
  *
  * <p>The current parameters can be obtained at any time in various parts of the cycle, which facilitates
  * subsequent parameter extension operations
- *
+ * @param <R> Implement a unified response class data type.
  * @author zpf
  * @since 1.1.0
  */

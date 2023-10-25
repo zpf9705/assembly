@@ -6,7 +6,7 @@ import top.osjf.assembly.util.annotation.NotNull;
 
 /**
  * A custom processing scheme for response string conversion {@link Response}.
- *
+ * @param <R> Implement a unified response class data type.
  * @author zpf
  * @since 1.1.0
  */

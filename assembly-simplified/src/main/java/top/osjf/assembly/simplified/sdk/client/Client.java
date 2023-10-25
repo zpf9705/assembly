@@ -19,7 +19,7 @@ import java.io.Serializable;
  * Each process has a corresponding interface method, which you can override to customize method conversion.
  *
  * <p>There are also well-defined abstract classes {@link AbstractClient} here to learn about.</p>
- *
+ * @param <R> Implement a unified response class data type.
  * @author zpf
  * @since 1.1.0
  */
