@@ -23,7 +23,7 @@ import java.io.Serializable;
  * <p>When these interfaces are called through the spring container, We will uniformly bring the parameters
  * to the proxy object and connect them to our {@link top.osjf.assembly.simplified.sdk.client.ClientExecutors}
  * processing through this class.
- *
+ * @param <T> The data type of the proxy class.
  * @author zpf
  * @since 1.1.0
  */

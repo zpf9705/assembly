@@ -26,7 +26,7 @@ import java.lang.reflect.Method;
  *
  * <p>Simply obtain the host parameter from the corresponding proxy class
  * entity to complete the SDK request.
- *
+ * @param <T> The data type of the proxy class.
  * @author zpf
  * @since 1.1.0
  */
