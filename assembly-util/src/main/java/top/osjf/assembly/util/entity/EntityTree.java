@@ -34,6 +34,8 @@ import java.util.stream.Collectors;
  * @see Node
  * @see EntityConsumer
  * @see TreeData
+ * @param <T> The type of tree structured data.
+ * @param <E> Subclass types of tree structure components.
  * @author zpf
  * @since 1.0.4
  */

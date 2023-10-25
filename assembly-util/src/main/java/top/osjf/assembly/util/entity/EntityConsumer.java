@@ -9,6 +9,8 @@ import java.util.function.Consumer;
  * @see Node
  * @see EntityTree
  * @see TreeData
+ * @param <T> The type of tree structured data.
+ * @param <E> Subclass types of tree structure components.
  * @author zpf
  * @since 1.0.4
  */

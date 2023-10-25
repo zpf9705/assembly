@@ -19,6 +19,7 @@ import java.util.List;
  * @see EntityTree
  * @see EntityConsumer
  * @see Node
+ * @param <T> The type of tree structured data.
  * @author zpf
  * @since 1.0.4
  */
