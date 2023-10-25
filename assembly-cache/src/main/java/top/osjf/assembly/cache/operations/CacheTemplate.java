@@ -31,7 +31,8 @@ import java.util.Map;
  * When the configuration is completed of this class are thread safe operation.
  * <p>
  * <b>his is the central class in Expiry support</b>
- *
+ * @param <K> The type of key.
+ * @param <V> The type of value.
  * @author zpf
  * @since 1.0.0
  **/

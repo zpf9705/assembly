@@ -7,7 +7,8 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Cache operations for simple (or in Expiring terminology 'string' 'object') values.
- *
+ * @param <K> The type of key.
+ * @param <V> The type of value.
  * @author zpf
  * @since 1.0.0
  **/

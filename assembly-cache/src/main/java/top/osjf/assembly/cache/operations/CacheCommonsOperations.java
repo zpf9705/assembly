@@ -17,7 +17,8 @@ import java.util.Map;
  * <p>
  * In the future, the interface can be inherited by the addition of cache components and method extensions,
  * Alternatively, add and implement on top of this interface.
- *
+ * @param <K> The type of key.
+ * @param <V> The type of value.
  * @author zpf
  * @since 1.0.0
  **/
