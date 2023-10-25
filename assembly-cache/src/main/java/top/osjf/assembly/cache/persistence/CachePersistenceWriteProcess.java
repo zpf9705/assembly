@@ -4,7 +4,8 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Cache persistent file writing process definition method interface.
- *
+ * @param <K> the type of keys maintained by this cache.
+ * @param <V> the type of cache values.
  * @author zpf
  * @since 1.0.0
  */

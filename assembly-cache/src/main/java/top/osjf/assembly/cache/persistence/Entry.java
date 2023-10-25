@@ -7,7 +7,8 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Cached indicator attribute class.
- *
+ * @param <K> the type of keys maintained by this cache.
+ * @param <V> the type of cache values.
  * @author zpf
  * @since 1.0.0
  **/
