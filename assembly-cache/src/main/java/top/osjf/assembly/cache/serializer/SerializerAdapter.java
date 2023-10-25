@@ -5,7 +5,7 @@ import top.osjf.assembly.util.serial.SerialUtils;
 
 /**
  * Key/value pairs serialized adapter , direct implementation {@link PairSerializer}.
- *
+ * @param <T> Object type.
  * @author zpf
  * @since 1.0.0
  **/
