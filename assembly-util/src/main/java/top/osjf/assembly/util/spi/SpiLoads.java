@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 /**
  * Program interface loader tool, mainly used for the set of query interface implementation class.
- *
+ * @param <T> The type of collection group.
  * @author zpf
  * @since 1.0.0
  */
