@@ -48,7 +48,7 @@ import java.util.function.Supplier;
  *                     }
  *                 });}
  * </pre>
- *
+ * @param <T> The type of runtime.
  * @author zpf
  * @since 1.0.0
  */

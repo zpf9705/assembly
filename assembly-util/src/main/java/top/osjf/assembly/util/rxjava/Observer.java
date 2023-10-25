@@ -22,7 +22,7 @@ import java.util.function.Supplier;
  * as the handling strategy when the {@link BackpressureStrategy} upstream and downstream speeds
  * are inconsistent, You can also go to specific websites to learn more.
  * <a href="https://www.dazhuanlan.com/unclebill/topics/1173554">BackpressureStrategy introduce.</a>
- *
+ * @param <T> The type of runtime.
  * @author zpf
  * @since 1.0.0
  */
