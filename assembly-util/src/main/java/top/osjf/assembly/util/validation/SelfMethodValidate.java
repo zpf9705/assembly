@@ -8,6 +8,7 @@ import java.lang.annotation.*;
  * The automatic verification of one's own method is carried out by the colleague
  * wearing this annotation to implement {@link MethodValidate}, rewrite its method,
  * call it automatically at runtime, and throw the specified error.
+ * <p>
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
@@ -24,7 +25,7 @@ public @interface SelfMethodValidate {
      * Its priority program is lower than {@link #message()}.
      * @return Class Object within {@link Error}.
      */
-    Class<Error> errorReply() default Error.class;
+    Class<? extends Error> errorReply() default Error.class;
 
     String message() default "";
 
