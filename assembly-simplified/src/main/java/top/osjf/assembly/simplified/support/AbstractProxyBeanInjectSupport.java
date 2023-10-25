@@ -46,7 +46,8 @@ import java.util.Set;
  *
  * <p>Implementation {@link EnvironmentPostProcessor} provides task methods to scan the application
  * default when the package path is not provided.{@link Class#getPackage()}</p>
- *
+ * @param <O> Open the type of class annotation.
+ * @param <F> The type of informational annotation.
  * @author zpf
  * @since 1.1.0
  */
