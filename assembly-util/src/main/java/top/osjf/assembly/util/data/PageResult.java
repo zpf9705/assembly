@@ -8,8 +8,9 @@ import java.util.function.Consumer;
 
 /**
  * Suggested pagination result encapsulation.
- *
+ * @param <T> The type of result set item
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
+ * @since 1.0.4
  */
 public class PageResult<T> implements Serializable, PageAfter<T> {
 

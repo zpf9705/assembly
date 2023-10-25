@@ -17,7 +17,9 @@ import java.util.function.Consumer;
 
 /**
  * The post pagination operation allows for special processing of pagination results.
+ * @param <T> The type of result set item
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
+ * @since 1.0.4
  */
 public interface PageAfter<T> {
 
