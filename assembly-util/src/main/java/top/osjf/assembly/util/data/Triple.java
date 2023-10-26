@@ -1,7 +1,10 @@
 package top.osjf.assembly.util.data;
 
+import java.util.Objects;
+
 /**
  * The encapsulation mode of three objects.
+ *
  * @param <V1> One parameter.
  * @param <V2> Two parameter.
  * @param <V3> Three parameter.
@@ -29,7 +32,11 @@ public class Triple<V1, V2, V3> extends Double<V1, V2> {
     }
 
     public Triple(Double<V1, V2> doubles, V3 v3) {
+        Objects.requireNonNull(doubles);
         this.doubles = doubles;
+        setSingle(doubles.getSingle());
+        setV1(doubles.getV1());
+        setV2(doubles.getV2());
         this.v3 = v3;
     }
 
@@ -84,7 +91,7 @@ public class Triple<V1, V2, V3> extends Double<V1, V2> {
     }
 
     public static <V1, V2, V3> Triple<V1, V2, V3> ofTripleWithDouble(V1 v1, V2 v2, V3 v3) {
-        return ofTriple(ofDoubleWithSingle(v1, v2), v3);
+        return ofTriple(ofDoubleWithSingle(v1, v2),v3);
     }
 
     @Override

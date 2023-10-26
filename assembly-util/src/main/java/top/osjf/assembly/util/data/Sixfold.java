@@ -1,5 +1,7 @@
 package top.osjf.assembly.util.data;
 
+import java.util.Objects;
+
 /**
  * The encapsulation mode of six objects.
  * @param <V1> One parameter.
@@ -31,7 +33,17 @@ public class Sixfold<V1, V2, V3, V4, V5, V6> extends Fivefold<V1, V2, V3, V4, V5
     }
 
     public Sixfold(Fivefold<V1, V2, V3, V4, V5> fivefold, V6 v6) {
+        Objects.requireNonNull(fivefold);
         this.fivefold = fivefold;
+        setSingle(fivefold.getSingle());
+        setDouble(fivefold.getDouble());
+        setTriple(fivefold.getTriple());
+        setQuadruple(fivefold.getQuadruple());
+        setV1(fivefold.getV1());
+        setV2(fivefold.getV2());
+        setV3(fivefold.getV3());
+        setV4(fivefold.getV4());
+        setV5(fivefold.getV5());
         this.v6 = v6;
     }
 

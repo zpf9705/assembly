@@ -1,5 +1,7 @@
 package top.osjf.assembly.util.data;
 
+import java.util.Objects;
+
 /**
  * Double object encapsulation mode.
  * @param <V1> One parameter.
@@ -28,7 +30,9 @@ public class Double<V1, V2> extends Single<V1> {
     }
 
     public Double(Single<V1> single, V2 v2) {
+        Objects.requireNonNull(single);
         this.single = single;
+        setV1(single.getV1());
         this.v2 = v2;
     }
 
@@ -56,6 +60,7 @@ public class Double<V1, V2> extends Single<V1> {
 
     public void setSingle(Single<V1> single) {
         this.single = single;
+        setV1(single.getV1());
     }
 
     public Single<V1> getSingle() {

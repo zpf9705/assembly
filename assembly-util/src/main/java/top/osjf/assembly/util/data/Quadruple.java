@@ -1,5 +1,7 @@
 package top.osjf.assembly.util.data;
 
+import java.util.Objects;
+
 /**
  * The encapsulation mode of four objects.
  * @param <V1> One parameter.
@@ -30,7 +32,13 @@ public class Quadruple<V1, V2, V3, V4> extends Triple<V1, V2, V3> {
     }
 
     public Quadruple(Triple<V1, V2, V3> triple, V4 v4) {
+        Objects.requireNonNull(triple);
         this.triple = triple;
+        setSingle(triple.getSingle());
+        setDouble(triple.getDouble());
+        setV1(triple.getV1());
+        setV2(triple.getV2());
+        setV3(triple.getV3());
         this.v4 = v4;
     }
 

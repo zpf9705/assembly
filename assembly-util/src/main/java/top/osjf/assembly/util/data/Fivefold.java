@@ -1,5 +1,7 @@
 package top.osjf.assembly.util.data;
 
+import java.util.Objects;
+
 /**
  * The encapsulation mode of five objects.
  * @param <V1> One parameter.
@@ -31,7 +33,15 @@ public class Fivefold<V1, V2, V3, V4, V5> extends Quadruple<V1, V2, V3, V4> {
     }
 
     public Fivefold(Quadruple<V1, V2, V3, V4> quadruple, V5 v5) {
+        Objects.requireNonNull(quadruple);
         this.quadruple = quadruple;
+        setSingle(quadruple.getSingle());
+        setDouble(quadruple.getDouble());
+        setTriple(quadruple.getTriple());
+        setV1(quadruple.getV1());
+        setV2(quadruple.getV2());
+        setV3(quadruple.getV3());
+        setV4(quadruple.getV4());
         this.v5 = v5;
     }
 
