@@ -15,5 +15,5 @@ public interface Error {
 
     Error DEFAULT = () -> "An unknown error occurred during model validation.";
 
-    String getError();
+    String message();
 }

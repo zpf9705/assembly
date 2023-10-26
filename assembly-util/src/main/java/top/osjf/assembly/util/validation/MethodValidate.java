@@ -15,8 +15,8 @@ import java.util.function.Supplier;
  */
 public interface MethodValidate {
 
-    String name = "getValidate";
+    String name = "validate";
 
     @NotNull
-    Supplier<Boolean> getValidate();
+    Supplier<Boolean> validate();
 }
