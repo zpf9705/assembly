@@ -2,7 +2,6 @@ package top.osjf.assembly.util.data;
 
 /**
  * The encapsulation mode of four objects.
- *
  * @param <V1> One parameter.
  * @param <V2> Two parameter.
  * @param <V3> Three parameter.
