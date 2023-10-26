@@ -67,6 +67,10 @@ public class Fivefold<V1, V2, V3, V4, V5> extends Quadruple<V1, V2, V3, V4> {
         return v5 != null;
     }
 
+    public boolean isChinNotNull() {
+        return super.isChinNotNull() && isNotNull();
+    }
+
     public Quadruple<V1, V2, V3, V4> getQuadruple() {
         return quadruple;
     }

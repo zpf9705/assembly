@@ -50,6 +50,10 @@ public class Double<V1, V2> extends Single<V1> {
         return v2 != null;
     }
 
+    public boolean isChinNotNull() {
+        return super.isNotNull() && isNotNull();
+    }
+
     public void setSingle(Single<V1> single) {
         this.single = single;
     }

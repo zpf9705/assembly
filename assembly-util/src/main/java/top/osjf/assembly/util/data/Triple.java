@@ -55,6 +55,10 @@ public class Triple<V1, V2, V3> extends Double<V1, V2> {
         return v3 != null;
     }
 
+    public boolean isChinNotNull() {
+        return super.isChinNotNull() && isNotNull();
+    }
+
     public void setDouble(Double<V1, V2> doubles) {
         this.doubles = doubles;
     }

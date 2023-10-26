@@ -61,6 +61,10 @@ public class Quadruple<V1, V2, V3, V4> extends Triple<V1, V2, V3> {
         return v4 != null;
     }
 
+    public boolean isChinNotNull() {
+        return super.isChinNotNull() && isNotNull();
+    }
+
     public Triple<V1, V2, V3> getTriple() {
         return triple;
     }

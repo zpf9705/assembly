@@ -72,6 +72,10 @@ public class Sixfold<V1, V2, V3, V4, V5, V6> extends Fivefold<V1, V2, V3, V4, V5
         return v6 != null;
     }
 
+    public boolean isChinNotNull() {
+        return super.isChinNotNull() && isNotNull();
+    }
+
     public Fivefold<V1, V2, V3, V4, V5> getFivefold() {
         return fivefold;
     }
