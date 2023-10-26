@@ -11,15 +11,27 @@ public class Double<V1, V2> extends Single<V1> {
 
     private static final long serialVersionUID = 6107071398688956138L;
 
+    private Single<V1> single;
+
     private V2 v2;
 
     public Double() {
         super();
     }
 
+    public Double(Single<V1> single) {
+        this(single, null);
+    }
+
     public Double(V2 v2) {
         this.v2 = v2;
     }
+
+    public Double(Single<V1> single, V2 v2) {
+        this.single = single;
+        this.v2 = v2;
+    }
+
 
     public Double(V1 v1, V2 v2) {
         super(v1);
@@ -38,7 +50,15 @@ public class Double<V1, V2> extends Single<V1> {
         return v2 != null;
     }
 
+    public void setSingle(Single<V1> single) {
+        this.single = single;
+    }
+
     public Single<V1> getSingle() {
+        return single;
+    }
+
+    public Single<V1> getSelfSingle() {
         return this;
     }
 
@@ -48,6 +68,14 @@ public class Double<V1, V2> extends Single<V1> {
 
     public static <V1, V2> Double<V1, V2> ofDouble(V1 v1, V2 v2) {
         return new Double<>(v1, v2);
+    }
+
+    public static <V1, V2> Double<V1, V2> ofDouble(Single<V1> single, V2 v2) {
+        return new Double<>(single, v2);
+    }
+
+    public static <V1, V2> Double<V1, V2> ofDoubleWithSingle(V1 v1, V2 v2) {
+        return ofDouble(ofSingle(v1), v2);
     }
 
     @Override
