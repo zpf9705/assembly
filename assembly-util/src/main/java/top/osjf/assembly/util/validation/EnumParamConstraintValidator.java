@@ -3,6 +3,7 @@ package top.osjf.assembly.util.validation;
 import top.osjf.assembly.util.lang.ArrayUtils;
 import top.osjf.assembly.util.lang.StringUtils;
 
+import javax.validation.ConstraintDeclarationException;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.Arrays;
@@ -27,7 +28,7 @@ public class EnumParamConstraintValidator implements ConstraintValidator<EnumPar
         this.validates = enumParam.value().getEnumConstants();
         if (ArrayUtils.isEmpty(validates)) {
             //Here, a validation exception is directly thrown for empty enumeration values.
-            throw new IllegalArgumentException("No enumeration values were " +
+            throw new ConstraintDeclarationException("No enumeration values were " +
                     "found in " + enumParam.value().getName() + ", unable to perform validation operation.");
         }
     }
