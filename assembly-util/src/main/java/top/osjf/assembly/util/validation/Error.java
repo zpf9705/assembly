@@ -11,7 +11,7 @@ package top.osjf.assembly.util.validation;
 @FunctionalInterface
 public interface Error {
 
-    String name = "getError";
+    String name = "message";
 
     Error DEFAULT = () -> "An unknown error occurred during model validation.";
 
