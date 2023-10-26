@@ -15,12 +15,23 @@ public class Sixfold<V1, V2, V3, V4, V5, V6> extends Fivefold<V1, V2, V3, V4, V5
 
     private static final long serialVersionUID = 6202478729301216928L;
 
+    private Fivefold<V1, V2, V3, V4, V5> fivefold;
+
     private V6 v6;
 
     public Sixfold() {
     }
 
+    public Sixfold(Fivefold<V1, V2, V3, V4, V5> fivefold) {
+        this(fivefold, null);
+    }
+
     public Sixfold(V6 v6) {
+        this.v6 = v6;
+    }
+
+    public Sixfold(Fivefold<V1, V2, V3, V4, V5> fivefold, V6 v6) {
+        this.fivefold = fivefold;
         this.v6 = v6;
     }
 
@@ -62,6 +73,14 @@ public class Sixfold<V1, V2, V3, V4, V5, V6> extends Fivefold<V1, V2, V3, V4, V5
     }
 
     public Fivefold<V1, V2, V3, V4, V5> getFivefold() {
+        return fivefold;
+    }
+
+    public void setFivefold(Fivefold<V1, V2, V3, V4, V5> fivefold) {
+        this.fivefold = fivefold;
+    }
+
+    public Fivefold<V1, V2, V3, V4, V5> getSelfFivefold() {
         return this;
     }
 
@@ -69,9 +88,19 @@ public class Sixfold<V1, V2, V3, V4, V5, V6> extends Fivefold<V1, V2, V3, V4, V5
         return new Sixfold<>();
     }
 
-    public static <V1, V2, V3, V4, V5, V6> Sixfold<V1, V2, V3, V4, V5, V6> ofFivefold(V1 v1, V2 v2, V3 v3, V4 v4, V5 v5,
-                                                                                      V6 v6) {
+    public static <V1, V2, V3, V4, V5, V6> Sixfold<V1, V2, V3, V4, V5, V6> ofSixfold(V1 v1, V2 v2, V3 v3, V4 v4, V5 v5,
+                                                                                     V6 v6) {
         return new Sixfold<>(v1, v2, v3, v4, v5, v6);
+    }
+
+    public static <V1, V2, V3, V4, V5, V6> Sixfold<V1, V2, V3, V4, V5, V6> ofSixfold(Fivefold<V1, V2, V3, V4, V5>
+                                                                                             fivefold, V6 v6) {
+        return new Sixfold<>(fivefold, v6);
+    }
+
+    public static <V1, V2, V3, V4, V5, V6> Sixfold<V1, V2, V3, V4, V5, V6> ofSixfoldWithFiveFold(V1 v1, V2 v2, V3 v3,
+                                                                                                 V4 v4, V5 v5, V6 v6) {
+        return ofSixfold(ofFivefoldWithQuadruple(v1, v2, v3, v4, v5), v6);
     }
 
     @Override
