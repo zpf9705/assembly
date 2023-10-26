@@ -2,6 +2,7 @@ package top.osjf.assembly.util.data;
 
 /**
  * The encapsulation mode of four objects.
+ *
  * @param <V1> One parameter.
  * @param <V2> Two parameter.
  * @param <V3> Three parameter.
@@ -13,13 +14,24 @@ public class Quadruple<V1, V2, V3, V4> extends Triple<V1, V2, V3> {
 
     private static final long serialVersionUID = -8796183124403343408L;
 
+    private Triple<V1, V2, V3> triple;
+
     private V4 v4;
 
     public Quadruple() {
         super();
     }
 
+    public Quadruple(Triple<V1, V2, V3> triple) {
+        this(triple, null);
+    }
+
     public Quadruple(V4 v4) {
+        this.v4 = v4;
+    }
+
+    public Quadruple(Triple<V1, V2, V3> triple, V4 v4) {
+        this.triple = triple;
         this.v4 = v4;
     }
 
@@ -51,6 +63,14 @@ public class Quadruple<V1, V2, V3, V4> extends Triple<V1, V2, V3> {
     }
 
     public Triple<V1, V2, V3> getTriple() {
+        return triple;
+    }
+
+    public void setTriple(Triple<V1, V2, V3> triple) {
+        this.triple = triple;
+    }
+
+    public Triple<V1, V2, V3> getSelfTriple() {
         return this;
     }
 
@@ -60,6 +80,14 @@ public class Quadruple<V1, V2, V3, V4> extends Triple<V1, V2, V3> {
 
     public static <V1, V2, V3, V4> Quadruple<V1, V2, V3, V4> ofQuadruple(V1 v1, V2 v2, V3 v3, V4 v4) {
         return new Quadruple<>(v1, v2, v3, v4);
+    }
+
+    public static <V1, V2, V3, V4> Quadruple<V1, V2, V3, V4> ofQuadruple(Triple<V1, V2, V3> triple, V4 v4) {
+        return new Quadruple<>(triple, v4);
+    }
+
+    public static <V1, V2, V3, V4> Quadruple<V1, V2, V3, V4> ofQuadrupleWithTriple(V1 v1, V2 v2, V3 v3, V4 v4) {
+        return ofQuadruple(ofTripleWithDouble(v1, v2, v3), v4);
     }
 
     @Override
