@@ -47,12 +47,12 @@ public class MethodValidateConstraintValidator implements ConstraintValidator<Se
                                 "ensure that the return value is [java. util. function. Supplier]");
             }
         }
-        //Execution result does not want to be empty.
-        Objects.requireNonNull(validSupplier, "The executor does not want to be empty.");
         //The run value must be of Boolean type.
         Object result = validSupplier.get();
+        //The type of return value needs to be provided as: Supplier<Boolean>
         if (!(result instanceof Boolean)) {
-            throw new ConstraintDeclarationException("The run value must be of Boolean type.");
+            throw new ConstraintDeclarationException("The type of return value needs to be provided " +
+                    "as: Supplier<Boolean>");
         }
         if ((Boolean) result) {
             //Obtain the true result and proceed directly.
@@ -67,21 +67,43 @@ public class MethodValidateConstraintValidator implements ConstraintValidator<Se
         // classes to retrieve information.
         context.disableDefaultConstraintViolation();
         Class<? extends Error> errorClass = selfMethodValidate.errorReply();
+        //Specify a default information first.
         String failedMessageTemplate;
         if (Objects.equals(errorClass, Error.class)) {
-            //Prioritize using reflection lookup to ignore case.
-            failedMessageTemplate = ReflectUtils.getAndCheckMethodValue(
-                    Sixfold.ofSixfoldWithFiveFold(validate, Error.name, true, String.class, null, null));
-            if (StringUtils.isBlank(failedMessageTemplate)) {
-                //Error.class use default
-                failedMessageTemplate = Error.DEFAULT.message();
-            }
+            failedMessageTemplate = ifErrorClassDefault(validate);
         } else {
-            //Instantiate and take it.
-            failedMessageTemplate = ReflectUtils.newInstance(errorClass).message();
+            failedMessageTemplate = instantiateReplyMessage(errorClass);
         }
         context.buildConstraintViolationWithTemplate(failedMessageTemplate)
                 .addConstraintViolation();
         return false;
+    }
+
+    private String ifErrorClassDefault(Object validate){
+        String failedMessage;
+        //If using a high default exception dependency.
+        if (validate instanceof Error) {
+            failedMessage = ((Error) validate).message();
+        } else {
+            //next using reflection lookup to ignore case.
+            failedMessage = ReflectUtils.getAndCheckMethodValue(
+                    Sixfold.ofSixfoldWithFiveFold(validate, Error.name, true, String.class,
+                            null, null));
+        }
+        if (StringUtils.isBlank(failedMessage)) {
+            failedMessage = Error.DEFAULT.message();
+        }
+        return failedMessage;
+    }
+
+    private String instantiateReplyMessage(Class<? extends Error> errorClass) {
+        //If an incorrect attachment is specified,
+        // then instantiate and obtain method information.
+        //Please ensure that there are available constructions.
+        String failedMessage = ReflectUtils.newInstance(errorClass).message();
+        if (StringUtils.isBlank(failedMessage)) {
+            failedMessage = Error.DEFAULT.message();
+        }
+        return failedMessage;
     }
 }
