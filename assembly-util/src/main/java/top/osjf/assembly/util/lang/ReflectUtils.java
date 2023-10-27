@@ -29,6 +29,8 @@ public final class ReflectUtils extends ReflectUtil {
      * @param folds Six parameter bearing object.
      * @param <T>   Expected the type of return value allowed.
      * @return The return value of the execution method can be allowed to be empty.
+     * @throws NoSuchMethodException Method not found error.
+     * @throws MethodReturnTypeNoEqualException An error where the expected return value type is inconsistent.
      */
     @CanNull
     public static <T> T getAndCheckMethodValue(Sixfold<Object, String, Boolean, Class<T>, Class<?>[],
