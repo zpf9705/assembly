@@ -1,6 +1,7 @@
 package top.osjf.assembly.util.validation;
 
 import top.osjf.assembly.util.data.Sixfold;
+import top.osjf.assembly.util.lang.MethodReturnTypeNoEqualException;
 import top.osjf.assembly.util.lang.ReflectUtils;
 import top.osjf.assembly.util.lang.StringUtils;
 
@@ -79,14 +80,7 @@ public class MethodValidateConstraintValidator implements ConstraintValidator<Se
             //Reflect to find methods with the same name and return
             // value or return value as Boolean.
             //Method names can ignore case.
-            validSupplier = ReflectUtils.getAndCheckMethodValue(Sixfold.ofSixfoldWithFiveFold(
-                    validate, MethodValidate.name, true, Supplier.class, null, null));
-            if (validSupplier == null) {
-                throw new ConstraintDeclarationException(
-                        "If your self check body does not implement [top.osjf.assembly.util.validation" +
-                                ".MethodValidate],then you need to provide a method named [getValidate] to " +
-                                "ensure that the return value is [java. util. function. Supplier]");
-            }
+            validSupplier = getAndCheckMethodValue(validate, MethodValidate.name, Supplier.class);
         }
         return validSupplier;
     }
@@ -99,9 +93,7 @@ public class MethodValidateConstraintValidator implements ConstraintValidator<Se
             failedMessage = ((Error) validate).message();
         } else {
             //next using reflection lookup to ignore case.
-            failedMessage = ReflectUtils.getAndCheckMethodValue(
-                    Sixfold.ofSixfoldWithFiveFold(validate, Error.name, true, String.class,
-                            null, null));
+            failedMessage = getAndCheckMethodValue(validate, Error.name, String.class);
         }
         if (StringUtils.isBlank(failedMessage)) {
             failedMessage = Error.DEFAULT.message();
@@ -119,5 +111,22 @@ public class MethodValidateConstraintValidator implements ConstraintValidator<Se
             failedMessage = Error.DEFAULT.message();
         }
         return failedMessage;
+    }
+
+    //@since 1.0.5
+    private <T> T getAndCheckMethodValue(Object validate, String methodName, Class<T> requiredType) {
+        T result;
+        try {
+            result = ReflectUtils.getAndCheckMethodValue(
+                    Sixfold.ofSixfoldWithFiveFold(validate, methodName, true, requiredType,
+                            null, null));
+        } catch (NoSuchMethodException e) {
+            throw new ConstraintDeclarationException(
+                    "Self check body does not hava method named [" + methodName + "]");
+        } catch (MethodReturnTypeNoEqualException e) {
+            throw new ConstraintDeclarationException(
+                    "Ensure the method named [" + methodName + "] return value is [" + requiredType.getName() + "]");
+        }
+        return result;
     }
 }
