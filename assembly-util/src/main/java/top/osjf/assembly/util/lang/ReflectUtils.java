@@ -32,9 +32,11 @@ public final class ReflectUtils extends ReflectUtil {
      */
     @CanNull
     public static <T> T getAndCheckMethodValue(Sixfold<Object, String, Boolean, Class<T>, Class<?>[],
-            Object[]> folds) {
+            Object[]> folds) throws NoSuchMethodException, MethodReturnTypeNoEqualException {
         if (folds == null || !folds.getQuadruple().isChinNotNull()) {
-            return null;
+            throw new IllegalArgumentException(
+                    "The main parameter and the first four parameters of the main parameter cannot be empty."
+            );
         }
         //-----not be null------//
         final Object obj = folds.getV1();
@@ -47,11 +49,11 @@ public final class ReflectUtils extends ReflectUtil {
         //-----method find----//
         Method method = getMethod(obj.getClass(), ignoredMethodNameCase, methodName, methodParamTypes);
         if (method == null) {
-            return null;
+            throw new NoSuchMethodException(methodName);
         }
         //-----check requiredType----//
         if (!Objects.equals(method.getReturnType(), requiredType)) {
-            return null;
+            throw new MethodReturnTypeNoEqualException(requiredType, method.getReturnType());
         }
         //-----method invoke----//
         Object result = invoke(obj, method, methodInvokeParams);
