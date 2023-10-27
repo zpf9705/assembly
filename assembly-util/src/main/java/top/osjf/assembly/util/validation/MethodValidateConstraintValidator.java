@@ -30,7 +30,48 @@ public class MethodValidateConstraintValidator implements ConstraintValidator<Se
     @Override
     @SuppressWarnings("rawtypes")
     public boolean isValid(Object validate, ConstraintValidatorContext context) {
-        Objects.requireNonNull(validate, "The checksum does not want to be empty.");
+        if (validate == null) {
+            throw new ConstraintDeclarationException("The checksum does not want to be empty.");
+        }
+        Supplier validSupplier = getValidSupplier(validate);
+        //The run value must be of Boolean type.
+        Object result = validSupplier.get();
+        //The type of return value needs to be provided as: Supplier<Boolean>
+        if (!(result instanceof Boolean)) {
+            throw new ConstraintDeclarationException("The type of return value needs to be provided " +
+                    "as: Supplier<Boolean>");
+        }
+        if ((Boolean) result) {
+            //Obtain the true result and proceed directly.
+            return true;
+        }
+        //If there is a message, the exception information
+        // of the message will be thrown first.
+        if (StringUtils.isNotBlank(selfMethodValidate.message())) {
+            return false;//The required Boolean value thrown.
+        }
+        //Secondly, disable default information and use dependent
+        // classes to retrieve information.
+        context.disableDefaultConstraintViolation(); //Disable default messages first
+        Class<? extends Error> errorClass = selfMethodValidate.errorReply();
+        //Specify a default information first.
+        String failedMessageTemplate;
+        if (Objects.equals(errorClass, Error.class)) {
+            //see ifErrorClassDefault
+            failedMessageTemplate = ifErrorClassDefault(validate);
+        } else {
+            //see instantiateReplyMessage
+            failedMessageTemplate = instantiateReplyMessage(errorClass);
+        }
+        //Insert a new information template
+        context.buildConstraintViolationWithTemplate(failedMessageTemplate)
+                .addConstraintViolation();
+        return false;//The required Boolean value thrown.
+    }
+
+    //@since 1.0.5
+    @SuppressWarnings("rawtypes")
+    private Supplier getValidSupplier(Object validate) {
         Supplier validSupplier;
         if (validate instanceof MethodValidate) {
             validSupplier = ((MethodValidate) validate).validate();
@@ -47,39 +88,11 @@ public class MethodValidateConstraintValidator implements ConstraintValidator<Se
                                 "ensure that the return value is [java. util. function. Supplier]");
             }
         }
-        //The run value must be of Boolean type.
-        Object result = validSupplier.get();
-        //The type of return value needs to be provided as: Supplier<Boolean>
-        if (!(result instanceof Boolean)) {
-            throw new ConstraintDeclarationException("The type of return value needs to be provided " +
-                    "as: Supplier<Boolean>");
-        }
-        if ((Boolean) result) {
-            //Obtain the true result and proceed directly.
-            return true;
-        }
-        //If there is a message, the exception information
-        // of the message will be thrown first.
-        if (StringUtils.isNotBlank(selfMethodValidate.message())) {
-            return false;
-        }
-        //Secondly, disable default information and use dependent
-        // classes to retrieve information.
-        context.disableDefaultConstraintViolation();
-        Class<? extends Error> errorClass = selfMethodValidate.errorReply();
-        //Specify a default information first.
-        String failedMessageTemplate;
-        if (Objects.equals(errorClass, Error.class)) {
-            failedMessageTemplate = ifErrorClassDefault(validate);
-        } else {
-            failedMessageTemplate = instantiateReplyMessage(errorClass);
-        }
-        context.buildConstraintViolationWithTemplate(failedMessageTemplate)
-                .addConstraintViolation();
-        return false;
+        return validSupplier;
     }
 
-    private String ifErrorClassDefault(Object validate){
+    //@since 1.0.5
+    private String ifErrorClassDefault(Object validate) {
         String failedMessage;
         //If using a high default exception dependency.
         if (validate instanceof Error) {
@@ -96,6 +109,7 @@ public class MethodValidateConstraintValidator implements ConstraintValidator<Se
         return failedMessage;
     }
 
+    //@since 1.0.5
     private String instantiateReplyMessage(Class<? extends Error> errorClass) {
         //If an incorrect attachment is specified,
         // then instantiate and obtain method information.
