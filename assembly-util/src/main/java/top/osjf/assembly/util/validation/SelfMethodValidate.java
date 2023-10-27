@@ -17,7 +17,7 @@ import java.lang.annotation.*;
  *      private Object id;
  *
  *      public Supplier&lt;Boolean&gt; validate(){
- *          return ()-&lt; id != null;
+ *          return ()-&gt; id != null;
  *      }
  *
  *      public String message(){
@@ -34,7 +34,7 @@ import java.lang.annotation.*;
  *
  *      &#064;Override
  *      public Supplier&lt;Boolean&gt; validate(){
- *          return ()-&lt; id != null;
+ *          return ()-&gt; id != null;
  *      }
  *
  *      &#064;Override
@@ -52,7 +52,7 @@ import java.lang.annotation.*;
  *
  *      &#064;Override
  *      public Supplier&lt;Boolean&gt; validate(){
- *          return ()-&lt; id != null;
+ *          return ()-&gt; id != null;
  *      }
  *
  *      public static class Example implements Error {

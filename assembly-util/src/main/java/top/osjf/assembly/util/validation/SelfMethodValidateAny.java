@@ -14,6 +14,70 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * <p>Provided method level information acquisition that takes precedence over
  * {@link #message()} throwing, you can provide a correct method name and return
  * value method, which can be obtained through reflection calls.
+ * <p>The usage notes are as follows:
+ * <div><h3>Use the method in the calibration body.</h3></div>
+ * <pre>
+ *     &#064;SelfMethodValidate(selfCheckMethod = "validate", selfCheckFailedReply = "message")
+ *     &#064;SelfMethodValidate(selfCheckMethod = "validate0", selfCheckFailedReply = "message0")
+ *     public class SelfCheck {
+ *
+ *      private Object id;
+ *
+ *      private Object num;
+ *
+ *      public Supplier&lt;Boolean&gt; validate(){
+ *          return ()-&gt; id != null;
+ *      }
+ *
+ *      public String message(){
+ *          return "id not be null";
+ *      }
+ *
+ *      public Supplier&lt;Boolean&gt; validate0(){
+ *          return ()-&gt; num != null;
+ *      }
+ *
+ *      public String message0(){
+ *          return "num not be null";
+ *      }
+ *     }
+ * </pre>
+ * <div><h3>The failure information is obtained using the attachment class outside the verification body.</h3></div>
+ * <pre>
+ *     &#064;SelfMethodValidate(selfCheckMethod = "validate", selfCheckFailedReply = "top.osjf.example.Example")
+ *     &#064;SelfMethodValidate(selfCheckMethod = "validate0", selfCheckFailedReply = "top.osjf.example.Example0")
+ *     public class SelfCheck {
+ *
+ *      private Object id;
+ *
+ *      private Object num;
+ *
+ *      public Supplier&lt;Boolean&gt; validate(){
+ *          return ()-&gt; id != null;
+ *      }
+ *
+ *      public Supplier&lt;Boolean&gt; validate0(){
+ *          return ()-&gt; num != null;
+ *      }
+ *     }
+ *
+ *      public static class Example implements Error {
+ *
+ *          &#064;Override
+ *          public String message(){
+ *              return "id not be null";
+ *          }
+ *      }
+ *
+ *      public static class Example0 implements Error {
+ *
+ *          &#064;Override
+ *          public String message(){
+ *              return "num not be null";
+ *          }
+ *      }
+ * </pre>
+ * @see MethodValidateAnyConstraintValidator
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.5
  */
