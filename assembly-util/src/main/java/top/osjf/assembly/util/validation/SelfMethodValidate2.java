@@ -30,18 +30,18 @@ public @interface SelfMethodValidate2 {
      * <pre>{@code Supplier<Boolean>}.</pre>
      * @return Cannot be empty, item must be provided.
      */
-    String validateMethodName();
+    String method();
 
     /**
-     * Provide the method {@link #validateMethodName()} above, and when
+     * Provide the method {@link #method()} above, and when
      * there is no result returned from {@literal true}, the method that
      * obtains the thrown information has a high priority than {@link #message()}.
      * @return The name of the method for obtaining failure information.
      */
-    String errorReplyMethod() default "";
+    String errorMethod() default "";
 
     /**
-     * If not provided {@link #errorReplyMethod()}, default information
+     * If not provided {@link #errorMethod()}, default information
      * will be used.
      * <p>Of course, if you edit it well, your failed statements will
      * still be prioritized.
@@ -55,7 +55,6 @@ public @interface SelfMethodValidate2 {
 
     /**
      * Defines several {@code @SelfMethodValidate2} constraints on the same element.
-     *
      * @see SelfMethodValidate2
      */
     @Target(ElementType.TYPE)
