@@ -20,9 +20,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Constraint(validatedBy = MethodValidateConstraintValidator2.class)
-@Repeatable(value = SelfMethodValidate2.List.class)
-public @interface SelfMethodValidate2 {
+@Constraint(validatedBy = MethodValidateAnyConstraintValidator.class)
+@Repeatable(value = SelfMethodValidateAny.List.class)
+public @interface SelfMethodValidateAny {
 
     /**
      * To support multiple validations, it is necessary to specify the
@@ -30,23 +30,25 @@ public @interface SelfMethodValidate2 {
      * <pre>{@code Supplier<Boolean>}.</pre>
      * @return Cannot be empty, item must be provided.
      */
-    String method();
+    String selfCheckMethod();
 
     /**
-     * Provide the method {@link #method()} above, and when
-     * there is no result returned from {@literal true}, the method that
-     * obtains the thrown information has a high priority than {@link #message()}.
-     * @return The name of the method for obtaining failure information.
+     * Provide error information acquisition after verification failure
+     * for the above method {@link #selfCheckMethod()}.
+     * <p>You can provide the following items:
+     * <ul>
+     *     <li>The method name in this class.
+     *     <p>Invoke through reflection if necessary.
+     *     <p>Prioritize first.</li>
+     *     <li>The full path of the class.Implement {@link Error}.
+     *     <p>when needed and can be instantiated.
+     *     <p>Priority second consideration.</li>
+     * </ul>
+     * @return As mentioned above, if the parameter is empty,
+     * use {@link #message()}.
      */
-    String errorMethod() default "";
+    String selfCheckFailedReply() default "";
 
-    /**
-     * If not provided {@link #errorMethod()}, default information
-     * will be used.
-     * <p>Of course, if you edit it well, your failed statements will
-     * still be prioritized.
-     * @return failed msg.
-     */
     String message() default "An unknown error occurred during model validation.";
 
     Class<?>[] groups() default {};
@@ -54,13 +56,13 @@ public @interface SelfMethodValidate2 {
     Class<? extends Payload>[] payload() default {};
 
     /**
-     * Defines several {@code @SelfMethodValidate2} constraints on the same element.
-     * @see SelfMethodValidate2
+     * Defines several {@code @SelfMethodValidateAny} constraints on the same element.
+     * @see SelfMethodValidateAny
      */
     @Target(ElementType.TYPE)
     @Retention(RUNTIME)
     @Documented
     @interface List {
-        SelfMethodValidate2[] value();
+        SelfMethodValidateAny[] value();
     }
 }
