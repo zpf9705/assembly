@@ -16,6 +16,7 @@ import java.util.function.Supplier;
  * verify the parameters within this method, and simply return a false result to
  * throw the corresponding result error message.
  * <p>The implementation relies on {@link ConstraintValidator}.
+ * @see SelfMethodValidate
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
