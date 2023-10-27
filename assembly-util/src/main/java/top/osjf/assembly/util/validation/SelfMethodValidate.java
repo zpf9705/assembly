@@ -8,6 +8,62 @@ import java.lang.annotation.*;
  * The automatic verification of one's own method is carried out by the colleague
  * wearing this annotation to implement {@link MethodValidate}, rewrite its method,
  * call it automatically at runtime, and throw the specified error.
+ * <p>The usage notes are as follows:
+ * <div><h3>Pure annotation, using reflection.</h3></div>
+ * <pre>
+ *     &#064;SelfMethodValidate
+ *     public class SelfCheck {
+ *
+ *      private Object id;
+ *
+ *      public Supplier&lt;Boolean&gt; validate(){
+ *          return ()-&lt; id != null;
+ *      }
+ *
+ *      public String message(){
+ *          return "id not be null";
+ *      }
+ *     }
+ * </pre>
+ * <div><h3>Implement the specified verification interface and the specified error dependency interface.</h3></div>
+ * <pre>
+ *     &#064;SelfMethodValidate
+ *     public class SelfCheck implements MethodValidate, Error {
+ *
+ *      private Object id;
+ *
+ *      &#064;Override
+ *      public Supplier&lt;Boolean&gt; validate(){
+ *          return ()-&lt; id != null;
+ *      }
+ *
+ *      &#064;Override
+ *      public String message(){
+ *          return "id not be null";
+ *      }
+ *     }
+ * </pre>
+ * <div><h3>Implement the specified validation interface and specify the error dependency class.</h3></div>
+ * <pre>
+ *     &#064;SelfMethodValidate(errorReply = Example.class)
+ *     public class SelfCheck implements MethodValidate {
+ *
+ *      private Object id;
+ *
+ *      &#064;Override
+ *      public Supplier&lt;Boolean&gt; validate(){
+ *          return ()-&lt; id != null;
+ *      }
+ *
+ *      public static class Example implements Error {
+ *
+ *          &#064;Override
+ *          public String message(){
+ *              return "id not be null";
+ *          }
+ *      }
+ *     }
+ * </pre>
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
