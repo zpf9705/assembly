@@ -44,6 +44,7 @@ public @interface SelfMethodValidateAny {
      *     <p>when needed and can be instantiated.
      *     <p>Priority second consideration.</li>
      * </ul>
+     * <p>Only when this is not provided will {@link #message()} be used.
      * @return As mentioned above, if the parameter is empty,
      * use {@link #message()}.
      */
