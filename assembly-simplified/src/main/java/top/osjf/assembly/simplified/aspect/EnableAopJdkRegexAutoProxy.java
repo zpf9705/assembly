@@ -29,5 +29,10 @@ import java.lang.annotation.*;
 @Import(AopJdkRegexAutoProxyConfiguration.class)
 public @interface EnableAopJdkRegexAutoProxy {
 
+    /**
+     * Regular expression for the fully-qualified method names to match.
+     * The exact regexp syntax will depend on the subclass (e.g. Perl5 regular expressions)
+     * @return Must be filled in.
+     */
     String patten();
 }
