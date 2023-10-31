@@ -1,4 +1,4 @@
-package top.osjf.assembly.simplified.aspect;
+package top.osjf.assembly.simplified.aop;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;

@@ -1,4 +1,4 @@
-package top.osjf.assembly.simplified.aspect;
+package top.osjf.assembly.simplified.aop;
 
 import org.springframework.aop.Advisor;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
