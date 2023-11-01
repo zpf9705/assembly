@@ -47,7 +47,7 @@ public class AopJdkRegexAutoProxyConfiguration implements ImportAware {
         DefaultPointcutAdvisor advisor = new DefaultPointcutAdvisor();
         advisor.setPointcut(pointcut);
         advisor.setAdvice(new MethodInterceptorImpl());
-        advisor.setOrder(Ordered.HIGHEST_PRECEDENCE + 10);
+        advisor.setOrder(Ordered.HIGHEST_PRECEDENCE);
         return advisor;
     }
 }
