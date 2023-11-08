@@ -14,6 +14,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationBeanNameGenerator;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.event.ContextRefreshedEvent;
 import top.osjf.assembly.simplified.service.ServiceContextUtils;
 import top.osjf.assembly.simplified.service.annotation.EnableServiceCollection;
 import top.osjf.assembly.simplified.service.annotation.EnableServiceCollection2;
@@ -93,20 +94,10 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
      */
     public static class ServiceContextBeanNameGenerator extends AnnotationBeanNameGenerator implements BeanNameGenerator {
 
-        private final String applicationName;
+        private final String applicationId;
 
-        private static BeanNameGenerator INSTANCE;
-
-        private ServiceContextBeanNameGenerator(String applicationName) {
-            this.applicationName = applicationName;
-        }
-
-        public synchronized static BeanNameGenerator getInstance(String applicationName) {
-            if (INSTANCE != null) {
-                return INSTANCE;
-            }
-            INSTANCE = new ServiceContextBeanNameGenerator(applicationName);
-            return INSTANCE;
+        public ServiceContextBeanNameGenerator(String applicationId) {
+            this.applicationId = applicationId;
         }
 
         @Override
@@ -138,20 +129,20 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
                     }
                     //Normal name.
                     beanName = ServiceContextUtils.formatId(filterServices.get(0),
-                            value, applicationName);
+                            value, applicationId);
                     //The alias constructed by the first superior class object.
                     classAlisa.forEach(alisa -> registry.registerAlias(beanName,
                             ServiceContextUtils.formatAlisa(filterServices.get(0),
-                                    alisa, applicationName)));
+                                    alisa, applicationId)));
                     //Build a parent alias.
                     filterServices.remove(0);
                     if (CollectionUtils.isNotEmpty(filterServices)) {
                         for (Class<?> filterService : filterServices) {
                             registry.registerAlias(beanName, ServiceContextUtils.formatAlisa(filterService,
-                                    value, applicationName));
+                                    value, applicationId));
                             classAlisa.forEach(alias0 -> registry.registerAlias(beanName,
                                     ServiceContextUtils.formatAlisa(filterService,
-                                            alias0, applicationName)));
+                                            alias0, applicationId)));
                         }
                     }
                 }
@@ -193,14 +184,14 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
          */
         public ServiceContextRunListener(SpringApplication application, String[] args) {
             mainApplicationPackage = application.getMainApplicationClass().getPackage().getName();
-            enableServiceCollection = ScanUtils.getTypesAnnotatedWith(
-                    EnableServiceCollection.class,
-                    mainApplicationPackage
-            ).size()
-                    +
-                    ScanUtils.getTypesAnnotatedWith(
-                            EnableServiceCollection2.class,
-                            mainApplicationPackage).size() >= 1;
+            int size = ScanUtils.getTypesAnnotatedWith(EnableServiceCollection.class, mainApplicationPackage).size()
+                    + ScanUtils.getTypesAnnotatedWith(EnableServiceCollection2.class, mainApplicationPackage).size();
+            if (size > 1) {
+                throw new IllegalStateException("Multiple occurrences of service collection annotations have been " +
+                        "detected. Please ensure that they are executed once.");
+            } else {
+                enableServiceCollection = size == 1;
+            }
         }
 
         protected static String getMainApplicationPackage() {
@@ -214,6 +205,7 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
         protected static void clear() {
             mainApplicationPackage = null;
             context = null;
+            if (enableServiceCollection) enableServiceCollection = false;
         }
 
         @Override
@@ -222,10 +214,7 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
             if (!enableServiceCollection) {
                 return;
             }
-            BeanNameGenerator generator = ServiceContextBeanNameGenerator.getInstance(context.getId());
-            if (generator == null) {
-                return;
-            }
+            BeanNameGenerator generator = new ServiceContextBeanNameGenerator(context.getId());
             if (context instanceof AnnotationConfigServletWebServerApplicationContext) {
                 ((AnnotationConfigServletWebServerApplicationContext) context)
                         .setBeanNameGenerator(generator);
@@ -263,6 +252,12 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
     }
 
     @Override
+    public void onApplicationEvent(ContextRefreshedEvent event) {
+        super.onApplicationEvent(event);
+        ServiceContextRunListener.clear();
+    }
+
+    @Override
     public void reloadWithScanPackages(String... packages) {
         throw new UnsupportedOperationException();
     }
@@ -272,7 +267,7 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
         return context;
     }
 
-    public String getApplicationPackage(){
+    public String getApplicationPackage() {
         return ServiceContextRunListener.getMainApplicationPackage();
     }
 
