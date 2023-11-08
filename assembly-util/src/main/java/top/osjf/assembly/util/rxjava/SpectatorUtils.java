@@ -40,7 +40,7 @@ import java.util.function.Supplier;
  * @author zpf
  * @since 1.0.0
  */
-public abstract class SpectatorUtils {
+public final class SpectatorUtils {
 
     private SpectatorUtils() {
     }
