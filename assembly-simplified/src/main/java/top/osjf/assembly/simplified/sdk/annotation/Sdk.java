@@ -51,59 +51,53 @@ public @interface Sdk {
      */
     String hostProperty();
 
+//    @Deprecated
+//    BeanAttributes attributes();//This attribute has expired and has become a mandatory configuration.
+    //Listed below.
+
+    //The relevant bean properties of the spring proxy object created by oneself have default
+    // values that can be selected according to needs.
+    //Only the properties that may be used by the SDK proxy bean are listed.
+
     /**
-     * When dynamically registering spring beans, encapsulate them
-     * as an annotation based on certain properties that are required
-     * and can be reasonably set for this project.
-     * <p>Refer to the registration class {@link BeanDefinitionBuilder}.
+     * The unique ID of the spring container bean.
+     * <p>If it is empty, it defaults to the full path name
+     * of the registered class.
      *
-     * @return Annotation attribute encapsulation.
+     * @return Register the unique ID of the bean.
+     * @see BeanDefinitionHolder#BeanDefinitionHolder(BeanDefinition, String, String[])
      */
-    BeanAttributes attributes();
+    String beanName() default "";
 
+    /**
+     * The access aliases for spring container beans can be
+     * set multiple times and can be empty.
+     *
+     * @return Register the alisa array of the bean.
+     * @see BeanDefinitionHolder#BeanDefinitionHolder(BeanDefinition, String, String[])
+     */
+    String[] alisa() default {};
 
-    @interface BeanAttributes {
+    /**
+     * The scope of the spring container bean.
+     * The default is {@link AbstractBeanDefinition#SCOPE_DEFAULT},Equivalent to
+     * {@link AbstractBeanDefinition#SCOPE_SINGLETON}
+     *
+     * @return Returns the scope range.
+     * @see BeanDefinitionBuilder#setScope(String)
+     * @see ConfigurableBeanFactory#SCOPE_PROTOTYPE
+     * @see ConfigurableBeanFactory#SCOPE_SINGLETON
+     */
+    String scope() default AbstractBeanDefinition.SCOPE_DEFAULT;
 
-        /**
-         * The unique ID of the spring container bean.
-         * <p>If it is empty, it defaults to the full path name
-         * of the registered class.
-         *
-         * @return Register the unique ID of the bean.
-         * @see BeanDefinitionHolder#BeanDefinitionHolder(BeanDefinition, String, String[])
-         */
-        String beanName() default "";
-
-        /**
-         * The access aliases for spring container beans can be
-         * set multiple times and can be empty.
-         *
-         * @return Register the alisa array of the bean.
-         * @see BeanDefinitionHolder#BeanDefinitionHolder(BeanDefinition, String, String[])
-         */
-        String[] alisa() default {};
-
-        /**
-         * The scope of the spring container bean.
-         * The default is {@link AbstractBeanDefinition#SCOPE_DEFAULT},Equivalent to
-         * {@link AbstractBeanDefinition#SCOPE_SINGLETON}
-         *
-         * @return Returns the scope range.
-         * @see BeanDefinitionBuilder#setScope(String)
-         * @see ConfigurableBeanFactory#SCOPE_PROTOTYPE
-         * @see ConfigurableBeanFactory#SCOPE_SINGLETON
-         */
-        String scope() default AbstractBeanDefinition.SCOPE_DEFAULT;
-
-        /**
-         * Spring's bean injection method selection defaults to
-         * assembly by type.
-         *
-         * @return Returns the injection method.
-         * @see GenericBeanDefinition#AUTOWIRE_BY_NAME
-         * @see GenericBeanDefinition#AUTOWIRE_BY_TYPE
-         * @see GenericBeanDefinition#AUTOWIRE_CONSTRUCTOR
-         */
-        int autowireMode() default GenericBeanDefinition.AUTOWIRE_BY_TYPE;
-    }
+    /**
+     * Spring's bean injection method selection defaults to
+     * assembly by type.
+     *
+     * @return Returns the injection method.
+     * @see GenericBeanDefinition#AUTOWIRE_BY_NAME
+     * @see GenericBeanDefinition#AUTOWIRE_BY_TYPE
+     * @see GenericBeanDefinition#AUTOWIRE_CONSTRUCTOR
+     */
+    int autowireMode() default GenericBeanDefinition.AUTOWIRE_BY_TYPE;
 }
