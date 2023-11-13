@@ -6,6 +6,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.stereotype.Component;
 
 import java.lang.annotation.*;
 
@@ -30,6 +31,9 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+//only support ui and no significance
+//@since 2.0.7
+@Component
 public @interface Sdk {
 
     /**
