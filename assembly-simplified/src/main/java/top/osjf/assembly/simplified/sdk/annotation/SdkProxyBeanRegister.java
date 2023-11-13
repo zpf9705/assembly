@@ -49,11 +49,17 @@ public class SdkProxyBeanRegister extends AbstractProxyBeanInjectSupport<EnableS
         BeanDefinitionBuilder definition = BeanDefinitionBuilder.genericBeanDefinition(SdkProxyBeanDefinition.class);
         definition.addPropertyValue("host", getRequestHost(attributes.getString("hostProperty")));
         definition.addPropertyValue("clazz", className);
-        AnnotationAttributes attributes0 = attributes.getAnnotation("attributes");
-        String beanName = attributes0.getString("beanName");
-        String[] alisa = attributes0.getStringArray("alisa");
-        String scope = attributes0.getString("scope");
-        Number autowireMode = attributes0.getNumber("autowireMode");
+        //Deprecated for 2.0.7
+//        AnnotationAttributes attributes0 = attributes.getAnnotation("attributes");
+//        String beanName = attributes0.getString("beanName");
+//        String[] alisa = attributes0.getStringArray("alisa");
+//        String scope = attributes0.getString("scope");
+//        Number autowireMode = attributes0.getNumber("autowireMode");
+        //@since 2.0.7
+        String beanName = attributes.getString("beanName");
+        String[] alisa = attributes.getStringArray("alisa");
+        String scope = attributes.getString("scope");
+        Number autowireMode = attributes.getNumber("autowireMode");
         if (StringUtils.isBlank(beanName)) beanName = className;
         definition.setScope(scope);
         definition.setAutowireMode(autowireMode.intValue());
