@@ -34,10 +34,9 @@ import java.util.Map;
  * @author zpf
  * @since 1.0.0
  */
-public abstract class OkHttpSimpleRequestUtils {
+public final class OkHttpSimpleRequestUtils {
 
     private OkHttpSimpleRequestUtils() {
-        super();
     }
 
     /**

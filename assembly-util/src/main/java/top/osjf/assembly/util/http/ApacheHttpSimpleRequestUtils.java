@@ -41,10 +41,9 @@ import java.util.Map;
  * @author zpf
  * @since 1.0.0
  */
-public abstract class ApacheHttpSimpleRequestUtils {
+public final class ApacheHttpSimpleRequestUtils {
 
     private ApacheHttpSimpleRequestUtils() {
-        super();
     }
 
     /**
