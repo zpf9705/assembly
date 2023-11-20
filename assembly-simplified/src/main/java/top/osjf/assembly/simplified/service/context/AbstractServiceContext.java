@@ -239,8 +239,7 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
                 encodeServiceName -> contextMap.getValueOnClass(encodeServiceName, requiredType));
         if (service == null) {
             //Throw an exception that cannot be found.
-            throw new NoSuchServiceException("No service named " + serviceName + " was found " +
-                    "from the service context");
+            throw new NoSuchServiceException(serviceName);
         }
         return service;
     }
