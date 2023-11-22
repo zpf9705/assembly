@@ -1,4 +1,4 @@
-package top.osjf.assembly.util.concurrent;
+package top.osjf.assembly.util.annotation;
 
 import java.lang.annotation.*;
 

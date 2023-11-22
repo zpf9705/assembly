@@ -1,5 +1,7 @@
 package top.osjf.assembly.util.concurrent;
 
+import top.osjf.assembly.util.annotation.KeepThreadSafe;
+
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
