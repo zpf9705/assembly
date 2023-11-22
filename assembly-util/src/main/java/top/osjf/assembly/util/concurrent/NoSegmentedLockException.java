@@ -6,7 +6,7 @@ import java.util.concurrent.locks.Lock;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.7
  */
-public class NoSegmentedLockException extends Exception {
+public class NoSegmentedLockException extends RuntimeException {
 
     private static final long serialVersionUID = 2932539610317483217L;
 
