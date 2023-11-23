@@ -2,13 +2,11 @@ package top.osjf.assembly.simplified.sdk.annotation;
 
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.Assert;
 import top.osjf.assembly.simplified.sdk.SdkProxyBeanDefinition;
-import top.osjf.assembly.simplified.support.AbstractProxyBeanInjectSupport;
+import top.osjf.assembly.simplified.support.BeanDefinitionRegisterBeforeRefresh;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.lang.StringUtils;
 
@@ -29,54 +27,58 @@ import top.osjf.assembly.util.lang.StringUtils;
  * @author zpf
  * @since 1.1.0
  */
-public class SdkProxyBeanRegister extends AbstractProxyBeanInjectSupport<EnableSdkProxyRegister, Sdk> {
+public class SdkProxyBeanRegister extends BeanDefinitionRegisterBeforeRefresh {
 
     @Override
-    @NotNull
-    public Class<EnableSdkProxyRegister> getOpenClazz() {
-        return EnableSdkProxyRegister.class;
-    }
-
-    @Override
-    @NotNull
-    public Class<Sdk> getFindClazz() {
-        return Sdk.class;
-    }
-
-    @Override
-    public void beanRegister(AnnotationAttributes attributes, BeanDefinitionRegistry registry, AnnotationMetadata meta) {
+    public BeanDefinitionHolder getBeanDefinitionHolder(AnnotationAttributes attributes, AnnotationMetadata meta) {
         String className = meta.getClassName();
-        BeanDefinitionBuilder definition = BeanDefinitionBuilder.genericBeanDefinition(SdkProxyBeanDefinition.class);
+        Class<?> beanDefinitionClass = attributes.getClass("beanDefinitionClass");
+        BeanDefinitionBuilder definition = BeanDefinitionBuilder.genericBeanDefinition(beanDefinitionClass);
         definition.addPropertyValue("host", getRequestHost(attributes.getString("hostProperty")));
         definition.addPropertyValue("clazz", className);
-        //Deprecated for 2.0.7
-//        AnnotationAttributes attributes0 = attributes.getAnnotation("attributes");
-//        String beanName = attributes0.getString("beanName");
-//        String[] alisa = attributes0.getStringArray("alisa");
-//        String scope = attributes0.getString("scope");
-//        Number autowireMode = attributes0.getNumber("autowireMode");
         //@since 2.0.7
         String beanName = attributes.getString("beanName");
         String[] alisa = attributes.getStringArray("alisa");
         String scope = attributes.getString("scope");
         Number autowireMode = attributes.getNumber("autowireMode");
+        //@since 2.0.9
+        String initMethod = attributes.getString("initMethod");
+        String destroyMethod = attributes.getString("destroyMethod");
+        int role = attributes.getNumber("role").intValue();
+        boolean lazyInit = attributes.getBoolean("lazyInit");
+        String description = attributes.getString("description");
         if (StringUtils.isBlank(beanName)) beanName = className;
         definition.setScope(scope);
         definition.setAutowireMode(autowireMode.intValue());
-        BeanDefinitionHolder holder = new BeanDefinitionHolder(definition.getBeanDefinition(), beanName, alisa);
-        BeanDefinitionReaderUtils.registerBeanDefinition(holder, registry);
+        if (StringUtils.isNotBlank(initMethod)) definition.setInitMethodName(initMethod);
+        if (StringUtils.isNotBlank(destroyMethod)) definition.setDestroyMethodName(destroyMethod);
+        definition.setRole(role);
+        definition.setLazyInit(lazyInit);
+        if (StringUtils.isNotBlank(description)) definition.getBeanDefinition().setDescription(description);
+        return new BeanDefinitionHolder(definition.getBeanDefinition(), beanName, alisa);
     }
 
     @Override
     @NotNull
-    public String getPackagesSign() {
+    public Class<EnableSdkProxyRegister> getImportAnnotationClass() {
+        return EnableSdkProxyRegister.class;
+    }
+
+    @Override
+    @NotNull
+    public Class<Sdk> getFilterAnnotationClass() {
+        return Sdk.class;
+    }
+
+    @Override
+    @NotNull
+    public String getScanPathAttributeName() {
         return "basePackages";
     }
 
     /**
      * Obtain host configuration parameters,according to the startup
      * environment of spring.
-     *
      * @param hostProperty Host configuration key.
      * @return Real host address.
      */
