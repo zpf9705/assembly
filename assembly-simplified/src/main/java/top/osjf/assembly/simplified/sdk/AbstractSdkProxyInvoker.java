@@ -26,6 +26,7 @@ import java.lang.reflect.Method;
  *
  * <p>Simply obtain the host parameter from the corresponding proxy class
  * entity to complete the SDK request.
+ *
  * @param <T> The data type of the proxy class.
  * @author zpf
  * @since 1.1.0
@@ -37,7 +38,17 @@ public abstract class AbstractSdkProxyInvoker<T> extends AbstractJdkProxySupport
         return invoke0(proxy, method, args);
     }
 
-    public Object invoke0(@SuppressWarnings("unused") Object proxy, Method method, Object[] args) {
+    /**
+     * The parameter processing logic for Jdk dynamic proxy callbacks can be
+     * rewritten by subclasses, defined according to their own situation.
+     * <p>Here, a default processing posture that conforms to SDK is provided.
+     *
+     * @param proxy  Proxy obj.
+     * @param method Access method.
+     * @param args   transfer args.
+     * @return Proxy method solve result.
+     */
+    protected Object invoke0(@SuppressWarnings("unused") Object proxy, Method method, Object[] args) {
         //The method of the parent class Object is not given
         Class<T> clazz = getClazz();
         if (!clazz.getName().equals(method.getDeclaringClass().getName())) {
@@ -70,7 +81,10 @@ public abstract class AbstractSdkProxyInvoker<T> extends AbstractJdkProxySupport
      * @param request Think of {@link Request#getClientCls()}.
      * @return The result set of this request is encapsulated in {@link Response}.
      */
-    private Response doNext(@NotNull Request<?> request) {
+    protected Response doNext(@NotNull Request<?> request) {
+        //private perm
+        //change protected
+        //son class can use
         return ClientExecutors.executeRequestClient(this::getHost, request);
     }
 
