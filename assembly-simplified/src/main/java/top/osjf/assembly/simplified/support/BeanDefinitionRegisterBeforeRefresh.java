@@ -5,24 +5,20 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.BeanNameGenerator;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAttributes;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
-import org.springframework.util.Assert;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.lang.ArrayUtils;
 import top.osjf.assembly.util.lang.CollectionUtils;
+import top.osjf.assembly.util.lang.StringUtils;
 
 import java.lang.annotation.Annotation;
 import java.util.Set;
@@ -46,31 +42,19 @@ import java.util.Set;
  * <p>The lookup of annotated interfaces depends on the interface {@link ResourceLoader} and
  * {@link ClassPathScanningCandidateComponentProvider}.
  *
- * <p>Implementation {@link EnvironmentPostProcessor} provides task methods to scan the application
- * default when the package path is not provided.{@link Class#getPackage()}</p>
+ * <p>Innovated in version {@code 2.0.9}, this registration scheme does not participate
+ * in calling services such as {@link org.springframework.beans.factory.annotation.Autowired}
+ * before spring bean registration, and is executed as a registration scheme here.
  *
- * @param <O> Open the type of class annotation.
- * @param <F> The type of informational annotation.
  * @author zpf
  * @since 1.1.0
  */
-public abstract class AbstractProxyBeanInjectSupport<O extends Annotation, F extends Annotation>
-        implements EnvironmentPostProcessor, ImportBeanDefinitionRegistrar, EnvironmentAware,
-        ResourceLoaderAware, Ordered {
+public abstract class BeanDefinitionRegisterBeforeRefresh extends AbstractImportBeanDefinitionRegistrar
+        implements EnvironmentAware, ResourceLoaderAware, Ordered {
 
     private Environment environment;
 
     private ResourceLoader resourceLoader;
-
-    private static String applicationScanPath;
-
-    @Override
-    public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
-        Class<?> mainApplicationClass = application.getMainApplicationClass();
-        if (mainApplicationClass != null) {
-            applicationScanPath = mainApplicationClass.getPackage().getName();
-        }
-    }
 
     @Override
     public void setEnvironment(@NotNull Environment environment) {
@@ -88,34 +72,28 @@ public abstract class AbstractProxyBeanInjectSupport<O extends Annotation, F ext
     }
 
     @Override
-    public void registerBeanDefinitions(@NotNull AnnotationMetadata metadata, @NotNull BeanDefinitionRegistry registry,
-                                        @NotNull BeanNameGenerator importBeanNameGenerator) {
-        this.registerBeanDefinitions(metadata, registry);
-    }
-
-    @Override
-    public void registerBeanDefinitions(AnnotationMetadata metadata, @NotNull BeanDefinitionRegistry registry) {
-        //Obtain the annotation value for opening
-        AnnotationAttributes attributes = AnnotationAttributes.fromMap(metadata.getAnnotationAttributes(getOpenClazz()
-                .getName()));
-        //AssertUtils to Analysis
-        Assert.notNull(attributes, "Analysis " + getOpenClazz().getName() + " attribute encapsulation to " +
-                "org.springframework.core.annotation.AnnotationAttributes failed");
+    protected void process(AnnotationAttributes attributes, BeanDefinitionRegistry registry) {
         //Obtain Scan Path
-        String[] basePackages = attributes.getStringArray(getPackagesSign());
+        //if blank default to use value
+        String scanPathAttributeName = getScanPathAttributeName();
+        if (StringUtils.isBlank(scanPathAttributeName)) {
+            scanPathAttributeName = "value";
+        }
+        String[] basePackages = attributes.getStringArray(scanPathAttributeName);
         if (ArrayUtils.isEmpty(basePackages)) {
-            basePackages = new String[]{applicationScanPath};
+            //not support default to use main class path
+            basePackages = new String[]{getMainApplicationClassPath()};
         }
         //Obtain Path Scan Provider
-        ClassPathScanningCandidateComponentProvider classPathScan = this.getClassPathScanUseAnnotationClass();
+        ClassPathScanningCandidateComponentProvider classPathScan = getCandidateComponentsScanProvider();
         //The class annotated by the subcontracting scanning target
         for (String basePackage : basePackages) {
-            Set<BeanDefinition> beanDefinitions = classPathScan.findCandidateComponents(basePackage);
-            if (CollectionUtils.isEmpty(beanDefinitions)) {
+            Set<BeanDefinition> candidateComponents = classPathScan.findCandidateComponents(basePackage);
+            if (CollectionUtils.isEmpty(candidateComponents)) {
                 continue;
             }
             //Perform proxy registration for each bean
-            for (BeanDefinition beanDefinition : beanDefinitions) {
+            for (BeanDefinition beanDefinition : candidateComponents) {
                 if (!(beanDefinition instanceof AnnotatedBeanDefinition)) {
                     continue;
                 }
@@ -127,7 +105,7 @@ public abstract class AbstractProxyBeanInjectSupport<O extends Annotation, F ext
                 }
                 //Obtain annotation class identification interface annotation value domain
                 AnnotationAttributes attributesFu = AnnotationAttributes
-                        .fromMap(meta.getAnnotationAttributes(getFindClazz().getCanonicalName()));
+                        .fromMap(meta.getAnnotationAttributes(getFilterAnnotationClass().getCanonicalName()));
                 if (attributesFu == null) {
                     continue;
                 }
@@ -141,7 +119,6 @@ public abstract class AbstractProxyBeanInjectSupport<O extends Annotation, F ext
 
     /**
      * Define the registration behavior of beans based on all attributes.
-     *
      * @param attributes Annotation value Range.
      * @param meta       Associated annotation interface.
      * @return A wait register container BeanDefinition.
@@ -150,33 +127,26 @@ public abstract class AbstractProxyBeanInjectSupport<O extends Annotation, F ext
                                                                  AnnotationMetadata meta);
 
     /**
-     * Provide a conditional class scanner based on the provided class object.
+     * Obtain class path scanning candidate component providers based on conditions.
      *
      * @return {@link ClassPathScanningCandidateComponentProvider}.
      */
     @NotNull
-    public ClassPathScanningCandidateComponentProvider getClassPathScanUseAnnotationClass() {
+    public ClassPathScanningCandidateComponentProvider getCandidateComponentsScanProvider() {
         ClassPathScanningCandidateComponentProvider classPathScan =
                 new ClassPathScanningCandidateComponentProvider(false, this.environment) {
                     @Override
                     protected boolean isCandidateComponent(AnnotatedBeanDefinition beanDefinition) {
-                        return beanDefinition.getMetadata().isIndependent() && !beanDefinition.getMetadata().isAnnotation();
+                        return beanDefinition.getMetadata().isIndependent()
+                                && !beanDefinition.getMetadata().isAnnotation();
                     }
                 };
         classPathScan.setResourceLoader(this.resourceLoader);
         //scan all class type
         classPathScan.setResourcePattern("**/*.class");
-        classPathScan.addIncludeFilter(new AnnotationTypeFilter(getFindClazz()));
+        classPathScan.addIncludeFilter(new AnnotationTypeFilter(getFilterAnnotationClass()));
         return classPathScan;
     }
-
-    /**
-     * Provide functionality to enable annotation class objects.
-     *
-     * @return must not be {@literal null}.
-     */
-    @NotNull
-    public abstract Class<O> getOpenClazz();
 
     /**
      * Provide class objects for annotation of annotation classes.
@@ -184,7 +154,7 @@ public abstract class AbstractProxyBeanInjectSupport<O extends Annotation, F ext
      * @return must not be {@literal null}.
      */
     @NotNull
-    public abstract Class<F> getFindClazz();
+    public abstract Class<? extends Annotation> getFilterAnnotationClass();
 
     /**
      * Provide path scan variable identification, default to {@code value}.
@@ -192,16 +162,13 @@ public abstract class AbstractProxyBeanInjectSupport<O extends Annotation, F ext
      * @return must not be {@literal null}.
      */
     @NotNull
-    public String getPackagesSign() {
+    public String getScanPathAttributeName() {
         return "value";
     }
 
     /**
-     * Get Spring startup environment variables.
-     *
-     * @return {@link Environment}.
+     * @return Return the {@link Environment} associated with this component.
      */
-    @NotNull
     public Environment getEnvironment() {
         return this.environment;
     }

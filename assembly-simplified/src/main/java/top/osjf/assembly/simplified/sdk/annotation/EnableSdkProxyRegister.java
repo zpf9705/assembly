@@ -12,10 +12,10 @@ import java.lang.annotation.*;
  * and automatically create the implementation class, it mainly relies
  * on {@link SdkProxyBeanRegister}.
  *
- * @see top.osjf.assembly.simplified.support.AbstractProxyBeanInjectSupport
  * @see org.springframework.context.annotation.ImportBeanDefinitionRegistrar
- * @see org.springframework.context.ApplicationContext
- * @see org.springframework.core.env.Environment
+ * @see top.osjf.assembly.simplified.support.AbstractImportBeanDefinitionRegistrar
+ * @see top.osjf.assembly.simplified.support.BeanDefinitionRegisterBeforeRefresh
+ * @see SdkProxyBeanRegister
  * @author zpf
  * @since 1.1.0
  */
