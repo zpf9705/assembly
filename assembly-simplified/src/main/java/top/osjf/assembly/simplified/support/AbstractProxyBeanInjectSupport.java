@@ -2,6 +2,8 @@ package top.osjf.assembly.simplified.support;
 
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanDefinitionHolder;
+import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.boot.SpringApplication;
@@ -46,6 +48,7 @@ import java.util.Set;
  *
  * <p>Implementation {@link EnvironmentPostProcessor} provides task methods to scan the application
  * default when the package path is not provided.{@link Class#getPackage()}</p>
+ *
  * @param <O> Open the type of class annotation.
  * @param <F> The type of informational annotation.
  * @author zpf
@@ -128,8 +131,10 @@ public abstract class AbstractProxyBeanInjectSupport<O extends Annotation, F ext
                 if (attributesFu == null) {
                     continue;
                 }
-                //Bean registration
-                this.beanRegister(attributesFu, registry, meta);
+                //let son class take BeanDefinition
+                BeanDefinitionHolder holder = this.getBeanDefinitionHolder(attributesFu, meta);
+                //bean register
+                BeanDefinitionReaderUtils.registerBeanDefinition(holder, registry);
             }
         }
     }
@@ -138,11 +143,11 @@ public abstract class AbstractProxyBeanInjectSupport<O extends Annotation, F ext
      * Define the registration behavior of beans based on all attributes.
      *
      * @param attributes Annotation value Range.
-     * @param registry   Bean Keygen.
      * @param meta       Associated annotation interface.
+     * @return A wait register container BeanDefinition.
      */
-    public void beanRegister(AnnotationAttributes attributes, BeanDefinitionRegistry registry, AnnotationMetadata meta) {
-    }
+    public abstract BeanDefinitionHolder getBeanDefinitionHolder(AnnotationAttributes attributes,
+                                                                 AnnotationMetadata meta);
 
     /**
      * Provide a conditional class scanner based on the provided class object.
