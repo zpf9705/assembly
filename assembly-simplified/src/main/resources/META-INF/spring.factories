@@ -6,4 +6,4 @@ top.osjf.assembly.simplified.service.context.AbstractServiceContext.ServiceConte
 # Preparation before initialization
 org.springframework.boot.env.EnvironmentPostProcessor=\
 top.osjf.assembly.simplified.cron.CronTaskRegister,\
-top.osjf.assembly.simplified.sdk.annotation.SdkProxyBeanRegister
+top.osjf.assembly.simplified.support.AbstractImportBeanDefinitionRegistrar.MainClassPathCapable
