@@ -15,6 +15,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
+import org.springframework.util.Assert;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.lang.ArrayUtils;
 import top.osjf.assembly.util.lang.CollectionUtils;
@@ -112,7 +113,9 @@ public abstract class BeanDefinitionRegisterBeforeRefresh extends AbstractImport
                 //let son class take BeanDefinition
                 BeanDefinitionHolder holder = this.getBeanDefinitionHolder(attributesFu, meta);
                 //bean register
-                BeanDefinitionReaderUtils.registerBeanDefinition(holder, registry);
+                if (holder != null) {
+                    BeanDefinitionReaderUtils.registerBeanDefinition(holder, registry);
+                }
             }
         }
     }
@@ -123,16 +126,18 @@ public abstract class BeanDefinitionRegisterBeforeRefresh extends AbstractImport
      * @param meta       Associated annotation interface.
      * @return A wait register container BeanDefinition.
      */
-    public abstract BeanDefinitionHolder getBeanDefinitionHolder(AnnotationAttributes attributes,
-                                                                 AnnotationMetadata meta);
+    protected BeanDefinitionHolder getBeanDefinitionHolder(AnnotationAttributes attributes, AnnotationMetadata meta) {
+        return null;
+    }
 
     /**
      * Obtain class path scanning candidate component providers based on conditions.
-     *
      * @return {@link ClassPathScanningCandidateComponentProvider}.
      */
     @NotNull
-    public ClassPathScanningCandidateComponentProvider getCandidateComponentsScanProvider() {
+    protected ClassPathScanningCandidateComponentProvider getCandidateComponentsScanProvider() {
+        Class<? extends Annotation> filterAnnotationClass = getFilterAnnotationClass();
+        Assert.notNull(filterAnnotationClass, "filterAnnotationClass not be null");
         ClassPathScanningCandidateComponentProvider classPathScan =
                 new ClassPathScanningCandidateComponentProvider(false, this.environment) {
                     @Override
@@ -144,7 +149,7 @@ public abstract class BeanDefinitionRegisterBeforeRefresh extends AbstractImport
         classPathScan.setResourceLoader(this.resourceLoader);
         //scan all class type
         classPathScan.setResourcePattern("**/*.class");
-        classPathScan.addIncludeFilter(new AnnotationTypeFilter(getFilterAnnotationClass()));
+        classPathScan.addIncludeFilter(new AnnotationTypeFilter(filterAnnotationClass));
         return classPathScan;
     }
 
@@ -154,7 +159,7 @@ public abstract class BeanDefinitionRegisterBeforeRefresh extends AbstractImport
      * @return must not be {@literal null}.
      */
     @NotNull
-    public abstract Class<? extends Annotation> getFilterAnnotationClass();
+    protected abstract Class<? extends Annotation> getFilterAnnotationClass();
 
     /**
      * Provide path scan variable identification, default to {@code value}.
@@ -162,14 +167,14 @@ public abstract class BeanDefinitionRegisterBeforeRefresh extends AbstractImport
      * @return must not be {@literal null}.
      */
     @NotNull
-    public String getScanPathAttributeName() {
+    protected String getScanPathAttributeName() {
         return "value";
     }
 
     /**
      * @return Return the {@link Environment} associated with this component.
      */
-    public Environment getEnvironment() {
+    protected Environment getEnvironment() {
         return this.environment;
     }
 }
