@@ -1,12 +1,16 @@
 package top.osjf.assembly.simplified.sdk.annotation;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.stereotype.Component;
+import top.osjf.assembly.simplified.sdk.AbstractSdkProxyInvoker;
+import top.osjf.assembly.simplified.sdk.SdkProxyBeanDefinition;
 
 import java.lang.annotation.*;
 
@@ -24,6 +28,10 @@ import java.lang.annotation.*;
  * <p>Annotate properties based on viewing {@link BeanDefinitionBuilder},
  * and here only the names, aliases, and injection modes of beans are
  * listed, as mentioned above regarding the bean injection properties of Spring.
+ *
+ * <p>Added some attributes related to {@link BeanDefinitionBuilder} from
+ * version {@code 2.0.9}, and the remaining attributes that were not added
+ * will not be added, making them useless for this component.
  *
  * @author zpf
  * @since 1.1.0
@@ -51,13 +59,22 @@ public @interface Sdk {
      */
     String hostProperty();
 
-//    @Deprecated
-//    BeanAttributes attributes();//This attribute has expired and has become a mandatory configuration.
-    //Listed below.
-
     //The relevant bean properties of the spring proxy object created by oneself have default
     // values that can be selected according to needs.
     //Only the properties that may be used by the SDK proxy bean are listed.
+
+    /**
+     * Manually defining a class that can intuitively handle the {@link BeanDefinition}
+     * lifecycle requires passing in the corresponding class object.
+     * <p>If you have defined this class, you can intuitively use
+     * {@link #autowireMode()} to define the assembly pattern of the
+     * beans you introduce, and define the initialization and destruction
+     * methods {@link #initMethod()} and {@link #destroyMethod()} for {@link BeanDefinition}.
+     *
+     * @return A beanDefinition class.
+     * @since 2.0.9
+     */
+    Class<? extends AbstractSdkProxyInvoker> beanDefinitionClass() default SdkProxyBeanDefinition.class;
 
     /**
      * The unique ID of the spring container bean.
@@ -94,10 +111,95 @@ public @interface Sdk {
      * Spring's bean injection method selection defaults to
      * assembly by type.
      *
+     * <p><h3>There are two situations.</h3>
+     * <p><strong>_____________________________________________</strong>
+     * <p><strong>If you use {@link EnableSdkProxyRegister}</strong>
+     * <p>You need to pay attention to the following statements.</p>
+     * <p>It should be noted that if you choose the default {@link GenericBeanDefinition#AUTOWIRE_NO},
+     * as the proxy implementation class of sdk is created through {@link ImportBeanDefinitionRegistrar},
+     * Spring has not yet started creating beans in this registration stage, and since
+     * beans have not been created, it will not parse the {@link Autowired}  or
+     * {@link javax.annotation.Resource} annotation.
+     * <p><strong>Therefore,  do not use {@link Autowired}  or
+     * {@link javax.annotation.Resource} annotation for bean injection.</strong>
+     * <p>Of course, if you use {@link GenericBeanDefinition#AUTOWIRE_CONSTRUCTOR},
+     * please ensure that your injection class has a default constructor.
+     * <p><strong>_____________________________________________</strong>
+     *
      * @return Returns the injection method.
+     * @see GenericBeanDefinition#AUTOWIRE_NO
      * @see GenericBeanDefinition#AUTOWIRE_BY_NAME
      * @see GenericBeanDefinition#AUTOWIRE_BY_TYPE
      * @see GenericBeanDefinition#AUTOWIRE_CONSTRUCTOR
      */
-    int autowireMode() default GenericBeanDefinition.AUTOWIRE_BY_TYPE;
+    int autowireMode() default GenericBeanDefinition.AUTOWIRE_NO;
+
+    /**
+     * Set the name of the initializer method.
+     * <p>The default is {@code null} in which case there is no initializer method.
+     * <p>The explanation comes from {@link AbstractBeanDefinition#setInitMethodName(String)}}.
+     *
+     * @return A bean lifeStyle with init method name.
+     * @since 2.0.9
+     */
+    String initMethod() default "";
+
+    /**
+     * Set the name of the destroy method.
+     * <p>The default is {@code null} in which case there is no destroy method.
+     * <p>The explanation comes from {@link AbstractBeanDefinition#setDestroyMethodName(String)}}.
+     *
+     * @return A bean lifeStyle with destroy method name.
+     * @since 2.0.9
+     */
+    String destroyMethod() default "";
+
+    /**
+     * Set the role hint for this {@code BeanDefinition}.
+     * <p>The explanation comes from {@link AbstractBeanDefinition#setRole(int)}}.
+     * <p><strong>{@code role = 0}</strong>
+     * <p>Role hint indicating that a {@code BeanDefinition} is a major part
+     * of the application. Typically corresponds to a user-defined bean.
+     * <p><strong>{@code role = 1}</strong>
+     * <p>Role hint indicating that a {@code BeanDefinition} is a supporting
+     * part of some larger configuration, typically an outer
+     * {@link org.springframework.beans.factory.parsing.ComponentDefinition}.
+     * {@code SUPPORT} beans are considered important enough to be aware
+     * of when looking more closely at a particular
+     * {@link org.springframework.beans.factory.parsing.ComponentDefinition},
+     * but not when looking at the overall configuration of an application.
+     * <p><strong>{@code role = 2}</strong>
+     * <p>Role hint indicating that a {@code BeanDefinition} is providing an
+     * entirely background role and has no relevance to the end-user. This hint is
+     * used when registering beans that are completely part of the internal workings
+     * of a {@link org.springframework.beans.factory.parsing.ComponentDefinition}.
+     * <p>The explanation comes from {@link BeanDefinition}}.
+     * <p>Generally, the proxy object automatically generated by SDK is user-defined
+     * on the application side, that is, <strong>{@code role = 0}</strong>, which can
+     * be set according to one's own needs.
+     *
+     * @return A bean lifeStyle role type.
+     * @since 2.0.9
+     */
+    int role() default BeanDefinition.ROLE_APPLICATION;
+
+    /**
+     * Set whether this bean should be lazily initialized.
+     * <p>If {@code false}, the bean will get instantiated on startup by bean
+     * factories that perform eager initialization of singletons.
+     * <p>The explanation comes from {@link AbstractBeanDefinition#setLazyInit(boolean)}.
+     *
+     * @return A bean decide whether to lazily load.
+     * @since 2.0.9
+     */
+    boolean lazyInit() default false;
+
+    /**
+     * Set a human-readable description of this bean definition.
+     * <p>The explanation comes from {@link AbstractBeanDefinition#setDescription(String)}.
+     *
+     * @return A bean with its description content.
+     * @since 2.0.9
+     */
+    String description() default "";
 }
