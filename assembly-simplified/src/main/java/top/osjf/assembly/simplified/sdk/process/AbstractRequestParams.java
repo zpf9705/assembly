@@ -6,8 +6,9 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * <p>The abstract implementation of {@link Request} mainly focuses on default implementation of some
- * rules and methods of {@link Request}.</p>
+ * <p>The abstract implementation of {@link Request} mainly focuses on
+ * default implementation of some rules and methods of {@link Request}.</p>
+ *
  * @param <R> Implement a unified response class data type.
  * @author zpf
  * @since 1.1.0
