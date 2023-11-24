@@ -33,6 +33,11 @@ import java.lang.annotation.*;
  * version {@code 2.0.9}, and the remaining attributes that were not added
  * will not be added, making them useless for this component.
  *
+ * <p>If you want to provide visible proxy classes{@link #beanDefinitionClass()},
+ * then you need to understand {@link ImportBeanDefinitionRegistrar} registration
+ * {@link BeanDefinition} and the usage of injection models.
+ * <p>Please refer to the introduction of {@link #autowireMode()}.
+ *
  * @author zpf
  * @since 1.1.0
  */
@@ -71,7 +76,7 @@ public @interface Sdk {
      * beans you introduce, and define the initialization and destruction
      * methods {@link #initMethod()} and {@link #destroyMethod()} for {@link BeanDefinition}.
      *
-     * @return A beanDefinition class.
+     * @return A beanDefinition class , defaults to {@link SdkProxyBeanDefinition}.
      * @since 2.0.9
      */
     Class<? extends AbstractSdkProxyInvoker> beanDefinitionClass() default SdkProxyBeanDefinition.class;
@@ -81,7 +86,7 @@ public @interface Sdk {
      * <p>If it is empty, it defaults to the full path name
      * of the registered class.
      *
-     * @return Register the unique ID of the bean.
+     * @return Register the unique ID of the bean,defaults to {@link Class#getName()}.
      * @see BeanDefinitionHolder#BeanDefinitionHolder(BeanDefinition, String, String[])
      */
     String beanName() default "";
@@ -90,7 +95,7 @@ public @interface Sdk {
      * The access aliases for spring container beans can be
      * set multiple times and can be empty.
      *
-     * @return Register the alisa array of the bean.
+     * @return Register the alisa array of the bean,defaults empty.
      * @see BeanDefinitionHolder#BeanDefinitionHolder(BeanDefinition, String, String[])
      */
     String[] alisa() default {};
@@ -100,7 +105,7 @@ public @interface Sdk {
      * The default is {@link AbstractBeanDefinition#SCOPE_DEFAULT},Equivalent to
      * {@link AbstractBeanDefinition#SCOPE_SINGLETON}
      *
-     * @return Returns the scope range.
+     * @return Returns the scope range,defaults to singleton.
      * @see BeanDefinitionBuilder#setScope(String)
      * @see ConfigurableBeanFactory#SCOPE_PROTOTYPE
      * @see ConfigurableBeanFactory#SCOPE_SINGLETON
@@ -111,7 +116,6 @@ public @interface Sdk {
      * Spring's bean injection method selection defaults to
      * assembly by type.
      *
-     * <p><h3>There are two situations.</h3>
      * <p><strong>_____________________________________________</strong>
      * <p><strong>If you use {@link EnableSdkProxyRegister}</strong>
      * <p>You need to pay attention to the following statements.</p>
@@ -120,13 +124,14 @@ public @interface Sdk {
      * Spring has not yet started creating beans in this registration stage, and since
      * beans have not been created, it will not parse the {@link Autowired}  or
      * {@link javax.annotation.Resource} annotation.
-     * <p><strong>Therefore,  do not use {@link Autowired}  or
+     * <p><strong>Therefore, if you provide a {@link #beanDefinitionClass()} class,
+     * then in this class do not use {@link Autowired}  or
      * {@link javax.annotation.Resource} annotation for bean injection.</strong>
      * <p>Of course, if you use {@link GenericBeanDefinition#AUTOWIRE_CONSTRUCTOR},
      * please ensure that your injection class has a default constructor.
      * <p><strong>_____________________________________________</strong>
      *
-     * @return Returns the injection method.
+     * @return Returns the injection method,defaults to do not automatically assemble injection.
      * @see GenericBeanDefinition#AUTOWIRE_NO
      * @see GenericBeanDefinition#AUTOWIRE_BY_NAME
      * @see GenericBeanDefinition#AUTOWIRE_BY_TYPE
@@ -139,7 +144,7 @@ public @interface Sdk {
      * <p>The default is {@code null} in which case there is no initializer method.
      * <p>The explanation comes from {@link AbstractBeanDefinition#setInitMethodName(String)}}.
      *
-     * @return A bean lifeStyle with init method name.
+     * @return A bean lifeStyle with init method name,defaults blank.
      * @since 2.0.9
      */
     String initMethod() default "";
@@ -149,7 +154,7 @@ public @interface Sdk {
      * <p>The default is {@code null} in which case there is no destroy method.
      * <p>The explanation comes from {@link AbstractBeanDefinition#setDestroyMethodName(String)}}.
      *
-     * @return A bean lifeStyle with destroy method name.
+     * @return A bean lifeStyle with destroy method name,defaults blank.
      * @since 2.0.9
      */
     String destroyMethod() default "";
@@ -178,7 +183,7 @@ public @interface Sdk {
      * on the application side, that is, <strong>{@code role = 0}</strong>, which can
      * be set according to one's own needs.
      *
-     * @return A bean lifeStyle role type.
+     * @return A bean lifeStyle role type,defaults user-yourself define.
      * @since 2.0.9
      */
     int role() default BeanDefinition.ROLE_APPLICATION;
@@ -189,7 +194,7 @@ public @interface Sdk {
      * factories that perform eager initialization of singletons.
      * <p>The explanation comes from {@link AbstractBeanDefinition#setLazyInit(boolean)}.
      *
-     * @return A bean decide whether to lazily load.
+     * @return A bean decide whether to lazily load,defaults not.
      * @since 2.0.9
      */
     boolean lazyInit() default false;
@@ -198,7 +203,7 @@ public @interface Sdk {
      * Set a human-readable description of this bean definition.
      * <p>The explanation comes from {@link AbstractBeanDefinition#setDescription(String)}.
      *
-     * @return A bean with its description content.
+     * @return A bean with its description content,defaults blank.
      * @since 2.0.9
      */
     String description() default "";
