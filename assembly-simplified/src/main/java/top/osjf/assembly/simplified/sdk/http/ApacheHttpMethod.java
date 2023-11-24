@@ -5,8 +5,8 @@ import top.osjf.assembly.util.http.ApacheHttpSimpleRequestUtils;
 import java.util.Map;
 
 /**
- * One of the implementation classes of {@link HttpMethod}, please refer to{@link ApacheHttpSimpleRequestUtils}
- * for implementation.
+ * One of the implementation classes of {@link HttpMethod}, please
+ * refer to{@link ApacheHttpSimpleRequestUtils} for implementation.
  *
  * @author zpf
  * @since 1.1.1

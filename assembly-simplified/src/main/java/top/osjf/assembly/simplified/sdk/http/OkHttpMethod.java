@@ -5,8 +5,8 @@ import top.osjf.assembly.util.http.OkHttpSimpleRequestUtils;
 import java.util.Map;
 
 /**
- * One of the implementation classes of {@link HttpMethod}, please refer to {@link OkHttpSimpleRequestUtils}
- * for implementation.
+ * One of the implementation classes of {@link HttpMethod}, please
+ * refer to {@link OkHttpSimpleRequestUtils} for implementation.
  *
  * @author zpf
  * @since 1.1.1

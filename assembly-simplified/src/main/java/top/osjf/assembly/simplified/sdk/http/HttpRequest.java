@@ -5,21 +5,26 @@ import top.osjf.assembly.simplified.sdk.process.Request;
 /**
  * Request node information interface defined by SDK of http type.
  *
- * <p>You need to define an implementation {@link #matchHttpSdk()} interface to provide a fixed description of
- * SDK information.
+ * <p>You need to define an implementation {@link #matchHttpSdk()} interface
+ * to provide a fixed description of SDK information.
  *
  * <p>It is recommended to define an enumeration class.</p>
  *
- * <p>Generally, configure the host name as a configurable item, and dynamically format the input, which
- * is the {@link #formatUrl(String)} method. The corresponding request header information can be easily
- * added through the {@link #getHeadMap()} method. The body input here is set to {@link Object} to mask
- * all parameter differences and be processed uniformly in the future, Through the {@link #getClientCls()}
- * method, you can customize the request process for {@link top.osjf.assembly.simplified.sdk.client.Client}.
+ * <p>Generally, configure the host name as a configurable item, and
+ * dynamically format the input, which is the {@link #formatUrl(String)} method.
+ * <p>The corresponding request header information can be easily added through
+ * the {@link #getHeadMap()} method.
+ * <p>The body input here is set to {@link Object} to mask all parameter differences
+ * and be processed uniformly in the future, Through the {@link #getClientCls()}
+ * method, you can customize the request process for
+ * {@link top.osjf.assembly.simplified.sdk.client.Client}.
  *
- * <p>Here is a written HTTP based client solution.{@link ApacheHttpClient} and {@link OkHttpClient}
+ * <p>Here is a written HTTP based client solution.{@link ApacheHttpClient}
+ * and {@link OkHttpClient}.
  *
- * <p>Of course, the final conversion is still the response implementation class {@link HttpRequest} that
- * you defined for {@link #getResponseCls()}.
+ * <p>Of course, the final conversion is still the response implementation
+ * class {@link HttpRequest} that you defined for {@link #getResponseCls()}.
+ *
  * @param <R> Implement a unified response class data type.
  * @author zpf
  * @since 1.1.1

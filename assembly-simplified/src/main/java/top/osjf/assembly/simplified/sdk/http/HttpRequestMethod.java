@@ -7,7 +7,8 @@ import java.util.Map;
 
 /**
  * Enumeration of HTTP request types.
- * <p>Implement the {@link HttpSdkEnum.Action} interface to define the action methods for each request method.</p>
+ * <p>Implement the {@link HttpSdkEnum.Action} interface to define the
+ * action methods for each request method.</p>
  *
  * @author zpf
  * @see top.osjf.assembly.util.http.ApacheHttpSimpleRequestUtils

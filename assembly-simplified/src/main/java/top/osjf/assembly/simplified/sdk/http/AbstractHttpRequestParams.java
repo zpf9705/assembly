@@ -6,7 +6,8 @@ import top.osjf.assembly.simplified.sdk.process.AbstractRequestParams;
 import top.osjf.assembly.util.json.FastJsonUtils;
 
 /**
- * Http request abstract node class, used to define the public parameters or methods of the real request parameter class.
+ * Http request abstract node class, used to define the public parameters
+ * or methods of the real request parameter class.
  *
  * <p>You can check the example code:
  * <pre>

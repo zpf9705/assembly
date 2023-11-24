@@ -12,13 +12,18 @@ import java.util.Map;
 /**
  * The default client for the commons HTTP request mode of SDK.
  *
- * <p>It is also a step-by-step implementation process that involves verifying parameters, obtaining parameters,
- * HTTP type method requests, response preprocessing, and request transformation processing, including handling
- * {@link SdkException} exceptions and {@link Exception} unknown exceptions. Of course, there are also handling
- * of the final results, and common methods are placed. If this type is inherited, it can be rewritten.
+ * <p>It is also a step-by-step implementation process that involves
+ * verifying parameters, obtaining parameters, HTTP type method requests,
+ * response preprocessing, and request transformation processing, including
+ * handling {@link SdkException} exceptions and {@link Exception} unknown
+ * exceptions.
+ * <p>Of course, there are also handling of the final results, and common
+ * methods are placed.
+ * <p>If this type is inherited, it can be rewritten.
  *
- * <p>Of course, you can define your request based on the {@link #doRequest(HttpRequestMethod, Map, Object, Boolean)}
- * method.
+ * <p>Of course, you can define your request based on the
+ * {@link #doRequest(HttpRequestMethod, Map, Object, Boolean)} method.
+ *
  * @param <R> Implement a unified response class data type.
  * @author zpf
  * @since 1.1.1

@@ -4,8 +4,9 @@ import java.util.Map;
 
 /**
  * HTTP tool request client class based on Apache Open Source Foundation.
+ * <p>Please refer to {@link CommonsHttpClient} for the specific
+ * request process.</p>
  *
- * <p>Please refer to {@link CommonsHttpClient} for the specific request process.</p>
  * @param <R> Implement a unified response class data type.
  * @author zpf
  * @since 1.1.0
