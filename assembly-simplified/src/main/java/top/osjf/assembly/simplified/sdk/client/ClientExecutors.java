@@ -6,8 +6,8 @@ import top.osjf.assembly.simplified.sdk.process.Response;
 import java.util.function.Supplier;
 
 /**
- * Regarding the request executor of {@link Client}, instantiation is not allowed and only its
- * static methods can be called.
+ * Regarding the request executor of {@link Client}, instantiation is not
+ * allowed and only its static methods can be called.
  *
  * @author zpf
  * @see ClientAccess

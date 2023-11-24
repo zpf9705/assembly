@@ -3,7 +3,8 @@ package top.osjf.assembly.simplified.sdk.client;
 import java.util.function.BiConsumer;
 
 /**
- * Log consumers can easily specify log output for each {@link Client} using the function {@link BiConsumer}.
+ * Log consumers can easily specify log output for each {@link Client}
+ * using the function {@link BiConsumer}.
  *
  * @author zpf
  * @since 1.1.0

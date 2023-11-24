@@ -5,12 +5,14 @@ import top.osjf.assembly.simplified.sdk.process.Response;
 import top.osjf.assembly.util.annotation.NotNull;
 
 /**
- * The preprocessing of response strings is mainly to lay the groundwork for the unified conversion
- * of {@link ResponseConvert} response entities in the future.
+ * The preprocessing of response strings is mainly to lay the groundwork for
+ * the unified conversion of {@link ResponseConvert} response entities in the
+ * future.
  *
- * <p>If encountering a type different from the general conversion scheme, special conversion can be
- * attempted here to convert to a unified type, and subsequent conversion of response entities
- * can be carried out.</p>
+ * <p>If encountering a type different from the general conversion scheme,
+ * special conversion can be attempted here to convert to a unified type, and
+ * subsequent conversion of response entities can be carried out.</p>
+ *
  * @param <R> Implement a unified response class data type.
  * @author zpf
  * @since 1.1.0
