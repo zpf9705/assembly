@@ -2,6 +2,7 @@ package top.osjf.assembly.simplified.sdk.http;
 
 import top.osjf.assembly.simplified.sdk.SdkEnum;
 import top.osjf.assembly.util.annotation.NotNull;
+import top.osjf.assembly.util.fun.Function4;
 
 import java.util.Map;
 
@@ -57,7 +58,7 @@ public interface HttpSdkEnum extends SdkEnum {
     /**
      * SDK request action, directly requesting the real URL address.
      */
-    interface Action extends doRequestFun<String, Map<String, String>, Object, Boolean, String> {
+    interface Action extends Function4<String, Map<String, String>, Object, Boolean, String> {
 
         @Override
         default String doRequest(String url, Map<String, String> headers, Object requestParam, Boolean montage) {
@@ -72,7 +73,7 @@ public interface HttpSdkEnum extends SdkEnum {
      * <p>SDK request action, directly requesting {@link HttpRequestMethod} to route to
      * {@link #doRequest(HttpRequestMethod, Map, Object, Boolean)} according to it.</p>
      */
-    interface Action0 extends doRequestFun<HttpRequestMethod, Map<String, String>, Object, Boolean, String> {
+    interface Action0 extends Function4<HttpRequestMethod, Map<String, String>, Object, Boolean, String> {
 
         @Override
         String doRequest(HttpRequestMethod requestMethod, Map<String, String> headers, Object requestParam,

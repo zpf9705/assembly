@@ -1,8 +1,9 @@
 
-package top.osjf.assembly.simplified.sdk.http;
+package top.osjf.assembly.util.fun;
 
 /**
- * A functional interface (callback) that computes a value based on multiple input values.
+ * A functional interface (callback) that computes a value
+ * based on multiple input values.
  *
  * @param <T1> the first value type
  * @param <T2> the second value type
@@ -10,10 +11,10 @@ package top.osjf.assembly.simplified.sdk.http;
  * @param <T4> the fourth value type
  * @param <R>  the result type
  * @author zpf
- * @since 1.1.1
+ * @since 1.0.7
  */
 @FunctionalInterface
-public interface doRequestFun<T1, T2, T3, T4, R> {
+public interface Function4<T1, T2, T3, T4, R> {
 
     /**
      * Calculate a value based on the input values.
