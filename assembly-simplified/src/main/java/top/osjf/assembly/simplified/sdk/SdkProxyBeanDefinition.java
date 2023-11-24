@@ -13,7 +13,7 @@ import java.io.Serializable;
  *
  * <p>Here is an explanation of the main implementation idea: we first scan the interface classes wearing
  * {@link top.osjf.assembly.simplified.sdk.annotation.EnableSdkProxyRegister} in
- * {@link top.osjf.assembly.simplified.support.AbstractProxyBeanInjectSupport} through
+ * {@link top.osjf.assembly.simplified.support.BeanDefinitionRegisterBeforeRefresh} through
  * {@link top.osjf.assembly.simplified.sdk.annotation.Sdk}'s switch annotations,
  * and then create dynamic implementation classes for these interfaces through {}.
  *
@@ -48,5 +48,12 @@ public class SdkProxyBeanDefinition<T> extends AbstractSdkProxyInvoker<T> implem
     @Override
     public String getHost() {
         return host;
+    }
+
+    @Override
+    public String toString() {
+        return "SdkProxyBeanDefinition{" +
+                "host='" + host + '\'' +
+                '}';
     }
 }
