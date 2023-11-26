@@ -47,7 +47,8 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
     /**
      * Obtain the interface parameters for this HTTP request.
      *
-     * @return Return a {@link top.osjf.assembly.simplified.sdk.process.Request} param within {@link HttpRequest}.
+     * @return Return a {@link top.osjf.assembly.simplified.sdk.process.Request}
+     * param within {@link HttpRequest}.
      */
     public HttpRequest<R> getCurrentHttpRequest() {
         return (HttpRequest<R>) getCurrentRequest();
@@ -65,18 +66,18 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
     @NotNull
     public R convertToResponse(Request<R> request, String responseStr) {
         R response;
-        if (!FastJsonUtils.isValid(responseStr)) {
-            response = DefaultErrorResponse.parseErrorResponse(responseStr, DefaultErrorResponse.ErrorType.DATA,
-                    request.getResponseCls());
+        if (FastJsonUtils.isValidObject(responseStr)) {
+            response = FastJsonUtils.parseObject(responseStr, request.getResponseCls());
         } else if (FastJsonUtils.isValidArray(responseStr)) {
             List<R> responses = FastJsonUtils.parseArray(responseStr, request.getResponseCls());
-            if (CollectionUtils.isEmpty(responses)) {
+            if (CollectionUtils.isNotEmpty(responses)) {
                 response = responses.get(0);
             } else {
                 response = FastJsonUtils.toEmptyObj(request.getResponseCls());
             }
         } else {
-            response = FastJsonUtils.parseObject(responseStr, request.getResponseCls());
+            response = DefaultErrorResponse
+                    .parseErrorResponse(responseStr, DefaultErrorResponse.ErrorType.DATA, request.getResponseCls());
         }
         return response;
     }
