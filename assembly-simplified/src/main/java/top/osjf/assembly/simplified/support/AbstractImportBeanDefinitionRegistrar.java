@@ -15,7 +15,15 @@ import java.lang.annotation.Annotation;
 import java.util.Map;
 
 /**
+ * Abstract {@link ImportBeanDefinitionRegistrar} implementation class,
+ * parsing the triggered annotation content, and providing the package
+ * path where the application main class is located.
+ * <p>Pass in method {@link #process(AnnotationAttributes, BeanDefinitionRegistry)}
+ * and hand it over to subclasses to implement the behavior of registering beans.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
+ * @see ImportBeanDefinitionRegistrar
+ * @since 2.0.9
  */
 public abstract class AbstractImportBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar {
 
@@ -61,7 +69,7 @@ public abstract class AbstractImportBeanDefinitionRegistrar implements ImportBea
      * Obtain the package path where the main application is located.
      * @return Path of main application.
      */
-    protected String getMainApplicationClassPath(){
+    protected String getMainApplicationClassPath() {
         return MainClassPathCapable.getMainApplicationClassPath();
     }
 
@@ -77,7 +85,7 @@ public abstract class AbstractImportBeanDefinitionRegistrar implements ImportBea
             }
         }
 
-        public static String getMainApplicationClassPath(){
+        public static String getMainApplicationClassPath() {
             return mainApplicationClassPath;
         }
     }
