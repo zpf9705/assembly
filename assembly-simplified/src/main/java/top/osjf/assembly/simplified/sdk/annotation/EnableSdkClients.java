@@ -26,15 +26,15 @@ import java.lang.annotation.*;
  * <p>In principle, the paths of two attributes must correspond one by one to
  * achieve the above functions, so it is important to note that they should not
  * be used interchangeably.
- *
+ * @deprecated The purpose is to migrate to the 2.1.0 version of {@link EnableSdkProxyRegister}.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.0.9
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ComponentScan
-@EnableSdkProxyRegister
+//@ComponentScan
+//@EnableSdkProxyRegister
 public @interface EnableSdkClients {
 
     /**
