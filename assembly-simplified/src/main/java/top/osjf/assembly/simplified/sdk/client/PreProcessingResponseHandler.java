@@ -22,12 +22,12 @@ public interface PreProcessingResponseHandler<R extends Response> {
 
     /**
      * Preprocessing method for response strings.
-     *
      * <p>There is no preprocessing method by default.</p>
      *
      * @param request     {@link Request} class model parameters of API.
      * @param responseStr String data for API response.
-     * @return The formatted string after special processing of the response string cannot return {@literal null}.
+     * @return The formatted string after special processing of the response
+     * string cannot return {@literal null}.
      */
     @NotNull
     String preResponseStrHandler(Request<R> request, String responseStr);
