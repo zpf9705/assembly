@@ -20,7 +20,7 @@ public final class FastJsonUtils extends JSON {
     }
 
     //Standard JSON object format or JSON array format.
-    public static boolean isValid(String jsonStr) {
+    public static boolean effectiveDataStructure(String jsonStr) {
         if (StringUtils.isBlank(jsonStr)) {
             return false;
         }
