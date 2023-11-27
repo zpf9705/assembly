@@ -5,8 +5,8 @@ import top.osjf.assembly.util.exceptions.ExceptionUtils;
 import java.util.function.Supplier;
 
 /**
- * The default implementation class for the HTTP execution result collection interface
- * {@link top.osjf.assembly.simplified.sdk.http.HttpResultSolver.ExecuteInfo}.
+ * The default implementation class for the HTTP execution result
+ * collection interface {@link HttpResultSolver.ExecuteInfo}.
  *
  * @author zpf
  * @since 1.1.1

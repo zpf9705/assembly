@@ -6,7 +6,8 @@ import top.osjf.assembly.util.annotation.CanNull;
 import java.util.function.Supplier;
 
 /**
- * <p>The client implementation class in the form of HTTP implements the phased solver definition.</p>
+ * <p>The client implementation class in the form of HTTP implements
+ * the phased solver definition.</p>
  *
  * @author zpf
  * @since 1.1.1
