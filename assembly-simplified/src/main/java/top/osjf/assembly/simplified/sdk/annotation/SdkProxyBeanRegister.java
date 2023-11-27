@@ -9,6 +9,7 @@ import top.osjf.assembly.simplified.sdk.SdkProxyBeanDefinition;
 import top.osjf.assembly.simplified.support.BeanDefinitionRegisterBeforeRefresh;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.lang.StringUtils;
+import top.osjf.assembly.util.logger.Console;
 
 /**
  * The proxy registration class of SDK scans the relevant interface
@@ -28,6 +29,8 @@ import top.osjf.assembly.util.lang.StringUtils;
  * @since 1.1.0
  */
 public class SdkProxyBeanRegister extends BeanDefinitionRegisterBeforeRefresh {
+
+    static final String DEFAULT_HTTP_BROWSER_HOST = "127.0.0.1:80";
 
     @Override
     public BeanDefinitionHolder getBeanDefinitionHolder(AnnotationAttributes attributes, AnnotationMetadata meta) {
@@ -77,10 +80,14 @@ public class SdkProxyBeanRegister extends BeanDefinitionRegisterBeforeRefresh {
     }
 
     /**
-     * Obtain host configuration parameters,according to the startup
-     * environment of spring.
+     * Based on the provided configuration name, obtain the
+     * corresponding host address.
+     * <p>The supported formats are as described in {@link Sdk#hostProperty()}.
+     * <p>If none of the supported formats are obtained, the
+     * default value is {@link #DEFAULT_HTTP_BROWSER_HOST}, and any
+     * subsequent exceptions will be handled on their own.
      * @param hostProperty Host configuration key.
-     * @return Real host address.
+     * @return Real host address,defaults to {@link #DEFAULT_HTTP_BROWSER_HOST}.
      */
     private String getRequestHost(String hostProperty) {
         Assert.hasText(hostProperty, "HostProperty no be null");
@@ -88,9 +95,11 @@ public class SdkProxyBeanRegister extends BeanDefinitionRegisterBeforeRefresh {
         if (StringUtils.isBlank(host)) {
             host = getEnvironment().getProperty(hostProperty);
         }
-        Assert.hasText(host,
-                "Provided by the configuration keys [" + hostProperty + "] , Didn't find the corresponding " +
-                        "configuration items , Please check");
+        if (StringUtils.isBlank(host)) {
+            Console.warn("Provided by the configuration keys [ {} ] , Didn't find the corresponding " +
+                    "configuration items , Please check", hostProperty);
+            host = DEFAULT_HTTP_BROWSER_HOST;
+        }
         return host;
     }
 }
