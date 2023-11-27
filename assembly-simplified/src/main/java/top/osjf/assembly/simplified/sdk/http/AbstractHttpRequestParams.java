@@ -40,6 +40,7 @@ import top.osjf.assembly.util.json.FastJsonUtils;
  *     }
  * }}
  * </pre>
+ *
  * @param <R> Implement a unified response class data type.
  * @author zpf
  * @since 1.1.1
@@ -73,12 +74,15 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
     }
 
     /**
-     * The abstract method for obtaining the actual request body. If {@link #defaultToJson()} requires
-     * JSON serialization, it will be done in {@link #getRequestParam()}. If it is not a JSON request
-     * parameter, this method needs to be rewritten to directly convert the input parameter format and
-     * set {@link #defaultToJson()} to {@literal true}.
+     * The abstract method for obtaining the actual request body.
+     * <p>If {@link #defaultToJson()} requires JSON serialization,
+     * it will be done in {@link #getRequestParam()}.
+     * <p>If it is not a JSON request parameter, this method needs
+     * to be rewritten to directly convert the input parameter format
+     * and set {@link #defaultToJson()} to {@literal true}.
      *
-     * @return Returns an input parameter object, which may have multiple forms of existence or may be {@literal null}.
+     * @return Returns an input parameter object, which may have
+     * multiple forms of existence or may be {@literal null}.
      */
     @Nullable
     public abstract Object getParam();
