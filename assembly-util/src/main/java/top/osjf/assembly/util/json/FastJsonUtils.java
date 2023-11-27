@@ -53,7 +53,7 @@ public final class FastJsonUtils extends JSON {
         return true;
     }
 
-    public static <T> T toObj(String str, TypeReferences<T> references) {
+    public static <T> T toObject(String str, TypeReferences<T> references) {
         return JSON.parseObject(str, references);
     }
 

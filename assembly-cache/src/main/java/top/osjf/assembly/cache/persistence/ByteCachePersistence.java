@@ -79,7 +79,8 @@ public class ByteCachePersistence extends AbstractCachePersistence<byte[], byte[
         //parse json
         BytePersistence persistence;
         try {
-            persistence = FastJsonUtils.toObj(buffer.toString(), new FastJsonUtils.TypeReferences<BytePersistence>(){});
+            persistence = FastJsonUtils.toObject(buffer.toString(),
+                    new FastJsonUtils.TypeReferences<BytePersistence>(){});
         } catch (Exception e) {
             throw new CachePersistenceException("Buffer data [" + buffer + " ] parse Persistence error " +
                     "[" + e.getMessage() + "]");
