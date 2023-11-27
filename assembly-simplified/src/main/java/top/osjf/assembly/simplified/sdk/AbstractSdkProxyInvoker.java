@@ -1,8 +1,8 @@
 package top.osjf.assembly.simplified.sdk;
 
 import top.osjf.assembly.simplified.sdk.client.ClientExecutors;
-import top.osjf.assembly.simplified.sdk.process.HostCapable;
 import top.osjf.assembly.simplified.sdk.process.Request;
+import top.osjf.assembly.simplified.sdk.process.RequestAttributes;
 import top.osjf.assembly.simplified.sdk.process.Response;
 import top.osjf.assembly.simplified.support.AbstractJdkProxySupport;
 import top.osjf.assembly.util.annotation.NotNull;
@@ -31,7 +31,7 @@ import java.lang.reflect.Method;
  * @author zpf
  * @since 1.1.0
  */
-public abstract class AbstractSdkProxyInvoker<T> extends AbstractJdkProxySupport<T> implements HostCapable {
+public abstract class AbstractSdkProxyInvoker<T> extends AbstractJdkProxySupport<T> implements RequestAttributes {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) {
@@ -89,6 +89,5 @@ public abstract class AbstractSdkProxyInvoker<T> extends AbstractJdkProxySupport
     }
 
     @Override
-    @NotNull
     public abstract String getHost();
 }
