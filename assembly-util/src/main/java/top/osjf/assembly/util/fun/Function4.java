@@ -11,7 +11,7 @@ package top.osjf.assembly.util.fun;
  * @param <T4> the fourth value type
  * @param <R>  the result type
  * @author zpf
- * @since 1.0.7
+ * @since 1.0.8
  */
 @FunctionalInterface
 public interface Function4<T1, T2, T3, T4, R> {

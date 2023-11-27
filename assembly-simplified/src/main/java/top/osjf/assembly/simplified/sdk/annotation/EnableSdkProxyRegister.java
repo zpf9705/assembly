@@ -61,7 +61,7 @@ public @interface EnableSdkProxyRegister {
      * @return Alias for {{@link #basePackages()}} for {@link ComponentScan}.
      */
     // update since 2.1.0
-    @AliasFor(value = "value", annotation = ComponentScan.class)
+    @AliasFor(annotation = ComponentScan.class)
     String[] value() default {};
 
     /**
@@ -79,6 +79,6 @@ public @interface EnableSdkProxyRegister {
      * @return Alias for {{@link #value()}} for {@link ComponentScan}.
      */
     // update since 2.1.0
-    @AliasFor(value = "basePackages", annotation = ComponentScan.class)
+    @AliasFor(annotation = ComponentScan.class)
     String[] basePackages() default {};
 }
