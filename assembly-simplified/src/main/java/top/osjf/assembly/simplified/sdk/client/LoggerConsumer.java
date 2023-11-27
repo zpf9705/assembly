@@ -1,5 +1,7 @@
 package top.osjf.assembly.simplified.sdk.client;
 
+import top.osjf.assembly.simplified.sdk.SdkException;
+
 import java.util.function.BiConsumer;
 
 /**
@@ -19,7 +21,7 @@ public interface LoggerConsumer {
     BiConsumer<String, Object[]> normal();
 
     /**
-     * {@link top.osjf.assembly.simplified.sdk.SdkException} Exclusive log item, log output for user SDK exceptions.
+     * {@link SdkException} Exclusive log item, log output for user SDK exceptions.
      *
      * @return For example: {@code org.slf4j.Logger#error(String, Object...)}
      */
