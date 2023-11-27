@@ -68,7 +68,7 @@ public final class FastJsonUtils extends JSON {
         return null;
     }
 
-    public static JSONObject toObj(Object arg) {
+    public static JSONObject toJSONObject(Object arg) {
         if (arg == null) return null;
         JSONObject obj;
         if (arg instanceof JSONObject) {
