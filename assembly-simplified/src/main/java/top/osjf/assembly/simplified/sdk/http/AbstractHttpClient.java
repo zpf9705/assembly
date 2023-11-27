@@ -11,7 +11,6 @@ import top.osjf.assembly.util.logger.Console;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-
 /**
  * SDK's HTTP request mode client abstract class inherits
  * {@link AbstractClient} to implement the client's caching for
@@ -46,9 +45,7 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
 
     /**
      * Obtain the interface parameters for this HTTP request.
-     *
-     * @return Return a {@link top.osjf.assembly.simplified.sdk.process.Request}
-     * param within {@link HttpRequest}.
+     * @return Return a {@link Request} param within {@link HttpRequest}.
      */
     public HttpRequest<R> getCurrentHttpRequest() {
         return (HttpRequest<R>) getCurrentRequest();
