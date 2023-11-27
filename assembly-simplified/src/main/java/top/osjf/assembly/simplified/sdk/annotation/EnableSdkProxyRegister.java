@@ -30,6 +30,16 @@ import java.lang.annotation.*;
  * <p>Please refer to its attribute explanation for specific explanations
  * and {@link #value()} and {@link #basePackages()}still maintain bidirectional
  * binding, which is specifically implemented in {@link ComponentScan}.
+ * <p> <strong> Warn UI Support </strong>
+ * <p>Please be cautious when merging {@code org.springframework.boot.autoconfigure
+ * .SpringBootApplication}, as it is used together with {@link ComponentScan}.
+ * <p>The former is to scan the beans in the specified path of this project in
+ * seconds, while this annotation is to provide injected UI support for automatically
+ * registering the SDK interface of the implementation class.
+ * <p>The former has a higher priority and greater effect.
+ * <p>Therefore, it is recommended to use this annotation and create a separate
+ * configuration class.
+ * <p><strong>If is forcibly merged, UI support will be invalidated.</strong>
  *
  * @author zpf
  * @see org.springframework.context.annotation.ImportBeanDefinitionRegistrar
