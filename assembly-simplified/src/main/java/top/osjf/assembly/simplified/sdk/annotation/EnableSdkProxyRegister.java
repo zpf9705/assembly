@@ -22,7 +22,7 @@ import java.lang.annotation.*;
  *
  *     &#064;Configuration(proxyBeanMethods = false)
  *     &#064;Role(BeanDefinition.ROLE_INFRASTRUCTURE)
- *     &#064;EnableSdkProxyRegister(InterfaceConstance.SDK_SCAN_PATH)
+ *     &#064;EnableSdkProxyRegister(Constance.SDK_SCAN_PATH)
  *     public static class Configuration {
  *     }
  * }
@@ -30,7 +30,7 @@ import java.lang.annotation.*;
  * <p>Please refer to its attribute explanation for specific explanations
  * and {@link #value()} and {@link #basePackages()}still maintain bidirectional
  * binding, which is specifically implemented in {@link ComponentScan}.
- * </pre>
+ *
  * @author zpf
  * @see org.springframework.context.annotation.ImportBeanDefinitionRegistrar
  * @see top.osjf.assembly.simplified.support.AbstractImportBeanDefinitionRegistrar
@@ -57,9 +57,11 @@ public @interface EnableSdkProxyRegister {
      * <p>If this property is not configured, the injection source
      * will not be displayed, but the implementation class has already
      * been injected.
+     *
      * @return Alias for {{@link #basePackages()}} for {@link ComponentScan}.
      */
-    @AliasFor(value = "value", annotation = ComponentScan.class) // update since 2.1.0
+    // update since 2.1.0
+    @AliasFor(value = "value", annotation = ComponentScan.class)
     String[] value() default {};
 
     /**
@@ -73,8 +75,10 @@ public @interface EnableSdkProxyRegister {
      * <p>If this property is not configured, the injection source
      * will not be displayed, but the implementation class has already
      * been injected.
+     *
      * @return Alias for {{@link #value()}} for {@link ComponentScan}.
      */
-    @AliasFor(value = "basePackages", annotation = ComponentScan.class) // update since 2.1.0
+    // update since 2.1.0
+    @AliasFor(value = "basePackages", annotation = ComponentScan.class)
     String[] basePackages() default {};
 }
