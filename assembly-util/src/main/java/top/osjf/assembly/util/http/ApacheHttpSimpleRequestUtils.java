@@ -212,7 +212,7 @@ public final class ApacheHttpSimpleRequestUtils {
                 params = (Map<String, Object>) requestParam;
             } else {
                 String jsonStr = requestParam.toString();
-                if (FastJsonUtils.isValid(jsonStr)) {
+                if (FastJsonUtils.isValidObject(jsonStr)) {
                     params = FastJsonUtils.getInnerMapByJsonStr(jsonStr);
                 }
             }
