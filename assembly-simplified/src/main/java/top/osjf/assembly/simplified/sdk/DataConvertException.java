@@ -1,8 +1,9 @@
 package top.osjf.assembly.simplified.sdk;
 
+import top.osjf.assembly.simplified.sdk.process.DefaultErrorResponse;
+
 /**
- * {@link top.osjf.assembly.simplified.sdk.process.DefaultErrorResponse}
- * of abnormal conversion of response data.
+ * {@link DefaultErrorResponse} of abnormal conversion of response data.
  *
  * @author zpf
  * @since 1.1.1
