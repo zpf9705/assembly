@@ -1,8 +1,8 @@
 package top.osjf.assembly.simplified.sdk.http;
 
-import org.springframework.lang.Nullable;
 import top.osjf.assembly.simplified.sdk.client.Client;
 import top.osjf.assembly.simplified.sdk.process.AbstractRequestParams;
+import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.json.FastJsonUtils;
 
 /**
@@ -50,7 +50,7 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
         implements HttpRequest<R> {
 
     @Override
-    @Nullable
+    @CanNull
     public Object getRequestParam() {
         Object param = getParam();
         if (param == null) {
@@ -84,7 +84,7 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
      * @return Returns an input parameter object, which may have
      * multiple forms of existence or may be {@literal null}.
      */
-    @Nullable
+    @CanNull
     public abstract Object getParam();
 
     /**
