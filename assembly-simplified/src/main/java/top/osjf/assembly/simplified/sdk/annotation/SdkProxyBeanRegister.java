@@ -96,8 +96,8 @@ public class SdkProxyBeanRegister extends BeanDefinitionRegisterBeforeRefresh {
             host = getEnvironment().getProperty(hostProperty);
         }
         if (StringUtils.isBlank(host)) {
-            Console.warn("Provided by the configuration keys [ {} ] , Didn't find the corresponding " +
-                    "configuration items , Please check", hostProperty);
+            Console.warn("【WARNING】Provided by the configuration keys [{}] , didn't find the corresponding" +
+                    " configuration items", hostProperty);
             host = DEFAULT_HTTP_BROWSER_HOST;
         }
         return host;
