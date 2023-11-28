@@ -44,7 +44,7 @@ public final class ClientExecutors extends ClientAccess {
     public static <R extends Response> R executeRequestClient(String host, Request<R> request) {
         try (Client<R> client = getAndSetClient(request.getUrl(host), request)) {
             return client.request();
-        } catch (/*update since 3.0.0*/IOException e) {
+        } catch (/*update since 2.1.0*/IOException e) {
             throw new ClientRuntimeCloseException(e);
         }
     }
