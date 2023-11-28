@@ -12,7 +12,6 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Help class on context collection tools.
@@ -34,10 +33,26 @@ public final class ServiceContextUtils {
     /*** The name identification suffix of this service management proxy class.*/
     private static final String SERVICE_COLLECTION_BEAN_SIGNS = "@a.s.proxy";
 
+    /*** Instantiation is still not supported.*/
     private ServiceContextUtils() {
-
     }
 
+    /**
+     * Retrieve cache service based on service name and known elements.
+     * <p>Provide services to obtain equations, with sub equations provided
+     * externally.
+     * Encode the ID name based on the application ID.
+     * Priority should be given to using service name encoding, followed
+     * by using alias name encoding.
+     * @param serviceName   The service name passed in.
+     * @param requiredType  The type that needs to be converted.
+     * @param applicationId Application ID.
+     * @param getFun        The equation for obtaining services.
+     * @param <S>           Service type.
+     * @return The converted service type may be {@literal null}.
+     * @see #formatId(Class, String, String)
+     * @see #formatAlisa(Class, String, String)
+     */
     //Obtain service objects based on the provided elements.
     public static <S> S getService(String serviceName, Class<S> requiredType,
                                    String applicationId, Function<String, S> getFun) {
@@ -60,6 +75,16 @@ public final class ServiceContextUtils {
         return service;
     }
 
+    /**
+     * Analyze whether the current type is {@link Type} type.
+     * Due to the external {@link Type#SIMPLE} type, the object
+     * needs to be created in a timely manner.
+     * When the above viewpoint is met, create a {@link ClassesServiceContext}
+     * and return it as a singleton object.
+     * @param type    The type of service selected.
+     * @param context Known service context.
+     * @return The service context that has been analyzed.
+     */
     //If the type is empty or class, select the class mode, and for the rest,
     // select the already initialized simple mode
     public static ServiceContext newOrDefault(Type type, ServiceContext context) {
@@ -67,6 +92,11 @@ public final class ServiceContextUtils {
         return context;
     }
 
+    /**
+     * Retrieve the class object based on its name.
+     * @param className Class#getName.
+     * @return Class Object.
+     */
     //Obtain the class object based on the class name.
     public static Class<?> getClass(String className) {
         if (className == null) {
@@ -79,6 +109,14 @@ public final class ServiceContextUtils {
         }
     }
 
+    /**
+     * Retrieve a collection of abstract class and interface class
+     * objects based on known class objects.
+     * Contains abstract classes or interfaces that carry
+     * {@link ServiceCollection} at all levels.
+     * @param clazz Known class object.
+     * @return Get the result list.
+     */
     //Obtain and filter class objects that carry service collection annotations.
     public static List<Class<?>> getFilterServices(Class<?> clazz) {
         if (clazz == null) {
@@ -145,11 +183,23 @@ public final class ServiceContextUtils {
         return sortServices;
     }
 
+    /**
+     * @return Predicate for {@link ServiceCollection}.
+     */
     //Interface or abstract class, and annotate the service to collect annotations.
     public static Predicate<Class<?>> isServiceCollectionTarget() {
         return ServiceContextUtils::isServiceCollectionTarget;
     }
 
+    /**
+     * <strong>Meet the conditions for service collection.</strong>
+     * <ul>
+     *     <li>Interface or abstract class.</li>
+     *     <li>Carry {@link ServiceCollection}.</li>
+     * </ul>
+     * @param clazz Known class object.
+     * @return if {@code true} is collection service,otherwise.
+     */
     //Interface or abstract class, and annotate the service to collect annotations.
     public static boolean isServiceCollectionTarget(Class<?> clazz) {
         return (clazz.isInterface()
@@ -159,6 +209,13 @@ public final class ServiceContextUtils {
                 clazz.getAnnotation(ServiceCollection.class) != null;
     }
 
+    /**
+     * Determine whether it is a bean collected by the
+     * service by checking whether the ID suffix of the
+     * bean ends with {@link #SERVICE_COLLECTION_BEAN_SIGNS}.
+     * @param beanName Bean of ID.
+     * @return After encode,this ID Of their beans.
+     */
     //Whether to collect services for the target.
     public static boolean isCollectionService(String beanName) {
         if (StringUtils.isBlank(beanName)) {
@@ -167,16 +224,38 @@ public final class ServiceContextUtils {
         return beanName.endsWith(SERVICE_COLLECTION_BEAN_SIGNS);
     }
 
+    /**
+     * Conditionally encode the ID of the bean.
+     * @param parent        Known class object parent.
+     * @param suffix        Known Service name.
+     * @param applicationId Application id.
+     * @return Encode result string.
+     */
     //A custom generation scheme for bean name.
     public static String formatId(Class<?> parent, String suffix, String applicationId) {
         return encodeName(parent, suffix, applicationId, SERVICE_COLLECTION_BEAN_SIGNS);
     }
 
+    /**
+     * Conditionally encode the alisa name of the bean.
+     * @param parent        Known class object parent.
+     * @param suffix        Known Service name.
+     * @param applicationId Application id.
+     * @return Encode result string.
+     */
     //A custom generation scheme for bean alisa name.
     public static String formatAlisa(Class<?> parent, String suffix, String applicationId) {
         return encodeName(parent, suffix, applicationId, null);
     }
 
+    /**
+     * Encode the name according to the conditions.
+     * @param parent        Known class object parent.
+     * @param suffix        Known Service name.
+     * @param applicationId Application id.
+     * @param idSign        Id sign.
+     * @return Encode result string.
+     */
     //Encrypted bean name definition.
     private static String encodeName(Class<?> parent, String suffix, String applicationId, String idSign) {
         if (parent == null || StringUtils.isBlank(suffix) || StringUtils.isBlank(applicationId)) {
@@ -194,6 +273,12 @@ public final class ServiceContextUtils {
                 (StringUtils.isNotBlank(idSign) ? idSign : "");
     }
 
+    /**
+     * Encode the name according to the conditions.
+     * @param clazz           Known class object.
+     * @param ignoredFullName Whether to ignore the full name of the class.
+     * @return Alias of clazz in analyze result.
+     */
     //Analyze the remaining class names based on their applicability.
     public static List<String> analyzeClassAlias(Class<?> clazz, boolean ignoredFullName) {
         if (clazz == null) {
@@ -209,6 +294,13 @@ public final class ServiceContextUtils {
         return alisa;
     }
 
+    /**
+     * Obtain the full path of the empty class based
+     * on the identification of the annotation collected
+     * by the known class retrieval service.
+     * @param parent Known class object parent.
+     * @return Prefix for bean encode.
+     */
     //Obtain the service name prefix.
     private static String getServiceCollectionPrefix(Class<?> parent) {
         if (parent == null) {
@@ -222,58 +314,5 @@ public final class ServiceContextUtils {
             value = parent.getName();
         }
         return value;
-    }
-
-    @Deprecated
-    public interface NamedContext {
-
-        boolean hasValue();
-
-        List<String> getValue();
-    }
-
-    @Deprecated
-    //Obtain bean services based on the abbreviation.
-    public static NamedContext getBeanNameUseParentOrMainPackageName(Class<?> parent, String serviceName,
-                                                                     String applicationId,
-                                                                     String defaultApplicationPackage) {
-        String parentPackageMontageName = null;
-        String defaultApplicationPackageMontageName = null;
-        if (parent != null && StringUtils.isNotBlank(serviceName)
-                && StringUtils.isNotBlank(defaultApplicationPackage)) {
-            if (!serviceName.startsWith(parent.getPackage().getName())
-                    || !serviceName.contains(parent.getPackage().getName())) {
-                if (!serviceName.startsWith(".")) {
-                    serviceName = "." + serviceName;
-                }
-                //It needs to be in the same package as the parent class/interface.
-                parentPackageMontageName = parent.getPackage().getName() + serviceName;
-            }
-            if (!serviceName.startsWith(defaultApplicationPackage)
-                    || !serviceName.contains(defaultApplicationPackage)) {
-                if (!serviceName.startsWith(".")) {
-                    serviceName = "." + serviceName;
-                }
-                defaultApplicationPackageMontageName = defaultApplicationPackage + serviceName;
-            }
-        }
-        String parentPackageMontageNameEc = formatId(parent, parentPackageMontageName, applicationId);
-        String defaultApplicationPackageMontageNameEc =
-                formatId(parent, defaultApplicationPackageMontageName, applicationId);
-
-        List<String> values = Stream.of(parentPackageMontageNameEc, defaultApplicationPackageMontageNameEc)
-                .collect(Collectors.toList());
-        return new NamedContext() {
-
-            @Override
-            public boolean hasValue() {
-                return CollectionUtils.isNotEmpty(values);
-            }
-
-            @Override
-            public List<String> getValue() {
-                return values;
-            }
-        };
     }
 }
