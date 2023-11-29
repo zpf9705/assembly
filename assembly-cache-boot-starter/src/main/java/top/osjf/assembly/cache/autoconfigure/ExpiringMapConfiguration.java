@@ -7,8 +7,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import top.osjf.assembly.cache.config.expiringmap.ExpiringMapClients;
 import top.osjf.assembly.cache.config.expiringmap.ExpiringMapClientsCustomizer;
@@ -74,6 +72,8 @@ public class ExpiringMapConfiguration extends CacheCommonsConfiguration implemen
 
     private Environment environment;
 
+    private final List<ExpiringMapClientsCustomizer> configurationCustomizers;
+
     static final String SYNC_SIGN = "SYNC";
 
     static final String ASYNC_SIGN = "ASYNC";
@@ -94,8 +94,10 @@ public class ExpiringMapConfiguration extends CacheCommonsConfiguration implemen
         }
     }
 
-    public ExpiringMapConfiguration(CacheProperties properties) {
+    public ExpiringMapConfiguration(CacheProperties properties,
+                                    ObjectProvider<List<ExpiringMapClientsCustomizer>> listObjectProvider) {
         super(properties);
+        this.configurationCustomizers = listObjectProvider.getIfAvailable();
     }
 
     @Override
@@ -131,39 +133,29 @@ public class ExpiringMapConfiguration extends CacheCommonsConfiguration implemen
 
     @Bean
     @ConditionalOnMissingBean({CacheFactory.class})
-    public CacheFactory expiringMapCacheExecutorFactory(
-            ObjectProvider<List<ExpiringMapClientsCustomizer>> listObjectProvider) {
+    public CacheFactory expiringMapCacheExecutorFactory() {
         ExpiringMapClients.ExpiringMapClientsBuilder builder = ExpiringMapClients.builder();
-        listObjectProvider.orderedStream().forEach(expiringMapClientsCustomizers -> {
-            if (CollectionUtils.isNotEmpty(expiringMapClientsCustomizers)) {
-                expiringMapClientsCustomizers.forEach(customizer -> customizer.customize(builder));
-            }
-        });
-        return new ExpiringMapCacheFactory(builder.build());
-    }
-
-    @Bean
-    @Order(Ordered.HIGHEST_PRECEDENCE)
-    public ExpiringMapClientsCustomizer expiringMapClientsCustomizer() {
         CacheProperties properties = getProperties();
-        return customizer -> {
-            ExpiringMapClients.ExpiringMapClientsBuilder builder =
-                    customizer.acquireMaxSize(properties.getExpiringMap().getMaxSize())
-                            .acquireDefaultExpireTime(properties.getDefaultExpireTime())
-                            .acquireDefaultExpireTimeUnit(properties.getDefaultExpireTimeUnit())
-                            .acquireDefaultExpirationPolicy(properties.getExpiringMap().getExpirationPolicy());
-            Map<String, List<ExpirationListener>> listenerMap = findExpirationListener();
-            if (MapUtils.isNotEmpty(listenerMap)) {
-                List<ExpirationListener> sync = listenerMap.get(SYNC_SIGN);
-                if (CollectionUtils.isNotEmpty(sync)) {
-                    sync.forEach(builder::addSyncExpiredListener);
-                }
-                List<ExpirationListener> async = listenerMap.get(ASYNC_SIGN);
-                if (CollectionUtils.isNotEmpty(async)) {
-                    async.forEach(builder::addASyncExpiredListener);
-                }
+        CacheProperties.ExpiringMap expiringMap = properties.getExpiringMap();
+        builder.acquireMaxSize(expiringMap.getMaxSize())
+                .acquireDefaultExpireTime(properties.getDefaultExpireTime())
+                .acquireDefaultExpireTimeUnit(properties.getDefaultExpireTimeUnit())
+                .acquireDefaultExpirationPolicy(expiringMap.getExpirationPolicy());
+        Map<String, List<ExpirationListener>> listenerMap = findExpirationListener();
+        if (MapUtils.isNotEmpty(listenerMap)) {
+            List<ExpirationListener> sync = listenerMap.get(SYNC_SIGN);
+            if (CollectionUtils.isNotEmpty(sync)) {
+                sync.forEach(builder::addSyncExpiredListener);
             }
-        };
+            List<ExpirationListener> async = listenerMap.get(ASYNC_SIGN);
+            if (CollectionUtils.isNotEmpty(async)) {
+                async.forEach(builder::addASyncExpiredListener);
+            }
+        }
+        if (CollectionUtils.isNotEmpty(configurationCustomizers)) {
+            configurationCustomizers.forEach(c -> c.customize(builder));
+        }
+        return new ExpiringMapCacheFactory(builder.build());
     }
 
     /**
@@ -180,17 +172,21 @@ public class ExpiringMapConfiguration extends CacheCommonsConfiguration implemen
         CacheProperties.ExpiringMap expiringMap = getProperties().getExpiringMap();
         List<Class<? extends ExpirationListener>> expirationListenerClasses =
                 expiringMap.getExpirationListenerClasses();
-        String[] listeningPackages = getProperties().getExpiringMap().getListeningPackages();
-        if (ArrayUtils.isNotEmpty(listeningPackages)) {
-            Set<Class<ExpirationListener>> subTypesOf =
-                    ScanUtils.getSubTypesOf(ExpirationListener.class, listeningPackages);
-            if (CollectionUtils.isNotEmpty(subTypesOf)) {
-                expirationListenerClasses.addAll(subTypesOf);
+        List<String> listeningPackages = getProperties().getExpiringMap().getListeningPackages();
+        if (CollectionUtils.isNotEmpty(listeningPackages)) {
+            Set<Class<ExpirationListener>> scanResult =
+                    ScanUtils.getSubTypesOf(ExpirationListener.class, listeningPackages.toArray(new String[]{}));
+            if (CollectionUtils.isNotEmpty(scanResult)) {
+                if (CollectionUtils.isNotEmpty(scanResult)) {
+                    expirationListenerClasses.addAll(scanResult);
+                }
             }
         }
         if (CollectionUtils.isNotEmpty(expirationListenerClasses)) {
             expirationListenerClasses =
-                    expirationListenerClasses.stream().distinct().collect(Collectors.toList());
+                    expirationListenerClasses.stream().collect(
+                            Collectors.collectingAndThen(Collectors.toCollection(() ->
+                                    new TreeSet<>(Comparator.comparing(Class::getName))), ArrayList::new));
         } else {
             DefaultConsole.info("There is no class object provided for the scanning" +
                     " package path or class that can be registered and used by the listener.");
