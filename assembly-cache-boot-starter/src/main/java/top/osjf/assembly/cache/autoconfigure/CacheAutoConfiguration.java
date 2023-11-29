@@ -15,8 +15,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import top.osjf.assembly.cache.factory.CacheFactory;
 import top.osjf.assembly.cache.operations.*;
-import top.osjf.assembly.cache.persistence.CachePersistenceReduction;
-import top.osjf.assembly.cache.persistence.CachePersistenceReductionSelector;
 import top.osjf.assembly.cache.serializer.SerializerAdapter;
 import top.osjf.assembly.cache.serializer.StringPairSerializer;
 import top.osjf.assembly.util.annotation.NotNull;
@@ -66,6 +64,22 @@ import java.util.List;
 @Import(ExpiringMapConfiguration.class)
 public class CacheAutoConfiguration implements CacheBannerDisplayDevice, EnvironmentAware {
 
+    public static final String DEFAULT_SO_TEMPLATE = "DEFAULT_SO_TEMPLATE";
+
+    public static final String OPERATION = "_OPERATION";
+
+    public static final String OPERATION_E = "_OPERATION_E";
+
+    public static final String DEFAULT_SO_TEMPLATE_OPERATION = DEFAULT_SO_TEMPLATE + OPERATION;
+
+    public static final String DEFAULT_SO_TEMPLATE_OPERATION_E = DEFAULT_SO_TEMPLATE + OPERATION_E;
+
+    public static final String DEFAULT_SS_TEMPLATE = "DEFAULT_SS_TEMPLATE";
+
+    public static final String DEFAULT_SS_TEMPLATE_OPERATION = DEFAULT_SS_TEMPLATE + OPERATION;
+
+    public static final String DEFAULT_SS_TEMPLATE_OPERATION_E = DEFAULT_SS_TEMPLATE + OPERATION_E;
+
     private final CacheProperties properties;
 
     private final List<ConfigurationCustomizer> configurationCustomizers;
@@ -73,9 +87,9 @@ public class CacheAutoConfiguration implements CacheBannerDisplayDevice, Environ
     public Environment environment;
 
     public CacheAutoConfiguration(CacheProperties properties,
-                                          ObjectProvider<List<ConfigurationCustomizer>> customizerS) {
+                                  ObjectProvider<List<ConfigurationCustomizer>> listObjectProvider) {
         this.properties = properties;
-        this.configurationCustomizers = customizerS.getIfAvailable();
+        this.configurationCustomizers = listObjectProvider.getIfAvailable();
     }
 
     @Override
@@ -149,7 +163,7 @@ public class CacheAutoConfiguration implements CacheBannerDisplayDevice, Environ
     @ConditionalOnBean(name = DEFAULT_SO_TEMPLATE)
     @ConditionalOnMissingBean(name = DEFAULT_SO_TEMPLATE_OPERATION_E)
     public TimeOperations<String, Object> timeOperations(@Qualifier(DEFAULT_SO_TEMPLATE)
-                                                                     CacheTemplate<String, Object> template) {
+                                                         CacheTemplate<String, Object> template) {
         return template.opsForTime();
     }
 
@@ -157,42 +171,15 @@ public class CacheAutoConfiguration implements CacheBannerDisplayDevice, Environ
     @ConditionalOnBean(name = DEFAULT_SS_TEMPLATE)
     @ConditionalOnMissingBean(name = DEFAULT_SS_TEMPLATE_OPERATION_E)
     public TimeOperations<String, String> timeOperations(@Qualifier(DEFAULT_SS_TEMPLATE)
-                                                                     StringCacheTemplate template) {
+                                                         StringCacheTemplate template) {
         return template.opsForTime();
     }
 
-    @Bean("auto::persistenceReduction")
+    @Bean
     @ConditionalOnProperty(prefix = "assembly.cache", name = "open-persistence", havingValue = "true")
     @ConditionalOnBean(CacheTemplate.class)
-    public String persistenceReduction(@Value("${assembly.cache.persistence-path:default}") String path) {
-        Class<?> reductionClass = this.properties.getPersistenceReductionClass();
-        if (reductionClass == null) {
-            return "Open persistence now , but provider factoryClass is null so persistenceRegain failed";
-        }
-        String name = reductionClass.getName();
-        CachePersistenceReduction reduction = CachePersistenceReductionSelector.getReductionByClass(reductionClass);
-        if (reduction == null) {
-            return "Named [" + name + "] persistenceRegain failed";
-        }
-        reduction.reductionUsePath(path);
-        return "Named [" + name + "] exec reduction yet";
+    public PersistenceReductionProcess assemblyCachePersistenceReduction(
+            @Value("${assembly.cache.persistence-path:default}") String path) {
+        return new PersistenceReductionProcess(path, properties.getPersistenceReductionClass());
     }
-
-
-    //-----------------------------------Bean name example-------------------------------------
-    public static final String DEFAULT_SO_TEMPLATE = "DEFAULT_SO_TEMPLATE";
-
-    public static final String OPERATION = "_OPERATION";
-
-    public static final String OPERATION_E = "_OPERATION_E";
-
-    public static final String DEFAULT_SO_TEMPLATE_OPERATION = DEFAULT_SO_TEMPLATE + OPERATION;
-
-    public static final String DEFAULT_SO_TEMPLATE_OPERATION_E = DEFAULT_SO_TEMPLATE + OPERATION_E;
-
-    public static final String DEFAULT_SS_TEMPLATE = "DEFAULT_SS_TEMPLATE";
-
-    public static final String DEFAULT_SS_TEMPLATE_OPERATION = DEFAULT_SS_TEMPLATE + OPERATION;
-
-    public static final String DEFAULT_SS_TEMPLATE_OPERATION_E = DEFAULT_SS_TEMPLATE + OPERATION_E;
 }
