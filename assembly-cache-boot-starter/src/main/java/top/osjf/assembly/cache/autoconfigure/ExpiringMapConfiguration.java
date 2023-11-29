@@ -7,6 +7,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import top.osjf.assembly.cache.config.expiringmap.ExpiringMapClients;
 import top.osjf.assembly.cache.config.expiringmap.ExpiringMapClientsCustomizer;
@@ -30,6 +32,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * One of the optional caches for this component {@link ExpiringMap}.
@@ -65,6 +68,7 @@ import java.util.function.Predicate;
         havingValue = "expire_map",
         matchIfMissing = true
 )
+@SuppressWarnings({"rawtypes"})
 public class ExpiringMapConfiguration extends CacheCommonsConfiguration implements CacheBannerDisplayDevice,
         EnvironmentAware {
 
@@ -125,23 +129,26 @@ public class ExpiringMapConfiguration extends CacheCommonsConfiguration implemen
         return new ExpiringMapBanner();
     }
 
-    @Bean("expiringMap::cacheExecutorFactory")
+    @Bean
     @ConditionalOnMissingBean({CacheFactory.class})
-    public CacheFactory cacheExecutorFactory(
-            ObjectProvider<ExpiringMapClientsCustomizer> buildCustomizer) {
+    public CacheFactory expiringMapCacheExecutorFactory(
+            ObjectProvider<List<ExpiringMapClientsCustomizer>> listObjectProvider) {
         ExpiringMapClients.ExpiringMapClientsBuilder builder = ExpiringMapClients.builder();
-        buildCustomizer.orderedStream()
-                .forEach((customizer) -> customizer.customize(builder));
+        listObjectProvider.orderedStream().forEach(expiringMapClientsCustomizers -> {
+            if (CollectionUtils.isNotEmpty(expiringMapClientsCustomizers)) {
+                expiringMapClientsCustomizers.forEach(customizer -> customizer.customize(builder));
+            }
+        });
         return new ExpiringMapCacheFactory(builder.build());
     }
 
-    @Bean("expiringMap::expireMapClientCustomizer")
-    @SuppressWarnings("rawtypes")
-    public ExpiringMapClientsCustomizer expireMapClientCustomizer() {
+    @Bean
+    @Order(Ordered.HIGHEST_PRECEDENCE)
+    public ExpiringMapClientsCustomizer expiringMapClientsCustomizer() {
         CacheProperties properties = getProperties();
-        return c -> {
+        return customizer -> {
             ExpiringMapClients.ExpiringMapClientsBuilder builder =
-                    c.acquireMaxSize(properties.getExpiringMap().getMaxSize())
+                    customizer.acquireMaxSize(properties.getExpiringMap().getMaxSize())
                             .acquireDefaultExpireTime(properties.getDefaultExpireTime())
                             .acquireDefaultExpireTimeUnit(properties.getDefaultExpireTimeUnit())
                             .acquireDefaultExpirationPolicy(properties.getExpiringMap().getExpirationPolicy());
@@ -160,49 +167,48 @@ public class ExpiringMapConfiguration extends CacheCommonsConfiguration implemen
     }
 
     /**
-     * Find a listening class that carries {@link SyncListener} or {@link AsyncListener} in the specified path,
-     * as it needs to be instantiated.
-     *
-     * <p>If an interface or abstract class is scanned, it will be scanned for its implementation self class.
-     *
+     * Find a listening class that carries {@link SyncListener} or
+     * {@link AsyncListener} in the specified path, as it needs to
+     * be instantiated.
+     * <p>If an interface or abstract class is scanned, it will be
+     * scanned for its implementation self class.
      * <p>If it is not, it will not be possible to add listening.
      *
      * @return Sync listeners and async listeners.
      */
-    @SuppressWarnings({"rawtypes"})
-    public Map<String, List<ExpirationListener>> findExpirationListener() {
-        //obtain listing packages path
+    private Map<String, List<ExpirationListener>> findExpirationListener() {
+        CacheProperties.ExpiringMap expiringMap = getProperties().getExpiringMap();
+        List<Class<? extends ExpirationListener>> expirationListenerClasses =
+                expiringMap.getExpirationListenerClasses();
         String[] listeningPackages = getProperties().getExpiringMap().getListeningPackages();
-        if (ArrayUtils.isEmpty(listeningPackages)) {
-            DefaultConsole.info(
-                    "no provider listening scan path ," +
-                            "so ec no can provider binding Expiration Listener !"
-            );
-            return Collections.emptyMap();
+        if (ArrayUtils.isNotEmpty(listeningPackages)) {
+            Set<Class<ExpirationListener>> subTypesOf =
+                    ScanUtils.getSubTypesOf(ExpirationListener.class, listeningPackages);
+            if (CollectionUtils.isNotEmpty(subTypesOf)) {
+                expirationListenerClasses.addAll(subTypesOf);
+            }
         }
-        //reflection find packages
-        Set<Class<ExpirationListener>> subTypesOf =
-                ScanUtils.getSubTypesOf(ExpirationListener.class, listeningPackages);
-        if (CollectionUtils.isEmpty(subTypesOf)) {
-            DefaultConsole.info(
-                    "No provider implementation ExpiringLoadListener class ," +
-                            "so ec no can provider binding Expiration Listener"
-            );
+        if (CollectionUtils.isNotEmpty(expirationListenerClasses)) {
+            expirationListenerClasses =
+                    expirationListenerClasses.stream().distinct().collect(Collectors.toList());
+        } else {
+            DefaultConsole.info("There is no class object provided for the scanning" +
+                    " package path or class that can be registered and used by the listener.");
             return Collections.emptyMap();
         }
         List<ExpirationListener> sync = new ArrayList<>();
         List<ExpirationListener> async = new ArrayList<>();
         Map<String, List<ExpirationListener>> listenerMap = new HashMap<>();
-        for (Class<? extends ExpirationListener> listenerClass : subTypesOf) {
-            if (Modifier.isAbstract(listenerClass.getModifiers())
-                    || Modifier.isInterface(listenerClass.getModifiers())) {
+        for (Class<? extends ExpirationListener> expirationListenerClass : expirationListenerClasses) {
+            if (Modifier.isAbstract(expirationListenerClass.getModifiers())
+                    || Modifier.isInterface(expirationListenerClass.getModifiers())) {
                 continue;
             }
             Method target;
-            if (Arrays.stream(listenerClass.getMethods()).noneMatch(METHOD_PREDICATE)) {
+            if (Arrays.stream(expirationListenerClass.getMethods()).noneMatch(METHOD_PREDICATE)) {
                 continue;
             } else {
-                target = Arrays.stream(listenerClass.getMethods()).filter(METHOD_PREDICATE)
+                target = Arrays.stream(expirationListenerClass.getMethods()).filter(METHOD_PREDICATE)
                         .findFirst()
                         .orElse(null);
             }
@@ -211,15 +217,15 @@ public class ExpiringMapConfiguration extends CacheCommonsConfiguration implemen
             }
             ExpirationListener listener;
             try {
-                listener = ReflectUtils.newInstance(listenerClass);
+                listener = ReflectUtils.newInstance(expirationListenerClass);
             } catch (Throwable e) {
-                Console.warn("[" + listenerClass.getName() + "] newInstanceForNoArgs failed : [" + e.getMessage() + "]");
+                Console.warn("[" + expirationListenerClass.getName() + "] newInstanceForNoArgs" +
+                        " failed : [" + e.getMessage() + "]");
                 continue;
             }
-            //Synchronous monitoring is preferred
-            SyncListener syncListener = listenerClass.getAnnotation(SyncListener.class);
+            SyncListener syncListener = expirationListenerClass.getAnnotation(SyncListener.class);
             if (syncListener == null) {
-                AsyncListener asyncListener = listenerClass.getAnnotation(AsyncListener.class);
+                AsyncListener asyncListener = expirationListenerClass.getAnnotation(AsyncListener.class);
                 if (asyncListener != null) {
                     async.add(listener);
                 }
