@@ -8,7 +8,7 @@ package top.osjf.assembly.cache.autoconfigure;
  */
 public class CacheCommonsConfiguration {
 
-    public final CacheProperties properties;
+    private final CacheProperties properties;
 
     public CacheCommonsConfiguration(CacheProperties properties) {
         this.properties = properties;
