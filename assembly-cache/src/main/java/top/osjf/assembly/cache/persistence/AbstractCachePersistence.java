@@ -13,7 +13,6 @@ import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.data.ObjectIdentify;
 import top.osjf.assembly.util.encode.DigestUtils;
 import top.osjf.assembly.util.io.IoUtils;
-import top.osjf.assembly.util.io.ScanUtils;
 import top.osjf.assembly.util.json.FastJsonUtils;
 import top.osjf.assembly.util.lang.*;
 import top.osjf.assembly.util.logger.Console;
@@ -25,7 +24,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -933,13 +931,10 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
                 condition,
                 entry.getTimeUnit());
         //Callback for restoring cached keys and values
-        Set<Class<ListeningRecovery>> subTypesOf =
-                ScanUtils.getSubTypesOf(ListeningRecovery.class, configuration.getListeningRecoverySubPath());
-        if (CollectionUtils.isNotEmpty(subTypesOf)) {
-            subTypesOf.forEach(clazz -> {
-                ListeningRecovery recovery;
+        List<ListeningRecovery> listeningRecoveries = configuration.getListeningRecoveries();
+        if (CollectionUtils.isNotEmpty(listeningRecoveries)) {
+            for (ListeningRecovery recovery : listeningRecoveries) {
                 try {
-                    recovery = ReflectUtils.newInstance(clazz);
                     Object key = recoveryDeserializeKey(entry.getKey());
                     Object value = recoveryDeserializeValue(entry.getKey());
                     recovery.recovery(key, value);
@@ -947,7 +942,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
                 } catch (Exception e) {
                     Console.info("Cache recovery callback exception , throw an error : {}", e.getMessage());
                 }
-            });
+            }
         }
     }
 
