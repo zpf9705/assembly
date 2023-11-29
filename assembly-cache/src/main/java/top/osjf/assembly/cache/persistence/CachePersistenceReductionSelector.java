@@ -9,6 +9,7 @@ import top.osjf.assembly.util.spi.SpiLoads;
  * @author zpf
  * @since 1.0.0
  */
+@Deprecated
 public final class CachePersistenceReductionSelector {
 
     private CachePersistenceReductionSelector() {
