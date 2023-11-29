@@ -6,8 +6,10 @@ import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import top.osjf.assembly.util.annotation.NotNull;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * <p>The implementation of information collection before the creation of the
@@ -19,7 +21,7 @@ import java.util.Set;
  */
 public class SourceEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
 
-    private static String[] springbootPrimarySourcesPackages;
+    private static List<String> springbootPrimarySourcesPackages;
 
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
@@ -37,7 +39,7 @@ public class SourceEnvironmentPostProcessor implements EnvironmentPostProcessor,
      * @return According to {@code  org.springframework.boot.SpringApplication#primarySources},
      * there can be multiple main class paths and must not be {@literal  null}.
      */
-    public static String[] findSpringbootPrimarySourcesPackages() {
+    public static List<String> findSpringbootPrimarySourcesPackages() {
         return springbootPrimarySourcesPackages;
     }
 
@@ -59,6 +61,6 @@ public class SourceEnvironmentPostProcessor implements EnvironmentPostProcessor,
                         "\\." + ((Class<?>) o).getSimpleName())[0];
             }
             return null;
-        }).filter(Objects::nonNull).toArray(String[]::new);
+        }).filter(Objects::nonNull).collect(Collectors.toList());
     }
 }
