@@ -1,6 +1,7 @@
 package top.osjf.assembly.cache.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import top.osjf.assembly.cache.net.jodah.expiringmap.ExpirationListener;
 import top.osjf.assembly.cache.net.jodah.expiringmap.ExpirationPolicy;
 import top.osjf.assembly.cache.persistence.ByteCachePersistence;
 import top.osjf.assembly.cache.persistence.CachePersistenceReduction;
@@ -9,7 +10,9 @@ import top.osjf.assembly.cache.persistence.ListeningRecovery;
 import top.osjf.assembly.util.system.SystemUtils;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -203,6 +206,14 @@ public class CacheProperties {
         private ExpirationPolicy expirationPolicy = ExpirationPolicy.ACCESSED;
 
         /**
+         * Set {@code expiration Listeners} for map.
+         * <p>The function is similar to {@link #listeningPackages}.
+         * @since 1.0.8
+         */
+        @SuppressWarnings("rawtypes")
+        private List<Class<? extends ExpirationListener>> expirationListenerClasses = new ArrayList<>();
+
+        /**
          * Set a {@code listening packages} for map.
          *
          * <p>If it is null, the default is to use springboot to start the package path where the main class is located.
@@ -233,6 +244,16 @@ public class CacheProperties {
 
         public void setListeningPackages(String[] listeningPackages) {
             this.listeningPackages = listeningPackages;
+        }
+
+        @SuppressWarnings("rawtypes")
+        public List<Class<? extends ExpirationListener>> getExpirationListenerClasses() {
+            return expirationListenerClasses;
+        }
+
+        @SuppressWarnings("rawtypes")
+        public void setExpirationListenerClasses(List<Class<? extends ExpirationListener>> expirationListenerClasses) {
+            this.expirationListenerClasses = expirationListenerClasses;
         }
     }
 
