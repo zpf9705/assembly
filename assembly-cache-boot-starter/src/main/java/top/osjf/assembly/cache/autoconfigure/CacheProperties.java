@@ -11,9 +11,9 @@ import top.osjf.assembly.util.system.SystemUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 /**
  * Configuration properties for assembly-cache.
@@ -56,10 +56,19 @@ public class CacheProperties {
     private String persistencePath = SystemUtils.getCurrentProjectPath() + "/expire/";
 
     /**
+     * Cache persistence recovery implements a collection of class
+     * objects provided by {@link ListeningRecovery} locks, similar
+     * in function to {@link #listeningRecoverySubPath}.
+     *
+     * @since 1.0.8
+     */
+    private List<Class<? extends ListeningRecovery>> listeningRecoverySubClasses = new ArrayList<>();
+
+    /**
      * Monitor the path information of cache recovery and implement the class collection
      * path of {@link ListeningRecovery}.
      */
-    private String[] listeningRecoverySubPath = SourceEnvironmentPostProcessor.findSpringbootPrimarySourcesPackages();
+    private List<String> listeningRecoverySubPath = SourceEnvironmentPostProcessor.findSpringbootPrimarySourcesPackages();
 
     /**
      * No persistence time the most value (that is less than all of this time are not given persistent).
@@ -149,11 +158,19 @@ public class CacheProperties {
         this.noPersistenceOfExpireTimeUnit = noPersistenceOfExpireTimeUnit;
     }
 
-    public String[] getListeningRecoverySubPath() {
+    public List<Class<? extends ListeningRecovery>> getListeningRecoverySubClasses() {
+        return listeningRecoverySubClasses;
+    }
+
+    public void setListeningRecoverySubClasses(List<Class<? extends ListeningRecovery>> listeningRecoverySubClasses) {
+        this.listeningRecoverySubClasses = listeningRecoverySubClasses;
+    }
+
+    public List<String> getListeningRecoverySubPath() {
         return listeningRecoverySubPath;
     }
 
-    public void setListeningRecoverySubPath(String[] listeningRecoverySubPath) {
+    public void setListeningRecoverySubPath(List<String> listeningRecoverySubPath) {
         this.listeningRecoverySubPath = listeningRecoverySubPath;
     }
 
@@ -208,6 +225,7 @@ public class CacheProperties {
         /**
          * Set {@code expiration Listeners} for map.
          * <p>The function is similar to {@link #listeningPackages}.
+         *
          * @since 1.0.8
          */
         @SuppressWarnings("rawtypes")
@@ -220,7 +238,7 @@ public class CacheProperties {
          *
          * <p>{@link SourceEnvironmentPostProcessor}</p>
          */
-        private String[] listeningPackages = SourceEnvironmentPostProcessor.findSpringbootPrimarySourcesPackages();
+        private List<String> listeningPackages = SourceEnvironmentPostProcessor.findSpringbootPrimarySourcesPackages();
 
         public Integer getMaxSize() {
             return maxSize;
@@ -238,14 +256,6 @@ public class CacheProperties {
             this.expirationPolicy = expirationPolicy;
         }
 
-        public String[] getListeningPackages() {
-            return listeningPackages;
-        }
-
-        public void setListeningPackages(String[] listeningPackages) {
-            this.listeningPackages = listeningPackages;
-        }
-
         @SuppressWarnings("rawtypes")
         public List<Class<? extends ExpirationListener>> getExpirationListenerClasses() {
             return expirationListenerClasses;
@@ -254,6 +264,14 @@ public class CacheProperties {
         @SuppressWarnings("rawtypes")
         public void setExpirationListenerClasses(List<Class<? extends ExpirationListener>> expirationListenerClasses) {
             this.expirationListenerClasses = expirationListenerClasses;
+        }
+
+        public List<String> getListeningPackages() {
+            return listeningPackages;
+        }
+
+        public void setListeningPackages(List<String> listeningPackages) {
+            this.listeningPackages = listeningPackages;
         }
     }
 
@@ -274,6 +292,9 @@ public class CacheProperties {
         SystemUtils.setProperty(Configuration.noPersistenceOfExpireTime, this.noPersistenceOfExpireTime);
         SystemUtils.setProperty(Configuration.noPersistenceOfExpireTimeUnit, this.noPersistenceOfExpireTimeUnit);
         SystemUtils.setProperty(Configuration.chooseClient, this.client.name());
-        SystemUtils.setProperty(Configuration.listeningRecoverySubPath, Arrays.toString(this.listeningRecoverySubPath));
+        SystemUtils.setProperty(Configuration.listeningRecoverySubPath,
+                Configuration.ofListStrConfigurationWrapper(listeningRecoverySubPath, Function.identity()));
+        SystemUtils.setProperty(Configuration.listeningRecoverySubClassNames,
+                Configuration.ofListStrConfigurationWrapper(listeningRecoverySubClasses, Class::getName));
     }
 }

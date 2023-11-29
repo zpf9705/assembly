@@ -1,11 +1,20 @@
 package top.osjf.assembly.cache.persistence;
 
-import top.osjf.assembly.util.lang.StringUtils;
+import com.alibaba.fastjson.JSON;
+import top.osjf.assembly.util.io.ScanUtils;
+import top.osjf.assembly.util.json.FastJsonUtils;
+import top.osjf.assembly.util.lang.CollectionUtils;
+import top.osjf.assembly.util.lang.ReflectUtils;
 import top.osjf.assembly.util.system.SystemUtils;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Configuration property classes related to cache persistence.
@@ -24,12 +33,14 @@ public final class Configuration {
     public static final String defaultExpireTimeUnit = "assembly.cache.default.expire.timeUnit";
     public static final String chooseClient = "assembly.cache.choose.client";
     public static final String listeningRecoverySubPath = "assembly.cache.listening.recovery.path";
+    public static final String listeningRecoverySubClassNames = "assembly.cache.listening.recovery.classes";
     private static final long defaultNoPersistenceExpireTimeExample = 10L;
     private static final long defaultExpireTimeExample = 20L;
     private static boolean defaultCompareWithExpirePersistence = false;
     private static final AtomicBoolean load = new AtomicBoolean(false);
     private static long defaultNoPersistenceExpireTimeToMille;
     private static final Configuration CONFIGURATION = new Configuration();
+    private static final List<ListeningRecovery> listeningRecoveries = new ArrayList<>();
 
     private Configuration() {
     }
@@ -144,11 +155,64 @@ public final class Configuration {
     /**
      * Get listening recovery path with finding sub for {@link ListeningRecovery}.
      *
-     * @return choose client.
+     * @return Recovery scanner path.
      */
-    public String[] getListeningRecoverySubPath() {
-        return SystemUtils.getPropertyWithConvert(listeningRecoverySubPath, Configuration::toStringArrayToConvertArray,
-                null);
+    public List<String> getListeningRecoverySubPath() {
+        return SystemUtils.getPropertyWithConvert(listeningRecoverySubPath, JsonArrayToListStrFunction(), null);
+    }
+
+    /**
+     * Get listening recovery subclass names for {@link ListeningRecovery}.
+     *
+     * @return Recovery subclass names.
+     */
+    public List<String> getListeningRecoverySubClassNames() {
+        return SystemUtils.getPropertyWithConvert(listeningRecoverySubClassNames, JsonArrayToListStrFunction(), null);
+    }
+
+    /**
+     * Get listening all recoveries Within names and paths.
+     *
+     * @return Sets of {@link ListeningRecovery}.
+     */
+    public List<ListeningRecovery> getListeningRecoveries() {
+        if (listeningRecoveries.isEmpty()) {
+            synchronized (listeningRecoveries) {
+                List<String> listeningRecoverySubClassNames = getListeningRecoverySubClassNames();
+                boolean namingHave = CollectionUtils.isNotEmpty(listeningRecoverySubClassNames);
+                if (namingHave) {
+                    listeningRecoverySubClassNames =
+                            listeningRecoverySubClassNames.stream().distinct().collect(Collectors.toList());
+                    for (String listeningRecoverySubClassName : listeningRecoverySubClassNames) {
+                        ListeningRecovery listeningRecovery;
+                        try {
+                            listeningRecovery = ReflectUtils.newInstance(listeningRecoverySubClassName);
+                            listeningRecoveries.add(listeningRecovery);
+                        } catch (Exception ignored) {
+                        }
+                    }
+                }
+                List<String> listeningRecoveryPaths = getListeningRecoverySubPath();
+                if (CollectionUtils.isNotEmpty(listeningRecoveryPaths)) {
+                    Set<Class<ListeningRecovery>> scannerResult =
+                            ScanUtils.getSubTypesOf(ListeningRecovery.class, listeningRecoveryPaths.toArray(new String[]{}));
+                    if (CollectionUtils.isNotEmpty(scannerResult)) {
+                        for (Class<ListeningRecovery> listeningRecoveryClass : scannerResult) {
+                            ListeningRecovery listeningRecovery;
+                            if (namingHave && listeningRecoverySubClassNames.contains(listeningRecoveryClass.getName())) {
+                                continue;
+                            }
+                            try {
+                                listeningRecovery = ReflectUtils.newInstance(listeningRecoveryClass);
+                                listeningRecoveries.add(listeningRecovery);
+                            } catch (Exception ignored) {
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return listeningRecoveries;
     }
 
     /**
@@ -169,26 +233,49 @@ public final class Configuration {
         return defaultNoPersistenceExpireTimeToMille;
     }
 
+    public static <T> ListConfigurationWrapper<T, String> ofListStrConfigurationWrapper(List<T> objs,
+                                                                                        Function<T, String> collection) {
+        return new ListConfigurationWrapper<>(objs, collection);
+    }
+
+
+    public static Function<String, List<String>> JsonArrayToListStrFunction() {
+        return s -> {
+            if (FastJsonUtils.isValidArray(s)) {
+                return FastJsonUtils.parseArray(s, String.class);
+            }
+            return Collections.emptyList();
+        };
+    }
+
     /**
-     * Convert the string converted through the array {@link #toString()} method to the original array,
-     * but not the same array object.
+     * Collection Objs filed to String.
      *
-     * @param toString Array string after toString.
-     * @return Convert Array.
+     * @param <T> OBJECT TYPE.
+     * @param <R> COLLECTION TYPE.
      */
-    private static String[] toStringArrayToConvertArray(String toString) {
-        if (StringUtils.isBlank(toString)) {
-            return new String[0];
+    public static class ListConfigurationWrapper<T, R> {
+
+        private final List<T> objs;
+
+        private final Function<T, R> collection;
+
+        private ListConfigurationWrapper(List<T> objs, Function<T, R> collection) {
+            this.objs = objs;
+            this.collection = collection;
         }
-        if (!(toString.startsWith("[") && toString.endsWith("]"))) {
-            throw new IllegalArgumentException("Non compliant array: the conversion string does not contain " +
-                    "'[' at the beginning or ']' at the end");
+
+        @Override
+        public String toString() {
+            if (CollectionUtils.isNotEmpty(objs)) {
+                if (collection != null) {
+                    List<R> collect = objs.stream().map(collection).collect(Collectors.toList());
+                    return JSON.toJSONString(collect);
+                } else {
+                    return objs.toString();
+                }
+            }
+            return super.toString();
         }
-        toString = toString.replace("[", "").replace("]", "");
-        String[] split = toString.split(",");
-        if (split.length == 0) {
-            throw new IllegalArgumentException("Non compliant array: does not contain commas");
-        }
-        return split;
     }
 }
