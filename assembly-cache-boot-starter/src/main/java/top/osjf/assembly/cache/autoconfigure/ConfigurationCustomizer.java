@@ -6,6 +6,7 @@ package top.osjf.assembly.cache.autoconfigure;
  * @author zpf
  * @since 1.0.0
  */
+@FunctionalInterface
 public interface ConfigurationCustomizer {
 
     /**
