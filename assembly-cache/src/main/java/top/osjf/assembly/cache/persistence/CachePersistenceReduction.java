@@ -20,6 +20,7 @@ public interface CachePersistenceReduction {
      *
      * @return {@link Class#getName()}.
      */
+    @Deprecated
     String getReduction();
 
     /**
