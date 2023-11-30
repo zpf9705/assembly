@@ -52,20 +52,6 @@ public interface ExpiringMapClients {
     ExpirationPolicy getExpirationPolicy();
 
     /**
-     * Get a collection of synchronization listeners.
-     *
-     * @return {@literal ExpirationPolicy} Cluster expired to monitor interface of sync.
-     */
-    List<ExpirationListener> getSyncExpirationListeners();
-
-    /**
-     * Get asynchronous listener collection.
-     *
-     * @return {@literal ExpirationPolicy} Cluster expired to monitor interface of async.
-     */
-    List<ExpirationListener> getASyncExpirationListeners();
-
-    /**
      * Create a new {@link ExpiringMapClientsBuilder} to build {@link ExpiringMapClients} to be used.
      *
      * @return a new {@link ExpiringMapClientsBuilder} to build {@link ExpiringMapClients}.
@@ -110,7 +96,9 @@ public interface ExpiringMapClients {
         static final Long DEFAULT_EXPIRE_TIME = 30L;
         static final TimeUnit DEFAULT_EXPIRE_TIME_UNIT = TimeUnit.SECONDS;
         static final ExpirationPolicy DEFAULT_EXPIRATION_POLICY = ExpirationPolicy.ACCESSED;
+        @Deprecated
         final List<ExpirationListener> syncExpirationListeners = new ArrayList<>();
+        @Deprecated
         final List<ExpirationListener> asyncExpirationListeners = new ArrayList<>();
 
         ExpiringMapClientsBuilder() {
@@ -169,28 +157,6 @@ public interface ExpiringMapClients {
         }
 
         /**
-         * Increase the sync expired listeners.
-         *
-         * @param expirationListener {@link ExpirationListener}.
-         */
-        public void addSyncExpiredListener(ExpirationListener expirationListener) {
-            if (expirationListener != null) {
-                this.syncExpirationListeners.add(expirationListener);
-            }
-        }
-
-        /**
-         * Increase the async expired listeners.
-         *
-         * @param expirationListener {@link ExpirationListener}.
-         */
-        public void addASyncExpiredListener(ExpirationListener expirationListener) {
-            if (expirationListener != null) {
-                this.asyncExpirationListeners.add(expirationListener);
-            }
-        }
-
-        /**
          * Build the {@link ExpiringMapClients} with the configuration applied from this builder.
          *
          * @return a new {@link ExpiringMapClients} implementation.
@@ -212,9 +178,10 @@ public interface ExpiringMapClients {
                     this.maxSize,
                     this.defaultExpireTime,
                     this.defaultExpireTimeUnit,
-                    this.expirationPolicy,
-                    this.syncExpirationListeners,
-                    this.asyncExpirationListeners);
+                    this.expirationPolicy
+//                    this.syncExpirationListeners,
+//                    this.asyncExpirationListeners
+            );
         }
     }
 }
