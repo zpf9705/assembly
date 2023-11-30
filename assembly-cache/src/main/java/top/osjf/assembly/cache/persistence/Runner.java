@@ -1,5 +1,6 @@
 package top.osjf.assembly.cache.persistence;
 
+import top.osjf.assembly.cache.config.Configuration;
 import top.osjf.assembly.cache.exceptions.OnOpenPersistenceException;
 import top.osjf.assembly.util.annotation.NotNull;
 
@@ -8,7 +9,8 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
- * Cache persistence methods of operation indicators, decided to take what kind of way to run.
+ * Cache persistence methods of operation indicators,
+ * decided to take what kind of way to run.
  *
  * @author zpf
  * @since 1.0.0
