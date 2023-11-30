@@ -1,20 +1,20 @@
-package top.osjf.assembly.cache.persistence;
+package top.osjf.assembly.cache.config;
 
-import com.alibaba.fastjson.JSON;
+import top.osjf.assembly.cache.listener.ExpirationMessageListener;
+import top.osjf.assembly.cache.persistence.ListeningRecovery;
 import top.osjf.assembly.util.io.ScanUtils;
-import top.osjf.assembly.util.json.FastJsonUtils;
 import top.osjf.assembly.util.lang.CollectionUtils;
 import top.osjf.assembly.util.lang.ReflectUtils;
+import top.osjf.assembly.util.logger.Console;
 import top.osjf.assembly.util.system.SystemUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Configuration property classes related to cache persistence.
@@ -31,16 +31,18 @@ public final class Configuration {
     public static final String noPersistenceOfExpireTimeUnit = "assembly.cache.noPersistence.expire.timeUnit";
     public static final String defaultExpireTime = "assembly.cache.default.expire.time";
     public static final String defaultExpireTimeUnit = "assembly.cache.default.expire.timeUnit";
+    @Deprecated
     public static final String chooseClient = "assembly.cache.choose.client";
+    @Deprecated
     public static final String listeningRecoverySubPath = "assembly.cache.listening.recovery.path";
-    public static final String listeningRecoverySubClassNames = "assembly.cache.listening.recovery.classes";
     private static final long defaultNoPersistenceExpireTimeExample = 10L;
     private static final long defaultExpireTimeExample = 20L;
     private static boolean defaultCompareWithExpirePersistence = false;
     private static final AtomicBoolean load = new AtomicBoolean(false);
     private static long defaultNoPersistenceExpireTimeToMille;
     private static final Configuration CONFIGURATION = new Configuration();
-    private static final List<ListeningRecovery> listeningRecoveries = new ArrayList<>();//since 1.0.8
+    private static final List<ListeningRecovery> listeningRecoveries = new CopyOnWriteArrayList<>();//since 1.0.8
+    private static final List<ExpirationMessageListener> expirationMessageListeners = new CopyOnWriteArrayList<>();//since 1.0.8
 
     private Configuration() {
     }
@@ -77,6 +79,24 @@ public final class Configuration {
                     >= defaultNoPersistenceExpireTimeToMille;
         } catch (Exception ignored) {
         }
+    }
+
+    /**
+     * Whether you need to obtain the default persistent identity.
+     *
+     * @return if {@code true} persistence right.
+     */
+    public boolean isDefaultCompareWithExpirePersistence() {
+        return defaultCompareWithExpirePersistence;
+    }
+
+    /**
+     * Get the default not persistent {@link TimeUnit#toMillis(long)} value.
+     *
+     * @return result with long.
+     */
+    public long getDefaultNoPersistenceExpireTimeToMille() {
+        return defaultNoPersistenceExpireTimeToMille;
     }
 
     /**
@@ -144,149 +164,121 @@ public final class Configuration {
     }
 
     /**
+     * Retrieve all cache recovery listeners.
+     *
+     * @return recovery listeners
+     * @since 1.0.8
+     */
+    public List<ListeningRecovery> getListeningRecoveries() {
+        return listeningRecoveries;
+    }
+
+    /**
      * Get choose cache client.
      *
      * @return choose client.
      */
+    @Deprecated
     public String getChooseClient() {
         return SystemUtils.getPropertyWithConvert(chooseClient, Function.identity(), null);
     }
 
     /**
-     * Get listening recovery path with finding sub for {@link ListeningRecovery}.
+     * Scan the path of the instruction to obtain recovery listeners.
      *
-     * @return Recovery scanner path.
+     * @param paths Scan paths.
+     * @since 1.0.8
      */
-    public List<String> getListeningRecoverySubPath() {
-        return SystemUtils.getPropertyWithConvert(listeningRecoverySubPath, JsonArrayToListStrFunction(), null);
+    public static void scanListeningRecoveryWithPaths(List<String> paths) {
+        scanAndAdd(paths, ListeningRecovery.class, Configuration::addListeningRecovery);
     }
 
     /**
-     * Get listening recovery subclass names for {@link ListeningRecovery}.
+     * Scan the path of the instruction to obtain expired listeners.
      *
-     * @return Recovery subclass names.
+     * @param paths Scan paths.
      * @since 1.0.8
      */
-    public List<String> getListeningRecoverySubClassNames() {
-        return SystemUtils.getPropertyWithConvert(listeningRecoverySubClassNames, JsonArrayToListStrFunction(), null);
+    public static void scanExpirationMessageListenerWithPaths(List<String> paths) {
+        scanAndAdd(paths, ExpirationMessageListener.class, Configuration::addExpirationMessageListener);
     }
 
     /**
-     * Get listening all recoveries Within names and paths.
+     * Add a recovery listener with class.
      *
-     * @return Sets of {@link ListeningRecovery}.
+     * @param clazz recovery listener class.
      * @since 1.0.8
      */
-    public synchronized List<ListeningRecovery> getListeningRecoveries() {
-        if (listeningRecoveries.isEmpty()) {
-            List<String> listeningRecoverySubClassNames = getListeningRecoverySubClassNames();
-            boolean namingHave = CollectionUtils.isNotEmpty(listeningRecoverySubClassNames);
-            if (namingHave) {
-                listeningRecoverySubClassNames =
-                        listeningRecoverySubClassNames.stream().distinct().collect(Collectors.toList());
-                for (String listeningRecoverySubClassName : listeningRecoverySubClassNames) {
-                    ListeningRecovery listeningRecovery;
-                    try {
-                        listeningRecovery = ReflectUtils.newInstance(listeningRecoverySubClassName);
-                        listeningRecoveries.add(listeningRecovery);
-                    } catch (Exception ignored) {
-                    }
-                }
-            }
-            List<String> listeningRecoveryPaths = getListeningRecoverySubPath();
-            if (CollectionUtils.isNotEmpty(listeningRecoveryPaths)) {
-                Set<Class<ListeningRecovery>> scannerResult =
-                        ScanUtils.getSubTypesOf(ListeningRecovery.class, listeningRecoveryPaths.toArray(new String[]{}));
-                if (CollectionUtils.isNotEmpty(scannerResult)) {
-                    for (Class<ListeningRecovery> listeningRecoveryClass : scannerResult) {
-                        ListeningRecovery listeningRecovery;
-                        if (namingHave && listeningRecoverySubClassNames.contains(listeningRecoveryClass.getName())) {
-                            continue;
-                        }
-                        try {
-                            listeningRecovery = ReflectUtils.newInstance(listeningRecoveryClass);
-                            listeningRecoveries.add(listeningRecovery);
-                        } catch (Exception ignored) {
-                        }
-                    }
-                }
-            }
+    public static void addListeningRecovery(Class<? extends ListeningRecovery> clazz) {
+        add(clazz, (Consumer<ListeningRecovery>) Configuration::addListeningRecovery);
+    }
+
+    /**
+     * Add an expiration message listener with class.
+     *
+     * @param clazz expiration message listener class.
+     * @since 1.0.8
+     */
+    public static void addExpirationMessageListener(Class<? extends ExpirationMessageListener> clazz) {
+        add(clazz, (Consumer<ExpirationMessageListener>) Configuration::addExpirationMessageListener);
+    }
+
+    /**
+     * Add a recovery listener.
+     *
+     * @param recovery recovery listeners.
+     * @since 1.0.8
+     */
+    public static void addListeningRecovery(ListeningRecovery recovery) {
+        if (recovery != null && !listeningRecoveries.contains(recovery)) {
+            listeningRecoveries.add(recovery);
         }
-        return listeningRecoveries;
     }
 
     /**
-     * Whether you need to obtain the default persistent identity.
+     * Add an expiration message Listener.
      *
-     * @return if {@code true} persistence right.
-     */
-    public boolean isDefaultCompareWithExpirePersistence() {
-        return defaultCompareWithExpirePersistence;
-    }
-
-    /**
-     * Get the default not persistent {@link TimeUnit#toMillis(long)} value.
-     *
-     * @return result with long.
-     */
-    public long getDefaultNoPersistenceExpireTimeToMille() {
-        return defaultNoPersistenceExpireTimeToMille;
-    }
-
-    /**
-     * @param <T>        Object Types.
-     * @param collection collection Function.
-     * @param objs       Object list.
-     * @return Wrapper String field with list objs.
+     * @param listener expiration message listeners.
      * @since 1.0.8
      */
-    public static <T> ListConfigurationWrapper<T, String> ofListStrConfigurationWrapper(List<T> objs,
-                                                                                        Function<T, String> collection) {
-        return new ListConfigurationWrapper<>(objs, collection);
-    }
-
-    /**
-     * @return Function Of Json array format.
-     * @since 1.0.8
-     */
-    public static Function<String, List<String>> JsonArrayToListStrFunction() {
-        return s -> {
-            if (FastJsonUtils.isValidArray(s)) {
-                return FastJsonUtils.parseArray(s, String.class);
-            }
-            return Collections.emptyList();
-        };
-    }
-
-    /**
-     * Collection Objs filed to String.
-     *
-     * @param <T> OBJECT TYPE.
-     * @param <R> COLLECTION TYPE.
-     * @since 1.0.8
-     */
-    public static class ListConfigurationWrapper<T, R> {
-
-        private final List<T> objs;
-
-        private final Function<T, R> collection;
-
-        private ListConfigurationWrapper(List<T> objs, Function<T, R> collection) {
-            this.objs = objs;
-            this.collection = collection;
+    public static void addExpirationMessageListener(ExpirationMessageListener listener) {
+        if (listener != null && !expirationMessageListeners.contains(listener)) {
+            expirationMessageListeners.add(listener);
         }
+    }
 
-        @Override
-        public String toString() {
-            if (CollectionUtils.isNotEmpty(objs)) {
-                if (collection != null) {
-                    List<R> collect = objs.stream().map(collection).collect(Collectors.toList());
-                    return JSON.toJSONString(collect);
-                } else {
-                    return objs.toString();
-                }
-            }
-            return super.toString();
+    /**
+     * Retrieve all cache expiration message Listeners.
+     *
+     * @return expiration message listeners.
+     * @since 1.0.8
+     */
+    public static List<ExpirationMessageListener> getExpirationMessageListeners() {
+        return expirationMessageListeners;
+    }
+
+    private static <T> void scanAndAdd(List<String> paths, Class<? extends T> clazz, Consumer<T> consumer) {
+        if (CollectionUtils.isEmpty(paths)) {
+            return;
         }
+        Set<? extends Class<? extends T>> subTypesOf = ScanUtils.getSubTypesOf(clazz, paths.toArray(new String[]{}));
+        if (CollectionUtils.isEmpty(subTypesOf)) {
+            return;
+        }
+        subTypesOf.forEach((clazz0) -> add(clazz0, consumer));
+    }
+
+    private static <T> void add(Class<? extends T> clazz, Consumer<T> consumer) {
+        if (clazz == null || consumer == null) {
+            return;
+        }
+        T t;
+        try {
+            t = ReflectUtils.newInstance(clazz);
+        } catch (Exception e) {
+            Console.warn(clazz.getName() + " newInstance error : {}", e.getMessage());
+            return;
+        }
+        consumer.accept(t);
     }
 }
