@@ -170,21 +170,20 @@ public class ExpiringMapConfiguration extends CacheCommonsConfiguration implemen
      */
     private Map<String, List<ExpirationListener>> findExpirationListener() {
         CacheProperties.ExpiringMap expiringMap = getProperties().getExpiringMap();
-        List<Class<? extends ExpirationListener>> expirationListenerClasses =
-                expiringMap.getExpirationListenerClasses();
-        List<String> listeningPackages = getProperties().getExpiringMap().getListeningPackages();
+        List<Class<? extends ExpirationListener>> listenerClasses = expiringMap.getExpirationListenerClasses();
+        List<String> listeningPackages = getProperties().getExpiringMap().getExpirationListenerScanPackages();
         if (CollectionUtils.isNotEmpty(listeningPackages)) {
             Set<Class<ExpirationListener>> scanResult =
                     ScanUtils.getSubTypesOf(ExpirationListener.class, listeningPackages.toArray(new String[]{}));
             if (CollectionUtils.isNotEmpty(scanResult)) {
                 if (CollectionUtils.isNotEmpty(scanResult)) {
-                    expirationListenerClasses.addAll(scanResult);
+                    listenerClasses.addAll(scanResult);
                 }
             }
         }
-        if (CollectionUtils.isNotEmpty(expirationListenerClasses)) {
-            expirationListenerClasses =
-                    expirationListenerClasses.stream().collect(
+        if (CollectionUtils.isNotEmpty(listenerClasses)) {
+            listenerClasses =
+                    listenerClasses.stream().collect(
                             Collectors.collectingAndThen(Collectors.toCollection(() ->
                                     new TreeSet<>(Comparator.comparing(Class::getName))), ArrayList::new));
         } else {
@@ -195,7 +194,7 @@ public class ExpiringMapConfiguration extends CacheCommonsConfiguration implemen
         List<ExpirationListener> sync = new ArrayList<>();
         List<ExpirationListener> async = new ArrayList<>();
         Map<String, List<ExpirationListener>> listenerMap = new HashMap<>();
-        for (Class<? extends ExpirationListener> expirationListenerClass : expirationListenerClasses) {
+        for (Class<? extends ExpirationListener> expirationListenerClass : listenerClasses) {
             if (Modifier.isAbstract(expirationListenerClass.getModifiers())
                     || Modifier.isInterface(expirationListenerClass.getModifiers())) {
                 continue;
