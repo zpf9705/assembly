@@ -34,6 +34,21 @@ public class HttpResultResponse<T> extends AbstractHttpResponse {
     private T data;
 
     /**
+     * No parameter construction, customized based on set and get.
+     */
+    public HttpResultResponse() {
+    }
+
+    /**
+     * Create a success {@code HttpResultResponse} with result indicates.
+     *
+     * @param success Result indicates.
+     */
+    public HttpResultResponse(Boolean success) {
+        this(success, SUCCESS_CODE, SUCCESS_MESSAGE, null);
+    }
+
+    /**
      * Create a success {@code HttpResultResponse} with Result data.
      *
      * @param data Result data.
@@ -61,6 +76,7 @@ public class HttpResultResponse<T> extends AbstractHttpResponse {
         this(false, code, message, null);
     }
 
+    //Construct custom plans with full parameters.
     public HttpResultResponse(Boolean success, Integer code, String message, T data) {
         this.success = success;
         this.code = code;
@@ -75,7 +91,8 @@ public class HttpResultResponse<T> extends AbstractHttpResponse {
 
     /**
      * Provide other codes that can confirm successful requests.
-     * @return Codes.
+     *
+     * @return String codes.
      */
     public List<Integer> anySuccessCodes() {
         return Collections.emptyList();
@@ -83,7 +100,7 @@ public class HttpResultResponse<T> extends AbstractHttpResponse {
 
     //Static construction methods, including success and failure.
 
-    public static HttpResultResponse<Boolean> success() {
+    public static <T> HttpResultResponse<T> success() {
         return new HttpResultResponse<>(true);
     }
 
@@ -95,7 +112,7 @@ public class HttpResultResponse<T> extends AbstractHttpResponse {
         return success(dataSupplier.get());
     }
 
-    public static HttpResultResponse<String> failed() {
+    public static <T> HttpResultResponse<T> failed() {
         return new HttpResultResponse<>(FAILED_MESSAGE);
     }
 
