@@ -1,14 +1,13 @@
 package top.osjf.assembly.cache.factory;
 
-import net.jodah.expiringmap.ExpirationListener;
 import net.jodah.expiringmap.ExpiringMap;
 import top.osjf.assembly.cache.config.expiringmap.ExpiringMapClients;
 import top.osjf.assembly.cache.listener.MessageCapable;
+import top.osjf.assembly.cache.listener.expiringmap.DefaultExpiringmapExpirationListener;
 import top.osjf.assembly.cache.persistence.BytesCachePersistenceSolver;
 import top.osjf.assembly.cache.persistence.CachePersistenceSolver;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.data.ByteIdentify;
-import top.osjf.assembly.util.lang.CollectionUtils;
 import top.osjf.assembly.util.spi.SpiLoads;
 
 import java.util.Objects;
@@ -100,7 +99,6 @@ public class ExpireMapCenter extends AbstractRecordActivationCenter<ExpireMapCen
      * @param clients must not be {@literal null}.
      * @return {@link ExpireMapCenter}.
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
     private static ExpireMapCenter buildSingleton(@NotNull ExpiringMapClients clients) {
         ExpiringMap<ByteIdentify, ByteIdentify> singleton = ExpiringMap.builder()
                 .maxSize(clients.getMaxSize())
@@ -108,20 +106,7 @@ public class ExpireMapCenter extends AbstractRecordActivationCenter<ExpireMapCen
                 .expirationPolicy(clients.getExpirationPolicy())
                 .variableExpiration()
                 .build();
-        if (CollectionUtils.isNotEmpty(clients.getSyncExpirationListeners())) {
-            for (ExpirationListener expirationListener : clients.getSyncExpirationListeners()) {
-                //sync
-                singleton.addExpirationListener(expirationListener);
-
-            }
-        }
-        if (CollectionUtils.isNotEmpty(clients.getASyncExpirationListeners())) {
-            for (ExpirationListener expirationListener : clients.getASyncExpirationListeners()) {
-                //async
-                singleton.addAsyncExpirationListener(expirationListener);
-
-            }
-        }
+        singleton.addExpirationListener(DefaultExpiringmapExpirationListener.LISTENER);
         return new ExpireMapCenter(singleton);
     }
 
