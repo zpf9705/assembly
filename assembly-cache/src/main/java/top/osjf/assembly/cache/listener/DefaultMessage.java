@@ -3,15 +3,18 @@ package top.osjf.assembly.cache.listener;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.serial.SerialUtils;
 
+import java.io.Serializable;
+
 /**
- * When the expiration callback occurs, the relevant information of the key/value is stored.
+ * When the expiration callback occurs, the relevant
+ * information of the key/value is stored.
  *
  * @author zpf
  * @since 1.0.0
  */
-public final class Message implements MessageCapable {
+public final class DefaultMessage implements ByteMessage, ObjectMessage, Serializable {
 
-    private static final long serialVersionUID = -8830456426162230361L;
+    private static final long serialVersionUID = 4530419948323277941L;
 
     private final byte[] key;
 
@@ -21,7 +24,7 @@ public final class Message implements MessageCapable {
 
     private final Object valueSerialize;
 
-    private Message(byte[] key, byte[] value) {
+    public DefaultMessage(byte[] key, byte[] value) {
         this.key = key;
         this.value = value;
         this.keySerialize = SerialUtils.deserialize(key);
@@ -50,16 +53,5 @@ public final class Message implements MessageCapable {
     @NotNull
     public Object getValue() {
         return valueSerialize;
-    }
-
-    /**
-     * The key value deserialization.
-     *
-     * @param key   must not be {@literal null}
-     * @param value must not be {@literal null}
-     * @return {@link Message}
-     */
-    public static Message serial(@NotNull byte[] key, @NotNull byte[] value) {
-        return new Message(key, value);
     }
 }
