@@ -3,10 +3,10 @@ package top.osjf.assembly.cache.persistence;
 import java.util.concurrent.TimeUnit;
 
 /**
- * The listener recovery interface needs to be implemented and combined with the path
- * where {@link Configuration#listeningRecoverySubPath} is placed, and uniformly called
- * after {@link AbstractCachePersistence#reductionUseString(StringBuilder)} recovery.
- *
+ * After the project restarts, when the scheduled cache is restored,
+ * listen for the restored content, including key value pairs and
+ * corresponding time units.
+ * @see top.osjf.assembly.cache.config.Configuration
  * @author zpf
  * @since 1.0.0
  */

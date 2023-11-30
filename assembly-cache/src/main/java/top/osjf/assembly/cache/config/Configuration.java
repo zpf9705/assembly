@@ -31,10 +31,6 @@ public final class Configuration {
     public static final String noPersistenceOfExpireTimeUnit = "assembly.cache.noPersistence.expire.timeUnit";
     public static final String defaultExpireTime = "assembly.cache.default.expire.time";
     public static final String defaultExpireTimeUnit = "assembly.cache.default.expire.timeUnit";
-    @Deprecated
-    public static final String chooseClient = "assembly.cache.choose.client";
-    @Deprecated
-    public static final String listeningRecoverySubPath = "assembly.cache.listening.recovery.path";
     private static final long defaultNoPersistenceExpireTimeExample = 10L;
     private static final long defaultExpireTimeExample = 20L;
     private static boolean defaultCompareWithExpirePersistence = false;
@@ -171,16 +167,6 @@ public final class Configuration {
      */
     public List<ListeningRecovery> getListeningRecoveries() {
         return listeningRecoveries;
-    }
-
-    /**
-     * Get choose cache client.
-     *
-     * @return choose client.
-     */
-    @Deprecated
-    public String getChooseClient() {
-        return SystemUtils.getPropertyWithConvert(chooseClient, Function.identity(), null);
     }
 
     /**
