@@ -7,8 +7,9 @@ import top.osjf.assembly.util.logger.Console;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Caching persistent file method operation interface. According to the definition of persistent methods,
- * operations such as adding, modifying, deleting, and cleaning the current persistent file can be performed.
+ * Caching persistent file method operation interface. According to the
+ * definition of persistent methods,operations such as adding, modifying,
+ * deleting, and cleaning the current persistent file can be performed.
  * Please refer to the implementation class for details.
  * @param <K> the type of keys maintained by this cache.
  * @param <V> the type of cache values.
