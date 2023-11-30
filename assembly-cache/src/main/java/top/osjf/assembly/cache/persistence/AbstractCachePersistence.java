@@ -1,6 +1,7 @@
 package top.osjf.assembly.cache.persistence;
 
 import top.osjf.assembly.cache.command.CacheInvocationHandler;
+import top.osjf.assembly.cache.config.Configuration;
 import top.osjf.assembly.cache.exceptions.CachePersistenceException;
 import top.osjf.assembly.cache.exceptions.OnOpenPersistenceException;
 import top.osjf.assembly.cache.factory.AbstractRecordActivationCenter;
