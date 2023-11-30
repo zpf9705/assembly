@@ -7,13 +7,15 @@ import top.osjf.assembly.util.lang.Asserts;
 
 /**
  * In order to be compatible with all data types related to the Java language,
- * this abstract class uniformly converts data into byte arrays and passes them to the cache center.
+ * this abstract class uniformly converts data into byte arrays and passes
+ * them to the cache center.
  *
  * <p>Introducing intermediate abstraction {@link ValueDeserializingCacheCallback},
  * as not all methods require serialization of {@code Value} values, only {@code Key}
  * serialization is listed here.
  *
- * <p>If there is a serialization requirement for {@code Value}, {@link #rawValue(Object)} can be called separately.
+ * <p>If there is a serialization requirement for {@code Value}, {@link #rawValue(Object)}
+ * can be called separately.
  * @param <K> The type of key.
  * @param <V> The type of value.
  * @author zpf

@@ -8,15 +8,18 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * The direct method entry of the {@link CacheTemplate} operation template, all additions, deletions,
- * modifications, and queries related to caching, and the definition of methods should be aggregated
- * to this interface and implemented one by one in {@link CacheTemplate}. Moreover, from the class
- * operation interface, such as {@link ValueOperations}, it needs to be accessible through this interface.
+ * The direct method entry of the {@link CacheTemplate} operation template,
+ * all additions, deletions, modifications, and queries related to caching,
+ * and the definition of methods should be aggregated to this interface and
+ * implemented one by one in {@link CacheTemplate}. Moreover, from the class
+ * operation interface, such as {@link ValueOperations}, it needs to be accessible
+ * through this interface.
  * <p>
- * This can be seen as a summary of the overall API, which is the standardization of the template class.
+ * This can be seen as a summary of the overall API, which is the standardization
+ * of the template class.
  * <p>
- * In the future, the interface can be inherited by the addition of cache components and method extensions,
- * Alternatively, add and implement on top of this interface.
+ * In the future, the interface can be inherited by the addition of cache components
+ * and method extensions,Alternatively, add and implement on top of this interface.
  * @param <K> The type of key.
  * @param <V> The type of value.
  * @author zpf
