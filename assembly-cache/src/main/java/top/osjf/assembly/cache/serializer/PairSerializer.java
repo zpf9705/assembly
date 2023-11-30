@@ -1,8 +1,11 @@
 package top.osjf.assembly.cache.serializer;
 
 /**
- * The serialization method interface is mainly a method definition for byte array serialization and
- * deserialization, with a generic definition being the converted object type after deserialization.
+ * The serialization method interface is mainly a method
+ * definition for byte array serialization and deserialization,
+ * with a generic definition being the converted object type after
+ * deserialization.
+ *
  * @param <T> Object type.
  * @author zpf
  * @since 1.0.0
