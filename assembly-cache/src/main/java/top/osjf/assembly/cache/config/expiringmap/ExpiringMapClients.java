@@ -1,13 +1,10 @@
 package top.osjf.assembly.cache.config.expiringmap;
 
-import net.jodah.expiringmap.ExpirationListener;
 import net.jodah.expiringmap.ExpirationPolicy;
 import net.jodah.expiringmap.ExpiringMap;
 import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.lang.Asserts;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -15,12 +12,12 @@ import java.util.concurrent.TimeUnit;
  * <p>
  * Provides the function of the configuration and obtain.
  * <p>
- * Providing optional elements allows a more specific configuration of the client.
+ * Providing optional elements allows a more specific configuration
+ * of the client.
  *
  * @author zpf
  * @since 1.0.0
  */
-@SuppressWarnings("rawtypes")
 public interface ExpiringMapClients {
 
     /**
@@ -96,10 +93,6 @@ public interface ExpiringMapClients {
         static final Long DEFAULT_EXPIRE_TIME = 30L;
         static final TimeUnit DEFAULT_EXPIRE_TIME_UNIT = TimeUnit.SECONDS;
         static final ExpirationPolicy DEFAULT_EXPIRATION_POLICY = ExpirationPolicy.ACCESSED;
-        @Deprecated
-        final List<ExpirationListener> syncExpirationListeners = new ArrayList<>();
-        @Deprecated
-        final List<ExpirationListener> asyncExpirationListeners = new ArrayList<>();
 
         ExpiringMapClientsBuilder() {
         }
@@ -179,8 +172,6 @@ public interface ExpiringMapClients {
                     this.defaultExpireTime,
                     this.defaultExpireTimeUnit,
                     this.expirationPolicy
-//                    this.syncExpirationListeners,
-//                    this.asyncExpirationListeners
             );
         }
     }

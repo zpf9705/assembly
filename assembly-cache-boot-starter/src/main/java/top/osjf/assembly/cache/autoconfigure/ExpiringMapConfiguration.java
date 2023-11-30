@@ -1,7 +1,6 @@
 package top.osjf.assembly.cache.autoconfigure;
 
 import net.jodah.expiringmap.ExpiringMap;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -10,14 +9,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import top.osjf.assembly.cache.config.expiringmap.ExpiringMapClients;
-import top.osjf.assembly.cache.config.expiringmap.ExpiringMapClientsCustomizer;
 import top.osjf.assembly.cache.factory.CacheFactory;
 import top.osjf.assembly.cache.factory.ExpiringMapCacheFactory;
 import top.osjf.assembly.util.annotation.NotNull;
-import top.osjf.assembly.util.lang.CollectionUtils;
 
 import java.io.PrintStream;
-import java.util.List;
 
 /**
  * One of the optional caches for this component {@link ExpiringMap}.
@@ -49,19 +45,14 @@ import java.util.List;
 @ConditionalOnProperty(
         name = "assembly.cache.client",
         havingValue = "expire_map",
-        matchIfMissing = true
-)
+        matchIfMissing = true)
 public class ExpiringMapConfiguration extends CacheCommonsConfiguration implements CacheBannerDisplayDevice,
         EnvironmentAware {
 
     private Environment environment;
 
-    private final List<ExpiringMapClientsCustomizer> configurationCustomizers;
-
-    public ExpiringMapConfiguration(CacheProperties properties,
-                                    ObjectProvider<List<ExpiringMapClientsCustomizer>> listObjectProvider) {
+    public ExpiringMapConfiguration(CacheProperties properties) {
         super(properties);
-        this.configurationCustomizers = listObjectProvider.getIfAvailable();
     }
 
     @Override
@@ -98,16 +89,14 @@ public class ExpiringMapConfiguration extends CacheCommonsConfiguration implemen
     @Bean
     @ConditionalOnMissingBean({CacheFactory.class})
     public CacheFactory expiringMapCacheExecutorFactory() {
-        ExpiringMapClients.ExpiringMapClientsBuilder builder = ExpiringMapClients.builder();
         CacheProperties properties = getProperties();
         CacheProperties.ExpiringMap expiringMap = properties.getExpiringMap();
-        builder.acquireMaxSize(expiringMap.getMaxSize())
+        ExpiringMapClients.ExpiringMapClientsBuilder builder = ExpiringMapClients
+                .builder()
+                .acquireMaxSize(expiringMap.getMaxSize())
                 .acquireDefaultExpireTime(properties.getDefaultExpireTime())
                 .acquireDefaultExpireTimeUnit(properties.getDefaultExpireTimeUnit())
                 .acquireDefaultExpirationPolicy(expiringMap.getExpirationPolicy());
-        if (CollectionUtils.isNotEmpty(configurationCustomizers)) {
-            configurationCustomizers.forEach(c -> c.customize(builder));
-        }
         return new ExpiringMapCacheFactory(builder.build());
     }
 }
