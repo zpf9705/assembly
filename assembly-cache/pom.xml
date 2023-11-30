@@ -20,13 +20,14 @@
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <util>1.0.8</util>
+        <cache.help.expiringmap>0.5.11</cache.help.expiringmap>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>net.jodah</groupId>
             <artifactId>expiringmap</artifactId>
-            <version>0.5.11</version>
+            <version>${cache.help.expiringmap}</version>
         </dependency>
         <dependency>
             <groupId>top.osjf</groupId>
