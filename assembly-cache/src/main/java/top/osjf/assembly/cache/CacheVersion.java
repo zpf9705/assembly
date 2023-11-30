@@ -12,8 +12,9 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 
 /**
- * Used to retrieve and obtain resource versions, there is currently no specific combination
- * of dependent versions while maintaining the JDK version at 1.8.
+ * Used to retrieve and obtain resource versions, there is currently
+ * no specific combination of dependent versions while maintaining the
+ * JDK version at 1.8.
  *
  * @author zpf
  * @since 1.0.0
