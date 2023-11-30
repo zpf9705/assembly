@@ -40,7 +40,7 @@ public final class Configuration {
     private static final AtomicBoolean load = new AtomicBoolean(false);
     private static long defaultNoPersistenceExpireTimeToMille;
     private static final Configuration CONFIGURATION = new Configuration();
-    private static final List<ListeningRecovery> listeningRecoveries = new ArrayList<>();
+    private static final List<ListeningRecovery> listeningRecoveries = new ArrayList<>();//since 1.0.8
 
     private Configuration() {
     }
@@ -165,6 +165,7 @@ public final class Configuration {
      * Get listening recovery subclass names for {@link ListeningRecovery}.
      *
      * @return Recovery subclass names.
+     * @since 1.0.8
      */
     public List<String> getListeningRecoverySubClassNames() {
         return SystemUtils.getPropertyWithConvert(listeningRecoverySubClassNames, JsonArrayToListStrFunction(), null);
@@ -174,39 +175,38 @@ public final class Configuration {
      * Get listening all recoveries Within names and paths.
      *
      * @return Sets of {@link ListeningRecovery}.
+     * @since 1.0.8
      */
-    public List<ListeningRecovery> getListeningRecoveries() {
+    public synchronized List<ListeningRecovery> getListeningRecoveries() {
         if (listeningRecoveries.isEmpty()) {
-            synchronized (listeningRecoveries) {
-                List<String> listeningRecoverySubClassNames = getListeningRecoverySubClassNames();
-                boolean namingHave = CollectionUtils.isNotEmpty(listeningRecoverySubClassNames);
-                if (namingHave) {
-                    listeningRecoverySubClassNames =
-                            listeningRecoverySubClassNames.stream().distinct().collect(Collectors.toList());
-                    for (String listeningRecoverySubClassName : listeningRecoverySubClassNames) {
-                        ListeningRecovery listeningRecovery;
-                        try {
-                            listeningRecovery = ReflectUtils.newInstance(listeningRecoverySubClassName);
-                            listeningRecoveries.add(listeningRecovery);
-                        } catch (Exception ignored) {
-                        }
+            List<String> listeningRecoverySubClassNames = getListeningRecoverySubClassNames();
+            boolean namingHave = CollectionUtils.isNotEmpty(listeningRecoverySubClassNames);
+            if (namingHave) {
+                listeningRecoverySubClassNames =
+                        listeningRecoverySubClassNames.stream().distinct().collect(Collectors.toList());
+                for (String listeningRecoverySubClassName : listeningRecoverySubClassNames) {
+                    ListeningRecovery listeningRecovery;
+                    try {
+                        listeningRecovery = ReflectUtils.newInstance(listeningRecoverySubClassName);
+                        listeningRecoveries.add(listeningRecovery);
+                    } catch (Exception ignored) {
                     }
                 }
-                List<String> listeningRecoveryPaths = getListeningRecoverySubPath();
-                if (CollectionUtils.isNotEmpty(listeningRecoveryPaths)) {
-                    Set<Class<ListeningRecovery>> scannerResult =
-                            ScanUtils.getSubTypesOf(ListeningRecovery.class, listeningRecoveryPaths.toArray(new String[]{}));
-                    if (CollectionUtils.isNotEmpty(scannerResult)) {
-                        for (Class<ListeningRecovery> listeningRecoveryClass : scannerResult) {
-                            ListeningRecovery listeningRecovery;
-                            if (namingHave && listeningRecoverySubClassNames.contains(listeningRecoveryClass.getName())) {
-                                continue;
-                            }
-                            try {
-                                listeningRecovery = ReflectUtils.newInstance(listeningRecoveryClass);
-                                listeningRecoveries.add(listeningRecovery);
-                            } catch (Exception ignored) {
-                            }
+            }
+            List<String> listeningRecoveryPaths = getListeningRecoverySubPath();
+            if (CollectionUtils.isNotEmpty(listeningRecoveryPaths)) {
+                Set<Class<ListeningRecovery>> scannerResult =
+                        ScanUtils.getSubTypesOf(ListeningRecovery.class, listeningRecoveryPaths.toArray(new String[]{}));
+                if (CollectionUtils.isNotEmpty(scannerResult)) {
+                    for (Class<ListeningRecovery> listeningRecoveryClass : scannerResult) {
+                        ListeningRecovery listeningRecovery;
+                        if (namingHave && listeningRecoverySubClassNames.contains(listeningRecoveryClass.getName())) {
+                            continue;
+                        }
+                        try {
+                            listeningRecovery = ReflectUtils.newInstance(listeningRecoveryClass);
+                            listeningRecoveries.add(listeningRecovery);
+                        } catch (Exception ignored) {
                         }
                     }
                 }
@@ -233,12 +233,19 @@ public final class Configuration {
         return defaultNoPersistenceExpireTimeToMille;
     }
 
+    /**
+     * @return Wrapper String field with list objs.
+     * @since 1.0.8
+     */
     public static <T> ListConfigurationWrapper<T, String> ofListStrConfigurationWrapper(List<T> objs,
                                                                                         Function<T, String> collection) {
         return new ListConfigurationWrapper<>(objs, collection);
     }
 
-
+    /**
+     * @return Function Of Json array format.
+     * @since 1.0.8
+     */
     public static Function<String, List<String>> JsonArrayToListStrFunction() {
         return s -> {
             if (FastJsonUtils.isValidArray(s)) {
@@ -253,6 +260,7 @@ public final class Configuration {
      *
      * @param <T> OBJECT TYPE.
      * @param <R> COLLECTION TYPE.
+     * @since 1.0.8
      */
     public static class ListConfigurationWrapper<T, R> {
 
