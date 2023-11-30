@@ -7,6 +7,7 @@ import top.osjf.assembly.cache.persistence.ByteCachePersistence;
 import top.osjf.assembly.cache.persistence.CachePersistenceReduction;
 import top.osjf.assembly.cache.persistence.Configuration;
 import top.osjf.assembly.cache.persistence.ListeningRecovery;
+import top.osjf.assembly.util.lang.CollectionUtils;
 import top.osjf.assembly.util.system.SystemUtils;
 
 import javax.annotation.PostConstruct;
@@ -68,7 +69,7 @@ public class CacheProperties {
      * Monitor the path information of cache recovery and implement the class collection
      * path of {@link ListeningRecovery}.
      */
-    private List<String> listeningRecoverySubPath = SourceEnvironmentPostProcessor.findSpringbootPrimarySourcesPackages();
+    private List<String> listeningRecoverySubPath;
 
     /**
      * No persistence time the most value (that is less than all of this time are not given persistent).
@@ -224,7 +225,7 @@ public class CacheProperties {
 
         /**
          * Set {@code expiration Listeners} for map.
-         * <p>The function is similar to {@link #listeningPackages}.
+         * <p>The function is similar to {@link #expirationListenerScanPackages}.
          *
          * @since 1.0.8
          */
@@ -235,10 +236,8 @@ public class CacheProperties {
          * Set a {@code listening packages} for map.
          *
          * <p>If it is null, the default is to use springboot to start the package path where the main class is located.
-         *
-         * <p>{@link SourceEnvironmentPostProcessor}</p>
          */
-        private List<String> listeningPackages = SourceEnvironmentPostProcessor.findSpringbootPrimarySourcesPackages();
+        private List<String> expirationListenerScanPackages;
 
         public Integer getMaxSize() {
             return maxSize;
@@ -266,12 +265,12 @@ public class CacheProperties {
             this.expirationListenerClasses = expirationListenerClasses;
         }
 
-        public List<String> getListeningPackages() {
-            return listeningPackages;
+        public List<String> getExpirationListenerScanPackages() {
+            return expirationListenerScanPackages;
         }
 
-        public void setListeningPackages(List<String> listeningPackages) {
-            this.listeningPackages = listeningPackages;
+        public void setExpirationListenerScanPackages(List<String> expirationListenerScanPackages) {
+            this.expirationListenerScanPackages = expirationListenerScanPackages;
         }
     }
 
@@ -284,6 +283,17 @@ public class CacheProperties {
 
     @PostConstruct
     public void initForPersistenceConfiguration() {
+        if (CollectionUtils.isEmpty(listeningRecoverySubClasses)) {
+            if (CollectionUtils.isEmpty(listeningRecoverySubPath)) {
+                listeningRecoverySubPath = SourceEnvironmentPostProcessor.findSpringbootPrimarySourcesPackages();
+            }
+        }
+        if (CollectionUtils.isEmpty(expiringMap.expirationListenerClasses)) {
+            if (CollectionUtils.isEmpty(expiringMap.expirationListenerScanPackages)) {
+                expiringMap.expirationListenerScanPackages
+                        = SourceEnvironmentPostProcessor.findSpringbootPrimarySourcesPackages();
+            }
+        }
         SystemUtils.setProperty(Configuration.open_persistence, this.openPersistence);
         SystemUtils.setProperty(Configuration.persistenceRunAsync, this.persistenceAsync);
         SystemUtils.setProperty(Configuration.persistence_path, this.persistencePath);
@@ -292,9 +302,13 @@ public class CacheProperties {
         SystemUtils.setProperty(Configuration.noPersistenceOfExpireTime, this.noPersistenceOfExpireTime);
         SystemUtils.setProperty(Configuration.noPersistenceOfExpireTimeUnit, this.noPersistenceOfExpireTimeUnit);
         SystemUtils.setProperty(Configuration.chooseClient, this.client.name());
-        SystemUtils.setProperty(Configuration.listeningRecoverySubPath,
-                Configuration.ofListStrConfigurationWrapper(listeningRecoverySubPath, Function.identity()));
-        SystemUtils.setProperty(Configuration.listeningRecoverySubClassNames,
-                Configuration.ofListStrConfigurationWrapper(listeningRecoverySubClasses, Class::getName));
+        if (CollectionUtils.isNotEmpty(listeningRecoverySubPath)) {
+            SystemUtils.setProperty(Configuration.listeningRecoverySubPath,
+                    Configuration.ofListStrConfigurationWrapper(listeningRecoverySubPath, Function.identity()));
+        }
+        if (CollectionUtils.isNotEmpty(listeningRecoverySubClasses)) {
+            SystemUtils.setProperty(Configuration.listeningRecoverySubClassNames,
+                    Configuration.ofListStrConfigurationWrapper(listeningRecoverySubClasses, Class::getName));
+        }
     }
 }
