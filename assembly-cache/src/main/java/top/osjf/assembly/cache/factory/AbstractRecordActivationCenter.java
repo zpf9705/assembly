@@ -5,7 +5,8 @@ import top.osjf.assembly.util.lang.Asserts;
 import java.io.Serializable;
 
 /**
- * Abstract function class: used to record the currently activated cache center, providing static storage and retrieval.
+ * Abstract function class: used to record the currently activated
+ * cache center, providing static storage and retrieval.
  * @param <C> The type of help center.
  * @param <K> The type of key.
  * @param <V> The type of value.

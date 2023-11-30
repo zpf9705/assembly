@@ -16,13 +16,17 @@ import java.util.concurrent.TimeUnit;
 /**
  * Cache center based on {@link ExpiringMap}.
  * <p>
- * This class will help implement the method of using {@link ExpiringMapClients}to configure .
+ * This class will help implement the method of using {@link ExpiringMapClients}
+ * to configure .
  * <p>
- * Singleton objects of {@link ExpiringMap} and placing them in {@link AbstractRecordActivationCenter},
- * as well as rewriting and caching information read through file recovery.
+ * Singleton objects of {@link ExpiringMap} and placing them in
+ * {@link AbstractRecordActivationCenter}, as well as rewriting and
+ * caching information read through file recovery.
  * <p>
- * Once this class is encapsulated, it is not allowed to instantiate empty constructs.
- * <p>It must be done through the above method and always maintain a unique operand.</p>
+ * Once this class is encapsulated, it is not allowed to instantiate
+ * empty constructs.
+ * <p>It must be done through the above method and always maintain a
+ * unique operand.</p>
  *
  * @author zpf
  * @since 1.0.0

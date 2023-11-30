@@ -12,8 +12,8 @@ import java.util.concurrent.TimeUnit;
  * Used to call one's own method.<br>
  * <p>
  * Here, we also list the instruction methods in reference
- * {@link top.osjf.assembly.cache.command.CacheCommands} to provide the final implementation
- * for the instruction methods.
+ * {@link top.osjf.assembly.cache.command.CacheCommands} to
+ * provide the final implementation for the instruction methods.
  *
  * @author zpf
  * @since 1.0.0
