@@ -10,7 +10,7 @@ import java.io.Serializable;
  * information of the key/value is stored.
  *
  * @author zpf
- * @since 1.0.0
+ * @since 1.0.8
  */
 public final class DefaultMessage implements ByteMessage, ObjectMessage, Serializable {
 
