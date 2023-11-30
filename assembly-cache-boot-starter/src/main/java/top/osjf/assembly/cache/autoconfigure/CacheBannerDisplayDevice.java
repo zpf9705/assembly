@@ -4,6 +4,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.Banner;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.EnvironmentCapable;
+import top.osjf.assembly.cache.CacheVersion;
 import top.osjf.assembly.util.annotation.NotNull;
 
 import java.io.PrintStream;

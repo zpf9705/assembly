@@ -1,4 +1,4 @@
-package top.osjf.assembly.cache.autoconfigure;
+package top.osjf.assembly.cache;
 
 import top.osjf.assembly.util.lang.StringUtils;
 

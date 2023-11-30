@@ -4,6 +4,7 @@ import org.springframework.boot.ansi.AnsiColor;
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiStyle;
 import org.springframework.core.env.Environment;
+import top.osjf.assembly.cache.CacheVersion;
 import top.osjf.assembly.util.annotation.CanNull;
 
 import java.io.PrintStream;
