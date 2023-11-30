@@ -1,8 +1,8 @@
 package top.osjf.assembly.cache.command.expiremap;
 
+import net.jodah.expiringmap.ExpiringMap;
 import top.osjf.assembly.cache.command.CachePairCommands;
 import top.osjf.assembly.cache.factory.ExpiringMapCacheExecutor;
-import top.osjf.assembly.cache.net.jodah.expiringmap.ExpiringMap;
 
 import java.util.concurrent.TimeUnit;
 

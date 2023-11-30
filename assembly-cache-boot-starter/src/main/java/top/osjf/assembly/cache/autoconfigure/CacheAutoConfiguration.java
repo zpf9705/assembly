@@ -52,8 +52,9 @@ import java.util.List;
  * All the operation will be placed on the Helper and simulate the join operation such
  * as {@link top.osjf.assembly.cache.factory.CacheExecutor}.<br>
  *
- * <p>This layer is {@link top.osjf.assembly.cache.net.jodah.expiringmap.ExpiringMap}</p>
- * Additional data on the bottom will adopt a byte type for storage in order to enhance the cache restart recovery.
+ * <p>This layer is {@link net.jodah.expiringmap.ExpiringMap}</p>
+ * Additional data on the bottom will adopt a byte type for storage in order to enhance
+ * the cache restart recovery.
  *
  * @author zpf
  * @since 1.0.0

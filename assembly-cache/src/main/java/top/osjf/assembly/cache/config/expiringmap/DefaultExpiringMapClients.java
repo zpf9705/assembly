@@ -1,7 +1,7 @@
 package top.osjf.assembly.cache.config.expiringmap;
 
-import top.osjf.assembly.cache.net.jodah.expiringmap.ExpirationListener;
-import top.osjf.assembly.cache.net.jodah.expiringmap.ExpirationPolicy;
+import net.jodah.expiringmap.ExpirationListener;
+import net.jodah.expiringmap.ExpirationPolicy;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;

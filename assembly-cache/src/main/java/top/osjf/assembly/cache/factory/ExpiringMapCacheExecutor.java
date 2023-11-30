@@ -1,6 +1,6 @@
 package top.osjf.assembly.cache.factory;
 
-import top.osjf.assembly.cache.net.jodah.expiringmap.ExpiringMap;
+import net.jodah.expiringmap.ExpiringMap;
 import top.osjf.assembly.util.annotation.CanNull;
 
 import java.util.List;

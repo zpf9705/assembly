@@ -234,6 +234,9 @@ public final class Configuration {
     }
 
     /**
+     * @param <T>        Object Types.
+     * @param collection collection Function.
+     * @param objs       Object list.
      * @return Wrapper String field with list objs.
      * @since 1.0.8
      */

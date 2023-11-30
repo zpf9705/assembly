@@ -1,8 +1,8 @@
 package top.osjf.assembly.cache.config.expiringmap;
 
-import top.osjf.assembly.cache.net.jodah.expiringmap.ExpirationListener;
-import top.osjf.assembly.cache.net.jodah.expiringmap.ExpirationPolicy;
-import top.osjf.assembly.cache.net.jodah.expiringmap.ExpiringMap;
+import net.jodah.expiringmap.ExpirationListener;
+import net.jodah.expiringmap.ExpirationPolicy;
+import net.jodah.expiringmap.ExpiringMap;
 import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.lang.Asserts;
 

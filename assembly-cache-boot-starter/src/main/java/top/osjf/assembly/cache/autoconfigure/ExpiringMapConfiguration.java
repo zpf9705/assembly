@@ -1,5 +1,7 @@
 package top.osjf.assembly.cache.autoconfigure;
 
+import net.jodah.expiringmap.ExpirationListener;
+import net.jodah.expiringmap.ExpiringMap;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -14,8 +16,6 @@ import top.osjf.assembly.cache.factory.CacheFactory;
 import top.osjf.assembly.cache.factory.ExpiringMapCacheFactory;
 import top.osjf.assembly.cache.listener.expiringmap.AsyncListener;
 import top.osjf.assembly.cache.listener.expiringmap.SyncListener;
-import top.osjf.assembly.cache.net.jodah.expiringmap.ExpirationListener;
-import top.osjf.assembly.cache.net.jodah.expiringmap.ExpiringMap;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.io.ScanUtils;
 import top.osjf.assembly.util.lang.ArrayUtils;

@@ -1,8 +1,8 @@
 package top.osjf.assembly.cache.factory;
 
+import net.jodah.expiringmap.ExpiringMap;
 import top.osjf.assembly.cache.command.expiremap.ExpiringMapInvocationHandler;
 import top.osjf.assembly.cache.config.expiringmap.ExpiringMapClients;
-import top.osjf.assembly.cache.net.jodah.expiringmap.ExpiringMap;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.lang.ReflectUtils;
 

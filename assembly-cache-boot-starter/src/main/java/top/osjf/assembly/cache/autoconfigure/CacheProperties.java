@@ -1,8 +1,8 @@
 package top.osjf.assembly.cache.autoconfigure;
 
+import net.jodah.expiringmap.ExpirationListener;
+import net.jodah.expiringmap.ExpirationPolicy;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import top.osjf.assembly.cache.net.jodah.expiringmap.ExpirationListener;
-import top.osjf.assembly.cache.net.jodah.expiringmap.ExpirationPolicy;
 import top.osjf.assembly.cache.persistence.ByteCachePersistence;
 import top.osjf.assembly.cache.persistence.CachePersistenceReduction;
 import top.osjf.assembly.cache.persistence.Configuration;
@@ -107,7 +107,7 @@ public class CacheProperties {
     private Client client = Client.EXPIRE_MAP;
 
     /**
-     * Expiry implement for {@link top.osjf.assembly.cache.net.jodah.expiringmap.ExpiringMap}.
+     * Expiry implement for {@link net.jodah.expiringmap.ExpiringMap}.
      */
     private ExpiringMap expiringMap = new ExpiringMap();
 
