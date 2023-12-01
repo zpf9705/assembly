@@ -8,8 +8,11 @@ import top.osjf.assembly.simplified.sdk.http.ApacheHttpClient;
 import top.osjf.assembly.simplified.sdk.http.HttpResultResponse;
 import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
+import top.osjf.assembly.util.lang.ArrayUtils;
 
 import java.io.Serializable;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Map;
 
 /**
@@ -34,8 +37,8 @@ import java.util.Map;
 public interface Request<R extends Response> extends RequestParamCapable<Object>, Serializable {
 
     /**
-     * Obtain the true address value of the request based on the given host name.
-     *
+     * Obtain the true address value of the request based on
+     * the given host name.
      * @param host Host name, cannot be {@literal null}.
      * @return Address at the time of request.
      */
@@ -87,8 +90,7 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
 
     /**
      * Obtain the header information that needs to be set, and return a map.
-     *
-     * @return To be a {@link Map}.
+     * @return Maps heads.
      */
     Map<String, String> getHeadMap();
 
@@ -106,7 +108,9 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      * Based on {@link #getResponseCls()} and {@link #getResponseTypeToken()},
      * obtain the corresponding type that should be converted.
      * <p>{@link #getResponseCls()} has a higher priority than {@link #getResponseTypeToken()}.
-     * <p>If neither is provided, the default {@link HttpResultResponse} type is given.
+     * <p>If neither is provided, firstly, implement the logic of manually querying generics,
+     * as referenced in {@code TypeCapture#capture()};finally,the default {@link HttpResultResponse}
+     * type is given.
      * @return type object.
      */
     @NotNull
@@ -116,7 +120,18 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
         if (responseCls == null) {
             TypeToken<R> typeToken = getResponseTypeToken();
             if (typeToken == null) {
-                type = HttpResultResponse.class;
+                Type genericSuperclass = getClass().getGenericSuperclass();
+                if (genericSuperclass instanceof ParameterizedType) {
+                    Type[] actualTypeArguments = ((ParameterizedType) genericSuperclass)
+                            .getActualTypeArguments();
+                    if (ArrayUtils.isNotEmpty(actualTypeArguments)) {
+                        type = actualTypeArguments[0];
+                    } else {
+                        type = HttpResultResponse.class;
+                    }
+                } else {
+                    type = HttpResultResponse.class;
+                }
             } else {
                 type = typeToken.getType();
             }
