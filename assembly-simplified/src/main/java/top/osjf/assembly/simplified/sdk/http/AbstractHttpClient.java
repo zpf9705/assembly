@@ -1,6 +1,5 @@
 package top.osjf.assembly.simplified.sdk.http;
 
-import com.google.common.reflect.TypeToken;
 import top.osjf.assembly.simplified.sdk.client.AbstractClient;
 import top.osjf.assembly.simplified.sdk.process.DefaultErrorResponse;
 import top.osjf.assembly.simplified.sdk.process.Request;
@@ -65,19 +64,7 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
     @NotNull
     public R convertToResponse(Request<R> request, String responseStr) {
         R response;
-        Object type;
-        Class<R> responseCls = request.getResponseCls();
-        if (responseCls != null) {
-            type = responseCls;
-        } else {
-            TypeToken<R> typeToken = request.getResponseTypeToken();
-            if (typeToken != null) {
-                type = typeToken.getType();
-            } else {
-                //default
-                type = HttpResultResponse.class;
-            }
-        }
+        Object type = request.getResponseRequiredType();
         if (FastJsonUtils.isValidObject(responseStr)) {
             response = FastJsonUtils.parseObject(responseStr, type);
         } else if (FastJsonUtils.isValidArray(responseStr)) {
