@@ -17,8 +17,20 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * Configuration property classes related to cache persistence.
- *
+ * This article is a configuration class for component caching.
+ * <p>The central configuration that supports the use of this
+ * caching component is managed here, mainly consisting of two parts
+ * <ul>
+ *     <li>The cache saving mechanism at runtime.</li>
+ *     <li>Configuration related to cache persistence.</li>
+ * </ul>
+ * <p>Part of the runtime cache configuration is saved in the
+ * system cache {@link SystemUtils}, and when needed, it is
+ * retrieved from the system cache. Some listeners that need to
+ * be persisted are directly and statically saved in the configuration
+ * class, such as {@link #listeningRecoveries} and {@link #expirationMessageListeners}.
+ * <p>This configuration class is designed as a singleton to ensure
+ * thread safety for variable acquisition.
  * @author zpf
  * @since 1.0.0
  */
