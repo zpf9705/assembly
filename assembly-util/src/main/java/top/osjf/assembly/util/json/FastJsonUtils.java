@@ -79,6 +79,7 @@ public final class FastJsonUtils {
      *
      * @param jsonStr      the specified string to be parsed
      * @param requiredType the specified class of {@link T}
+     * @param <T>          required Type.
      * @return {@link T} or {@code null}
      * @throws JSONException If a parsing error occurs
      * @since 1.0.9
@@ -94,6 +95,7 @@ public final class FastJsonUtils {
      *
      * @param jsonStr      the specified string to be parsed
      * @param requiredType the specified actual type of {@link T}
+     * @param <T>          required Type.
      * @return {@link T} or {@code null}
      * @throws JSONException If a parsing error occurs
      * @since 1.0.9
@@ -137,6 +139,7 @@ public final class FastJsonUtils {
      *
      * @param jsonStr      the specified string to be parsed
      * @param requiredType the specified actual class of {@link T}
+     * @param <T>          required Type.
      * @return {@link List} or {@code null}
      * @throws JSONException If a parsing error occurs
      * @since 1.0.9
@@ -152,6 +155,7 @@ public final class FastJsonUtils {
      *
      * @param jsonStr      the specified string to be parsed
      * @param requiredType the specified actual type of {@link T}
+     * @param <T>          required Type.
      * @return {@link List} or {@code null}
      * @throws JSONException If a parsing error occurs
      * @since 1.0.9
@@ -229,6 +233,7 @@ public final class FastJsonUtils {
      *
      * @param str        the specified string to be parsed
      * @param references the specified actual type
+     * @param <T>        required Type.
      * @return {@link T} or {@code null}
      * @throws JSONException If a parsing error occurs
      */
@@ -238,7 +243,7 @@ public final class FastJsonUtils {
 
     /**
      * Parses an empty {@link T} with unKnow type.
-     *
+     * @param <T> required Type.
      * @param type the specified type object.
      * @return empty {@link T}.
      * @see #toEmptyObj(Class)
@@ -250,7 +255,7 @@ public final class FastJsonUtils {
 
     /**
      * Parses an empty {@link T} with specified Class.
-     *
+     * @param <T> required Type.
      * @param clazz the specified clazz
      * @return empty {@link T}.
      * @since 1.0.9
@@ -262,6 +267,7 @@ public final class FastJsonUtils {
     /**
      * Parses an empty {@link T} with specified actual type.
      *
+     * @param <T>  required Type.
      * @param type the specified actual type
      * @return empty {@link T}.
      * @since 1.0.9
