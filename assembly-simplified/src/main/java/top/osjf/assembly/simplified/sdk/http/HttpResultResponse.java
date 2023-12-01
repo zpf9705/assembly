@@ -45,7 +45,7 @@ public class HttpResultResponse<T> extends AbstractHttpResponse {
      * @param success Result indicates.
      */
     public HttpResultResponse(Boolean success) {
-        this(success, SUCCESS_CODE, SUCCESS_MESSAGE, null);
+        this(success, SC_OK, SUCCESS_MESSAGE, null);
     }
 
     /**
@@ -54,7 +54,7 @@ public class HttpResultResponse<T> extends AbstractHttpResponse {
      * @param data Result data.
      */
     public HttpResultResponse(T data) {
-        this(true, SUCCESS_CODE, SUCCESS_MESSAGE, data);
+        this(true, SC_OK, SUCCESS_MESSAGE, data);
     }
 
     /**
@@ -63,7 +63,7 @@ public class HttpResultResponse<T> extends AbstractHttpResponse {
      * @param message Result information.
      */
     public HttpResultResponse(String message) {
-        this(false, FAILED_CODE, message, null);
+        this(false, SC_OK, message, null);
     }
 
     /**
@@ -100,26 +100,66 @@ public class HttpResultResponse<T> extends AbstractHttpResponse {
 
     //Static construction methods, including success and failure.
 
+    /**
+     * Static for create a success {@code HttpResultResponse}.
+     * <p>Defaults to {@code true}</p>
+     *
+     * @param <T> data types.
+     * @return template of response.
+     */
     public static <T> HttpResultResponse<T> success() {
         return new HttpResultResponse<>(true);
     }
 
+    /**
+     * Static for create a success {@code HttpResultResponse}.
+     *
+     * @param <T> data types.
+     * @return template of response.
+     */
     public static <T> HttpResultResponse<T> success(T data) {
         return new HttpResultResponse<>(data);
     }
 
+    /**
+     * Static for create a success {@code HttpResultResponse}.
+     *
+     * @param <T> data types.
+     * @return template of response.
+     */
     public static <T> HttpResultResponse<T> success(@NotNull Supplier<T> dataSupplier) {
         return success(dataSupplier.get());
     }
 
+    /**
+     * Static for create a success {@code HttpResultResponse}.
+     * <p>Defaults to {@link #FAILED_MESSAGE}</p>
+     *
+     * @param <T> data types.
+     * @return template of response.
+     */
     public static <T> HttpResultResponse<T> failed() {
         return new HttpResultResponse<>(FAILED_MESSAGE);
     }
 
+    /**
+     * Static for create a failed {@code HttpResultResponse}.
+     *
+     * @param <T>      data types.
+     * @param filedMsg error message.
+     * @return template of response.
+     */
     public static <T> HttpResultResponse<T> failed(String filedMsg) {
         return new HttpResultResponse<>(filedMsg);
     }
 
+    /**
+     * Static for create a failed {@code HttpResultResponse}.
+     *
+     * @param <T>              data types.
+     * @param filedMsgSupplier error message supplier.
+     * @return template of response.
+     */
     public static <T> HttpResultResponse<T> failed(@NotNull Supplier<String> filedMsgSupplier) {
         return failed(filedMsgSupplier.get());
     }
