@@ -113,7 +113,7 @@ public class HttpResultResponse<T> extends AbstractHttpResponse {
 
     /**
      * Static for create a success {@code HttpResultResponse}.
-     *
+     * @param data response data.
      * @param <T> data types.
      * @return template of response.
      */
@@ -124,7 +124,8 @@ public class HttpResultResponse<T> extends AbstractHttpResponse {
     /**
      * Static for create a success {@code HttpResultResponse}.
      *
-     * @param <T> data types.
+     * @param dataSupplier data supplier.
+     * @param <T>          data types.
      * @return template of response.
      */
     public static <T> HttpResultResponse<T> success(@NotNull Supplier<T> dataSupplier) {
