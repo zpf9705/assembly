@@ -7,6 +7,7 @@ import top.osjf.assembly.simplified.sdk.client.Client;
 import top.osjf.assembly.simplified.sdk.http.ApacheHttpClient;
 import top.osjf.assembly.simplified.sdk.http.HttpResultResponse;
 import top.osjf.assembly.util.annotation.CanNull;
+import top.osjf.assembly.util.annotation.NotNull;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -61,7 +62,7 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      * @return Return implementation for {@link Response}.
      */
     @CanNull
-    default Class<R> getResponseCls(){
+    default Class<R> getResponseCls() {
         return null;
     }
 
@@ -100,4 +101,28 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      */
     @SuppressWarnings("rawtypes")
     Class<? extends Client> getClientCls();
+
+    /**
+     * Based on {@link #getResponseCls()} and {@link #getResponseTypeToken()},
+     * obtain the corresponding type that should be converted.
+     * <p>{@link #getResponseCls()} has a higher priority than {@link #getResponseTypeToken()}.
+     * <p>If neither is provided, the default {@link HttpResultResponse} type is given.
+     * @return type object.
+     */
+    @NotNull
+    default Object getResponseRequiredType() {
+        Object type;
+        Class<R> responseCls = getResponseCls();
+        if (responseCls == null) {
+            TypeToken<R> typeToken = getResponseTypeToken();
+            if (typeToken == null) {
+                type = HttpResultResponse.class;
+            } else {
+                type = typeToken.getType();
+            }
+        } else {
+            type = responseCls;
+        }
+        return type;
+    }
 }
