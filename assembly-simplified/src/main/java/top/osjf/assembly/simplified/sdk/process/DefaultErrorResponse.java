@@ -25,20 +25,20 @@ public class DefaultErrorResponse extends AbstractResponse {
 
     public static final Integer UNKNOWN_ERROR_CODE = 500358;
 
-    private Integer code;
+    private Object code;
 
     private String message;
 
-    public DefaultErrorResponse(Integer code, String message) {
+    public DefaultErrorResponse(Object code, String message) {
         this.code = code;
         this.message = message;
     }
 
-    public Integer getCode() {
+    public Object getCode() {
         return code;
     }
 
-    public void setCode(Integer code) {
+    public void setCode(Object code) {
         this.code = code;
     }
 
@@ -70,15 +70,16 @@ public class DefaultErrorResponse extends AbstractResponse {
                 .format("Happen data_error exception,message=[%s]", message));
     }
 
-    public static <R extends Response> R parseErrorResponse(String error, ErrorType type, Class<R> clazz) {
-        return parseErrorResponse(new DataConvertException(error), type, clazz);
+    public static <R extends Response> R parseErrorResponse(String error, ErrorType type, Request<R> request) {
+        return parseErrorResponse(new DataConvertException(error), type, request);
     }
 
-    public static <R extends Response> R parseErrorResponse(Throwable error, ErrorType type, Class<R> clazz) {
-        DefaultErrorResponse defaultErrorResponse = type.getMessageWithType(error);
-        R r = FastJsonUtils.toObject(defaultErrorResponse, clazz);
-        r.setErrorCode(defaultErrorResponse.getCode());
-        r.setErrorMessage(defaultErrorResponse.getMessage());
+    public static <R extends Response> R parseErrorResponse(Throwable error, ErrorType type, Request<R> request) {
+        DefaultErrorResponse response = type.getMessageWithType(error);
+        R r = FastJsonUtils.parseObject(FastJsonUtils.toJSONString(response),
+                request.getResponseRequiredType());
+        r.setErrorCode(response.getCode());
+        r.setErrorMessage(response.getMessage());
         return r;
     }
 
