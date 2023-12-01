@@ -126,12 +126,12 @@ public class SdkProxyBeanRegister extends BeanDefinitionRegisterBeforeRefresh {
                 try {
                     host = environment.resolveRequiredPlaceholders(hostProperty);
                 } catch (IllegalArgumentException e) {
+                    Console.warn("No configuration item with configuration key [{}] was found, " +
+                            "so it defaults to [{}]", hostProperty, DEFAULT_HTTP_BROWSER_HOST);
                     //if catch IllegalArgumentException not found hostProperty
                     //use default host and logged console
                     host = DEFAULT_HTTP_BROWSER_HOST;
                     useDefaultHost = true;
-                    Console.warn("No configuration item with configuration key [{}] was found, " +
-                            "so it defaults to [{}]", hostProperty, DEFAULT_HTTP_BROWSER_HOST);
                 }
             } else {
                 Console.warn("No configuration item with configuration key [{}] was found, " +
