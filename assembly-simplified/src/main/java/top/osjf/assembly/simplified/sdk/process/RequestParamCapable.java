@@ -3,17 +3,17 @@ package top.osjf.assembly.simplified.sdk.process;
 import top.osjf.assembly.util.annotation.CanNull;
 
 /**
- * Request parameter acquisition interface, uniformly
- * return {@link Object},compatible with all return values.
- *
+ * Get request parameters of the specified type.
+ * @param <T> Param type.
  * @author zpf
  * @since 1.1.0
  */
-public interface RequestParamCapable {
+@FunctionalInterface
+public interface RequestParamCapable<T> {
 
     /**
      * @return Return any of {@link Object}.
      */
     @CanNull
-    Object getRequestParam();
+    T getRequestParam();
 }
