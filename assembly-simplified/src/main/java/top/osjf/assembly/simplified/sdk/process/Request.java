@@ -111,6 +111,7 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      * <p>If neither is provided, firstly, implement the logic of manually querying generics,
      * as referenced in {@code TypeCapture#capture()};finally,the default {@link HttpResultResponse}
      * type is given.
+     * @since 2.1.2
      * @return type object.
      */
     @NotNull
