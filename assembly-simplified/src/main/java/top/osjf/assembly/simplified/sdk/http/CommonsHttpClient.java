@@ -62,14 +62,13 @@ public class CommonsHttpClient<R extends HttpResponse> extends AbstractHttpClien
             //sdk Exception catch
             handlerSdkError(request, e);
             throwable = e;
-            response = DefaultErrorResponse.parseErrorResponse(throwable, DefaultErrorResponse.ErrorType.SDK,
-                    request.getResponseCls());
+            response = DefaultErrorResponse.parseErrorResponse(throwable, DefaultErrorResponse.ErrorType.SDK, request);
         } catch (Exception e) {
             //unKnow Exception catch
             handlerUnKnowError(request, e);
             throwable = e;
             response = DefaultErrorResponse.parseErrorResponse(throwable, DefaultErrorResponse.ErrorType.UN_KNOWN,
-                    request.getResponseCls());
+                    request);
         } finally {
             watch.stop();
             //finally result input
