@@ -900,7 +900,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
     public void reductionUseString(@NotNull StringBuilder buffer) {
         String json = buffer.toString();
         //check json
-        Asserts.isTrue(FastJsonUtils.isValid(json), "Buffer data [" + json + "] no a valid json");
+        Asserts.isTrue(FastJsonUtils.isValidObject(json), "Buffer data [" + json + "] no a valid json");
     }
 
     /**
