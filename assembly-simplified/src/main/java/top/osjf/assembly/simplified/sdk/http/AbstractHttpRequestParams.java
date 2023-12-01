@@ -85,7 +85,9 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
      * multiple forms of existence or may be {@literal null}.
      */
     @CanNull
-    public abstract Object getParam();
+    public Object getParam(){
+        return null;
+    }
 
     /**
      * Mark whether to use input parameters as JSON serial numbers.
