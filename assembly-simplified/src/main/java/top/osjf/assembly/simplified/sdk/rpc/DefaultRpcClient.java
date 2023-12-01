@@ -70,7 +70,7 @@ public class DefaultRpcClient<T extends Response> extends AbstractClient<T> {
         }
 
         @Override
-        public void setErrorCode(Integer code) {
+        public void setErrorCode(Object code) {
             
         }
 

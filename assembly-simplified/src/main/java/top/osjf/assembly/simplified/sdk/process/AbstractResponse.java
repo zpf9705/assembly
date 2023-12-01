@@ -29,7 +29,7 @@ public abstract class AbstractResponse implements Response {
     }
 
     @Override
-    public void setErrorCode(Integer code) {
+    public void setErrorCode(Object code) {
     }
 
     @Override

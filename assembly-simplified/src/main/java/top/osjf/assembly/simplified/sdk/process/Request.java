@@ -79,9 +79,9 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      * @return Composite paradigm.
      * @since 2.1.2
      */
+    @CanNull
     default TypeToken<R> getResponseTypeToken() {
-        return new TypeToken<R>() {
-        };
+        return null;
     }
 
     /**

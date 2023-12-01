@@ -10,7 +10,7 @@ import top.osjf.assembly.simplified.sdk.client.ResponseConvert;
  * <p>At this point, this interface defines two standard methods.
  *
  * <p>In the event of an exception, the code and message are directly set through
- * {@link DefaultErrorResponse#parseErrorResponse(String, DefaultErrorResponse.ErrorType, Class)}
+ * {@link DefaultErrorResponse#parseErrorResponse(String, DefaultErrorResponse.ErrorType, Request)}
  * conversion.
  *
  * <p>The user needs to rewrite these two methods to obtain the corresponding
@@ -41,7 +41,7 @@ public interface ErrorResponse {
      *
      * @param code Defined as an int type, it is fixed.
      */
-    void setErrorCode(Integer code);
+    void setErrorCode(Object code);
 
     /**
      * The setting of abnormal conversion information, with the help of tool
