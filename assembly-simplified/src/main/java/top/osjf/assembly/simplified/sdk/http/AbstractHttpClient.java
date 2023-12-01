@@ -1,11 +1,12 @@
 package top.osjf.assembly.simplified.sdk.http;
 
+import com.google.common.reflect.TypeToken;
 import top.osjf.assembly.simplified.sdk.client.AbstractClient;
 import top.osjf.assembly.simplified.sdk.process.DefaultErrorResponse;
 import top.osjf.assembly.simplified.sdk.process.Request;
 import top.osjf.assembly.util.annotation.NotNull;
-import top.osjf.assembly.util.lang.CollectionUtils;
 import top.osjf.assembly.util.json.FastJsonUtils;
+import top.osjf.assembly.util.lang.CollectionUtils;
 import top.osjf.assembly.util.logger.Console;
 
 import java.util.List;
@@ -45,6 +46,7 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
 
     /**
      * Obtain the interface parameters for this HTTP request.
+     *
      * @return Return a {@link Request} param within {@link HttpRequest}.
      */
     public HttpRequest<R> getCurrentHttpRequest() {
@@ -63,18 +65,31 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
     @NotNull
     public R convertToResponse(Request<R> request, String responseStr) {
         R response;
+        Object type;
+        Class<R> responseCls = request.getResponseCls();
+        if (responseCls != null) {
+            type = responseCls;
+        } else {
+            TypeToken<R> typeToken = request.getResponseTypeToken();
+            if (typeToken != null) {
+                type = typeToken.getType();
+            } else {
+                //default
+                type = HttpResultResponse.class;
+            }
+        }
         if (FastJsonUtils.isValidObject(responseStr)) {
-            response = FastJsonUtils.parseObject(responseStr, request.getResponseCls());
+            response = FastJsonUtils.parseObject(responseStr, type);
         } else if (FastJsonUtils.isValidArray(responseStr)) {
-            List<R> responses = FastJsonUtils.parseArray(responseStr, request.getResponseCls());
+            List<R> responses = FastJsonUtils.parseArray(responseStr,type);
             if (CollectionUtils.isNotEmpty(responses)) {
                 response = responses.get(0);
             } else {
-                response = FastJsonUtils.toEmptyObj(request.getResponseCls());
+                response = FastJsonUtils.toEmptyObj(type);
             }
         } else {
             response = DefaultErrorResponse
-                    .parseErrorResponse(responseStr, DefaultErrorResponse.ErrorType.DATA, request.getResponseCls());
+                    .parseErrorResponse(responseStr, DefaultErrorResponse.ErrorType.DATA, request);
         }
         return response;
     }
