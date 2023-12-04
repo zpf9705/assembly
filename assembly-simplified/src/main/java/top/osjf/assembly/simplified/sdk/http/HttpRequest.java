@@ -36,6 +36,11 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
         return formatUrl(host);
     }
 
+    @Override
+    default boolean isAssignableRequest(Class<?> clazz) {
+        return HttpRequest.class.isAssignableFrom(clazz);
+    }
+
     /**
      * Http sdk containing {@link HttpSdkEnum} implementation information.
      *
