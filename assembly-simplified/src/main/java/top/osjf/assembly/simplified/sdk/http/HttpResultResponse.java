@@ -90,6 +90,7 @@ public class HttpResultResponse<T> extends AbstractHttpResponse {
         return (super.isSuccess() || anySuccessCodes().contains(getCode())) && getSuccess();
     }
 
+    //Since 2.1.3
     @Override
     public void setErrorCode(Object code) {
         if (this.code == null) {
@@ -104,6 +105,7 @@ public class HttpResultResponse<T> extends AbstractHttpResponse {
         }
     }
 
+    //Since 2.1.3
     @Override
     public void setErrorMessage(String message) {
         if (StringUtils.isBlank(this.message)) {
