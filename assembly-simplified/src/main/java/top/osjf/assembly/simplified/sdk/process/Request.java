@@ -2,17 +2,16 @@ package top.osjf.assembly.simplified.sdk.process;
 
 import com.google.common.reflect.TypeToken;
 import top.osjf.assembly.simplified.sdk.SdkException;
+import top.osjf.assembly.simplified.sdk.SdkUtils;
 import top.osjf.assembly.simplified.sdk.client.AbstractClient;
 import top.osjf.assembly.simplified.sdk.client.Client;
+import top.osjf.assembly.simplified.sdk.http.AbstractHttpRequestParams;
 import top.osjf.assembly.simplified.sdk.http.ApacheHttpClient;
 import top.osjf.assembly.simplified.sdk.http.HttpResultResponse;
 import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
-import top.osjf.assembly.util.lang.ArrayUtils;
 
 import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.Map;
 
 /**
@@ -39,6 +38,7 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
     /**
      * Obtain the true address value of the request based on
      * the given host name.
+     *
      * @param host Host name, cannot be {@literal null}.
      * @return Address at the time of request.
      */
@@ -62,6 +62,7 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      * implemented in {@link Response}.
      * <p>If you need a {@link Response} transformation of composite
      * generics, please refer to {@link #getResponseTypeToken()}.
+     *
      * @return Return implementation for {@link Response}.
      */
     @CanNull
@@ -80,6 +81,7 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      * regulations.
      * <p>If you need to customize {@link Response}, it will be more convenient
      * for you to use {@link #getResponseCls()}.
+     *
      * @return Composite paradigm.
      * @since 2.1.2
      */
@@ -90,6 +92,7 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
 
     /**
      * Obtain the header information that needs to be set, and return a map.
+     *
      * @return Maps heads.
      */
     Map<String, String> getHeadMap();
@@ -99,6 +102,7 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      * can define it yourself.
      * <p>Currently, there are {@link ApacheHttpClient} in HTTP format and
      * some default methods provided in {@link AbstractClient}.
+     *
      * @return Implementation class of {@link Client}.
      */
     @SuppressWarnings("rawtypes")
@@ -108,37 +112,95 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      * Based on {@link #getResponseCls()} and {@link #getResponseTypeToken()},
      * obtain the corresponding type that should be converted.
      * <p>{@link #getResponseCls()} has a higher priority than {@link #getResponseTypeToken()}.
-     * <p>If neither is provided, firstly, implement the logic of manually querying generics,
-     * as referenced in {@code TypeCapture#capture()};finally,the default {@link HttpResultResponse}
-     * type is given.
-     * @since 2.1.2
+     * <p>If neither is provided, {@link SdkUtils#getResponseRequiredType(Request)}
+     * will be used for generic retrieval of the response.
+     * <p><strong>The specific supported formats are shown below.</strong></p>
+     * <strong>____________________________________________________________________</strong>
+     * <p>The abstract {@link AbstractHttpRequestParams} provided directly is followed
+     * by a response implementation with a generic type.
+     * <pre>
+     *     {@code
+     *   class RequestParam
+     *   extends AbstractHttpRequestParams<HttpResultResponse<Character>> {
+     *      private static final long serialVersionUID = 6115216307330001269L;
+     *         Override
+     *         public HttpSdkEnum matchHttpSdk() {
+     *             return null;
+     *         }
+     *       }
+     *     }
+     * </pre>
+     * <strong>____________________________________________________________________</strong>
+     * <p>Implement an interface that carries the main class generic request.
+     * <pre>
+     *     {@code
+     *     interface
+     *     InterHttpRequest extends HttpRequest<HttpResultResponse<String>> {
+     *     }
+     *     class RequestParam implements Inter {
+     *         private static final long serialVersionUID = 7371775319382181179L;
+     *     }
+     *     }
+     * </pre>
+     * <strong>____________________________________________________________________</strong>
+     * <p>Nested inheritance type.
+     * <pre>
+     *     {@code
+     *      class RequestParam extends AbstractHttpRequestParams<HttpResultResponse<String>> {
+     *         private static final long serialVersionUID = 6115216307330001269L;
+     *         Override
+     *         public HttpSdkEnum matchHttpSdk() {
+     *             return null;
+     *         }
+     *     }
+     *     class RequestParam0 extends RequestParam {
+     *         private static final long serialVersionUID = 2463029032762347802L;
+     *     }
+     *     }
+     * </pre>
+     * <strong>____________________________________________________________________</strong>
+     * <p>Nested implementation type.
+     * <pre>
+     *     {@code
+     *     class RequestParam implements HttpRequest<HttpResultResponse<String>> {
+     *         private static final long serialVersionUID = 6115216307330001269L;
+     *         ...
+     *     }
+     *     class RequestParam1 extends RequestParam {
+     *         private static final long serialVersionUID = 2463029032762347802L;
+     *     }
+     *     }
+     * <strong>____________________________________________________________________</strong>
+     * </pre>
+     *
      * @return type object.
+     * @see SdkUtils#getResponseRequiredType(Request)
+     * @since 2.1.2
      */
     @NotNull
+    @SuppressWarnings({"unchecked"})
     default Object getResponseRequiredType() {
         Object type;
-        Class<R> responseCls = getResponseCls();
-        if (responseCls == null) {
-            TypeToken<R> typeToken = getResponseTypeToken();
-            if (typeToken == null) {
-                Type genericSuperclass = getClass().getGenericSuperclass();
-                if (genericSuperclass instanceof ParameterizedType) {
-                    Type[] actualTypeArguments = ((ParameterizedType) genericSuperclass)
-                            .getActualTypeArguments();
-                    if (ArrayUtils.isNotEmpty(actualTypeArguments)) {
-                        type = actualTypeArguments[0];
-                    } else {
-                        type = HttpResultResponse.class;
-                    }
-                } else {
-                    type = HttpResultResponse.class;
-                }
-            } else {
-                type = typeToken.getType();
-            }
-        } else {
-            type = responseCls;
-        }
-        return type;
+        if ((type = getResponseCls()) != null) return type;
+        if ((type = getResponseTypeToken()) != null) return ((TypeToken<R>) type).getType();
+        //If you have not provided the corresponding types of
+        // acquisition methods for the above two suggestions,
+        // then the following will dynamically obtain them for you.
+        return SdkUtils.getResponseRequiredType(this);
+    }
+
+    /**
+     * When {@link #getResponseCls()} and {@link #getResponseTypeToken()}
+     * are not provided, attempting to obtain the generic indicators of
+     * an inherited class or interface must satisfy the requirement that
+     * it is a subclass of the requesting main interface, and the criteria
+     * for determining whether it is true need to be determined through this method.
+     *
+     * @param clazz Determine type.
+     * @return If {@code true} is judged successful, {@code false} otherwise .
+     * @since 2.1.3
+     */
+    default boolean isAssignableRequest(Class<?> clazz) {
+        return Request.class.isAssignableFrom(clazz);
     }
 }
