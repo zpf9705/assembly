@@ -28,56 +28,77 @@ import java.util.Map;
  * @since 1.1.1
  */
 @SuppressWarnings("serial")
-public class CommonsHttpClient<R extends HttpResponse> extends AbstractHttpClient<R> implements HttpSdkEnum.Action0,
-        HttpResultSolver {
+public abstract class ExecutableHttpClient<R extends HttpResponse> extends AbstractHttpClient<R>
+        implements HttpSdkEnum.Action0, HttpResultSolver {
 
-    public CommonsHttpClient(String url) {
+    public ExecutableHttpClient(String url) {
         super(url);
     }
 
     @Override
     public R request() {
+
+        //Get the request parameters for the current thread.
         HttpRequest<R> request = getCurrentHttpRequest();
+
+        //Define the required parameters for this request.
         R response;
         String responseStr = null;
         Throwable throwable = null;
+
+        //Enable request timing operation
         StopWatch watch = new StopWatch();
-        //try start at watch start
         watch.start();
+
+        //Key operation steps: try the package.
         try {
-            //Verification of necessary parameters
+
+            //Custom validation of request parameters.
             request.validate();
-            //Obtain request body map
+
+            //Obtain the real request parameters.
             Object requestParam = request.getRequestParam();
-            //Get Request Header
+
+            //Get the request header parameters.
             Map<String, String> headers = request.getHeadMap();
-            //requested action
-            responseStr = doRequest(request.matchHttpSdk().getRequestMethod(), headers, requestParam,
-                    request.montage());
-            //pretreatment
+
+            //Execute this request, route according to the request type, and handle the parameters.
+            responseStr = doRequest(request.matchHttpSdk().getRequestMethod(), headers, requestParam, request.montage());
+
+            //Preprocessing operation for request results.
             responseStr = preResponseStrHandler(request, responseStr);
-            //convert
+
+            //The result conversion operation of the request result.
             response = convertToResponse(request, responseStr);
+
         } catch (SdkException e) {
-            //sdk Exception catch
+
+            //Capture anomalies in SDK and provide a conversion reminder.
             handlerSdkError(request, e);
             throwable = e;
             response = DefaultErrorResponse.parseErrorResponse(throwable, DefaultErrorResponse.ErrorType.SDK, request);
+
         } catch (Exception e) {
-            //unKnow Exception catch
+
+            //Capture unknown exceptions and provide a transition reminder.
             handlerUnKnowError(request, e);
             throwable = e;
             response = DefaultErrorResponse.parseErrorResponse(throwable, DefaultErrorResponse.ErrorType.UN_KNOWN,
                     request);
+
         } finally {
+
+            //Stop timing.
             watch.stop();
-            //finally result input
+
+            //Hand over the call information to the final processing project.
             finallyHandler(ExecuteInfoBuild.builder().requestAccess(request)
                     .spend(watch.getTotalTimeMillis())
                     .maybeError(throwable)
                     .response(responseStr)
                     .build());
         }
+
         return response;
     }
 

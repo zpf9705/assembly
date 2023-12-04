@@ -6,13 +6,13 @@ import java.util.Map;
 /**
  * HTTP tool request client class based on Square's open-source products.
  *
- * <p>Please refer to {@link CommonsHttpClient} for the specific request process.</p>
+ * <p>Please refer to {@link ExecutableHttpClient} for the specific request process.</p>
  * @param <R> Implement a unified response class data type.
  * @author zpf
  * @since 1.1.1
  */
 @SuppressWarnings("serial")
-public class OkHttpClient<R extends HttpResponse> extends CommonsHttpClient<R> {
+public class OkHttpClient<R extends HttpResponse> extends ExecutableHttpClient<R> {
 
     public OkHttpClient(String url) {
         super(url);
