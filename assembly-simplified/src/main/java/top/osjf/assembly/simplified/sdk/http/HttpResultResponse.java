@@ -1,6 +1,7 @@
 package top.osjf.assembly.simplified.sdk.http;
 
 import top.osjf.assembly.util.annotation.NotNull;
+import top.osjf.assembly.util.lang.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -89,6 +90,27 @@ public class HttpResultResponse<T> extends AbstractHttpResponse {
         return (super.isSuccess() || anySuccessCodes().contains(getCode())) && getSuccess();
     }
 
+    @Override
+    public void setErrorCode(Object code) {
+        if (this.code == null) {
+            if (code instanceof Integer) {
+                this.code = (Integer) code;
+            } else {
+                try {
+                    this.code = Integer.parseInt(code.toString());
+                } catch (NumberFormatException ignored) {
+                }
+            }
+        }
+    }
+
+    @Override
+    public void setErrorMessage(String message) {
+        if (StringUtils.isBlank(this.message)) {
+            this.message = message;
+        }
+    }
+
     /**
      * Provide other codes that can confirm successful requests.
      *
@@ -113,8 +135,9 @@ public class HttpResultResponse<T> extends AbstractHttpResponse {
 
     /**
      * Static for create a success {@code HttpResultResponse}.
+     *
      * @param data response data.
-     * @param <T> data types.
+     * @param <T>  data types.
      * @return template of response.
      */
     public static <T> HttpResultResponse<T> success(T data) {
