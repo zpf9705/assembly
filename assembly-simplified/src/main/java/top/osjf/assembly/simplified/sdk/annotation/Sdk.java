@@ -113,8 +113,7 @@ public @interface Sdk {
     String scope() default AbstractBeanDefinition.SCOPE_DEFAULT;
 
     /**
-     * Spring's bean injection method selection defaults to
-     * assembly by type.
+     * Define the way the bean itself injects into other container classes.
      *
      * <p><strong>_____________________________________________</strong>
      * <p><strong>If you use {@link EnableSdkProxyRegister}</strong>
