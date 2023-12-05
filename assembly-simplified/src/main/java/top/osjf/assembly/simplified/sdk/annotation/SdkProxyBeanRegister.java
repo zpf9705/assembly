@@ -78,16 +78,6 @@ public class SdkProxyBeanRegister extends BeanDefinitionRegisterBeforeRefresh {
         return "basePackages";
     }
 
-
-    /*** Prefix for system property placeholders: "${". */
-    public static final String PLACEHOLDER_PREFIX = "${";
-
-    /*** Suffix for system property placeholders: "}". */
-    public static final String PLACEHOLDER_SUFFIX = "}";
-
-    /*** Value separator for system property placeholders: ":". */
-    public static final String VALUE_SEPARATOR = ":";
-
     /*** Default browser host address */
     static final String DEFAULT_HTTP_BROWSER_HOST = "127.0.0.1:80";
 
@@ -148,15 +138,6 @@ public class SdkProxyBeanRegister extends BeanDefinitionRegisterBeforeRefresh {
             }
         }
         return host;
-    }
-
-    //@since 2.1.1
-    private boolean is$PropertyGet(String hostProperty) {
-        if (StringUtils.isNotBlank(hostProperty)) {
-            return hostProperty.startsWith(PLACEHOLDER_PREFIX)
-                    && hostProperty.endsWith(PLACEHOLDER_SUFFIX);
-        }
-        return false;
     }
 
     //@since 2.1.1

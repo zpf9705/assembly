@@ -53,6 +53,15 @@ import java.util.Set;
 public abstract class BeanDefinitionRegisterBeforeRefresh extends AbstractImportBeanDefinitionRegistrar
         implements EnvironmentAware, ResourceLoaderAware, Ordered {
 
+    /*** Prefix for system property placeholders: "${". */
+    protected static final String PLACEHOLDER_PREFIX = "${";
+
+    /*** Suffix for system property placeholders: "}". */
+    protected static final String PLACEHOLDER_SUFFIX = "}";
+
+    /*** Value separator for system property placeholders: ":". */
+    protected static final String VALUE_SEPARATOR = ":";
+
     private Environment environment;
 
     private ResourceLoader resourceLoader;
@@ -74,6 +83,7 @@ public abstract class BeanDefinitionRegisterBeforeRefresh extends AbstractImport
 
     @Override
     protected void process(AnnotationAttributes attributes, BeanDefinitionRegistry registry) {
+
         //Obtain Scan Path
         //if blank default to use value
         String scanPathAttributeName = getScanPathAttributeName();
@@ -82,36 +92,52 @@ public abstract class BeanDefinitionRegisterBeforeRefresh extends AbstractImport
         }
         String[] basePackages = attributes.getStringArray(scanPathAttributeName);
         if (ArrayUtils.isEmpty(basePackages)) {
+
             //not support default to use main class path
             basePackages = new String[]{getMainApplicationClassPath()};
         }
+
         //Obtain Path Scan Provider
         ClassPathScanningCandidateComponentProvider classPathScan = getCandidateComponentsScanProvider();
+
         //The class annotated by the subcontracting scanning target
         for (String basePackage : basePackages) {
+
+            //Supports obtaining el expressions.
+            if (is$PropertyGet(basePackage)) {
+
+                //Directly obtain without judging whether it can be obtained,
+                // and do not throw exceptions for configuration not found.
+                basePackage = environment.resolvePlaceholders(basePackage);
+            }
             Set<BeanDefinition> candidateComponents = classPathScan.findCandidateComponents(basePackage);
             if (CollectionUtils.isEmpty(candidateComponents)) {
                 continue;
             }
+
             //Perform proxy registration for each bean
             for (BeanDefinition beanDefinition : candidateComponents) {
                 if (!(beanDefinition instanceof AnnotatedBeanDefinition)) {
                     continue;
                 }
                 AnnotatedBeanDefinition adi = (AnnotatedBeanDefinition) beanDefinition;
+
                 //Obtain annotation class identification interface
                 AnnotationMetadata meta = adi.getMetadata();
                 if (!meta.isInterface()) {
                     continue;
                 }
+
                 //Obtain annotation class identification interface annotation value domain
                 AnnotationAttributes attributesFu = AnnotationAttributes
                         .fromMap(meta.getAnnotationAttributes(getFilterAnnotationClass().getCanonicalName()));
                 if (attributesFu == null) {
                     continue;
                 }
+
                 //let son class take BeanDefinition
                 BeanDefinitionHolder holder = this.getBeanDefinitionHolder(attributesFu, meta);
+
                 //bean register
                 if (holder != null) {
                     BeanDefinitionReaderUtils.registerBeanDefinition(holder, registry);
@@ -122,6 +148,7 @@ public abstract class BeanDefinitionRegisterBeforeRefresh extends AbstractImport
 
     /**
      * Define the registration behavior of beans based on all attributes.
+     *
      * @param attributes Annotation value Range.
      * @param meta       Associated annotation interface.
      * @return A wait register container BeanDefinition.
@@ -132,6 +159,7 @@ public abstract class BeanDefinitionRegisterBeforeRefresh extends AbstractImport
 
     /**
      * Obtain class path scanning candidate component providers based on conditions.
+     *
      * @return {@link ClassPathScanningCandidateComponentProvider}.
      */
     @NotNull
@@ -176,5 +204,18 @@ public abstract class BeanDefinitionRegisterBeforeRefresh extends AbstractImport
      */
     protected Environment getEnvironment() {
         return this.environment;
+    }
+
+    /**
+     * Determine whether the given attribute is in the form of an el expression.
+     * @param property Attribute name.
+     * @return If {@code true} is determined as an el expression , {@code false} otherwise.
+     */
+    //@since 2.1.4
+    protected boolean is$PropertyGet(String property) {
+        if (StringUtils.isNotBlank(property)) {
+            return property.startsWith(PLACEHOLDER_PREFIX) && property.endsWith(PLACEHOLDER_SUFFIX);
+        }
+        return false;
     }
 }
