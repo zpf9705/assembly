@@ -209,15 +209,15 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
 
         protected static void clearMainApplicationPackageCache() {
             mainApplicationPackage = null;
-            setRestore();
+            resetBeanNameGeneratorSwitch();
         }
 
         protected static void clearContextCache() {
             context = null;
-            setRestore();
+            resetBeanNameGeneratorSwitch();
         }
 
-        protected static void setRestore() {
+        protected static void resetBeanNameGeneratorSwitch() {
             if (enableCustomBeanNameGeneratorSet) enableCustomBeanNameGeneratorSet = false;
         }
 
