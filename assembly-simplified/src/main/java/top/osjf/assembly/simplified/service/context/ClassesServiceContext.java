@@ -66,6 +66,7 @@ public class ClassesServiceContext extends AbstractServiceContext {
         super.onApplicationEvent(event);
         setScanPackages(getApplicationPackage());
         load(this, event.getApplicationContext());
+        clearMainApplicationPackageCache();
     }
 
     @Override

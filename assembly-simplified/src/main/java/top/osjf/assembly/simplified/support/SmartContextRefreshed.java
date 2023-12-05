@@ -15,7 +15,7 @@ public abstract class SmartContextRefreshed extends AbstractApplicationContextLi
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        Asserts.state(nowApplicationContext() == event.getApplicationContext(),
+        Asserts.state(getApplicationContext() == event.getApplicationContext(),
                 "Inconsistency before and after application startup.");
     }
 
@@ -23,5 +23,5 @@ public abstract class SmartContextRefreshed extends AbstractApplicationContextLi
      * @return Currently supported application context information.
      */
     @NotNull
-    public abstract ApplicationContext nowApplicationContext();
+    public abstract ApplicationContext getApplicationContext();
 }

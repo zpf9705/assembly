@@ -167,7 +167,7 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
 
         private static ConfigurableApplicationContext context;
 
-        private static boolean enableServiceCollection;
+        private static boolean enableCustomBeanNameGeneratorSet;
 
         /**
          * The empty structure here is mainly used for configuration purposes.
@@ -184,13 +184,14 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
          */
         public ServiceContextRunListener(SpringApplication application, String[] args) {
             mainApplicationPackage = application.getMainApplicationClass().getPackage().getName();
-            int size = ScanUtils.getTypesAnnotatedWith(EnableServiceCollection.class, mainApplicationPackage).size()
-                    + ScanUtils.getTypesAnnotatedWith(EnableServiceCollection2.class, mainApplicationPackage).size();
-            if (size > 1) {
-                throw new IllegalStateException("Multiple occurrences of service collection annotations have been " +
-                        "detected. Please ensure that they are executed once.");
-            } else {
-                enableServiceCollection = size == 1;
+            //Determine whether to add a custom bean name generator based on the existence of adaptive annotations.
+            Class<?> mainApplicationClass = application.getMainApplicationClass();
+            if (mainApplicationClass.isAnnotationPresent(EnableServiceCollection.class)
+                    || mainApplicationClass.isAnnotationPresent(EnableServiceCollection2.class)
+                    //Only the package path where the main class is located is restricted here.
+                    || !ScanUtils.getTypesAnnotatedWith(EnableServiceCollection.class, mainApplicationPackage).isEmpty()
+                    || !ScanUtils.getTypesAnnotatedWith(EnableServiceCollection2.class, mainApplicationPackage).isEmpty()) {
+                enableCustomBeanNameGeneratorSet = true;
             }
         }
 
@@ -198,32 +199,43 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
             return mainApplicationPackage;
         }
 
+        protected static void setConfigurableApplicationContext(ConfigurableApplicationContext context0) {
+            context = context0;
+        }
+
         protected static ConfigurableApplicationContext getContext() {
             return context;
         }
 
-        protected static void clear() {
+        protected static void clearMainApplicationPackageCache() {
             mainApplicationPackage = null;
+            setRestore();
+        }
+
+        protected static void clearContextCache() {
             context = null;
-            if (enableServiceCollection) enableServiceCollection = false;
+            setRestore();
+        }
+
+        protected static void setRestore() {
+            if (enableCustomBeanNameGeneratorSet) enableCustomBeanNameGeneratorSet = false;
         }
 
         @Override
         public void contextPrepared(ConfigurableApplicationContext context) {
-            ServiceContextRunListener.context = context;
-            if (!enableServiceCollection) {
-                return;
-            }
-            BeanNameGenerator generator = new ServiceContextBeanNameGenerator(context.getId());
-            if (context instanceof AnnotationConfigServletWebServerApplicationContext) {
-                ((AnnotationConfigServletWebServerApplicationContext) context)
-                        .setBeanNameGenerator(generator);
-            } else if (context instanceof AnnotationConfigReactiveWebServerApplicationContext) {
-                ((AnnotationConfigReactiveWebServerApplicationContext) context)
-                        .setBeanNameGenerator(generator);
-            } else if (context instanceof AnnotationConfigApplicationContext) {
-                ((AnnotationConfigApplicationContext) context)
-                        .setBeanNameGenerator(generator);
+            setConfigurableApplicationContext(context);
+            if (enableCustomBeanNameGeneratorSet) {
+                BeanNameGenerator generator = new ServiceContextBeanNameGenerator(context.getId());
+                if (context instanceof AnnotationConfigServletWebServerApplicationContext) {
+                    ((AnnotationConfigServletWebServerApplicationContext) context)
+                            .setBeanNameGenerator(generator);
+                } else if (context instanceof AnnotationConfigReactiveWebServerApplicationContext) {
+                    ((AnnotationConfigReactiveWebServerApplicationContext) context)
+                            .setBeanNameGenerator(generator);
+                } else if (context instanceof AnnotationConfigApplicationContext) {
+                    ((AnnotationConfigApplicationContext) context)
+                            .setBeanNameGenerator(generator);
+                }
             }
         }
     }
@@ -244,16 +256,9 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
         return service;
     }
 
-    @NotNull
-    @Override
-    public ApplicationContext nowApplicationContext() {
-        return getApplicationContext();
-    }
-
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         super.onApplicationEvent(event);
-        ServiceContextRunListener.clear();
     }
 
     @Override
@@ -262,6 +267,7 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
     }
 
     @Override
+    @NotNull
     public ApplicationContext getApplicationContext() {
         return context;
     }
@@ -280,6 +286,14 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
 
     public ConfigurableApplicationContext getConfigurableApplicationContext() {
         return ServiceContextRunListener.getContext();
+    }
+
+    protected static void clearMainApplicationPackageCache() {
+        ServiceContextRunListener.clearMainApplicationPackageCache();
+    }
+
+    protected static void clearContextCache() {
+        ServiceContextRunListener.clearContextCache();
     }
 
     @Override

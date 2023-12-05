@@ -100,7 +100,7 @@ public class CronTaskRegisterPostProcessor extends SmartContextRefreshed impleme
 
     @NotNull
     @Override
-    public ApplicationContext nowApplicationContext() {
+    public ApplicationContext getApplicationContext() {
         return context;
     }
 
