@@ -904,7 +904,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
      * @param t   must not be {@literal null}.
      * @param <T> generics of subclasses of {@link AbstractCachePersistence}.
      */
-    public <T extends AbstractCachePersistence<K, V>> void reductionUseEntry(@NotNull T t) {
+    protected <T extends AbstractCachePersistence<K, V>> void reductionUseEntry(@NotNull T t) {
         //current time
         long currentTimeMillis = System.currentTimeMillis();
         AbstractPersistenceStore<K, V> persistence = t.getAttributeStore();
@@ -946,11 +946,12 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
      * Deserialize the current serialized value, leaving it to the
      * subclass by default for completion.
      * <p>The type depends on the type of the subclass.
-     * @param o Serializing objects.
-     * @return Deserialize the result.
+     *
+     * @param obj The object to be deserialized.
      * @param <T> Serialization type.
+     * @return Deserialize Function.
      */
-    protected abstract <T> Object deserialize(@NotNull T o);
+    protected abstract <T> Object deserialize(T obj);
 
     /**
      * Calculating the cache recovery time remaining with {@code TimeUnit}.
