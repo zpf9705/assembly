@@ -4,6 +4,7 @@ import net.jodah.expiringmap.ExpirationPolicy;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import top.osjf.assembly.cache.config.Configuration;
 import top.osjf.assembly.cache.listener.ExpirationMessageListener;
+import top.osjf.assembly.cache.persistence.AbstractCachePersistence;
 import top.osjf.assembly.cache.persistence.ByteCachePersistence;
 import top.osjf.assembly.cache.persistence.CachePersistenceReduction;
 import top.osjf.assembly.cache.persistence.ListeningRecovery;
@@ -41,16 +42,18 @@ public class CacheProperties {
 
     /**
      * Persistence Renew factory class.
-     *
+     * <p>It is recommended to use the default value without any changes.
+     * <p>Rewriting recommendation rewrites {@link AbstractCachePersistence},
+     * saving a lot of complex logic.
+     * <p>If rewritten, please implement the logic of {@link #listeningRecoveries}
+     * yourself.
      * <p>The default is {@link ByteCachePersistence}.</p>
      */
     private Class<? extends CachePersistenceReduction> persistenceReductionClass = ByteCachePersistence.class;
 
     /**
      * Attention : If you offer the persistent path.<br>
-     *
      * <p>Will automatically on your path to create persistent file.<br>
-     *
      * <p>If not we will create in the root of your project directory.<br>
      */
     private String persistencePath = SystemUtils.getCurrentProjectPath() + "/expire/";
@@ -60,7 +63,10 @@ public class CacheProperties {
      * objects provided by {@link ListeningRecovery} locks.
      * <p>After indicating this attribute, path scanning for
      * {@link #listeningRecoveryScanPath} will no longer be provided.
-     *
+     * <p>Using the default {@link #persistenceReductionClass} can make
+     * it take effect immediately in the restored state, but if
+     * {@link #persistenceReductionClass} is rewritten, it needs to
+     * be implemented on its own.
      * @since 1.0.8
      */
     private List<Class<? extends ListeningRecovery>> listeningRecoveries = new ArrayList<>();
