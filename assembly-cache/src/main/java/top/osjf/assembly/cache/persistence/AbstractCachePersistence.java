@@ -9,6 +9,7 @@ import top.osjf.assembly.cache.factory.Center;
 import top.osjf.assembly.cache.factory.HelpCenter;
 import top.osjf.assembly.cache.factory.ReloadCenter;
 import top.osjf.assembly.cache.operations.ValueOperations;
+import top.osjf.assembly.cache.serializer.PairSerializer;
 import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.data.ObjectIdentify;
@@ -109,7 +110,7 @@ import java.util.stream.Collectors;
  */
 @SuppressWarnings({"unchecked", "rawtypes", "serial"})
 public abstract class AbstractCachePersistence<K, V> extends AbstractPersistenceFileManager implements
-        CachePersistenceWriteProcess<K, V>, CachePersistenceReduction, Serializable {
+        CachePersistenceWriteProcess<K, V>, CachePersistenceReduction<K, V>, Serializable {
 
     //The system configuration
     private static Configuration configuration;
@@ -936,8 +937,8 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
         if (CollectionUtils.isNotEmpty(listeningRecoveries)) {
             for (ListeningRecovery recovery : listeningRecoveries) {
                 try {
-                    Object key = recoveryDeserializeKey(entry.getKey());
-                    Object value = recoveryDeserializeValue(entry.getKey());
+                    Object key = getKeyPairSerializer().serialize(entry.getKey());
+                    Object value = getValuePairSerializer().serialize(entry.getValue());
                     recovery.recovery(key, value);
                     recovery.recovery(key, value, condition, entry.getTimeUnit());
                 } catch (Exception e) {
@@ -950,18 +951,22 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
     /**
      * Deserialization requires restoring the cached {@code key} value.
      *
-     * @param key The current persistent read {@code key} value.
      * @return Deserialize the object.
+     * @see top.osjf.assembly.cache.operations.CacheTemplate#setKeySerializer(PairSerializer)
      */
-    public abstract Object recoveryDeserializeKey(K key);
+    @Override
+    @NotNull
+    public abstract PairSerializer<K> getKeyPairSerializer();
 
     /**
      * Deserialization requires restoring the cached {@code value} value.
      *
-     * @param value The current persistent read {@code value} value.
      * @return Deserialize the object.
+     * @see top.osjf.assembly.cache.operations.CacheTemplate#setValueSerializer(PairSerializer)
      */
-    public abstract Object recoveryDeserializeValue(K value);
+    @Override
+    @NotNull
+    public abstract PairSerializer<V> getValuePairSerializer();
 
     /**
      * Calculating the cache recovery time remaining with {@code TimeUnit}.
