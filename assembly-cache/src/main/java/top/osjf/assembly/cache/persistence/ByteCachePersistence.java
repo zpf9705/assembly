@@ -72,11 +72,6 @@ public class ByteCachePersistence extends AbstractCachePersistence<byte[], byte[
     }
 
     @Override
-    public String getReduction() {
-        return ByteCachePersistence.class.getName();
-    }
-
-    @Override
     public void reductionUseString(@NotNull StringBuilder buffer) {
         super.reductionUseString(buffer);
         //parse json
@@ -96,15 +91,8 @@ public class ByteCachePersistence extends AbstractCachePersistence<byte[], byte[
     }
 
     @Override
-    @NotNull
-    public PairSerializer<byte[]> getKeyPairSerializer() {
-        return serializer;
-    }
-
-    @Override
-    @NotNull
-    public PairSerializer<byte[]> getValuePairSerializer() {
-        return serializer;
+    protected <T> Object deserialize(@NotNull T o) {
+        return serializer.deserialize((byte[]) o);
     }
 
     public static class BytePersistence extends AbstractPersistenceStore<byte[], byte[]> {
