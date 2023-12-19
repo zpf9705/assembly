@@ -1,7 +1,6 @@
 package top.osjf.assembly.cache.persistence;
 
 import top.osjf.assembly.cache.exceptions.CachePersistenceException;
-import top.osjf.assembly.cache.serializer.PairSerializerCapable;
 import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
 
@@ -13,16 +12,7 @@ import java.io.File;
  * @author zpf
  * @since 1.0.0
  */
-public interface CachePersistenceReduction<K, V> extends PairSerializerCapable<K, V> {
-
-    /**
-     * Obtain the service name of the implementation class and search for the user service class.
-     * <p>{@link java.util.ServiceLoader}</p>
-     *
-     * @return {@link Class#getName()}.
-     */
-    @Deprecated
-    String getReduction();
+public interface CachePersistenceReduction {
 
     /**
      * Restore cache files based on the provided file path.
