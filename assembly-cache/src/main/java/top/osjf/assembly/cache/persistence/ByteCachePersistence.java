@@ -1,11 +1,10 @@
 package top.osjf.assembly.cache.persistence;
 
 import top.osjf.assembly.cache.exceptions.CachePersistenceException;
-import top.osjf.assembly.cache.serializer.PairSerializer;
-import top.osjf.assembly.cache.serializer.SerializerAdapter;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.json.FastJsonUtils;
 import top.osjf.assembly.util.lang.Asserts;
+import top.osjf.assembly.util.serial.SerialUtils;
 
 import java.util.List;
 
@@ -18,8 +17,6 @@ import java.util.List;
 public class ByteCachePersistence extends AbstractCachePersistence<byte[], byte[]> {
 
     private static final long serialVersionUID = 5518995337588214891L;
-
-    public static final PairSerializer<byte[]> serializer = new SerializerAdapter<>(byte[].class);
 
     public ByteCachePersistence() {
         super();
@@ -91,8 +88,8 @@ public class ByteCachePersistence extends AbstractCachePersistence<byte[], byte[
     }
 
     @Override
-    protected <T> Object deserialize(@NotNull T o) {
-        return serializer.deserialize((byte[]) o);
+    public <T> Object deserialize(T obj) {
+        return SerialUtils.deserialize((byte[]) obj);
     }
 
     public static class BytePersistence extends AbstractPersistenceStore<byte[], byte[]> {
