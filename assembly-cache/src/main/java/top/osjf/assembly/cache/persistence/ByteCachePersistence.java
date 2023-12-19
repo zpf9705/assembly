@@ -1,10 +1,11 @@
 package top.osjf.assembly.cache.persistence;
 
 import top.osjf.assembly.cache.exceptions.CachePersistenceException;
+import top.osjf.assembly.cache.serializer.PairSerializer;
+import top.osjf.assembly.cache.serializer.SerializerAdapter;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.json.FastJsonUtils;
 import top.osjf.assembly.util.lang.Asserts;
-import top.osjf.assembly.util.serial.SerialUtils;
 
 import java.util.List;
 
@@ -17,6 +18,8 @@ import java.util.List;
 public class ByteCachePersistence extends AbstractCachePersistence<byte[], byte[]> {
 
     private static final long serialVersionUID = 5518995337588214891L;
+
+    public static final PairSerializer<byte[]> serializer = new SerializerAdapter<>(byte[].class);
 
     public ByteCachePersistence() {
         super();
@@ -80,7 +83,8 @@ public class ByteCachePersistence extends AbstractCachePersistence<byte[], byte[
         BytePersistence persistence;
         try {
             persistence = FastJsonUtils.toObject(buffer.toString(),
-                    new FastJsonUtils.TypeReferences<BytePersistence>(){});
+                    new FastJsonUtils.TypeReferences<BytePersistence>() {
+                    });
         } catch (Exception e) {
             throw new CachePersistenceException("Buffer data [" + buffer + " ] parse Persistence error " +
                     "[" + e.getMessage() + "]");
@@ -92,13 +96,15 @@ public class ByteCachePersistence extends AbstractCachePersistence<byte[], byte[
     }
 
     @Override
-    public Object recoveryDeserializeKey(byte[] key) {
-        return SerialUtils.deserialize(key);
+    @NotNull
+    public PairSerializer<byte[]> getKeyPairSerializer() {
+        return serializer;
     }
 
     @Override
-    public Object recoveryDeserializeValue(byte[] value) {
-        return SerialUtils.deserialize(value);
+    @NotNull
+    public PairSerializer<byte[]> getValuePairSerializer() {
+        return serializer;
     }
 
     public static class BytePersistence extends AbstractPersistenceStore<byte[], byte[]> {
