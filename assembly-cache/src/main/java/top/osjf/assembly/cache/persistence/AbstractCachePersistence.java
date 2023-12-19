@@ -9,7 +9,6 @@ import top.osjf.assembly.cache.factory.Center;
 import top.osjf.assembly.cache.factory.HelpCenter;
 import top.osjf.assembly.cache.factory.ReloadCenter;
 import top.osjf.assembly.cache.operations.ValueOperations;
-import top.osjf.assembly.cache.serializer.PairSerializer;
 import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.data.ObjectIdentify;
@@ -110,7 +109,7 @@ import java.util.stream.Collectors;
  */
 @SuppressWarnings({"unchecked", "rawtypes", "serial"})
 public abstract class AbstractCachePersistence<K, V> extends AbstractPersistenceFileManager implements
-        CachePersistenceWriteProcess<K, V>, CachePersistenceReduction<K, V>, Serializable {
+        CachePersistenceWriteProcess<K, V>, CachePersistenceReduction, Serializable {
 
     //The system configuration
     private static Configuration configuration;
@@ -831,11 +830,6 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
     }
 
     @Override
-    public String getReduction() {
-        return AbstractCachePersistence.class.getName();
-    }
-
-    @Override
     public void reductionUsePath(@CanNull String path) {
         if (StringUtils.isBlank(path) || Objects.equals(path, DEFAULT_WRITE_PATH_SIGN)) {
             path = configuration.getPersistencePath();
@@ -937,8 +931,8 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
         if (CollectionUtils.isNotEmpty(listeningRecoveries)) {
             for (ListeningRecovery recovery : listeningRecoveries) {
                 try {
-                    Object key = getKeyPairSerializer().serialize(entry.getKey());
-                    Object value = getValuePairSerializer().serialize(entry.getValue());
+                    Object key = deserialize(entry.getKey());
+                    Object value = deserialize(entry.getValue());
                     recovery.recovery(key, value);
                     recovery.recovery(key, value, condition, entry.getTimeUnit());
                 } catch (Exception e) {
@@ -949,24 +943,14 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
     }
 
     /**
-     * Deserialization requires restoring the cached {@code key} value.
-     *
-     * @return Deserialize the object.
-     * @see top.osjf.assembly.cache.operations.CacheTemplate#setKeySerializer(PairSerializer)
+     * Deserialize the current serialized value, leaving it to the
+     * subclass by default for completion.
+     * <p>The type depends on the type of the subclass.
+     * @param o Serializing objects.
+     * @return Deserialize the result.
+     * @param <T> Serialization type.
      */
-    @Override
-    @NotNull
-    public abstract PairSerializer<K> getKeyPairSerializer();
-
-    /**
-     * Deserialization requires restoring the cached {@code value} value.
-     *
-     * @return Deserialize the object.
-     * @see top.osjf.assembly.cache.operations.CacheTemplate#setValueSerializer(PairSerializer)
-     */
-    @Override
-    @NotNull
-    public abstract PairSerializer<V> getValuePairSerializer();
+    protected abstract <T> Object deserialize(@NotNull T o);
 
     /**
      * Calculating the cache recovery time remaining with {@code TimeUnit}.
