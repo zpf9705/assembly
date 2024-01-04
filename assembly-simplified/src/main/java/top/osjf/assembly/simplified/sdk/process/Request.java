@@ -91,9 +91,11 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
     }
 
     /**
-     * Obtain the header information that needs to be set, and return a map.
+     * Return a map data format encapsulated by a key/value request
+     * header, iteratively placed in the actual request header during
+     * subsequent request processing.
      *
-     * @return Maps heads.
+     * @return The request header encapsulation type for {@code Map} data format.
      */
     Map<String, String> getHeadMap();
 
@@ -115,10 +117,10 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      * <p>If neither is provided, {@link SdkUtils#getResponseRequiredType(Request)}
      * will be used for generic retrieval of the response.
      * <p><strong>The specific supported formats are shown below.</strong></p>
-     * <strong>____________________________________________________________________</strong>
-     * <p>The abstract {@link AbstractHttpRequestParams} provided directly is followed
-     * by a response implementation with a generic type.
-     * <pre>
+     * <hr><blockquote>
+     * <p><strong>The abstract {@link AbstractHttpRequestParams} provided directly is followed
+     * by a response implementation with a generic type.</strong>
+     * <hr><blockquote><pre>
      *     {@code
      *   class RequestParam
      *   extends AbstractHttpRequestParams<HttpResultResponse<Character>> {
@@ -129,10 +131,9 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      *         }
      *       }
      *     }
-     * </pre>
-     * <strong>____________________________________________________________________</strong>
-     * <p>Implement an interface that carries the main class generic request.
-     * <pre>
+     * </pre></blockquote><hr>
+     * <p><strong>Implement an interface that carries the main class generic request.</strong>
+     * <hr><blockquote><pre>
      *     {@code
      *     interface
      *     InterHttpRequest extends HttpRequest<HttpResultResponse<String>> {
@@ -141,10 +142,9 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      *         private static final long serialVersionUID = 7371775319382181179L;
      *     }
      *     }
-     * </pre>
-     * <strong>____________________________________________________________________</strong>
-     * <p>Nested inheritance type.
-     * <pre>
+     * </pre></blockquote><hr>
+     * <p><strong>Nested inheritance type.</strong>
+     * <hr><blockquote><pre>
      *     {@code
      *      class RequestParam extends AbstractHttpRequestParams<HttpResultResponse<String>> {
      *         private static final long serialVersionUID = 6115216307330001269L;
@@ -157,10 +157,9 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      *         private static final long serialVersionUID = 2463029032762347802L;
      *     }
      *     }
-     * </pre>
-     * <strong>____________________________________________________________________</strong>
-     * <p>Nested implementation type.
-     * <pre>
+     * </pre></blockquote><hr>
+     * <p><strong>Nested implementation type.</strong>
+     * <hr><blockquote><pre>
      *     {@code
      *     class RequestParam implements HttpRequest<HttpResultResponse<String>> {
      *         private static final long serialVersionUID = 6115216307330001269L;
@@ -170,8 +169,11 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      *         private static final long serialVersionUID = 2463029032762347802L;
      *     }
      *     }
-     * <strong>____________________________________________________________________</strong>
-     * </pre>
+     * </pre></blockquote><hr>
+     * <p><h3>WARN</h3></p>
+     * <p>If a custom response type has a generic indicator, it will not be supported
+     * and will obtain an unpredictable type. For example, {@code HttpResultResponse<T>}
+     * in {@code T} cannot locate a specific type from the subclass's generic.
      *
      * @return type object.
      * @see SdkUtils#getResponseRequiredType(Request)

@@ -42,16 +42,16 @@ public class SdkProxyBeanRegister extends BeanDefinitionRegisterBeforeRefresh {
         String beanName = attributes.getString("beanName");
         String[] alisa = attributes.getStringArray("alisa");
         String scope = attributes.getString("scope");
-        Number autowireMode = attributes.getNumber("autowireMode");
+        int autowireMode = attributes.<Integer>getNumber("autowireMode");
         //@since 2.0.9
         String initMethod = attributes.getString("initMethod");
         String destroyMethod = attributes.getString("destroyMethod");
-        int role = attributes.getNumber("role").intValue();
+        int role = attributes.<Integer>getNumber("role");
         boolean lazyInit = attributes.getBoolean("lazyInit");
         String description = attributes.getString("description");
         if (StringUtils.isBlank(beanName)) beanName = className;
         definition.setScope(scope);
-        definition.setAutowireMode(autowireMode.intValue());
+        definition.setAutowireMode(autowireMode);
         if (StringUtils.isNotBlank(initMethod)) definition.setInitMethodName(initMethod);
         if (StringUtils.isNotBlank(destroyMethod)) definition.setDestroyMethodName(destroyMethod);
         definition.setRole(role);

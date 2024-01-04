@@ -1,10 +1,12 @@
 package top.osjf.assembly.simplified.sdk.http;
 
 import top.osjf.assembly.util.annotation.NotNull;
+import top.osjf.assembly.util.json.FastJsonUtils;
 import top.osjf.assembly.util.lang.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -224,5 +226,34 @@ public class HttpResultResponse<T> extends AbstractHttpResponse {
 
     public void setData(T data) {
         this.data = data;
+    }
+
+    //Override Object methods.
+
+    @Override
+    public String toString() {
+        return "HttpResultResponse{" +
+                "success=" + success +
+                ", code=" + code +
+                ", message='" + message + '\'' +
+                ", data=" + data +
+                ", json=" + FastJsonUtils.toJSONString(this) +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        HttpResultResponse<?> that = (HttpResultResponse<?>) o;
+        return Objects.equals(success, that.success) &&
+                Objects.equals(code, that.code) &&
+                Objects.equals(message, that.message) &&
+                Objects.equals(data, that.data);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(success, code, message, data);
     }
 }
