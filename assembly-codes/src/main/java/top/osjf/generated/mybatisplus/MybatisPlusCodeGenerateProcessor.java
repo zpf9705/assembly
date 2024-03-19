@@ -17,8 +17,9 @@ import javax.lang.model.element.TypeElement;
  * The Mybatis plus framework is a processor that automatically generates
  * bytecode level annotations {@link MybatisPlusCodeGenerate} for the mapper
  * interface, service interface, and service implementation class interface.
- * @see MybatisPlusCodeGenerate
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
+ * @see MybatisPlusCodeGenerate
  * @since 1.1.0
  */
 @SupportedAnnotationTypes(MybatisPlusCodeGenerateProcessor.SUPPORT_OF_MPC_GENERATE_NAME)
@@ -95,8 +96,8 @@ public class MybatisPlusCodeGenerateProcessor extends AbstractSmartProcessor {
         String tableClassSimpleName = element.getSimpleName().toString();
         try {
             return ReflectUtils.getConstructor(clazz, String.class, String.class, String.class)
-                    .newInstance(((TypeElement) element).getQualifiedName().toString(),
-                            tableClassSimpleName + suffixName, appointPackage);
+                    .newInstance(tableClassSimpleName + suffixName, appointPackage,
+                            ((TypeElement) element).getQualifiedName().toString());
         } catch (Exception e) {
             return null;
         }
