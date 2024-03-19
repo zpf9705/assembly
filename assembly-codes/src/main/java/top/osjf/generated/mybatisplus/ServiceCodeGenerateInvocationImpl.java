@@ -3,7 +3,6 @@ package top.osjf.generated.mybatisplus;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.generated.ClassKind;
 import top.osjf.generated.GeneratedCodeAppenderBuilder;
-import top.osjf.generated.impl.annotation.AbstractCodeGenerateInvocation;
 
 /**
  * Generate the necessary service interface for accessing database
@@ -11,12 +10,15 @@ import top.osjf.generated.impl.annotation.AbstractCodeGenerateInvocation;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.1.0
  */
-public class ServiceCodeGenerateInvocationImpl extends AbstractCodeGenerateInvocation {
+public class ServiceCodeGenerateInvocationImpl extends AbstractMybatisPlusCodeGenerateInvocation {
 
     public static final String MYBATIS_PLUS_BASE_SERVICE = "com.baomidou.mybatisplus.extension.service.IService";
 
-    public ServiceCodeGenerateInvocationImpl(String simpleName, String packageName, String targetName) {
-        super(simpleName, packageName, targetName);
+    public static final String MYBATIS_PLUS_JOIN_BASE_MAPPER = "com.github.yulichang.base.MPJBaseService";
+
+    public ServiceCodeGenerateInvocationImpl(String simpleName, String packageName, String targetName,
+                                             boolean join, String tableChineseName) {
+        super(simpleName, packageName, targetName, join, tableChineseName);
     }
 
     @NotNull
@@ -26,7 +28,7 @@ public class ServiceCodeGenerateInvocationImpl extends AbstractCodeGenerateInvoc
         GeneratedCodeAppenderBuilder builder = super.getGeneratedCodeAppenderBuilder();
 
         return builder.classKind(ClassKind.INTERFACE)
-                .extend(MYBATIS_PLUS_BASE_SERVICE)
+                .extend(getJoin() ? MYBATIS_PLUS_JOIN_BASE_MAPPER : MYBATIS_PLUS_BASE_SERVICE)
                 .extendGenerics(new String[]{getTargetName()});
     }
 }
