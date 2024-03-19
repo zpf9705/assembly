@@ -14,6 +14,7 @@ public class MapperCodeGenerateInvocationImpl extends AbstractMybatisPlusCodeGen
 
     public static final String MYBATIS_PLUS_BASE_MAPPER = "com.baomidou.mybatisplus.core.mapper.BaseMapper";
     public static final String MYBATIS_PLUS_JOIN_BASE_MAPPER = "com.github.yulichang.base.MPJBaseMapper";
+    public static final String MAPPER_CHINESE_CHARACTERIZATION = "的[Mapper接口]";
 
     public MapperCodeGenerateInvocationImpl(String simpleName, String packageName, String targetName,
                                             boolean join, String tableChineseName) {
@@ -30,5 +31,10 @@ public class MapperCodeGenerateInvocationImpl extends AbstractMybatisPlusCodeGen
                 .classKind(ClassKind.INTERFACE)
                 .extend(getJoin() ? MYBATIS_PLUS_JOIN_BASE_MAPPER : MYBATIS_PLUS_BASE_MAPPER)
                 .extendGenerics(new String[]{getTargetName()});
+    }
+
+    @Override
+    protected String getCharacterization() {
+        return MAPPER_CHINESE_CHARACTERIZATION;
     }
 }
