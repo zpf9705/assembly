@@ -6,6 +6,7 @@ import top.osjf.assembly.util.lang.StringUtils;
 import top.osjf.generated.AbstractSmartProcessor;
 import top.osjf.generated.CodeGenerateInvocation;
 import top.osjf.generated.GeneratedUtils;
+import top.osjf.generated.SystemPrintKind;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.RoundEnvironment;
@@ -36,15 +37,26 @@ public class MybatisPlusCodeGenerateProcessor extends AbstractSmartProcessor {
 
         Filer filer = getFiler();
 
-        CodeGenerateInvocation mapperInvocation = getMapperNameMetadata(element, annotation, commonPackage);
+        TypeElement typeElement = (TypeElement) element;
+
+        CodeGenerateInvocation mapperInvocation = getMapperNameMetadata(typeElement, annotation, commonPackage);
+
+        log(SystemPrintKind.OUT, "mapper {} {} {}", mapperInvocation.getSimpleName(), mapperInvocation.getPackageName(),
+                mapperInvocation.getName(), mapperInvocation.getTargetName());
 
         if (mapperInvocation != null) mapperInvocation.write(filer, this);
 
-        CodeGenerateInvocation serviceInvocation = getServiceNameMetadata(element, annotation, commonPackage);
+        CodeGenerateInvocation serviceInvocation = getServiceNameMetadata(typeElement, annotation, commonPackage);
+
+        log(SystemPrintKind.OUT, "mapper {} {} {}", serviceInvocation.getSimpleName(), serviceInvocation.getPackageName(),
+                serviceInvocation.getName(), mapperInvocation.getTargetName());
 
         if (serviceInvocation != null) serviceInvocation.write(filer, this);
 
-        CodeGenerateInvocation serviceImplInvocation = getServiceImplNameMetadata(element, annotation, commonPackage);
+        CodeGenerateInvocation serviceImplInvocation = getServiceImplNameMetadata(typeElement, annotation, commonPackage);
+
+        log(SystemPrintKind.OUT, "mapper {} {} {}", serviceImplInvocation.getSimpleName(),
+                mapperInvocation.getPackageName(), serviceImplInvocation.getName(), serviceImplInvocation.getTargetName());
 
         if (serviceImplInvocation != null) ((ServiceImplCodeGenerateInvocation) serviceImplInvocation)
                 .mapper(mapperInvocation).service(serviceInvocation).write(filer, this);
@@ -55,51 +67,68 @@ public class MybatisPlusCodeGenerateProcessor extends AbstractSmartProcessor {
         return element.getAnnotation(TableName.class) != null && element instanceof TypeElement;
     }
 
-    private CodeGenerateInvocation getMapperNameMetadata(Element element, MybatisPlusCodeGenerate codeGenerate,
+    private CodeGenerateInvocation getMapperNameMetadata(TypeElement element, MybatisPlusCodeGenerate codeGenerate,
                                                          String commonPackage) {
         return getCodeGenerateInvocation(element, codeGenerate.mapperGeneratePackage(),
                 MybatisPlusCodeGenerate.DEFAULT_MAPPER_PACKAGE_SUFFIX_NAME,
                 codeGenerate.mapperSuffixName(),
                 commonPackage,
+                codeGenerate.noProviderPackageUseDefault(),
                 MapperCodeGenerateInvocationImpl.class);
     }
 
-    private CodeGenerateInvocation getServiceNameMetadata(Element element, MybatisPlusCodeGenerate codeGenerate,
+    private CodeGenerateInvocation getServiceNameMetadata(TypeElement element, MybatisPlusCodeGenerate codeGenerate,
                                                           String commonPackage) {
         return getCodeGenerateInvocation(element, codeGenerate.serviceGeneratePackage(),
                 MybatisPlusCodeGenerate.DEFAULT_SERVICE_PACKAGE_SUFFIX_NAME,
                 codeGenerate.serviceSuffixName(),
                 commonPackage,
+                codeGenerate.noProviderPackageUseDefault(),
                 ServiceCodeGenerateInvocationImpl.class);
     }
 
-    private CodeGenerateInvocation getServiceImplNameMetadata(Element element, MybatisPlusCodeGenerate codeGenerate,
+    private CodeGenerateInvocation getServiceImplNameMetadata(TypeElement element, MybatisPlusCodeGenerate codeGenerate,
                                                               String commonPackage) {
         return getCodeGenerateInvocation(element, codeGenerate.serviceImplGeneratePackage(),
                 MybatisPlusCodeGenerate.DEFAULT_SERVICE_IMPL_PACKAGE_SUFFIX_NAME,
                 codeGenerate.serviceImplSuffixName(),
                 commonPackage,
+                codeGenerate.noProviderPackageUseDefault(),
                 ServiceImplCodeGenerateInvocationImpl.class);
     }
 
-    private CodeGenerateInvocation getCodeGenerateInvocation(Element element, String appointPackage,
+    private CodeGenerateInvocation getCodeGenerateInvocation(TypeElement element, String appointPackage,
                                                              String defaultSuffixPackageName, String suffixName,
                                                              String commonPackage,
+                                                             boolean noProviderPackageUseDefault,
                                                              Class<? extends CodeGenerateInvocation> clazz) {
         if (StringUtils.isBlank(appointPackage)) {
             appointPackage = commonPackage;
             if (StringUtils.isBlank(appointPackage)) {
-                appointPackage = GeneratedUtils.getTypeElementPackage((TypeElement) element)
-                        + "." + defaultSuffixPackageName;
+                appointPackage = getTypeElementNoYourSelfPackage(element, noProviderPackageUseDefault,
+                        defaultSuffixPackageName);
             }
         }
         String tableClassSimpleName = element.getSimpleName().toString();
         try {
             return ReflectUtils.getConstructor(clazz, String.class, String.class, String.class)
                     .newInstance(tableClassSimpleName + suffixName, appointPackage,
-                            ((TypeElement) element).getQualifiedName().toString());
+                            element.getQualifiedName().toString());
         } catch (Exception e) {
             return null;
         }
+    }
+
+    private String getTypeElementNoYourSelfPackage(TypeElement typeElement, boolean noProviderPackageUseDefault,
+                                                   String defaultSuffixPackageName) {
+
+        String typeElementPackage = GeneratedUtils.getTypeElementPackage(typeElement);
+        String realPackage;
+        if (!noProviderPackageUseDefault) {
+            realPackage = typeElementPackage;
+        } else {
+            realPackage = GeneratedUtils.getPackageNamePrevious(typeElementPackage) + "." + defaultSuffixPackageName;
+        }
+        return realPackage;
     }
 }

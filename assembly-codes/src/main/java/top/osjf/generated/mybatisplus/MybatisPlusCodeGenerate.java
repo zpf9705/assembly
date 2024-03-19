@@ -49,8 +49,12 @@ public @interface MybatisPlusCodeGenerate {
      * is not provided, the final generated path of the mapper interface will
      * be defined in the same way as {@code  #codeCommonPackage()} + {@link #DEFAULT_MAPPER_PACKAGE_SUFFIX_NAME}.
      *
+     * <p>To achieve the above viewpoint, you need to pay attention to {@link #noProviderPackageUseDefault()}.
+     *
      * <p> The priority of this attribute is lower than the specified package names
      * of the following types.
+     *
+     * <p>Example for {@code com.example.common}
      * @return Public generation path.
      */
     String codeCommonPackage() default "";
@@ -61,6 +65,7 @@ public @interface MybatisPlusCodeGenerate {
      * <p>This attribute is not provided, nor is {@link #codeCommonPackage()} provided.
      * The default path for generating the mapper is the package path
      * where the annotation identity class is located.
+     * <p>Example for {@code com.example.mapper}
      * @return Generate package path for mapper interface.
      */
     String mapperGeneratePackage() default "";
@@ -71,6 +76,7 @@ public @interface MybatisPlusCodeGenerate {
      * <p>This attribute is not provided, nor is {@link #codeCommonPackage()} provided.
      * The default path for generating the service is the package path
      * where the annotation identity class is located.
+     * <p>Example for {@code com.example.service}
      * @return Generate package path for service interface.
      */
     String serviceGeneratePackage() default "";
@@ -81,9 +87,21 @@ public @interface MybatisPlusCodeGenerate {
      * <p>This attribute is not provided, nor is {@link #codeCommonPackage()} provided.
      * The default path for generating the service impl is the package path
      * where the annotation identity class is located.
+     * <p>Example for {@code com.example.service.impl}
      * @return Generate package path for service impl.
      */
     String serviceImplGeneratePackage() default "";
+
+    /**
+     * When you do not provide the specified path or public path mentioned above,
+     * if this property is {@code true}, the generated classes such as mapper will
+     * be placed in a standardized file package, such as {@link #DEFAULT_MAPPER_PACKAGE_SUFFIX_NAME}.
+     * If set to {@code false}, they will be placed in the same path as the current
+     * annotation flag class.
+     * @return Have the generated classes been moved to the specification package
+     * under the target class without providing a clear package.
+     */
+    boolean noProviderPackageUseDefault() default false;
 
     /**
      * The abbreviation suffix specification name of the interface
