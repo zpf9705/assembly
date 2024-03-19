@@ -13,12 +13,7 @@ public class NameMetadataImpl implements NameMetadata {
 
     private final String packageName;
 
-    private String targetName;
-
-    public NameMetadataImpl(String simpleName, String packageName) {
-        this.simpleName = simpleName;
-        this.packageName = packageName;
-    }
+    private final String targetName;
 
     public NameMetadataImpl(String simpleName, String packageName, String targetName) {
         this.simpleName = simpleName;
