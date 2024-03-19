@@ -25,6 +25,8 @@ public class ServiceImplCodeGenerateInvocationImpl extends AbstractMybatisPlusCo
 
     public static final String SPRING_SERVICE_ANNOTATION = "org.springframework.stereotype.Service";
 
+    public static final String SERVICE_IMPL_CHINESE_CHARACTERIZATION = "的[数据服务实现类]";
+
     private CodeGenerateInvocation mapper;
 
     private CodeGenerateInvocation service;
@@ -67,5 +69,10 @@ public class ServiceImplCodeGenerateInvocationImpl extends AbstractMybatisPlusCo
         }
 
         return builder;
+    }
+
+    @Override
+    protected String getCharacterization() {
+        return SERVICE_IMPL_CHINESE_CHARACTERIZATION;
     }
 }
