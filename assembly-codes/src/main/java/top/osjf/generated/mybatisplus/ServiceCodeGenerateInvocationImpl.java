@@ -16,6 +16,8 @@ public class ServiceCodeGenerateInvocationImpl extends AbstractMybatisPlusCodeGe
 
     public static final String MYBATIS_PLUS_JOIN_BASE_MAPPER = "com.github.yulichang.base.MPJBaseService";
 
+    public static final String SERVICE_CHINESE_CHARACTERIZATION = "的[数据服务接口]";
+
     public ServiceCodeGenerateInvocationImpl(String simpleName, String packageName, String targetName,
                                              boolean join, String tableChineseName) {
         super(simpleName, packageName, targetName, join, tableChineseName);
@@ -30,5 +32,10 @@ public class ServiceCodeGenerateInvocationImpl extends AbstractMybatisPlusCodeGe
         return builder.classKind(ClassKind.INTERFACE)
                 .extend(getJoin() ? MYBATIS_PLUS_JOIN_BASE_MAPPER : MYBATIS_PLUS_BASE_SERVICE)
                 .extendGenerics(new String[]{getTargetName()});
+    }
+
+    @Override
+    protected String getCharacterization() {
+        return SERVICE_CHINESE_CHARACTERIZATION;
     }
 }
