@@ -123,4 +123,22 @@ public @interface MybatisPlusCodeGenerate {
      * @return The abbreviation and suffix specification name of the service impl.
      */
     String serviceImplSuffixName() default "ManagerImpl";
+
+    /**
+     * Set whether to generate a service interface that supports linked table queries.
+     * <p>The default value of this property is to generate the basic service interface
+     * of the mybatis plus framework.
+     * <p>If a linked table service is required, it will generate the linked table service
+     * class provided by {@code com.github.yulichang.mybatis-plus-join}.
+     * <p>This tool is based on mybatis plus and provides an extended service option for
+     * selection.
+     * @return Generate a service class that supports table concatenation.
+     */
+    boolean join() default false;
+
+    /**
+     * Set the Chinese descriptive name for the table.
+     * @return Chinese descriptive name.
+     */
+    String tableChineseName() default "";
 }
