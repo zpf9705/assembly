@@ -64,7 +64,9 @@ public class MybatisPlusCodeGenerateProcessor extends AbstractSmartProcessor {
                 codeGenerate.mapperSuffixName(),
                 commonPackage,
                 codeGenerate.noProviderPackageUseDefault(),
-                MapperCodeGenerateInvocationImpl.class);
+                MapperCodeGenerateInvocationImpl.class,
+                codeGenerate.join(),
+                codeGenerate.tableChineseName());
     }
 
     private CodeGenerateInvocation getServiceNameMetadata(TypeElement element, MybatisPlusCodeGenerate codeGenerate,
@@ -74,7 +76,9 @@ public class MybatisPlusCodeGenerateProcessor extends AbstractSmartProcessor {
                 codeGenerate.serviceSuffixName(),
                 commonPackage,
                 codeGenerate.noProviderPackageUseDefault(),
-                ServiceCodeGenerateInvocationImpl.class);
+                ServiceCodeGenerateInvocationImpl.class,
+                codeGenerate.join(),
+                codeGenerate.tableChineseName());
     }
 
     private CodeGenerateInvocation getServiceImplNameMetadata(TypeElement element, MybatisPlusCodeGenerate codeGenerate,
@@ -84,14 +88,18 @@ public class MybatisPlusCodeGenerateProcessor extends AbstractSmartProcessor {
                 codeGenerate.serviceImplSuffixName(),
                 commonPackage,
                 codeGenerate.noProviderPackageUseDefault(),
-                ServiceImplCodeGenerateInvocationImpl.class);
+                ServiceImplCodeGenerateInvocationImpl.class,
+                codeGenerate.join(),
+                codeGenerate.tableChineseName());
     }
 
     private CodeGenerateInvocation getCodeGenerateInvocation(TypeElement element, String appointPackage,
                                                              String defaultSuffixPackageName, String suffixName,
                                                              String commonPackage,
                                                              boolean noProviderPackageUseDefault,
-                                                             Class<? extends CodeGenerateInvocation> clazz) {
+                                                             Class<? extends CodeGenerateInvocation> clazz,
+                                                             boolean join,
+                                                             String tableChineseName) {
         if (StringUtils.isBlank(appointPackage)) {
             appointPackage = commonPackage;
             if (StringUtils.isBlank(appointPackage)) {
@@ -101,9 +109,10 @@ public class MybatisPlusCodeGenerateProcessor extends AbstractSmartProcessor {
         }
         String tableClassSimpleName = element.getSimpleName().toString();
         try {
-            return ReflectUtils.getConstructor(clazz, String.class, String.class, String.class)
+            return ReflectUtils.getConstructor(clazz, String.class, String.class, String.class,
+                            boolean.class, String.class)
                     .newInstance(tableClassSimpleName + suffixName, appointPackage,
-                            element.getQualifiedName().toString());
+                            element.getQualifiedName().toString(), join, tableChineseName);
         } catch (Exception e) {
             return null;
         }
