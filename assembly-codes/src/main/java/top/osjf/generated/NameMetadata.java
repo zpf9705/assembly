@@ -41,7 +41,7 @@ public interface NameMetadata {
      */
     @NotNull
     default String getName() {
-        return getSimpleName() + "." + getPackageName();
+        return getPackageName() + "." + getSimpleName();
     }
 
     /**
