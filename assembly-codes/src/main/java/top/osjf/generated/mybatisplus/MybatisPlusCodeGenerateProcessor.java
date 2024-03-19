@@ -6,7 +6,6 @@ import top.osjf.assembly.util.lang.StringUtils;
 import top.osjf.generated.AbstractSmartProcessor;
 import top.osjf.generated.CodeGenerateInvocation;
 import top.osjf.generated.GeneratedUtils;
-import top.osjf.generated.SystemPrintKind;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.RoundEnvironment;
@@ -41,22 +40,13 @@ public class MybatisPlusCodeGenerateProcessor extends AbstractSmartProcessor {
 
         CodeGenerateInvocation mapperInvocation = getMapperNameMetadata(typeElement, annotation, commonPackage);
 
-        log(SystemPrintKind.OUT, "mapper {} {} {}", mapperInvocation.getSimpleName(), mapperInvocation.getPackageName(),
-                mapperInvocation.getName(), mapperInvocation.getTargetName());
-
         if (mapperInvocation != null) mapperInvocation.write(filer, this);
 
         CodeGenerateInvocation serviceInvocation = getServiceNameMetadata(typeElement, annotation, commonPackage);
 
-        log(SystemPrintKind.OUT, "mapper {} {} {}", serviceInvocation.getSimpleName(), serviceInvocation.getPackageName(),
-                serviceInvocation.getName(), mapperInvocation.getTargetName());
-
         if (serviceInvocation != null) serviceInvocation.write(filer, this);
 
         CodeGenerateInvocation serviceImplInvocation = getServiceImplNameMetadata(typeElement, annotation, commonPackage);
-
-        log(SystemPrintKind.OUT, "mapper {} {} {}", serviceImplInvocation.getSimpleName(),
-                mapperInvocation.getPackageName(), serviceImplInvocation.getName(), serviceImplInvocation.getTargetName());
 
         if (serviceImplInvocation != null) ((ServiceImplCodeGenerateInvocation) serviceImplInvocation)
                 .mapper(mapperInvocation).service(serviceInvocation).write(filer, this);
