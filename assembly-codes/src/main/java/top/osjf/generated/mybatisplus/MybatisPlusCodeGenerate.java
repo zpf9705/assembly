@@ -3,8 +3,27 @@ package top.osjf.generated.mybatisplus;
 import java.lang.annotation.*;
 
 /**
+ * The mybatis plus framework automatically generates annotations for
+ * mapper, service, and service implementation classes, without generating
+ * specific Java files.
+ *
+ * <p>Instead, it directly generates compiled bytecode files.
+ *
+ * <p>Annotations need to be annotated on the corresponding entities in the database
+ * table, and the presence of {@link com.baomidou.mybatisplus.annotation.TableName}
+ * annotations will be checked.
+ *
+ * <p>The default value for annotation changes has been planned to be generated under
+ * the specification package of the annotated class path in all cases where it is not provided.
+ * Therefore, when you do not provide a specified path, you only need to create
+ * {@link #DEFAULT_MAPPER_PACKAGE_SUFFIX_NAME} or {@link #DEFAULT_SERVICE_PACKAGE_SUFFIX_NAME}
+ * or {@link #DEFAULT_SERVICE_IMPL_PACKAGE_SUFFIX_NAME} under the annotated class
+ * package to meet the package path generation requirements for generating mappers,
+ * services, and service implementation classes.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @see com.baomidou.mybatisplus.annotation.TableName
+ * @see MybatisPlusCodeGenerateProcessor
  * @since 1.1.0
  */
 @Retention(RetentionPolicy.SOURCE)
