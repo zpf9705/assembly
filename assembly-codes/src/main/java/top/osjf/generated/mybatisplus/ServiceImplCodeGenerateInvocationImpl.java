@@ -5,7 +5,6 @@ import top.osjf.assembly.util.lang.MapUtils;
 import top.osjf.generated.ClassKind;
 import top.osjf.generated.CodeGenerateInvocation;
 import top.osjf.generated.GeneratedCodeAppenderBuilder;
-import top.osjf.generated.impl.annotation.AbstractCodeGenerateInvocation;
 
 /**
  * Generate the necessary service implementation class for accessing
@@ -15,11 +14,14 @@ import top.osjf.generated.impl.annotation.AbstractCodeGenerateInvocation;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.1.0
  */
-public class ServiceImplCodeGenerateInvocationImpl extends AbstractCodeGenerateInvocation implements
+public class ServiceImplCodeGenerateInvocationImpl extends AbstractMybatisPlusCodeGenerateInvocation implements
         ServiceImplCodeGenerateInvocation {
 
     public static final String MYBATIS_PLUS_BASE_SERVICE_IMPL =
             "com.baomidou.mybatisplus.extension.service.impl.ServiceImpl";
+
+    public static final String MYBATIS_PLUS_JOIN_BASE_SERVICE_IMPL
+            = "com.github.yulichang.base.MPJBaseServiceImpl";
 
     public static final String SPRING_SERVICE_ANNOTATION = "org.springframework.stereotype.Service";
 
@@ -27,10 +29,11 @@ public class ServiceImplCodeGenerateInvocationImpl extends AbstractCodeGenerateI
 
     private CodeGenerateInvocation service;
 
-
-    public ServiceImplCodeGenerateInvocationImpl(String simpleName, String packageName, String targetName) {
-        super(simpleName, packageName, targetName);
+    public ServiceImplCodeGenerateInvocationImpl(String simpleName, String packageName, String targetName,
+                                                 boolean join, String tableChineseName) {
+        super(simpleName, packageName, targetName, join, tableChineseName);
     }
+
 
     @Override
     public ServiceImplCodeGenerateInvocationImpl mapper(CodeGenerateInvocation codeGenerateInvocation) {
@@ -51,7 +54,8 @@ public class ServiceImplCodeGenerateInvocationImpl extends AbstractCodeGenerateI
         GeneratedCodeAppenderBuilder builder = super.getGeneratedCodeAppenderBuilder();
 
         builder.classKind(ClassKind.CLASS)
-                .extend(MYBATIS_PLUS_BASE_SERVICE_IMPL)
+                .extend(getJoin() ? MYBATIS_PLUS_JOIN_BASE_SERVICE_IMPL :
+                        MYBATIS_PLUS_BASE_SERVICE_IMPL)
                 .annotations(MapUtils.of(SPRING_SERVICE_ANNOTATION, ""));
 
         if (mapper != null) {
