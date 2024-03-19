@@ -2,7 +2,7 @@ package top.osjf.generated.mybatisplus;
 
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.generated.GeneratedCodeAppenderBuilder;
-import top.osjf.generated.impl.annotation.AbstractCodeGenerateInvocation;
+import top.osjf.generated.AbstractCodeGenerateInvocation;
 
 /**
  * Abstract implementation for special attributes of the mybatis plus framework.
