@@ -104,7 +104,7 @@ public final class GeneratedUtils {
      */
     static {
         try (InputStream stream = GeneratedUtils.class.getClassLoader().getResourceAsStream
-                ("base.properties")) {
+                ("properties/base.properties")) {
             Properties properties = new Properties();
             properties.load(stream);
             version = properties.getProperty("project.version");
