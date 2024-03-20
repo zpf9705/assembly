@@ -1,7 +1,5 @@
 package top.osjf.generated;
 
-import top.osjf.generated.impl.annotation.AnnotationSource;
-
 import java.util.Map;
 
 /**
