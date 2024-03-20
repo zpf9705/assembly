@@ -1,6 +1,7 @@
 package top.osjf.generated.mybatisplus;
 
 import top.osjf.assembly.util.annotation.NotNull;
+import top.osjf.assembly.util.lang.StringUtils;
 import top.osjf.generated.GeneratedCodeAppenderBuilder;
 import top.osjf.generated.AbstractCodeGenerateInvocation;
 
@@ -40,7 +41,9 @@ public abstract class AbstractMybatisPlusCodeGenerateInvocation extends Abstract
 
         GeneratedCodeAppenderBuilder builder = super.getGeneratedCodeAppenderBuilder();
 
-        builder.description(getTableChineseName() + getCharacterization());
+        if (StringUtils.isNotBlank(getCharacterization())) {
+            builder.description(getTableChineseName() + getCharacterization());
+        }
 
         return builder;
     }
