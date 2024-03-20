@@ -90,15 +90,27 @@ public final class GeneratedUtils {
     /** The startup version number of the current project.*/
     private static String version;
 
+    /** The startup id of the current project.*/
+    private static String id;
+
+    /** Author email of the current project.*/
+    private static String email;
+
+    /** Generate the default description of the class.*/
+    private static String defaultDescribe;
+
     /*
      * Load the project version number.
      */
     static {
         try (InputStream stream = GeneratedUtils.class.getClassLoader().getResourceAsStream
-                ("version.properties")) {
+                ("base.properties")) {
             Properties properties = new Properties();
             properties.load(stream);
             version = properties.getProperty("project.version");
+            id = properties.getProperty("project.id");
+            email = properties.getProperty("project.author.email");
+            defaultDescribe = properties.getProperty("project.default.describe");
         } catch (IOException e) {
             version = "unKnown";
         }
@@ -307,9 +319,9 @@ public final class GeneratedUtils {
 
     private static void setGeneratedNote(StringBuilder classAppend, String description) {
         classAppend.append(String.format(NOTE_FORMAT,
-                        StringUtils.isNotBlank(description) ? description : "Automatically by assembly-codes",
-                        "929160069@qq.com",
-                        "assembly-codes",
+                        StringUtils.isNotBlank(description) ? description : defaultDescribe,
+                        email,
+                        id,
                         version))
                 .append(LINE_BREAK);
     }
