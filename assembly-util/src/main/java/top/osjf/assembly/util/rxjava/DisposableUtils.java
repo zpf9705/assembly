@@ -45,10 +45,19 @@ public abstract class DisposableUtils {
     private static final ScheduledExecutorService service;
 
     static {
+
         //ScheduledExecutor init
         service = Executors.newScheduledThreadPool(
                 SystemUtils.getPropertyWithConvert(core_size_sign, Integer::parseInt, 1),
                 default_thread_factory);
+
+        //Register a hook for Jvm process shutdown.
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            @Override
+            public void run() {
+                service.shutdownNow();
+            }
+        }));
 
         start();
     }
