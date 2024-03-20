@@ -22,7 +22,7 @@ public @interface GeneratedSource {
      * <p>If left blank, this annotation does not take any action.
      * Other annotations that use this annotation can provide default values,
      * such as {@link top.osjf.generated.impl.GeneratedSourceGroup} defaulting
-     * to the current annotation target class+'$' random string+'$Impl'.
+     * to the current annotation target class+"$"+order of occurrence+"$Impl".
      * @return the abbreviation of the generated class.
      */
     String simpleName() default "";

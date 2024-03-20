@@ -1,6 +1,5 @@
 package top.osjf.generated;
 
-import cn.hutool.core.util.RandomUtil;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.data.Triple;
 import top.osjf.assembly.util.lang.ArrayUtils;
@@ -16,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 /**
@@ -235,21 +235,24 @@ public final class GeneratedUtils {
      * Choose based on the input package name and abbreviation.
      * <p>If it is not empty, return it directly.
      * <p>If it is empty, the abbreviation is based on the abbreviation
-     * of the target class+"$"+random string+"$Impl", and the package name is
+     * of the target class+"$"+order of occurrence+"$Impl", and the package name is
      * directly set to the package where the target class is located.
      * @param simpleName            provider simpleName.
      * @param packageName           provider packageName.
      * @param sourceQualifiedName   target name.
      * @param sourceSimpleName      target simpleName.
+     * @param counter If no abbreviation is provided, it will be used
+     *                to calculate the number of occurrences.
      * @return The abbreviation, package name, and full name obtained from the analysis
      */
     public static Triple<String, String, String> getNames(String simpleName,
                                                           String packageName,
                                                           @NotNull Name sourceQualifiedName,
-                                                          @NotNull Name sourceSimpleName) {
+                                                          @NotNull Name sourceSimpleName,
+                                                          AtomicLong counter) {
         String sourceSimpleNameStr = sourceSimpleName.toString();
         if (StringUtils.isBlank(simpleName)) {
-            simpleName = sourceSimpleNameStr + "$" + RandomUtil.randomString(6) + "$Impl";
+            simpleName = sourceSimpleNameStr + "$" + counter.incrementAndGet() + "$Impl";
         }
         if (StringUtils.isBlank(packageName)) {
             packageName = sourceQualifiedName.toString().split(sourceSimpleNameStr)[0];

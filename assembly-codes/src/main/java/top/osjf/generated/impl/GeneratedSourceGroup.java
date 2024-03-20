@@ -33,7 +33,7 @@ import java.lang.annotation.*;
  * }
  * </pre>
  * <p>If you do not fill in the {@link #group()} attribute in {@link GeneratedSource#simpleName()},
- * it defaults to the current annotation target class+'$' random string+'$Impl'.
+ * it defaults to the current annotation target class+'$' order of occurrence +'$Impl'.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.1.0
  */

@@ -9,6 +9,7 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Compilation time annotation processor for {@link GeneratedSourceGroup}.
@@ -47,6 +48,8 @@ public class GeneratedSourceGroupProcessor extends AbstractSmartProcessor {
         AnnotationSource[] globeAnnotationSources = group.annotationSources();
 
         String targetName = typeElement.getQualifiedName().toString();
+
+        AtomicLong noProviderSimpleNameCounter = new AtomicLong(0);
 
         for (GeneratedSource source : group.group()) {
 
@@ -89,7 +92,8 @@ public class GeneratedSourceGroupProcessor extends AbstractSmartProcessor {
             Triple<String, String, String> names = GeneratedUtils.getNames(
                     source.simpleName(),
                     usePackageName,
-                    typeElement.getQualifiedName(), typeElement.getSimpleName());
+                    typeElement.getQualifiedName(), typeElement.getSimpleName(),
+                    noProviderSimpleNameCounter);
 
             new SourceCodeGenerateInvocation(
                     names.getV1(),
