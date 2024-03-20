@@ -168,7 +168,7 @@ public final class GeneratedUtils {
 
         //Secondly, handle inheritance class settings.
         String extendClassName = appender.getExtendClassName();
-        if (StringUtils.isNotBlank(extendClassName)) {
+        if (StringUtils.isNotBlank(extendClassName) && !appender.getClassKind().isEnum()) {
             Triple<String, String, String> extendClassNameMetadata = getNameMetadataByProvider(extendClassName);
             classAppend.append(JAVA_EXTEND_KEYWORDS)
                     .append(JAVA_SYNTAX_BLANK)
