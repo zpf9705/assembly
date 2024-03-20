@@ -41,7 +41,7 @@ public abstract class AbstractMybatisPlusCodeGenerateInvocation extends Abstract
 
         GeneratedCodeAppenderBuilder builder = super.getGeneratedCodeAppenderBuilder();
 
-        if (StringUtils.isNotBlank(getCharacterization())) {
+        if (StringUtils.isNotBlank(getTableChineseName())) {
             builder.description(getTableChineseName() + getCharacterization());
         }
 
