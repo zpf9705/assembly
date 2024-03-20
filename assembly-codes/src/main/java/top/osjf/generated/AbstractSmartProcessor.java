@@ -54,7 +54,7 @@ public abstract class AbstractSmartProcessor extends AbstractProcessor implement
      * Returns the result of the execution filtering condition
      * for the annotation identification class.
      * @param element {@link Element}.
-     * @return if {@linkplain true} acceptance processing.
+     * @return if {@literal true} acceptance processing.
      */
     public boolean elementFilterCondition(Element element) {
         return true;
