@@ -25,4 +25,12 @@ public enum ClassKind {
     public String getAppender() {
         return appender;
     }
+
+    /**
+     * Check if it is an enumeration type.
+     * @return Returns {@literal true}, otherwise it is not.
+     */
+    public boolean isEnum(){
+        return ENUM.equals(this);
+    }
 }
