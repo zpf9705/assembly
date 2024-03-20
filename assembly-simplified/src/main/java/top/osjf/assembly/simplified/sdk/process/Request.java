@@ -117,7 +117,6 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      * <p>If neither is provided, {@link SdkUtils#getResponseRequiredType(Request)}
      * will be used for generic retrieval of the response.
      * <p><strong>The specific supported formats are shown below.</strong></p>
-     * <hr><blockquote>
      * <p><strong>The abstract {@link AbstractHttpRequestParams} provided directly is followed
      * by a response implementation with a generic type.</strong>
      * <hr><blockquote><pre>
@@ -170,7 +169,7 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      *     }
      *     }
      * </pre></blockquote><hr>
-     * <p><h3>WARN</h3></p>
+     * <h3>Warn</h3>
      * <p>If a custom response type has a generic indicator, it will not be supported
      * and will obtain an unpredictable type. For example, {@code HttpResultResponse<T>}
      * in {@code T} cannot locate a specific type from the subclass's generic.
