@@ -285,6 +285,7 @@ public final class GeneratedUtils {
      * Convert the array collection of {@link ClassSource} to a
      * type that {@link CodeAppender#getInterfaceWithGenericsNames()} can parse.
      * @param interfaceClassSources interface Class Sources with {@link ClassSource}.
+     * @return {@link GeneratedCodeAppenderBuilder#interfaces(Map)}
      */
     public static Map<String, String[]> convertInterfaceClassNameSources(ClassSource[] interfaceClassSources) {
         if (ArrayUtils.isEmpty(interfaceClassSources)) return Collections.emptyMap();
@@ -296,6 +297,7 @@ public final class GeneratedUtils {
      * Convert the array collection of {@link AnnotationSource} to a
      * type that {@link CodeAppender#getAnnotationWithValueNames()} can parse.
      * @param annotationSources annotation Class Sources with {@link ClassSource}.
+     * @return {@link GeneratedCodeAppenderBuilder#annotations(Map)}
      */
     public static Map<String, String> convertAnnotationNameSources(AnnotationSource[] annotationSources) {
         if (ArrayUtils.isEmpty(annotationSources)) return Collections.emptyMap();
