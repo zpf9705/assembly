@@ -7,13 +7,10 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationRunListener;
-import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
-import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationBeanNameGenerator;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import top.osjf.assembly.simplified.service.ServiceContextUtils;
 import top.osjf.assembly.simplified.service.annotation.EnableServiceCollection;
@@ -24,8 +21,10 @@ import top.osjf.assembly.util.data.ClassMap;
 import top.osjf.assembly.util.data.ThreadSafeClassMap;
 import top.osjf.assembly.util.io.ScanUtils;
 import top.osjf.assembly.util.lang.CollectionUtils;
+import top.osjf.assembly.util.lang.ReflectUtils;
 import top.osjf.assembly.util.lang.StringUtils;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 /**
@@ -225,16 +224,10 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
         public void contextPrepared(ConfigurableApplicationContext context) {
             setConfigurableApplicationContext(context);
             if (enableCustomBeanNameGeneratorSet) {
-                BeanNameGenerator generator = new ServiceContextBeanNameGenerator(context.getId());
-                if (context instanceof AnnotationConfigServletWebServerApplicationContext) {
-                    ((AnnotationConfigServletWebServerApplicationContext) context)
-                            .setBeanNameGenerator(generator);
-                } else if (context instanceof AnnotationConfigReactiveWebServerApplicationContext) {
-                    ((AnnotationConfigReactiveWebServerApplicationContext) context)
-                            .setBeanNameGenerator(generator);
-                } else if (context instanceof AnnotationConfigApplicationContext) {
-                    ((AnnotationConfigApplicationContext) context)
-                            .setBeanNameGenerator(generator);
+                Method method = ReflectUtils.getMethod(context.getClass(), "setBeanNameGenerator",
+                        BeanNameGenerator.class);
+                if (method != null) {
+                    ReflectUtils.invoke(context, method, new ServiceContextBeanNameGenerator(context.getId()));
                 }
             }
         }
