@@ -15,6 +15,7 @@
         <module>assembly-simplified</module>
         <module>assembly-cache</module>
         <module>assembly-cache-boot-starter</module>
+        <module>assembly-codes</module>
     </modules>
     <!--less description-->
     <description>
