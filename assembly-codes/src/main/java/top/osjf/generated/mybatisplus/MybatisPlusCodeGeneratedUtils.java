@@ -1,11 +1,18 @@
 package top.osjf.generated.mybatisplus;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import top.osjf.assembly.util.lang.StringUtils;
 import top.osjf.assembly.util.logger.Console;
 import top.osjf.generated.GeneratedUtils;
+import top.osjf.generated.Logger;
+import top.osjf.generated.SystemPrintKind;
 
+import javax.annotation.processing.Filer;
 import javax.lang.model.element.TypeElement;
+import javax.tools.FileObject;
+import javax.tools.JavaFileManager;
 import java.beans.Introspector;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -103,5 +110,24 @@ public final class MybatisPlusCodeGeneratedUtils {
         shortName = Introspector.decapitalize(shortName);
         //get name
         return shortName + properties.getProperty(ServiceImplCodeGenerateInvocationImpl.SERVICE_IMPL_WRITE_PREFIX);
+    }
+
+    public static FileObject getFileObject(Filer filer, Logger logger, JavaFileManager.Location location, String fileName) {
+        if (filer == null || location == null || StringUtils.isBlank(fileName)) {
+            return null;
+        }
+        FileObject resource;
+        try {
+            resource = filer.getResource(location, "", fileName);
+        } catch (IOException e) {
+            try {
+                resource = filer.createResource(location, "", fileName);
+            } catch (IOException ex) {
+                logger.log(SystemPrintKind.ERROR, "Get or create FileObject {} all failed {}",
+                        fileName, e.getMessage());
+                resource = null;
+            }
+        }
+        return resource;
     }
 }

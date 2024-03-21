@@ -81,42 +81,54 @@ public abstract class AbstractMybatisPlusCodeGenerateInvocation extends Abstract
         //Write the necessary Java files first.
         super.write(filer, logger);
         //Create a file for the mybatis plus configuration project.
-        if (!create) {
-            try {
-                FileObject afterSourceFile = filer.createResource(StandardLocation.CLASS_OUTPUT, "", afterSourceFileName);
-                printWriter = new PrintWriter(afterSourceFile.openWriter());
-                create = true;
-            } catch (Exception e) {
-                logger.log(SystemPrintKind.OUT, "Error creating post file for mybatis plus:  {} {}",
-                        e.getClass().getName(), e.getMessage());
-            }
-        }
-        //Global write of files.
-        if (printWriter != null) {
-            try {
-                printWriter.write(getWritePrefix() + "=" + getSuffixName() + "\n");
-                implNum--;
+        FileObject fileObject =
+                MybatisPlusCodeGeneratedUtils.getFileObject(filer, logger, StandardLocation.CLASS_OUTPUT, afterSourceFileName);
+        if (fileObject != null) {
+            try (PrintWriter writer = new PrintWriter(fileObject.openWriter())) {
+                writer.write(getTargetName() + "." + getWritePrefix() + "=" + getSuffixName() + "\n");
             } catch (Exception e) {
                 logger.log(SystemPrintKind.OUT, "Error writing content to afterSource File file::  {} {}",
                         e.getClass().getName(), e.getMessage());
             }
-            if (implNum == 0) {
-                printWriter.close();
-                printWriter = null;
-                logger.log(SystemPrintKind.OUT, "The file {} write stream has been closed.", afterSourceFileName);
-            }
         }
+//        if (!create) {
+//            try {
+//                FileObject afterSourceFile = filer.createResource(StandardLocation.CLASS_OUTPUT, "", afterSourceFileName);
+//                printWriter = new PrintWriter(afterSourceFile.openWriter());
+//                create = true;
+//            } catch (Exception e) {
+//                logger.log(SystemPrintKind.OUT, "Error creating post file for mybatis plus:  {} {}",
+//                        e.getClass().getName(), e.getMessage());
+//            }
+//        }
+//        //Global write of files.
+//        if (printWriter != null) {
+//            try {
+//                printWriter.write(getWritePrefix() + "=" + getSuffixName() + "\n");
+//                implNum--;
+//            } catch (Exception e) {
+//                logger.log(SystemPrintKind.OUT, "Error writing content to afterSource File file::  {} {}",
+//                        e.getClass().getName(), e.getMessage());
+//            }
+//            if (implNum == 0) {
+//                printWriter.close();
+//                printWriter = null;
+//                logger.log(SystemPrintKind.OUT, "The file {} write stream has been closed.", afterSourceFileName);
+//            }
+//        }
     }
 
     /**
      * Write the configuration item prefix to the temporary configuration file.
-     * @since  1.1.1
+     *
      * @return the configuration item prefix to the temporary configuration file
+     * @since 1.1.1
      */
     protected abstract String getWritePrefix();
 
     /**
      * Returns a special description of the generated class.
+     *
      * @return a special description of the generated class.
      */
     protected abstract String getCharacterization();
