@@ -6,7 +6,7 @@
     <parent>
         <groupId>top.osjf</groupId>
         <artifactId>assembly</artifactId>
-        <version>2.0.2</version>
+        <version>2.0.3</version>
     </parent>
 
     <artifactId>assembly-codes</artifactId>
@@ -18,7 +18,8 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <util>1.1.0</util>
+        <util>1.1.1</util>
+        <mp>3.5.2</mp>
     </properties>
 
     <dependencies>
@@ -31,7 +32,7 @@
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-annotation</artifactId>
-            <version>3.5.2</version>
+            <version>${mp}</version>
             <optional>true</optional>
         </dependency>
     </dependencies>
