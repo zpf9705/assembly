@@ -20,4 +20,13 @@ public interface MybatisPlusCodeGenerateInvocation extends CodeGenerateInvocatio
      * @return MybatisPlusCodeGenerate#tableChineseName()
      */
     String getTableChineseName();
+
+    /**
+     * @see MybatisPlusCodeGenerate#mapperSuffixName()
+     * @see MybatisPlusCodeGenerate#serviceSuffixName()
+     * @see MybatisPlusCodeGenerate#serviceImplSuffixName()
+     * @since 1.1.1
+     * @return Type of suffixName.
+     */
+    String getSuffixName();
 }
