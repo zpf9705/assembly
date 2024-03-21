@@ -27,15 +27,17 @@ public class ServiceImplCodeGenerateInvocationImpl extends AbstractMybatisPlusCo
 
     public static final String SERVICE_IMPL_CHINESE_CHARACTERIZATION = "的[数据服务实现类]";
 
+    //since 1.1.1
+    public static final String SERVICE_IMPL_WRITE_PREFIX = "service.impl.suffix.name";
+
     private CodeGenerateInvocation mapper;
 
     private CodeGenerateInvocation service;
 
     public ServiceImplCodeGenerateInvocationImpl(String simpleName, String packageName, String targetName,
-                                                 boolean join, String tableChineseName) {
-        super(simpleName, packageName, targetName, join, tableChineseName);
+                                                 boolean join, String tableChineseName, String suffixName) {
+        super(simpleName, packageName, targetName, join, tableChineseName, suffixName);
     }
-
 
     @Override
     public ServiceImplCodeGenerateInvocationImpl mapper(CodeGenerateInvocation codeGenerateInvocation) {
@@ -69,6 +71,12 @@ public class ServiceImplCodeGenerateInvocationImpl extends AbstractMybatisPlusCo
         }
 
         return builder;
+    }
+
+    //since 1.1.1
+    @Override
+    protected String getWritePrefix() {
+        return SERVICE_IMPL_WRITE_PREFIX;
     }
 
     @Override
