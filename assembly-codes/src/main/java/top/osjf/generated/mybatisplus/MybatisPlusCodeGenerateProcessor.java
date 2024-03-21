@@ -13,6 +13,7 @@ import javax.lang.model.element.TypeElement;
  * bytecode level annotations {@link MybatisPlusCodeGenerate} for the mapper
  * interface, service interface, and service implementation class interface.
  *
+ * @see MybatisPlusCodeGenerateMetadataCollector
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @see MybatisPlusCodeGenerate
  * @since 1.1.0

@@ -9,6 +9,9 @@ import javax.annotation.processing.Filer;
 import javax.lang.model.element.TypeElement;
 
 /**
+ * The integration logic of annotation processor {@link MybatisPlusCodeGenerate} for
+ * {@link MybatisPlusCodeGenerateProcessor}.
+ * @see MybatisPlusCodeGenerate
  * @see MybatisPlusCodeGenerateProcessor
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.1.1
