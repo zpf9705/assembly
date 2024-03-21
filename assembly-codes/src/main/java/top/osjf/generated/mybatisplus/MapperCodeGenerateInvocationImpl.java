@@ -13,12 +13,17 @@ import top.osjf.generated.GeneratedCodeAppenderBuilder;
 public class MapperCodeGenerateInvocationImpl extends AbstractMybatisPlusCodeGenerateInvocation {
 
     public static final String MYBATIS_PLUS_BASE_MAPPER = "com.baomidou.mybatisplus.core.mapper.BaseMapper";
+
     public static final String MYBATIS_PLUS_JOIN_BASE_MAPPER = "com.github.yulichang.base.MPJBaseMapper";
+
     public static final String MAPPER_CHINESE_CHARACTERIZATION = "的[Mapper接口]";
 
+    //since 1.1.1
+    public static final String MAPPER_WRITE_PREFIX = "mapper.suffix.name";
+
     public MapperCodeGenerateInvocationImpl(String simpleName, String packageName, String targetName,
-                                            boolean join, String tableChineseName) {
-        super(simpleName, packageName, targetName, join, tableChineseName);
+                                            boolean join, String tableChineseName, String suffixName) {
+        super(simpleName, packageName, targetName, join, tableChineseName, suffixName);
     }
 
     @NotNull
@@ -31,6 +36,12 @@ public class MapperCodeGenerateInvocationImpl extends AbstractMybatisPlusCodeGen
                 .classKind(ClassKind.INTERFACE)
                 .extend(getJoin() ? MYBATIS_PLUS_JOIN_BASE_MAPPER : MYBATIS_PLUS_BASE_MAPPER)
                 .extendGenerics(new String[]{getTargetName()});
+    }
+
+    //since 1.1.1
+    @Override
+    protected String getWritePrefix() {
+        return MAPPER_WRITE_PREFIX;
     }
 
     @Override
