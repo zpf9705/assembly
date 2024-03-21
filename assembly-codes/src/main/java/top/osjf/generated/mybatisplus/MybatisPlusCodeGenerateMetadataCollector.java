@@ -2,7 +2,6 @@ package top.osjf.generated.mybatisplus;
 
 import top.osjf.assembly.util.lang.ReflectUtils;
 import top.osjf.assembly.util.lang.StringUtils;
-import top.osjf.generated.GeneratedUtils;
 import top.osjf.generated.Logger;
 
 import javax.annotation.processing.Filer;
@@ -106,8 +105,8 @@ class MybatisPlusCodeGenerateMetadataCollector {
         if (StringUtils.isBlank(appointPackage)) {
             appointPackage = commonPackage;
             if (StringUtils.isBlank(appointPackage)) {
-                appointPackage = getTypeElementNoYourSelfPackage(element, noProviderPackageUseDefault,
-                        defaultSuffixPackageName);
+                appointPackage = MybatisPlusCodeGeneratedUtils.
+                        getTypeElementNoYourSelfPackage(element, noProviderPackageUseDefault, defaultSuffixPackageName);
             }
         }
         String tableClassSimpleName = element.getSimpleName().toString();
@@ -128,18 +127,5 @@ class MybatisPlusCodeGenerateMetadataCollector {
         } catch (Exception e) {
             return null;
         }
-    }
-
-    private String getTypeElementNoYourSelfPackage(TypeElement typeElement, boolean noProviderPackageUseDefault,
-                                                   String defaultSuffixPackageName) {
-
-        String typeElementPackage = GeneratedUtils.getTypeElementPackage(typeElement);
-        String realPackage;
-        if (!noProviderPackageUseDefault) {
-            realPackage = typeElementPackage;
-        } else {
-            realPackage = GeneratedUtils.getPackageNamePrevious(typeElementPackage) + "." + defaultSuffixPackageName;
-        }
-        return realPackage;
     }
 }
