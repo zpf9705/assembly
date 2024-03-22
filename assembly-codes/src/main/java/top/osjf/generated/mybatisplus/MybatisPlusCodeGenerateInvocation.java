@@ -35,13 +35,14 @@ public interface MybatisPlusCodeGenerateInvocation extends CodeGenerateInvocatio
     /**
      * Return the set of configuration items that need to be written
      * to the configuration file after generating the class.
-     *
+     * @since 1.1.2
      * @return the configuration items after generating the class.
      */
     List<Configuration> getWriteConfiguration();
 
     /**
      * Write the encapsulation interface for the subsequent configuration.
+     * @since 1.1.2
      */
     interface Configuration {
 
