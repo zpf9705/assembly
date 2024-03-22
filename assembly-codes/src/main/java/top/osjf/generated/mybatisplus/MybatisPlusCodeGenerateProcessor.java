@@ -27,8 +27,7 @@ public class MybatisPlusCodeGenerateProcessor extends AbstractSmartProcessor {
     public void process0(Element element, RoundEnvironment roundEnv) {
         new MybatisPlusCodeGenerateMetadataCollector(element.getAnnotation(MybatisPlusCodeGenerate.class),
                 (TypeElement) element,
-                getFiler(),
-                this)
+                getFiler(), this)
                 .process();
     }
 
