@@ -20,7 +20,7 @@ public class ServiceCodeGenerateInvocationImpl extends AbstractMybatisPlusCodeGe
     public static final String SERVICE_CHINESE_CHARACTERIZATION = "的[数据服务接口]";
 
     //since 1.1.1
-    public static final String SERVICE_WRITE_PREFIX = "service.suffix.name";
+    protected static final String SERVICE_WRITE_PREFIX = "service.suffix.name";
 
     public ServiceCodeGenerateInvocationImpl(String simpleName, String packageName, String targetName,
                                              boolean join, String tableChineseName, String suffixName) {
@@ -38,14 +38,13 @@ public class ServiceCodeGenerateInvocationImpl extends AbstractMybatisPlusCodeGe
                 .extendGenerics(new String[]{getTargetName()});
     }
 
-    //since 1.1.1
-    @Override
-    protected String getWritePrefix() {
-        return SERVICE_WRITE_PREFIX;
-    }
-
     @Override
     protected String getCharacterization() {
         return SERVICE_CHINESE_CHARACTERIZATION;
+    }
+
+    @Override
+    public String getSuffixNameConfigurationPrefix() {
+        return SERVICE_WRITE_PREFIX;
     }
 }
