@@ -3,62 +3,114 @@ package top.osjf.generated.mybatisplus;
 import top.osjf.assembly.util.lang.ReflectUtils;
 import top.osjf.assembly.util.lang.StringUtils;
 import top.osjf.generated.Logger;
+import top.osjf.generated.SystemPrintKind;
 
 import javax.annotation.processing.Filer;
 import javax.lang.model.element.TypeElement;
+import javax.tools.FileObject;
+import javax.tools.StandardLocation;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Writer;
+import java.util.List;
 
 /**
  * The integration logic of annotation processor {@link MybatisPlusCodeGenerate} for
  * {@link MybatisPlusCodeGenerateProcessor}.
+ *
+ * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @see MybatisPlusCodeGenerate
  * @see MybatisPlusCodeGenerateProcessor
- * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.1.1
  */
 class MybatisPlusCodeGenerateMetadataCollector {
 
-    private final MybatisPlusCodeGenerate codeGenerate;
+    final MybatisPlusCodeGenerate codeGenerate;
 
-    private final TypeElement element;
+    final TypeElement element;
 
-    private final Filer filer;
+    final Filer filer;
 
-    private final Logger logger;
+    final Logger logger;
+
+    static final String afterSourceFileName = "table-generate-setting/%s.MybatisPlusCodeGenerate.properties";
 
     MybatisPlusCodeGenerateMetadataCollector(MybatisPlusCodeGenerate codeGenerate,
-                                                    TypeElement element,
-                                                    Filer filer,
-                                                    Logger logger) {
+                                             TypeElement element,
+                                             Filer filer,
+                                             Logger logger) {
         this.codeGenerate = codeGenerate;
         this.element = element;
         this.filer = filer;
         this.logger = logger;
     }
 
-    public void process() {
+    void process() {
+
+        //Execute the logic for generating classes.
 
         String commonPackage = codeGenerate.codeCommonPackage();
+
+        //Execute the generation of the mapper layer.
 
         MybatisPlusCodeGenerateInvocation mapperInvocation = getMapperNameMetadata(element, codeGenerate,
                 commonPackage);
 
         if (mapperInvocation != null) mapperInvocation.write(filer, logger);
 
+        //Execute the generation of the service layer.
+
         MybatisPlusCodeGenerateInvocation serviceInvocation = getServiceNameMetadata(element, codeGenerate,
                 commonPackage);
 
         if (serviceInvocation != null) serviceInvocation.write(filer, logger);
+
+        //Execute the generation of service implementation class layer.
 
         MybatisPlusCodeGenerateInvocation serviceImplInvocation = getServiceImplNameMetadata(element, codeGenerate,
                 commonPackage);
 
         if (serviceImplInvocation != null) ((ServiceImplCodeGenerateInvocation) serviceImplInvocation)
                 .mapper(mapperInvocation).service(serviceInvocation).write(filer, logger);
+
+        //If the above does not mention generating corresponding generated instances,
+        // there is no need to create subsequent record files.
+
+        if (mapperInvocation == null || serviceInvocation == null || serviceImplInvocation == null) return;
+
+        String targetName = serviceImplInvocation.getTargetName();
+
+        //Create a file for the mybatis plus configuration project.
+        //Generate record files for subsequent use by users.
+
+        try {
+
+            FileObject afterSourceFile = filer.createResource(StandardLocation.CLASS_OUTPUT, "",
+                    String.format(afterSourceFileName, targetName));
+
+            try (PrintWriter writer = new PrintWriter(afterSourceFile.openWriter())) {
+
+                writeln(mapperInvocation.getWriteConfiguration(),writer);
+
+                writeln(serviceInvocation.getWriteConfiguration(),writer);
+
+                writeln(serviceImplInvocation.getWriteConfiguration(),writer);
+            }
+        } catch (Exception e) {
+            logger.log(SystemPrintKind.OUT, "Error creating post file for mybatis plus:  {} {}",
+                    e.getClass().getName(), e.getMessage());
+        }
     }
 
-    private MybatisPlusCodeGenerateInvocation getMapperNameMetadata(TypeElement element,
-                                                                    MybatisPlusCodeGenerate codeGenerate,
-                                                                    String commonPackage) {
+    void writeln(List<MybatisPlusCodeGenerateInvocation.Configuration> configurations, Writer writer) throws IOException {
+        for (MybatisPlusCodeGenerateInvocation.Configuration configuration : configurations) {
+            writer.write(configuration.getWriteLine());
+        }
+    }
+
+    MybatisPlusCodeGenerateInvocation getMapperNameMetadata(TypeElement element,
+                                                            MybatisPlusCodeGenerate codeGenerate,
+                                                            String commonPackage) {
         return getCodeGenerateInvocation(element, codeGenerate.mapperGeneratePackage(),
                 MybatisPlusCodeGenerate.DEFAULT_MAPPER_PACKAGE_SUFFIX_NAME,
                 codeGenerate.mapperSuffixName(),
@@ -69,9 +121,9 @@ class MybatisPlusCodeGenerateMetadataCollector {
                 codeGenerate.tableChineseName());
     }
 
-    private MybatisPlusCodeGenerateInvocation getServiceNameMetadata(TypeElement element,
-                                                                     MybatisPlusCodeGenerate codeGenerate,
-                                                                     String commonPackage) {
+    MybatisPlusCodeGenerateInvocation getServiceNameMetadata(TypeElement element,
+                                                             MybatisPlusCodeGenerate codeGenerate,
+                                                             String commonPackage) {
         return getCodeGenerateInvocation(element, codeGenerate.serviceGeneratePackage(),
                 MybatisPlusCodeGenerate.DEFAULT_SERVICE_PACKAGE_SUFFIX_NAME,
                 codeGenerate.serviceSuffixName(),
@@ -82,9 +134,9 @@ class MybatisPlusCodeGenerateMetadataCollector {
                 codeGenerate.tableChineseName());
     }
 
-    private MybatisPlusCodeGenerateInvocation getServiceImplNameMetadata(TypeElement element,
-                                                                         MybatisPlusCodeGenerate codeGenerate,
-                                                                         String commonPackage) {
+    MybatisPlusCodeGenerateInvocation getServiceImplNameMetadata(TypeElement element,
+                                                                 MybatisPlusCodeGenerate codeGenerate,
+                                                                 String commonPackage) {
         return getCodeGenerateInvocation(element, codeGenerate.serviceImplGeneratePackage(),
                 MybatisPlusCodeGenerate.DEFAULT_SERVICE_IMPL_PACKAGE_SUFFIX_NAME,
                 codeGenerate.serviceImplSuffixName(),
@@ -95,13 +147,13 @@ class MybatisPlusCodeGenerateMetadataCollector {
                 codeGenerate.tableChineseName());
     }
 
-    private MybatisPlusCodeGenerateInvocation getCodeGenerateInvocation(TypeElement element, String appointPackage,
-                                                                        String defaultSuffixPackageName, String suffixName,
-                                                                        String commonPackage,
-                                                                        boolean noProviderPackageUseDefault,
-                                                                        Class<? extends MybatisPlusCodeGenerateInvocation> clazz,
-                                                                        boolean join,
-                                                                        String tableChineseName) {
+    MybatisPlusCodeGenerateInvocation getCodeGenerateInvocation(TypeElement element, String appointPackage,
+                                                                String defaultSuffixPackageName, String suffixName,
+                                                                String commonPackage,
+                                                                boolean noProviderPackageUseDefault,
+                                                                Class<? extends MybatisPlusCodeGenerateInvocation> clazz,
+                                                                boolean join,
+                                                                String tableChineseName) {
         if (StringUtils.isBlank(appointPackage)) {
             appointPackage = commonPackage;
             if (StringUtils.isBlank(appointPackage)) {
@@ -110,8 +162,9 @@ class MybatisPlusCodeGenerateMetadataCollector {
             }
         }
         String tableClassSimpleName = element.getSimpleName().toString();
+        MybatisPlusCodeGenerateInvocation codeGenerateInvocation;
         try {
-            return ReflectUtils.getConstructor(clazz,
+            codeGenerateInvocation = ReflectUtils.getConstructor(clazz,
                             String.class,
                             String.class,
                             String.class,
@@ -124,8 +177,9 @@ class MybatisPlusCodeGenerateMetadataCollector {
                             join,
                             tableChineseName,
                             suffixName);
-        } catch (Exception e) {
-            return null;
+        } catch (Exception ignored) {
+            codeGenerateInvocation = null;
         }
+        return codeGenerateInvocation;
     }
 }
