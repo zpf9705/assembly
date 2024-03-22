@@ -19,7 +19,7 @@ public class MapperCodeGenerateInvocationImpl extends AbstractMybatisPlusCodeGen
     public static final String MAPPER_CHINESE_CHARACTERIZATION = "的[Mapper接口]";
 
     //since 1.1.1
-    public static final String MAPPER_WRITE_PREFIX = "mapper.suffix.name";
+    protected static final String MAPPER_WRITE_PREFIX = "mapper.suffix.name";
 
     public MapperCodeGenerateInvocationImpl(String simpleName, String packageName, String targetName,
                                             boolean join, String tableChineseName, String suffixName) {
@@ -38,14 +38,13 @@ public class MapperCodeGenerateInvocationImpl extends AbstractMybatisPlusCodeGen
                 .extendGenerics(new String[]{getTargetName()});
     }
 
-    //since 1.1.1
-    @Override
-    protected String getWritePrefix() {
-        return MAPPER_WRITE_PREFIX;
-    }
-
     @Override
     protected String getCharacterization() {
         return MAPPER_CHINESE_CHARACTERIZATION;
+    }
+
+    @Override
+    public String getSuffixNameConfigurationPrefix() {
+        return MAPPER_WRITE_PREFIX;
     }
 }
