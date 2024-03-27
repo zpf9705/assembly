@@ -1,7 +1,7 @@
 package top.osjf.generated.mybatisplus;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import top.osjf.generated.AbstractSmartProcessor;
+import top.osjf.generated.AbstractInitializationProcessor;
 
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
@@ -19,7 +19,7 @@ import javax.lang.model.element.TypeElement;
  * @since 1.1.0
  */
 @SupportedAnnotationTypes(MybatisPlusCodeGenerateProcessor.SUPPORT_OF_MPC_GENERATE_NAME)
-public class MybatisPlusCodeGenerateProcessor extends AbstractSmartProcessor {
+public class MybatisPlusCodeGenerateProcessor extends AbstractInitializationProcessor {
 
     public static final String SUPPORT_OF_MPC_GENERATE_NAME = "top.osjf.generated.mybatisplus.MybatisPlusCodeGenerate";
 
@@ -27,8 +27,7 @@ public class MybatisPlusCodeGenerateProcessor extends AbstractSmartProcessor {
     public void process0(Element element, RoundEnvironment roundEnv) {
         new MybatisPlusCodeGenerateMetadataCollector(element.getAnnotation(MybatisPlusCodeGenerate.class),
                 (TypeElement) element,
-                getFiler(), this)
-                .process();
+                getFiler(), this);
     }
 
     @Override

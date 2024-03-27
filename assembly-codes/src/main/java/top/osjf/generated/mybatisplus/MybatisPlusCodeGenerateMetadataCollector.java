@@ -2,6 +2,7 @@ package top.osjf.generated.mybatisplus;
 
 import top.osjf.assembly.util.lang.ReflectUtils;
 import top.osjf.assembly.util.lang.StringUtils;
+import top.osjf.generated.AbstractMetadataCollector;
 import top.osjf.generated.Logger;
 import top.osjf.generated.SystemPrintKind;
 
@@ -23,29 +24,29 @@ import java.util.List;
  * @see MybatisPlusCodeGenerateProcessor
  * @since 1.1.1
  */
-class MybatisPlusCodeGenerateMetadataCollector {
-
-    final MybatisPlusCodeGenerate codeGenerate;
-
-    final TypeElement element;
-
-    final Filer filer;
-
-    final Logger logger;
+class MybatisPlusCodeGenerateMetadataCollector extends AbstractMetadataCollector<MybatisPlusCodeGenerate> {
 
     static final String afterSourceFileName = "table-generate-setting/%s.MybatisPlusCodeGenerate.properties";
 
-    MybatisPlusCodeGenerateMetadataCollector(MybatisPlusCodeGenerate codeGenerate,
-                                             TypeElement element,
-                                             Filer filer,
-                                             Logger logger) {
-        this.codeGenerate = codeGenerate;
-        this.element = element;
-        this.filer = filer;
-        this.logger = logger;
+    public MybatisPlusCodeGenerateMetadataCollector(MybatisPlusCodeGenerate annotation,
+                                                    TypeElement element,
+                                                    Filer filer, Logger logger) {
+        super(annotation, element, filer, logger);
     }
 
-    void process() {
+
+    @Override
+    public void process() {
+
+        //Obtain Metadata Collector info
+
+        MybatisPlusCodeGenerate codeGenerate = getAnnotation();
+
+        TypeElement element = getTypeElement();
+
+        Filer filer = getFiler();
+
+        Logger logger = getLogger();
 
         //Execute the logic for generating classes.
 
@@ -90,11 +91,11 @@ class MybatisPlusCodeGenerateMetadataCollector {
 
             try (PrintWriter writer = new PrintWriter(afterSourceFile.openWriter())) {
 
-                writeln(mapperInvocation.getWriteConfiguration(),writer);
+                writeln(mapperInvocation.getWriteConfiguration(), writer);
 
-                writeln(serviceInvocation.getWriteConfiguration(),writer);
+                writeln(serviceInvocation.getWriteConfiguration(), writer);
 
-                writeln(serviceImplInvocation.getWriteConfiguration(),writer);
+                writeln(serviceImplInvocation.getWriteConfiguration(), writer);
             }
         } catch (Exception e) {
             logger.log(SystemPrintKind.OUT, "Error creating post file for mybatis plus:  {} {}",
