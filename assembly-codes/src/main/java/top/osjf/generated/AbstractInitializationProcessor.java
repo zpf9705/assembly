@@ -8,15 +8,16 @@ import javax.tools.Diagnostic;
 import java.util.Set;
 
 /**
- * The public processing class of the annotation processor standardizes
- * each step of the annotation processor, provides default values for
- * the execution of each annotation processor, and passes the most
- * direct method processing to the actual processing class.
+ * The public processing class of the annotation processor standardizes each
+ * step of the annotation processor, provides default values for the execution
+ * of each annotation processor, and passes the most direct method processing to
+ * the actual processing class.
+ * <p>Rename AbstractInitializationProcessor form 1.1.3
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.1.0
  */
-public abstract class AbstractSmartProcessor extends AbstractProcessor implements ProcessingEnvironmentInvocation,
-        Logger {
+public abstract class AbstractInitializationProcessor extends AbstractProcessor implements ProcessorInitialization
+        , Logger {
 
     private ProcessingEnvironment processingEnvironment;
 
@@ -90,13 +91,5 @@ public abstract class AbstractSmartProcessor extends AbstractProcessor implement
     @Override
     public void log(Diagnostic.Kind kind, String message, Object... args) {
         getMessager().printMessage(kind, Logger.loggerFormat(message, args));
-    }
-
-    public void logStreamOut(String message, Object... args) {
-        log(SystemPrintKind.OUT, message, args);
-    }
-
-    public void logPeError(String message, Object... args) {
-        log(Diagnostic.Kind.ERROR, message, args);
     }
 }
