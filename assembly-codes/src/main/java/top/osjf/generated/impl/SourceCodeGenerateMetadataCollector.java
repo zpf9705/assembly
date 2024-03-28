@@ -6,6 +6,8 @@ import top.osjf.assembly.util.lang.StringUtils;
 import top.osjf.generated.*;
 
 import javax.annotation.processing.Filer;
+import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -20,16 +22,17 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 class SourceCodeGenerateMetadataCollector extends AbstractMetadataCollector<GeneratedSourceGroup> {
 
-    public SourceCodeGenerateMetadataCollector(GeneratedSourceGroup annotation,
-                                               TypeElement element,
-                                               Filer filer, Logger logger) {
-        super(annotation, element, filer, logger);
+    public SourceCodeGenerateMetadataCollector(GeneratedSourceGroup annotation, RoundEnvironment roundEnvironment,
+                                               Element element,
+                                               Filer filer,
+                                               Logger logger) {
+        super(annotation, roundEnvironment, element, filer, logger);
     }
 
     @Override
     public void process() {
 
-        TypeElement typeElement = getTypeElement();
+        TypeElement typeElement = getElement();
 
         GeneratedSourceGroup group = typeElement.getAnnotation(GeneratedSourceGroup.class);
 
