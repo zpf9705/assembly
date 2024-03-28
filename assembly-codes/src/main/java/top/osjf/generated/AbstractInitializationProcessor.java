@@ -98,7 +98,7 @@ public abstract class AbstractInitializationProcessor extends AbstractProcessor 
                 && (annotation = element.getAnnotation(triggerAnnotationType)) != null) {
 
             Constructor<? extends MetadataCollector<?>> constructor = ReflectUtils.getConstructor(processorCollectorType,
-                    Annotation.class,
+                    triggerAnnotationType,
                     RoundEnvironment.class,
                     Element.class,
                     Filer.class,
