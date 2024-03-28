@@ -1,11 +1,12 @@
 package top.osjf.generated.impl;
 
 import top.osjf.generated.AbstractInitializationProcessor;
+import top.osjf.generated.MetadataCollector;
 
-import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import java.lang.annotation.Annotation;
 
 /**
  * Compilation time annotation processor for {@link GeneratedSourceGroup}.
@@ -23,8 +24,12 @@ public class GeneratedSourceGroupProcessor extends AbstractInitializationProcess
     }
 
     @Override
-    public void process0(Element element, RoundEnvironment roundEnv) {
-        new SourceCodeGenerateMetadataCollector(element.getAnnotation(GeneratedSourceGroup.class),
-                (TypeElement) element,getFiler(),this);
+    public Class<? extends MetadataCollector<?>> getProcessorCollectorType() {
+        return SourceCodeGenerateMetadataCollector.class;
+    }
+
+    @Override
+    public Class<? extends Annotation> getTriggerAnnotationType() {
+        return GeneratedSourceGroup.class;
     }
 }
