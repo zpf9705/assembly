@@ -7,6 +7,8 @@ import top.osjf.generated.Logger;
 import top.osjf.generated.SystemPrintKind;
 
 import javax.annotation.processing.Filer;
+import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
@@ -29,11 +31,10 @@ class MybatisPlusCodeGenerateMetadataCollector extends AbstractMetadataCollector
     static final String afterSourceFileName = "table-generate-setting/%s.MybatisPlusCodeGenerate.properties";
 
     public MybatisPlusCodeGenerateMetadataCollector(MybatisPlusCodeGenerate annotation,
-                                                    TypeElement element,
-                                                    Filer filer, Logger logger) {
-        super(annotation, element, filer, logger);
+                                                    RoundEnvironment roundEnvironment,
+                                                    Element element, Filer filer, Logger logger) {
+        super(annotation, roundEnvironment, element, filer, logger);
     }
-
 
     @Override
     public void process() {
@@ -42,7 +43,7 @@ class MybatisPlusCodeGenerateMetadataCollector extends AbstractMetadataCollector
 
         MybatisPlusCodeGenerate codeGenerate = getAnnotation();
 
-        TypeElement element = getTypeElement();
+        TypeElement element = getElement();
 
         Filer filer = getFiler();
 
