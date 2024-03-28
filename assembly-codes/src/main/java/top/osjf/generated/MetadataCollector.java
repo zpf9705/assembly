@@ -9,9 +9,10 @@ import java.lang.annotation.Annotation;
  * The build class executes metadata records and executes, including
  * executor-specific annotations to generate processor initialization
  * properties related to annotations.
+ *
+ * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @see ProcessAble
  * @see AbstractMetadataCollector
- * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.1.3
  */
 public interface MetadataCollector<T extends Annotation> extends ProcessAble {
@@ -26,22 +27,23 @@ public interface MetadataCollector<T extends Annotation> extends ProcessAble {
      * Returns the process environment when the annotation processor
      * triggers execution.
      * @return the process environment when the annotation processor
-     *       triggers execution.
+     * triggers execution.
      */
     RoundEnvironment getRoundEnvironment();
 
     /**
      * Returns the {@link Element} object that identifies the target class
      * of the annotation.
+     * @param <E> The type of {@link Element} required.
+     * @return the {@link Element} object that identifies the target class
+     * of the annotation.
      * @see javax.lang.model.element.TypeElement
      * @see javax.lang.model.element.PackageElement
      * @see javax.lang.model.element.TypeParameterElement
      * @see javax.lang.model.element.ExecutableElement
      * @see javax.lang.model.element.VariableElement
-     * @return the {@link Element} object that identifies the target class
-     *      of the annotation.
      */
-    Element getElement();
+    <E extends Element> E getElement();
 
     /**
      * Returns the file manager during compilation.
