@@ -12,7 +12,11 @@ import java.util.Set;
  * step of the annotation processor, provides default values for the execution
  * of each annotation processor, and passes the most direct method processing to
  * the actual processing class.
- * <p>Rename AbstractInitializationProcessor form 1.1.3
+ *
+ * <p>Due to a misunderstanding of the annotation processor in the previous version,
+ * the current class was renamed as {@code AbstractInitializationProcessor} in
+ * version {@code 1.1.3}.
+ * @see ProcessorInitialization
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.1.0
  */
@@ -61,6 +65,12 @@ public abstract class AbstractInitializationProcessor extends AbstractProcessor 
         return true;
     }
 
+    /**
+     * The true execution logic that annotation processors need to implement.
+     * @param element The {@link Element} object of the target class.
+     * @param roundEnv The annotation processor triggers the runtime wrap
+     *                 around environment variable.
+     */
     public abstract void process0(Element element, RoundEnvironment roundEnv);
 
     @Override
