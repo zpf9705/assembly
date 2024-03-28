@@ -10,7 +10,7 @@ import javax.annotation.processing.ProcessingEnvironment;
  * phase of the annotation processor.
  *
  * <p>Due to a misinterpretation of the definition name for this interface in
- * version 1.1.2, it has now been changed to {@code ProcessorInitialization}.
+ * version 1.1.2, it has now been changed to {@code ProcessorInitialization} in 1.1.3.
  *
  * <p>The modified name better reflects that this interface is used to obtain a
  * unified set of variables that can be initialized when triggered by the
@@ -24,21 +24,18 @@ public interface ProcessorInitialization {
 
     /**
      * Returns the process environment when the annotation processor triggers.
-     *
      * @return the process environment when the annotation processor triggers.
      */
     ProcessingEnvironment getProcessingEnvironment();
 
     /**
      * Returns the file manager during compilation.
-     *
      * @return the file manager during compilation.
      */
     Filer getFiler();
 
     /**
      * Returns the message notification date manager during compilation time.
-     *
      * @return the message notification date manager during compilation time.
      */
     Messager getMessager();
