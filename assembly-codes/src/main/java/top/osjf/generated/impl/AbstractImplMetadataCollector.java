@@ -90,7 +90,7 @@ public abstract class AbstractImplMetadataCollector<T extends Annotation> extend
                     usePackageName,
                     element.getQualifiedName(), element.getSimpleName(), noProviderSimpleNameCounter);
 
-            new SourceCodeGenerateInvocation(
+            new ImplSourceCodeGenerateInvocation(
                     names.getV1(),
                     names.getV2(),
                     targetName,
