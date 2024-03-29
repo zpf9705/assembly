@@ -3,6 +3,8 @@ package top.osjf.generated.impl;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.generated.*;
 
+import java.util.Map;
+
 /**
  * Create source code files for {@link GeneratedSourceGroup} annotations and
  * write them to the executor.
@@ -17,14 +19,15 @@ public class SourceCodeGenerateInvocation extends AbstractCodeGenerateInvocation
 
     private final String[] extendGenericsClassNames;
 
-    private final ClassSource[] interfaceClassSources;
+    private final Map<String, String[]> interfaceClassSources;
 
-    private final AnnotationSource[] annotationSources;
+    private final Map<String, String> annotationSources;
 
     public SourceCodeGenerateInvocation(String simpleName, String packageName,
                                         String target, ClassKind classKind, String extendClassName,
-                                        String[] extendGenericsClassNames, ClassSource[] interfaceClassSources,
-                                        AnnotationSource[] annotationSources) {
+                                        String[] extendGenericsClassNames,
+                                        Map<String, String[]> interfaceClassSources,
+                                        Map<String, String> annotationSources) {
         super(simpleName, packageName, target);
         this.classKind = classKind;
         this.extendClassName = extendClassName;
@@ -42,8 +45,8 @@ public class SourceCodeGenerateInvocation extends AbstractCodeGenerateInvocation
         builder.classKind(classKind)
                 .extend(extendClassName)
                 .extendGenerics(extendGenericsClassNames)
-                .interfaces(GeneratedUtils.convertInterfaceClassNameSources(interfaceClassSources))
-                .annotations(GeneratedUtils.convertAnnotationNameSources(annotationSources))
+                .interfaces(interfaceClassSources)
+                .annotations(annotationSources)
                 .build();
 
         return builder;
