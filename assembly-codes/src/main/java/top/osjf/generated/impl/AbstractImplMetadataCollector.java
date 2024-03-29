@@ -41,17 +41,17 @@ public abstract class AbstractImplMetadataCollector<T extends Annotation> extend
 
         TypeElement element = getElement();
 
-        String globePackageName = allocation.getPackageName();
+        String unifiedPackageName = allocation.getUnifiedPackageName();
 
-        ClassKind globeClassKind = allocation.getClassKind();
+        ClassKind unifiedClassKind = allocation.getUnifiedClassKind();
 
-        String globeExtendClassName = allocation.getExtendClassName();
+        String unifiedExtendClassName = allocation.getUnifiedExtendClassName();
 
-        String[] globeGenericsClassNames = allocation.getExtendGenericsClassNames();
+        String[] unifiedExtendGenericsClassNames = allocation.getUnifiedExtendGenericsClassNames();
 
-        Map<String, String[]> globeInterfaceClassSources = allocation.getInterfaceClassSources();
+        Map<String, String[]> unifiedInterfaceClassSources = allocation.getUnifiedInterfaceClassSources();
 
-        Map<String, String> globeAnnotationSources = allocation.getAnnotationSources();
+        Map<String, String> unifiedAnnotationSources = allocation.getUnifiedAnnotationSources();
 
         String targetName = element.getQualifiedName().toString();
 
@@ -73,17 +73,17 @@ public abstract class AbstractImplMetadataCollector<T extends Annotation> extend
 
             Map<String, String> useAnnotationSources = sourceEntry.getAnnotationSources();
 
-            if (StringUtils.isBlank(usePackageName)) usePackageName = globePackageName;
+            if (StringUtils.isBlank(usePackageName)) usePackageName = unifiedPackageName;
 
-            if (Objects.isNull(useClassKind)) useClassKind = globeClassKind;
+            if (Objects.isNull(useClassKind)) useClassKind = unifiedClassKind;
 
-            if (StringUtils.isBlank(useExtendClassName)) useExtendClassName = globeExtendClassName;
+            if (StringUtils.isBlank(useExtendClassName)) useExtendClassName = unifiedExtendClassName;
 
-            if (ArrayUtils.isEmpty(useGenericsClassNames)) useGenericsClassNames = globeGenericsClassNames;
+            if (ArrayUtils.isEmpty(useGenericsClassNames)) useGenericsClassNames = unifiedExtendGenericsClassNames;
 
-            if (MapUtils.isEmpty(useInterfaceClassSources)) useInterfaceClassSources = globeInterfaceClassSources;
+            if (MapUtils.isEmpty(useInterfaceClassSources)) useInterfaceClassSources = unifiedInterfaceClassSources;
 
-            if (MapUtils.isEmpty(globeAnnotationSources)) useAnnotationSources = globeAnnotationSources;
+            if (MapUtils.isEmpty(useAnnotationSources)) useAnnotationSources = unifiedAnnotationSources;
 
             Triple<String, String, String> names = GeneratedUtils.getNames(
                     sourceEntry.getSimpleName(),
