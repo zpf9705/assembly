@@ -59,8 +59,8 @@ public class SourceCodeGenerateMetadataCollector$GeneratedSourceAllocation exten
      * The implementation class for interface {@link GeneratedSourceAllocation.GroupSourceEntry}
      * of {@link SourceCodeGenerateMetadataCollector}.
      */
-    static class SourceCodeGenerateMetadataCollector$GeneratedSourceAllocation$GroupSourceEntry implements
-            GeneratedSourceAllocation.GroupSourceEntry{
+    public static class SourceCodeGenerateMetadataCollector$GeneratedSourceAllocation$GroupSourceEntry implements
+            GeneratedSourceAllocation.GroupSourceEntry {
 
         private final GeneratedSource source;
 
