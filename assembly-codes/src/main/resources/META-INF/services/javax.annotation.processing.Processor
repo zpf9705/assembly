@@ -1,2 +1,3 @@
 top.osjf.generated.impl.GeneratedSourceGroupProcessor
+top.osjf.generated.impl.SpringServiceGroupProcessor
 top.osjf.generated.mybatisplus.MybatisPlusCodeGenerateProcessor
