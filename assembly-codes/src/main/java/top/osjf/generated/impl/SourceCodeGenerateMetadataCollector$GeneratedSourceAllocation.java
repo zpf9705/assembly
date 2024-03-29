@@ -14,10 +14,10 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.1.3
  */
-public class SourceCodeGenerateMetadataCollector$GeneratedSourceAllocation extends AbstractGeneratedSourceAllocation {
+class SourceCodeGenerateMetadataCollector$GeneratedSourceAllocation extends AbstractGeneratedSourceAllocation {
     private final GeneratedSourceGroup group;
 
-    public SourceCodeGenerateMetadataCollector$GeneratedSourceAllocation(GeneratedSourceGroup group) {
+    SourceCodeGenerateMetadataCollector$GeneratedSourceAllocation(GeneratedSourceGroup group) {
         this.group = group;
         setEntries(Arrays.stream(group.group())
                 .map((Function<GeneratedSource, GroupSourceEntry>)

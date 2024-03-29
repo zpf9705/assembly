@@ -15,10 +15,10 @@ import java.util.stream.Collectors;
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  */
-public class SpringServiceGenerateMetadataCollector$GeneratedSourceAllocation extends AbstractGeneratedSourceAllocation {
+class SpringServiceGenerateMetadataCollector$GeneratedSourceAllocation extends AbstractGeneratedSourceAllocation {
     private final SpringServiceGroup group;
 
-    public SpringServiceGenerateMetadataCollector$GeneratedSourceAllocation(SpringServiceGroup group) {
+    SpringServiceGenerateMetadataCollector$GeneratedSourceAllocation(SpringServiceGroup group) {
         this.group = group;
         setEntries(Arrays.stream(group.group())
                 .map((Function<SpringServiceSource, GroupSourceEntry>) springServiceSource ->
