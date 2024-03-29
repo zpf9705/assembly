@@ -66,28 +66,25 @@ public class SpringServiceGenerateMetadataCollector$GeneratedSourceAllocation ex
 
         private static final String SPRING_SERVICE_NAME = "org.springframework.stereotype.Service";
 
-        private final SpringServiceSource serviceSource;
-
-        public final GeneratedSource generatedSource;
+        private final SpringServiceSource source;
 
         private final SpringServiceGenerateMetadataCollector$GeneratedSourceAllocation allocation;
 
         public SpringServiceGenerateMetadataCollector$GeneratedSourceAllocation$GroupSourceEntry(
-                SpringServiceSource serviceSource,
+                SpringServiceSource source,
                 SpringServiceGenerateMetadataCollector$GeneratedSourceAllocation allocation) {
-            this.serviceSource = serviceSource;
+            this.source = source;
             this.allocation = allocation;
-            this.generatedSource = serviceSource.source();
         }
 
         @Override
         public String getSimpleName() {
-            return generatedSource.simpleName();
+            return source.simpleName();
         }
 
         @Override
         public String getPackageName() {
-            return generatedSource.packageName();
+            return source.packageName();
         }
 
         @Override
@@ -97,23 +94,23 @@ public class SpringServiceGenerateMetadataCollector$GeneratedSourceAllocation ex
 
         @Override
         public String getExtendClassName() {
-            return generatedSource.extendClassName();
+            return source.extendClassName();
         }
 
         @Override
         public String[] getExtendGenericsClassNames() {
-            return generatedSource.extendGenericsClassNames();
+            return source.extendGenericsClassNames();
         }
 
         @Override
         public Map<String, String[]> getInterfaceClassSources() {
-            return GeneratedUtils.convertInterfaceClassNameSources(generatedSource.interfaceClassSources());
+            return GeneratedUtils.convertInterfaceClassNameSources(source.interfaceClassSources());
         }
 
         @Override
         public Map<String, String> getAnnotationSources() {
             Map<String, String> annotationNameSources =
-                    GeneratedUtils.convertAnnotationNameSources(generatedSource.annotationSources());
+                    GeneratedUtils.convertAnnotationNameSources(source.annotationSources());
             if (MapUtils.isEmpty(annotationNameSources)) {
                 annotationNameSources = new HashMap<>();
                 Map<String, String> parentAnnotationSources = allocation.getAnnotationSources();
@@ -121,7 +118,7 @@ public class SpringServiceGenerateMetadataCollector$GeneratedSourceAllocation ex
                     annotationNameSources.putAll(parentAnnotationSources);
                 }
             }
-            annotationNameSources.putIfAbsent(SPRING_SERVICE_NAME, serviceSource.value());
+            annotationNameSources.putIfAbsent(SPRING_SERVICE_NAME, source.value());
             return annotationNameSources;
         }
     }
