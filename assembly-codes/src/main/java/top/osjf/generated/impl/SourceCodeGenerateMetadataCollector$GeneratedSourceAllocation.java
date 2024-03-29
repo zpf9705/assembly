@@ -26,32 +26,32 @@ public class SourceCodeGenerateMetadataCollector$GeneratedSourceAllocation exten
     }
 
     @Override
-    public String getPackageName() {
+    public String getUnifiedPackageName() {
         return group.packageName();
     }
 
     @Override
-    public ClassKind getClassKind() {
+    public ClassKind getUnifiedClassKind() {
         return group.classKind();
     }
 
     @Override
-    public String getExtendClassName() {
+    public String getUnifiedExtendClassName() {
         return group.extendClassName();
     }
 
     @Override
-    public String[] getExtendGenericsClassNames() {
+    public String[] getUnifiedExtendGenericsClassNames() {
         return group.extendGenericsClassNames();
     }
 
     @Override
-    public Map<String, String[]> getInterfaceClassSources() {
+    public Map<String, String[]> getUnifiedInterfaceClassSources() {
         return GeneratedUtils.convertInterfaceClassNameSources(group.interfaceClassSources());
     }
 
     @Override
-    public Map<String, String> getAnnotationSources() {
+    public Map<String, String> getUnifiedAnnotationSources() {
         return GeneratedUtils.convertAnnotationNameSources(group.annotationSources());
     }
 
