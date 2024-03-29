@@ -1,26 +1,27 @@
 package top.osjf.generated.impl;
 
-import top.osjf.assembly.util.data.Triple;
-import top.osjf.assembly.util.lang.ArrayUtils;
-import top.osjf.assembly.util.lang.StringUtils;
+import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.generated.*;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.TypeElement;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * The integration logic of annotation processor {@link GeneratedSourceGroup} for
  * {@link GeneratedSourceGroupProcessor}.
  *
+ * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @see GeneratedSourceGroup
  * @see GeneratedSourceGroupProcessor
- * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.1.3
  */
-class SourceCodeGenerateMetadataCollector extends AbstractMetadataCollector<GeneratedSourceGroup> {
+class SourceCodeGenerateMetadataCollector extends AbstractImplMetadataCollector<GeneratedSourceGroup> {
 
     public SourceCodeGenerateMetadataCollector(GeneratedSourceGroup annotation, RoundEnvironment roundEnvironment,
                                                Element element,
@@ -30,81 +31,118 @@ class SourceCodeGenerateMetadataCollector extends AbstractMetadataCollector<Gene
     }
 
     @Override
-    public void process() {
+    @NotNull
+    public GeneratedSourceAllocation getGeneratedSourceAllocation() {
+        return new SourceCodeGenerateMetadataCollector$GeneratedSourceAllocation(getAnnotation());
+    }
 
-        TypeElement typeElement = getElement();
+    /**
+     * The iterator logic of {@link SourceCodeGenerateMetadataCollector} is implemented in the
+     * public {@link AbstractGeneratedSourceAllocation}.
+     */
+    static class SourceCodeGenerateMetadataCollector$GeneratedSourceAllocation extends AbstractGeneratedSourceAllocation {
 
-        GeneratedSourceGroup group = typeElement.getAnnotation(GeneratedSourceGroup.class);
+        private final GeneratedSourceGroup group;
 
-        String globePackageName = group.packageName();
+        private final List<GroupSourceEntry> entries;
 
-        ClassKind globeClassKind = group.classKind();
+        public SourceCodeGenerateMetadataCollector$GeneratedSourceAllocation(GeneratedSourceGroup group) {
+            this.group = group;
+            entries = Arrays.stream(group.group())
+                    .map((Function<GeneratedSource, GroupSourceEntry>)
+                            SourceCodeGenerateMetadataCollector$GeneratedSourceAllocation$GroupSourceEntry::new)
+                    .collect(Collectors.toList());
+        }
 
-        String globeExtendClassName = group.extendClassName();
+        @Override
+        public String getPackageName() {
+            return group.packageName();
+        }
 
-        String[] globeGenericsClassNames = group.extendGenericsClassNames();
+        @Override
+        public ClassKind getClassKind() {
+            return group.classKind();
+        }
 
-        ClassSource[] globeInterfaceClassSources = group.interfaceClassSources();
+        @Override
+        public String getExtendClassName() {
+            return group.extendClassName();
+        }
 
-        AnnotationSource[] globeAnnotationSources = group.annotationSources();
+        @Override
+        public String[] getExtendGenericsClassNames() {
+            return group.extendGenericsClassNames();
+        }
 
-        String targetName = typeElement.getQualifiedName().toString();
+        @Override
+        public Map<String, String[]> getInterfaceClassSources() {
+            return GeneratedUtils.convertInterfaceClassNameSources(group.interfaceClassSources());
+        }
 
-        AtomicLong noProviderSimpleNameCounter = new AtomicLong(0);
+        @Override
+        public Map<String, String> getAnnotationSources() {
+            return GeneratedUtils.convertAnnotationNameSources(group.annotationSources());
+        }
 
-        for (GeneratedSource source : group.group()) {
+        @Override
+        public int getSize() {
+            return entries.size();
+        }
 
-            String usePackageName;
+        @Override
+        @NotNull
+        public List<GroupSourceEntry> getEntries() {
+            return entries;
+        }
+    }
 
-            ClassKind useClassKind;
+    /**
+     * The implementation class for interface {@link GeneratedSourceAllocation.GroupSourceEntry}
+     * of {@link SourceCodeGenerateMetadataCollector}.
+     */
+    static class SourceCodeGenerateMetadataCollector$GeneratedSourceAllocation$GroupSourceEntry implements
+            GeneratedSourceAllocation.GroupSourceEntry{
 
-            String useExtendClassName;
+        private final GeneratedSource source;
 
-            String[] useGenericsClassNames;
+        public SourceCodeGenerateMetadataCollector$GeneratedSourceAllocation$GroupSourceEntry(
+                GeneratedSource source) {
+            this.source = source;
+        }
 
-            ClassSource[] useInterfaceClassSources;
+        @Override
+        public String getSimpleName() {
+            return source.simpleName();
+        }
 
-            AnnotationSource[] useAnnotationSources;
+        @Override
+        public String getPackageName() {
+            return source.packageName();
+        }
 
-            if (StringUtils.isNotBlank(globePackageName)) {
-                usePackageName = globePackageName;
-            } else usePackageName = source.packageName();
+        @Override
+        public ClassKind getClassKind() {
+            return source.classKind();
+        }
 
-            if (globeClassKind != null) {
-                useClassKind = globeClassKind;
-            } else useClassKind = source.classKind();
+        @Override
+        public String getExtendClassName() {
+            return source.extendClassName();
+        }
 
-            if (StringUtils.isNotBlank(globeExtendClassName)) {
-                useExtendClassName = globeExtendClassName;
-            } else useExtendClassName = source.extendClassName();
+        @Override
+        public String[] getExtendGenericsClassNames() {
+            return source.extendGenericsClassNames();
+        }
 
-            if (ArrayUtils.isNotEmpty(globeGenericsClassNames)) {
-                useGenericsClassNames = globeGenericsClassNames;
-            } else useGenericsClassNames = source.extendGenericsClassNames();
+        @Override
+        public Map<String, String[]> getInterfaceClassSources() {
+            return GeneratedUtils.convertInterfaceClassNameSources(source.interfaceClassSources());
+        }
 
-            if (ArrayUtils.isNotEmpty(globeInterfaceClassSources)) {
-                useInterfaceClassSources = globeInterfaceClassSources;
-            } else useInterfaceClassSources = source.interfaceClassSources();
-
-            if (ArrayUtils.isNotEmpty(globeAnnotationSources)) {
-                useAnnotationSources = globeAnnotationSources;
-            } else useAnnotationSources = source.annotationSources();
-
-            Triple<String, String, String> names = GeneratedUtils.getNames(
-                    source.simpleName(),
-                    usePackageName,
-                    typeElement.getQualifiedName(), typeElement.getSimpleName(),
-                    noProviderSimpleNameCounter);
-
-            new SourceCodeGenerateInvocation(
-                    names.getV1(),
-                    names.getV2(),
-                    targetName,
-                    useClassKind,
-                    useExtendClassName,
-                    useGenericsClassNames,
-                    useInterfaceClassSources,
-                    useAnnotationSources).write(getFiler(), getLogger());
+        @Override
+        public Map<String, String> getAnnotationSources() {
+            return GeneratedUtils.convertAnnotationNameSources(source.annotationSources());
         }
     }
 }
