@@ -3,10 +3,6 @@ package top.osjf.assembly.simplified.scope;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import static org.springframework.web.context.WebApplicationContext.SCOPE_REQUEST;
-import static org.springframework.web.context.WebApplicationContext.SCOPE_SESSION;
-import static org.springframework.web.context.WebApplicationContext.SCOPE_APPLICATION;
-
 /**
  * The loading interface for unNormal scope container beans in the Spring
  * framework (normal scope includes singleton and multi instance), and the
@@ -14,15 +10,16 @@ import static org.springframework.web.context.WebApplicationContext.SCOPE_APPLIC
  * domain{@code SCOPE_APPLICATION}, session domain{@code SCOPE_SESSION},
  * etc. defined by the Spring framework.
  *
- * <p>This interface supports the loading and creation of special scope beans.
- * For specific differentiation, you can refer to the extension interface of the
- * subclass. It is generally recommended to use the extension interface directly,
- * or you can use the extension method {@link #type()} directly to distinguish scopes.
+ * <p>This interface defines the initialization method {@link #load()} for the
+ * special scope beans mentioned above, the callback after setting the properties,
+ * and the destroy callback when discarding usage.
+ *
+ * <p>Due to the fact that the special scope of beans in the Spring framework cannot
+ * be dynamically changed in {@link org.springframework.beans.factory.config.BeanDefinition},
+ * the establishment of special scopes still requires the use of annotations from the
+ * Spring special framework, as referenced in {@link org.springframework.context.annotation.Scope}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @see RequestScopeLoader
- * @see SessionScopeLoader
- * @see ApplicationScopeLoader
  * @since 2.1.6
  */
 public interface ScopeLoader extends InitializingBean, DisposableBean {
@@ -34,17 +31,7 @@ public interface ScopeLoader extends InitializingBean, DisposableBean {
      * <p>At the end of the call, the {@link #destroy()} callback is
      * automatically called to destroy it.
      */
-    default void load() {
-    }
-
-    /**
-     * Specify the special scope of the current bean in the form of an
-     * enumeration {@link SupportScopeType}.
-     *
-     * @return the special scope of the current bean in the form of an
-     * enumeration {@link SupportScopeType}.
-     */
-    SupportScopeType type();
+    void load();
 
     /**
      * After using a special scope to create a bean and completing attribute assignments,
@@ -65,19 +52,5 @@ public interface ScopeLoader extends InitializingBean, DisposableBean {
      */
     @Override
     default void destroy() throws Exception {
-    }
-
-    /**
-     * @see org.springframework.web.context.WebApplicationContext
-     */
-    enum SupportScopeType {
-        REQUEST(SCOPE_REQUEST),
-        SESSION(SCOPE_SESSION),
-        APPLICATION(SCOPE_APPLICATION);
-        final String scope;
-
-        SupportScopeType(String scope) {
-            this.scope = scope;
-        }
     }
 }
