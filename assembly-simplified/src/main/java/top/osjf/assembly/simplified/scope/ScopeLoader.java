@@ -20,7 +20,7 @@ import org.springframework.beans.factory.InitializingBean;
  * Spring special framework, as referenced in {@link org.springframework.context.annotation.Scope}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 2.1.6
+ * @since 2.1.7
  */
 public interface ScopeLoader extends InitializingBean, DisposableBean {
 

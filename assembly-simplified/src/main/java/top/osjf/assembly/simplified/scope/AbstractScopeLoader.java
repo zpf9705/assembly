@@ -13,7 +13,7 @@ import java.util.Arrays;
  * and dynamic entry requirements that may be required after loading special beans.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 2.1.6
+ * @since 2.1.7
  */
 public abstract class AbstractScopeLoader implements ScopeLoader {
 
@@ -36,6 +36,7 @@ public abstract class AbstractScopeLoader implements ScopeLoader {
      *
      * <p>Please note the above two points. The above logic comes from
      * {@link AspectJAroundAdvice#currentJoinPoint()}
+     * @return Join Point info of aspectj.
      */
     public JoinPoint currentJoinPoint() {
         return AbstractAspectJAdvice.currentJoinPoint();
