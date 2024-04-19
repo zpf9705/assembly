@@ -2,11 +2,13 @@ package top.osjf.assembly.simplified.cron;
 
 import cn.hutool.cron.CronException;
 import cn.hutool.cron.CronUtil;
+import org.springframework.aop.framework.AopProxyUtils;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.env.Environment;
 import org.springframework.scheduling.support.CronExpression;
 import top.osjf.assembly.simplified.cron.annotation.Cron;
+import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.io.ScanUtils;
 import top.osjf.assembly.util.lang.ArrayUtils;
@@ -19,21 +21,19 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Timed task registrar, which relies on domestic Hutu {@code cn.hutool.Hutool} toolkit for implementation.
+ * Timed task registrar, which relies on domestic Hutu {@code cn.hutool.Hutool}
+ * toolkit for implementation.
  *
  * @author zpf
+ * @see cn.hutool.Hutool
  * @since 1.1.0
  */
 public final class CronRegister {
 
-    static final String second_match_key = "cron.match.second=";
-
-    static final String thread_daemon_key = "cron.thread.daemon=";
-
     private CronRegister() {
     }
 
-    //************************** Help class ******************************//
+    //************************** EnableCronTaskRegister Help class start ******************************//
 
     /**
      * @since 2.0.3
@@ -112,7 +112,7 @@ public final class CronRegister {
         }
 
         protected static void start(@NotNull ApplicationContext context) {
-            if (!enable){
+            if (!enable) {
                 return;
             }
             //The first step is to add a scheduled task.
@@ -125,7 +125,7 @@ public final class CronRegister {
         }
 
         protected static void running(@NotNull ApplicationContext context) {
-            if (!enable){
+            if (!enable) {
                 clear();
                 return;
             }
@@ -197,32 +197,6 @@ public final class CronRegister {
         }
     }
 
-    public static void registerWthBean(Object bean, Environment environment) {
-        if (bean == null
-                || ArrayUtils.isEmpty(bean.getClass().getMethods())
-                || Arrays.stream(bean.getClass().getMethods()).allMatch(m -> m.getAnnotation(Cron.class) == null)) {
-            return;
-        }
-        for (Method method : bean.getClass().getMethods()) {
-            Cron cron = method.getAnnotation(Cron.class);
-            if (cron != null) {
-                if (profilesCheck(cron.profiles(), environment.getActiveProfiles())) {
-                    CronRegister.register(cron.express(), () -> ReflectUtils.invoke(bean, method));
-                }
-            }
-        }
-    }
-
-    private static boolean profilesCheck(String[] providerProfiles, String[] startUpProfiles) {
-        if (ArrayUtils.isEmpty(startUpProfiles)) {
-            throw new CronException("No startup env profiles");
-        }
-        if (ArrayUtils.isEmpty(providerProfiles)) {
-            return true;
-        }
-        return Arrays.stream(providerProfiles).anyMatch(p -> Arrays.asList(startUpProfiles).contains(p));
-    }
-
     public static void register(String express, Runnable runnable) {
         if (express == null || runnable == null) {
             return;
@@ -234,6 +208,94 @@ public final class CronRegister {
         CronUtil.schedule(express, runnable);
     }
 
+    public static List<Method> getScanMethodsWithCron(String... scanPackage) {
+        if (ArrayUtils.isEmpty(scanPackage)) {
+            return Collections.emptyList();
+        }
+        return new ArrayList<>(ScanUtils.getMethodsAnnotatedWith(Cron.class, scanPackage));
+    }
+
+    //************************** EnableCronTaskRegister Help class end ******************************//
+
+
+    //*********************************************************************************************//
+
+    //**************************  EnableCronTaskRegister2   ******************************//
+
+    /**
+     * By obtaining container beans, check if their built-in accessible methods contain
+     * {@link Cron} annotations, in order to register and run them on a scheduled basis.
+     *
+     * <p>Before 2.1.7, there was no attention paid to the situation of dynamic proxies,
+     * and support for dynamic proxy objects was added in version 2.1.8.
+     *
+     * @param bean           Container beans.
+     * @param activeProfiles Spring environment.
+     * @see AopUtils#isAopProxy(Object)
+     */
+    public static void register(Object bean, @CanNull String[] activeProfiles) {
+        if (bean == null) return;
+
+        //@Since 2.1.8
+        //If it is a dynamic proxy object, first obtain the class object of
+        // its target object, and obtain it directly without the proxy.
+        Class<?> target;
+        if (AopUtils.isAopProxy(bean)) {
+            target = AopProxyUtils.ultimateTargetClass(bean);
+        } else {
+            target = bean.getClass();
+        }
+        Method[] methods = target.getMethods();
+        //Determine if there is a timing method.
+        if (Arrays.stream(methods).allMatch(m -> m.getAnnotation(Cron.class) == null)) {
+            return;
+        }
+        for (Method method : methods) {
+            Cron cron = method.getAnnotation(Cron.class);
+            if (cron != null) {
+                String express = cron.express();
+                Runnable rab = () -> ReflectUtils.invoke(bean, method);
+                if (ArrayUtils.isEmpty(activeProfiles)) {
+                    //When the environment is not activated, it indicates that
+                    // everything is applicable and can be registered directly.
+                    CronRegister.register(express, rab);
+                } else {
+                    if (profilesCheck(cron.profiles(), activeProfiles)) {
+                        CronRegister.register(express, rab);
+                    }
+                }
+
+            }
+        }
+    }
+
+    /**
+     * Check if the required operating environment is within the list of activated environments.
+     *
+     * @param providerProfiles The set of execution environment names that the
+     *                         registration task aims to satisfy.
+     * @param activeProfiles   The current set of activated environments.
+     * @return if {@code true} allow registration ,otherwise no allowed.
+     */
+    public static boolean profilesCheck(String[] providerProfiles, String[] activeProfiles) {
+        if (ArrayUtils.isEmpty(activeProfiles)) {
+            //When the environment is not activated, it indicates that
+            // everything is applicable and can be registered directly.
+            return true;
+        }
+        if (ArrayUtils.isEmpty(providerProfiles)) {
+            //When no running environment is provided, register directly.
+            return true;
+        }
+        //Adaptation provides the presence of the required environment in the activated environment.
+        return Arrays.stream(providerProfiles).anyMatch(p -> Arrays.asList(activeProfiles).contains(p));
+    }
+
+    /**
+     * Scan the top path to obtain the listener.
+     *
+     * @param scanPackage The path where the listener is located.
+     */
     public static void addListenerWithPackages(String[] scanPackage) {
         if (ArrayUtils.isEmpty(scanPackage)) {
             return;
@@ -245,6 +307,11 @@ public final class CronRegister {
         classes.forEach(c -> addListener(ReflectUtils.newInstance(c)));
     }
 
+    /**
+     * Add listeners for the start sequence of scheduled tasks.
+     *
+     * @param cronListeners listeners for the start sequence of scheduled tasks.
+     */
     public static void addListener(CronListener... cronListeners) {
         if (ArrayUtils.isEmpty(cronListeners)) {
             return;
@@ -255,20 +322,33 @@ public final class CronRegister {
         }
     }
 
+    /**
+     * Pause a scheduled task by deleting it through ID.
+     *
+     * @param taskId Unique ID for scheduled tasks.
+     */
     public static void removeCornTask(String taskId) {
         CronUtil.remove(taskId);
     }
 
-    public static List<Method> getScanMethodsWithCron(String... scanPackage) {
-        if (ArrayUtils.isEmpty(scanPackage)) {
-            return Collections.emptyList();
-        }
-        return new ArrayList<>(ScanUtils.getMethodsAnnotatedWith(Cron.class, scanPackage));
-    }
-
+    /**
+     * Obtain whether scheduled registration is an empty item.
+     *
+     * @return if {@code true} register item number is zero ,otherwise more than 0.
+     */
     public static boolean registerZero() {
         return CronUtil.getScheduler().isEmpty();
     }
+
+    /**
+     * Support timed second level for startup parameters.
+     */
+    static final String second_match_key = "cron.match.second=";
+
+    /**
+     * Support thread daemon for startup parameters.
+     */
+    static final String thread_daemon_key = "cron.thread.daemon=";
 
     /**
      * Notify the system of the startup parameters passed in by the main method to

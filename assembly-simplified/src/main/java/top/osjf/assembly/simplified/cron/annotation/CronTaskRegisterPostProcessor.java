@@ -82,7 +82,7 @@ public class CronTaskRegisterPostProcessor extends SmartContextRefreshed impleme
     @CanNull
     @Override
     public Object postProcessAfterInitialization(@NotNull Object bean, @NotNull String beanName) throws BeansException {
-        CronRegister.registerWthBean(bean, environment);
+        CronRegister.register(bean, environment.getActiveProfiles());
         return bean;
     }
 

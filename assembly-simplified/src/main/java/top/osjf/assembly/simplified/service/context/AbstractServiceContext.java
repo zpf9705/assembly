@@ -182,9 +182,9 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
          * @param args        The startup parameters for the application startup class of Spring.
          */
         public ServiceContextRunListener(SpringApplication application, String[] args) {
-            mainApplicationPackage = application.getMainApplicationClass().getPackage().getName();
             //Determine whether to add a custom bean name generator based on the existence of adaptive annotations.
             Class<?> mainApplicationClass = application.getMainApplicationClass();
+            mainApplicationPackage = mainApplicationClass.getPackage().getName();
             if (mainApplicationClass.isAnnotationPresent(EnableServiceCollection.class)
                     || mainApplicationClass.isAnnotationPresent(EnableServiceCollection2.class)
                     //Only the package path where the main class is located is restricted here.
@@ -194,28 +194,49 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
             }
         }
 
+        /**
+         * Return the package path where the SpringBoot main class is located.
+         * @return the package path where the SpringBoot main class is located.
+         */
         protected static String getMainApplicationPackage() {
             return mainApplicationPackage;
         }
 
+        /**
+         * Set the spring context object for initialization.
+         * @param context0 the spring context object for initialization.
+         */
         protected static void setConfigurableApplicationContext(ConfigurableApplicationContext context0) {
             context = context0;
         }
 
+        /**
+         * Return the spring context object for initialization.
+         * @return the spring context object for initialization.
+         */
         protected static ConfigurableApplicationContext getContext() {
             return context;
         }
 
+        /**
+         * Clear intermediate variables.
+         */
         protected static void clearMainApplicationPackageCache() {
             mainApplicationPackage = null;
             resetBeanNameGeneratorSwitch();
         }
 
+        /**
+         * Clear the cache of the spring context.
+         */
         protected static void clearContextCache() {
             context = null;
             resetBeanNameGeneratorSwitch();
         }
 
+        /**
+         * Clear the setting cache of the bean name registration machine.
+         */
         protected static void resetBeanNameGeneratorSwitch() {
             if (enableCustomBeanNameGeneratorSet) enableCustomBeanNameGeneratorSet = false;
         }
@@ -265,26 +286,48 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
         return context;
     }
 
+    /**
+     * Return the package path where the SpringBoot main class is located.
+     * @return the package path where the SpringBoot main class is located.
+     */
     public String getApplicationPackage() {
         return ServiceContextRunListener.getMainApplicationPackage();
     }
 
+    /**
+     * Return the bean registration machine for Spring.
+     * @return the bean registration machine for Spring.
+     */
     public BeanDefinitionRegistry getBeanDefinitionRegistry() {
         return (BeanDefinitionRegistry) context;
     }
 
+    /**
+     * Return service mapping cache.
+     * @return service mapping cache.
+     */
     public ClassMap<String, Object> getContextMap() {
         return contextMap;
     }
 
+    /**
+     * Return the spring context object for initialization.
+     * @return the spring context object for initialization.
+     */
     public ConfigurableApplicationContext getConfigurableApplicationContext() {
         return ServiceContextRunListener.getContext();
     }
 
+    /**
+     * Clear intermediate variables.
+     */
     protected static void clearMainApplicationPackageCache() {
         ServiceContextRunListener.clearMainApplicationPackageCache();
     }
 
+    /**
+     * Clear the cache of the spring context.
+     */
     protected static void clearContextCache() {
         ServiceContextRunListener.clearContextCache();
     }
