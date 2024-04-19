@@ -47,9 +47,11 @@ import java.util.Objects;
  * <p>Implementation {@link EnvironmentPostProcessor} provides task methods to scan the application
  * default when the package path is not provided.{@link Class#getPackage()}</p>
  *
+ * @deprecated See {@link top.osjf.assembly.simplified.cron.annotation.CronTaskRegisterPostProcessor}
  * @author zpf
  * @since 1.1.0
  */
+@Deprecated
 public class CronTaskRegister implements EnvironmentPostProcessor, EnvironmentAware, ImportSelector,
         SpringApplicationRunListener, Ordered {
 

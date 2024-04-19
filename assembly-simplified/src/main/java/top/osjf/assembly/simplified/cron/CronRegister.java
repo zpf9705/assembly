@@ -38,6 +38,7 @@ public final class CronRegister {
     /**
      * @since 2.0.3
      */
+    @Deprecated
     protected static class Actuator {
 
         protected static boolean enable;
@@ -162,6 +163,7 @@ public final class CronRegister {
         }
     }
 
+    @Deprecated
     public static void registerPrepareCronWithSpringContextOrNew(@NotNull ApplicationContext context,
                                                                  List<Method> cronMethods) {
         if (CollectionUtils.isEmpty(cronMethods)) {
@@ -197,6 +199,7 @@ public final class CronRegister {
         }
     }
 
+    @Deprecated
     public static List<Method> getScanMethodsWithCron(String... scanPackage) {
         if (ArrayUtils.isEmpty(scanPackage)) {
             return Collections.emptyList();

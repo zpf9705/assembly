@@ -18,7 +18,7 @@ import java.lang.annotation.*;
  *
  * <p>It only needs to be standardized in the class header of the spring
  * container to be implemented.</p>
- *
+ * @deprecated See {@link EnableCronTaskRegister2}
  * @author zpf
  * @since 1.1.0
  */
@@ -26,6 +26,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Import({CronTaskRegister.class})
+@Deprecated
 public @interface EnableCronTaskRegister {
 
     /**
