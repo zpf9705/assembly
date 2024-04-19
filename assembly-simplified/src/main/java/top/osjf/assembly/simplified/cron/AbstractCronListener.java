@@ -4,8 +4,9 @@ import cn.hutool.cron.TaskExecutor;
 import top.osjf.assembly.util.annotation.NotNull;
 
 /**
- * For abstract classes implemented by exception methods, the signals for startup and success can be selectively rewritten.
- *
+ * For abstract classes implemented by exception methods, the signals
+ * for startup and success can be selectively rewritten.
+ * @see CronListener
  * @author zpf
  * @since 1.1.0
  */
@@ -26,15 +27,28 @@ public abstract class AbstractCronListener implements CronListener {
         onFailedSetSchedulerId(executor.getCronTask().getId(), exception);
     }
 
-    public void onStartSetSchedulerId(@NotNull String SchedulerId) {
+    /**
+     * Triggered when a scheduled task is initiated, passing a unique scheduled ID.
+     * @param schedulerId a unique scheduled ID.
+     */
+    public void onStartSetSchedulerId(@NotNull String schedulerId) {
 
     }
 
-    public void onSucceededSetSchedulerId(@NotNull String SchedulerId) {
+    /**
+     * Triggered when a timed task is completed, passing a unique timed ID.
+     * @param schedulerId a unique scheduled ID.
+     */
+    public void onSucceededSetSchedulerId(@NotNull String schedulerId) {
 
     }
 
-    public void onFailedSetSchedulerId(@NotNull String SchedulerId, Throwable exception) {
+    /**
+     * Triggered when a scheduled task is abnormal, passing a unique scheduled ID.
+     * @param schedulerId a unique scheduled ID.
+     * @param exception Abnormal encapsulation.
+     */
+    public void onFailedSetSchedulerId(@NotNull String schedulerId, Throwable exception) {
 
     }
 }
