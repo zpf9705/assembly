@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  * toolkit for implementation.
  *
  * @author zpf
- * @see cn.hutool.Hutool
+ * @see CronUtil
  * @since 1.1.0
  */
 public final class CronRegister {
@@ -197,17 +197,6 @@ public final class CronRegister {
         }
     }
 
-    public static void register(String express, Runnable runnable) {
-        if (express == null || runnable == null) {
-            return;
-        }
-        if (!CronExpression.isValidExpression(express)) {
-            throw new CronException("Provider " + express + "no a valid cron express");
-        }
-        //Register scheduled tasks
-        CronUtil.schedule(express, runnable);
-    }
-
     public static List<Method> getScanMethodsWithCron(String... scanPackage) {
         if (ArrayUtils.isEmpty(scanPackage)) {
             return Collections.emptyList();
@@ -258,10 +247,10 @@ public final class CronRegister {
                 if (ArrayUtils.isEmpty(activeProfiles)) {
                     //When the environment is not activated, it indicates that
                     // everything is applicable and can be registered directly.
-                    CronRegister.register(express, rab);
+                    register(express, rab);
                 } else {
                     if (profilesCheck(cron.profiles(), activeProfiles)) {
-                        CronRegister.register(express, rab);
+                        register(express, rab);
                     }
                 }
 
@@ -339,6 +328,27 @@ public final class CronRegister {
     public static boolean registerZero() {
         return CronUtil.getScheduler().isEmpty();
     }
+
+
+    //******************************** register rule ***************************************//
+
+    /**
+     * Register a valid cron expression and runtime into the scheduled task pool.
+     * @param express cron expressions.
+     * @param runnable Register the runtime.
+     */
+    public static void register(String express, Runnable runnable) {
+        if (express == null || runnable == null) {
+            return;
+        }
+        if (!CronExpression.isValidExpression(express)) {
+            throw new CronException("Provider " + express + "no a valid cron express");
+        }
+        //Register scheduled tasks
+        CronUtil.schedule(express, runnable);
+    }
+
+    //******************************** start rule ***************************************//
 
     /**
      * Support timed second level for startup parameters.
