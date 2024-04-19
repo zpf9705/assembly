@@ -26,7 +26,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Import({CronTaskRegister.class})
-@Deprecated
+@Deprecated //2.1.8
 public @interface EnableCronTaskRegister {
 
     /**

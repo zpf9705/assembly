@@ -51,7 +51,7 @@ import java.util.Objects;
  * @author zpf
  * @since 1.1.0
  */
-@Deprecated
+@Deprecated //2.1.8
 public class CronTaskRegister implements EnvironmentPostProcessor, EnvironmentAware, ImportSelector,
         SpringApplicationRunListener, Ordered {
 
