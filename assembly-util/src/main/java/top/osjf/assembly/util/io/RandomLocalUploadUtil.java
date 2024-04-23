@@ -59,6 +59,7 @@ public final class RandomLocalUploadUtil {
     /**
      * The system-dependent default name-separator character, represented as a
      * string for convenience.  This string contains a single character, namely
+     * <p>copy form {@link java.io.File}</p>
      */
     private static final String systemFileSeparator = File.separator;
 
