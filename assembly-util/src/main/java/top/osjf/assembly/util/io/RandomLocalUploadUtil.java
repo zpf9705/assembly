@@ -37,7 +37,7 @@ import java.util.Objects;
  * <p>The usage method can be observed as follows:
  *
  * <pre>
- *         RandomLocalUploadUtil.setUploadPath("/Users/zhangpengfei/workspace/rar");
+ *         RandomLocalUploadUtil.setUploadPath("/Users/joe/workspace/example");
  *
  *         BytesImage bytesImage = new BytesImage();
  *
