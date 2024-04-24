@@ -32,9 +32,12 @@ import top.osjf.assembly.util.lang.ArrayUtils;
  * <p>The collection of this service configuration can only rely on
  * <pre>&#064;EnableServiceCollection2@type=SIMPLE.</pre>
  *
+ * @deprecated Due to the delay in bean creation, the monitor of the bean cannot
+ *             monitor all target beans, so this solution is abandoned.
  * @author zpf
  * @since 2.0.6
  */
+@Deprecated
 public class SimpleServiceContext extends AbstractServiceContext implements MergedBeanDefinitionPostProcessor, Ordered {
 
     public SimpleServiceContext() {
