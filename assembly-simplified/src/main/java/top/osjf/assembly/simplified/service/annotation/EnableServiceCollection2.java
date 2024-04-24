@@ -28,8 +28,10 @@ public @interface EnableServiceCollection2 {
 
     /**
      * Select the configuration you need.
-     *
      * @return Refer to {@link Type}.
+     * @deprecated {@link Type#SIMPLE} There is a problem with bean loading
+     * delay, temporarily suspending use.
      */
+    @Deprecated
     Type type() default Type.CLASSES;
 }
