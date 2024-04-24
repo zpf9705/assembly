@@ -37,7 +37,7 @@ import top.osjf.assembly.util.lang.ArrayUtils;
  * @author zpf
  * @since 2.0.6
  */
-@Deprecated
+@Deprecated //2.2.0
 public class SimpleServiceContext extends AbstractServiceContext implements MergedBeanDefinitionPostProcessor, Ordered {
 
     public SimpleServiceContext() {
