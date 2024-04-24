@@ -30,6 +30,9 @@ public final class ServiceContextUtils {
     /*** The name collected in the default class mode.*/
     public static final String CONFIG_BEAN_NAME = "CLASSES_SERVICE_CONTENT_BEAN";
 
+    /*** The name collected in the record class mode.*/
+    public static final String RECORD_BEAN_NAME = "RECORD_SERVICE_CONTENT_BEAN";
+
     /*** The name identification suffix of this service management proxy class.*/
     private static final String SERVICE_COLLECTION_BEAN_SIGNS = "@a.s.proxy";
 
