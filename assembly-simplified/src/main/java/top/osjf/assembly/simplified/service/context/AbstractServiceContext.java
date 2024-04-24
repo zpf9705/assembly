@@ -126,18 +126,21 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
 
             String beanName;
 
-            //First, search for the class object based on the class name.
-            String beanClassName = definition.getBeanClassName();
-            Class<?> clazz = ServiceContextUtils.getClass(beanClassName);
-            if (clazz == null) {
+            //Service collection only accepts default singletons
+            String scope = definition.getScope();
+            if (!BeanDefinition.SCOPE_SINGLETON.equals(scope)) {
                 beanName = super.generateBeanName(definition, registry);
 
             } else {
 
-                //Service collection only accepts default singletons
-                String scope = definition.getScope();
-                if (!BeanDefinition.SCOPE_SINGLETON.equals(scope)) {
+                //search for the class object based on the class name.
+                String beanClassName = definition.getBeanClassName();
+                Class<?> clazz = ServiceContextUtils.getClass(beanClassName);
+
+                //Unknown class object, not processed.
+                if (clazz == null) {
                     beanName = super.generateBeanName(definition, registry);
+
                 } else {
 
                     //Single instance beans perform service collection operations.
