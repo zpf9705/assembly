@@ -16,5 +16,6 @@ public enum Type {
     /**
      * @see top.osjf.assembly.simplified.service.context.SimpleServiceContext
      */
+    @Deprecated
     SIMPLE
 }
