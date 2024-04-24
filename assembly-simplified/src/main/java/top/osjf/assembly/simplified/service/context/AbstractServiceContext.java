@@ -15,6 +15,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import top.osjf.assembly.simplified.service.ServiceContextUtils;
 import top.osjf.assembly.simplified.service.annotation.EnableServiceCollection;
 import top.osjf.assembly.simplified.service.annotation.EnableServiceCollection2;
+import top.osjf.assembly.simplified.service.annotation.EnableServiceCollection3;
 import top.osjf.assembly.simplified.support.SmartContextRefreshed;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.data.ClassMap;
@@ -24,8 +25,10 @@ import top.osjf.assembly.util.lang.CollectionUtils;
 import top.osjf.assembly.util.lang.ReflectUtils;
 import top.osjf.assembly.util.lang.StringUtils;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * The abstract help class for the service context.
@@ -95,53 +98,99 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
 
         private final String applicationId;
 
+        private static final List<String> recordBeanNames = new CopyOnWriteArrayList<>();
+
         public ServiceContextBeanNameGenerator(String applicationId) {
             this.applicationId = applicationId;
+        }
+
+        /**
+         * Returns the name of the bean named by the rule.
+         *
+         * @return the name of the bean named by the rule.
+         */
+        public static List<String> getRecordBeanNames() {
+            return recordBeanNames;
+        }
+
+        /**
+         * Clear the name of the bean named by the rule.
+         */
+        public static void clearRecordBeanNames() {
+            recordBeanNames.clear();
         }
 
         @Override
         @NotNull
         public String generateBeanName(@NotNull BeanDefinition definition, @NotNull BeanDefinitionRegistry registry) {
+
             String beanName;
+
+            //First, search for the class object based on the class name.
             String beanClassName = definition.getBeanClassName();
             Class<?> clazz = ServiceContextUtils.getClass(beanClassName);
             if (clazz == null) {
                 beanName = super.generateBeanName(definition, registry);
+
             } else {
-                List<Class<?>> filterServices = ServiceContextUtils.getFilterServices(clazz);
-                if (CollectionUtils.isEmpty(filterServices)) {
+
+                //Service collection only accepts default singletons
+                String scope = definition.getScope();
+                if (!BeanDefinition.SCOPE_SINGLETON.equals(scope)) {
                     beanName = super.generateBeanName(definition, registry);
                 } else {
-                    String value;
-                    List<String> classAlisa;
-                    if (definition instanceof AnnotatedBeanDefinition) {
-                        value = determineBeanNameFromAnnotation((AnnotatedBeanDefinition) definition);
-                        if (StringUtils.isBlank(value)) {
+
+                    //Single instance beans perform service collection operations.
+                    List<Class<?>> filterServices = ServiceContextUtils.getFilterServices(clazz);
+
+                    //If no collection flag is found, the default bean name definition rule will be used.
+                    if (CollectionUtils.isEmpty(filterServices)) {
+                        beanName = super.generateBeanName(definition, registry);
+
+                    } else {
+
+                        //Service collection name definition rules.
+                        String value;
+                        List<String> classAlisa;
+                        if (definition instanceof AnnotatedBeanDefinition) {
+                            //Get the name of the Spring build annotation.
+                            value = determineBeanNameFromAnnotation((AnnotatedBeanDefinition) definition);
+                            if (StringUtils.isBlank(value)) {
+                                value = clazz.getName();
+                                classAlisa = ServiceContextUtils.analyzeClassAlias(clazz, true);
+                            } else {
+                                classAlisa = ServiceContextUtils.analyzeClassAlias(clazz, false);
+                            }
+                        } else {
                             value = clazz.getName();
                             classAlisa = ServiceContextUtils.analyzeClassAlias(clazz, true);
-                        } else {
-                            classAlisa = ServiceContextUtils.analyzeClassAlias(clazz, false);
                         }
-                    } else {
-                        value = clazz.getName();
-                        classAlisa = ServiceContextUtils.analyzeClassAlias(clazz, true);
-                    }
-                    //Normal name.
-                    beanName = ServiceContextUtils.formatId(filterServices.get(0),
-                            value, applicationId);
-                    //The alias constructed by the first superior class object.
-                    classAlisa.forEach(alisa -> registry.registerAlias(beanName,
-                            ServiceContextUtils.formatAlisa(filterServices.get(0),
-                                    alisa, applicationId)));
-                    //Build a parent alias.
-                    filterServices.remove(0);
-                    if (CollectionUtils.isNotEmpty(filterServices)) {
-                        for (Class<?> filterService : filterServices) {
-                            registry.registerAlias(beanName, ServiceContextUtils.formatAlisa(filterService,
-                                    value, applicationId));
-                            classAlisa.forEach(alias0 -> registry.registerAlias(beanName,
-                                    ServiceContextUtils.formatAlisa(filterService,
-                                            alias0, applicationId)));
+
+                        Class<?> ms = filterServices.get(0);
+
+                        //Format the main bean name according to the rules first.
+                        beanName = ServiceContextUtils.formatId(ms, value, applicationId);
+
+                        //Cache the name of the main bean.
+                        recordBeanNames.add(beanName);
+
+                        //The alias constructed by the first superior class object.
+                        classAlisa.forEach(alisa -> registry.registerAlias(beanName,
+                                ServiceContextUtils.formatAlisa(ms, alisa, applicationId)));
+
+                        //Remove the first level class that has been built.
+                        filterServices.remove(0);
+
+
+                        if (CollectionUtils.isNotEmpty(filterServices)) {
+
+                            //Build an alias for the parent class.
+                            for (Class<?> filterService : filterServices) {
+                                registry.registerAlias(beanName, ServiceContextUtils.formatAlisa(filterService,
+                                        value, applicationId));
+                                classAlisa.forEach(alias0 -> registry.registerAlias(beanName,
+                                        ServiceContextUtils.formatAlisa(filterService, alias0, applicationId)));
+                            }
                         }
                     }
                 }
@@ -162,10 +211,13 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
      */
     public static class ServiceContextRunListener implements SpringApplicationRunListener {
 
+        /*** The package path where the spring main class is located.*/
         private static String mainApplicationPackage;
 
+        /*** Spring configuration context caching.*/
         private static ConfigurableApplicationContext context;
 
+        /*** Do you want to set a new bean name generator.*/
         private static boolean enableCustomBeanNameGeneratorSet;
 
         /**
@@ -182,54 +234,65 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
          * @param args        The startup parameters for the application startup class of Spring.
          */
         public ServiceContextRunListener(SpringApplication application, String[] args) {
+
             //Determine whether to add a custom bean name generator based on the existence of adaptive annotations.
             Class<?> mainApplicationClass = application.getMainApplicationClass();
             mainApplicationPackage = mainApplicationClass.getPackage().getName();
-            if (mainApplicationClass.isAnnotationPresent(EnableServiceCollection.class)
-                    || mainApplicationClass.isAnnotationPresent(EnableServiceCollection2.class)
-                    //Only the package path where the main class is located is restricted here.
-                    || !ScanUtils.getTypesAnnotatedWith(EnableServiceCollection.class, mainApplicationPackage).isEmpty()
-                    || !ScanUtils.getTypesAnnotatedWith(EnableServiceCollection2.class, mainApplicationPackage).isEmpty()) {
+
+            //There is one of the three annotations that requires setting a bean name generator.
+            if (serviceCollectionExist(mainApplicationClass, EnableServiceCollection.class) ||
+                    serviceCollectionExist(mainApplicationClass, EnableServiceCollection2.class) ||
+                    serviceCollectionExist(mainApplicationClass, EnableServiceCollection3.class)) {
                 enableCustomBeanNameGeneratorSet = true;
             }
         }
 
         /**
+         * Returns whether the current project indicates a service annotation.
+         *
+         * @param mainApplicationClass   The main class for launching the Spring framework.
+         * @param serviceAnnotationClass The class object for collecting annotations for the service to be determined.
+         * @return If {@code true} the current project indicates a service annotation,otherwise not.
+         */
+        private static boolean serviceCollectionExist(Class<?> mainApplicationClass,
+                                                      Class<? extends Annotation> serviceAnnotationClass) {
+            return mainApplicationClass.isAnnotationPresent(serviceAnnotationClass)
+                    //Only the package path where the main class is located is restricted here.
+                    || !ScanUtils.getTypesAnnotatedWith(serviceAnnotationClass, mainApplicationPackage).isEmpty();
+        }
+
+        /**
          * Return the package path where the SpringBoot main class is located.
+         *
          * @return the package path where the SpringBoot main class is located.
          */
-        protected static String getMainApplicationPackage() {
+        public static String getMainApplicationPackage() {
             return mainApplicationPackage;
         }
 
         /**
          * Set the spring context object for initialization.
+         *
          * @param context0 the spring context object for initialization.
          */
-        protected static void setConfigurableApplicationContext(ConfigurableApplicationContext context0) {
+        public static void setConfigurableApplicationContext(ConfigurableApplicationContext context0) {
             context = context0;
         }
 
         /**
          * Return the spring context object for initialization.
+         *
          * @return the spring context object for initialization.
          */
-        protected static ConfigurableApplicationContext getContext() {
+        public static ConfigurableApplicationContext getConfigurableApplicationContext() {
             return context;
         }
 
         /**
-         * Clear intermediate variables.
+         * Clear the cache at runtime.
          */
-        protected static void clearMainApplicationPackageCache() {
+        public static void clearCache() {
             mainApplicationPackage = null;
-            resetBeanNameGeneratorSwitch();
-        }
-
-        /**
-         * Clear the cache of the spring context.
-         */
-        protected static void clearContextCache() {
             context = null;
             resetBeanNameGeneratorSwitch();
         }
@@ -237,7 +300,7 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
         /**
          * Clear the setting cache of the bean name registration machine.
          */
-        protected static void resetBeanNameGeneratorSwitch() {
+        public static void resetBeanNameGeneratorSwitch() {
             if (enableCustomBeanNameGeneratorSet) enableCustomBeanNameGeneratorSet = false;
         }
 
@@ -264,8 +327,14 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
         S service = ServiceContextUtils.getService(serviceName, requiredType, context.getId(),
                 encodeServiceName -> contextMap.getValueOnClass(encodeServiceName, requiredType));
         if (service == null) {
+            if (StringUtils.isBlank(serviceName)) {
+                throw new NullPointerException("ServiceName must not be null");
+            }
+            if (requiredType == null) {
+                throw new NullPointerException("RequiredType must not be null");
+            }
             //Throw an exception that cannot be found.
-            throw new NoSuchServiceException(serviceName);
+            throw new NoSuchServiceException(serviceName, requiredType);
         }
         return service;
     }
@@ -286,54 +355,71 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
         return context;
     }
 
+    @Override
+    public void close() {
+        contextMap.clear();
+    }
+
+    //———————————————————————————————————— info op
+
+    /**
+     * Return service mapping cache.
+     *
+     * @return service mapping cache.
+     */
+    protected ClassMap<String, Object> getContextMap() {
+        return contextMap;
+    }
+
     /**
      * Return the package path where the SpringBoot main class is located.
+     *
      * @return the package path where the SpringBoot main class is located.
      */
-    public String getApplicationPackage() {
+    protected String getMainApplicationPackage() {
         return ServiceContextRunListener.getMainApplicationPackage();
     }
 
     /**
      * Return the bean registration machine for Spring.
+     *
      * @return the bean registration machine for Spring.
      */
-    public BeanDefinitionRegistry getBeanDefinitionRegistry() {
+    protected BeanDefinitionRegistry getBeanDefinitionRegistry() {
         return (BeanDefinitionRegistry) context;
     }
 
     /**
-     * Return service mapping cache.
-     * @return service mapping cache.
-     */
-    public ClassMap<String, Object> getContextMap() {
-        return contextMap;
-    }
-
-    /**
      * Return the spring context object for initialization.
+     *
      * @return the spring context object for initialization.
      */
-    public ConfigurableApplicationContext getConfigurableApplicationContext() {
-        return ServiceContextRunListener.getContext();
+    protected ConfigurableApplicationContext getConfigurableApplicationContext() {
+        return ServiceContextRunListener.getConfigurableApplicationContext();
     }
 
     /**
-     * Clear intermediate variables.
+     * Returns the name of the bean named by the rule.
+     *
+     * @return the name of the bean named by the rule.
      */
-    protected static void clearMainApplicationPackageCache() {
-        ServiceContextRunListener.clearMainApplicationPackageCache();
+    protected List<String> getRecordBeanNames() {
+        return ServiceContextBeanNameGenerator.getRecordBeanNames();
+    }
+
+    //———————————————————————————————————— clear op
+
+    /**
+     * Clear {@link ServiceContextRunListener} intermediate variables.
+     */
+    protected void clearCache() {
+        ServiceContextRunListener.clearCache();
     }
 
     /**
-     * Clear the cache of the spring context.
+     * Clear the name of the bean named by the rule.
      */
-    protected static void clearContextCache() {
-        ServiceContextRunListener.clearContextCache();
-    }
-
-    @Override
-    public void close() {
-        contextMap.clear();
+    protected void clearRecordBeanNames() {
+        ServiceContextBeanNameGenerator.clearRecordBeanNames();
     }
 }
