@@ -65,7 +65,7 @@ public class SimpleServiceContext extends AbstractServiceContext implements Merg
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         super.onApplicationEvent(event);
-        clearContextCache();
+        clearCache();
     }
 
     @Override
