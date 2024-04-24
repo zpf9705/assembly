@@ -14,8 +14,9 @@ public class NoSuchServiceException extends BeansException {
 
     private final String serviceName;
 
-    public NoSuchServiceException(String serviceName) {
-        super("No service named " + serviceName + " was found from the service context");
+    public NoSuchServiceException(String serviceName, Class<?> clazz) {
+        super("Required type " + clazz.getName() + " no service named " + serviceName +
+                " was found from the service context");
         this.serviceName = serviceName;
     }
 
