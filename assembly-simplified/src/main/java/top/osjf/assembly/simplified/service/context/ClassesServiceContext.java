@@ -64,16 +64,16 @@ public class ClassesServiceContext extends AbstractServiceContext {
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         super.onApplicationEvent(event);
-        setScanPackages(getApplicationPackage());
-        load(this, event.getApplicationContext());
-        clearMainApplicationPackageCache();
+        setScanPackages(getMainApplicationPackage());
+        load(this);
+        clearCache();
     }
 
     @Override
     public void reloadWithScanPackages(String... packages) {
         close();
         setScanPackages(packages);
-        load(this, getApplicationContext());
+        load(this);
     }
 
     @Override
@@ -82,13 +82,14 @@ public class ClassesServiceContext extends AbstractServiceContext {
         this.scanPackages = null;
     }
 
-    private void load(ClassesServiceContext contextBean, ApplicationContext context) {
+    private void load(ClassesServiceContext contextBean) {
         Set<Class<Object>> serviceClasses = ScanUtils
                 .getTypesAnnotatedWith(ServiceCollection.class, contextBean.scanPackages);
         if (CollectionUtils.isEmpty(serviceClasses)) {
             return;
         }
-        BeanDefinitionRegistry registry = (BeanDefinitionRegistry) context;
+        ApplicationContext context = getApplicationContext();
+        BeanDefinitionRegistry registry = getBeanDefinitionRegistry();
         for (Class<Object> serviceClass : serviceClasses) {
             Map<String, Object> beansMap;
             try {
