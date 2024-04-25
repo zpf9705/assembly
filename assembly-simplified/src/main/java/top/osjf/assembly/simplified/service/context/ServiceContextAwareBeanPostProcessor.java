@@ -3,11 +3,11 @@ package top.osjf.assembly.simplified.service.context;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.Aware;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.Ordered;
 import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
+
+import java.util.Objects;
 
 /**
  * To implement {@link ServiceContextAware}'s bean setting {@link ServiceContext},
@@ -16,14 +16,19 @@ import top.osjf.assembly.util.annotation.NotNull;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.1
  */
-public class ServiceContextAwareBeanPostProcessor implements BeanPostProcessor, ApplicationContextAware, Ordered {
+public class ServiceContextAwareBeanPostProcessor implements BeanPostProcessor, Ordered {
 
     /*** The service context that has already been loaded.*/
-    private ServiceContext serviceContext;
+    private final ServiceContext serviceContext;
 
-    @Override
-    public void setApplicationContext(@NotNull ApplicationContext applicationContext) throws BeansException {
-        serviceContext = applicationContext.getBean(ServiceContext.class);
+    /**
+     * The construction method of carrying service context.
+     * @param serviceContext carrying service context
+     * @since 2.2.2
+     */
+    public ServiceContextAwareBeanPostProcessor(ServiceContext serviceContext) {
+        Objects.requireNonNull(serviceContext, "ServiceContext must not be null");
+        this.serviceContext = serviceContext;
     }
 
     @CanNull
