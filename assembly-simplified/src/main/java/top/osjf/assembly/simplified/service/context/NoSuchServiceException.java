@@ -14,13 +14,28 @@ public class NoSuchServiceException extends BeansException {
 
     private final String serviceName;
 
-    public NoSuchServiceException(String serviceName, Class<?> clazz) {
-        super("Required type " + clazz.getName() + " no service named " + serviceName +
+    private final Class<?> requiredType;
+
+    public NoSuchServiceException(String serviceName, Class<?> requiredType) {
+        super("Required type " + requiredType.getName() + " no service named " + serviceName +
                 " was found from the service context");
         this.serviceName = serviceName;
+        this.requiredType = requiredType;
     }
 
+    /**
+     * Return the service name of the parameter that did not find the service bean.
+     * @return the service name of the parameter that did not find the service bean.
+     */
     public String getServiceName() {
         return serviceName;
+    }
+
+    /**
+     * Return the conversion type of parameters for service beans that were not found.
+     * @return the conversion type of parameters for service beans that were not found.
+     */
+    public Class<?> getRequiredType() {
+        return requiredType;
     }
 }
