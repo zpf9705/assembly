@@ -2,6 +2,7 @@ package top.osjf.assembly.simplified.service.context;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.Aware;
+import top.osjf.assembly.util.annotation.NotNull;
 
 /**
  * Interface to be implemented by any bean that wishes to be
@@ -20,5 +21,5 @@ public interface ServiceContextAware extends Aware {
      * @param serviceContext service context to be used by this object
      * @throws BeansException if thrown by service context methods.
      */
-    void setServiceContext(ServiceContext serviceContext) throws BeansException;
+    void setServiceContext(@NotNull ServiceContext serviceContext) throws BeansException;
 }

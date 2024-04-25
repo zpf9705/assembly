@@ -1,3 +1,6 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  top.osjf.assembly.simplified.SimplifiedAutoConfiguration
+
 # Application Run Listener
 org.springframework.boot.SpringApplicationRunListener=\
 top.osjf.assembly.simplified.cron.CronTaskRegister,\
