@@ -2,9 +2,11 @@ package top.osjf.assembly.simplified;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
+import top.osjf.assembly.simplified.service.ServiceContextUtils;
 import top.osjf.assembly.simplified.service.context.ServiceContext;
 import top.osjf.assembly.simplified.service.context.ServiceContextAwareBeanPostProcessor;
 
@@ -17,10 +19,14 @@ import top.osjf.assembly.simplified.service.context.ServiceContextAwareBeanPostP
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 public class SimplifiedAutoConfiguration {
 
-    @Bean
+    //———————————————————————————————————————— auto config for serviceContext setting
+
+    @Bean(ServiceContextUtils.SC_AWARE_BPP_NANE)
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-    @ConditionalOnBean(ServiceContext.class)
-    public ServiceContextAwareBeanPostProcessor serviceContextAwareBeanPostProcessor() {
-        return new ServiceContextAwareBeanPostProcessor();
+    @ConditionalOnBean(ServiceContext.class) //Configure during service context loading
+    @ConditionalOnMissingBean(ServiceContextAwareBeanPostProcessor.class) //Only configure when this configuration is not available
+    public ServiceContextAwareBeanPostProcessor serviceContextAwareBeanPostProcessor(/*Since 2.2.2*/
+            ServiceContext serviceContext) {
+        return new ServiceContextAwareBeanPostProcessor(serviceContext);
     }
 }
