@@ -33,6 +33,9 @@ public final class ServiceContextUtils {
     /*** The name collected in the record class mode.*/
     public static final String RECORD_BEAN_NAME = "RECORD_SERVICE_CONTENT_BEAN";
 
+    /*** The bean name of the bean monitor when setting the service context.*/
+    public static final String SC_AWARE_BPP_NANE = "CONTENT_AWARE_BPP_BEAN";
+
     /*** The name identification suffix of this service management proxy class.*/
     private static final String SERVICE_COLLECTION_BEAN_SIGNS = "@a.s.proxy";
 
