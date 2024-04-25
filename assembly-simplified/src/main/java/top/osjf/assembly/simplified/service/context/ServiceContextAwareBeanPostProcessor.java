@@ -5,6 +5,7 @@ import org.springframework.beans.factory.Aware;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.Ordered;
 import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
 
@@ -15,7 +16,7 @@ import top.osjf.assembly.util.annotation.NotNull;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.1
  */
-public class ServiceContextAwareBeanPostProcessor implements BeanPostProcessor, ApplicationContextAware {
+public class ServiceContextAwareBeanPostProcessor implements BeanPostProcessor, ApplicationContextAware, Ordered {
 
     /*** The service context that has already been loaded.*/
     private ServiceContext serviceContext;
@@ -34,5 +35,10 @@ public class ServiceContextAwareBeanPostProcessor implements BeanPostProcessor, 
             }
         }
         return BeanPostProcessor.super.postProcessAfterInitialization(bean, beanName);
+    }
+
+    @Override
+    public int getOrder() {
+        return Ordered.HIGHEST_PRECEDENCE + 18;
     }
 }
