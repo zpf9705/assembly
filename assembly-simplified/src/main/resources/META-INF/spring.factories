@@ -1,3 +1,4 @@
+# Auto Configuration
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   top.osjf.assembly.simplified.SimplifiedAutoConfiguration
 
