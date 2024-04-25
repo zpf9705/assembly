@@ -25,7 +25,7 @@ public class ServiceContextAwareBeanPostProcessor implements BeanPostProcessor, 
 
     @CanNull
     @Override
-    public Object postProcessAfterInitialization(@NotNull Object bean, @NotNull String beanName) throws BeansException {
+    public Object postProcessBeforeInitialization(@NotNull Object bean, @NotNull String beanName) throws BeansException {
         if (bean instanceof ServiceContextAware){
             ((ServiceContextAware) bean).setServiceContext(serviceContext);
         }
