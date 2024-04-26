@@ -1,6 +1,7 @@
 package top.osjf.assembly.simplified;
 
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +12,8 @@ import top.osjf.assembly.simplified.service.context.ServiceContext;
 import top.osjf.assembly.simplified.service.context.ServiceContextAwareBeanPostProcessor;
 
 /**
- * Auto Configuration for assembly-simplified.
+ * {@link EnableAutoConfiguration Auto-configuration} for assembly-simplified.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.1
  */
