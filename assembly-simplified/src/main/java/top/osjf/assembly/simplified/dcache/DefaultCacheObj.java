@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Default Impl for {@link CacheObj}.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.4
  */
@@ -14,7 +15,7 @@ public class DefaultCacheObj implements CacheObj {
 
     private static final long serialVersionUID = -5802691745617857758L;
 
-    private final String cacheTableName;
+    private final String value;
 
     private final Object[] makeCacheParams;
 
@@ -28,8 +29,8 @@ public class DefaultCacheObj implements CacheObj {
 
     private String reCacheMethod;
 
-    public DefaultCacheObj(String cacheTableName, Object[] makeCacheParams) {
-        this.cacheTableName = cacheTableName;
+    public DefaultCacheObj(String value, Object[] makeCacheParams) {
+        this.value = value;
         this.makeCacheParams = makeCacheParams;
     }
 
@@ -49,8 +50,8 @@ public class DefaultCacheObj implements CacheObj {
     }
 
     @Override
-    public String getCacheTableName() {
-        return cacheTableName;
+    public String getValue() {
+        return value;
     }
 
     @Override
