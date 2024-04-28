@@ -37,4 +37,12 @@ public interface CacheObj extends Serializable {
     void setReCacheMethod(String reCacheMethod);
 
     void reCache(ApplicationContext context);
+
+    @Override
+    int hashCode();
+
+    @Override
+    boolean equals(Object obj);
+    @Override
+    String toString();
 }
