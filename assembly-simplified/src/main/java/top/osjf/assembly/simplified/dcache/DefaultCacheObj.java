@@ -3,6 +3,8 @@ package top.osjf.assembly.simplified.dcache;
 import org.springframework.context.ApplicationContext;
 import top.osjf.assembly.util.lang.ReflectUtils;
 
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -93,5 +95,32 @@ public class DefaultCacheObj implements CacheObj {
         } catch (Throwable e) {
             throw new DCacheException(e);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DefaultCacheObj that = (DefaultCacheObj) o;
+        return cacheDuration == that.cacheDuration
+                && Objects.equals(value, that.value)
+                && Arrays.equals(makeCacheParams, that.makeCacheParams)
+                && Objects.equals(cacheContent, that.cacheContent)
+                && cacheTimeUnit == that.cacheTimeUnit
+                && Objects.equals(reCacheProxyObjName, that.reCacheProxyObjName)
+                && Objects.equals(reCacheMethod, that.reCacheMethod);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(value, cacheContent, cacheDuration, cacheTimeUnit,
+                reCacheProxyObjName, reCacheMethod);
+        result = 31 * result + Arrays.hashCode(makeCacheParams);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return getCacheKey();
     }
 }
