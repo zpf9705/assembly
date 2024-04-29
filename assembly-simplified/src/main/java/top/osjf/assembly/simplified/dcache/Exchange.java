@@ -13,7 +13,7 @@ package top.osjf.assembly.simplified.dcache;
 public interface Exchange {
 
     /**
-     * Same as {@link CacheObj#getValue().
+     * Same as {@link CacheObj#getValue()}.
      *
      * @return Fill in the values according to the scene.
      */
