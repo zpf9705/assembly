@@ -24,7 +24,7 @@ import java.util.Objects;
  *
  * <p>Now version 2.2.3 has resolved this issue and we hope users can keep it in mind.
  *
- * @see top.osjf.assembly.simplified.SimplifiedAutoConfiguration#serviceContextAwareBeanPostProcessor(ServiceContext)
+ * @see top.osjf.assembly.simplified.service.annotation.AbstractServiceCollectionConfiguration
  * @see org.springframework.context.annotation.Lazy
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.1
