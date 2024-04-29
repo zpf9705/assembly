@@ -18,4 +18,20 @@ public interface Exchange {
      * @return Fill in the values according to the scene.
      */
     String getValue();
+
+    /**
+     * Calculate the hash code for the overall attribute value of {@link Exchange}.
+     *
+     * @return the hash code for the overall attribute.
+     */
+    @Override
+    int hashCode();
+
+    /**
+     * Compare whether two {@link Exchange} are equal.
+     *
+     * @return if {@code true} equals, {@code false} otherwise.
+     */
+    @Override
+    boolean equals(Object obj);
 }
