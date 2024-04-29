@@ -69,7 +69,7 @@ public class CacheDruidFilterEvent extends FilterEventAdapter {
      * @param statement  SQL information related to the proxy.
      * @param checkQuery Check if it is a query operation.
      */
-    private void recordValueChange(String sql, StatementProxy statement, boolean checkQuery) {
+    private void recordValueChange(String sql, @SuppressWarnings("unused") StatementProxy statement, boolean checkQuery) {
         if (StringUtils.isBlank(sql)) return;
         if (checkQuery) {
             if (sql.startsWith(Token.SELECT.name)
