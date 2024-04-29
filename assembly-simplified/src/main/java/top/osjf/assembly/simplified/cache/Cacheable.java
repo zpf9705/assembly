@@ -1,6 +1,6 @@
-package top.osjf.assembly.simplified.dcache;
+package top.osjf.assembly.simplified.cache;
 
-import top.osjf.assembly.simplified.dcache.sql.CacheDruidFilterEvent;
+import top.osjf.assembly.simplified.cache.sql.CacheDruidFilterEvent;
 
 import java.lang.annotation.*;
 import java.util.concurrent.TimeUnit;
