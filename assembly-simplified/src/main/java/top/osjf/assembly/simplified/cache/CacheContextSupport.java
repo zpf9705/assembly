@@ -1,4 +1,4 @@
-package top.osjf.assembly.simplified.dcache;
+package top.osjf.assembly.simplified.cache;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
