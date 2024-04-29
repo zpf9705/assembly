@@ -1,4 +1,4 @@
-package top.osjf.assembly.simplified.dcache.aop;
+package top.osjf.assembly.simplified.cache.aop;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -14,7 +14,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import top.osjf.assembly.cache.operations.ValueOperations;
-import top.osjf.assembly.simplified.dcache.*;
+import top.osjf.assembly.simplified.cache.*;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.lang.CollectionUtils;
 
@@ -47,7 +47,7 @@ public class CacheAspectJSupport implements ApplicationContextAware {
         this.applicationContext = applicationContext;
     }
 
-    @Around("@annotation(top.osjf.assembly.simplified.dcache.Cacheable)")
+    @Around("@annotation(top.osjf.assembly.simplified.cache.Cacheable)")
     public Object aroundForExecuteCache(ProceedingJoinPoint pjp) throws Throwable {
 
         //————————————————————— Retrieve cache annotation information from the method first.
@@ -117,7 +117,7 @@ public class CacheAspectJSupport implements ApplicationContextAware {
 
     //———————————————————————————————————————— Cache refresh after execution
 
-    @AfterReturning(value = "@annotation(top.osjf.assembly.simplified.dcache.CacheUpdate)", returning = "result")
+    @AfterReturning(value = "@annotation(top.osjf.assembly.simplified.cache.CacheUpdate)", returning = "result")
     public void afterExecutedToCacheUpdate(@SuppressWarnings("unused") JoinPoint joinPoint,
                                            @SuppressWarnings("unused") Object result) {
 
