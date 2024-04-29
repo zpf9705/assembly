@@ -19,7 +19,7 @@ import top.osjf.assembly.simplified.service.context.ServiceContext;
  */
 @Configuration(proxyBeanMethods = false)
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-public class ServiceContextRecordConfiguration {
+public class ServiceContextRecordConfiguration extends AbstractServiceCollectionConfiguration {
 
     @Bean(ServiceContextUtils.RECORD_BEAN_NAME)
     public ServiceContext serviceContext() {

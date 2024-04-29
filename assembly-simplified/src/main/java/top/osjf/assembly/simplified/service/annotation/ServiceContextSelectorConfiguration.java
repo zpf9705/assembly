@@ -31,7 +31,7 @@ import java.util.Objects;
  */
 @Configuration(proxyBeanMethods = false)
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-public class ServiceContextSelectorConfiguration implements ImportAware {
+public class ServiceContextSelectorConfiguration extends AbstractServiceCollectionConfiguration implements ImportAware {
 
     /**
      * The initialization object set when the type is simple is to call an
