@@ -50,12 +50,12 @@ public class CacheDruidFilterEvent extends FilterEventAdapter {
 
     @Override
     protected void statementExecuteAfter(StatementProxy statement, String sql, boolean firstResult) {
-        recordValueChange(statement.getBatchSql(), statement, true);
+        recordValueChange(sql, statement, true);
     }
 
     @Override
     protected void statementExecuteUpdateAfter(StatementProxy statement, String sql, int updateCount) {
-        recordValueChange(statement.getBatchSql(), statement, false);
+        recordValueChange(sql, statement, false);
     }
 
     @Override
