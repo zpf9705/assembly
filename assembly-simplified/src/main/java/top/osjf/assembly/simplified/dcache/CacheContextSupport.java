@@ -1,7 +1,6 @@
 package top.osjf.assembly.simplified.dcache;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Provide cache related support classes.
@@ -13,7 +12,7 @@ public final class CacheContextSupport {
     }
 
     /*** Keep the changes made to the current thread.*/
-    private static final ThreadLocal<List<Exchange>> exchanges = new ThreadLocal<>();
+    private static final ThreadLocal<CopyOnWriteArrayList<Exchange>> exchanges = new ThreadLocal<>();
 
     /**
      * Add a {@link Exchange} of the current change.
@@ -21,12 +20,12 @@ public final class CacheContextSupport {
      * @param exchange the current change.
      */
     public static void addCurrentExchange(Exchange exchange) {
-        List<Exchange> local = currentExchanges();
+        CopyOnWriteArrayList<Exchange> local = currentExchanges();
         if (local == null) {
-            local = new LinkedList<>();
+            local = new CopyOnWriteArrayList<>();
             exchanges.set(local);
         }
-        local.add(exchange);
+        local.addIfAbsent(exchange);
     }
 
     /**
@@ -34,7 +33,7 @@ public final class CacheContextSupport {
      *
      * @return all change information for the current thread.
      */
-    public static List<Exchange> currentExchanges() {
+    public static CopyOnWriteArrayList<Exchange> currentExchanges() {
         return exchanges.get();
     }
 
