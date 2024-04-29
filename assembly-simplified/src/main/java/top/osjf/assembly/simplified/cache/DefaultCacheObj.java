@@ -1,4 +1,4 @@
-package top.osjf.assembly.simplified.dcache;
+package top.osjf.assembly.simplified.cache;
 
 import org.springframework.context.ApplicationContext;
 import top.osjf.assembly.util.lang.ReflectUtils;
@@ -93,7 +93,7 @@ public class DefaultCacheObj implements CacheObj {
             cacheContent =
                     ReflectUtils.invoke(applicationContext.getBean(reCacheProxyObjName), reCacheMethod, makeCacheParams);
         } catch (Throwable e) {
-            throw new DCacheException(e);
+            throw new CacheException(e);
         }
     }
 
