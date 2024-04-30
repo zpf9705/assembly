@@ -20,6 +20,14 @@ public interface Exchange {
     String getValue();
 
     /**
+     * Return whether the operation corresponding to {@link #getValue()}
+     * above has affected its cache.
+     *
+     * @return if {@code true} affected its cache,{@code false} otherwise.
+     */
+    boolean result();
+
+    /**
      * Calculate the hash code for the overall attribute value of {@link Exchange}.
      *
      * @return the hash code for the overall attribute.
