@@ -4,6 +4,7 @@ import top.osjf.assembly.simplified.cache.DefaultExchange;
 
 /**
  * Default Impl for {@link SqlExchange}.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.4
  */
@@ -33,5 +34,10 @@ public class DefaultSqlExchange extends DefaultExchange implements SqlExchange {
     @Override
     public boolean result() {
         return getUpdateCount() != null && getUpdateCount() > 0;
+    }
+
+    @Override
+    public void ifSetResult() {
+        if (!result()) setUpdateCount(999);
     }
 }
