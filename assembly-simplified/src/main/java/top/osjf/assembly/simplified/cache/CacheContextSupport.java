@@ -25,8 +25,7 @@ public final class CacheContextSupport {
             new AtomicInteger(-1));
 
     /**
-     * Add a {@link Exchange} of the current change.
-     *
+     * Add the current {@link Exchange} in an orderly and non repetitive manner.
      * @param exchange the current change.
      */
     @SuppressWarnings("rawtypes")
