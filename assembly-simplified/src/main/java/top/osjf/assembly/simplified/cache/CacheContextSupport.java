@@ -31,8 +31,9 @@ public final class CacheContextSupport {
      */
     @SuppressWarnings("rawtypes")
     public static void addCurrentExchange(Exchange exchange) {
-        ((CopyOnWriteArrayList) exchanges.get()).addIfAbsent(exchange);
-        counter.get().incrementAndGet();
+        if (((CopyOnWriteArrayList) exchanges.get()).addIfAbsent(exchange)) {
+            counter.get().incrementAndGet();
+        }
     }
 
     /**
