@@ -26,13 +26,17 @@ import java.sql.Statement;
 @Intercepts({@Signature(type = StatementHandler.class, method = "update", args = {Statement.class}),
         @Signature(type = StatementHandler.class, method = "batch", args = {Statement.class})})
 public class AroundSQLExecuteInterceptor implements Interceptor {
+
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
 
+        //Pre execute SQL and collect relevant information about SQL.
         Object proceed = invocation.proceed();
 
+        //Obtain SQL changes for the current execution order.
         SqlExchange exchange = CacheContextSupport.currentOrderExchange();
 
+        //Placement affects the results.
         if (exchange != null && proceed != null) {
 
             exchange.setUpdateCount((Integer) proceed);
