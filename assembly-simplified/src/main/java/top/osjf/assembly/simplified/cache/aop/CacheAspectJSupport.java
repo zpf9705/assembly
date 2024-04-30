@@ -120,7 +120,7 @@ public class CacheAspectJSupport implements ApplicationContextAware {
                                            @SuppressWarnings("unused") Object result) {
 
         //Monitor and clear cache information in a timely manner.
-        List<Exchange> exchanges = CacheContextSupport.currentExchanges();
+        List<Exchange> exchanges = CacheContextSupport.currentPurgeExchanges();
         if (CollectionUtils.isEmpty(exchanges)) {
             return;
         }
