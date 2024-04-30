@@ -28,6 +28,12 @@ public interface Exchange {
     boolean result();
 
     /**
+     * Directly setting this change has already had an impact
+     * on the target module.
+     */
+    void ifSetResult();
+
+    /**
      * Calculate the hash code for the overall attribute value of {@link Exchange}.
      *
      * @return the hash code for the overall attribute.
