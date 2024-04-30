@@ -1,6 +1,5 @@
 package top.osjf.assembly.simplified.cache;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -11,6 +10,7 @@ import top.osjf.assembly.cache.serializer.SerializerAdapter;
 import top.osjf.assembly.cache.serializer.StringPairSerializer;
 import top.osjf.assembly.simplified.cache.aop.CacheAspectJSupport;
 import top.osjf.assembly.simplified.cache.sql.CacheDruidFilterEvent;
+import top.osjf.assembly.simplified.cache.sql.GlobeSQLExecuteInterceptor;
 
 /**
  * Based on the cache configuration item enabled by {@link EnableCache}.
@@ -22,12 +22,6 @@ import top.osjf.assembly.simplified.cache.sql.CacheDruidFilterEvent;
 public class CacheConfiguration {
 
     @Bean
-    public CacheDruidFilterEvent cacheDruidFilterEvent() {
-        return new CacheDruidFilterEvent();
-    }
-
-    @Bean
-    @ConditionalOnBean(CacheFactory.class)
     public CacheTemplate<String, CacheObj> cacheObjCacheTemplate(CacheFactory cacheFactory) {
         return new CacheTemplate<>(cacheFactory, new StringPairSerializer(),
                 new SerializerAdapter<>(CacheObj.class));
@@ -42,5 +36,18 @@ public class CacheConfiguration {
     @Bean
     public CacheAspectJSupport cacheAspectJSupport(ValueOperations<String, CacheObj> valueOperations) {
         return new CacheAspectJSupport(valueOperations);
+    }
+
+
+    //—————————————————————————————————— For example, using SQL for cache change configuration.
+
+    @Bean
+    public CacheDruidFilterEvent cacheDruidFilterEvent() {
+        return new CacheDruidFilterEvent();
+    }
+
+    @Bean
+    public GlobeSQLExecuteInterceptor globeInterceptor(){
+        return new GlobeSQLExecuteInterceptor();
     }
 }
