@@ -12,7 +12,7 @@ import java.lang.annotation.*;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.4
  */
-@Target(ElementType.METHOD)
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Import(CacheConfiguration.class)
 @Documented
