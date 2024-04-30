@@ -26,6 +26,10 @@ public class DefaultExchange implements Exchange {
     }
 
     @Override
+    public void ifSetResult() {
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
