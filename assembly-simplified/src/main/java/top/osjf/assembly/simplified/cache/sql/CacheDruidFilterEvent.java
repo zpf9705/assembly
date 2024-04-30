@@ -6,7 +6,6 @@ import com.alibaba.druid.proxy.jdbc.DataSourceProxy;
 import com.alibaba.druid.proxy.jdbc.StatementProxy;
 import com.alibaba.druid.sql.parser.Token;
 import top.osjf.assembly.simplified.cache.CacheContextSupport;
-import top.osjf.assembly.simplified.cache.DefaultExchange;
 import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.lang.StringUtils;
 
@@ -81,6 +80,6 @@ public class CacheDruidFilterEvent extends FilterEventAdapter {
         if (StringUtils.isBlank(operationTableName)) {
             return;
         }
-        CacheContextSupport.addCurrentExchange(new DefaultExchange(operationTableName));
+        CacheContextSupport.addCurrentExchange(new DefaultSqlExchange(operationTableName));
     }
 }
