@@ -19,7 +19,6 @@ import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.lang.CollectionUtils;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -135,8 +134,7 @@ public class CacheAspectJSupport implements ApplicationContextAware {
                 //Find similar key cache clearing based on important value values.
                 List<String> similarKeys = valueOperations.getSimilarKeys(exchange.getValue());
                 if (CollectionUtils.isNotEmpty(similarKeys)) {
-                    final List<String> similarKeys0 = new ArrayList<>(similarKeys);
-                    for (String key : similarKeys0) {
+                    for (String key : similarKeys) {
                         CacheObj cacheObj = valueOperations.get(key);
                         if (cacheObj != null) {
                             valueOperations.getCommonsOperations().delete(key);
