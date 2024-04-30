@@ -9,8 +9,8 @@ import top.osjf.assembly.cache.operations.ValueOperations;
 import top.osjf.assembly.cache.serializer.SerializerAdapter;
 import top.osjf.assembly.cache.serializer.StringPairSerializer;
 import top.osjf.assembly.simplified.cache.aop.CacheAspectJSupport;
+import top.osjf.assembly.simplified.cache.sql.AroundSQLExecuteInterceptor;
 import top.osjf.assembly.simplified.cache.sql.CacheDruidFilterEvent;
-import top.osjf.assembly.simplified.cache.sql.GlobeSQLExecuteInterceptor;
 
 /**
  * Based on the cache configuration item enabled by {@link EnableCache}.
@@ -47,7 +47,7 @@ public class CacheConfiguration {
     }
 
     @Bean
-    public GlobeSQLExecuteInterceptor globeInterceptor(){
-        return new GlobeSQLExecuteInterceptor();
+    public AroundSQLExecuteInterceptor aroundSQLExecuteInterceptor(){
+        return new AroundSQLExecuteInterceptor();
     }
 }
