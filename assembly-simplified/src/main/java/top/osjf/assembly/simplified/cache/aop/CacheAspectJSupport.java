@@ -91,8 +91,7 @@ public class CacheAspectJSupport implements ApplicationContextAware {
 
         //————————————————————— Put in cache before returning.
 
-        valueOperations.set(probingCacheObj.getCacheKey(), probingCacheObj, cacheable.cacheDuration(),
-                cacheable.cacheTimeUnit());
+        valueOperations.set(key, probingCacheObj, cacheable.cacheDuration(), cacheable.cacheTimeUnit());
 
         return result;
     }
@@ -130,6 +129,9 @@ public class CacheAspectJSupport implements ApplicationContextAware {
         //Enable cache thread processing.
         new Thread(() -> {
             for (Exchange exchange : exchanges) {
+                if (!exchange.result()){
+                    continue;
+                }
                 //Find similar key cache clearing based on important value values.
                 List<String> similarKeys = valueOperations.getSimilarKeys(exchange.getValue());
                 if (CollectionUtils.isNotEmpty(similarKeys)) {
