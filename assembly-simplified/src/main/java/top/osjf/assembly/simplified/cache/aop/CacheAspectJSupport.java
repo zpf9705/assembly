@@ -33,11 +33,11 @@ import java.util.List;
 @Aspect
 public class CacheAspectJSupport implements ApplicationContextAware {
 
-    private final ValueOperations<String, CacheObj> valueOperations;
+    private final ValueOperations<String, Object> valueOperations;
 
     private ApplicationContext applicationContext;
 
-    public CacheAspectJSupport(ValueOperations<String, CacheObj> valueOperations) {
+    public CacheAspectJSupport(ValueOperations<String, Object> valueOperations) {
         this.valueOperations = valueOperations;
     }
 
@@ -65,12 +65,9 @@ public class CacheAspectJSupport implements ApplicationContextAware {
 
         //————————————————————— If cache is found, return directly.
 
-        CacheObj cached = valueOperations.get(key);
+        CacheObj cacheObj = getCacheObj(key);
 
-        if (cached != null) {
-
-            return cached.getCacheContent();
-        }
+        if (cacheObj != null) return cacheObj.getCacheContent();
 
         //————————————————————— If there is no cache, execute the ontology operation.
 
@@ -113,6 +110,22 @@ public class CacheAspectJSupport implements ApplicationContextAware {
         throw new NoSuchBeanDefinitionException(AopProxyUtils.ultimateTargetClass(o));
     }
 
+    /**
+     * Return the cache object {@link CacheObj} corresponding to the provided key value.
+     *
+     * @param key Cached flags.
+     * @return the cache object {@link CacheObj} corresponding to the provided key value.
+     */
+    private CacheObj getCacheObj(String key) {
+        Object cached = valueOperations.get(key);
+        if (cached != null) {
+            if (cached instanceof CacheObj) {
+                return (CacheObj) cached;
+            }
+        }
+        return null;
+    }
+
     //———————————————————————————————————————— Cache refresh after execution
 
     @AfterReturning(value = "@annotation(top.osjf.assembly.simplified.cache.CacheUpdate)", returning = "result")
@@ -128,17 +141,19 @@ public class CacheAspectJSupport implements ApplicationContextAware {
         //Enable cache thread processing.
         new Thread(() -> {
             for (Exchange exchange : exchanges) {
-                if (!exchange.result()){
+                if (!exchange.result()) {
                     continue;
                 }
                 //Find similar key cache clearing based on important value values.
                 List<String> similarKeys = valueOperations.getSimilarKeys(exchange.getValue());
                 if (CollectionUtils.isNotEmpty(similarKeys)) {
                     for (String key : similarKeys) {
-                        CacheObj cacheObj = valueOperations.get(key);
+                        Object cacheObj = valueOperations.get(key);
                         if (cacheObj != null) {
-                            valueOperations.getCommonsOperations().delete(key);
-                            cacheObj.reCache(applicationContext);
+                            if (cacheObj instanceof CacheObj) {
+                                valueOperations.getCommonsOperations().delete(key);
+                                ((CacheObj) cacheObj).reCache(applicationContext);
+                            }
                         }
                     }
                 }
