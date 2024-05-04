@@ -15,6 +15,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import top.osjf.assembly.cache.operations.ValueOperations;
 import top.osjf.assembly.simplified.cache.*;
+import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.lang.CollectionUtils;
 import top.osjf.assembly.util.lang.ConvertUtils;
@@ -117,6 +118,7 @@ public class CacheAspectJSupport implements ApplicationContextAware {
      * @param key Cached flags.
      * @return the cache object {@link CacheObj} corresponding to the provided key value.
      */
+    @CanNull
     private CacheObj getCacheObj(String key) {
         return ConvertUtils.convert(CacheObj.class, valueOperations.get(key));
     }
