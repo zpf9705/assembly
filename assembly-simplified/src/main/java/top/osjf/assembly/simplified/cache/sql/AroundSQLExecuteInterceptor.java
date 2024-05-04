@@ -9,6 +9,9 @@ import top.osjf.assembly.simplified.cache.CacheContextSupport;
 
 import java.sql.Statement;
 
+import static top.osjf.assembly.simplified.cache.sql.AroundSQLExecuteInterceptor.BATCH_SQL_TYPE_NAME;
+import static top.osjf.assembly.simplified.cache.sql.AroundSQLExecuteInterceptor.UPDATE_SQL_TYPE_NAME;
+
 /**
  * Using the interceptor of Mybatis for SQL interception is mainly
  * to obtain the result of the number of SQL execution impacts
@@ -23,10 +26,15 @@ import java.sql.Statement;
  * @see CacheDruidFilterEvent
  * @since 2.2.4
  */
-@Intercepts({@Signature(type = StatementHandler.class, method = "update", args = {Statement.class}),
-        @Signature(type = StatementHandler.class, method = "batch", args = {Statement.class})})
+@Intercepts({@Signature(type = StatementHandler.class, method = UPDATE_SQL_TYPE_NAME, args = {Statement.class}),
+        @Signature(type = StatementHandler.class, method = BATCH_SQL_TYPE_NAME, args = {Statement.class})})
 public class AroundSQLExecuteInterceptor implements Interceptor {
 
+    /*** The changes of adding, deleting, and updating are collectively referred to as.*/
+    public static final String UPDATE_SQL_TYPE_NAME = "update";
+
+    /*** The operation name for the batch operation.*/
+    public static final String BATCH_SQL_TYPE_NAME = "batch";
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
 
