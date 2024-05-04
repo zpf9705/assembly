@@ -17,6 +17,7 @@ import top.osjf.assembly.cache.operations.ValueOperations;
 import top.osjf.assembly.simplified.cache.*;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.lang.CollectionUtils;
+import top.osjf.assembly.util.lang.ConvertUtils;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -117,13 +118,7 @@ public class CacheAspectJSupport implements ApplicationContextAware {
      * @return the cache object {@link CacheObj} corresponding to the provided key value.
      */
     private CacheObj getCacheObj(String key) {
-        Object cached = valueOperations.get(key);
-        if (cached != null) {
-            if (cached instanceof CacheObj) {
-                return (CacheObj) cached;
-            }
-        }
-        return null;
+        return ConvertUtils.convert(CacheObj.class, valueOperations.get(key));
     }
 
     //———————————————————————————————————————— Cache refresh after execution
