@@ -3,11 +3,7 @@ package top.osjf.assembly.simplified.cache;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import top.osjf.assembly.cache.factory.CacheFactory;
-import top.osjf.assembly.cache.operations.CacheTemplate;
 import top.osjf.assembly.cache.operations.ValueOperations;
-import top.osjf.assembly.cache.serializer.SerializerAdapter;
-import top.osjf.assembly.cache.serializer.StringPairSerializer;
 import top.osjf.assembly.simplified.cache.aop.CacheAspectJSupport;
 import top.osjf.assembly.simplified.cache.sql.AroundSQLExecuteInterceptor;
 import top.osjf.assembly.simplified.cache.sql.CacheDruidFilterEvent;
@@ -22,19 +18,7 @@ import top.osjf.assembly.simplified.cache.sql.CacheDruidFilterEvent;
 public class CacheConfiguration {
 
     @Bean
-    public CacheTemplate<String, CacheObj> cacheObjCacheTemplate(CacheFactory cacheFactory) {
-        return new CacheTemplate<>(cacheFactory, new StringPairSerializer(),
-                new SerializerAdapter<>(CacheObj.class));
-    }
-
-    @Bean
-    public ValueOperations<String, CacheObj> cacheObjValueOperations(CacheTemplate<String, CacheObj>
-                                                                             cacheObjCacheTemplate) {
-        return cacheObjCacheTemplate.opsForValue();
-    }
-
-    @Bean
-    public CacheAspectJSupport cacheAspectJSupport(ValueOperations<String, CacheObj> valueOperations) {
+    public CacheAspectJSupport cacheAspectJSupport(ValueOperations<String, Object> valueOperations) {
         return new CacheAspectJSupport(valueOperations);
     }
 
