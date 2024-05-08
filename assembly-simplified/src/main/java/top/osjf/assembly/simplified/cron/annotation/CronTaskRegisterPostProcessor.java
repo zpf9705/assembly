@@ -88,6 +88,7 @@ public class CronTaskRegisterPostProcessor extends SmartContextRefreshed impleme
 
     @Override
     public void onApplicationEvent(@NotNull ContextRefreshedEvent event) {
+        super.onApplicationEvent(event);
         String[] sourceArgs = context.getBean(ApplicationArguments.class).getSourceArgs();
         if (CronRegister.registerZero()) {
             if (noMethodDefaultStart) {
