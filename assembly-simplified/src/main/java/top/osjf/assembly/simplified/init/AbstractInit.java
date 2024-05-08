@@ -1,0 +1,51 @@
+package top.osjf.assembly.simplified.init;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+
+/**
+ * Abstract public initialization class, providing default
+ * initialization confirmation methods and marking methods
+ * after initialization.
+ *
+ * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
+ * @since 2.2.4
+ */
+public abstract class AbstractInit implements Init {
+
+    /*** Has it been loaded? Each initialization class has an atomic switch,
+     * which is {@code true} when initializing and {@code false} afterwards.*/
+    private final AtomicBoolean inited = new AtomicBoolean(false);
+
+    @Override
+    public boolean canInit() {
+        return !inited.get() || supportRuntime();
+    }
+
+    @Override
+    public void initAfter() {
+    }
+
+    @Override
+    public void actionInited() {
+        if (!inited.get()) inited.set(true);
+    }
+
+    @Override
+    public void initBefore() {
+    }
+
+    /**
+     * This method marks a Boolean return value {@code true}, indicating that
+     * the current initialization class can not only be initialized
+     * and run, but can also be called freely at runtime.
+     * It can be seen as not only an initialization class, but
+     * also a regular method class at runtime.
+     * Conversely, it is only used for initialization when called.
+     *
+     * @return Return {@code true} to be called arbitrarily,
+     * otherwise only during initialization.
+     */
+    protected boolean supportRuntime() {
+        return false;
+    }
+}
