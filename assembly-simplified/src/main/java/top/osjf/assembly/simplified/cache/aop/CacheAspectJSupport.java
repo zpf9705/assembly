@@ -53,15 +53,13 @@ public class CacheAspectJSupport implements ApplicationContextAware {
 
         //————————————————————— Retrieve cache annotation information from the method first.
 
-        MethodSignature signature = (MethodSignature) pjp.getSignature();
-
-        Method method = signature.getMethod();
+        Method method = getMethodByJoinPoint(pjp);
 
         Cacheable cacheable = method.getAnnotation(Cacheable.class);
 
         //Build key information based on important values and parameter hash values.
         CacheObj probingCacheObj
-                = new DefaultCacheObj(cacheable.value(), pjp.getArgs());
+                = new DefaultCacheObj(getProxyKey(cacheable.value()), pjp.getArgs());
 
         String key = probingCacheObj.getCacheKey();
 
@@ -123,6 +121,28 @@ public class CacheAspectJSupport implements ApplicationContextAware {
         return ConvertUtils.convert(CacheObj.class, valueOperations.get(key));
     }
 
+    /**
+     * Returns the method parameters corresponding to the entry point.
+     *
+     * @param jp Entry point parameters.
+     * @return the method parameters corresponding to the entry point.
+     */
+    private Method getMethodByJoinPoint(JoinPoint jp) {
+        MethodSignature signature = (MethodSignature) jp.getSignature();
+        return signature.getMethod();
+    }
+
+    /**
+     * Returns the key value processed by the agent.
+     *
+     * @param key {@link Cacheable}'s value.
+     * @return the key value processed by the agent.
+     */
+    public String getProxyKey(String key) {
+        Object obj = AopContext.currentProxy();
+        Class<?> targetType = AopProxyUtils.ultimateTargetClass(obj);
+        return key + "@" + targetType.getName();
+    }
     //———————————————————————————————————————— Cache refresh after execution
 
     @AfterReturning(value = "@annotation(top.osjf.assembly.simplified.cache.CacheUpdate)", returning = "result")
@@ -141,17 +161,16 @@ public class CacheAspectJSupport implements ApplicationContextAware {
                 if (!exchange.result()) {
                     continue;
                 }
+                String proxyKey = getProxyKey(exchange.getValue());
                 //Find similar key cache clearing based on important value values.
-                List<String> similarKeys = valueOperations.getSimilarKeys(exchange.getValue());
+                List<String> similarKeys = valueOperations.getSimilarKeys(proxyKey);
                 if (CollectionUtils.isNotEmpty(similarKeys)) {
                     for (String key : similarKeys) {
-                        Object cacheObj = valueOperations.get(key);
-                        if (cacheObj != null) {
-                            if (cacheObj instanceof CacheObj) {
-                                valueOperations.getCommonsOperations().delete(key);
-                                ((CacheObj) cacheObj).reCache(applicationContext);
-                            }
-                        }
+                        CacheObj cacheObj = getCacheObj(key);
+                        if (cacheObj == null) continue;
+                        valueOperations.getCommonsOperations().delete(key);
+                        cacheObj.reCache(applicationContext);
+
                     }
                 }
             }
