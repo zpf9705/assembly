@@ -13,6 +13,7 @@ import top.osjf.assembly.util.lang.CollectionUtils;
 import top.osjf.assembly.util.lang.StringUtils;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Related tool classes for {@link Init}.
@@ -60,7 +61,26 @@ public class InitUtils implements ApplicationContextAware {
      * {@link org.springframework.web.context.WebApplicationContext#SCOPE_SESSION}<br>
      * {@link org.springframework.web.context.WebApplicationContext#SCOPE_REQUEST}<br>,
      * and it is not initialized.
-     * @param <T> The type of {@link Init} or his word accumulation.
+     *
+     * @param <T>      The type of {@link Init} or his word accumulation.
+     * @param beanType Initialize the class object of {@link Init} or subclasses.
+     */
+    public <T extends Init> void initWithoutWSAScopeBeans(Class<T> beanType) {
+        Objects.requireNonNull(beanType, "beanType not be null");
+        initWithoutWSAScopeBeans(applicationContext.getBeansOfType(beanType));
+    }
+
+    /**
+     * Initialize the execution {@link Init} and exclude the
+     * scope within {@link #NOT_REQUIRED_SCOPE_NAMES}.
+     *
+     * <p>The scope of the filter bean is
+     * {@link org.springframework.web.context.WebApplicationContext#SCOPE_APPLICATION}<br>
+     * {@link org.springframework.web.context.WebApplicationContext#SCOPE_SESSION}<br>
+     * {@link org.springframework.web.context.WebApplicationContext#SCOPE_REQUEST}<br>,
+     * and it is not initialized.
+     *
+     * @param <T>     The type of {@link Init} or his word accumulation.
      * @param initMap Key is the name of the bean, and
      *                value is the map type of the bean.
      */
@@ -72,9 +92,9 @@ public class InitUtils implements ApplicationContextAware {
             BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
             //Does not include non executable scopes.
             String scope = beanDefinition.getScope();
-            if (StringUtils.isBlank(scope)){
+            if (StringUtils.isBlank(scope)) {
                 BeanDefinition originatingBeanDefinition = beanDefinition.getOriginatingBeanDefinition();
-                if (originatingBeanDefinition != null){
+                if (originatingBeanDefinition != null) {
                     scope = originatingBeanDefinition.getScope();
                 }
             }
