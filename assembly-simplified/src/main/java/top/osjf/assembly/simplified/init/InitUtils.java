@@ -6,6 +6,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.lang.Nullable;
 import org.springframework.web.context.WebApplicationContext;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.lang.ArrayUtils;
@@ -53,8 +54,43 @@ public class InitUtils implements ApplicationContextAware {
     }
 
     /**
+     * Execute the relevant bean implementation for initializing {@link Init}.
+     *
+     * <p>Find the population of beans based on the provided type.
+     *
+     * @param <T>      The type of {@link Init} or his word accumulation.
+     * @param beanType Initialize the class object of {@link Init} or subclasses.
+     * @param filter   Initialize the collection to perform filtering conditions.
+     */
+    public <T extends Init> void initBeans(Class<T> beanType, @Nullable InitFilter filter) {
+        Objects.requireNonNull(beanType, "beanType not be null");
+        initBeans(applicationContext.getBeansOfType(beanType), filter);
+    }
+
+    /**
+     * Execute the relevant bean implementation for initializing {@link Init}.
+     *
+     * @param <T>          The type of {@link Init} or his word accumulation.
+     * @param initBeansMap Key is the name of the bean, and
+     *                     value is the map type of the bean.
+     * @param filter       Initialize the collection to perform filtering conditions.
+     */
+    public <T extends Init> void initBeans(Map<String, T> initBeansMap, @Nullable InitFilter filter) {
+        Objects.requireNonNull(initBeansMap, "initBeansMap not be null");
+        initBeansMap.forEach((beanName, bean) -> {
+            if (filter != null) {
+                if (filter.test(beanName, bean, applicationContext)) {
+                    bean.init();
+                }
+            } else bean.init();
+        });
+    }
+
+    /**
      * Initialize the execution {@link Init} and exclude the
      * scope within {@link #NOT_REQUIRED_SCOPE_NAMES}.
+     *
+     * <p>Find the population of beans based on the provided type.
      *
      * <p>The scope of the filter bean is
      * {@link org.springframework.web.context.WebApplicationContext#SCOPE_APPLICATION}<br>
@@ -80,15 +116,15 @@ public class InitUtils implements ApplicationContextAware {
      * {@link org.springframework.web.context.WebApplicationContext#SCOPE_REQUEST}<br>,
      * and it is not initialized.
      *
-     * @param <T>     The type of {@link Init} or his word accumulation.
-     * @param initMap Key is the name of the bean, and
-     *                value is the map type of the bean.
+     * @param <T>          The type of {@link Init} or his word accumulation.
+     * @param initBeansMap Key is the name of the bean, and
+     *                     value is the map type of the bean.
      */
-    public <T extends Init> void initWithoutWSAScopeBeans(Map<String, T> initMap) {
-        if (CollectionUtils.isEmpty(initMap)) {
+    public <T extends Init> void initWithoutWSAScopeBeans(Map<String, T> initBeansMap) {
+        if (CollectionUtils.isEmpty(initBeansMap)) {
             return;
         }
-        for (String beanName : initMap.keySet()) {
+        for (String beanName : initBeansMap.keySet()) {
             BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
             //Does not include non executable scopes.
             String scope = beanDefinition.getScope();
@@ -100,7 +136,7 @@ public class InitUtils implements ApplicationContextAware {
             }
             if (StringUtils.isBlank(scope)) return;
             if (!ArrayUtils.contains(NOT_REQUIRED_SCOPE_NAMES, scope)) {
-                initMap.get(beanName).init();
+                initBeansMap.get(beanName).init();
             }
         }
     }
