@@ -24,6 +24,7 @@ public class InitConfiguration {
         return new AspectJInitSupport();
     }
 
+    //@Since 2.2.5
     @Bean
     public InitUtils initUtils(){
         return new InitUtils();
