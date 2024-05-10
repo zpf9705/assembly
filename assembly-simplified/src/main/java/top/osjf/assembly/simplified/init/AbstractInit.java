@@ -54,6 +54,7 @@ public abstract class AbstractInit implements Init {
      * subsequent initialization operations only when
      * this condition is met.
      *
+     * @since 2.2.5
      * @return Return {@code true} Indicates that the current
      * initialization operation can proceed logically.
      * otherwise indicates that initialization is not possible.
