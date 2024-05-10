@@ -68,7 +68,7 @@ public class AspectJInitSupport {
      * */
     @AfterReturning("pointCut()")
     public void afterReturn(JoinPoint point) {
-        TargetObjHolder.execute(point, () -> TargetObjHolder.<ActionInited>getTargetObj(point).actionInited());
+        TargetObjHolder.execute(point, () -> TargetObjHolder.<InitAfter>getTargetObj(point).initAfter());
     }
 
     /*
@@ -76,6 +76,6 @@ public class AspectJInitSupport {
      * */
     @After("pointCut()")
     public void after(JoinPoint point) {
-        TargetObjHolder.execute(point, () -> TargetObjHolder.<InitAfter>getTargetObj(point).initAfter());
+        TargetObjHolder.execute(point, () -> TargetObjHolder.<ActionInited>getTargetObj(point).actionInited());
     }
 }
