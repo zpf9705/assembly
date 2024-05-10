@@ -79,7 +79,7 @@ public class InitUtils implements ApplicationContextAware {
         Objects.requireNonNull(initBeansMap, "initBeansMap not be null");
         initBeansMap.forEach((beanName, bean) -> {
             if (filter != null) {
-                if (filter.test(beanName, bean, applicationContext)) {
+                if (filter.test(beanName, bean, getApplicationContext())) {
                     bean.init();
                 }
             } else bean.init();
@@ -103,7 +103,7 @@ public class InitUtils implements ApplicationContextAware {
      */
     public <T extends Init> void initWithoutWSAScopeBeans(Class<T> beanType) {
         Objects.requireNonNull(beanType, "beanType not be null");
-        initWithoutWSAScopeBeans(applicationContext.getBeansOfType(beanType));
+        initWithoutWSAScopeBeans(getApplicationContext().getBeansOfType(beanType));
     }
 
     /**
@@ -125,7 +125,7 @@ public class InitUtils implements ApplicationContextAware {
             return;
         }
         for (String beanName : initBeansMap.keySet()) {
-            BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
+            BeanDefinition beanDefinition = getBeanFactory().getBeanDefinition(beanName);
             //Does not include non executable scopes.
             String scope = beanDefinition.getScope();
             if (StringUtils.isBlank(scope)) {
