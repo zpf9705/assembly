@@ -22,16 +22,8 @@ public abstract class AbstractInit implements Init {
     }
 
     @Override
-    public void initAfter() {
-    }
-
-    @Override
     public void actionInited() {
         if (!inited.get()) inited.set(true);
-    }
-
-    @Override
-    public void initBefore() {
     }
 
     /**
