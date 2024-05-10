@@ -24,14 +24,28 @@ public interface Init extends InitBefore, InitAble, ActionInited, InitAfter {
     }
 
     /**
-     * The logic implementation method for initialization execution.
-     */
-    void init0();
-
-    /**
      * Confirm if this initialization can be executed.
-     *
      * @return if {@code true} can initialization,otherwise not.
      */
-    boolean canInit();
+    default boolean canInit(){
+        return true;
+    }
+
+    /**
+     * The logic implementation method for initialization execution.
+     */
+    default void init0(){
+    }
+
+    @Override
+    default void initBefore(){
+    }
+
+    @Override
+    default void actionInited(){
+    }
+
+    @Override
+    default void initAfter(){
+    }
 }
