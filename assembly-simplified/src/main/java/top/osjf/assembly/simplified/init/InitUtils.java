@@ -10,11 +10,13 @@ import org.springframework.web.context.WebApplicationContext;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.lang.ArrayUtils;
 import top.osjf.assembly.util.lang.CollectionUtils;
+import top.osjf.assembly.util.lang.StringUtils;
 
 import java.util.Map;
 
 /**
  * Related tool classes for {@link Init}.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.5
  */
@@ -58,18 +60,26 @@ public class InitUtils implements ApplicationContextAware {
      * {@link org.springframework.web.context.WebApplicationContext#SCOPE_SESSION}<br>
      * {@link org.springframework.web.context.WebApplicationContext#SCOPE_REQUEST}<br>,
      * and it is not initialized.
-     *
+     * @param <T> The type of {@link Init} or his word accumulation.
      * @param initMap Key is the name of the bean, and
      *                value is the map type of the bean.
      */
-    public void initWithoutWSAScopeBeans(Map<String, Init> initMap) {
+    public <T extends Init> void initWithoutWSAScopeBeans(Map<String, T> initMap) {
         if (CollectionUtils.isEmpty(initMap)) {
             return;
         }
         for (String beanName : initMap.keySet()) {
             BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
             //Does not include non executable scopes.
-            if (!ArrayUtils.contains(NOT_REQUIRED_SCOPE_NAMES, beanDefinition.getScope())) {
+            String scope = beanDefinition.getScope();
+            if (StringUtils.isBlank(scope)){
+                BeanDefinition originatingBeanDefinition = beanDefinition.getOriginatingBeanDefinition();
+                if (originatingBeanDefinition != null){
+                    scope = originatingBeanDefinition.getScope();
+                }
+            }
+            if (StringUtils.isBlank(scope)) return;
+            if (!ArrayUtils.contains(NOT_REQUIRED_SCOPE_NAMES, scope)) {
                 initMap.get(beanName).init();
             }
         }
