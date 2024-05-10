@@ -18,7 +18,7 @@ public abstract class AbstractInit implements Init {
 
     @Override
     public boolean canInit() {
-        return !inited.get() || supportRuntime();
+        return (!inited.get() || supportRuntime()) && conditionalJudgment();
     }
 
     @Override
@@ -47,5 +47,18 @@ public abstract class AbstractInit implements Init {
      */
     protected boolean supportRuntime() {
         return false;
+    }
+
+    /**
+     * Add an executable condition that allows for
+     * subsequent initialization operations only when
+     * this condition is met.
+     *
+     * @return Return {@code true} Indicates that the current
+     * initialization operation can proceed logically.
+     * otherwise indicates that initialization is not possible.
+     */
+    protected boolean conditionalJudgment() {
+        return true;
     }
 }
