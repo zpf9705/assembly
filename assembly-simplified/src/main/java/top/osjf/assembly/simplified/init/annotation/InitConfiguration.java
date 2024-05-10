@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
 import top.osjf.assembly.simplified.init.AspectJInitSupport;
+import top.osjf.assembly.simplified.init.InitUtils;
 
 /**
  * The relevant configuration of the initialization mechanism
@@ -21,5 +22,10 @@ public class InitConfiguration {
     @Bean
     public AspectJInitSupport aspectJInitSupport(){
         return new AspectJInitSupport();
+    }
+
+    @Bean
+    public InitUtils initUtils(){
+        return new InitUtils();
     }
 }
