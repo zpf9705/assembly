@@ -30,11 +30,14 @@ public class InitUtils implements ApplicationContextAware {
     private ConfigurableListableBeanFactory beanFactory;
 
     /*** The scope collection of beans that are not allowed to initiate initialization.*/
-    private final String[] NOT_REQUIRED_SCOPE_NAMES = {
+    private static final String[] NOT_REQUIRED_SCOPE_NAMES = {
             WebApplicationContext.SCOPE_REQUEST,
             WebApplicationContext.SCOPE_APPLICATION,
             WebApplicationContext.SCOPE_SESSION
     };
+
+    /*** Beans with default filtering scope in {@link #NOT_REQUIRED_SCOPE_NAMES} are not initialized.*/
+    private final InitFilter withoutWSAScope = new WithoutWSAScopeInitFilter();
 
     public ConfigurableApplicationContext getApplicationContext() {
         return applicationContext;
@@ -42,6 +45,10 @@ public class InitUtils implements ApplicationContextAware {
 
     public ConfigurableListableBeanFactory getBeanFactory() {
         return beanFactory;
+    }
+
+    public InitFilter getWithoutWSAScope() {
+        return withoutWSAScope;
     }
 
     @Override
@@ -135,8 +142,18 @@ public class InitUtils implements ApplicationContextAware {
      */
     public <T extends Init> void initWithoutWSAScopeBeans(Map<String, T> initBeansMap) {
         Objects.requireNonNull(initBeansMap, "initBeansMap not be null");
-        for (String beanName : initBeansMap.keySet()) {
-            BeanDefinition beanDefinition = getBeanFactory().getBeanDefinition(beanName);
+        initBeans(initBeansMap, withoutWSAScope);
+    }
+
+    /**
+     * The example implementation of {@link Init} does not perform
+     * initialization on beans with filtering scope in {@link #NOT_REQUIRED_SCOPE_NAMES}.
+     */
+    public static class WithoutWSAScopeInitFilter implements InitFilter {
+
+        @Override
+        public boolean test(String beanName, Object bean, ConfigurableApplicationContext applicationContext) {
+            BeanDefinition beanDefinition = applicationContext.getBeanFactory().getBeanDefinition(beanName);
             //Does not include non executable scopes.
             String scope = beanDefinition.getScope();
             if (StringUtils.isBlank(scope)) {
@@ -145,10 +162,8 @@ public class InitUtils implements ApplicationContextAware {
                     scope = originatingBeanDefinition.getScope();
                 }
             }
-            if (StringUtils.isBlank(scope)) return;
-            if (!ArrayUtils.contains(NOT_REQUIRED_SCOPE_NAMES, scope)) {
-                initBeansMap.get(beanName).init();
-            }
+            if (StringUtils.isBlank(scope)) return true;
+            return !ArrayUtils.contains(NOT_REQUIRED_SCOPE_NAMES, scope);
         }
     }
 }
