@@ -10,7 +10,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.context.WebApplicationContext;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.lang.ArrayUtils;
-import top.osjf.assembly.util.lang.CollectionUtils;
 import top.osjf.assembly.util.lang.StringUtils;
 
 import java.util.Map;
@@ -54,6 +53,20 @@ public class InitUtils implements ApplicationContextAware {
     }
 
     /**
+     * Get a collection of type beans of a certain type, including
+     * non singleton beans, and do not initialize beans that handle
+     * proxy mode special scope names.
+     *
+     * @param beanType the class or interface to match, or {@code null} for all concrete beans
+     * @param <T>      The type of {@link Init} or his word accumulation.
+     * @return a Map with the matching beans, containing the bean names as
+     * keys and the corresponding bean instances as values
+     */
+    public <T extends Init> Map<String, T> getBeansOfTypeNonAllowEagerInit(Class<T> beanType) {
+        return applicationContext.getBeansOfType(beanType, true, false);
+    }
+
+    /**
      * Execute the relevant bean implementation for initializing {@link Init}.
      *
      * <p>Find the population of beans based on the provided type.
@@ -64,7 +77,7 @@ public class InitUtils implements ApplicationContextAware {
      */
     public <T extends Init> void initBeans(Class<T> beanType, @Nullable InitFilter filter) {
         Objects.requireNonNull(beanType, "beanType not be null");
-        initBeans(applicationContext.getBeansOfType(beanType), filter);
+        initBeans(getBeansOfTypeNonAllowEagerInit(beanType), filter);
     }
 
     /**
@@ -103,7 +116,7 @@ public class InitUtils implements ApplicationContextAware {
      */
     public <T extends Init> void initWithoutWSAScopeBeans(Class<T> beanType) {
         Objects.requireNonNull(beanType, "beanType not be null");
-        initWithoutWSAScopeBeans(getApplicationContext().getBeansOfType(beanType));
+        initWithoutWSAScopeBeans(getBeansOfTypeNonAllowEagerInit(beanType));
     }
 
     /**
@@ -121,9 +134,7 @@ public class InitUtils implements ApplicationContextAware {
      *                     value is the map type of the bean.
      */
     public <T extends Init> void initWithoutWSAScopeBeans(Map<String, T> initBeansMap) {
-        if (CollectionUtils.isEmpty(initBeansMap)) {
-            return;
-        }
+        Objects.requireNonNull(initBeansMap, "initBeansMap not be null");
         for (String beanName : initBeansMap.keySet()) {
             BeanDefinition beanDefinition = getBeanFactory().getBeanDefinition(beanName);
             //Does not include non executable scopes.
