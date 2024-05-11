@@ -8,6 +8,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.5
  */
+@FunctionalInterface
 public interface InitFilter {
 
     /**
