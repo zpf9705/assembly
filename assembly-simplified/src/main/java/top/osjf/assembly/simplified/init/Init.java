@@ -33,19 +33,33 @@ public interface Init extends InitBefore, InitAble, ActionInited, InitAfter {
 
     /**
      * The logic implementation method for initialization execution.
+     * @see #init()
      */
     default void init0(){
+        //When using the default logic of init, the logical content you need to implement.
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default void initBefore(){
+        // default no super logic.
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default void actionInited(){
+        // default no super logic.
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default void initAfter(){
+        // default no super logic.
     }
 }

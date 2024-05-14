@@ -49,6 +49,8 @@ public class SdkProxyBeanRegister extends BeanDefinitionRegisterBeforeRefresh {
         int role = attributes.<Integer>getNumber("role");
         boolean lazyInit = attributes.getBoolean("lazyInit");
         String description = attributes.getString("description");
+        //@Since 2.2.5
+        boolean autowireCandidate = attributes.getBoolean("autowireCandidate");
         if (StringUtils.isBlank(beanName)) beanName = className;
         definition.setScope(scope);
         definition.setAutowireMode(autowireMode);
@@ -57,6 +59,7 @@ public class SdkProxyBeanRegister extends BeanDefinitionRegisterBeforeRefresh {
         definition.setRole(role);
         definition.setLazyInit(lazyInit);
         if (StringUtils.isNotBlank(description)) definition.getBeanDefinition().setDescription(description);
+        definition.getBeanDefinition().setAutowireCandidate(autowireCandidate);
         return new BeanDefinitionHolder(definition.getBeanDefinition(), beanName, alisa);
     }
 

@@ -136,7 +136,22 @@ public @interface Sdk {
      * @see GenericBeanDefinition#AUTOWIRE_BY_TYPE
      * @see GenericBeanDefinition#AUTOWIRE_CONSTRUCTOR
      */
+    @Deprecated
     int autowireMode() default GenericBeanDefinition.AUTOWIRE_NO;
+
+    /**
+     * Set whether this bean is a candidate for getting autowired into some other bean.
+     * <p>Note that this flag is designed to only affect type-based autowiring.
+     * It does not affect explicit references by name, which will get resolved even
+     * if the specified bean is not marked as an autowire candidate. As a consequence,
+     * autowiring by name will nevertheless inject a bean if the name matches.
+     *
+     * @return Return whether this bean is a candidate for getting autowired into some
+     *         other bean.
+     * @see AbstractBeanDefinition#AUTOWIRE_BY_TYPE
+     * @see AbstractBeanDefinition#AUTOWIRE_BY_NAME
+     */
+    boolean autowireCandidate() default true;
 
     /**
      * Set the name of the initializer method.

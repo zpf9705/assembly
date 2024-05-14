@@ -1,6 +1,7 @@
 package top.osjf.assembly.simplified.init;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -39,6 +40,9 @@ public class InitUtils implements ApplicationContextAware {
     /*** Beans with default filtering scope in {@link #NOT_REQUIRED_SCOPE_NAMES} are not initialized.*/
     private final InitFilter withoutWSAScope = new WithoutWSAScopeInitFilter();
 
+    /*** Run directly without filtering.*/
+    private final InitFilter direct = (beanName, bean, applicationContext) -> true;
+
     public ConfigurableApplicationContext getApplicationContext() {
         return applicationContext;
     }
@@ -47,8 +51,12 @@ public class InitUtils implements ApplicationContextAware {
         return beanFactory;
     }
 
-    public InitFilter getWithoutWSAScope() {
+    public InitFilter getWithoutWSAScopeInitFilter() {
         return withoutWSAScope;
+    }
+
+    public InitFilter getDirectInitFilter() {
+        return direct;
     }
 
     @Override
@@ -60,17 +68,21 @@ public class InitUtils implements ApplicationContextAware {
     }
 
     /**
-     * Get a collection of type beans of a certain type, including
-     * non singleton beans, and do not initialize beans that handle
-     * proxy mode special scope names.
+     * Returns a combination map of singleton beans of a certain type,
+     * where key is the name of the bean and value is the bean.
+     *
+     * <p>It filters singletons specifically for
+     * {@link ListableBeanFactory#getBeansOfType(Class, boolean, boolean)},
+     * and does not provide initialization calls for non singleton scope and
+     * lazy loaded beans.
      *
      * @param beanType the class or interface to match, or {@code null} for all concrete beans
      * @param <T>      The type of {@link Init} or his word accumulation.
      * @return a Map with the matching beans, containing the bean names as
      * keys and the corresponding bean instances as values
      */
-    public <T extends Init> Map<String, T> getBeansOfTypeNonAllowEagerInit(Class<T> beanType) {
-        return applicationContext.getBeansOfType(beanType, true, false);
+    public <T extends Init> Map<String, T> getBeansOfTypeOnlySingletonNonAllowEagerInit(Class<T> beanType) {
+        return applicationContext.getBeansOfType(beanType, false, false);
     }
 
     /**
@@ -84,7 +96,7 @@ public class InitUtils implements ApplicationContextAware {
      */
     public <T extends Init> void initBeans(Class<T> beanType, @Nullable InitFilter filter) {
         Objects.requireNonNull(beanType, "beanType not be null");
-        initBeans(getBeansOfTypeNonAllowEagerInit(beanType), filter);
+        initBeans(getBeansOfTypeOnlySingletonNonAllowEagerInit(beanType), filter);
     }
 
     /**
@@ -123,7 +135,7 @@ public class InitUtils implements ApplicationContextAware {
      */
     public <T extends Init> void initWithoutWSAScopeBeans(Class<T> beanType) {
         Objects.requireNonNull(beanType, "beanType not be null");
-        initWithoutWSAScopeBeans(getBeansOfTypeNonAllowEagerInit(beanType));
+        initWithoutWSAScopeBeans(getBeansOfTypeOnlySingletonNonAllowEagerInit(beanType));
     }
 
     /**
