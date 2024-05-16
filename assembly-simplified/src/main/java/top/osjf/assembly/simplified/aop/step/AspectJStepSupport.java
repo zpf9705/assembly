@@ -94,11 +94,9 @@ public class AspectJStepSupport {
                 break;
         }
         if (CollectionUtils.isNotEmpty(bodies)) {
-            for (Object body : bodies) {
-                if (target instanceof Step) {
-                    execute.accept((Step) body);
-                }
-            }
+            bodies.forEach(o -> {
+                if (o instanceof Step) execute.accept((Step) o);
+            });
         }
     }
 }
