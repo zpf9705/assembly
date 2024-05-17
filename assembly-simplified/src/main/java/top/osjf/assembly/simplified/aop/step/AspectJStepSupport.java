@@ -2,10 +2,12 @@ package top.osjf.assembly.simplified.aop.step;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
-import top.osjf.assembly.util.annotation.NotNull;
+import org.aspectj.lang.reflect.MethodSignature;
+import top.osjf.assembly.simplified.aop.step.annotation.StepInterceptor;
 import top.osjf.assembly.util.lang.ArrayUtils;
 import top.osjf.assembly.util.lang.CollectionUtils;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,13 +25,6 @@ import java.util.function.Consumer;
  */
 @Aspect
 public class AspectJStepSupport {
-
-    @NotNull
-    private final StepSignature signature;
-
-    public AspectJStepSupport(@NotNull StepSignature signature) {
-        this.signature = signature;
-    }
 
     @Pointcut("@annotation(top.osjf.assembly.simplified.aop.step.annotation.StepInterceptor)")
     public void pointCut() {
@@ -69,26 +64,31 @@ public class AspectJStepSupport {
     }
 
     /**
-     * According to the value of {@link #signature}, it is a collection
+     * According to the value of {@link StepSignature}, it is a collection
      * of objects that need to be executed about {@link Step}.
      *
      * @param joinPoint Method entry point.
      * @param execute   Stage execution method.
+     * @see top.osjf.assembly.simplified.aop.step.annotation.StepInterceptor
      */
     private void execute(JoinPoint joinPoint, Consumer<Step> execute) {
-        Object[] args = joinPoint.getArgs();
-        Object target = joinPoint.getTarget();
-        List<Object> bodies = new ArrayList<>(args.length + 1);
-        switch (signature) {
+        //Step interception annotations exist in methods.
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        //Get the entry point method.
+        Method method = signature.getMethod();
+        StepInterceptor interceptor = method.getAnnotation(StepInterceptor.class);
+        //Divide the execution according to the steps of intercepting annotations to execute the target.
+        //The initialization length is the parameter length plus the target object.
+        List<Object> bodies = new ArrayList<>(joinPoint.getArgs() != null ? joinPoint.getArgs().length + 1 : 1);
+        switch (interceptor.value()) {
             case ARG:
-                if (ArrayUtils.isNotEmpty(args)) bodies.addAll(Arrays.asList(args));
+                addStepWithArg(bodies, joinPoint);
                 break;
             case TARGET:
-                if (target != null) bodies.add(target);
+                addStepWithTarget(bodies, joinPoint);
                 break;
             case TOGETHER:
-                if (ArrayUtils.isNotEmpty(args)) bodies.addAll(Arrays.asList(args));
-                if (target != null) bodies.add(target);
+                addStepTogether(bodies, joinPoint);
                 break;
             default:
                 break;
@@ -98,5 +98,20 @@ public class AspectJStepSupport {
                 if (o instanceof Step) execute.accept((Step) o);
             });
         }
+    }
+
+    private void addStepWithArg(List<Object> bodies, JoinPoint joinPoint) {
+        Object[] args = joinPoint.getArgs();
+        if (ArrayUtils.isNotEmpty(args)) bodies.addAll(Arrays.asList(args));
+    }
+
+    private void addStepWithTarget(List<Object> bodies, JoinPoint joinPoint) {
+        Object target = joinPoint.getTarget();
+        if (target != null) bodies.add(target);
+    }
+
+    private void addStepTogether(List<Object> bodies, JoinPoint joinPoint) {
+        addStepWithArg(bodies, joinPoint);
+        addStepWithTarget(bodies, joinPoint);
     }
 }
