@@ -301,6 +301,18 @@ public final class CronRegister {
 
     /**
      * Add listeners for the start sequence of scheduled tasks.
+     * @since 2.2.5
+     * @param cronListeners listeners for the start sequence of scheduled tasks.
+     */
+    public static void addListeners(List<CronListener> cronListeners) {
+        if (CollectionUtils.isEmpty(cronListeners)){
+            return;
+        }
+        addListener(cronListeners.toArray(new CronListener[]{}));
+    }
+
+    /**
+     * Add listeners for the start sequence of scheduled tasks.
      *
      * @param cronListeners listeners for the start sequence of scheduled tasks.
      */
