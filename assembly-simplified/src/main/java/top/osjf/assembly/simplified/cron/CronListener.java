@@ -16,21 +16,21 @@ public interface CronListener extends TaskListener {
 
     /**
      * Triggered when a scheduled task starts.
-     *
+     * @since 2.2.5
      * @param executor Job executor.
      */
     void onStart(TaskExecutor executor);
 
     /**
      * Triggered when the task successfully ends.
-     *
+     * @since 2.2.5
      * @param executor Job executor.
      */
     void onSucceeded(TaskExecutor executor);
 
     /**
      * Triggered when the task fails to start.
-     *
+     * @since 2.2.5
      * @param executor Job executor.
      * @param exception The specific exception captured by the
      *                  listener when a scheduled task is abnormal.
