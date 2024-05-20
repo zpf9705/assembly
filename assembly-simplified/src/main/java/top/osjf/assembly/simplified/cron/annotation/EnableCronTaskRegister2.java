@@ -17,6 +17,9 @@ import java.lang.annotation.*;
  * default startup. When changing the annotation configuration to default task
  * less registration, it will also start the timed thread.
  *
+ * <p>At this point, support for automatic registration {@link CronListener}
+ * has been added, relying on annotations {@link EnableListenerAutoRegister}.
+ *
  * @see CronTaskRegisterPostProcessor
  * @author zpf
  * @since 2.0.6
