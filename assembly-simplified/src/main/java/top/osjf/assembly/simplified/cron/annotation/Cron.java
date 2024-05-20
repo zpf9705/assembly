@@ -10,8 +10,8 @@ import java.lang.annotation.*;
  * {@link org.springframework.core.env.Environment} registration,
  * and provides fixed initialization parameters.
  *
- * <p>Relying on {@link CronTaskRegister} to scan, obtain, and register
- * corresponding annotation methods.
+ * <p>Relying on {@link CronTaskRegister} or {@link CronTaskRegisterPostProcessor}
+ * to scan, obtain, and register corresponding annotation methods.
  *
  * @author zpf
  * @since 1.1.0
