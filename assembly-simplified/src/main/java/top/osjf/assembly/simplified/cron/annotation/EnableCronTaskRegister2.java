@@ -25,7 +25,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Import({CronTaskRegisterPostProcessor.class})
-@EnableListenerAutoRegister
+@EnableListenerAutoRegister //Since 2.2.5
 public @interface EnableCronTaskRegister2 {
 
     /**
