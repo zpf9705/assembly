@@ -1,4 +1,4 @@
-package top.osjf.assembly.simplified.init;
+package top.osjf.assembly.simplified.aop.init;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
@@ -51,7 +51,7 @@ public class AspectJInitSupport {
      * Note that the type matching of AOP proxy objects may include type
      * matching when introducing interfaces;
      * */
-    @Pointcut("this(top.osjf.assembly.simplified.init.InitAble)")
+    @Pointcut("this(top.osjf.assembly.simplified.aop.init.InitAble)")
     public void pointCut() {
     }
 

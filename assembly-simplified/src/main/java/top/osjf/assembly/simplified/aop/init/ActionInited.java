@@ -1,4 +1,4 @@
-package top.osjf.assembly.simplified.init;
+package top.osjf.assembly.simplified.aop.init;
 
 /**
  * Whether to initialize the marking interface, specifically

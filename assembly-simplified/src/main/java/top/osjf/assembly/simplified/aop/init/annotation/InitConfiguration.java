@@ -1,11 +1,11 @@
-package top.osjf.assembly.simplified.init.annotation;
+package top.osjf.assembly.simplified.aop.init.annotation;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
-import top.osjf.assembly.simplified.init.AspectJInitSupport;
-import top.osjf.assembly.simplified.init.InitUtils;
+import top.osjf.assembly.simplified.aop.init.InitUtils;
+import top.osjf.assembly.simplified.aop.init.AspectJInitSupport;
 
 /**
  * The relevant configuration of the initialization mechanism

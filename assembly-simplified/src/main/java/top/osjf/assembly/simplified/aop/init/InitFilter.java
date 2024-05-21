@@ -1,4 +1,4 @@
-package top.osjf.assembly.simplified.init;
+package top.osjf.assembly.simplified.aop.init;
 
 import org.springframework.context.ConfigurableApplicationContext;
 

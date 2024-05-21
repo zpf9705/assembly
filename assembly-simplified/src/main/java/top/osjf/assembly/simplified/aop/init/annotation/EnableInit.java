@@ -1,6 +1,7 @@
-package top.osjf.assembly.simplified.init.annotation;
+package top.osjf.assembly.simplified.aop.init.annotation;
 
 import org.springframework.context.annotation.Import;
+import top.osjf.assembly.simplified.aop.init.*;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -14,11 +15,11 @@ import java.lang.annotation.Target;
  * method before executing the initialization method.
  *
  * @see InitConfiguration
- * @see top.osjf.assembly.simplified.init.AspectJInitSupport
- * @see top.osjf.assembly.simplified.init.InitBefore
- * @see top.osjf.assembly.simplified.init.InitAble
- * @see top.osjf.assembly.simplified.init.ActionInited
- * @see top.osjf.assembly.simplified.init.InitAfter
+ * @see AspectJInitSupport
+ * @see InitBefore
+ * @see InitAble
+ * @see ActionInited
+ * @see InitAfter
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.4
  */

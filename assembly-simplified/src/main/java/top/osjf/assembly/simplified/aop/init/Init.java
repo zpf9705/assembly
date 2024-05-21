@@ -1,14 +1,14 @@
-package top.osjf.assembly.simplified.init;
+package top.osjf.assembly.simplified.aop.init;
 
 /**
  * Initialize the loading interface and execute it in stages.
  * Before and after the main initialization method is loaded,
  * logical execution can be defined sequentially.
  *
- * @see top.osjf.assembly.simplified.init.InitBefore
- * @see top.osjf.assembly.simplified.init.InitAble
- * @see top.osjf.assembly.simplified.init.ActionInited
- * @see top.osjf.assembly.simplified.init.InitAfter
+ * @see InitBefore
+ * @see InitAble
+ * @see ActionInited
+ * @see InitAfter
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.4
  */
