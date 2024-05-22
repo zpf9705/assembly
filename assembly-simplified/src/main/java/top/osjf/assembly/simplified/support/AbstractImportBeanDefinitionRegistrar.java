@@ -1,5 +1,7 @@
 package top.osjf.assembly.simplified.support;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.boot.SpringApplication;
@@ -8,8 +10,8 @@ import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.util.Assert;
 import top.osjf.assembly.util.annotation.NotNull;
+import top.osjf.assembly.util.lang.CollectionUtils;
 
 import java.lang.annotation.Annotation;
 import java.util.Map;
@@ -18,36 +20,51 @@ import java.util.Map;
  * Abstract {@link ImportBeanDefinitionRegistrar} implementation class,
  * parsing the triggered annotation content, and providing the package
  * path where the application main class is located.
- * <p>Pass in method {@link #process(AnnotationAttributes, BeanDefinitionRegistry)}
+ *
+ * <p>Pass in method {@link #registerBeanDefinitions(AnnotationAttributes, BeanDefinitionRegistry)}
  * and hand it over to subclasses to implement the behavior of registering beans.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @see ImportBeanDefinitionRegistrar
  * @since 2.0.9
  */
 public abstract class AbstractImportBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar {
 
+    /*** 2.2.5 add Log output, providing its own subclass usage.*/
+    protected final Logger log = LoggerFactory.getLogger(getClass());
+
     @Override
     public void registerBeanDefinitions(@NotNull AnnotationMetadata metadata, @NotNull BeanDefinitionRegistry registry,
-                                        @NotNull BeanNameGenerator importBeanNameGenerator) {
+                                        @NotNull BeanNameGenerator beanNameGenerator) {
         this.registerBeanDefinitions(metadata, registry);
     }
 
     @Override
-    public void registerBeanDefinitions(AnnotationMetadata metadata, @NotNull BeanDefinitionRegistry registry) {
+    public void registerBeanDefinitions(@NotNull AnnotationMetadata metadata, @NotNull BeanDefinitionRegistry registry) {
 
         //The annotation type that triggers automatic configuration this time.
         Class<? extends Annotation> annotationType = getImportAnnotationType();
-        Assert.notNull(annotationType, "Imported annotation type must not be null");
+        if (annotationType == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("You need to provide the annotation type to enable this bean assembly in " +
+                        "the override method ‘getImportAnnotationType’.");
+            }
+            log.error("The target annotation was not obtained, and this automatic registration is invalid.");
+            return;
+        }
 
         //According to the type, obtain the attribute setting value of the annotation.
         String annotationName = annotationType.getName();
         Map<String, Object> annotationMap = metadata.getAnnotationAttributes(annotationName);
-        Assert.notEmpty(annotationMap, "Get annotation [" + annotationName + "] attributes is empty");
-        AnnotationAttributes attributes = AnnotationAttributes.fromMap(annotationMap);
+        if (CollectionUtils.isEmpty(annotationMap)) {
+            if (log.isDebugEnabled()) {
+                log.debug("No corresponding map structure was obtained based on the annotation type name {}.",
+                        annotationName);
+            }
+            log.error("Failed to obtain annotation properties,, and this automatic registration is invalid.");
+        }
 
         //Execute custom bean behavior registration.
-        process(attributes, registry);
+        registerBeanDefinitions(AnnotationAttributes.fromMap(annotationMap), registry);
     }
 
     /**
@@ -56,12 +73,13 @@ public abstract class AbstractImportBeanDefinitionRegistrar implements ImportBea
      * encapsulated map, without providing a default method, and leave
      * it to the subclass to implement the processing logic.
      *
+     * <p>For clarity of meaning, the name ‘registerBeanDefinitions’
+     * was changed to version 2.2.5.
+     *
      * @param attributes Annotated content.
      * @param registry   The registration machine for the bean.
      */
-    protected void process(AnnotationAttributes attributes, BeanDefinitionRegistry registry) {
-        // no op
-    }
+    protected abstract void registerBeanDefinitions(AnnotationAttributes attributes, BeanDefinitionRegistry registry);
 
     /**
      * Provide {@link org.springframework.context.annotation.Import}
@@ -69,15 +87,17 @@ public abstract class AbstractImportBeanDefinitionRegistrar implements ImportBea
      * and obtain it for analyzing the content for subsequent extension use.
      * <p>Must need Override and provider not be {@literal null}</p>
      *
-     * @return Annotation class.
+     * <p>For clarity of meaning, the name ‘getImportAnnotationType’
+     * was changed to version 2.2.5.
+     *
+     * @return Annotation type.
      */
-    @NotNull
     protected abstract Class<? extends Annotation> getImportAnnotationType();
 
     /**
-     * Obtain the package path where the main application is located.
+     * Returns the package path where the main application is located.
      *
-     * @return Path of main application.
+     * @return the package path where the main application is located.
      */
     protected String getMainApplicationClassPath() {
         return MainClassPathCapable.getMainApplicationClassPath();
