@@ -190,9 +190,21 @@ public interface HttpResponse extends Response {
     int SC_INSUFFICIENT_STORAGE = 507;
     String SC_INSUFFICIENT_STORAGE0 = "507";
 
+    /** {@inheritDoc}*/
     @Override
     boolean isSuccess();
 
+    /** {@inheritDoc}*/
     @Override
     String getMessage();
+
+    /**
+     * Returns the status code that defines the status of an HTTP request.
+     * <p>This attribute is often related to the business due to inconsistent
+     * definition types, so {@link Object} is used here as a universal replacement
+     * for the type determination of the status code.
+     * @since 2.2.5
+     * @return status code that defines the status of an HTTP request.
+     * */
+    Object getCode();
 }
