@@ -12,7 +12,6 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.core.type.ClassMetadata;
 import org.springframework.core.type.filter.TypeFilter;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.lang.ArrayUtils;
@@ -138,7 +137,6 @@ public abstract class ScanningCandidateImportBeanDefinitionRegistrar<T extends B
      * @return Returns a {@link ClassPathScanningCandidateComponentProvider} that can
      * have the ability to search for independent and non interface classes under the
      * defined package, specifying a filter {@link TypeFilter}.
-     * @see ClassMetadata#isIndependent()
      */
     @NotNull
     protected abstract ClassPathScanningCandidateComponentProvider getScanningCandidateProvider();
