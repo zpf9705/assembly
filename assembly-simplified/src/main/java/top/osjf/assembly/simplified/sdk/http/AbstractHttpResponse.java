@@ -60,9 +60,8 @@ public abstract class AbstractHttpResponse extends AbstractResponse implements H
         return SUCCESS_MESSAGE;
     }
 
-    /*
-     * To avoid affecting the rewrite return type of subclasses, it is written as an object type.
-     * */
+    /** {@inheritDoc}*/
+    @Override
     public Object getCode() {
         return SC_OK;
     }
