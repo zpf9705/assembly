@@ -3,7 +3,7 @@ package top.osjf.assembly.simplified.sdk;
 import top.osjf.assembly.simplified.sdk.annotation.EnableSdkProxyRegister;
 import top.osjf.assembly.simplified.sdk.annotation.Sdk;
 import top.osjf.assembly.simplified.sdk.client.ClientExecutors;
-import top.osjf.assembly.simplified.support.BeanDefinitionRegisterBeforeRefresh;
+import top.osjf.assembly.simplified.support.ScanningCandidateImportBeanDefinitionRegistrar;
 import top.osjf.assembly.util.lang.StringUtils;
 
 import java.io.Serializable;
@@ -18,8 +18,9 @@ import java.io.Serializable;
  * our custom {@link top.osjf.assembly.simplified.sdk.client.Client} scheme.
  * <p>Here is an explanation of the main implementation idea: we first scan the
  * interface classes wearing {@link EnableSdkProxyRegister} in
- * {@link BeanDefinitionRegisterBeforeRefresh} through{@link Sdk}'s switch annotations,
- * and then create dynamic implementation classes for these interfaces through {}.
+ * {@link ScanningCandidateImportBeanDefinitionRegistrar} through{@link Sdk}'s
+ * switch annotations,and then create dynamic implementation classes for these
+ * interfaces through {@link top.osjf.assembly.simplified.sdk.annotation.SdkProxyBeanRegister}.
  *
  * <p>At this point, the implementation class is given to the proxy objects
  * created by the jdk dynamic proxy, and the proxy objects are handed over
@@ -28,6 +29,7 @@ import java.io.Serializable;
  * <p>When these interfaces are called through the spring container, We will
  * uniformly bring the parameters to the proxy object and connect them to our
  * {@link ClientExecutors} processing through this class.
+ *
  * @param <T> The data type of the proxy class.
  * @author zpf
  * @since 1.1.0
