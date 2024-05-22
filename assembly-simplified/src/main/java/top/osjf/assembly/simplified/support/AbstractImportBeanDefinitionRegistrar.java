@@ -35,11 +35,18 @@ public abstract class AbstractImportBeanDefinitionRegistrar implements ImportBea
 
     @Override
     public void registerBeanDefinitions(AnnotationMetadata metadata, @NotNull BeanDefinitionRegistry registry) {
-        Assert.notNull(getImportAnnotationClass(), "ImportAnnotationClass Not be null");
-        String importAnnotationName = getImportAnnotationClass().getName();
-        Map<String, Object> annotationAttributes = metadata.getAnnotationAttributes(importAnnotationName);
-        Assert.notEmpty(annotationAttributes, "Not find named " + importAnnotationName + " annotation");
-        AnnotationAttributes attributes = AnnotationAttributes.fromMap(annotationAttributes);
+
+        //The annotation type that triggers automatic configuration this time.
+        Class<? extends Annotation> annotationType = getImportAnnotationType();
+        Assert.notNull(annotationType, "Imported annotation type must not be null");
+
+        //According to the type, obtain the attribute setting value of the annotation.
+        String annotationName = annotationType.getName();
+        Map<String, Object> annotationMap = metadata.getAnnotationAttributes(annotationName);
+        Assert.notEmpty(annotationMap, "Get annotation [" + annotationName + "] attributes is empty");
+        AnnotationAttributes attributes = AnnotationAttributes.fromMap(annotationMap);
+
+        //Execute custom bean behavior registration.
         process(attributes, registry);
     }
 
@@ -48,6 +55,7 @@ public abstract class AbstractImportBeanDefinitionRegistrar implements ImportBea
      * here, present {@link AnnotationAttributes} in the form of an
      * encapsulated map, without providing a default method, and leave
      * it to the subclass to implement the processing logic.
+     *
      * @param attributes Annotated content.
      * @param registry   The registration machine for the bean.
      */
@@ -60,19 +68,27 @@ public abstract class AbstractImportBeanDefinitionRegistrar implements ImportBea
      * annotation to pour into the target annotation of the configuration,
      * and obtain it for analyzing the content for subsequent extension use.
      * <p>Must need Override and provider not be {@literal null}</p>
+     *
      * @return Annotation class.
      */
     @NotNull
-    protected abstract Class<? extends Annotation> getImportAnnotationClass();
+    protected abstract Class<? extends Annotation> getImportAnnotationType();
 
     /**
      * Obtain the package path where the main application is located.
+     *
      * @return Path of main application.
      */
     protected String getMainApplicationClassPath() {
         return MainClassPathCapable.getMainApplicationClassPath();
     }
 
+    /**
+     * When initializing startup using {@link EnvironmentPostProcessor}, obtain the package path
+     * where the main startup class is located.
+     *
+     * <p>Provide default values for scanning paths.
+     */
     public static class MainClassPathCapable implements EnvironmentPostProcessor {
 
         private static String mainApplicationClassPath;
