@@ -7,7 +7,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.Assert;
 import top.osjf.assembly.simplified.sdk.SdkProxyBeanDefinition;
-import top.osjf.assembly.simplified.support.BeanDefinitionRegisterBeforeRefresh;
+import top.osjf.assembly.simplified.support.AnnotationTypeScanningCandidateImportBeanDefinitionRegistrar;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.lang.StringUtils;
 import top.osjf.assembly.util.logger.Console;
@@ -29,28 +29,30 @@ import top.osjf.assembly.util.logger.Console;
  * @author zpf
  * @since 1.1.0
  */
-public class SdkProxyBeanRegister extends BeanDefinitionRegisterBeforeRefresh {
+public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportBeanDefinitionRegistrar {
 
     @Override
-    public BeanDefinitionHolder getBeanDefinitionHolder(AnnotationAttributes attributes, AnnotationMetadata meta) {
-        String className = meta.getClassName();
-        Class<?> beanDefinitionClass = attributes.getClass("beanDefinitionClass");
-        BeanDefinitionBuilder definition = BeanDefinitionBuilder.genericBeanDefinition(beanDefinitionClass);
-        definition.addPropertyValue("host", getRequestHost(attributes.getString("hostProperty")));
+    public BeanDefinitionHolder createBeanDefinitionHolder(AnnotationAttributes markedAnnotationAttributes,
+                                                           AnnotationMetadata markedAnnotationMetadata) {
+        String className = markedAnnotationMetadata.getClassName();
+        Class<?> beanDefinitionType = markedAnnotationAttributes.getClass("beanDefinitionType");
+        BeanDefinitionBuilder definition = BeanDefinitionBuilder.genericBeanDefinition(beanDefinitionType);
+        definition.addPropertyValue("host",
+                getRequestHost(markedAnnotationAttributes.getString("hostProperty")));
         definition.addPropertyValue("clazz", className);
         //@since 2.0.7
-        String beanName = attributes.getString("beanName");
-        String[] alisa = attributes.getStringArray("alisa");
-        String scope = attributes.getString("scope");
-        int autowireMode = attributes.<Integer>getNumber("autowireMode");
+        String beanName = markedAnnotationAttributes.getString("beanName");
+        String[] alisa = markedAnnotationAttributes.getStringArray("alisa");
+        String scope = markedAnnotationAttributes.getString("scope");
+        int autowireMode = markedAnnotationAttributes.<Integer>getNumber("autowireMode");
         //@since 2.0.9
-        String initMethod = attributes.getString("initMethod");
-        String destroyMethod = attributes.getString("destroyMethod");
-        int role = attributes.<Integer>getNumber("role");
-        boolean lazyInit = attributes.getBoolean("lazyInit");
-        String description = attributes.getString("description");
+        String initMethod = markedAnnotationAttributes.getString("initMethod");
+        String destroyMethod = markedAnnotationAttributes.getString("destroyMethod");
+        int role = markedAnnotationAttributes.<Integer>getNumber("role");
+        boolean lazyInit = markedAnnotationAttributes.getBoolean("lazyInit");
+        String description = markedAnnotationAttributes.getString("description");
         //@Since 2.2.5
-        boolean autowireCandidate = attributes.getBoolean("autowireCandidate");
+        boolean autowireCandidate = markedAnnotationAttributes.getBoolean("autowireCandidate");
         if (StringUtils.isBlank(beanName)) beanName = className;
         definition.setScope(scope);
         definition.setAutowireMode(autowireMode);
@@ -65,20 +67,19 @@ public class SdkProxyBeanRegister extends BeanDefinitionRegisterBeforeRefresh {
 
     @Override
     @NotNull
-    public Class<EnableSdkProxyRegister> getImportAnnotationClass() {
+    public Class<EnableSdkProxyRegister> getImportAnnotationType() {
         return EnableSdkProxyRegister.class;
     }
 
     @Override
     @NotNull
-    public Class<Sdk> getFilterAnnotationClass() {
+    public Class<Sdk> getFilterAnnotationType() {
         return Sdk.class;
     }
 
     @Override
-    @NotNull
-    public String getScanPathAttributeName() {
-        return "basePackages";
+    protected boolean isAvailableMarkedBeanDefinitionMetadata(AnnotationMetadata metadata) {
+        return metadata.isInterface();
     }
 
     /*** Default browser host address */
