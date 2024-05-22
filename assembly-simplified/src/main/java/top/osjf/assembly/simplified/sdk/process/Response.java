@@ -24,16 +24,15 @@ import java.io.Serializable;
 public interface Response extends ErrorResponse, Serializable {
 
     /**
-     * Verify this request whether successful.
-     *
-     * @return True Success False Failure.
+     * Returns the success identifier of the request, displayed as a Boolean value.
+     * @return displayed as a Boolean value，if {@link true} represents
+     *          success, otherwise it fails.
      */
     boolean isSuccess();
 
     /**
-     * Get Request return message.
-     *
-     * @return Status information.
+     * Returns information carried by the end of the return request.
+     * @return information carried by the end of the return request.
      */
     String getMessage();
 }
