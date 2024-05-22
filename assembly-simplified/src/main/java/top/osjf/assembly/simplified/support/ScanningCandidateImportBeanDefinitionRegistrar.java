@@ -33,7 +33,16 @@ import java.util.Set;
  * If the above type is not provided, the package scanning will be carried
  * out according to the package where the main class is launched.
  *
- * <p>
+ * <p>Subclass can customize scanning rules {@link #getScanningCandidateProvider()},
+ * which must be provided. The scanned {@link BeanDefinition} will be handed over
+ * to the subclass to determine whether it is valid {@link #isAvailableMarkedBeanDefinition(BeanDefinition)},
+ * which is directly valid by default.
+ *
+ * <p>After the above steps, subclasses will be requested to construct a set
+ * of information related to {@link BeanDefinition} based on the provided metadata
+ * information, which will be passed on to the subsequent bean registration machine
+ * {@link BeanDefinitionRegistry} for unified registration.
+ * At this point, the dynamic registration process is completed.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.5
