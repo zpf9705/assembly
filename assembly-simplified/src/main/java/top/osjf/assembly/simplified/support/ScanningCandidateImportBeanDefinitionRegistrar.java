@@ -8,6 +8,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
@@ -22,6 +23,17 @@ import top.osjf.assembly.util.lang.StringUtils;
 import java.util.Set;
 
 /**
+ * The processing class used to dynamically add beans during the startup
+ * process of the Spring framework is a further encapsulation of
+ * {@link ImportBeanDefinitionRegistrar} to achieve directional scanning.
+ *
+ * <p>To use the functionality of this encapsulation class, it is necessary
+ * to provide the annotation type {@link #getImportAnnotationType()} that
+ * triggers this configuration,which is used to determine the package path
+ * selection for subsequent directed scanning.
+ * If the above type is not provided, the package scanning will be carried
+ * out according to the package where the main class is launched.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.5
  */
@@ -62,16 +74,20 @@ public abstract class ScanningCandidateImportBeanDefinitionRegistrar<T extends B
     }
 
     @Override
-    protected void registerBeanDefinitions(@NotNull AnnotationAttributes importAnnotationAttributes,
+    protected void registerBeanDefinitions(AnnotationAttributes importAnnotationAttributes,
                                            @NotNull BeanDefinitionRegistry registry) {
-
-        String scanPathAttributeName = getScanPathAttributeName();
-        String[] scanningPackageNames = importAnnotationAttributes.getStringArray(scanPathAttributeName);
-        if (ArrayUtils.isEmpty(scanningPackageNames)) {
-            if (log.isDebugEnabled()) {
-                log.debug("According to the attribute name {}, the scan path array value was not obtained.",
-                        scanPathAttributeName);
+        String[] scanningPackageNames;
+        if (importAnnotationAttributes != null) {
+            String scanPathAttributeName = getScanPathAttributeName();
+            scanningPackageNames = importAnnotationAttributes.getStringArray(scanPathAttributeName);
+            if (ArrayUtils.isEmpty(scanningPackageNames)) {
+                scanningPackageNames = new String[]{getMainApplicationClassPath()};
+                if (log.isDebugEnabled()) {
+                    log.debug("According to the attribute name {}, the scan path array value was not obtained.",
+                            scanPathAttributeName);
+                }
             }
+        } else {
             scanningPackageNames = new String[]{getMainApplicationClassPath()};
         }
         ClassPathScanningCandidateComponentProvider scanningCandidateProvider = getScanningCandidateProvider();
@@ -109,10 +125,10 @@ public abstract class ScanningCandidateImportBeanDefinitionRegistrar<T extends B
     }
 
     /**
-     * @see ClassMetadata#isIndependent()
      * @return Returns a {@link ClassPathScanningCandidateComponentProvider} that can
      * have the ability to search for independent and non interface classes under the
      * defined package, specifying a filter {@link TypeFilter}.
+     * @see ClassMetadata#isIndependent()
      */
     protected ClassPathScanningCandidateComponentProvider getScanningCandidateProvider() {
         ClassPathScanningCandidateComponentProvider classPathScan =

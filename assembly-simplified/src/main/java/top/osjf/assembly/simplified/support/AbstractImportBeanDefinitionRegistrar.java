@@ -10,6 +10,7 @@ import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.lang.Nullable;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.lang.CollectionUtils;
 
@@ -40,17 +41,27 @@ public abstract class AbstractImportBeanDefinitionRegistrar implements ImportBea
 
     @Override
     public void registerBeanDefinitions(@NotNull AnnotationMetadata metadata, @NotNull BeanDefinitionRegistry registry) {
-        String annotationName = getImportAnnotationType().getName();
-        Map<String, Object> annotationMap = metadata.getAnnotationAttributes(annotationName);
-        if (CollectionUtils.isEmpty(annotationMap)) {
-            if (log.isDebugEnabled()) {
-                log.debug("No corresponding map structure was obtained based on the annotation type name {}.",
-                        annotationName);
+        AnnotationAttributes importAnnotationAttributes;
+        Class<? extends Annotation> importAnnotationType = getImportAnnotationType();
+        if (importAnnotationType != null) {
+            String annotationName = importAnnotationType.getName();
+            Map<String, Object> annotationMap = metadata.getAnnotationAttributes(annotationName);
+            if (CollectionUtils.isNotEmpty(annotationMap)) {
+                importAnnotationAttributes = AnnotationAttributes.fromMap(annotationMap);
+            } else {
+                importAnnotationAttributes = null;
+                if (log.isDebugEnabled()) {
+                    log.debug("No corresponding map structure was obtained based on the annotation type name {}.",
+                            annotationName);
+                }
             }
-            log.error("Failed to obtain annotation properties, and this automatic registration is invalid.");
-            return;
+        } else {
+            importAnnotationAttributes = null;
+            if (log.isDebugEnabled()) {
+                log.debug("There is no type provided that can trigger this configuration annotation.");
+            }
         }
-        registerBeanDefinitions(AnnotationAttributes.fromMap(annotationMap), registry);
+        registerBeanDefinitions(importAnnotationAttributes, registry);
     }
 
     /**
@@ -66,7 +77,7 @@ public abstract class AbstractImportBeanDefinitionRegistrar implements ImportBea
      *                                   configuration annotation.
      * @param registry                   The registration machine for the bean.
      */
-    protected abstract void registerBeanDefinitions(@NotNull AnnotationAttributes importAnnotationAttributes,
+    protected abstract void registerBeanDefinitions(@Nullable AnnotationAttributes importAnnotationAttributes,
                                                     @NotNull BeanDefinitionRegistry registry);
 
     /**
@@ -80,7 +91,7 @@ public abstract class AbstractImportBeanDefinitionRegistrar implements ImportBea
      *
      * @return Annotation type,must not be {@literal null}.
      */
-    @NotNull
+    @Nullable
     protected abstract Class<? extends Annotation> getImportAnnotationType();
 
     /**
