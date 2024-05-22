@@ -16,11 +16,13 @@ import java.util.Map;
 @SuppressWarnings("serial")
 public abstract class AbstractRequestParams<R extends AbstractResponse> implements Request<R> {
 
+    /** {@inheritDoc}*/
     @Override
     public Map<String, String> getHeadMap() {
         return Collections.emptyMap();
     }
 
+    /** {@inheritDoc}*/
     @Override
     public void validate() throws SdkException {
     }
