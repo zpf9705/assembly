@@ -1,6 +1,7 @@
 package top.osjf.assembly.simplified.sdk.http;
 
 import top.osjf.assembly.simplified.sdk.SdkException;
+import top.osjf.assembly.simplified.sdk.process.Request;
 import top.osjf.assembly.util.annotation.CanNull;
 
 import java.util.function.Supplier;
@@ -14,10 +15,33 @@ import java.util.function.Supplier;
  */
 public interface HttpResultSolver {
 
+    /**
+     * The type of {@link SdkException} exception that runs during the
+     * request processing is usually manually checked and thrown in the
+     * reference method {@link Request#validate()}.
+     *
+     * @param request Request parameters.
+     * @param e       Exception {@link SdkException}.
+     */
     void handlerSdkError(HttpRequest<?> request, SdkException e);
 
+    /**
+     * The type of {@link Throwable} exception that runs during the
+     * request processing is usually an exception thrown by the requester
+     * or other unknown exceptions such as network exceptions.
+     *
+     * @param request Request parameters.
+     * @param e       UnKnow Exception {@link Throwable}.
+     */
     void handlerUnKnowError(HttpRequest<?> request, Throwable e);
 
+    /**
+     * The final process is to call the interface implementation
+     * class {@link ExecuteInfo} encapsulated by the metadata of
+     * this request call in the finally of try catch.
+     *
+     * @param info {@link ExecuteInfo}.
+     */
     void finallyHandler(ExecuteInfo info);
 
     /**
@@ -25,14 +49,29 @@ public interface HttpResultSolver {
      */
     interface ExecuteInfo {
 
+        /**
+         * @return Returns the number of milliseconds spent on this request.
+         */
         long getSpendTotalTimeMillis();
 
+        /**
+         * @return Return the {@link Supplier} package type indicating whether the request was successful.
+         */
         Supplier<Boolean> noHappenError();
 
+        /**
+         * @return Returns the parameters for this request.
+         */
         HttpRequest<?> getHttpRequest();
 
+        /**
+         * @return Returns the body of this request.
+         */
         String getResponse();
 
+        /**
+         * @return Returns the error response information for this request.
+         */
         String getErrorMessage();
     }
 
