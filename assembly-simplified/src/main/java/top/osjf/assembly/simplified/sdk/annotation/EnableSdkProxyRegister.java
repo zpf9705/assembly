@@ -44,7 +44,7 @@ import java.lang.annotation.*;
  * @author zpf
  * @see org.springframework.context.annotation.ImportBeanDefinitionRegistrar
  * @see top.osjf.assembly.simplified.support.AbstractImportBeanDefinitionRegistrar
- * @see top.osjf.assembly.simplified.support.BeanDefinitionRegisterBeforeRefresh
+ * @see top.osjf.assembly.simplified.support.AnnotationTypeScanningCandidateImportBeanDefinitionRegistrar
  * @see SdkProxyBeanRegister
  * @see ComponentScan
  * @since 1.1.0
