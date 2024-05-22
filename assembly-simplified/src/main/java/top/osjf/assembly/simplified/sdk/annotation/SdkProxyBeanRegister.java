@@ -9,6 +9,7 @@ import org.springframework.util.Assert;
 import top.osjf.assembly.simplified.sdk.SdkProxyBeanDefinition;
 import top.osjf.assembly.simplified.support.AnnotationTypeScanningCandidateImportBeanDefinitionRegistrar;
 import top.osjf.assembly.util.annotation.NotNull;
+import top.osjf.assembly.util.encode.DigestUtils;
 import top.osjf.assembly.util.lang.StringUtils;
 import top.osjf.assembly.util.logger.Console;
 
@@ -53,7 +54,7 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
         String description = markedAnnotationAttributes.getString("description");
         //@Since 2.2.5
         boolean autowireCandidate = markedAnnotationAttributes.getBoolean("autowireCandidate");
-        if (StringUtils.isBlank(beanName)) beanName = className;
+        if (StringUtils.isBlank(beanName)) beanName = generateBeanName(className);
         definition.setScope(scope);
         definition.setAutowireMode(autowireMode);
         if (StringUtils.isNotBlank(initMethod)) definition.setInitMethodName(initMethod);
@@ -84,6 +85,18 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
 
     /*** Default browser host address */
     static final String DEFAULT_HTTP_BROWSER_HOST = "127.0.0.1:80";
+
+    /*** Default browser host address */
+    static final String DEFAULT_BEAN_NAME_SUFFIX = "@sdk.proxy.bean";
+
+    /**
+     * When no bean name is provided for the SDK proxy bean,
+     * this method is used as an alternative.
+     * @return The name of the proxy bean.
+     * */
+    private String generateBeanName(String className) {
+        return DigestUtils.md5Hex(className) + DEFAULT_BEAN_NAME_SUFFIX;
+    }
 
     /**
      * Based on the provided configuration name, obtain the
