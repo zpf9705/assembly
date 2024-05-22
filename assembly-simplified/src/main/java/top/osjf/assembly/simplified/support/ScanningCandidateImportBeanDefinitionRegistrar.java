@@ -1,6 +1,5 @@
 package top.osjf.assembly.simplified.support;
 
-import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
@@ -33,6 +32,8 @@ import java.util.Set;
  * selection for subsequent directed scanning.
  * If the above type is not provided, the package scanning will be carried
  * out according to the package where the main class is launched.
+ *
+ * <p>
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.5
@@ -130,28 +131,8 @@ public abstract class ScanningCandidateImportBeanDefinitionRegistrar<T extends B
      * defined package, specifying a filter {@link TypeFilter}.
      * @see ClassMetadata#isIndependent()
      */
-    protected ClassPathScanningCandidateComponentProvider getScanningCandidateProvider() {
-        ClassPathScanningCandidateComponentProvider classPathScan =
-                new ClassPathScanningCandidateComponentProvider(false, this.environment) {
-                    @Override
-                    protected boolean isCandidateComponent(AnnotatedBeanDefinition beanDefinition) {
-                        return beanDefinition.getMetadata().isIndependent() && !beanDefinition.getMetadata()
-                                .isAnnotation();
-                    }
-                };
-        classPathScan.setResourceLoader(this.resourceLoader);
-        classPathScan.setResourcePattern("**/*.class");
-        classPathScan.addIncludeFilter(getTypeFilter());
-        return classPathScan;
-    }
-
-    /**
-     * Returns the class filter used when scanning with the Spring class path scanner.
-     *
-     * @return the class filter used when scanning with the Spring class path scanner.
-     */
     @NotNull
-    protected abstract TypeFilter getTypeFilter();
+    protected abstract ClassPathScanningCandidateComponentProvider getScanningCandidateProvider();
 
     /**
      * Returns whether the {@link BeanDefinition} provided by the scan is
@@ -179,6 +160,13 @@ public abstract class ScanningCandidateImportBeanDefinitionRegistrar<T extends B
      */
     protected Environment getEnvironment() {
         return this.environment;
+    }
+
+    /**
+     * @return Return the resource loader and hand it over to the subclass for use.
+     */
+    protected ResourceLoader getResourceLoader() {
+        return resourceLoader;
     }
 
     /**

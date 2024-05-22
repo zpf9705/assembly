@@ -9,7 +9,6 @@ import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
-import org.springframework.core.type.filter.TypeFilter;
 import top.osjf.assembly.util.annotation.NotNull;
 
 import java.lang.annotation.Annotation;
@@ -45,11 +44,21 @@ import java.lang.annotation.Annotation;
  */
 public abstract class AnnotationTypeScanningCandidateImportBeanDefinitionRegistrar
         extends ScanningCandidateImportBeanDefinitionRegistrar<AnnotatedBeanDefinition> {
-
     @NotNull
     @Override
-    protected TypeFilter getTypeFilter() {
-        return new AnnotationTypeFilter(getFilterAnnotationType());
+    protected ClassPathScanningCandidateComponentProvider getScanningCandidateProvider() {
+        ClassPathScanningCandidateComponentProvider componentProvider =
+                new ClassPathScanningCandidateComponentProvider(false, getEnvironment()) {
+                    @Override
+                    protected boolean isCandidateComponent(AnnotatedBeanDefinition beanDefinition) {
+                        AnnotationMetadata metadata = beanDefinition.getMetadata();
+                        return metadata.isIndependent() && !metadata.isAnnotation();
+                    }
+                };
+        componentProvider.setResourceLoader(getResourceLoader());
+        componentProvider.setResourcePattern("**/*.class");
+        componentProvider.addIncludeFilter(new AnnotationTypeFilter(getFilterAnnotationType()));
+        return componentProvider;
     }
 
     @Override
