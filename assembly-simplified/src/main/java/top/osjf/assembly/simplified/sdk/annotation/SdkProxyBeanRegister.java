@@ -67,7 +67,6 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
     }
 
     @Override
-    @NotNull
     public Class<EnableSdkProxyRegister> getImportAnnotationType() {
         return EnableSdkProxyRegister.class;
     }
