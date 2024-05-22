@@ -25,7 +25,7 @@ public interface Response extends ErrorResponse, Serializable {
 
     /**
      * Returns the success identifier of the request, displayed as a Boolean value.
-     * @return displayed as a Boolean value，if {@link true} represents
+     * @return displayed as a Boolean value，if {@code true} represents
      *          success, otherwise it fails.
      */
     boolean isSuccess();
