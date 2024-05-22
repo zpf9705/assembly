@@ -61,6 +61,7 @@ public abstract class AbstractImportBeanDefinitionRegistrar implements ImportBea
                         annotationName);
             }
             log.error("Failed to obtain annotation properties,, and this automatic registration is invalid.");
+            return;
         }
 
         //Execute custom bean behavior registration.
@@ -76,10 +77,12 @@ public abstract class AbstractImportBeanDefinitionRegistrar implements ImportBea
      * <p>For clarity of meaning, the name ‘registerBeanDefinitions’
      * was changed to version 2.2.5.
      *
-     * @param attributes Annotated content.
-     * @param registry   The registration machine for the bean.
+     * @param importAnnotationAttributes Pour {@link AnnotationAttributes} into the
+     *                                   configuration annotation.
+     * @param registry                   The registration machine for the bean.
      */
-    protected abstract void registerBeanDefinitions(AnnotationAttributes attributes, BeanDefinitionRegistry registry);
+    protected abstract void registerBeanDefinitions(@NotNull AnnotationAttributes importAnnotationAttributes,
+                                                    @NotNull BeanDefinitionRegistry registry);
 
     /**
      * Provide {@link org.springframework.context.annotation.Import}
