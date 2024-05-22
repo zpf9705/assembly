@@ -145,11 +145,11 @@ public abstract class ScanningCandidateImportBeanDefinitionRegistrar<T extends B
      * Returns whether the {@link BeanDefinition} provided by the scan is
      * available for subclass conditions.
      *
-     * @param beanDefinition the {@link BeanDefinition} provided by the scan.
+     * @param markedBeanDefinition the {@link BeanDefinition} provided by the scan.
      * @return whether the {@link BeanDefinition} provided by the scan is
      * available for subclass conditions.
      */
-    protected boolean isAvailableMarkedBeanDefinition(BeanDefinition beanDefinition) {
+    protected boolean isAvailableMarkedBeanDefinition(BeanDefinition markedBeanDefinition) {
         return true;
     }
 

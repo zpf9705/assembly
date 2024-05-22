@@ -62,9 +62,10 @@ public abstract class AnnotationTypeScanningCandidateImportBeanDefinitionRegistr
     }
 
     @Override
-    protected boolean isAvailableMarkedBeanDefinition(BeanDefinition beanDefinition) {
-        if (beanDefinition instanceof AnnotatedBeanDefinition) {
-            return isAvailableMarkedBeanDefinitionMetadata(((AnnotatedBeanDefinition) beanDefinition).getMetadata());
+    protected boolean isAvailableMarkedBeanDefinition(BeanDefinition markedBeanDefinition) {
+        if (markedBeanDefinition instanceof AnnotatedBeanDefinition) {
+            return isAvailableMarkedBeanDefinitionMetadata(((AnnotatedBeanDefinition) markedBeanDefinition)
+                    .getMetadata());
         }
         return false;
     }
