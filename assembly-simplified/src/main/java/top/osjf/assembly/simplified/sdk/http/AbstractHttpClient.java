@@ -44,9 +44,8 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
     }
 
     /**
-     * Obtain the interface parameters for this HTTP request.
-     *
-     * @return Return a {@link Request} param within {@link HttpRequest}.
+     * Return the request that was temporarily placed in the thread copy as {@link Request}.
+     * @return the request that was temporarily placed in the thread copy as {@link Request}.
      */
     public HttpRequest<R> getCurrentHttpRequest() {
         return (HttpRequest<R>) getCurrentRequest();
