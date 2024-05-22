@@ -40,31 +40,16 @@ public abstract class AbstractImportBeanDefinitionRegistrar implements ImportBea
 
     @Override
     public void registerBeanDefinitions(@NotNull AnnotationMetadata metadata, @NotNull BeanDefinitionRegistry registry) {
-
-        //The annotation type that triggers automatic configuration this time.
-        Class<? extends Annotation> annotationType = getImportAnnotationType();
-        if (annotationType == null) {
-            if (log.isDebugEnabled()) {
-                log.debug("You need to provide the annotation type to enable this bean assembly in " +
-                        "the override method ‘getImportAnnotationType’.");
-            }
-            log.error("The target annotation was not obtained, and this automatic registration is invalid.");
-            return;
-        }
-
-        //According to the type, obtain the attribute setting value of the annotation.
-        String annotationName = annotationType.getName();
+        String annotationName = getImportAnnotationType().getName();
         Map<String, Object> annotationMap = metadata.getAnnotationAttributes(annotationName);
         if (CollectionUtils.isEmpty(annotationMap)) {
             if (log.isDebugEnabled()) {
                 log.debug("No corresponding map structure was obtained based on the annotation type name {}.",
                         annotationName);
             }
-            log.error("Failed to obtain annotation properties,, and this automatic registration is invalid.");
+            log.error("Failed to obtain annotation properties, and this automatic registration is invalid.");
             return;
         }
-
-        //Execute custom bean behavior registration.
         registerBeanDefinitions(AnnotationAttributes.fromMap(annotationMap), registry);
     }
 
@@ -93,8 +78,9 @@ public abstract class AbstractImportBeanDefinitionRegistrar implements ImportBea
      * <p>For clarity of meaning, the name ‘getImportAnnotationType’
      * was changed to version 2.2.5.
      *
-     * @return Annotation type.
+     * @return Annotation type,must not be {@literal null}.
      */
+    @NotNull
     protected abstract Class<? extends Annotation> getImportAnnotationType();
 
     /**
