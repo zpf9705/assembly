@@ -76,10 +76,13 @@ public @interface Sdk {
      * beans you introduce, and define the initialization and destruction
      * methods {@link #initMethod()} and {@link #destroyMethod()} for {@link BeanDefinition}.
      *
+     * <p>For clarity of meaning, the name ‘beanDefinitionType’
+     * was changed to version 2.2.5.
+     *
      * @return A beanDefinition class , defaults to {@link SdkProxyBeanDefinition}.
      * @since 2.0.9
      */
-    Class<? extends AbstractSdkProxyInvoker> beanDefinitionClass() default SdkProxyBeanDefinition.class;
+    Class<? extends AbstractSdkProxyInvoker> beanDefinitionType() default SdkProxyBeanDefinition.class;
 
     /**
      * The unique ID of the spring container bean.
@@ -147,7 +150,7 @@ public @interface Sdk {
      * autowiring by name will nevertheless inject a bean if the name matches.
      *
      * @return Return whether this bean is a candidate for getting autowired into some
-     *         other bean.
+     * other bean.
      * @see AbstractBeanDefinition#AUTOWIRE_BY_TYPE
      * @see AbstractBeanDefinition#AUTOWIRE_BY_NAME
      */
