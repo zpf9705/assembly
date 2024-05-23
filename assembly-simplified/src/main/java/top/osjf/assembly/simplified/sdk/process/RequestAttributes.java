@@ -1,10 +1,12 @@
 package top.osjf.assembly.simplified.sdk.process;
 
+import top.osjf.assembly.simplified.sdk.proxy.SdkProxyBeanDefinition;
+
 /**
  * Regarding the definition property of {@link Request},
  * the aware interface needs to be implemented to set and
  * obtain the corresponding request properties.
- * @see top.osjf.assembly.simplified.sdk.SdkProxyBeanDefinition
+ * @see SdkProxyBeanDefinition
  * @author zpf
  * @since 1.1.0
  */
