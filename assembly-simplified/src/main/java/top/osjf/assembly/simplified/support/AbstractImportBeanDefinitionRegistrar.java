@@ -4,11 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.lang.Nullable;
 import top.osjf.assembly.util.annotation.NotNull;
@@ -93,36 +90,4 @@ public abstract class AbstractImportBeanDefinitionRegistrar implements ImportBea
      */
     @Nullable
     protected abstract Class<? extends Annotation> getImportAnnotationType();
-
-    /**
-     * Returns the package path where the main application is located.
-     *
-     * @return the package path where the main application is located.
-     */
-    protected String getMainApplicationClassPath() {
-        return MainClassPathCapable.getMainApplicationClassPath();
-    }
-
-    /**
-     * When initializing startup using {@link EnvironmentPostProcessor}, obtain the package path
-     * where the main startup class is located.
-     *
-     * <p>Provide default values for scanning paths.
-     */
-    public static class MainClassPathCapable implements EnvironmentPostProcessor {
-
-        private static String mainApplicationClassPath;
-
-        @Override
-        public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
-            Class<?> mainApplicationClass = application.getMainApplicationClass();
-            if (mainApplicationClass != null) {
-                mainApplicationClassPath = mainApplicationClass.getPackage().getName();
-            }
-        }
-
-        public static String getMainApplicationClassPath() {
-            return mainApplicationClassPath;
-        }
-    }
 }
