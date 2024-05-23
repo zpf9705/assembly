@@ -9,6 +9,7 @@ import org.springframework.util.Assert;
 import top.osjf.assembly.simplified.sdk.proxy.SdkCglibProxyBean;
 import top.osjf.assembly.simplified.sdk.proxy.SdkJDKProxyBean;
 import top.osjf.assembly.simplified.support.AnnotationTypeScanningCandidateImportBeanDefinitionRegistrar;
+import top.osjf.assembly.simplified.support.ProxyModel;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.encode.DigestUtils;
 import top.osjf.assembly.util.lang.StringUtils;
@@ -37,8 +38,10 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
     public BeanDefinitionHolder createBeanDefinitionHolder(AnnotationAttributes markedAnnotationAttributes,
                                                            AnnotationMetadata markedAnnotationMetadata) {
         String className = markedAnnotationMetadata.getClassName();
-        Class<?> beanDefinitionType = markedAnnotationAttributes.getClass("beanDefinitionType");
-        BeanDefinitionBuilder definition = BeanDefinitionBuilder.genericBeanDefinition(beanDefinitionType);
+        ProxyModel model = markedAnnotationAttributes.getEnum("model");
+        BeanDefinitionBuilder definition = BeanDefinitionBuilder.genericBeanDefinition(
+                getTypeByProxyModelAndCompare(model,
+                        markedAnnotationAttributes.getClass("proxyBeanType")));
         definition.addPropertyValue("host",
                 getRequestHost(markedAnnotationAttributes.getString("hostProperty")));
         definition.addPropertyValue("type", className);
@@ -92,10 +95,31 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
     /**
      * When no bean name is provided for the SDK proxy bean,
      * this method is used as an alternative.
+     *
      * @return The name of the proxy bean.
-     * */
+     */
     private String generateBeanName(String className) {
         return DigestUtils.md5Hex(className) + DEFAULT_BEAN_NAME_SUFFIX;
+    }
+
+    /**
+     * Select the proxy type based on the model.
+     *
+     * @return the proxy type。
+     */
+    private Class<?> getTypeByProxyModelAndCompare(ProxyModel proxyModel, Class<?> hopeType) {
+        Class<?> type;
+        if (proxyModel == ProxyModel.SPRING_CJ_LIB) {
+            type = SdkCglibProxyBean.class;
+        } else type = SdkJDKProxyBean.class;
+        if (!type.isAssignableFrom(hopeType)) {
+            if (log.isWarnEnabled()) {
+                log.warn("The proxy model needs to not correspond to the corresponding " +
+                        "proxy type, and the dynamic proxy model of cglib is selected by default.");
+            }
+            type = SdkCglibProxyBean.class;
+        }
+        return type;
     }
 
     /**

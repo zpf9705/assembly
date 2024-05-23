@@ -10,7 +10,9 @@ import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.stereotype.Component;
 import top.osjf.assembly.simplified.sdk.proxy.AbstractSdkProxyHandler;
+import top.osjf.assembly.simplified.sdk.proxy.SdkCglibProxyBean;
 import top.osjf.assembly.simplified.sdk.proxy.SdkJDKProxyBean;
+import top.osjf.assembly.simplified.support.ProxyModel;
 
 import java.lang.annotation.*;
 
@@ -79,10 +81,35 @@ public @interface Sdk {
      * <p>For clarity of meaning, the name ‘beanDefinitionType’
      * was changed to version 2.2.5.
      *
-     * @return A beanDefinition class , defaults to {@link SdkJDKProxyBean}.
+     * <p>For clearer meaning, it was renamed 'proxyBeanType',represents
+     * the type of proxy class.
+     *
+     * <p>{@link ProxyModel#JDK} corresponds to {@link SdkJDKProxyBean} and
+     * {@link ProxyModel#SPRING_CJ_LIB} corresponds to {@link SdkCglibProxyBean}
+     * If this rule is violated, the cglib proxy will be selected by default.
+     *
+     * @return A proxy class , defaults to {@link SdkJDKProxyBean}.
      * @since 2.0.9
      */
-    Class<? extends AbstractSdkProxyHandler> beanDefinitionType() default SdkJDKProxyBean.class;
+    Class<? extends AbstractSdkProxyHandler> proxyBeanType() default SdkJDKProxyBean.class;
+
+    /**
+     * When selecting the type of proxy object to generate for the
+     * SDK tag target, you need to pay attention to whether your tag
+     * type is an interface, abstract class, or regular type.
+     *
+     * <p>If it is an interface, use the default type.
+     * <p>If it is a class level, then you may need to consider using
+     * {@link ProxyModel#SPRING_CJ_LIB} to create a proxy class.
+     *
+     * <p>{@link ProxyModel#JDK} corresponds to {@link SdkJDKProxyBean} and
+     * {@link ProxyModel#SPRING_CJ_LIB} corresponds to {@link SdkCglibProxyBean}
+     * If this rule is violated, the cglib proxy will be selected by default.
+     *
+     * @return The basic technical model for creating proxy classes.
+     * @since 2.2.5
+     */
+    ProxyModel model() default ProxyModel.JDK;
 
     /**
      * The unique ID of the spring container bean.
