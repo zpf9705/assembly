@@ -9,8 +9,8 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.stereotype.Component;
-import top.osjf.assembly.simplified.sdk.AbstractSdkProxyInvoker;
-import top.osjf.assembly.simplified.sdk.SdkProxyBeanDefinition;
+import top.osjf.assembly.simplified.sdk.proxy.AbstractSdkProxyInvoker;
+import top.osjf.assembly.simplified.sdk.proxy.SdkProxyBeanDefinition;
 
 import java.lang.annotation.*;
 
