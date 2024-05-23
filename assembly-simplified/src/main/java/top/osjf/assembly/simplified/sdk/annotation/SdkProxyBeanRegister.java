@@ -6,7 +6,8 @@ import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.Assert;
-import top.osjf.assembly.simplified.sdk.SdkProxyBeanDefinition;
+import top.osjf.assembly.simplified.sdk.proxy.SdkCglibProxyBean;
+import top.osjf.assembly.simplified.sdk.proxy.SdkJDKProxyBean;
 import top.osjf.assembly.simplified.support.AnnotationTypeScanningCandidateImportBeanDefinitionRegistrar;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.encode.DigestUtils;
@@ -19,8 +20,8 @@ import top.osjf.assembly.util.logger.Console;
  *
  * <p>Annotations based on the switch {@link Sdk}, automatically equips
  * the proxy implementation class , and calls the method of unified direction
- * {@link SdkProxyBeanDefinition} to achieve unified deployment of SDK proxy
- * encapsulation.
+ * {@link SdkJDKProxyBean} or since 2.2.5 {@link SdkCglibProxyBean}to achieve
+ * unified deployment of SDK proxy encapsulation.
  *
  * <p>It mainly defines beans through {@link BeanDefinitionBuilder},
  * with variables including obtaining host addresses through spring's
@@ -40,7 +41,7 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
         BeanDefinitionBuilder definition = BeanDefinitionBuilder.genericBeanDefinition(beanDefinitionType);
         definition.addPropertyValue("host",
                 getRequestHost(markedAnnotationAttributes.getString("hostProperty")));
-        definition.addPropertyValue("clazz", className);
+        definition.addPropertyValue("type", className);
         //@since 2.0.7
         String beanName = markedAnnotationAttributes.getString("beanName");
         String[] alisa = markedAnnotationAttributes.getStringArray("alisa");
@@ -79,7 +80,7 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
 
     @Override
     protected boolean isAvailableMarkedBeanDefinitionMetadata(AnnotationMetadata metadata) {
-        return metadata.isInterface();
+        return metadata.isInterface() || metadata.isAbstract();
     }
 
     /*** Default browser host address */
