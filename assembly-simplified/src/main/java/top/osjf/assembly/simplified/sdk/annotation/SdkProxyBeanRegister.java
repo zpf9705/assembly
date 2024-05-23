@@ -1,5 +1,6 @@
 package top.osjf.assembly.simplified.sdk.annotation;
 
+import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -81,6 +82,16 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
         return Sdk.class;
     }
 
+    /**
+     * Create proxy classes only for interfaces and abstract classes. Regular
+     * classes should use the annotations {@link org.springframework.stereotype.Component}
+     * {@link org.springframework.stereotype.Service}  provided by Spring to
+     * actively create beans, rather than using the proxies in this class.
+     *
+     * @param metadata the {@link AnnotationMetadata} provided by the
+     *                 {@link AnnotatedBeanDefinition}.
+     * @return Further filtering results from {@link SdkProxyBeanRegister} on class metadata.
+     */
     @Override
     protected boolean isAvailableMarkedBeanDefinitionMetadata(AnnotationMetadata metadata) {
         return metadata.isInterface() || metadata.isAbstract();
