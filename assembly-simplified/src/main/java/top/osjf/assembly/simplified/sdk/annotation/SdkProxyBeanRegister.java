@@ -40,10 +40,10 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
         String className = markedAnnotationMetadata.getClassName();
         ProxyModel model = markedAnnotationAttributes.getEnum("model");
         BeanDefinitionBuilder definition = BeanDefinitionBuilder.genericBeanDefinition(
-                getTypeByProxyModelAndCompare(model,
-                        markedAnnotationAttributes.getClass("proxyBeanType")));
+                markedAnnotationAttributes.getClass("proxyBeanType"));
         definition.addPropertyValue("host",
                 getRequestHost(markedAnnotationAttributes.getString("hostProperty")));
+        definition.addPropertyValue("proxyModel", model);
         definition.addPropertyValue("type", className);
         //@since 2.0.7
         String beanName = markedAnnotationAttributes.getString("beanName");
@@ -100,31 +100,6 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
      */
     private String generateBeanName(String className) {
         return DigestUtils.md5Hex(className) + DEFAULT_BEAN_NAME_SUFFIX;
-    }
-
-    /**
-     * According to the proxy model, when selecting the proxy type, attention
-     * should be paid to the corresponding relationship:
-     *
-     * <p>{@link ProxyModel#JDK} corresponds to {@link SdkJDKProxyBean} and
-     * {@link ProxyModel#SPRING_CJ_LIB} corresponds to {@link SdkCglibProxyBean}
-     * If this rule is violated, the cglib proxy will be selected by default.
-     *
-     * @return the proxy type。
-     */
-    private Class<?> getTypeByProxyModelAndCompare(ProxyModel proxyModel, Class<?> hopeType) {
-        Class<?> type;
-        if (proxyModel == ProxyModel.SPRING_CJ_LIB) {
-            type = SdkCglibProxyBean.class;
-        } else type = SdkJDKProxyBean.class;
-        if (!type.isAssignableFrom(hopeType)) {
-            if (log.isWarnEnabled()) {
-                log.warn("The proxy model needs to not correspond to the corresponding " +
-                        "proxy type, and the dynamic proxy model of cglib is selected by default.");
-            }
-            type = SdkCglibProxyBean.class;
-        }
-        return type;
     }
 
     /**
