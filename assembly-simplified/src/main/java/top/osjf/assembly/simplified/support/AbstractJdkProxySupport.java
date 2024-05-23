@@ -9,27 +9,20 @@ import java.lang.reflect.Method;
 /**
  * Abstract jdk dynamic proxy method/Spring dynamic registration support class.
  *
- * <p>The process is to first rely on the dynamic proxy {@link InvocationHandler} of JDK to create a proxy object,
- * hand it over to Spring, and when Spring calls the proxy object, execute the {@link #invoke(Object, Method, Object[])}
- * method,which performs unified logical processing and distribution within this method,
+ * <p>The process is to first rely on the dynamic proxy {@link InvocationHandler} of
+ * JDK to create a proxy object,hand it over to Spring, and when Spring calls the proxy
+ * object, execute the {@link #invoke(Object, Method, Object[])} method,which performs
+ * unified logical processing and distribution within this method,
  *
- * <p>The method entrusted to Spring to create bean objects is to implement the {@link FactoryBean} interface and
- * dynamically register beans through {@link org.springframework.beans.factory.support.BeanDefinitionRegistry}
+ * <p>The method entrusted to Spring to create bean objects is to implement the
+ * {@link FactoryBean} interface and dynamically register beans through
+ * {@link org.springframework.beans.factory.support.BeanDefinitionRegistry}
+ *
  * @param <T> The data type of the proxy class.
  * @author zpf
  * @since 1.1.0
  */
-public abstract class AbstractJdkProxySupport<T> implements InvocationHandler, FactoryBean<T> {
-
-    private Class<T> clazz;
-
-    public Class<T> getClazz() {
-        return clazz;
-    }
-
-    public void setClazz(Class<T> clazz) {
-        this.clazz = clazz;
-    }
+public abstract class AbstractJdkProxySupport<T> extends AbstractClassSupport<T> implements InvocationHandler, FactoryBean<T> {
 
     @Override
     public boolean isSingleton() {
@@ -38,7 +31,7 @@ public abstract class AbstractJdkProxySupport<T> implements InvocationHandler, F
 
     @Override
     public T getObject() {
-        return ReflectUtils.newProxyInstance(this, this.clazz);
+        return ReflectUtils.newProxyInstance(this, getClazz());
     }
 
     @Override
