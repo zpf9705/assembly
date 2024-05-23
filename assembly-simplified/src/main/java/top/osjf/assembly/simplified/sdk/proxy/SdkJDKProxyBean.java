@@ -3,10 +3,8 @@ package top.osjf.assembly.simplified.sdk.proxy;
 import top.osjf.assembly.simplified.sdk.annotation.EnableSdkProxyRegister;
 import top.osjf.assembly.simplified.sdk.annotation.Sdk;
 import top.osjf.assembly.simplified.sdk.client.ClientExecutors;
+import top.osjf.assembly.simplified.support.ProxyModel;
 import top.osjf.assembly.simplified.support.ScanningCandidateImportBeanDefinitionRegistrar;
-import top.osjf.assembly.util.lang.StringUtils;
-
-import java.io.Serializable;
 
 /**
  * This class contains all the information about the composition of the SDK,
@@ -30,32 +28,16 @@ import java.io.Serializable;
  * uniformly bring the parameters to the proxy object and connect them to our
  * {@link ClientExecutors} processing through this class.
  *
+ * <p>For clearer meaning, it was renamed 'SdkJDKProxyBean', which
+ * means that this class implements JDK dynamic proxy to create objects.
+ *
  * @param <T> The data type of the proxy class.
  * @author zpf
  * @since 1.1.0
  */
-public class SdkProxyBeanDefinition<T> extends AbstractSdkProxyInvoker<T> implements Serializable {
+public class SdkJDKProxyBean<T> extends AbstractSdkProxyHandler<T> {
 
-    private static final long serialVersionUID = -4976006670359451017L;
-
-    private String host;
-
-    @Override
-    public void setHost(String host) {
-        if (StringUtils.isBlank(host)) throw new IllegalArgumentException(
-                "The calling host address of the SDK proxy class cannot be empty");
-        this.host = host;
-    }
-
-    @Override
-    public String getHost() {
-        return host;
-    }
-
-    @Override
-    public String toString() {
-        return "SdkProxyBeanDefinition{" +
-                "host='" + host + '\'' +
-                '}';
+    public SdkJDKProxyBean() {
+        setProxyModel(ProxyModel.JDK);
     }
 }
