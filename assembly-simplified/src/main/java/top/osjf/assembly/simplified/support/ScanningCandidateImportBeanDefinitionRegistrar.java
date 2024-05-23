@@ -90,18 +90,24 @@ public abstract class ScanningCandidateImportBeanDefinitionRegistrar<T extends B
             String scanPathAttributeName = getScanPathAttributeName();
             scanningPackageNames = importAnnotationAttributes.getStringArray(scanPathAttributeName);
             if (ArrayUtils.isEmpty(scanningPackageNames)) {
-                scanningPackageNames = new String[]{getMainApplicationClassPath()};
+                scanningPackageNames = EmbeddedEnvironmentPostProcessor.getEmbeddedPackageNameArray();
                 if (log.isDebugEnabled()) {
                     log.debug("According to the attribute name {}, the scan path array value was not obtained.",
                             scanPathAttributeName);
                 }
+                if (log.isWarnEnabled()) {
+                    log.warn("Unable to parse usable path information from import annotation, " +
+                            "default resource path is now used.");
+                }
             }
         } else {
-            scanningPackageNames = new String[]{getMainApplicationClassPath()};
+            scanningPackageNames = EmbeddedEnvironmentPostProcessor.getEmbeddedPackageNameArray();
+            if (log.isWarnEnabled()) {
+                log.warn("Import annotation no provider, default resource path is now used.");
+            }
         }
         ClassPathScanningCandidateComponentProvider scanningCandidateProvider = getScanningCandidateProvider();
         for (String packageName : scanningPackageNames) {
-            //Add configuration file compatible spel expression support to the specified path.
             if (is$PropertyGet(packageName)) {
                 packageName = environment.resolvePlaceholders(packageName);
             }
@@ -156,10 +162,10 @@ public abstract class ScanningCandidateImportBeanDefinitionRegistrar<T extends B
     /**
      * Returns holder for a BeanDefinition with name and aliases.
      *
-     * @param markedMarkedBeanDefinition Specify the {@link BeanDefinition} of the filter type tag.
+     * @param markedBeanDefinition Specify the {@link BeanDefinition} of the filter type tag.
      * @return Holder for a BeanDefinition with name and aliases.
      */
-    protected abstract BeanDefinitionHolder createBeanDefinitionHolder(T markedMarkedBeanDefinition);
+    protected abstract BeanDefinitionHolder createBeanDefinitionHolder(T markedBeanDefinition);
 
     /**
      * @return Run the environment object and leave it to subclasses to

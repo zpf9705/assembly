@@ -6,6 +6,7 @@ import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
@@ -44,21 +45,12 @@ import java.lang.annotation.Annotation;
  */
 public abstract class AnnotationTypeScanningCandidateImportBeanDefinitionRegistrar
         extends ScanningCandidateImportBeanDefinitionRegistrar<AnnotatedBeanDefinition> {
+
     @NotNull
     @Override
     protected ClassPathScanningCandidateComponentProvider getScanningCandidateProvider() {
-        ClassPathScanningCandidateComponentProvider componentProvider =
-                new ClassPathScanningCandidateComponentProvider(false, getEnvironment()) {
-                    @Override
-                    protected boolean isCandidateComponent(AnnotatedBeanDefinition beanDefinition) {
-                        AnnotationMetadata metadata = beanDefinition.getMetadata();
-                        return metadata.isIndependent() && !metadata.isAnnotation();
-                    }
-                };
-        componentProvider.setResourceLoader(getResourceLoader());
-        componentProvider.setResourcePattern("**/*.class");
-        componentProvider.addIncludeFilter(new AnnotationTypeFilter(getFilterAnnotationType()));
-        return componentProvider;
+        return new AnnotationTypeClassPathScanningCandidateComponentProvider(
+                getEnvironment(), getResourceLoader(), getFilterAnnotationType());
     }
 
     @Override
@@ -71,8 +63,8 @@ public abstract class AnnotationTypeScanningCandidateImportBeanDefinitionRegistr
     }
 
     @Override
-    protected BeanDefinitionHolder createBeanDefinitionHolder(AnnotatedBeanDefinition markedMarkedBeanDefinition) {
-        AnnotationMetadata markedAnnotationMetadata = markedMarkedBeanDefinition.getMetadata();
+    protected BeanDefinitionHolder createBeanDefinitionHolder(AnnotatedBeanDefinition markedBeanDefinition) {
+        AnnotationMetadata markedAnnotationMetadata = markedBeanDefinition.getMetadata();
         AnnotationAttributes markedAnnotationAttributes = AnnotationAttributes
                 .fromMap(markedAnnotationMetadata.getAnnotationAttributes(getFilterAnnotationType().getCanonicalName()));
         return createBeanDefinitionHolder(markedAnnotationAttributes, markedAnnotationMetadata);
@@ -113,4 +105,23 @@ public abstract class AnnotationTypeScanningCandidateImportBeanDefinitionRegistr
      */
     protected abstract BeanDefinitionHolder createBeanDefinitionHolder(AnnotationAttributes markedAnnotationAttributes,
                                                                        AnnotationMetadata markedAnnotationMetadata);
+
+    /*** To find a specialized rewrite query for {@link AnnotatedBeanDefinition} using annotations.*/
+    public static class AnnotationTypeClassPathScanningCandidateComponentProvider
+            extends ClassPathScanningCandidateComponentProvider {
+
+        public AnnotationTypeClassPathScanningCandidateComponentProvider(Environment environment,
+                                                                         ResourceLoader resourceLoader,
+                                                                         Class<? extends Annotation> filterAnnotationType) {
+            super(false, environment);
+            setResourceLoader(resourceLoader);
+            addIncludeFilter(new AnnotationTypeFilter(filterAnnotationType));
+        }
+
+        @Override
+        protected boolean isCandidateComponent(AnnotatedBeanDefinition beanDefinition) {
+            AnnotationMetadata metadata = beanDefinition.getMetadata();
+            return metadata.isIndependent() && !metadata.isAnnotation();
+        }
+    }
 }
