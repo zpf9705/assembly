@@ -1,4 +1,4 @@
-package top.osjf.assembly.simplified.sdk;
+package top.osjf.assembly.simplified.sdk.proxy;
 
 import top.osjf.assembly.simplified.sdk.client.ClientExecutors;
 import top.osjf.assembly.simplified.sdk.process.Request;

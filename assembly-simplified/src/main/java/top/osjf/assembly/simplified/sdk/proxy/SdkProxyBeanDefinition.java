@@ -1,4 +1,4 @@
-package top.osjf.assembly.simplified.sdk;
+package top.osjf.assembly.simplified.sdk.proxy;
 
 import top.osjf.assembly.simplified.sdk.annotation.EnableSdkProxyRegister;
 import top.osjf.assembly.simplified.sdk.annotation.Sdk;
