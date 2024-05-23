@@ -26,7 +26,7 @@ import java.lang.annotation.Annotation;
  * <p>For example, when the springboot program starts, if it detects that the container bean is
  * wearing {@link top.osjf.assembly.simplified.sdk.annotation.EnableSdkProxyRegister} annotations,
  * it will automatically search for the wearing annotation {@link top.osjf.assembly.simplified.sdk.annotation.Sdk}
- * interface in this class and create an implementation class (refer to {@link AbstractJdkProxySupport}).
+ * interface in this class and create an implementation class (refer to {@link AbstractMultipleProxySupport}).
  *
  * <p>The implementation process depends on the bean's registrar interface {@link ImportBeanDefinitionRegistrar}.
  *
