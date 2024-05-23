@@ -103,7 +103,12 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
     }
 
     /**
-     * Select the proxy type based on the model.
+     * According to the proxy model, when selecting the proxy type, attention
+     * should be paid to the corresponding relationship:
+     *
+     * <p>{@link ProxyModel#JDK} corresponds to {@link SdkJDKProxyBean} and
+     * {@link ProxyModel#SPRING_CJ_LIB} corresponds to {@link SdkCglibProxyBean}
+     * If this rule is violated, the cglib proxy will be selected by default.
      *
      * @return the proxy type。
      */
