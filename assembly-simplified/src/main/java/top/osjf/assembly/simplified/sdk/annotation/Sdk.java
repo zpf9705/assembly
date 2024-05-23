@@ -9,8 +9,8 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.stereotype.Component;
-import top.osjf.assembly.simplified.sdk.proxy.AbstractSdkProxyInvoker;
-import top.osjf.assembly.simplified.sdk.proxy.SdkProxyBeanDefinition;
+import top.osjf.assembly.simplified.sdk.proxy.AbstractSdkProxyHandler;
+import top.osjf.assembly.simplified.sdk.proxy.SdkJDKProxyBean;
 
 import java.lang.annotation.*;
 
@@ -79,10 +79,10 @@ public @interface Sdk {
      * <p>For clarity of meaning, the name ‘beanDefinitionType’
      * was changed to version 2.2.5.
      *
-     * @return A beanDefinition class , defaults to {@link SdkProxyBeanDefinition}.
+     * @return A beanDefinition class , defaults to {@link SdkJDKProxyBean}.
      * @since 2.0.9
      */
-    Class<? extends AbstractSdkProxyInvoker> beanDefinitionType() default SdkProxyBeanDefinition.class;
+    Class<? extends AbstractSdkProxyHandler> beanDefinitionType() default SdkJDKProxyBean.class;
 
     /**
      * The unique ID of the spring container bean.
