@@ -1,6 +1,7 @@
 package top.osjf.assembly.simplified.support;
 
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.lang.Nullable;
 import top.osjf.assembly.util.lang.ReflectUtils;
 
 import java.lang.reflect.InvocationHandler;
@@ -22,15 +23,30 @@ import java.lang.reflect.Method;
  * @author zpf
  * @since 1.1.0
  */
-public abstract class AbstractJdkProxySupport<T> extends AbstractFactoryBeanSupport<T> implements InvocationHandler {
+@Deprecated
+public abstract class AbstractJdkProxySupport<T> implements FactoryBean<T>, InvocationHandler {
+
+    private Class<T> type;
+
+    public void setType(Class<T> type) {
+        this.type = type;
+    }
+
+    public Class<T> getType() {
+        return type;
+    }
+
+    @Nullable
+    @Override
+    public Class<?> getObjectType() {
+        return type;
+    }
 
     @Override
     public T getObject() {
-        return ReflectUtils.newProxyInstance(this, getClazz());
+        return ReflectUtils.newProxyInstance(this, type);
     }
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        return purse(proxy, method, args);
-    }
+    public abstract Object invoke(Object proxy, Method method, Object[] args);
 }
