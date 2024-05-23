@@ -22,12 +22,7 @@ import java.lang.reflect.Method;
  * @author zpf
  * @since 1.1.0
  */
-public abstract class AbstractJdkProxySupport<T> extends AbstractClassSupport<T> implements InvocationHandler, FactoryBean<T> {
-
-    @Override
-    public boolean isSingleton() {
-        return FactoryBean.super.isSingleton();
-    }
+public abstract class AbstractJdkProxySupport<T> extends AbstractFactoryBeanSupport<T> implements InvocationHandler {
 
     @Override
     public T getObject() {
@@ -35,10 +30,7 @@ public abstract class AbstractJdkProxySupport<T> extends AbstractClassSupport<T>
     }
 
     @Override
-    public Class<?> getObjectType() {
-        return this.clazz;
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        return purse(proxy, method, args);
     }
-
-    @Override
-    public abstract Object invoke(Object proxy, Method method, Object[] args) throws Throwable;
 }
