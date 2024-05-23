@@ -35,7 +35,7 @@ import java.lang.annotation.*;
  * version {@code 2.0.9}, and the remaining attributes that were not added
  * will not be added, making them useless for this component.
  *
- * <p>If you want to provide visible proxy classes{@link #beanDefinitionType()},
+ * <p>If you want to provide visible proxy classes{@link #proxyBeanType()},
  * then you need to understand {@link ImportBeanDefinitionRegistrar} registration
  * {@link BeanDefinition} and the usage of injection models.
  * <p>Please refer to the introduction of {@link #autowireMode()}.
@@ -153,7 +153,7 @@ public @interface Sdk {
      * Spring has not yet started creating beans in this registration stage, and since
      * beans have not been created, it will not parse the {@link Autowired}  or
      * {@link javax.annotation.Resource} annotation.
-     * <p><strong>Therefore, if you provide a {@link #beanDefinitionType()} class,
+     * <p><strong>Therefore, if you provide a {@link #proxyBeanType()} class,
      * then in this class do not use {@link Autowired}  or
      * {@link javax.annotation.Resource} annotation for bean injection.</strong>
      * <p>Of course, if you use {@link GenericBeanDefinition#AUTOWIRE_CONSTRUCTOR},
