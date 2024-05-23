@@ -10,6 +10,18 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
 /**
+ * The functionality of this abstract class is based on a fusion version
+ * of {@link AbstractJdkProxySupport} and {@link AbstractCglibProxySupport}.
+ *
+ * <p>For the convenience of encapsulation, a unified function is written based
+ * on the input {@link ProxyModel} model for unified routing creation. If you
+ * need to understand the proxy model, you can go to the abstract class above
+ * for specific understanding.
+ *
+ * <p>The callbacks for cglib and jdk dynamic proxies have all been integrated
+ * into {@link ProxyHandler}, allowing both proxies to use the same callback,
+ * facilitating subsequent proxy execution calls.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @see AbstractJdkProxySupport
  * @see AbstractCglibProxySupport
@@ -92,9 +104,10 @@ public abstract class AbstractMultipleProxySupport<T> implements FactoryBean<T>,
 
     /**
      * Create different proxy objects based on different proxy models.
+     *
+     * @return different proxy models.
      * @see AbstractCglibProxySupport#createProxy(Class, Callback)
      * @see AbstractJdkProxySupport#createProxy(Class, InvocationHandler)
-     * @return different proxy models.
      */
     private T getObject0() {
         T proxy;
