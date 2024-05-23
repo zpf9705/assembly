@@ -7,10 +7,9 @@ import top.osjf.assembly.simplified.support.ProxyModel;
 import top.osjf.assembly.simplified.support.ScanningCandidateImportBeanDefinitionRegistrar;
 
 /**
- * This class contains all the information about the composition of the SDK,
- * including the host address, the base of the Spring proxy bean implementation
- * class, and the final parameter convergence point of the JDK method dynamic
- * proxy.
+ * Using the proxy model of cglib to create proxy beans for SDK, this
+ * pattern can support types other than interfaces, and implementing
+ * this feature is also based on the principle of spring's cglib.
  *
  * <p>It can be said to be a fusion point between the Spring framework and
  * our custom {@link top.osjf.assembly.simplified.sdk.client.Client} scheme.
@@ -20,27 +19,25 @@ import top.osjf.assembly.simplified.support.ScanningCandidateImportBeanDefinitio
  * switch annotations,and then create dynamic implementation classes for these
  * interfaces through {@link top.osjf.assembly.simplified.sdk.annotation.SdkProxyBeanRegister}.
  *
- * <p>At this point, the implementation class is given to the proxy objects
- * created by the jdk dynamic proxy, and the proxy objects are handed over
- * to spring as the virtual implementation classes for these interfaces.
+ * <p>At this point, the implementation class is assigned a proxy object
+ * created by the spring cglib dynamic proxy, and the proxy object is handed
+ * over to spring as the virtual implementation class for these interfaces or
+ * classes (abstract or simple).
  *
  * <p>When these interfaces are called through the spring container, We will
  * uniformly bring the parameters to the proxy object and connect them to our
  * {@link ClientExecutors} processing through this class.
  *
- * <p>For clearer meaning, it was renamed 'SdkJDKProxyBean', which
- * means that this class implements JDK dynamic proxy to create objects.
- *
  * @param <T> The data type of the proxy class.
- * @author zpf
- * @since 1.1.0
+ * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
+ * @since 2.2.5
  */
-public class SdkJDKProxyBean<T> extends AbstractSdkProxyHandler<T> {
+public class SdkCglibProxyBean<T> extends AbstractSdkProxyHandler<T> {
 
     /**
      * The construction method for setting the proxy model {@link ProxyModel} to cglib.
      */
-    public SdkJDKProxyBean() {
-        setProxyModel(ProxyModel.JDK);
+    public SdkCglibProxyBean() {
+        setProxyModel(ProxyModel.SPRING_CJ_LIB);
     }
 }
