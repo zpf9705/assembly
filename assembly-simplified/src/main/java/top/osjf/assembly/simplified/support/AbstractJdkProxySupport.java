@@ -19,14 +19,23 @@ import java.lang.reflect.Method;
  * {@link FactoryBean} interface and dynamically register beans through
  * {@link org.springframework.beans.factory.support.BeanDefinitionRegistry}
  *
+ * <p>If you want to standardize processing, you can access {@link AbstractMultipleProxySupport}.
+ *
  * @param <T> The data type of the proxy class.
  * @author zpf
- * @see AbstractMultipleProxySupport
  * @since 1.1.0
  */
 public abstract class AbstractJdkProxySupport<T> implements FactoryBean<T>, InvocationHandler {
 
+    /**
+     * The target type of dynamic proxy.
+     */
     private Class<T> type;
+
+    /**
+     * Is the object managed by this factory a singleton.
+     */
+    public boolean isSingleton = true;
 
     public void setType(Class<T> type) {
         this.type = type;
@@ -34,6 +43,15 @@ public abstract class AbstractJdkProxySupport<T> implements FactoryBean<T>, Invo
 
     public Class<T> getType() {
         return type;
+    }
+
+    public void setSingleton(boolean singleton) {
+        isSingleton = singleton;
+    }
+
+    @Override
+    public boolean isSingleton() {
+        return isSingleton;
     }
 
     @Nullable
@@ -44,7 +62,11 @@ public abstract class AbstractJdkProxySupport<T> implements FactoryBean<T>, Invo
 
     @Override
     public T getObject() {
-        return ReflectUtils.newProxyInstance(this, type);
+        return createProxy(type, this);
+    }
+
+    static <T> T createProxy(Class<T> type, InvocationHandler invocationHandler) {
+        return ReflectUtils.newProxyInstance(invocationHandler, type);
     }
 
     @Override
