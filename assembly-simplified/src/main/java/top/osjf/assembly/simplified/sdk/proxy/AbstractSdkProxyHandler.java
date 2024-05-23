@@ -4,14 +4,15 @@ import top.osjf.assembly.simplified.sdk.client.ClientExecutors;
 import top.osjf.assembly.simplified.sdk.process.Request;
 import top.osjf.assembly.simplified.sdk.process.RequestAttributes;
 import top.osjf.assembly.simplified.sdk.process.Response;
-import top.osjf.assembly.simplified.support.AbstractJdkProxySupport;
+import top.osjf.assembly.simplified.support.AbstractMultipleProxySupport;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.lang.ArrayUtils;
+import top.osjf.assembly.util.lang.StringUtils;
 
 import java.lang.reflect.Method;
 
 /**
- * Inheriting {@link AbstractJdkProxySupport} implements handing over
+ * Inheriting {@link AbstractMultipleProxySupport} implements handing over
  * the object of the jdk dynamic proxy to the spring container for management.
  *
  * <p>When this object is called, the {@link #invoke(Object, Method, Object[])}
@@ -27,15 +28,31 @@ import java.lang.reflect.Method;
  * <p>Simply obtain the host parameter from the corresponding proxy class
  * entity to complete the SDK request.
  *
+ * <p>For clearer meaning, it was renamed 'AbstractSdkProxyHandler' since 2.2.5.
+ *
  * @param <T> The data type of the proxy class.
  * @author zpf
  * @since 1.1.0
  */
-public abstract class AbstractSdkProxyInvoker<T> extends AbstractJdkProxySupport<T> implements RequestAttributes {
+public abstract class AbstractSdkProxyHandler<T> extends AbstractMultipleProxySupport<T> implements RequestAttributes {
+
+    private String host;
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args) {
-        return invoke0(proxy, method, args);
+    public void setHost(String host) {
+        if (StringUtils.isBlank(host)) throw new IllegalArgumentException(
+                "The calling host address of the SDK proxy class cannot be empty");
+        this.host = host;
+    }
+
+    @Override
+    public String getHost() {
+        return host;
+    }
+
+    @Override
+    public Object handle(Object proxy, Method method, Object[] args) {
+        return handle0(proxy, method, args);
     }
 
     /**
@@ -48,12 +65,12 @@ public abstract class AbstractSdkProxyInvoker<T> extends AbstractJdkProxySupport
      * @param args   transfer args.
      * @return Proxy method solve result.
      */
-    protected Object invoke0(@SuppressWarnings("unused") Object proxy, Method method, Object[] args) {
+    protected Object handle0(@SuppressWarnings("unused") Object proxy, Method method, Object[] args) {
         //The method of the parent class Object is not given
-        Class<T> clazz = getClazz();
-        if (!clazz.getName().equals(method.getDeclaringClass().getName())) {
+        Class<T> type = getType();
+        if (!type.getName().equals(method.getDeclaringClass().getName())) {
             throw new UnsupportedOperationException(
-                    "Only methods defined by class " + clazz.getName() + " are supported.");
+                    "Only methods defined by class " + type.getName() + " are supported.");
         }
         //The request parameter encapsulation must exist.
         if (ArrayUtils.isEmpty(args)) {
@@ -71,7 +88,7 @@ public abstract class AbstractSdkProxyInvoker<T> extends AbstractJdkProxySupport
                             "class object that returns the value is a subclass of response"
             );
         }
-        return doNext((Request<?>) param);
+        return doRequest((Request<?>) param);
     }
 
     /**
@@ -81,13 +98,10 @@ public abstract class AbstractSdkProxyInvoker<T> extends AbstractJdkProxySupport
      * @param request Think of {@link Request#getClientCls()}.
      * @return The result set of this request is encapsulated in {@link Response}.
      */
-    protected Response doNext(@NotNull Request<?> request) {
+    protected Response doRequest(@NotNull Request<?> request) {
         //private perm
         //change protected
         //son class can use
         return ClientExecutors.executeRequestClient(this::getHost, request);
     }
-
-    @Override
-    public abstract String getHost();
 }
