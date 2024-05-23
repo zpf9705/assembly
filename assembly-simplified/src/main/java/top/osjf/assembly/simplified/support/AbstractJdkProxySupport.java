@@ -18,7 +18,7 @@ import java.lang.reflect.Method;
  * <p>The method entrusted to Spring to create bean objects is to implement the
  * {@link FactoryBean} interface and dynamically register beans through
  * {@link org.springframework.beans.factory.support.BeanDefinitionRegistry}
- *
+ * @see AbstractMultipleProxySupport
  * @param <T> The data type of the proxy class.
  * @author zpf
  * @since 1.1.0
