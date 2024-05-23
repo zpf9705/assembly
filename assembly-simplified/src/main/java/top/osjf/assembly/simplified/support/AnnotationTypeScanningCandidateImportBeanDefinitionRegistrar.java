@@ -13,6 +13,7 @@ import org.springframework.core.type.filter.AnnotationTypeFilter;
 import top.osjf.assembly.util.annotation.NotNull;
 
 import java.lang.annotation.Annotation;
+import java.util.Objects;
 
 /**
  * Manually register objects into the support classes of the Spring container.
@@ -121,7 +122,11 @@ public abstract class AnnotationTypeScanningCandidateImportBeanDefinitionRegistr
         @Override
         protected boolean isCandidateComponent(AnnotatedBeanDefinition beanDefinition) {
             AnnotationMetadata metadata = beanDefinition.getMetadata();
-            return metadata.isIndependent() && !metadata.isAnnotation();
+            return metadata.isIndependent()
+                    &&
+                    !metadata.isAnnotation()
+                    &&
+                    !Objects.equals(metadata.getSuperClassName(), Enum.class.getName());
         }
     }
 }
