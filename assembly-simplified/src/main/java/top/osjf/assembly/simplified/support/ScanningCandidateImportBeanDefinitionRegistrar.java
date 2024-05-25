@@ -18,6 +18,9 @@ import top.osjf.assembly.util.lang.ArrayUtils;
 import top.osjf.assembly.util.lang.CollectionUtils;
 import top.osjf.assembly.util.lang.StringUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -57,6 +60,9 @@ public abstract class ScanningCandidateImportBeanDefinitionRegistrar<T extends B
 
     /*** Value separator for system property placeholders: ":". */
     protected static final String VALUE_SEPARATOR = ":";
+
+    /*** Array list configuration item delimiter.. */
+    protected static final String COMMA = ",";
 
     /*** Environmental variables. */
     private Environment environment;
@@ -107,10 +113,7 @@ public abstract class ScanningCandidateImportBeanDefinitionRegistrar<T extends B
             }
         }
         ClassPathScanningCandidateComponentProvider scanningCandidateProvider = getScanningCandidateProvider();
-        for (String packageName : scanningPackageNames) {
-            if (is$PropertyGet(packageName)) {
-                packageName = environment.resolvePlaceholders(packageName);
-            }
+        for (String packageName : resolvePlaceholdersSupport(scanningPackageNames)) {
             Set<BeanDefinition> markedBeanDefinitions = scanningCandidateProvider.findCandidateComponents(packageName);
             if (CollectionUtils.isEmpty(markedBeanDefinitions)) {
                 continue;
@@ -126,6 +129,27 @@ public abstract class ScanningCandidateImportBeanDefinitionRegistrar<T extends B
                 }
             }
         }
+    }
+
+    /**
+     * Add configuration paths to support parsing of configurations,
+     * specifically manifested as spring's el expressions, and handle
+     * support for array separation.
+     *
+     * @param scanningPackageNames Path items to be checked.
+     * @return Checked path items.
+     */
+    private List<String> resolvePlaceholdersSupport(String[] scanningPackageNames) {
+        List<String> checkedScanningPackageNames = new ArrayList<>();
+        for (String checkItem : scanningPackageNames) {
+            if (is$PropertyGet(checkItem)) {
+                String resolveResult = environment.resolvePlaceholders(checkItem);
+                if (resolveResult.contains(COMMA)) {
+                    checkedScanningPackageNames.addAll(Arrays.asList(resolveResult.split(COMMA)));
+                }
+            } else checkedScanningPackageNames.add(checkItem);
+        }
+        return checkedScanningPackageNames;
     }
 
     /**
@@ -187,7 +211,7 @@ public abstract class ScanningCandidateImportBeanDefinitionRegistrar<T extends B
      *
      * @param property Attribute name.
      * @return If {@code true} is determined as an el expression , {@code false} otherwise.
-     * @since 2.1.4
+     * @since 2.1.4 version before change
      */
     protected boolean is$PropertyGet(String property) {
         if (StringUtils.isNotBlank(property)) {
