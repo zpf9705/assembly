@@ -327,15 +327,11 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
 
     @Override
     public <S> S getService(String serviceName, Class<S> requiredType) throws NoSuchServiceException {
+        if (StringUtils.isBlank(serviceName)) throw new NullPointerException("ServiceName must not be null");
+        if (requiredType == null) throw new NullPointerException("RequiredType must not be null");
         S service = ServiceContextUtils.getService(serviceName, requiredType, context.getId(),
                 encodeServiceName -> contextMap.getValueOnClass(encodeServiceName, requiredType));
         if (service == null) {
-            if (StringUtils.isBlank(serviceName)) {
-                throw new NullPointerException("ServiceName must not be null");
-            }
-            if (requiredType == null) {
-                throw new NullPointerException("RequiredType must not be null");
-            }
             //Throw an exception that cannot be found.
             throw new NoSuchServiceException(serviceName, requiredType);
         }
