@@ -41,6 +41,11 @@ public abstract class AbstractMultipleProxySupport<T> implements FactoryBean<T>,
     private ProxyModel proxyModel = DEFAULT_PROXY_MODEL;
 
     /**
+     * The proxy object created.
+     */
+    private T proxy;
+
+    /**
      * The target type of dynamic proxy.
      */
     private Class<T> type;
@@ -100,7 +105,11 @@ public abstract class AbstractMultipleProxySupport<T> implements FactoryBean<T>,
     @Nullable
     @Override
     public T getObject() {
-        return getObject0();
+        if (proxy != null) {
+            return proxy;
+        }
+        proxy = getObject0();
+        return proxy;
     }
 
     /**
