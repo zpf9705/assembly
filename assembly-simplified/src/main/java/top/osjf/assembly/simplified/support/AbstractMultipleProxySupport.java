@@ -48,7 +48,7 @@ public abstract class AbstractMultipleProxySupport<T> implements FactoryBean<T>,
     /**
      * Is the object managed by this factory a singleton.
      */
-    public boolean isSingleton = true;
+    private boolean isSingleton = true;
 
     /**
      * Set the target type for this proxy creation.
@@ -86,9 +86,10 @@ public abstract class AbstractMultipleProxySupport<T> implements FactoryBean<T>,
         isSingleton = singleton;
     }
 
+    @Nullable
     @Override
     public Class<?> getObjectType() {
-        return this.type;
+        return type;
     }
 
     @Override
