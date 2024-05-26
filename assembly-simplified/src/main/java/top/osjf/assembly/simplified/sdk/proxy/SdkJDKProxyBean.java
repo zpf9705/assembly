@@ -1,5 +1,7 @@
 package top.osjf.assembly.simplified.sdk.proxy;
 
+import org.springframework.beans.factory.FactoryBean;
+import org.springframework.web.context.WebApplicationContext;
 import top.osjf.assembly.simplified.sdk.annotation.EnableSdkProxyRegister;
 import top.osjf.assembly.simplified.sdk.annotation.Sdk;
 import top.osjf.assembly.simplified.sdk.client.ClientExecutors;
@@ -31,6 +33,10 @@ import top.osjf.assembly.simplified.support.ScanningCandidateImportBeanDefinitio
  * <p>For clearer meaning, it was renamed 'SdkJDKProxyBean', which
  * means that this class implements JDK dynamic proxy to create objects.
  *
+ * <p>When setting the scope of a special bean and inheriting this class, it is
+ * necessary to override the constructor {@link #SdkJDKProxyBean(Class)} and provide
+ * the corresponding type for setting {@link FactoryBean#getObjectType()}.
+ *
  * @param <T> The data type of the proxy class.
  * @author zpf
  * @since 1.1.0
@@ -42,5 +48,18 @@ public class SdkJDKProxyBean<T> extends AbstractSdkProxyHandler<T> {
      */
     public SdkJDKProxyBean() {
         setProxyModel(ProxyModel.JDK);
+    }
+
+    /**
+     * When defining a special scope bean, such as {@link WebApplicationContext#SCOPE_REQUEST}
+     * {@link WebApplicationContext#SCOPE_APPLICATION} {@link WebApplicationContext#SCOPE_SESSION},
+     * call this constructor to pass the type in advance.
+     *
+     * @param type When injecting beans, the type of teammates is required.
+     *             {@link FactoryBean#getObjectType()}.
+     */
+    public SdkJDKProxyBean(Class<T> type) {
+        setProxyModel(ProxyModel.JDK);
+        setType(type);
     }
 }

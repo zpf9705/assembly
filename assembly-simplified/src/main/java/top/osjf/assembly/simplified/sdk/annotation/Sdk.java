@@ -51,6 +51,7 @@ public @interface Sdk {
      * <p>Intended to be used when no other attributes are needed, for example:
      * {@code @Sdk("${custom.setting}")}.
      *
+     * @return {@link #hostProperty()}
      * @see #hostProperty()
      * @since 2.2.5
      */

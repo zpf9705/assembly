@@ -1,7 +1,11 @@
 package top.osjf.assembly.simplified.sdk.annotation;
 
+import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
+import org.springframework.beans.factory.annotation.Autowire;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
@@ -12,9 +16,16 @@ import top.osjf.assembly.simplified.sdk.proxy.SdkJDKProxyBean;
 import top.osjf.assembly.simplified.support.AnnotationTypeScanningCandidateImportBeanDefinitionRegistrar;
 import top.osjf.assembly.simplified.support.ProxyModel;
 import top.osjf.assembly.util.annotation.NotNull;
-import top.osjf.assembly.util.encode.DigestUtils;
+import top.osjf.assembly.util.lang.ArrayUtils;
 import top.osjf.assembly.util.lang.StringUtils;
 import top.osjf.assembly.util.logger.Console;
+
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * The proxy registration class of SDK scans the relevant interface
@@ -35,40 +46,54 @@ import top.osjf.assembly.util.logger.Console;
  */
 public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportBeanDefinitionRegistrar {
 
+    /***A collection of regular bean scopes.*/
+    public static final List<String> ALLOW_SCOPES = Stream.of(BeanDefinition.SCOPE_SINGLETON,
+            BeanDefinition.SCOPE_PROTOTYPE, AbstractBeanDefinition.SCOPE_DEFAULT).collect(Collectors.toList());
+
+    /*** Default browser host address */
+    public static final String DEFAULT_HTTP_BROWSER_HOST = "127.0.0.1:80";
+
+    /*** Default browser host address */
+    public static final String DEFAULT_BEAN_NAME_SUFFIX = "@sdk.proxy.bean";
+
     @Override
     public BeanDefinitionHolder createBeanDefinitionHolder(AnnotationAttributes markedAnnotationAttributes,
                                                            AnnotationMetadata markedAnnotationMetadata) {
         String className = markedAnnotationMetadata.getClassName();
         ProxyModel model = markedAnnotationAttributes.getEnum("model");
-        BeanDefinitionBuilder definition = BeanDefinitionBuilder.genericBeanDefinition(
+        BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(
                 markedAnnotationAttributes.getClass("proxyBeanType"));
-        definition.addPropertyValue("host",
+        builder.addPropertyValue("host",
                 getRequestHost(markedAnnotationAttributes.getString("hostProperty")));
-        definition.addPropertyValue("proxyModel", model);
-        definition.addPropertyValue("type", className);
+        builder.addPropertyValue("proxyModel", model);
+        builder.addPropertyValue("type", className);
+        //@Since 2.2.5 Use @BeanProperty instead.
+        AnnotationAttributes beanPropertyAttributes = markedAnnotationAttributes
+                .getAnnotation("sdkProxyBeanProperty");
+        String[] names = beanPropertyAttributes.getStringArray("name");
         //@since 2.0.7
-        String beanName = markedAnnotationAttributes.getString("beanName");
-        String[] alisa = markedAnnotationAttributes.getStringArray("alisa");
-        String scope = markedAnnotationAttributes.getString("scope");
-        int autowireMode = markedAnnotationAttributes.<Integer>getNumber("autowireMode");
+        String beanName = getBeanName(names);
+        String[] alisaNames = getAlisaNames(names);
+        String scope = beanPropertyAttributes.getString("scope");
+        Autowire autowire = beanPropertyAttributes.getEnum("autowire");
         //@since 2.0.9
-        String initMethod = markedAnnotationAttributes.getString("initMethod");
-        String destroyMethod = markedAnnotationAttributes.getString("destroyMethod");
-        int role = markedAnnotationAttributes.<Integer>getNumber("role");
-        boolean lazyInit = markedAnnotationAttributes.getBoolean("lazyInit");
-        String description = markedAnnotationAttributes.getString("description");
+        String initMethod = beanPropertyAttributes.getString("initMethod");
+        String destroyMethod = beanPropertyAttributes.getString("destroyMethod");
+        int role = beanPropertyAttributes.<Integer>getNumber("role");
+        boolean lazyInit = beanPropertyAttributes.getBoolean("lazyInit");
+        String description = beanPropertyAttributes.getString("description");
         //@Since 2.2.5
-        boolean autowireCandidate = markedAnnotationAttributes.getBoolean("autowireCandidate");
+        boolean autowireCandidate = beanPropertyAttributes.getBoolean("autowireCandidate");
         if (StringUtils.isBlank(beanName)) beanName = generateBeanName(className);
-        definition.setScope(scope);
-        definition.setAutowireMode(autowireMode);
-        if (StringUtils.isNotBlank(initMethod)) definition.setInitMethodName(initMethod);
-        if (StringUtils.isNotBlank(destroyMethod)) definition.setDestroyMethodName(destroyMethod);
-        definition.setRole(role);
-        definition.setLazyInit(lazyInit);
-        if (StringUtils.isNotBlank(description)) definition.getBeanDefinition().setDescription(description);
-        definition.getBeanDefinition().setAutowireCandidate(autowireCandidate);
-        return new BeanDefinitionHolder(definition.getBeanDefinition(), beanName, alisa);
+        builder.setScope(scope);
+        builder.setAutowireMode(autowire.value());
+        if (StringUtils.isNotBlank(initMethod)) builder.setInitMethodName(initMethod);
+        if (StringUtils.isNotBlank(destroyMethod)) builder.setDestroyMethodName(destroyMethod);
+        builder.setRole(role);
+        builder.setLazyInit(lazyInit);
+        if (StringUtils.isNotBlank(description)) builder.getBeanDefinition().setDescription(description);
+        builder.getBeanDefinition().setAutowireCandidate(autowireCandidate);
+        return createBeanDefinitionHolderDistinguishScope(builder, scope, className, beanName, alisaNames);
     }
 
     @Override
@@ -97,11 +122,62 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
         return metadata.isInterface() || metadata.isAbstract();
     }
 
-    /*** Default browser host address */
-    static final String DEFAULT_HTTP_BROWSER_HOST = "127.0.0.1:80";
+    /**
+     * Create registration information bodies for proxy beans based on different scopes.
+     *
+     * @param builder   The builder of {@link BeanDefinitionBuilder}.
+     * @param scope     The scope of the settings.
+     * @param className The fully qualified name of the proxy class.
+     * @param beanName  The name of the proxy bean.
+     * @param alisa     The alias set of proxy beans.
+     * @return The information registration body of {@link BeanDefinition}.
+     */
+    private BeanDefinitionHolder createBeanDefinitionHolderDistinguishScope(BeanDefinitionBuilder builder,
+                                                                            String scope,
+                                                                            String className,
+                                                                            String beanName,
+                                                                            String[] alisa) {
 
-    /*** Default browser host address */
-    static final String DEFAULT_BEAN_NAME_SUFFIX = "@sdk.proxy.bean";
+        if (ALLOW_SCOPES.stream().anyMatch(sc -> Objects.equals(sc, scope))) {
+            return new BeanDefinitionHolder(builder.getBeanDefinition(), beanName, alisa);
+        }
+        builder.addConstructorArgValue(className);
+        return ScopedProxyUtils.createScopedProxy(new BeanDefinitionHolder(builder.getBeanDefinition(),
+                beanName, alisa), getBeanDefinitionRegistry(), true);
+    }
+
+    /**
+     * Following the processing specification of {@link org.springframework.context.annotation.Bean},
+     * the first name should be the main name of the bean.
+     *
+     * @param names Define a collection of names.
+     * @return The primary name of the bean.
+     */
+    private String getBeanName(String[] names) {
+        if (ArrayUtils.isNotEmpty(names)) {
+            return names[0];
+        }
+        return null;
+    }
+
+    /**
+     * According to the definition specification of {@link org.springframework.context.annotation.Bean},
+     * the non empty element array after removing the first element is
+     * called an alias element array.
+     *
+     * @param names Define a collection of names.
+     * @return alias name array.
+     */
+    private String[] getAlisaNames(String[] names) {
+        if (ArrayUtils.isNotEmpty(names)) {
+            if (names.length == 1) {
+                return null;
+            }
+            return new LinkedHashSet<>(Arrays.asList(
+                    ArrayUtils.remove(names, 0))).toArray(new String[]{});
+        }
+        return null;
+    }
 
     /**
      * When no bean name is provided for the SDK proxy bean,
@@ -110,7 +186,7 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
      * @return The name of the proxy bean.
      */
     private String generateBeanName(String className) {
-        return DigestUtils.md5Hex(className) + DEFAULT_BEAN_NAME_SUFFIX;
+        return className + DEFAULT_BEAN_NAME_SUFFIX;
     }
 
     /**
@@ -135,7 +211,9 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
      * @see #validationHost(String)
      */
     private String getRequestHost(String hostProperty) {
-        Assert.hasText(hostProperty, "HostProperty no be null");
+        if (StringUtils.isBlank(hostProperty)) {
+            return DEFAULT_HTTP_BROWSER_HOST;
+        }
         Environment environment = getEnvironment();
         Assert.notNull(environment, "Environment not capable");
         //Priority is given to using field query configurations directly.

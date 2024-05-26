@@ -11,6 +11,17 @@ import org.springframework.core.annotation.AliasFor;
 import java.lang.annotation.*;
 
 /**
+ * Dynamically construct annotation identifiers for {@link BeanDefinition},
+ * which include some essential attributes related to spring beans and also
+ * provide some default values.
+ *
+ * <p>They inherit all related attributes of {@link Bean} and can be used
+ * directly as {@link Bean}.
+ *
+ * <p>The basic purpose is to serve as a secondary attribute for special
+ * bean registration services, such as setting properties for proxy beans
+ * annotated with {@link top.osjf.assembly.simplified.sdk.annotation.Sdk}.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.5
  */
@@ -21,19 +32,19 @@ import java.lang.annotation.*;
 public @interface BeanProperty {
 
     /**
-     * @see Bean#name()
+     * @return {@code org.springframework.context.annotation.Bean#value()}
      */
     @AliasFor(annotation = Bean.class)
     String[] value() default {};
 
     /**
-     * @see Bean#value()
+     * @return {@code org.springframework.context.annotation.Bean#name()}
      */
     @AliasFor(annotation = Bean.class)
     String[] name() default {};
 
     /**
-     * @see Bean#autowire()
+     * @return {@code org.springframework.context.annotation.Bean#autowire()}
      * @deprecated copy from Bean#autowire() explain as of 5.1, since {@code @Bean} factory method
      * argument resolution and {@code @Autowired} processing supersede name/type-based bean property
      * injection.
@@ -43,19 +54,19 @@ public @interface BeanProperty {
     Autowire autowire() default Autowire.NO;
 
     /**
-     * @see Bean#autowireCandidate()
+     * @return {@code org.springframework.context.annotation.Bean#autowireCandidate()}
      */
     @AliasFor(annotation = Bean.class)
     boolean autowireCandidate() default true;
 
     /**
-     * @see Bean#initMethod()
+     * @return {@code org.springframework.context.annotation.Bean#initMethod()}
      */
     @AliasFor(annotation = Bean.class)
     String initMethod() default "";
 
     /**
-     * @see Bean#destroyMethod()
+     * @return {@code org.springframework.context.annotation.Bean#destroyMethod()}
      */
     @AliasFor(annotation = Bean.class)
     String destroyMethod() default AbstractBeanDefinition.INFER_METHOD;

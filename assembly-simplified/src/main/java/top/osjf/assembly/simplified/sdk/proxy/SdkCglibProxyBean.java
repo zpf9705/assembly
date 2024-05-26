@@ -1,5 +1,7 @@
 package top.osjf.assembly.simplified.sdk.proxy;
 
+import org.springframework.beans.factory.FactoryBean;
+import org.springframework.web.context.WebApplicationContext;
 import top.osjf.assembly.simplified.sdk.annotation.EnableSdkProxyRegister;
 import top.osjf.assembly.simplified.sdk.annotation.Sdk;
 import top.osjf.assembly.simplified.sdk.client.ClientExecutors;
@@ -28,6 +30,10 @@ import top.osjf.assembly.simplified.support.ScanningCandidateImportBeanDefinitio
  * uniformly bring the parameters to the proxy object and connect them to our
  * {@link ClientExecutors} processing through this class.
  *
+ * <p>When setting the scope of a special bean and inheriting this class, it is
+ * necessary to override the constructor {@link #SdkCglibProxyBean(Class)} and provide
+ * the corresponding type for setting {@link FactoryBean#getObjectType()}.
+ *
  * @param <T> The data type of the proxy class.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.5
@@ -39,5 +45,18 @@ public class SdkCglibProxyBean<T> extends AbstractSdkProxyHandler<T> {
      */
     public SdkCglibProxyBean() {
         setProxyModel(ProxyModel.SPRING_CJ_LIB);
+    }
+
+    /**
+     * When defining a special scope bean, such as {@link WebApplicationContext#SCOPE_REQUEST}
+     * {@link WebApplicationContext#SCOPE_APPLICATION} {@link WebApplicationContext#SCOPE_SESSION},
+     * call this constructor to pass the type in advance.
+     *
+     * @param type When injecting beans, the type of teammates is required.
+     *             {@link FactoryBean#getObjectType()}.
+     */
+    public SdkCglibProxyBean(Class<T> type) {
+        setProxyModel(ProxyModel.JDK);
+        setType(type);
     }
 }
