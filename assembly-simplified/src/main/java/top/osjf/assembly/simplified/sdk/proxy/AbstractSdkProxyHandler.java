@@ -36,12 +36,14 @@ import java.lang.reflect.Method;
  */
 public abstract class AbstractSdkProxyHandler<T> extends AbstractMultipleProxySupport<T> implements RequestAttributes {
 
+    /*** The host address when calling SDK.*/
     private String host;
 
     @Override
     public void setHost(String host) {
-        if (StringUtils.isBlank(host)) throw new IllegalArgumentException(
-                "The calling host address of the SDK proxy class cannot be empty");
+        if (StringUtils.isBlank(host)) {
+            throw new IllegalArgumentException("SDK access host address cannot be empty!");
+        }
         this.host = host;
     }
 
