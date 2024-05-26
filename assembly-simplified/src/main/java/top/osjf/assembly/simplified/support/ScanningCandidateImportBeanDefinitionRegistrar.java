@@ -18,9 +18,6 @@ import top.osjf.assembly.util.lang.ArrayUtils;
 import top.osjf.assembly.util.lang.CollectionUtils;
 import top.osjf.assembly.util.lang.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -61,14 +58,14 @@ public abstract class ScanningCandidateImportBeanDefinitionRegistrar<T extends B
     /*** Value separator for system property placeholders: ":". */
     protected static final String VALUE_SEPARATOR = ":";
 
-    /*** Array list configuration item delimiter.. */
-    protected static final String COMMA = ",";
-
     /*** Environmental variables. */
     private Environment environment;
 
     /*** Resource processor. */
     private ResourceLoader resourceLoader;
+
+    /*** registration machine of the container bean.*/
+    private BeanDefinitionRegistry registry;
 
     /*** 2.2.5 The default configuration triggers the name of the annotation path scan item property.*/
     protected static final String DEFAULT_SCAN_PATH_ATTRIBUTE_NAME = "value";
@@ -85,12 +82,13 @@ public abstract class ScanningCandidateImportBeanDefinitionRegistrar<T extends B
 
     @Override
     public int getOrder() {
-        return Integer.MIN_VALUE + 11;
+        return Ordered.HIGHEST_PRECEDENCE + 1;
     }
 
     @Override
     protected void registerBeanDefinitions(AnnotationAttributes importAnnotationAttributes,
                                            @NotNull BeanDefinitionRegistry registry) {
+        this.registry = registry;
         String[] scanningPackageNames;
         if (importAnnotationAttributes != null) {
             String scanPathAttributeName = getScanPathAttributeName();
@@ -113,7 +111,7 @@ public abstract class ScanningCandidateImportBeanDefinitionRegistrar<T extends B
             }
         }
         ClassPathScanningCandidateComponentProvider scanningCandidateProvider = getScanningCandidateProvider();
-        for (String packageName : resolvePlaceholdersSupport(scanningPackageNames)) {
+        for (String packageName : scanningPackageNames) {
             Set<BeanDefinition> markedBeanDefinitions = scanningCandidateProvider.findCandidateComponents(packageName);
             if (CollectionUtils.isEmpty(markedBeanDefinitions)) {
                 continue;
@@ -129,27 +127,6 @@ public abstract class ScanningCandidateImportBeanDefinitionRegistrar<T extends B
                 }
             }
         }
-    }
-
-    /**
-     * Add configuration paths to support parsing of configurations,
-     * specifically manifested as spring's el expressions, and handle
-     * support for array separation.
-     *
-     * @param scanningPackageNames Path items to be checked.
-     * @return Checked path items.
-     */
-    private List<String> resolvePlaceholdersSupport(String[] scanningPackageNames) {
-        List<String> checkedScanningPackageNames = new ArrayList<>();
-        for (String checkItem : scanningPackageNames) {
-            if (is$PropertyGet(checkItem)) {
-                String resolveResult = environment.resolvePlaceholders(checkItem);
-                if (resolveResult.contains(COMMA)) {
-                    checkedScanningPackageNames.addAll(Arrays.asList(resolveResult.split(COMMA)));
-                }
-            } else checkedScanningPackageNames.add(checkItem);
-        }
-        return checkedScanningPackageNames;
     }
 
     /**
@@ -204,6 +181,13 @@ public abstract class ScanningCandidateImportBeanDefinitionRegistrar<T extends B
      */
     protected ResourceLoader getResourceLoader() {
         return resourceLoader;
+    }
+
+    /**
+     * @return Return the registration machine of the container bean.
+     */
+    protected BeanDefinitionRegistry getBeanDefinitionRegistry() {
+        return registry;
     }
 
     /**
