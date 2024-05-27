@@ -10,6 +10,7 @@ import top.osjf.assembly.simplified.cron.CronRegister;
 import top.osjf.assembly.util.lang.CollectionUtils;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Use annotation {@link EnableListenerAutoRegister} to enable this
@@ -41,6 +42,7 @@ public class ListenerAutoRegisterConfiguration {
         if (CollectionUtils.isNotEmpty(cronConfigurers)) {
             cronConfigurers.stream()
                     .map(CronConfigurer::getWillRegisterCronListeners)
+                    .filter(Objects::nonNull)
                     .distinct()
                     .forEach(CronRegister::addListeners);
         }
