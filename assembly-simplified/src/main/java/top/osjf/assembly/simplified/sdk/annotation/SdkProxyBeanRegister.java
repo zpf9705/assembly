@@ -2,9 +2,7 @@ package top.osjf.assembly.simplified.sdk.annotation;
 
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.annotation.Autowire;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
-import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
@@ -19,10 +17,6 @@ import top.osjf.assembly.simplified.support.ProxyModel;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.lang.StringUtils;
 import top.osjf.assembly.util.logger.Console;
-
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * The proxy registration class of SDK scans the relevant interface
@@ -42,10 +36,6 @@ import java.util.stream.Stream;
  * @since 1.1.0
  */
 public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportBeanDefinitionRegistrar {
-
-    /***A collection of regular bean scopes.*/
-    public static final List<String> ALLOW_SCOPES = Stream.of(BeanDefinition.SCOPE_SINGLETON,
-            BeanDefinition.SCOPE_PROTOTYPE, AbstractBeanDefinition.SCOPE_DEFAULT).collect(Collectors.toList());
 
     /*** Default browser host address */
     public static final String DEFAULT_HTTP_BROWSER_HOST = "127.0.0.1:80";
@@ -69,7 +59,7 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
                 .getAnnotation("sdkProxyBeanProperty");
         String[] names = beanPropertyAttributes.getStringArray("name");
         //@since 2.0.7
-        String beanName = BeanPropertyUtils.getBeanName(names);
+        String beanName = SdkProxyBeanUtils.getTargetBeanName(BeanPropertyUtils.getBeanName(names), className);
         String[] alisaNames = BeanPropertyUtils.getAlisaNames(names);
         String scope = beanPropertyAttributes.getString("scope");
         Autowire autowire = beanPropertyAttributes.getEnum("autowire");
@@ -81,7 +71,6 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
         String description = beanPropertyAttributes.getString("description");
         //@Since 2.2.5
         boolean autowireCandidate = beanPropertyAttributes.getBoolean("autowireCandidate");
-        if (StringUtils.isBlank(beanName)) beanName = generateBeanName(className);
         builder.setScope(scope);
         builder.setAutowireMode(autowire.value());
         if (StringUtils.isNotBlank(initMethod)) builder.setInitMethodName(initMethod);
@@ -123,30 +112,6 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
     protected boolean isAvailableMarkedBeanDefinitionMetadata(AnnotationMetadata metadata) {
         return metadata.isInterface() || metadata.isAbstract();
     }
-
-//    /**
-//     * Create registration information bodies for proxy beans based on different scopes.
-//     *
-//     * @param builder   The builder of {@link BeanDefinitionBuilder}.
-//     * @param scope     The scope of the settings.
-//     * @param className The fully qualified name of the proxy class.
-//     * @param beanName  The name of the proxy bean.
-//     * @param alisa     The alias set of proxy beans.
-//     * @return The information registration body of {@link BeanDefinition}.
-//     */
-//    private BeanDefinitionHolder createBeanDefinitionHolderDistinguishScope(BeanDefinitionBuilder builder,
-//                                                                            String scope,
-//                                                                            String className,
-//                                                                            String beanName,
-//                                                                            String[] alisa) {
-//
-//        if (ALLOW_SCOPES.stream().anyMatch(sc -> Objects.equals(sc, scope))) {
-//            return new BeanDefinitionHolder(builder.getBeanDefinition(), beanName, alisa);
-//        }
-//        builder.addConstructorArgValue(className);
-//        return ScopedProxyUtils.createScopedProxy(new BeanDefinitionHolder(builder.getBeanDefinition(),
-//                beanName, alisa), getBeanDefinitionRegistry(), true);
-//    }
 
     /**
      * When no bean name is provided for the SDK proxy bean,
