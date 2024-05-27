@@ -26,7 +26,7 @@ public abstract class SdkProxyBeanUtils {
     public static final List<String> ROUTINE_SCOPES = Stream.of(BeanDefinition.SCOPE_SINGLETON,
             BeanDefinition.SCOPE_PROTOTYPE, AbstractBeanDefinition.SCOPE_DEFAULT).collect(Collectors.toList());
 
-    /*** Default browser host address */
+    /*** The name suffix of the SDK proxy bean.*/
     public static final String BEAN_NAME_SUFFIX = "@sdk.proxy.bean";
 
     /**
