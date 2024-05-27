@@ -1,7 +1,6 @@
 package top.osjf.assembly.simplified.sdk.proxy;
 
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.web.context.WebApplicationContext;
 import top.osjf.assembly.simplified.sdk.annotation.EnableSdkProxyRegister;
 import top.osjf.assembly.simplified.sdk.annotation.Sdk;
 import top.osjf.assembly.simplified.sdk.client.ClientExecutors;
@@ -44,19 +43,12 @@ public class SdkCglibProxyBean<T> extends AbstractSdkProxyHandler<T> {
      * The construction method for setting the proxy model {@link ProxyModel} to cglib.
      */
     public SdkCglibProxyBean() {
+        super();
         setProxyModel(ProxyModel.SPRING_CJ_LIB);
     }
 
-    /**
-     * When defining a special scope bean, such as {@link WebApplicationContext#SCOPE_REQUEST}
-     * {@link WebApplicationContext#SCOPE_APPLICATION} {@link WebApplicationContext#SCOPE_SESSION},
-     * call this constructor to pass the type in advance.
-     *
-     * @param type When injecting beans, the type of teammates is required.
-     *             {@link FactoryBean#getObjectType()}.
-     */
     public SdkCglibProxyBean(Class<T> type) {
+        super(type);
         setProxyModel(ProxyModel.JDK);
-        setType(type);
     }
 }
