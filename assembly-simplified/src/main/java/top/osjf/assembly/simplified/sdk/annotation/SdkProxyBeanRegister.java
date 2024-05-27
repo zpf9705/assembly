@@ -1,6 +1,5 @@
 package top.osjf.assembly.simplified.sdk.annotation;
 
-import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -13,17 +12,15 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.Assert;
 import top.osjf.assembly.simplified.sdk.proxy.SdkCglibProxyBean;
 import top.osjf.assembly.simplified.sdk.proxy.SdkJDKProxyBean;
+import top.osjf.assembly.simplified.sdk.proxy.SdkProxyBeanUtils;
 import top.osjf.assembly.simplified.support.AnnotationTypeScanningCandidateImportBeanDefinitionRegistrar;
+import top.osjf.assembly.simplified.support.BeanPropertyUtils;
 import top.osjf.assembly.simplified.support.ProxyModel;
 import top.osjf.assembly.util.annotation.NotNull;
-import top.osjf.assembly.util.lang.ArrayUtils;
 import top.osjf.assembly.util.lang.StringUtils;
 import top.osjf.assembly.util.logger.Console;
 
-import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -72,8 +69,8 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
                 .getAnnotation("sdkProxyBeanProperty");
         String[] names = beanPropertyAttributes.getStringArray("name");
         //@since 2.0.7
-        String beanName = getBeanName(names);
-        String[] alisaNames = getAlisaNames(names);
+        String beanName = BeanPropertyUtils.getBeanName(names);
+        String[] alisaNames = BeanPropertyUtils.getAlisaNames(names);
         String scope = beanPropertyAttributes.getString("scope");
         Autowire autowire = beanPropertyAttributes.getEnum("autowire");
         //@since 2.0.9
@@ -93,7 +90,12 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
         builder.setLazyInit(lazyInit);
         if (StringUtils.isNotBlank(description)) builder.getBeanDefinition().setDescription(description);
         builder.getBeanDefinition().setAutowireCandidate(autowireCandidate);
-        return createBeanDefinitionHolderDistinguishScope(builder, scope, className, beanName, alisaNames);
+        return SdkProxyBeanUtils.createBeanDefinitionHolderDistinguishScope(builder,
+                getBeanDefinitionRegistry(),
+                scope,
+                b -> b.addConstructorArgValue(className),
+                beanName,
+                alisaNames);
     }
 
     @Override
@@ -122,62 +124,29 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
         return metadata.isInterface() || metadata.isAbstract();
     }
 
-    /**
-     * Create registration information bodies for proxy beans based on different scopes.
-     *
-     * @param builder   The builder of {@link BeanDefinitionBuilder}.
-     * @param scope     The scope of the settings.
-     * @param className The fully qualified name of the proxy class.
-     * @param beanName  The name of the proxy bean.
-     * @param alisa     The alias set of proxy beans.
-     * @return The information registration body of {@link BeanDefinition}.
-     */
-    private BeanDefinitionHolder createBeanDefinitionHolderDistinguishScope(BeanDefinitionBuilder builder,
-                                                                            String scope,
-                                                                            String className,
-                                                                            String beanName,
-                                                                            String[] alisa) {
-
-        if (ALLOW_SCOPES.stream().anyMatch(sc -> Objects.equals(sc, scope))) {
-            return new BeanDefinitionHolder(builder.getBeanDefinition(), beanName, alisa);
-        }
-        builder.addConstructorArgValue(className);
-        return ScopedProxyUtils.createScopedProxy(new BeanDefinitionHolder(builder.getBeanDefinition(),
-                beanName, alisa), getBeanDefinitionRegistry(), true);
-    }
-
-    /**
-     * Following the processing specification of {@link org.springframework.context.annotation.Bean},
-     * the first name should be the main name of the bean.
-     *
-     * @param names Define a collection of names.
-     * @return The primary name of the bean.
-     */
-    private String getBeanName(String[] names) {
-        if (ArrayUtils.isNotEmpty(names)) {
-            return names[0];
-        }
-        return null;
-    }
-
-    /**
-     * According to the definition specification of {@link org.springframework.context.annotation.Bean},
-     * the non empty element array after removing the first element is
-     * called an alias element array.
-     *
-     * @param names Define a collection of names.
-     * @return alias name array.
-     */
-    private String[] getAlisaNames(String[] names) {
-        if (ArrayUtils.isNotEmpty(names)) {
-            if (names.length == 1) {
-                return null;
-            }
-            return new LinkedHashSet<>(Arrays.asList(
-                    ArrayUtils.remove(names, 0))).toArray(new String[]{});
-        }
-        return null;
-    }
+//    /**
+//     * Create registration information bodies for proxy beans based on different scopes.
+//     *
+//     * @param builder   The builder of {@link BeanDefinitionBuilder}.
+//     * @param scope     The scope of the settings.
+//     * @param className The fully qualified name of the proxy class.
+//     * @param beanName  The name of the proxy bean.
+//     * @param alisa     The alias set of proxy beans.
+//     * @return The information registration body of {@link BeanDefinition}.
+//     */
+//    private BeanDefinitionHolder createBeanDefinitionHolderDistinguishScope(BeanDefinitionBuilder builder,
+//                                                                            String scope,
+//                                                                            String className,
+//                                                                            String beanName,
+//                                                                            String[] alisa) {
+//
+//        if (ALLOW_SCOPES.stream().anyMatch(sc -> Objects.equals(sc, scope))) {
+//            return new BeanDefinitionHolder(builder.getBeanDefinition(), beanName, alisa);
+//        }
+//        builder.addConstructorArgValue(className);
+//        return ScopedProxyUtils.createScopedProxy(new BeanDefinitionHolder(builder.getBeanDefinition(),
+//                beanName, alisa), getBeanDefinitionRegistry(), true);
+//    }
 
     /**
      * When no bean name is provided for the SDK proxy bean,
