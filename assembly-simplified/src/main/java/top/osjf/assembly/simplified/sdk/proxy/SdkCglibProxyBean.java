@@ -37,7 +37,7 @@ import top.osjf.assembly.simplified.support.ScanningCandidateImportBeanDefinitio
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.5
  */
-public class SdkCglibProxyBean<T> extends AbstractSdkProxyHandler<T> {
+public class SdkCglibProxyBean<T> extends AbstractSdkProxyBean<T> {
 
     /**
      * The construction method for setting the proxy model {@link ProxyModel} to cglib.

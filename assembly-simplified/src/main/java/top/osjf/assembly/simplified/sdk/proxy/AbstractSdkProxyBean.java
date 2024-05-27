@@ -1,5 +1,7 @@
 package top.osjf.assembly.simplified.sdk.proxy;
 
+import org.springframework.beans.factory.FactoryBean;
+import org.springframework.web.context.WebApplicationContext;
 import top.osjf.assembly.simplified.sdk.client.ClientExecutors;
 import top.osjf.assembly.simplified.sdk.process.Request;
 import top.osjf.assembly.simplified.sdk.process.RequestAttributes;
@@ -28,16 +30,36 @@ import java.lang.reflect.Method;
  * <p>Simply obtain the host parameter from the corresponding proxy class
  * entity to complete the SDK request.
  *
- * <p>For clearer meaning, it was renamed 'AbstractSdkProxyHandler' since 2.2.5.
+ * <p>For clearer meaning, it was renamed 'AbstractSdkProxyBean' since 2.2.5.
  *
  * @param <T> The data type of the proxy class.
  * @author zpf
  * @since 1.1.0
  */
-public abstract class AbstractSdkProxyHandler<T> extends AbstractMultipleProxySupport<T> implements RequestAttributes {
+public abstract class AbstractSdkProxyBean<T> extends AbstractMultipleProxySupport<T> implements RequestAttributes {
 
     /*** The host address when calling SDK.*/
     private String host;
+
+    /**
+     * The construction method called when defining the scope of a normal bean
+     * , such as {@link org.springframework.beans.factory.config.BeanDefinition#SCOPE_PROTOTYPE}
+     * {@link org.springframework.beans.factory.config.BeanDefinition#SCOPE_SINGLETON}.
+     */
+    public AbstractSdkProxyBean() {
+    }
+
+    /**
+     * When defining a special scope bean, such as {@link WebApplicationContext#SCOPE_REQUEST}
+     * {@link WebApplicationContext#SCOPE_APPLICATION} {@link WebApplicationContext#SCOPE_SESSION},
+     * call this constructor to pass the type in advance.
+     *
+     * @param type When injecting beans, the type of teammates is required.
+     *             {@link FactoryBean#getObjectType()}.
+     */
+    public AbstractSdkProxyBean(Class<T> type) {
+        setType(type);
+    }
 
     @Override
     public void setHost(String host) {

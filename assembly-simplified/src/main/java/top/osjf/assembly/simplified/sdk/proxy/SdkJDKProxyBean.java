@@ -40,7 +40,7 @@ import top.osjf.assembly.simplified.support.ScanningCandidateImportBeanDefinitio
  * @author zpf
  * @since 1.1.0
  */
-public class SdkJDKProxyBean<T> extends AbstractSdkProxyHandler<T> {
+public class SdkJDKProxyBean<T> extends AbstractSdkProxyBean<T> {
 
     /**
      * The construction method for setting the proxy model {@link ProxyModel} to cglib.
