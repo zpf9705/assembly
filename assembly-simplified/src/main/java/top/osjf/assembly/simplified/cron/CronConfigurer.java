@@ -1,5 +1,7 @@
 package top.osjf.assembly.simplified.cron;
 
+import top.osjf.assembly.util.annotation.CanNull;
+
 import java.util.List;
 
 /**
@@ -18,5 +20,8 @@ public interface CronConfigurer {
      * @return listeners {@link CronConfigurer} that will
      *          soon need to be registered.
      */
-    List<CronListener> getWillRegisterCronListeners();
+    @CanNull
+    default List<CronListener> getWillRegisterCronListeners(){
+        return null;
+    }
 }
