@@ -16,7 +16,8 @@ import top.osjf.assembly.simplified.support.BeanPropertyUtils;
 import top.osjf.assembly.simplified.support.ProxyModel;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.lang.StringUtils;
-import top.osjf.assembly.util.logger.Console;
+
+import java.util.regex.Pattern;
 
 /**
  * The proxy registration class of SDK scans the relevant interface
@@ -37,11 +38,17 @@ import top.osjf.assembly.util.logger.Console;
  */
 public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportBeanDefinitionRegistrar {
 
-    /*** Default browser host address */
+    /*** Default browser host address. */
     public static final String DEFAULT_HTTP_BROWSER_HOST = "127.0.0.1:80";
 
-    /*** Default browser host address */
-    public static final String DEFAULT_BEAN_NAME_SUFFIX = "@sdk.proxy.bean";
+    /*** Regular verification of domain names. */
+    private static final Pattern DOMAIN_PATTERN =
+            Pattern.compile("^(?!-)[A-Za-z0-9-]{1,63}(?<!-)\\.(?!-)[A-Za-z0-9-]{1,63}(?<!-)\\.[A-Za-z]{2,}$");
+
+    /*** Regular verification of IP.*/
+    private static final Pattern IP_PATTERN =
+            Pattern.compile(
+                    "((25[0-5])|(2[0-4]\\d)|(1\\d\\d)|([1-9]\\d)|\\d)(\\.((25[0-5])|(2[0-4]\\d)|(1\\d\\d)|([1-9]\\d)|\\d)){3}");
 
     @Override
     public BeanDefinitionHolder createBeanDefinitionHolder(AnnotationAttributes markedAnnotationAttributes,
@@ -114,16 +121,6 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
     }
 
     /**
-     * When no bean name is provided for the SDK proxy bean,
-     * this method is used as an alternative.
-     *
-     * @return The name of the proxy bean.
-     */
-    private String generateBeanName(String className) {
-        return className + DEFAULT_BEAN_NAME_SUFFIX;
-    }
-
-    /**
      * Based on the provided configuration name, obtain the
      * corresponding host address.
      * <p>The supported formats are as described in {@link Sdk#hostProperty()}.
@@ -160,7 +157,7 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
                 try {
                     host = environment.resolveRequiredPlaceholders(hostProperty);
                 } catch (IllegalArgumentException e) {
-                    Console.warn("No configuration item with configuration key [{}] was found, " +
+                    log.error("No configuration item with configuration key [{}] was found, " +
                             "so it defaults to [{}]", hostProperty, DEFAULT_HTTP_BROWSER_HOST);
                     //if catch IllegalArgumentException not found hostProperty
                     //use default host and logged console
@@ -168,12 +165,11 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
                     useDefaultHost = true;
                 }
             } else {
-                Console.warn("No configuration item with configuration key [{}] was found, " +
-                        "so it defaults to [{}]", hostProperty, DEFAULT_HTTP_BROWSER_HOST);
-                //If no relevant environment configuration for the host is
-                // found, the default HTTP host address will be used.
-                host = DEFAULT_HTTP_BROWSER_HOST;
-                useDefaultHost = true;
+                if (log.isWarnEnabled()) {
+                    log.warn("The host address {} attribute provides non configuration items and " +
+                            "can be used directly as the host address.", hostProperty);
+                }
+                host = hostProperty;
             }
         }
         if (!useDefaultHost) {
@@ -184,15 +180,13 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
         return host;
     }
 
+
     //@since 2.1.1
     private boolean validationHost(String host) {
         if (StringUtils.isBlank(host)) {
             return false;
         }
         boolean result;
-        final String doMainRegex = "[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+\\.?";
-        final String ipRegex
-                = "((25[0-5])|(2[0-4]\\d)|(1\\d\\d)|([1-9]\\d)|\\d)(\\.((25[0-5])|(2[0-4]\\d)|(1\\d\\d)|([1-9]\\d)|\\d)){3}";
         if (host.contains(VALUE_SEPARATOR)) {
             String[] hostAtt = host.split(VALUE_SEPARATOR);
             boolean $suffixIsInt;
@@ -202,9 +196,9 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
             } catch (NumberFormatException e) {
                 $suffixIsInt = false;
             }
-            result = hostAtt[0].matches(ipRegex) && $suffixIsInt;
+            result = IP_PATTERN.matcher(hostAtt[0]).matches() && $suffixIsInt;
         } else {
-            result = host.matches(doMainRegex);
+            result = DOMAIN_PATTERN.matcher(host).matches();
         }
         return result;
     }
