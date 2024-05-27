@@ -18,6 +18,7 @@ import top.osjf.assembly.util.system.DefaultConsole;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /**
@@ -283,6 +284,9 @@ public final class CronRegister {
         return Arrays.stream(providerProfiles).anyMatch(p -> Arrays.asList(activeProfiles).contains(p));
     }
 
+    /*** Temporary cache pre added listener cache, used to prevent duplicate additions, cleared after startup.*/
+    private static final List<CronListener> CRON_LISTENERS = new CopyOnWriteArrayList<>();
+
     /**
      * Scan the top path to obtain the listener.
      *
@@ -301,11 +305,12 @@ public final class CronRegister {
 
     /**
      * Add listeners for the start sequence of scheduled tasks.
-     * @since 2.2.5
+     *
      * @param cronListeners listeners for the start sequence of scheduled tasks.
+     * @since 2.2.5
      */
     public static void addListeners(List<CronListener> cronListeners) {
-        if (CollectionUtils.isEmpty(cronListeners)){
+        if (CollectionUtils.isEmpty(cronListeners)) {
             return;
         }
         addListener(cronListeners.toArray(new CronListener[]{}));
@@ -321,8 +326,11 @@ public final class CronRegister {
             return;
         }
         for (CronListener cronListener : cronListeners) {
-            //Register scheduled tasks Listener
-            CronUtil.getScheduler().addListener(cronListener);
+            if (!CRON_LISTENERS.contains(cronListener)) {
+                //Register scheduled tasks Listener
+                CronUtil.getScheduler().addListener(cronListener);
+                CRON_LISTENERS.add(cronListener);
+            }
         }
     }
 
@@ -349,7 +357,8 @@ public final class CronRegister {
 
     /**
      * Register a valid cron expression and runtime into the scheduled task pool.
-     * @param express cron expressions.
+     *
+     * @param express  cron expressions.
      * @param runnable Register the runtime.
      */
     public static void register(String express, Runnable runnable) {
@@ -425,6 +434,7 @@ public final class CronRegister {
         CronUtil.setMatchSecond(isMatchSecond);
         //Configurable to set up daemon threads
         CronUtil.start(isDaemon);
+        if (!CRON_LISTENERS.isEmpty()) CRON_LISTENERS.clear();
         //register info log
         DefaultConsole.info("Cron register success : success task num : {}", CronUtil.getScheduler().size());
     }
