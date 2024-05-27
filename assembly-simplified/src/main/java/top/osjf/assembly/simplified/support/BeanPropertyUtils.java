@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 
 /**
- * The relevant general method tool class for {@link org.springframework.context.annotation.Bean}.
+ * The relevant general method tool class for {@link BeanProperty}.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.5
  */
