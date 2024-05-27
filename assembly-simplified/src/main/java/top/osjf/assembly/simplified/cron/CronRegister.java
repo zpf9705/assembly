@@ -326,7 +326,7 @@ public final class CronRegister {
             return;
         }
         for (CronListener cronListener : cronListeners) {
-            if (!CRON_LISTENERS.contains(cronListener)) {
+            if (cronListener != null && !CRON_LISTENERS.contains(cronListener)) {
                 //Register scheduled tasks Listener
                 CronUtil.getScheduler().addListener(cronListener);
                 CRON_LISTENERS.add(cronListener);
