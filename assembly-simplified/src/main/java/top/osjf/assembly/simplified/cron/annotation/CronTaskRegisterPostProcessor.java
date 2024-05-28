@@ -16,7 +16,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
-import top.osjf.assembly.simplified.cron.CronRegister;
+import top.osjf.assembly.simplified.cron.CronTaskManager;
 import top.osjf.assembly.simplified.support.SmartContextRefreshed;
 import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
@@ -37,7 +37,7 @@ import java.util.Objects;
  * At this time, it receives the notification of the refreshed event sent by {@link
  * ContextRefreshedEvent} to start the thread operation of the scheduled task.
  *
- * <p>Compared to {@link CronRegister}, it lacks non container object instantiation
+ * <p>Compared to {@link CronTaskManager}, it lacks non container object instantiation
  * operations and only supports timed processing of container objects.
  *
  * @author zpf
@@ -82,7 +82,7 @@ public class CronTaskRegisterPostProcessor extends SmartContextRefreshed impleme
     @CanNull
     @Override
     public Object postProcessAfterInitialization(@NotNull Object bean, @NotNull String beanName) throws BeansException {
-        CronRegister.register(bean, environment.getActiveProfiles());
+        CronTaskManager.registerCronTask(bean, environment.getActiveProfiles());
         return bean;
     }
 
@@ -90,12 +90,12 @@ public class CronTaskRegisterPostProcessor extends SmartContextRefreshed impleme
     public void onApplicationEvent(@NotNull ContextRefreshedEvent event) {
         super.onApplicationEvent(event);
         String[] sourceArgs = context.getBean(ApplicationArguments.class).getSourceArgs();
-        if (CronRegister.registerZero()) {
+        if (CronTaskManager.registerZero()) {
             if (noMethodDefaultStart) {
-                CronRegister.start(sourceArgs);
+                CronTaskManager.start(sourceArgs);
             }
         } else {
-            CronRegister.start(sourceArgs);
+            CronTaskManager.start(sourceArgs);
         }
     }
 
