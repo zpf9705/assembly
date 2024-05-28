@@ -1,6 +1,5 @@
 package top.osjf.assembly.simplified.cron;
 
-import cn.hutool.cron.CronException;
 import cn.hutool.cron.CronUtil;
 import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.aop.support.AopUtils;
@@ -59,7 +58,7 @@ public final class CronTaskManager {
      * @param activeProfiles Spring environment.
      * @see AopUtils#isAopProxy(Object)
      */
-    public static void register(Object bean, @CanNull String[] activeProfiles) {
+    public static void registerCronTask(Object bean, @CanNull String[] activeProfiles) {
         Objects.requireNonNull(bean, "The registrant cannot be null.");
 
         //@Since 2.1.8
@@ -86,10 +85,10 @@ public final class CronTaskManager {
             if (ArrayUtils.isEmpty(activeProfiles)) {
                 //When the environment is not activated, it indicates that
                 // everything is applicable and can be registered directly.
-                register(expression, rab);
+                registerCronTask(expression, rab);
             } else {
                 if (profilesCheck(cronAttribute.getProfiles(), activeProfiles)) {
-                    register(expression, rab);
+                    registerCronTask(expression, rab);
                 }
             }
         });
@@ -101,12 +100,12 @@ public final class CronTaskManager {
      * @param expression cron expressions.
      * @param runnable   Register the runtime.
      */
-    public static void register(String expression, Runnable runnable) {
+    public static void registerCronTask(String expression, Runnable runnable) {
         if (StringUtils.isBlank(expression) || runnable == null) {
             return;
         }
         if (!CronExpression.isValidExpression(expression)) {
-            throw new CronException("Provider " + expression + "no a valid cron express");
+            throw new CronExpressionInvalidException(expression);
         }
         //Register scheduled tasks
         CronUtil.schedule(expression, runnable);
