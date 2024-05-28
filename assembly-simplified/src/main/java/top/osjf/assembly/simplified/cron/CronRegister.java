@@ -439,6 +439,6 @@ public final class CronRegister {
         CronUtil.start(isDaemon);
         if (!CRON_LISTENERS.isEmpty()) CRON_LISTENERS.clear();
         //register info log
-        DefaultConsole.info("Cron register success : success task num : {}", CronUtil.getScheduler().size());
+        DefaultConsole.info("Cron register success task num : {}", CronUtil.getScheduler().size());
     }
 }
