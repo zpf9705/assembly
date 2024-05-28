@@ -139,11 +139,11 @@ public final class CronTaskManager {
      * @param cronListeners listeners for the start sequence of scheduled tasks.
      * @since 2.2.5
      */
-    public static void addListeners(List<CronListener> cronListeners) {
+    public static void addCronListeners(List<CronListener> cronListeners) {
         if (CollectionUtils.isEmpty(cronListeners)) {
             return;
         }
-        addListener(cronListeners.toArray(new CronListener[]{}));
+        addCronListeners(cronListeners.toArray(new CronListener[]{}));
     }
 
     /**
@@ -151,7 +151,7 @@ public final class CronTaskManager {
      *
      * @param cronListeners listeners for the start sequence of scheduled tasks.
      */
-    public static void addListener(CronListener... cronListeners) {
+    public static void addCronListeners(CronListener... cronListeners) {
         if (ArrayUtils.isEmpty(cronListeners)) {
             return;
         }
