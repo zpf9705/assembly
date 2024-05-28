@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
  * @see CronUtil
  * @since 1.1.0
  */
+@Deprecated
 public final class CronRegister {
 
     private CronRegister() {
