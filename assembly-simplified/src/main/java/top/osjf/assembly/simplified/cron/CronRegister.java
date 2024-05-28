@@ -8,15 +8,18 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.support.CronExpression;
 import top.osjf.assembly.simplified.cron.annotation.Cron;
+import top.osjf.assembly.simplified.cron.annotation.CronAnnotationAttributes;
 import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.io.ScanUtils;
 import top.osjf.assembly.util.lang.ArrayUtils;
 import top.osjf.assembly.util.lang.CollectionUtils;
 import top.osjf.assembly.util.lang.ReflectUtils;
+import top.osjf.assembly.util.lang.StringUtils;
 import top.osjf.assembly.util.system.DefaultConsole;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
@@ -196,7 +199,7 @@ public final class CronRegister {
             }
             Cron cron = method.getAnnotation(Cron.class);
             Object finalTarget = target;
-            register(cron.express(), () -> ReflectUtils.invoke(finalTarget, method));
+            register(cron.expression(), () -> ReflectUtils.invoke(finalTarget, method));
         }
     }
 
@@ -238,28 +241,28 @@ public final class CronRegister {
         } else {
             target = bean.getClass();
         }
-        Method[] methods = target.getMethods();
+        Method[] methods = target.getDeclaredMethods();
         //Determine if there is a timing method.
-        if (Arrays.stream(methods).allMatch(m -> m.getAnnotation(Cron.class) == null)) {
-            return;
-        }
-        for (Method method : methods) {
-            Cron cron = method.getAnnotation(Cron.class);
-            if (cron != null) {
-                String express = cron.express();
-                Runnable rab = () -> ReflectUtils.invoke(bean, method);
-                if (ArrayUtils.isEmpty(activeProfiles)) {
-                    //When the environment is not activated, it indicates that
-                    // everything is applicable and can be registered directly.
-                    register(express, rab);
-                } else {
-                    if (profilesCheck(cron.profiles(), activeProfiles)) {
-                        register(express, rab);
-                    }
+        Arrays.stream(methods).filter(method -> {
+            //Must meet the requirements of publicly available county-wide,
+            // non-static methods, and include specified annotations.
+            return method.isAnnotationPresent(Cron.class)
+                    && !Modifier.isStatic(method.getModifiers())
+                    && Modifier.isPublic(method.getModifiers());
+        }).forEach(method -> {
+            CronAnnotationAttributes cronAttribute = CronAnnotationAttributes.of(method);
+            String expression = cronAttribute.getExpression();
+            Runnable rab = () -> ReflectUtils.invoke(bean, method);
+            if (ArrayUtils.isEmpty(activeProfiles)) {
+                //When the environment is not activated, it indicates that
+                // everything is applicable and can be registered directly.
+                register(expression, rab);
+            } else {
+                if (profilesCheck(cronAttribute.getProfiles(), activeProfiles)) {
+                    register(expression, rab);
                 }
-
             }
-        }
+        });
     }
 
     /**
@@ -358,18 +361,18 @@ public final class CronRegister {
     /**
      * Register a valid cron expression and runtime into the scheduled task pool.
      *
-     * @param express  cron expressions.
-     * @param runnable Register the runtime.
+     * @param expression cron expressions.
+     * @param runnable   Register the runtime.
      */
-    public static void register(String express, Runnable runnable) {
-        if (express == null || runnable == null) {
+    public static void register(String expression, Runnable runnable) {
+        if (StringUtils.isBlank(expression) || runnable == null) {
             return;
         }
-        if (!CronExpression.isValidExpression(express)) {
-            throw new CronException("Provider " + express + "no a valid cron express");
+        if (!CronExpression.isValidExpression(expression)) {
+            throw new CronException("Provider " + expression + "no a valid cron express");
         }
         //Register scheduled tasks
-        CronUtil.schedule(express, runnable);
+        CronUtil.schedule(expression, runnable);
     }
 
     //******************************** start rule ***************************************//
