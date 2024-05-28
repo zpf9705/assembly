@@ -30,7 +30,7 @@ public class ListenerAutoRegisterConfiguration {
      */
     @Autowired(required = false)
     public void setCronListeners(List<CronListener> cronListeners) {
-        CronTaskManager.addListeners(cronListeners);
+        CronTaskManager.addCronListeners(cronListeners);
     }
 
     /**
@@ -44,7 +44,7 @@ public class ListenerAutoRegisterConfiguration {
                     .map(CronConfigurer::getWillRegisterCronListeners)
                     .filter(Objects::nonNull)
                     .distinct()
-                    .forEach(CronTaskManager::addListeners);
+                    .forEach(CronTaskManager::addCronListeners);
         }
     }
 }
