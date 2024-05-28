@@ -18,7 +18,6 @@ import java.lang.annotation.*;
  * @author zpf
  * @see EnableCronTaskRegister2
  * @see CronTaskRegisterPostProcessor
- * @see top.osjf.assembly.simplified.cron.CronRegister#register(Object, String[])
  * @see CronAnnotationAttributes
  * @since 1.1.0
  */
