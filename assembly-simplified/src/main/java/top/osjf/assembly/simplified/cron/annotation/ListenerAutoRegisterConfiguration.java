@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
 import top.osjf.assembly.simplified.cron.CronConfigurer;
 import top.osjf.assembly.simplified.cron.CronListener;
-import top.osjf.assembly.simplified.cron.CronRegister;
+import top.osjf.assembly.simplified.cron.CronTaskManager;
 import top.osjf.assembly.util.lang.CollectionUtils;
 
 import java.util.List;
@@ -30,7 +30,7 @@ public class ListenerAutoRegisterConfiguration {
      */
     @Autowired(required = false)
     public void setCronListeners(List<CronListener> cronListeners) {
-        CronRegister.addListeners(cronListeners);
+        CronTaskManager.addListeners(cronListeners);
     }
 
     /**
@@ -44,7 +44,7 @@ public class ListenerAutoRegisterConfiguration {
                     .map(CronConfigurer::getWillRegisterCronListeners)
                     .filter(Objects::nonNull)
                     .distinct()
-                    .forEach(CronRegister::addListeners);
+                    .forEach(CronTaskManager::addListeners);
         }
     }
 }
