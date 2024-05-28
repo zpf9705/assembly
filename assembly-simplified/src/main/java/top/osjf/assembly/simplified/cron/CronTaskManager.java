@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Predicate;
 
 /**
  * The static method manager for scheduled tasks, derived from abandoned
@@ -43,6 +44,13 @@ public final class CronTaskManager {
      * Support thread daemon for startup parameters.
      */
     public static final String thread_daemon_key = "assembly.simplified.cron.thread.daemon=";
+
+    //Must meet the requirements of publicly available county-wide,
+    // non-static methods, and include specified annotations.
+    public static final Predicate<Method> CRON_METHOD_PREDICATE = method ->
+            method.isAnnotationPresent(Cron.class)
+            && !Modifier.isStatic(method.getModifiers())
+            && Modifier.isPublic(method.getModifiers());
 
     private CronTaskManager() {
     }
@@ -72,13 +80,7 @@ public final class CronTaskManager {
         }
         Method[] methods = target.getDeclaredMethods();
         //Determine if there is a timing method.
-        Arrays.stream(methods).filter(method -> {
-            //Must meet the requirements of publicly available county-wide,
-            // non-static methods, and include specified annotations.
-            return method.isAnnotationPresent(Cron.class)
-                    && !Modifier.isStatic(method.getModifiers())
-                    && Modifier.isPublic(method.getModifiers());
-        }).forEach(method -> {
+        Arrays.stream(methods).filter(CRON_METHOD_PREDICATE).forEach(method -> {
             CronAnnotationAttributes cronAttribute = CronAnnotationAttributes.of(method);
             String expression = cronAttribute.getExpression();
             Runnable rab = () -> ReflectUtils.invoke(bean, method);
