@@ -1,6 +1,6 @@
 package top.osjf.assembly.simplified.service.context;
 
-import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
 /**
  * An exception thrown when the service is not queried.
@@ -8,7 +8,7 @@ import org.springframework.beans.BeansException;
  * @author zpf
  * @since 2.0.4
  */
-public class NoSuchServiceException extends BeansException {
+public class NoSuchServiceException extends NoSuchBeanDefinitionException {
 
     private static final long serialVersionUID = 922435911357767431L;
 
@@ -25,6 +25,7 @@ public class NoSuchServiceException extends BeansException {
 
     /**
      * Return the service name of the parameter that did not find the service bean.
+     *
      * @return the service name of the parameter that did not find the service bean.
      */
     public String getServiceName() {
@@ -33,6 +34,7 @@ public class NoSuchServiceException extends BeansException {
 
     /**
      * Return the conversion type of parameters for service beans that were not found.
+     *
      * @return the conversion type of parameters for service beans that were not found.
      */
     public Class<?> getRequiredType() {

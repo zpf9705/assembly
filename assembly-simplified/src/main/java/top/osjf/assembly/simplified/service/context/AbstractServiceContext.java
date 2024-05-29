@@ -18,17 +18,19 @@ import top.osjf.assembly.simplified.service.annotation.EnableServiceCollection2;
 import top.osjf.assembly.simplified.service.annotation.EnableServiceCollection3;
 import top.osjf.assembly.simplified.support.SmartContextRefreshed;
 import top.osjf.assembly.util.annotation.NotNull;
-import top.osjf.assembly.util.data.ClassMap;
-import top.osjf.assembly.util.data.ThreadSafeClassMap;
 import top.osjf.assembly.util.io.ScanUtils;
 import top.osjf.assembly.util.lang.CollectionUtils;
+import top.osjf.assembly.util.lang.ConvertUtils;
 import top.osjf.assembly.util.lang.ReflectUtils;
 import top.osjf.assembly.util.lang.StringUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Function;
 
 /**
  * The abstract help class for the service context.
@@ -70,7 +72,7 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
 
     private ApplicationContext context;
 
-    private final ClassMap<String, Object> contextMap = new ThreadSafeClassMap<>(16);
+    private final Map<String, Object> contextMap = new ConcurrentHashMap<>(16);
 
     //************************* Help classes ******************************
 
@@ -329,13 +331,30 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
     public <S> S getService(String serviceName, Class<S> requiredType) throws NoSuchServiceException {
         if (StringUtils.isBlank(serviceName)) throw new NullPointerException("ServiceName must not be null");
         if (requiredType == null) throw new NullPointerException("RequiredType must not be null");
-        S service = ServiceContextUtils.getService(serviceName, requiredType, context.getId(),
-                encodeServiceName -> contextMap.getValueOnClass(encodeServiceName, requiredType));
+        S service = ServiceContextUtils
+                .getService(serviceName, requiredType, context.getId(), getService(requiredType));
         if (service == null) {
             //Throw an exception that cannot be found.
             throw new NoSuchServiceException(serviceName, requiredType);
         }
         return service;
+    }
+
+    /**
+     * Return the {@link Function} of the parsing service.
+     *
+     * @param requiredType type the bean must match; can be an interface or superclass.
+     * @param <S>          types of required.
+     * @return an instance of the service.
+     */
+    <S> Function<String, S> getService(Class<S> requiredType) {
+        return encodeServiceName -> {
+            Object obj = contextMap.get(encodeServiceName);
+            if (obj == null) {
+                return null;
+            }
+            return ConvertUtils.convert(requiredType, obj);
+        };
     }
 
     @Override
@@ -366,7 +385,7 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
      *
      * @return service mapping cache.
      */
-    protected ClassMap<String, Object> getContextMap() {
+    protected Map<String, Object> getContextMap() {
         return contextMap;
     }
 
