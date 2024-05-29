@@ -8,7 +8,6 @@ import top.osjf.assembly.simplified.service.ServiceContextUtils;
 import top.osjf.assembly.simplified.service.annotation.EnableServiceCollection;
 import top.osjf.assembly.simplified.service.annotation.EnableServiceCollection2;
 import top.osjf.assembly.simplified.service.annotation.ServiceCollection;
-import top.osjf.assembly.util.data.ClassMap;
 import top.osjf.assembly.util.io.ScanUtils;
 import top.osjf.assembly.util.lang.ArrayUtils;
 import top.osjf.assembly.util.lang.CollectionUtils;
@@ -55,10 +54,9 @@ public class ClassesServiceContext extends AbstractServiceContext {
      *
      * @param contextMap Service name map , must not be {@literal null}.
      */
-    @SuppressWarnings("unchecked")
     public void addContextMap(Map<String, Object> contextMap) {
         Objects.requireNonNull(contextMap, "Setting contextMap no be null");
-        getContextMap().mergeMaps(contextMap);
+        getContextMap().putAll(contextMap);
     }
 
     @Override
@@ -100,7 +98,7 @@ public class ClassesServiceContext extends AbstractServiceContext {
             contextBean.addContextMap(beansMap);
         }
         Map<String, Object> temporary = new HashMap<>();
-        ClassMap<String, Object> contextMap = contextBean.getContextMap();
+        Map<String, Object> contextMap = contextBean.getContextMap();
         if (CollectionUtils.isNotEmpty(contextMap)) {
             contextMap.forEach((name, bean) -> {
                 String[] aliases = registry.getAliases(name);
