@@ -22,9 +22,8 @@ import java.util.function.Supplier;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.5
  */
+@SuppressWarnings("serial")
 public class MappedAnnotationAttributes extends AnnotationAttributes {
-
-    private static final long serialVersionUID = 1326994275618873618L;
 
     /**
      * Create a {@link MappedAnnotationAttributes} encapsulated map structure using {@link Map map}.
