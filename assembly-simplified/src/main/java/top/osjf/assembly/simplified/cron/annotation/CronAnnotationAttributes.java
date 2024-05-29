@@ -19,9 +19,8 @@ import java.util.Map;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.5
  */
+@SuppressWarnings("serial")
 public final class CronAnnotationAttributes extends MappedAnnotationAttributes {
-
-    private static final long serialVersionUID = 1326994275618873618L;
 
     /**
      * Create a {@link MappedAnnotationAttributes} encapsulated map structure using {@link Map map}.
