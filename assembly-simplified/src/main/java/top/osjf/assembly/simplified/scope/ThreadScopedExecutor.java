@@ -18,26 +18,22 @@ public class ThreadScopedExecutor extends ThreadPoolExecutor implements ThreadSc
     protected final Map<String, DestructionCallback> threadDestructionCallbacks = new LinkedHashMap<>(8);
 
     @Override
-    public void registerDestructionCallback(@NotNull String threadName,
+    public void registerDestructionCallback(@NotNull String name,
                                             @NotNull Runnable callback,
                                             @NotNull Runnable afterExecute) {
-        threadDestructionCallbacks.putIfAbsent(threadName, new DestructionCallback(callback, afterExecute));
+        threadDestructionCallbacks.putIfAbsent(name, new DestructionCallback(callback, afterExecute));
     }
 
     /**
      * The runtime of {@link #afterExecute(Runnable, Throwable)} after temporary execution is completed.
      */
     public static class DestructionCallback implements Runnable {
-        @NotNull
-        Runnable callback;
-        @NotNull
-        Runnable afterExecute;
-
+        @NotNull Runnable callback;
+        @NotNull Runnable afterExecute;
         public DestructionCallback(@NotNull Runnable callback, @NotNull Runnable afterExecute) {
             this.callback = callback;
             this.afterExecute = afterExecute;
         }
-
         @Override
         public void run() {
             callback.run();
@@ -70,6 +66,8 @@ public class ThreadScopedExecutor extends ThreadPoolExecutor implements ThreadSc
      *                        will wait for new tasks before terminating.
      * @param unit            the time unit for the {@code keepAliveTime} argument
      *                        tasks submitted by the {@code execute} method.
+     * @param queueCapacity   Queue capacity. An unbounded capacity does not increase the pool and therefore
+     *                        ignores the "max-size" property.
      * @throws IllegalArgumentException if one of the following holds:<br>
      *                                  {@code corePoolSize < 0}<br>
      *                                  {@code keepAliveTime < 0}<br>
