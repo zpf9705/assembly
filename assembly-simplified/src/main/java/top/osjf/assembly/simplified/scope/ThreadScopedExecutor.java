@@ -17,11 +17,12 @@ public class ThreadScopedExecutor extends ThreadPoolExecutor implements ThreadSc
      */
     protected final Map<String, DestructionCallback> threadDestructionCallbacks = new LinkedHashMap<>(8);
 
+    private final ThreadLocal<DestructionCallback> callbackThreadLocal = new ThreadLocal<>();
+
     @Override
-    public void registerDestructionCallback(@NotNull String name,
-                                            @NotNull Runnable callback,
+    public void registerDestructionCallback(@NotNull Runnable callback,
                                             @NotNull Runnable afterExecute) {
-        threadDestructionCallbacks.putIfAbsent(name, new DestructionCallback(callback, afterExecute));
+        callbackThreadLocal.set(new DestructionCallback(callback, afterExecute));
     }
 
     /**
@@ -43,11 +44,10 @@ public class ThreadScopedExecutor extends ThreadPoolExecutor implements ThreadSc
 
     @Override
     protected void afterExecute(Runnable r, Throwable t) {
-        String name = Thread.currentThread().getName();
-        DestructionCallback callback = threadDestructionCallbacks.get(name);
-        if (callback != null) {
+        DestructionCallback callback = callbackThreadLocal.get();
+        if (callback != null){
             callback.run();
-            threadDestructionCallbacks.remove(name);
+            callbackThreadLocal.remove();
         }
     }
 

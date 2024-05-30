@@ -52,7 +52,7 @@ public class ThreadScoped implements Scope {
 
     @Override
     public void registerDestructionCallback(@NotNull String name, @NotNull Runnable callback) {
-        registry.registerDestructionCallback(Thread.currentThread().getName(), callback, threadScope::remove);
+        registry.registerDestructionCallback(callback, threadScope::remove);
     }
 
     @Override

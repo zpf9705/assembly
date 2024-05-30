@@ -12,10 +12,9 @@ public interface ThreadScopedDestructionRegistry {
     /**
      * Register the given callback as to be executed after thread completion.
      *
-     * @param threadName   The name of the current thread.
      * @param callback     the callback to be executed for destruction.
      * @param afterExecute The runtime after the thread has completed execution.
      */
-    void registerDestructionCallback(@NotNull String threadName, @NotNull Runnable callback,
+    void registerDestructionCallback(@NotNull Runnable callback,
                                      @NotNull Runnable afterExecute);
 }
