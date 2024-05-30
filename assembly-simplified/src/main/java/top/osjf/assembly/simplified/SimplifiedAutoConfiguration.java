@@ -61,7 +61,8 @@ public class SimplifiedAutoConfiguration {
                 TimeUnit.SECONDS,
                 pool.getQueueCapacity()
         );
-        beanFactory.registerScope("thread", new ThreadScoped(executor));
+        executor.setThreadScoped(new ThreadScoped());
+        beanFactory.registerScope("thread", executor.getThreadScoped());
         return executor;
     }
 }

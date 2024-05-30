@@ -2,53 +2,30 @@ package top.osjf.assembly.simplified.scope;
 
 import top.osjf.assembly.util.annotation.NotNull;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.5
  */
-public class ThreadScopedExecutor extends ThreadPoolExecutor implements ThreadScopedDestructionRegistry {
+public class ThreadScopedExecutor extends ThreadPoolExecutor {
 
-    /**
-     * Map from attribute name String to destruction callback Runnable.
-     */
-    protected final Map<String, DestructionCallback> threadDestructionCallbacks = new LinkedHashMap<>(8);
+    private ThreadScoped threadScoped;
 
-    private final ThreadLocal<DestructionCallback> callbackThreadLocal = new ThreadLocal<>();
-
-    @Override
-    public void registerDestructionCallback(@NotNull Runnable callback,
-                                            @NotNull Runnable afterExecute) {
-        callbackThreadLocal.set(new DestructionCallback(callback, afterExecute));
+    public void setThreadScoped(ThreadScoped threadScoped) {
+        this.threadScoped = threadScoped;
     }
 
-    /**
-     * The runtime of {@link #afterExecute(Runnable, Throwable)} after temporary execution is completed.
-     */
-    public static class DestructionCallback implements Runnable {
-        @NotNull Runnable callback;
-        @NotNull Runnable afterExecute;
-        public DestructionCallback(@NotNull Runnable callback, @NotNull Runnable afterExecute) {
-            this.callback = callback;
-            this.afterExecute = afterExecute;
-        }
-        @Override
-        public void run() {
-            callback.run();
-            afterExecute.run();
-        }
+    public ThreadScoped getThreadScoped() {
+        return threadScoped;
     }
 
     @Override
     protected void afterExecute(Runnable r, Throwable t) {
-        DestructionCallback callback = callbackThreadLocal.get();
-        if (callback != null){
-            callback.run();
-            callbackThreadLocal.remove();
-        }
+        threadScoped.run();
     }
 
     /**

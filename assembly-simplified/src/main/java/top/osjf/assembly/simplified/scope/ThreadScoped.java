@@ -5,17 +5,18 @@ import org.springframework.beans.factory.config.Scope;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.lang.Nullable;
 import top.osjf.assembly.util.annotation.NotNull;
+import top.osjf.assembly.util.lang.CollectionUtils;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.5
  */
-public class ThreadScoped implements Scope {
-
-    private final ThreadScopedDestructionRegistry registry;
+public class ThreadScoped implements Scope ,Runnable{
 
     private final ThreadLocal<Map<String, Object>> threadScope =
             new NamedThreadLocal<Map<String, Object>>("ThreadScoped") {
@@ -25,9 +26,10 @@ public class ThreadScoped implements Scope {
                 }
             };
 
-    public ThreadScoped(ThreadScopedDestructionRegistry registry) {
-        this.registry = registry;
-    }
+    /**
+     * Map from attribute name String to destruction callback Runnable.
+     */
+    private final ThreadLocal<List<Runnable>> callbackThreadLocal = ThreadLocal.withInitial(LinkedList::new);
 
     @Override
     @NotNull
@@ -52,7 +54,8 @@ public class ThreadScoped implements Scope {
 
     @Override
     public void registerDestructionCallback(@NotNull String name, @NotNull Runnable callback) {
-        registry.registerDestructionCallback(callback, threadScope::remove);
+        List<Runnable> destructionCallbacks = callbackThreadLocal.get();
+        destructionCallbacks.add(callback);
     }
 
     @Override
@@ -64,5 +67,17 @@ public class ThreadScoped implements Scope {
     @Override
     public String getConversationId() {
         return Thread.currentThread().getName();
+    }
+
+    @Override
+    public void run() {
+        List<Runnable> destructionCallbacks = callbackThreadLocal.get();
+        if (CollectionUtils.isNotEmpty(destructionCallbacks)){
+            for (Runnable destructionCallback : destructionCallbacks) {
+                destructionCallback.run();
+            }
+            callbackThreadLocal.remove();
+        }
+        threadScope.remove();
     }
 }
