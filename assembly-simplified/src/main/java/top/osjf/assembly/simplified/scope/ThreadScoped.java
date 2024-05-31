@@ -16,7 +16,16 @@ import java.util.Map;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.5
  */
-public class ThreadScoped implements Scope ,Runnable{
+public class ThreadScoped implements Scope {
+
+    private final List<ThreadScopedExecutor> executors;
+
+    public ThreadScoped(List<ThreadScopedExecutor> executors) {
+        this.executors = executors;
+        if (CollectionUtils.isNotEmpty(executors)) {
+            executors.forEach(e -> e.setAfterExecute(this::clear));
+        }
+    }
 
     private final ThreadLocal<Map<String, Object>> threadScope =
             new NamedThreadLocal<Map<String, Object>>("ThreadScoped") {
@@ -34,6 +43,7 @@ public class ThreadScoped implements Scope ,Runnable{
     @Override
     @NotNull
     public Object get(@NotNull String name, @NotNull ObjectFactory<?> objectFactory) {
+        checkScope();
         Map<String, Object> scope = this.threadScope.get();
         // NOTE: Do NOT modify the following to use Map::computeIfAbsent. For details,
         // see https://github.com/spring-projects/spring-framework/issues/25801.
@@ -69,10 +79,19 @@ public class ThreadScoped implements Scope ,Runnable{
         return Thread.currentThread().getName();
     }
 
-    @Override
-    public void run() {
+    void checkScope() {
+        if (CollectionUtils.isEmpty(executors)) {
+            throw new IllegalStateException();
+        }
+        if (executors.stream().noneMatch(e ->
+                Thread.currentThread().getName().startsWith(e.getThreadNamePrefix()))) {
+            throw new IllegalStateException();
+        }
+    }
+
+    public void clear() {
         List<Runnable> destructionCallbacks = callbackThreadLocal.get();
-        if (CollectionUtils.isNotEmpty(destructionCallbacks)){
+        if (CollectionUtils.isNotEmpty(destructionCallbacks)) {
             for (Runnable destructionCallback : destructionCallbacks) {
                 destructionCallback.run();
             }
