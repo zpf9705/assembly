@@ -24,7 +24,6 @@ import java.lang.annotation.*;
  * @see org.springframework.web.context.request.RequestScope
  * @see org.springframework.web.context.annotation.RequestScope
  * @see org.springframework.context.support.SimpleThreadScope
- * @see ThreadScoped
  * @see ThreadScope
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.5
