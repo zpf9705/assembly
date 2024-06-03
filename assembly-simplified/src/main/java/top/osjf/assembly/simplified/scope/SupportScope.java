@@ -25,6 +25,11 @@ import java.lang.annotation.*;
  * {@link org.springframework.beans.factory.config.Scope} and compare it with
  * the {@code thread} of this annotation.
  *
+ * <p>If you use {@link EnableRegisterSupportScope} to provide relevant
+ * {@link org.springframework.beans.factory.config.Scope}, it can automatically
+ * register relevant scope support for you.
+ *
+ * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @see org.springframework.web.context.support.ServletContextScope
  * @see org.springframework.web.context.annotation.ApplicationScope
  * @see org.springframework.web.context.request.SessionScope
@@ -33,7 +38,6 @@ import java.lang.annotation.*;
  * @see org.springframework.web.context.annotation.RequestScope
  * @see org.springframework.context.support.SimpleThreadScope
  * @see SupportScope
- * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.5
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
@@ -45,6 +49,7 @@ public @interface SupportScope {
     /**
      * Alias for {@link Scope#proxyMode}.
      * <p>Defaults to {@link ScopedProxyMode#TARGET_CLASS}.
+     *
      * @return Enumerates the various scoped-proxy options.
      */
     @AliasFor(annotation = Scope.class)
