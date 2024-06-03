@@ -1,5 +1,6 @@
 package top.osjf.assembly.simplified.scope;
 
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.core.annotation.AliasFor;
@@ -16,6 +17,12 @@ import java.lang.annotation.*;
  *
  * <p>{@code @ThreadScope} may be used as a meta-annotation to create custom
  * composed annotations.
+ *
+ * <p>At present, there is no actual scope processing. If you need it, you can
+ * use {@link ConfigurableListableBeanFactory#registerScope(String,
+ * org.springframework.beans.factory.config.Scope)} to register a
+ * {@link org.springframework.beans.factory.config.Scope} and compare it with
+ * the {@code thread} of this annotation.
  *
  * @see org.springframework.web.context.support.ServletContextScope
  * @see org.springframework.web.context.annotation.ApplicationScope
