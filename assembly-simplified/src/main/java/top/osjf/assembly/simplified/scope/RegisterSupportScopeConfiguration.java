@@ -36,6 +36,6 @@ public class RegisterSupportScopeConfiguration implements ImportAware, BeanFacto
 
     @Override
     public void postProcessBeanFactory(@NotNull ConfigurableListableBeanFactory beanFactory) throws BeansException {
-        beanFactory.registerScope("support", scope);
+        beanFactory.registerScope(SupportScope.SCOPE_NAME, scope);
     }
 }
