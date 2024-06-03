@@ -22,6 +22,7 @@ import java.lang.annotation.*;
  * bean registration services, such as setting properties for proxy beans
  * annotated with {@link top.osjf.assembly.simplified.sdk.annotation.Sdk}.
  *
+ * @see BeanPropertyUtils
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.5
  */
