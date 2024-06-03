@@ -136,6 +136,7 @@ public @interface BeanProperty {
      * <p>The explanation comes from {@link AbstractBeanDefinition#setDescription(String)}.
      *
      * @return A bean with its description content,defaults blank.
+     * @see org.springframework.context.annotation.Description
      */
     String description() default "";
 }
