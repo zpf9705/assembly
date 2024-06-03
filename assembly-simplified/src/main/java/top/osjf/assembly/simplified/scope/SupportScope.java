@@ -43,8 +43,13 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Scope("support")
+@Scope(SupportScope.SCOPE_NAME)
 public @interface SupportScope {
+
+    /**
+     * {@link Scope} for {@link SupportScope} provider scope name.
+     */
+    String SCOPE_NAME = "support";
 
     /**
      * Alias for {@link Scope#proxyMode}.
