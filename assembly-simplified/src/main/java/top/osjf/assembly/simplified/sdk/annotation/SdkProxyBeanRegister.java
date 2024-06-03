@@ -1,7 +1,7 @@
 package top.osjf.assembly.simplified.sdk.annotation;
 
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
-import org.springframework.beans.factory.annotation.Autowire;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -53,6 +53,11 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
     @Override
     public BeanDefinitionHolder createBeanDefinitionHolder(AnnotationAttributes markedAnnotationAttributes,
                                                            AnnotationMetadata markedAnnotationMetadata) {
+        return createBeanDefinitionHolder0(markedAnnotationAttributes, markedAnnotationMetadata);
+    }
+
+    private BeanDefinitionHolder createBeanDefinitionHolder0(AnnotationAttributes markedAnnotationAttributes,
+                                                             AnnotationMetadata markedAnnotationMetadata) {
         String className = markedAnnotationMetadata.getClassName();
         ProxyModel model = markedAnnotationAttributes.getEnum("model");
         BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(
@@ -61,46 +66,19 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
                 getRequestHost(markedAnnotationAttributes.getString("hostProperty")));
         builder.addPropertyValue("proxyModel", model);
         builder.addPropertyValue("type", className);
-        //@Since 2.2.5 Use @BeanProperty instead.
         AnnotationAttributes beanPropertyAttributes = markedAnnotationAttributes
                 .getAnnotation("sdkProxyBeanProperty");
         String[] names = beanPropertyAttributes.getStringArray("name");
-        //@since 2.0.7
         String beanName = SdkProxyBeanUtils.getTargetBeanName(BeanPropertyUtils.getBeanName(names), className);
         String[] alisaNames = BeanPropertyUtils.getAlisaNames(names);
-        Autowire autowire = beanPropertyAttributes.getEnum("autowire");
-        //@since 2.0.9
-        String initMethod = beanPropertyAttributes.getString("initMethod");
-        String destroyMethod = beanPropertyAttributes.getString("destroyMethod");
-        String scope =
-                BeanPropertyUtils.getMaybeAnnotationScope(markedAnnotationMetadata,
-                        beanPropertyAttributes.getString("scope"));
-        int role =
-                BeanPropertyUtils.getMaybeAnnotationRole(markedAnnotationMetadata,
-                        beanPropertyAttributes.<Integer>getNumber("role"));
-        boolean lazyInit =
-                BeanPropertyUtils.getMaybeAnnotationLazy(
-                        markedAnnotationMetadata,
-                        beanPropertyAttributes.getBoolean("lazyInit"));
-        String description =
-                BeanPropertyUtils.getMaybeAnnotationDescription(markedAnnotationMetadata,
-                        beanPropertyAttributes.getString("description"));
-        //@Since 2.2.5
-        boolean autowireCandidate = beanPropertyAttributes.getBoolean("autowireCandidate");
-        builder.setScope(scope);
-        builder.setAutowireMode(autowire.value());
-        if (StringUtils.isNotBlank(initMethod)) builder.setInitMethodName(initMethod);
-        if (StringUtils.isNotBlank(destroyMethod)) builder.setDestroyMethodName(destroyMethod);
-        builder.setRole(role);
-        builder.setLazyInit(lazyInit);
-        if (StringUtils.isNotBlank(description)) builder.getBeanDefinition().setDescription(description);
-        builder.getBeanDefinition().setAutowireCandidate(autowireCandidate);
-        return SdkProxyBeanUtils.createBeanDefinitionHolderDistinguishScope(builder,
-                getBeanDefinitionRegistry(),
-                scope,
-                b -> b.addConstructorArgValue(className),
+        BeanDefinition beanDefinition =
+                BeanPropertyUtils.fullBeanDefinition(builder, markedAnnotationMetadata, beanPropertyAttributes);
+        return SdkProxyBeanUtils.createBeanDefinitionHolderDistinguishScope(
+                beanDefinition,
                 beanName,
-                alisaNames);
+                alisaNames,
+                getBeanDefinitionRegistry(),
+                () -> builder.addConstructorArgValue(className));
     }
 
     @Override

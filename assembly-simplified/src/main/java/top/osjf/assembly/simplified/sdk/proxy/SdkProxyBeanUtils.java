@@ -10,7 +10,6 @@ import top.osjf.assembly.util.lang.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -36,30 +35,27 @@ public abstract class SdkProxyBeanUtils {
      * {@link BeanDefinitionHolder}. If it is a special scope outside of this range,
      * a proxy bean will be created first to meet the special scope.
      *
-     * @param builder                                     The builder of {@link BeanDefinitionBuilder}.
-     * @param scope                                       The scope of the settings.
-     * @param registry                                    the bean definition registry.
-     * @param noRoutineScopeBeanDefinitionBuilderConsumer When the scope does not satisfy {@link #ROUTINE_SCOPES},
-     *                                                    make some special consumption actions for
-     *                                                    {@link BeanDefinitionBuilder}.
-     * @param beanName                                    The name of the proxy bean.
-     * @param alisa                                       The alias set of proxy beans.
+     * @param definition                     The builder of {@link BeanDefinitionBuilder}.
+     * @param beanName                       The name of the proxy bean.
+     * @param alisa                          The alias set of proxy beans.
+     * @param registry                       the bean definition registry.
+     * @param beanDefinitionScopeProxyUpdate The custom {@link BeanDefinition} update action
+     *                                       given when the currently registered bean is a
+     *                                       scope that needs to be proxied.
      * @return The information registration body of {@link BeanDefinition}.
      * @see ScopedProxyUtils#createScopedProxy(BeanDefinitionHolder, BeanDefinitionRegistry, boolean)
      */
-    public static BeanDefinitionHolder createBeanDefinitionHolderDistinguishScope(BeanDefinitionBuilder builder,
-                                                                                  BeanDefinitionRegistry registry,
-                                                                                  String scope,
-                                                                                  Consumer<BeanDefinitionBuilder>
-                                                                                          noRoutineScopeBeanDefinitionBuilderConsumer,
+    public static BeanDefinitionHolder createBeanDefinitionHolderDistinguishScope(BeanDefinition definition,
                                                                                   String beanName,
-                                                                                  String[] alisa) {
-        if (ROUTINE_SCOPES.stream().anyMatch(sc -> Objects.equals(sc, scope))) {
-            return new BeanDefinitionHolder(builder.getBeanDefinition(), beanName, alisa);
+                                                                                  String[] alisa,
+                                                                                  BeanDefinitionRegistry registry,
+                                                                                  Runnable beanDefinitionScopeProxyUpdate) {
+        BeanDefinitionHolder holder = new BeanDefinitionHolder(definition, beanName, alisa);
+        if (ROUTINE_SCOPES.stream().anyMatch(sc -> Objects.equals(sc, definition.getScope()))) {
+            return holder;
         }
-        noRoutineScopeBeanDefinitionBuilderConsumer.accept(builder);
-        return ScopedProxyUtils.createScopedProxy(new BeanDefinitionHolder(builder.getBeanDefinition(),
-                beanName, alisa), registry, true);
+        if (beanDefinitionScopeProxyUpdate != null) beanDefinitionScopeProxyUpdate.run();
+        return ScopedProxyUtils.createScopedProxy(holder, registry, true);
     }
 
     /**

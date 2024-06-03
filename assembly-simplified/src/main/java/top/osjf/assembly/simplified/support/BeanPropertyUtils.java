@@ -210,8 +210,9 @@ public abstract class BeanPropertyUtils {
      * @param builder                The construction class of {@link BeanDefinition}.
      * @param annotationMetadata     Annotate metadata information.
      * @param beanPropertyAttributes Encapsulation of {@link BeanProperty}'s properties.
+     * @return A BeanDefinition describes a bean instance after full use {@link BeanProperty}.
      */
-    public static void fullBeanDefinition(BeanDefinitionBuilder builder,
+    public static BeanDefinition fullBeanDefinition(BeanDefinitionBuilder builder,
                                           AnnotationMetadata annotationMetadata,
                                           AnnotationAttributes beanPropertyAttributes) {
         Autowire autowire = beanPropertyAttributes.getEnum(AUTOWIRE);
@@ -238,5 +239,6 @@ public abstract class BeanPropertyUtils {
         //—————————————————————————— BeanDefinition attributes ——————————————————————————
         beanDefinition.setAutowireCandidate(autowireCandidate);
         if (StringUtils.isNotBlank(description)) beanDefinition.setDescription(description);
+        return beanDefinition;
     }
 }
