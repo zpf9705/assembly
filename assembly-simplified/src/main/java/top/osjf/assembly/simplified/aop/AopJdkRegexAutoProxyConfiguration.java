@@ -9,11 +9,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportAware;
 import org.springframework.context.annotation.Role;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
+import top.osjf.assembly.simplified.support.MappedAnnotationAttributes;
 import top.osjf.assembly.util.annotation.NotNull;
-
-import java.util.Objects;
 
 /**
  * By obtaining the rules provided by the {@link EnableAopJdkRegexAutoProxy}
@@ -32,11 +30,8 @@ public class AopJdkRegexAutoProxyConfiguration implements ImportAware {
 
     @Override
     public void setImportMetadata(@NotNull AnnotationMetadata metadata) {
-        AnnotationAttributes attributes =
-                AnnotationAttributes.fromMap(metadata
-                        .getAnnotationAttributes(EnableAopJdkRegexAutoProxy.class.getName()));
-        Objects.requireNonNull(attributes, EnableAopJdkRegexAutoProxy.class.getName()
-                + " analysis failed.");
+        MappedAnnotationAttributes attributes = MappedAnnotationAttributes.of(metadata
+                .getAnnotationAttributes(EnableAopJdkRegexAutoProxy.class.getCanonicalName()));
         patten = attributes.getString("patten");
     }
 
