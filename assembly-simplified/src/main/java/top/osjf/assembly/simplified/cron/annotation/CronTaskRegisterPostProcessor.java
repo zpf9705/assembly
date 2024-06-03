@@ -13,15 +13,13 @@ import org.springframework.context.annotation.ImportAware;
 import org.springframework.context.annotation.Role;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
 import top.osjf.assembly.simplified.cron.CronTaskManager;
+import top.osjf.assembly.simplified.support.MappedAnnotationAttributes;
 import top.osjf.assembly.simplified.support.SmartContextRefreshed;
 import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
-
-import java.util.Objects;
 
 /**
  * Create a post processor for custom bean elements.
@@ -66,11 +64,8 @@ public class CronTaskRegisterPostProcessor extends SmartContextRefreshed impleme
 
     @Override
     public void setImportMetadata(@NotNull AnnotationMetadata metadata) {
-        AnnotationAttributes attributes =
-                AnnotationAttributes.fromMap(metadata
-                        .getAnnotationAttributes(EnableCronTaskRegister2.class.getName()));
-        Objects.requireNonNull(attributes, EnableCronTaskRegister2.class.getName()
-                + " analysis failed.");
+        MappedAnnotationAttributes attributes = MappedAnnotationAttributes.of(metadata
+                .getAnnotationAttributes(EnableCronTaskRegister2.class.getCanonicalName()));
         noMethodDefaultStart = attributes.getBoolean("noMethodDefaultStart");
     }
 
