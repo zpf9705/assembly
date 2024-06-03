@@ -11,7 +11,9 @@ import top.osjf.assembly.util.lang.CollectionUtils;
 import top.osjf.assembly.util.lang.ConvertUtils;
 
 import java.lang.annotation.Annotation;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Map;
 
 /**
  * The relevant general method tool class for {@link BeanProperty}.
@@ -74,7 +76,7 @@ public abstract class BeanPropertyUtils {
         }
         MergedAnnotation<Annotation> mergedAnnotation = annotationMetadata.getAnnotations()
                 .stream()
-                .filter(m -> m.getType().getAnnotation(Scope.class) != null)
+                .filter(m -> m.getType().isAnnotationPresent(Scope.class))
                 .min((o1, o2) -> {
                     int o1_index = o1.getAggregateIndex();
                     int o2_index = o2.getAggregateIndex();

@@ -68,14 +68,23 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
         //@since 2.0.7
         String beanName = SdkProxyBeanUtils.getTargetBeanName(BeanPropertyUtils.getBeanName(names), className);
         String[] alisaNames = BeanPropertyUtils.getAlisaNames(names);
-        String scope = beanPropertyAttributes.getString("scope");
         Autowire autowire = beanPropertyAttributes.getEnum("autowire");
         //@since 2.0.9
         String initMethod = beanPropertyAttributes.getString("initMethod");
         String destroyMethod = beanPropertyAttributes.getString("destroyMethod");
-        int role = beanPropertyAttributes.<Integer>getNumber("role");
-        boolean lazyInit = beanPropertyAttributes.getBoolean("lazyInit");
-        String description = beanPropertyAttributes.getString("description");
+        String scope =
+                BeanPropertyUtils.getMaybeAnnotationScope(markedAnnotationMetadata,
+                        beanPropertyAttributes.getString("scope"));
+        int role =
+                BeanPropertyUtils.getMaybeAnnotationRole(markedAnnotationMetadata,
+                        beanPropertyAttributes.<Integer>getNumber("role"));
+        boolean lazyInit =
+                BeanPropertyUtils.getMaybeAnnotationLazy(
+                        markedAnnotationMetadata,
+                        beanPropertyAttributes.getBoolean("lazyInit"));
+        String description =
+                BeanPropertyUtils.getMaybeAnnotationDescription(markedAnnotationMetadata,
+                        beanPropertyAttributes.getString("description"));
         //@Since 2.2.5
         boolean autowireCandidate = beanPropertyAttributes.getBoolean("autowireCandidate");
         builder.setScope(scope);
