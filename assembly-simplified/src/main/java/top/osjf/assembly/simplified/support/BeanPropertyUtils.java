@@ -1,14 +1,19 @@
 package top.osjf.assembly.simplified.support;
 
+import org.springframework.beans.factory.annotation.Autowire;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.context.annotation.Description;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Role;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.type.AnnotationMetadata;
 import top.osjf.assembly.util.lang.ArrayUtils;
 import top.osjf.assembly.util.lang.CollectionUtils;
 import top.osjf.assembly.util.lang.ConvertUtils;
+import top.osjf.assembly.util.lang.StringUtils;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
@@ -22,6 +27,46 @@ import java.util.Map;
  * @since 2.2.5
  */
 public abstract class BeanPropertyUtils {
+
+    /**
+     * @see BeanProperty#autowire()
+     */
+    private static final String AUTOWIRE = "autowire";
+
+    /**
+     * @see BeanProperty#autowireCandidate()
+     */
+    private static final String AUTOWIRE_CANDIDATE = "autowireCandidate";
+
+    /**
+     * @see BeanProperty#initMethod()
+     */
+    private static final String INIT_METHOD = "initMethod";
+
+    /**
+     * @see BeanProperty#destroyMethod()
+     */
+    private static final String DESTROY_METHOD = "destroyMethod";
+
+    /**
+     * @see BeanProperty#scope()
+     */
+    private static final String SCOPE = "scope";
+
+    /**
+     * @see BeanProperty#role()
+     */
+    private static final String ROLE = "role";
+
+    /**
+     * @see BeanProperty#lazyInit()
+     */
+    private static final String LAZY = "lazyInit";
+
+    /**
+     * @see BeanProperty#description()
+     */
+    private static final String DESCRIPTION = "description";
 
     /**
      * Following the processing specification of {@link org.springframework.context.annotation.Bean},
@@ -156,5 +201,42 @@ public abstract class BeanPropertyUtils {
             return defaultValue;
         }
         return ConvertUtils.convert(valueType, annotationAttributes.get("value"));
+    }
+
+    /**
+     * Fill {@link BeanProperty} with the relevant properties of {@link BeanDefinition} and
+     * call the relevant methods for building the class.
+     *
+     * @param builder                The construction class of {@link BeanDefinition}.
+     * @param annotationMetadata     Annotate metadata information.
+     * @param beanPropertyAttributes Encapsulation of {@link BeanProperty}'s properties.
+     */
+    public static void fullBeanDefinition(BeanDefinitionBuilder builder,
+                                          AnnotationMetadata annotationMetadata,
+                                          AnnotationAttributes beanPropertyAttributes) {
+        Autowire autowire = beanPropertyAttributes.getEnum(AUTOWIRE);
+        boolean autowireCandidate = beanPropertyAttributes.getBoolean(AUTOWIRE_CANDIDATE);
+        String initMethod = beanPropertyAttributes.getString(INIT_METHOD);
+        String destroyMethod = beanPropertyAttributes.getString(DESTROY_METHOD);
+        String scope = getMaybeAnnotationScope(annotationMetadata,
+                beanPropertyAttributes.getString(SCOPE));
+        int role = getMaybeAnnotationRole(annotationMetadata,
+                beanPropertyAttributes.<Integer>getNumber(ROLE));
+        boolean lazyInit = getMaybeAnnotationLazy(annotationMetadata,
+                beanPropertyAttributes.getBoolean(LAZY));
+        String description = getMaybeAnnotationDescription(annotationMetadata,
+                beanPropertyAttributes.getString(DESCRIPTION));
+        //—————————————————————————— General attributes ——————————————————————————
+        builder.setScope(scope);
+        builder.setAutowireMode(autowire.value());
+        if (StringUtils.isNotBlank(initMethod)) builder.setInitMethodName(initMethod);
+        if (StringUtils.isNotBlank(destroyMethod)) builder.setDestroyMethodName(destroyMethod);
+        builder.setRole(role);
+        builder.setLazyInit(lazyInit);
+        //—————————————————————————— Pre inspection ——————————————————————————
+        BeanDefinition beanDefinition = builder.getBeanDefinition();
+        //—————————————————————————— BeanDefinition attributes ——————————————————————————
+        beanDefinition.setAutowireCandidate(autowireCandidate);
+        if (StringUtils.isNotBlank(description)) beanDefinition.setDescription(description);
     }
 }
