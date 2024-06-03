@@ -32,6 +32,18 @@ import java.lang.annotation.*;
 public @interface BeanProperty {
 
     /**
+     * Constant for the default scope name: {@code ""}, equivalent to singleton
+     * status unless overridden from a parent bean definition (if applicable).
+     */
+    String SCOPE_DEFAULT = "";
+
+    /**
+     * Role hint indicating that a {@code BeanDefinition} is a major part
+     * of the application. Typically corresponds to a user-defined bean.
+     */
+    int ROLE_APPLICATION = 0;
+
+    /**
      * @return {@code org.springframework.context.annotation.Bean#value()}
      */
     @AliasFor(annotation = Bean.class)
@@ -86,7 +98,7 @@ public @interface BeanProperty {
      * @see org.springframework.web.context.annotation.SessionScope
      * @see org.springframework.web.context.annotation.ApplicationScope
      */
-    String scope() default AbstractBeanDefinition.SCOPE_DEFAULT;
+    String scope() default SCOPE_DEFAULT;
 
     /**
      * Set the role hint for this {@code BeanDefinition}.
@@ -118,7 +130,7 @@ public @interface BeanProperty {
      * @see BeanDefinition#ROLE_INFRASTRUCTURE
      * @see BeanDefinition#ROLE_SUPPORT
      */
-    int role() default BeanDefinition.ROLE_APPLICATION;
+    int role() default ROLE_APPLICATION;
 
     /**
      * Set whether this bean should be lazily initialized.
