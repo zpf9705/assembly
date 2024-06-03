@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportAware;
 import org.springframework.context.annotation.Role;
 import org.springframework.core.type.AnnotationMetadata;
-import top.osjf.assembly.simplified.cron.annotation.EnableCronTaskRegister2;
 import top.osjf.assembly.simplified.service.ServiceContextUtils;
 import top.osjf.assembly.simplified.service.context.ClassesServiceContext;
 import top.osjf.assembly.simplified.service.context.ServiceContext;
