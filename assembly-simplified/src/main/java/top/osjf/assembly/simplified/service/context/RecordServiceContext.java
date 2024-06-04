@@ -52,7 +52,7 @@ public class RecordServiceContext extends AbstractServiceContext implements Init
     public <S> S getService(String serviceName, Class<S> requiredType) throws NoSuchServiceException {
         ApplicationContext applicationContext = getApplicationContext();
         for (String name :
-                ServiceContextUtils.getLinkedServiceNames(serviceName, requiredType, applicationContext.getId())) {
+                ServiceContextUtils.getCandidateServiceNames(serviceName, requiredType, applicationContext.getId())) {
             try {
                 return applicationContext.getBean(name, requiredType);
             } catch (BeansException e) {
