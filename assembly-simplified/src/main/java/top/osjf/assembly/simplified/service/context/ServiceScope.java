@@ -38,6 +38,13 @@ public class ServiceScope implements Scope, DisposableBean {
     /*** placeholder for {@link #getConversationId()}*/
     private final String uniqueId = UUID.randomUUID().toString();
 
+    /**
+     * An empty construct carries a hook function that performs a destroy callback.
+     */
+    public ServiceScope() {
+        Runtime.getRuntime().addShutdownHook(new Thread(this::destroy));
+    }
+
     @Override
     @NotNull
     public Object get(@NotNull String name, @NotNull ObjectFactory<?> objectFactory) {
@@ -74,11 +81,9 @@ public class ServiceScope implements Scope, DisposableBean {
 
     @Override
     public void destroy() {
-        synchronized (this.destructionCallbacks) {
-            for (Runnable runnable : this.destructionCallbacks) {
-                runnable.run();
-            }
-            this.destructionCallbacks.clear();
+        for (Runnable runnable : this.destructionCallbacks) {
+            runnable.run();
         }
+        this.destructionCallbacks.clear();
     }
 }
