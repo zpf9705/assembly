@@ -32,8 +32,8 @@ public class RegisterScopeConfiguration implements ImportAware, BeanFactoryPostP
     public void setImportMetadata(@NotNull AnnotationMetadata importMetadata) {
         MappedAnnotationAttributes attributes = MappedAnnotationAttributes.of(
                 importMetadata.getAnnotationAttributes(EnableRegisterScope.class.getCanonicalName()));
-        type = attributes.getClass("value");
         scopeName = attributes.getString("scopeName");
+        type = attributes.getClass("scopeType");
     }
 
     @Override
