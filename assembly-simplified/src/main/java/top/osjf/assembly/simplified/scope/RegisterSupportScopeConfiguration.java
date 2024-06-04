@@ -24,18 +24,17 @@ import top.osjf.assembly.util.lang.ReflectUtils;
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 public class RegisterSupportScopeConfiguration implements ImportAware, BeanFactoryPostProcessor {
 
-    private Scope scope;
+    private Class<? extends Scope> type;
 
     @Override
     public void setImportMetadata(@NotNull AnnotationMetadata importMetadata) {
-        Class<? extends Scope> type = MappedAnnotationAttributes.of(importMetadata
-                        .getAnnotationAttributes(EnableRegisterSupportScope.class.getCanonicalName()))
+        type = MappedAnnotationAttributes.of(
+                        importMetadata.getAnnotationAttributes(EnableRegisterSupportScope.class.getCanonicalName()))
                 .getClass("value");
-        scope = ReflectUtils.newInstance(type);
     }
 
     @Override
     public void postProcessBeanFactory(@NotNull ConfigurableListableBeanFactory beanFactory) throws BeansException {
-        beanFactory.registerScope(SupportScope.SCOPE_NAME, scope);
+        beanFactory.registerScope(SupportScope.SCOPE_NAME, ReflectUtils.newInstance(type));
     }
 }
