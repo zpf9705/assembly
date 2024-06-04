@@ -3,6 +3,7 @@ package top.osjf.assembly.simplified.service.context;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.boot.SpringApplication;
@@ -31,6 +32,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * The abstract help class for the service context.
@@ -102,6 +105,11 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
 
         private static final List<String> recordBeanNames = new CopyOnWriteArrayList<>();
 
+        /*** Support custom editing of scope collections for bean names.*/
+        private final List<String> scopes = Stream.of(BeanDefinition.SCOPE_SINGLETON,
+                BeanDefinition.SCOPE_PROTOTYPE, AbstractBeanDefinition.SCOPE_DEFAULT)
+                .collect(Collectors.toList());
+
         public ServiceContextBeanNameGenerator(String applicationId) {
             this.applicationId = applicationId;
         }
@@ -130,7 +138,7 @@ public abstract class AbstractServiceContext extends SmartContextRefreshed imple
 
             //Service collection only accepts default singletons
             String scope = definition.getScope();
-            if (!BeanDefinition.SCOPE_SINGLETON.equals(scope)) {
+            if (!scopes.contains(scope)) {
                 beanName = super.generateBeanName(definition, registry);
 
             } else {
