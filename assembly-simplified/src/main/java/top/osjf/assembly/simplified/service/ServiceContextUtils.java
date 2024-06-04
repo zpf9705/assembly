@@ -41,7 +41,7 @@ public final class ServiceContextUtils {
     private static final String SERVICE_COLLECTION_BEAN_SIGNS = "@a.s.proxy";
 
     /*** The name identification suffix of this service management proxy class.@since 2.2.5*/
-    public static final String SERVICE_SCOPE = "SERVICE_SCOPE";
+    public static final String SERVICE_SCOPE = "service";
 
     /*** Instantiation is still not supported.*/
     private ServiceContextUtils() {
