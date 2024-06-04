@@ -12,6 +12,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Help class on context collection tools.
@@ -240,17 +241,21 @@ public final class ServiceContextUtils {
     }
 
     /**
+     * Returns a collection of names for candidate retrieval services.
+     *
      * @param serviceName   The service name passed in.
      * @param requiredType  The type that needs to be converted.
      * @param applicationId Application ID.
-     * @return linked names.
+     * @return candidate service names.
+     * @since 2.2.5
      */
-    public static List<String> getLinkedServiceNames(String serviceName, Class<?> requiredType, String applicationId) {
-        List<String> linkedNames = new LinkedList<>();
-        linkedNames.add(serviceName);
-        linkedNames.add(formatId(requiredType, serviceName, applicationId));
-        linkedNames.add(formatAlisa(requiredType, serviceName, applicationId));
-        return linkedNames;
+    public static List<String> getCandidateServiceNames(String serviceName, Class<?> requiredType, String applicationId) {
+        return Stream.of(
+                formatId(requiredType, serviceName, applicationId),
+                formatAlisa(requiredType, serviceName, applicationId),
+                //As the final option
+                serviceName
+        ).collect(Collectors.toList());
     }
 
     /**
