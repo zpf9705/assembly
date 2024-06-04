@@ -17,6 +17,9 @@ import top.osjf.assembly.util.lang.StringUtils;
 import java.util.Objects;
 
 /**
+ * The import of annotation {@link EnableRegisterScope} automatically
+ * configures the class.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.5
  */
