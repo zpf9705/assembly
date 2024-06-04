@@ -37,6 +37,7 @@ import java.lang.annotation.*;
  * @see org.springframework.web.context.request.RequestScope
  * @see org.springframework.web.context.annotation.RequestScope
  * @see org.springframework.context.support.SimpleThreadScope
+ * @see EnableRegisterSupportScope
  * @see SupportScope
  * @since 2.2.5
  */
