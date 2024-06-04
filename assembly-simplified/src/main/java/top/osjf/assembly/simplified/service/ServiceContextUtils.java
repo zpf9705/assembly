@@ -39,6 +39,9 @@ public final class ServiceContextUtils {
     /*** The name identification suffix of this service management proxy class.*/
     private static final String SERVICE_COLLECTION_BEAN_SIGNS = "@a.s.proxy";
 
+    /*** The name identification suffix of this service management proxy class.@since 2.2.5*/
+    public static final String SERVICE_SCOPE = "SERVICE_SCOPE";
+
     /*** Instantiation is still not supported.*/
     private ServiceContextUtils() {
     }
@@ -50,6 +53,7 @@ public final class ServiceContextUtils {
      * Encode the ID name based on the application ID.
      * Priority should be given to using service name encoding, followed
      * by using alias name encoding.
+     *
      * @param serviceName   The service name passed in.
      * @param requiredType  The type that needs to be converted.
      * @param applicationId Application ID.
@@ -87,6 +91,7 @@ public final class ServiceContextUtils {
      * needs to be created in a timely manner.
      * When the above viewpoint is met, create a {@link ClassesServiceContext}
      * and return it as a singleton object.
+     *
      * @param type    The type of service selected.
      * @param context Known service context.
      * @return The service context that has been analyzed.
@@ -100,6 +105,7 @@ public final class ServiceContextUtils {
 
     /**
      * Retrieve the class object based on its name.
+     *
      * @param className Class#getName.
      * @return Class Object.
      */
@@ -120,6 +126,7 @@ public final class ServiceContextUtils {
      * objects based on known class objects.
      * Contains abstract classes or interfaces that carry
      * {@link ServiceCollection} at all levels.
+     *
      * @param clazz Known class object.
      * @return Get the result list.
      */
@@ -203,6 +210,7 @@ public final class ServiceContextUtils {
      *     <li>Interface or abstract class.</li>
      *     <li>Carry {@link ServiceCollection}.</li>
      * </ul>
+     *
      * @param clazz Known class object.
      * @return if {@code true} is collection service,otherwise.
      */
@@ -219,6 +227,7 @@ public final class ServiceContextUtils {
      * Determine whether it is a bean collected by the
      * service by checking whether the ID suffix of the
      * bean ends with {@link #SERVICE_COLLECTION_BEAN_SIGNS}.
+     *
      * @param beanName Bean of ID.
      * @return After encode,this ID Of their beans.
      */
@@ -231,7 +240,22 @@ public final class ServiceContextUtils {
     }
 
     /**
+     * @param serviceName   The service name passed in.
+     * @param requiredType  The type that needs to be converted.
+     * @param applicationId Application ID.
+     * @return linked names.
+     */
+    public static List<String> getLinkedServiceNames(String serviceName, Class<?> requiredType, String applicationId) {
+        List<String> linkedNames = new LinkedList<>();
+        linkedNames.add(serviceName);
+        linkedNames.add(formatId(requiredType, serviceName, applicationId));
+        linkedNames.add(formatAlisa(requiredType, serviceName, applicationId));
+        return linkedNames;
+    }
+
+    /**
      * Conditionally encode the ID of the bean.
+     *
      * @param parent        Known class object parent.
      * @param suffix        Known Service name.
      * @param applicationId Application id.
@@ -244,6 +268,7 @@ public final class ServiceContextUtils {
 
     /**
      * Conditionally encode the alisa name of the bean.
+     *
      * @param parent        Known class object parent.
      * @param suffix        Known Service name.
      * @param applicationId Application id.
@@ -256,6 +281,7 @@ public final class ServiceContextUtils {
 
     /**
      * Encode the name according to the conditions.
+     *
      * @param parent        Known class object parent.
      * @param suffix        Known Service name.
      * @param applicationId Application id.
@@ -281,6 +307,7 @@ public final class ServiceContextUtils {
 
     /**
      * Encode the name according to the conditions.
+     *
      * @param clazz           Known class object.
      * @param ignoredFullName Whether to ignore the full name of the class.
      * @return Alias of clazz in analyze result.
@@ -304,6 +331,7 @@ public final class ServiceContextUtils {
      * Obtain the full path of the empty class based
      * on the identification of the annotation collected
      * by the known class retrieval service.
+     *
      * @param parent Known class object parent.
      * @return Prefix for bean encode.
      */
