@@ -20,6 +20,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * used for retrieval, and saved to the storage structure
  * of the current class.
  *
+ * <p>The corresponding service cache lifecycle is equivalent
+ * to that of an application, and a unified {@link DisposableBean}
+ * destruction callback is performed when the application is closed.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.5
  */
