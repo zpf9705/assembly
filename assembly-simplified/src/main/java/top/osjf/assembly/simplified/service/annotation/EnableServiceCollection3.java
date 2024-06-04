@@ -1,6 +1,7 @@
 package top.osjf.assembly.simplified.service.annotation;
 
 import org.springframework.context.annotation.Import;
+import top.osjf.assembly.simplified.service.ServiceContextUtils;
 
 import java.lang.annotation.*;
 
@@ -9,9 +10,13 @@ import java.lang.annotation.*;
  * than the previous two versions, which collects rule bean
  * names during bean renaming.
  *
+ * <p>In version 2.2.5, the collection of services has been
+ * changed to store within the scope {@link ServiceContextUtils#SERVICE_SCOPE}.
+ *
  * @see EnableServiceCollection
  * @see EnableServiceCollection2
  * @see ServiceContextRecordConfiguration
+ * @see ServiceContextRecordConfiguration.ServiceContextRecordImportConfiguration
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.0
  */
