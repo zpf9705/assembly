@@ -28,6 +28,7 @@ public @interface EnableRegisterScope {
      * @see ConfigurableBeanFactory#SCOPE_SINGLETON
      * @see org.springframework.web.context.WebApplicationContext#SCOPE_REQUEST
      * @see org.springframework.web.context.WebApplicationContext#SCOPE_SESSION
+     * @return The scope name of the bean.
      */
     String scopeName() default "";
 
