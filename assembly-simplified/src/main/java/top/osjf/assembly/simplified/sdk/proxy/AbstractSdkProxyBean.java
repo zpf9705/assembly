@@ -83,7 +83,7 @@ public abstract class AbstractSdkProxyBean<T> extends AbstractMultipleProxySuppo
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        log.info("SDK proxy bean initialization action.");
+        log.info("SDK proxy bean initialization action,please ask the subclass to rewrite it on its own.");
     }
 
     @Override
@@ -93,7 +93,7 @@ public abstract class AbstractSdkProxyBean<T> extends AbstractMultipleProxySuppo
 
     @Override
     public void destroy() throws Exception {
-        log.info("SDK's proxy bean destruction action.");
+        log.info("SDK's proxy bean destruction action,please ask the subclass to rewrite it on its own.");
     }
 
     /**
