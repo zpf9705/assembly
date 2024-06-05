@@ -1,6 +1,10 @@
 package top.osjf.assembly.simplified.sdk.proxy;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.WebApplicationContext;
 import top.osjf.assembly.simplified.sdk.client.ClientExecutors;
 import top.osjf.assembly.simplified.sdk.process.Request;
@@ -36,7 +40,10 @@ import java.lang.reflect.Method;
  * @author zpf
  * @since 1.1.0
  */
-public abstract class AbstractSdkProxyBean<T> extends AbstractMultipleProxySupport<T> implements RequestAttributes {
+public abstract class AbstractSdkProxyBean<T> extends AbstractMultipleProxySupport<T> implements RequestAttributes,
+        InitializingBean, DisposableBean {
+
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     /*** The host address when calling SDK.*/
     private String host;
@@ -75,8 +82,18 @@ public abstract class AbstractSdkProxyBean<T> extends AbstractMultipleProxySuppo
     }
 
     @Override
+    public void afterPropertiesSet() throws Exception {
+        log.info("SDK proxy bean initialization action.");
+    }
+
+    @Override
     public Object handle(Object proxy, Method method, Object[] args) {
         return handle0(proxy, method, args);
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        log.info("SDK's proxy bean destruction action.");
     }
 
     /**
