@@ -47,6 +47,7 @@ public class RecordServiceContext extends AbstractServiceContext implements Init
      * Rewrite the service retrieval method to point to the beans saved in the specified
      * scope, whether to use the method of the parent class to retrieve beans that have
      * not changed the scope.
+     * @see ServiceScope
      */
     @Override
     public <S> S getService(String serviceName, Class<S> requiredType) throws NoSuchServiceException {
