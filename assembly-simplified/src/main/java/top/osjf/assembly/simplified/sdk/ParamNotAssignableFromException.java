@@ -17,8 +17,8 @@ public class ParamNotAssignableFromException extends SdkException {
     private static final long serialVersionUID = -229096675399838690L;
 
     public ParamNotAssignableFromException() {
-        super("The SDK proxy method needs to satisfy that the input parameter " +
-                "type is a subclass of " + Request.class.getName() + ", and the " +
-                "output parameter is a subclass of " + Response.class.getName() + ".");
+        super("The methods that SDK proxy callbacks can handle need to satisfy that" +
+                " the input parameter is a subclass of " + Request.class.getName() + " " +
+                "and the output parameter is a subclass of " + Response.class.getName() + ".");
     }
 }
