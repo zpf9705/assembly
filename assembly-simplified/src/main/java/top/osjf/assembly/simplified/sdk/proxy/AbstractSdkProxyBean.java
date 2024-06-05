@@ -6,6 +6,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.WebApplicationContext;
+import top.osjf.assembly.simplified.sdk.ParamNotAssignableFromException;
 import top.osjf.assembly.simplified.sdk.client.ClientExecutors;
 import top.osjf.assembly.simplified.sdk.process.Request;
 import top.osjf.assembly.simplified.sdk.process.RequestAttributes;
@@ -101,35 +102,39 @@ public abstract class AbstractSdkProxyBean<T> extends AbstractMultipleProxySuppo
      * rewritten by subclasses, defined according to their own situation.
      * <p>Here, a default processing posture that conforms to SDK is provided.
      *
-     * @param proxy  Proxy obj.
-     * @param method Access method.
-     * @param args   transfer args.
-     * @return Proxy method solve result.
+     * @param proxy  Proxy object.
+     * @param method The method object executed by the proxy class.
+     * @param args   The real parameters executed by the proxy method.
+     * @return The result returned by the proxy execution method.
      */
     protected Object handle0(@SuppressWarnings("unused") Object proxy, Method method, Object[] args) {
-        //The method of the parent class Object is not given
-        Class<T> type = getType();
-        if (!type.getName().equals(method.getDeclaringClass().getName())) {
-            throw new UnsupportedOperationException(
-                    "Only methods defined by class " + type.getName() + " are supported.");
-        }
+        if (checkMethodCoverRanger(proxy, getType(), method, args))
+            throw new UnsupportedSDKCallBackMethodException(method.getName());
         //The request parameter encapsulation must exist.
-        if (ArrayUtils.isEmpty(args)) {
-            throw new IllegalArgumentException(
-                    "The input parameter of the SDK encapsulation class call method cannot be empty."
-            );
-        }
+        if (ArrayUtils.isEmpty(args))
+            throw new IllegalArgumentException("The required request parameters cannot be empty.");
         //And all encapsulated as one parameter.
         Object param = args[0];
         //Determine whether it is a request parameter and whether the
         //class object that returns the value is a subclass of response.
-        if (!(param instanceof Request) || !Response.class.isAssignableFrom(method.getReturnType())) {
-            throw new IllegalArgumentException(
-                    "Determine whether it is a request parameter and whether the" +
-                            "class object that returns the value is a subclass of response"
-            );
-        }
+        if (!(param instanceof Request) || !Response.class.isAssignableFrom(method.getReturnType()))
+            throw new ParamNotAssignableFromException();
         return doRequest((Request<?>) param);
+    }
+
+    /**
+     * Check the scope of direct methods that can be proxied.
+     *
+     * @param proxy      Proxy object.
+     * @param targetType the target type created by this proxy.
+     * @param method     The method object executed by the proxy class.
+     * @param args       The real parameters executed by the proxy method.
+     * @return Returns {@code true}, indicating that it can be executed
+     * subsequently, otherwise it is not supported.
+     * @since 2.2.5
+     */
+    protected boolean checkMethodCoverRanger(Object proxy, Class<T> targetType, Method method, Object[] args) {
+        return true;
     }
 
     /**
