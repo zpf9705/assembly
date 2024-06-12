@@ -107,6 +107,7 @@ public class CachePersistenceThreadLocal extends ThreadLocal<CachePersistenceThr
 
         public static CachePersistenceThreadData ofPairSerializer(PairSerializer keyPairSerializer,
                                                                   PairSerializer valuePairSerializer) {
+            AbstractCachePersistence.cachePairSerializers(keyPairSerializer, valuePairSerializer);
             return new CachePersistenceThreadData(keyPairSerializer, valuePairSerializer);
         }
 
