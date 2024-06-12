@@ -29,7 +29,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -656,6 +655,31 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
         return System.currentTimeMillis() + timeUnit.toMillis(duration);
     }
 
+    /**
+     * Retrieve the serialized entity object based on the fully qualified name
+     * of the serialized implementation class, and when obtained, add it to the
+     * cache queue.
+     *
+     * @param pairSerializerName Serializing {@link PairSerializer} the fully
+     *                           qualified name of the implementation class.
+     * @param <T>                Serialize the type of the target object.
+     * @return {@link PairSerializer}.
+     */
+    public static <T> PairSerializer<T> getPairSerializerByName(String pairSerializerName) {
+        Objects.requireNonNull(pairSerializerName,"PairSerializerName not be null");
+        PairSerializer<T> pairSerializer = SERIALIZER_CACHE.get(pairSerializerName);
+        if (pairSerializer != null) {
+            return pairSerializer;
+        }
+        try {
+            pairSerializer = (PairSerializer<T>) Class.forName(pairSerializerName).newInstance();
+        } catch (Throwable e) {
+            throw new PairSerializerNotFoundException(pairSerializerName);
+        }
+        SERIALIZER_CACHE.putIfAbsent(pairSerializerName, pairSerializer);
+        return SERIALIZER_CACHE.get(pairSerializerName);
+    }
+
     //******************** public instance methods ******************//
 
     /**
@@ -886,7 +910,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
         //Loop back
         List<File> lookFiles = files;
         //Start a new thread for file recovery operations
-        CompletableFuture.runAsync(() -> lookFiles.forEach(v -> {
+        new Thread(() -> lookFiles.forEach(v -> {
             try {
                 reductionUseFile(v);
             } catch (Throwable e) {
@@ -894,7 +918,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
                     log.warn("Restore cache file {}  error : {}", v.getName(), e.getMessage());
                 }
             }
-        })).whenComplete((unused, throwable) -> SERIALIZER_CACHE.clear());
+        }), "Cache Restore thread");
     }
 
     @Override
@@ -979,30 +1003,6 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
                 }
             }
         }
-    }
-
-    /**
-     * Retrieve the serialized entity object based on the fully qualified name
-     * of the serialized implementation class, and when obtained, add it to the
-     * cache queue.
-     *
-     * @param pairSerializerName Serializing {@link PairSerializer} the fully
-     *                           qualified name of the implementation class.
-     * @param <T>                Serialize the type of the target object.
-     * @return {@link PairSerializer}.
-     */
-    private <T> PairSerializer<T> getPairSerializerByName(String pairSerializerName) {
-        PairSerializer<T> pairSerializer = SERIALIZER_CACHE.get(pairSerializerName);
-        if (pairSerializer != null) {
-            return pairSerializer;
-        }
-        try {
-            pairSerializer = (PairSerializer<T>) Class.forName(pairSerializerName).newInstance();
-        } catch (Throwable e) {
-            throw new PairSerializerNotFoundException(pairSerializerName);
-        }
-        SERIALIZER_CACHE.putIfAbsent(pairSerializerName, pairSerializer);
-        return SERIALIZER_CACHE.get(pairSerializerName);
     }
 
     /**
