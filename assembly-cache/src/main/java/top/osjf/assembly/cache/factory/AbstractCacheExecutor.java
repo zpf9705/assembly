@@ -1,6 +1,5 @@
 package top.osjf.assembly.cache.factory;
 
-import top.osjf.assembly.cache.persistence.CachePersistenceThreadLocal;
 import top.osjf.assembly.cache.serializer.CacheByteIdentify;
 import top.osjf.assembly.cache.serializer.SerializerOperationType;
 import top.osjf.assembly.util.annotation.CanNull;
@@ -83,6 +82,6 @@ public abstract class AbstractCacheExecutor<T> implements DefaultCacheExecutor {
      * @return Be a {@link ByteIdentify}.
      */
     protected ByteIdentify identifyByteArray(byte[] var, SerializerOperationType type) {
-        return new CacheByteIdentify(var, CachePersistenceThreadLocal.getPairSerializerNameBySerializerType(type));
+        return new CacheByteIdentify(var, type.get());
     }
 }
