@@ -11,6 +11,8 @@ import top.osjf.assembly.cache.factory.Center;
 import top.osjf.assembly.cache.factory.HelpCenter;
 import top.osjf.assembly.cache.factory.ReloadCenter;
 import top.osjf.assembly.cache.operations.ValueOperations;
+import top.osjf.assembly.cache.serializer.PairSerializer;
+import top.osjf.assembly.cache.serializer.PairSerializerNotFoundException;
 import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.data.ObjectIdentify;
@@ -25,6 +27,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -154,6 +157,8 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
     /*** Encapsulation object for persisting file content.*/
     private AbstractPersistenceStore<K, V> store;
 
+    private static final Map<String, PairSerializer> SERIALIZER_CACHE = new ConcurrentHashMap<>();
+
     //**************** help classes ************************//
 
     /**
@@ -166,6 +171,8 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
         private static final long serialVersionUID = 5916681709307714445L;
         private Entry<K, V> entry;
         private Long expire;
+        private String keyPairSerializerName;
+        private String valuePairSerializerName;
         static final String FORMAT = AT + "\n" + "%s" + "\n" + AT;
 
         public AbstractPersistenceStore() {
@@ -190,6 +197,22 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
 
         public Long getExpire() {
             return expire;
+        }
+
+        public String getKeyPairSerializerName() {
+            return keyPairSerializerName;
+        }
+
+        public void setKeyPairSerializerName(String keyPairSerializerName) {
+            this.keyPairSerializerName = keyPairSerializerName;
+        }
+
+        public String getValuePairSerializerName() {
+            return valuePairSerializerName;
+        }
+
+        public void setValuePairSerializerName(String valuePairSerializerName) {
+            this.valuePairSerializerName = valuePairSerializerName;
         }
 
         @Override
@@ -250,7 +273,9 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
 
     //*************** configuration ********************//
 
-    static { loadConfiguration(); }
+    static {
+        loadConfiguration();
+    }
 
     /**
      * Load cache persistence configuration classes.
@@ -373,6 +398,10 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
             P persistence = ReflectUtils.newInstance(persistenceClass, entry);
             //set expired timestamp
             persistence.setExpire(expired);
+            persistence.setKeyPairSerializerName(
+                    CachePersistenceThreadLocal.getKeyPairSerializerName());
+            persistence.setValuePairSerializerName(
+                    CachePersistenceThreadLocal.getValuePairSerializerName());
             //instance for globePersistenceClass
             globePersistence = ReflectUtils.newInstance(globePersistenceClass, persistence, writePath);
             //record class GlobePersistenceClass type and persistenceClass
@@ -930,13 +959,15 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
                 entry.getValue(),
                 condition,
                 entry.getTimeUnit());
+        PairSerializer<K> keyPairSerializer = getPairSerializerByName(persistence.getKeyPairSerializerName());
+        PairSerializer<V> valuePairSerializer = getPairSerializerByName(persistence.getValuePairSerializerName());
         //Callback for restoring cached keys and values
         List<ListeningRecovery> listeningRecoveries = configuration.unmodifiableListeningRecoveries();
         if (CollectionUtils.isNotEmpty(listeningRecoveries)) {
             for (ListeningRecovery recovery : listeningRecoveries) {
                 try {
-                    Object key = deserialize(entry.getKey());
-                    Object value = deserialize(entry.getValue());
+                    Object key = deserialize(keyPairSerializer, entry.getKey());
+                    Object value = deserialize(valuePairSerializer, entry.getValue());
                     recovery.recovery(key, value);
                     recovery.recovery(key, value, condition, entry.getTimeUnit());
                 } catch (Exception e) {
@@ -949,15 +980,40 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
     }
 
     /**
+     * Retrieve the serialized entity object based on the fully qualified name
+     * of the serialized implementation class, and when obtained, add it to the
+     * cache queue.
+     *
+     * @param pairSerializerName Serializing {@link PairSerializer} the fully
+     *                           qualified name of the implementation class.
+     * @param <T>                Serialize the type of the target object.
+     * @return {@link PairSerializer}.
+     */
+    private <T> PairSerializer<T> getPairSerializerByName(String pairSerializerName) {
+        PairSerializer<T> pairSerializer = SERIALIZER_CACHE.get(pairSerializerName);
+        if (pairSerializer != null) {
+            return pairSerializer;
+        }
+        try {
+            pairSerializer = (PairSerializer<T>) Class.forName(pairSerializerName).newInstance();
+        } catch (Throwable e) {
+            throw new PairSerializerNotFoundException(pairSerializerName);
+        }
+        SERIALIZER_CACHE.putIfAbsent(pairSerializerName, pairSerializer);
+        return SERIALIZER_CACHE.get(pairSerializerName);
+    }
+
+    /**
      * Deserialize the current serialized value, leaving it to the
      * subclass by default for completion.
      * <p>The type depends on the type of the subclass.
      *
-     * @param obj The object to be deserialized.
-     * @param <T> Serialization type.
+     * @param pairSerializer Appoint pairSerializer. //@since 1.1.4
+     * @param obj            The object to be deserialized.
+     * @param <T>            Serialization type.
      * @return Deserialize Function.
      */
-    protected abstract <T> Object deserialize(T obj);
+    protected abstract <T, S> S deserialize(PairSerializer<S> pairSerializer, T obj);
 
     /**
      * Calculating the cache recovery time remaining with {@code TimeUnit}.
