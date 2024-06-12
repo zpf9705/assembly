@@ -1,7 +1,6 @@
 package top.osjf.assembly.cache.autoconfigure;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -14,9 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import top.osjf.assembly.cache.factory.CacheFactory;
-import top.osjf.assembly.cache.listener.ExpirationMessageListener;
 import top.osjf.assembly.cache.operations.*;
-import top.osjf.assembly.cache.persistence.ListeningRecovery;
 import top.osjf.assembly.cache.serializer.SerializerAdapter;
 import top.osjf.assembly.cache.serializer.StringPairSerializer;
 import top.osjf.assembly.util.annotation.NotNull;
@@ -64,6 +61,7 @@ import java.util.List;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({CacheCommonsOperations.class})
 @EnableConfigurationProperties({CacheProperties.class})
+@EnableListenersAutoRegister
 @Import(ExpiringMapConfiguration.class)
 public class CacheAutoConfiguration implements CacheBannerDisplayDevice, EnvironmentAware {
 
@@ -77,16 +75,6 @@ public class CacheAutoConfiguration implements CacheBannerDisplayDevice, Environ
                                   ObjectProvider<List<ConfigurationCustomizer>> listObjectProvider) {
         this.properties = properties;
         this.configurationCustomizers = listObjectProvider.getIfAvailable();
-    }
-
-    @Autowired
-    public void setExpirationMessageListeners(List<ExpirationMessageListener> expirationMessageListeners){
-        properties.getGlobeConfiguration().addExpirationMessageListeners(expirationMessageListeners);
-    }
-
-    @Autowired
-    public void seListeningRecoveries(List<ListeningRecovery> listeningRecoveries){
-        properties.getGlobeConfiguration().addListeningRecoveries(listeningRecoveries);
     }
 
     @Override
