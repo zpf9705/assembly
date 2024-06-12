@@ -140,8 +140,8 @@ public class Configuration {
      */
     public static void setGlobalConfiguration(Configuration configuration) {
         if (configuration != null) {
-            configuration.compareDefaultCompareWithCachePersistence();
             Configuration.configuration = configuration;
+            Configuration.configuration.compareDefaultCompareWithCachePersistence();
         }
     }
 
