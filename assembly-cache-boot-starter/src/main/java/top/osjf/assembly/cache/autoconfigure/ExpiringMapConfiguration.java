@@ -94,8 +94,8 @@ public class ExpiringMapConfiguration extends CacheCommonsConfiguration implemen
         ExpiringMapClients.ExpiringMapClientsBuilder builder = ExpiringMapClients
                 .builder()
                 .acquireMaxSize(expiringMap.getMaxSize())
-                .acquireDefaultExpireTime(properties.getDefaultExpireTime())
-                .acquireDefaultExpireTimeUnit(properties.getDefaultExpireTimeUnit())
+                .acquireDefaultExpireTime(properties.getGlobeConfiguration().getDefaultCacheDuration())
+                .acquireDefaultExpireTimeUnit(properties.getGlobeConfiguration().getDefaultCacheDurationUnit())
                 .acquireDefaultExpirationPolicy(expiringMap.getExpirationPolicy());
         return new ExpiringMapCacheFactory(builder.build());
     }
