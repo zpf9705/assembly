@@ -112,43 +112,46 @@ import java.util.stream.Collectors;
 public abstract class AbstractCachePersistence<K, V> extends AbstractPersistenceFileManager implements
         CachePersistenceWriteProcess<K, V>, CachePersistenceReduction, Serializable {
 
+    /*** Log objects of subclass types.*/
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    //The system configuration
+    /*** The global configuration object for configuration.*/
     private static Configuration configuration;
 
     private static final Object lock = new Object();
 
-    //The persistent file suffix
+    /*** The suffix name of the persistent file.*/
     public static final String PREFIX_BEFORE = ".aof";
 
-    //The file content difference between symbols
+    /*** Persist content interval symbol.*/
     public static final String AT = "@";
 
-    //The default configuration symbol
+    /*** By default, cache recovery path prompt is used.*/
     public static final String DEFAULT_WRITE_PATH_SIGN = "default";
 
-    //Implementation type object
+    /*** Globe determined holding {@link AbstractCachePersistence} type.*/
     private Class<? extends AbstractCachePersistence> globePersistenceClass;
 
-    //Realize persistent information type object
+    /*** Determined holding {@link AbstractPersistenceStore} type.*/
     private Class<? extends AbstractPersistenceStore> persistenceClass;
 
+    /*** Persist file formatting symbols.*/
     private static final String DEALT = "$*&";
 
-    //Open the persistent identifier
+    /*** Persistent enable flag.*/
     private static boolean enablePersistence;
 
-    //Global information persistent cache
+    /*** Cache the necessary information filtering function's cache map.*/
     private static final FilterMap<ObjectIdentify, PersistenceObj> CACHE_MAP = new FilterMap<>();
 
-    //Read-write lock
+    /*** Thread safe read and write locks for persistent file operations.*/
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
     private final Lock readLock = readWriteLock.readLock();
 
     private final Lock writeLock = readWriteLock.writeLock();
 
+    /*** Encapsulation object for persisting file content.*/
     private AbstractPersistenceStore<K, V> store;
 
     //**************** help classes ************************//
