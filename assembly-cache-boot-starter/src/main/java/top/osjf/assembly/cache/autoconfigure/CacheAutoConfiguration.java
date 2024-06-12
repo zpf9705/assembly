@@ -14,8 +14,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import top.osjf.assembly.cache.factory.CacheFactory;
 import top.osjf.assembly.cache.operations.*;
-import top.osjf.assembly.cache.serializer.SerializerAdapter;
-import top.osjf.assembly.cache.serializer.StringPairSerializer;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.lang.CollectionUtils;
 
@@ -112,17 +110,15 @@ public class CacheAutoConfiguration implements CacheBannerDisplayDevice, Environ
     }
 
     @Bean
-    @ConditionalOnMissingBean
-    public CacheTemplate<String, Object> cacheTemplate(CacheFactory cacheFactory) {
-        CacheTemplate<String, Object> template = new CacheTemplate<>();
+    @ConditionalOnMissingBean(ValueObjectedCacheTemplate.class)
+    public ValueObjectedCacheTemplate valueObjectedCacheTemplate(CacheFactory cacheFactory) {
+        ValueObjectedCacheTemplate template = new ValueObjectedCacheTemplate();
         template.setCacheFactory(cacheFactory);
-        template.setKeySerializer(new StringPairSerializer());
-        template.setValueSerializer(new SerializerAdapter<>(Object.class));
         return template;
     }
 
     @Bean
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(StringCacheTemplate.class)
     public StringCacheTemplate stringCacheTemplate(CacheFactory cacheFactory) {
         StringCacheTemplate template = new StringCacheTemplate();
         template.setCacheFactory(cacheFactory);
@@ -130,8 +126,8 @@ public class CacheAutoConfiguration implements CacheBannerDisplayDevice, Environ
     }
 
     @Bean("StringObjectValueOperations")
-    public ValueOperations<String, Object> valueOperations(CacheTemplate<String, Object> cacheTemplate) {
-        return cacheTemplate.opsForValue();
+    public ValueOperations<String, Object> valueOperations(ValueObjectedCacheTemplate valueObjectedCacheTemplate) {
+        return valueObjectedCacheTemplate.opsForValue();
     }
 
     @Bean("StringStringValueOperations")
@@ -140,8 +136,8 @@ public class CacheAutoConfiguration implements CacheBannerDisplayDevice, Environ
     }
 
     @Bean("StringObjectTimeOperations")
-    public TimeOperations<String, Object> timeOperations(CacheTemplate<String, Object> cacheTemplate) {
-        return cacheTemplate.opsForTime();
+    public TimeOperations<String, Object> timeOperations(ValueObjectedCacheTemplate valueObjectedCacheTemplate) {
+        return valueObjectedCacheTemplate.opsForTime();
     }
 
     @Bean("StringStringTimeOperations")
@@ -152,7 +148,7 @@ public class CacheAutoConfiguration implements CacheBannerDisplayDevice, Environ
     @Bean
     @ConditionalOnProperty(prefix = "assembly.cache", name = "globe-configuration.enable-persistence",
             havingValue = "true")
-    @ConditionalOnBean(CacheTemplate.class)
+    @ConditionalOnBean(CacheFactory.class)
     public PersistenceReductionProcess persistenceReductionProcess(
             @Value("${assembly.cache.persistence-path:default}") String path) {
         return new PersistenceReductionProcess(path);
