@@ -16,7 +16,7 @@ import java.io.Serializable;
 @SuppressWarnings({"rawtypes", "serial"})
 public abstract class AbstractRecordActivationCenter<C, K, V> implements Center<C, K, V>, Serializable {
 
-    protected static Center center;
+    protected static volatile Center center;
 
     /**
      * Place it in a global cache center.
