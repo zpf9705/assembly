@@ -931,7 +931,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
                     log.warn("Restore cache file {}  error : {}", v.getName(), e.getMessage());
                 }
             }
-        }), "Cache Restore thread");
+        }), "Cache Restore thread").start();
     }
 
     @Override
