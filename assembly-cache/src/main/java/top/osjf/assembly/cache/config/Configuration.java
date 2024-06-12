@@ -81,16 +81,6 @@ public class Configuration {
     private String persistencePath;
 
     /**
-     * Collection of listener types for callback when cache values expire.
-     */
-    private List<Class<? extends ExpirationMessageListener>> expirationMessageListenerTypes;
-
-    /**
-     * Collection of notifications for cache restart and recovery types.
-     */
-    private List<Class<? extends ListeningRecovery>> listeningRecoveryTypes;
-
-    /**
      * Collection of listeners for callback when cache values expire.
      */
     private final List<ExpirationMessageListener> expirationMessageListeners = new CopyOnWriteArrayList<>();
@@ -237,16 +227,6 @@ public class Configuration {
         this.persistencePath = persistencePath;
     }
 
-    public void setExpirationMessageListenerTypes(
-            List<Class<? extends ExpirationMessageListener>> expirationMessageListenerTypes) {
-        this.expirationMessageListenerTypes = expirationMessageListenerTypes;
-    }
-
-    public void setListeningRecoveryTypes(
-            List<Class<? extends ListeningRecovery>> listeningRecoveryTypes) {
-        this.listeningRecoveryTypes = listeningRecoveryTypes;
-    }
-
 //———————————————————————————————— get main setting ——————————————————————————————————————————
 
     public Long getDefaultCacheDuration() {
@@ -305,11 +285,16 @@ public class Configuration {
         }
     }
 
-    public List<ExpirationMessageListener> getExpirationMessageListeners() {
-        expirationMessageListenerTypes.forEach(e -> addExpirationMessageListener(ReflectUtils.newInstance(e)));
-        return getOrPropertyUpdate(expirationMessageListeners, expirationMessageListenersKey,
-                this::newInstanceMultipleSplit,
-                Collections.emptyList(), expirationMessageListeners::addAll);
+    /**
+     * Returns an immutable {@link ExpirationMessageListener} set.
+     *
+     * @return immutable {@link ExpirationMessageListener} set.
+     */
+    public List<ExpirationMessageListener> unmodifiableExpirationMessageListeners() {
+        return Collections.unmodifiableList(
+                getOrPropertyUpdate(expirationMessageListeners, expirationMessageListenersKey,
+                        this::newInstanceMultipleSplit,
+                        Collections.emptyList(), expirationMessageListeners::addAll));
     }
 
     /**
@@ -332,10 +317,15 @@ public class Configuration {
         }
     }
 
-    public List<ListeningRecovery> getListeningRecoveries() {
-        listeningRecoveryTypes.forEach(l -> addListeningRecovery(ReflectUtils.newInstance(l)));
-        return getOrPropertyUpdate(listeningRecoveries, listeningRecoveriesKey, this::newInstanceMultipleSplit,
-                Collections.emptyList(), listeningRecoveries::addAll);
+    /**
+     * Returns an immutable {@link ListeningRecovery} set.
+     *
+     * @return immutable {@link ListeningRecovery} set.
+     */
+    public List<ListeningRecovery> unmodifiableListeningRecoveries() {
+        return Collections.unmodifiableList(getOrPropertyUpdate(listeningRecoveries, listeningRecoveriesKey,
+                this::newInstanceMultipleSplit,
+                Collections.emptyList(), listeningRecoveries::addAll));
     }
 
     //———————————————————————————————— other ——————————————————————————————————————————

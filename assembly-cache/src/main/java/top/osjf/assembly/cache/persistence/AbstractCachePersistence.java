@@ -924,7 +924,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
                 condition,
                 entry.getTimeUnit());
         //Callback for restoring cached keys and values
-        List<ListeningRecovery> listeningRecoveries = configuration.getListeningRecoveries();
+        List<ListeningRecovery> listeningRecoveries = configuration.unmodifiableListeningRecoveries();
         if (CollectionUtils.isNotEmpty(listeningRecoveries)) {
             for (ListeningRecovery recovery : listeningRecoveries) {
                 try {

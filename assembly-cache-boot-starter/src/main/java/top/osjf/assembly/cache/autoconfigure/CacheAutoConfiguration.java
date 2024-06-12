@@ -1,6 +1,7 @@
 package top.osjf.assembly.cache.autoconfigure;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -13,7 +14,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import top.osjf.assembly.cache.factory.CacheFactory;
+import top.osjf.assembly.cache.listener.ExpirationMessageListener;
 import top.osjf.assembly.cache.operations.*;
+import top.osjf.assembly.cache.persistence.ListeningRecovery;
 import top.osjf.assembly.cache.serializer.SerializerAdapter;
 import top.osjf.assembly.cache.serializer.StringPairSerializer;
 import top.osjf.assembly.util.annotation.NotNull;
@@ -76,6 +79,16 @@ public class CacheAutoConfiguration implements CacheBannerDisplayDevice, Environ
         this.configurationCustomizers = listObjectProvider.getIfAvailable();
     }
 
+    @Autowired
+    public void setExpirationMessageListeners(List<ExpirationMessageListener> expirationMessageListeners){
+        properties.getGlobeConfiguration().addExpirationMessageListeners(expirationMessageListeners);
+    }
+
+    @Autowired
+    public void seListeningRecoveries(List<ListeningRecovery> listeningRecoveries){
+        properties.getGlobeConfiguration().addListeningRecoveries(listeningRecoveries);
+    }
+
     @Override
     public void afterPropertiesSet() {
         this.printBanner(this.environment, getSourceClass(), System.out);
@@ -129,25 +142,21 @@ public class CacheAutoConfiguration implements CacheBannerDisplayDevice, Environ
     }
 
     @Bean("StringObjectValueOperations")
-    @ConditionalOnMissingBean
     public ValueOperations<String, Object> valueOperations(CacheTemplate<String, Object> cacheTemplate) {
         return cacheTemplate.opsForValue();
     }
 
     @Bean("StringStringValueOperations")
-    @ConditionalOnMissingBean
     public ValueOperations<String, String> valueOperations(StringCacheTemplate stringCacheTemplate) {
         return stringCacheTemplate.opsForValue();
     }
 
     @Bean("StringObjectTimeOperations")
-    @ConditionalOnMissingBean
     public TimeOperations<String, Object> timeOperations(CacheTemplate<String, Object> cacheTemplate) {
         return cacheTemplate.opsForTime();
     }
 
     @Bean("StringStringTimeOperations")
-    @ConditionalOnMissingBean
     public TimeOperations<String, String> timeOperations(StringCacheTemplate stringCacheTemplate) {
         return stringCacheTemplate.opsForTime();
     }

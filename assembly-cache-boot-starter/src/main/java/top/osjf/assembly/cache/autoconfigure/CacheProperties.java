@@ -18,7 +18,7 @@ public class CacheProperties {
      * Cached public global configuration.
      */
     @NestedConfigurationProperty
-    private Configuration globeConfiguration;
+    private Configuration globeConfiguration = new Configuration();
 
     /**
      * Set a {@code client} for help source.
