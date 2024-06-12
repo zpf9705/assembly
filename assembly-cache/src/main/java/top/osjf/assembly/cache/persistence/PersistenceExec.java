@@ -22,7 +22,7 @@ import java.util.function.Predicate;
 public @interface PersistenceExec {
 
     /**
-     * Perform annotation type
+     * Enumeration of types for cache persistence operations.
      *
      * @return {@link PersistenceExecTypeEnum}
      */
@@ -32,13 +32,16 @@ public @interface PersistenceExec {
      * The processing of execution annotation corresponding interface implementation class type.
      *
      * @return Clazz of {@link CachePersistenceSolver}.
+     * @deprecated Temporarily give up and may be deleted in the future.
      */
+    @Deprecated
     Class<? extends CachePersistenceSolver> shouldSolver() default BytesCachePersistenceSolver.class;
 
     /**
-     * Perform enum within {@link ValueExpectations}.
+     * Return hope the value is based on {@link ValueExpectations}'s assertion
+     * to verify the enumeration type.
      *
-     * @return result value
+     * @return hope the value is based on {@link ValueExpectations}'s assertion
      */
     ValueExpectations expectValue() default ValueExpectations.NULL;
 
