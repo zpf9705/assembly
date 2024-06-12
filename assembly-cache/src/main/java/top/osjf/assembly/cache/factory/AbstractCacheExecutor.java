@@ -1,8 +1,11 @@
 package top.osjf.assembly.cache.factory;
 
-import top.osjf.assembly.util.data.ByteIdentify;
+import top.osjf.assembly.cache.persistence.CachePersistenceThreadLocal;
+import top.osjf.assembly.cache.serializer.CacheByteIdentify;
+import top.osjf.assembly.cache.serializer.SerializerOperationType;
 import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
+import top.osjf.assembly.util.data.ByteIdentify;
 
 /**
  * Caching supports the abstract class of the Heart of Components method, introducing
@@ -11,6 +14,7 @@ import top.osjf.assembly.util.annotation.NotNull;
  *
  * <p>The above approach is to achieve code simplification, clarity, and avoid byte
  * address changes (see {@link ByteIdentify} for details).
+ *
  * @param <T> The type of help center.
  * @author zpf
  * @since 1.0.0
@@ -30,7 +34,7 @@ public abstract class AbstractCacheExecutor<T> implements DefaultCacheExecutor {
         }
 
         public IdentifyKeyCallback(byte[] key) {
-            this.keyByteIdentify = identifyByteArray(key);
+            this.keyByteIdentify = identifyKeyByteArray(key);
         }
 
         @Override
@@ -51,12 +55,34 @@ public abstract class AbstractCacheExecutor<T> implements DefaultCacheExecutor {
     }
 
     /**
-     * Convert the byte array into an encapsulated object {} to help with subsequent search methods.
+     * Convert the specific value of the key to a byte identity encapsulation object.
      *
      * @param var A byte array,must not be {@literal null}.
      * @return Be a {@link ByteIdentify}.
      */
-    public ByteIdentify identifyByteArray(byte[] var) {
-        return new ByteIdentify(var);
+    protected ByteIdentify identifyKeyByteArray(byte[] var) {
+        return identifyByteArray(var, SerializerOperationType.KEY);
+    }
+
+    /**
+     * Convert the specific value of the value to a byte identity encapsulation object.
+     *
+     * @param var A byte array,must not be {@literal null}.
+     * @return Be a {@link ByteIdentify}.
+     */
+    protected ByteIdentify identifyValueByteArray(byte[] var) {
+        return identifyByteArray(var, SerializerOperationType.VALUE);
+    }
+
+    /**
+     * Transform to create specific values as byte identity encapsulated objects based
+     * on the enumeration type {@link SerializerOperationType}.
+     *
+     * @param type The type of serialization operation.
+     * @param var  A byte array,must not be {@literal null}.
+     * @return Be a {@link ByteIdentify}.
+     */
+    protected ByteIdentify identifyByteArray(byte[] var, SerializerOperationType type) {
+        return new CacheByteIdentify(var, CachePersistenceThreadLocal.getPairSerializerNameBySerializerType(type));
     }
 }
