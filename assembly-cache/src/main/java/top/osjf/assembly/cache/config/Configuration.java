@@ -1,9 +1,11 @@
 package top.osjf.assembly.cache.config;
 
 import top.osjf.assembly.cache.listener.ExpirationMessageListener;
+import top.osjf.assembly.cache.persistence.AbstractPersistenceFileManager;
 import top.osjf.assembly.cache.persistence.ListeningRecovery;
 import top.osjf.assembly.util.lang.ClassUtils;
 import top.osjf.assembly.util.lang.ReflectUtils;
+import top.osjf.assembly.util.lang.StringUtils;
 import top.osjf.assembly.util.system.SystemUtils;
 
 import java.util.ArrayList;
@@ -12,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -185,6 +188,7 @@ public class Configuration {
      * Based on the comparison between the default cache time and the cache
      * threshold, determine whether persistence markers are needed when no
      * cache time is provided.
+     *
      * @return Persistent tags,if {@code true} need to be cache persistence.
      */
     public boolean isDefaultCompareWithCachePersistence() {
@@ -193,6 +197,7 @@ public class Configuration {
 
     /**
      * Returns the conversion of the persistent cache time threshold to milliseconds.
+     *
      * @return conversion of the persistent cache time threshold to milliseconds.
      */
     public long getDefaultNonCachePersistentCriticalDurationToMille() {
@@ -226,6 +231,9 @@ public class Configuration {
     }
 
     public void setPersistencePath(String persistencePath) {
+        if (StringUtils.isNotBlank(persistencePath)) {
+            AbstractPersistenceFileManager.checkDirectory(persistencePath);
+        }
         this.persistencePath = persistencePath;
     }
 
@@ -242,46 +250,46 @@ public class Configuration {
 //———————————————————————————————— get main setting ——————————————————————————————————————————
 
     public Long getDefaultCacheDuration() {
-        return getOrDefault(defaultCacheDuration, defaultCacheDurationKey, Long::valueOf, 10L);
+        return getOrPropertyUpdate(defaultCacheDuration, defaultCacheDurationKey, Long::valueOf, 10L,
+                this::setDefaultCacheDuration);
     }
 
     public TimeUnit getDefaultCacheDurationUnit() {
-        return getOrDefault(defaultCacheDurationUnit, defaultCacheDurationUnitKey, TimeUnit::valueOf, TimeUnit.SECONDS);
+        return getOrPropertyUpdate(defaultCacheDurationUnit, defaultCacheDurationUnitKey, TimeUnit::valueOf,
+                TimeUnit.SECONDS, this::setDefaultCacheDurationUnit);
     }
 
     public boolean isEnablePersistence() {
-        return getOrDefault(enablePersistence, enablePersistenceKey, Boolean::valueOf, false);
+        return getOrPropertyUpdate(enablePersistence, enablePersistenceKey, Boolean::valueOf, false,
+                this::setEnablePersistence);
     }
 
     public Long getNonCachePersistentCriticalDuration() {
-        return getOrDefault(nonCachePersistentCriticalDuration, nonCachePersistentCriticalDurationKey,
-                Long::valueOf, 60L);
+        return getOrPropertyUpdate(nonCachePersistentCriticalDuration, nonCachePersistentCriticalDurationKey,
+                Long::valueOf, 60L, this::setNonCachePersistentCriticalDuration);
     }
 
     public TimeUnit getNonCachePersistentCriticalDurationUnit() {
-        return getOrDefault(nonCachePersistentCriticalDurationUnit, nonCachePersistentCriticalDurationUnitKey,
-                TimeUnit::valueOf, TimeUnit.SECONDS);
+        return getOrPropertyUpdate(nonCachePersistentCriticalDurationUnit, nonCachePersistentCriticalDurationUnitKey,
+                TimeUnit::valueOf, TimeUnit.SECONDS, this::setNonCachePersistentCriticalDurationUnit);
     }
 
     public boolean isEnablePersistenceAsync() {
-        return getOrDefault(enablePersistenceAsync, enablePersistenceAsyncKey, Boolean::valueOf, false);
+        return getOrPropertyUpdate(enablePersistenceAsync, enablePersistenceAsyncKey, Boolean::valueOf,
+                false, this::setEnablePersistenceAsync);
     }
 
     public String getPersistencePath() {
-        return getOrDefault(persistencePath, persistencePathKey, String::valueOf,
-                SystemUtils.getCurrentProjectPath() + "/expire/");
-    }
-
-    public List<ExpirationMessageListener> getExpirationMessageListeners() {
-        expirationMessageListenerTypes.forEach(e -> addExpirationMessageListener(ReflectUtils.newInstance(e)));
-        return getOrDefault(expirationMessageListeners, expirationMessageListenersKey, this::newInstanceMultipleSplit,
-                Collections.emptyList());
+        return getOrPropertyUpdate(persistencePath, persistencePathKey, String::valueOf,
+                SystemUtils.getCurrentProjectPath() + "/expire/",
+                this::setPersistencePath);
     }
 
     /**
      * Add a cache expiration listener.
-     * @see #addExpirationMessageListeners(List)
+     *
      * @param listener cache expiration listener.
+     * @see #addExpirationMessageListeners(List)
      */
     public void addExpirationMessageListener(ExpirationMessageListener listener) {
         synchronized (expirationMessageListeners) {
@@ -297,10 +305,18 @@ public class Configuration {
         }
     }
 
+    public List<ExpirationMessageListener> getExpirationMessageListeners() {
+        expirationMessageListenerTypes.forEach(e -> addExpirationMessageListener(ReflectUtils.newInstance(e)));
+        return getOrPropertyUpdate(expirationMessageListeners, expirationMessageListenersKey,
+                this::newInstanceMultipleSplit,
+                Collections.emptyList(), expirationMessageListeners::addAll);
+    }
+
     /**
      * Add a cache recovery listener.
-     * @see #addListeningRecoveries(List)
+     *
      * @param listener cache recovery listener.
+     * @see #addListeningRecoveries(List)
      */
     public void addListeningRecovery(ListeningRecovery listener) {
         synchronized (expirationMessageListeners) {
@@ -315,10 +331,11 @@ public class Configuration {
             listeningRecoveries.addAll(listeners);
         }
     }
+
     public List<ListeningRecovery> getListeningRecoveries() {
         listeningRecoveryTypes.forEach(l -> addListeningRecovery(ReflectUtils.newInstance(l)));
-        return getOrDefault(listeningRecoveries, listeningRecoveriesKey, this::newInstanceMultipleSplit,
-                Collections.emptyList());
+        return getOrPropertyUpdate(listeningRecoveries, listeningRecoveriesKey, this::newInstanceMultipleSplit,
+                Collections.emptyList(), listeningRecoveries::addAll);
     }
 
     //———————————————————————————————— other ——————————————————————————————————————————
@@ -338,7 +355,8 @@ public class Configuration {
         return ts;
     }
 
-    private <T> T getOrDefault(T nowValue, String propertiesKey, Function<String, T> convert, T defaultValue) {
+    private <T> T getOrPropertyUpdate(T nowValue, String propertiesKey, Function<String, T> convert, T defaultValue,
+                                      Consumer<T> propertyGetUpdate) {
         if (nowValue != null) {
             if (nowValue instanceof Collection) {
                 if (!((Collection<?>) nowValue).isEmpty()) {
@@ -346,6 +364,8 @@ public class Configuration {
                 }
             } else return nowValue;
         }
-        return SystemUtils.getPropertyWithConvert(propertiesKey, convert, defaultValue);
+        T propertyValue = SystemUtils.getPropertyWithConvert(propertiesKey, convert, defaultValue);
+        propertyGetUpdate.accept(propertyValue);
+        return propertyValue;
     }
 }
