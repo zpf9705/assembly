@@ -4,6 +4,10 @@ import top.osjf.assembly.cache.serializer.PairSerializer;
 import top.osjf.assembly.util.annotation.NotNull;
 
 /**
+ * A related class used to temporarily store the inheritance {@link ThreadLocal}
+ * function of cache persistence process related data, in version 1.1.4, to add
+ * support for custom {@link PairSerializer}.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.1.4
  */
@@ -21,7 +25,7 @@ public class CachePersistenceThreadLocal extends ThreadLocal<CachePersistenceThr
      * (non-Javadoc)
      * @see #setData(CachePersistenceThreadData)
      */
-    public static void putData(CachePersistenceThreadData data){
+    public static void putData(CachePersistenceThreadData data) {
         INSTANCE.setData(data);
     }
 
@@ -30,15 +34,15 @@ public class CachePersistenceThreadLocal extends ThreadLocal<CachePersistenceThr
      * @see #setData(PairSerializer, PairSerializer)
      */
     public static void putData(PairSerializer keyPairSerializer,
-                               PairSerializer valuePairSerializer){
-        INSTANCE.setData(keyPairSerializer,valuePairSerializer);
+                               PairSerializer valuePairSerializer) {
+        INSTANCE.setData(keyPairSerializer, valuePairSerializer);
     }
 
     /*
      * (non-Javadoc)
      * @see #get()
      */
-    public static CachePersistenceThreadData getData(){
+    public static CachePersistenceThreadData getData() {
         return INSTANCE.get();
     }
 
