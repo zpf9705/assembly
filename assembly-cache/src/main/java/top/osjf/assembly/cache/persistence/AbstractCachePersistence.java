@@ -666,7 +666,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
      * @return {@link PairSerializer}.
      */
     public static <T> PairSerializer<T> getPairSerializerByName(String pairSerializerName) {
-        Objects.requireNonNull(pairSerializerName,"PairSerializerName not be null");
+        Objects.requireNonNull(pairSerializerName, "PairSerializerName not be null");
         PairSerializer<T> pairSerializer = SERIALIZER_CACHE.get(pairSerializerName);
         if (pairSerializer != null) {
             return pairSerializer;
@@ -678,6 +678,19 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
         }
         SERIALIZER_CACHE.putIfAbsent(pairSerializerName, pairSerializer);
         return SERIALIZER_CACHE.get(pairSerializerName);
+    }
+
+    /**
+     * Cache the specified serialized collection.
+     *
+     * @param pairSerializers Serialized collection that needs to be cached.
+     */
+    public static void cachePairSerializers(PairSerializer... pairSerializers) {
+        if (ArrayUtils.isNotEmpty(pairSerializers)) {
+            for (PairSerializer serializer : pairSerializers) {
+                SERIALIZER_CACHE.putIfAbsent(serializer.getClass().getName(), serializer);
+            }
+        }
     }
 
     //******************** public instance methods ******************//
