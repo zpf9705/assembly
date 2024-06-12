@@ -18,6 +18,6 @@ public class DefaultExpiringmapExpirationListener extends AbstractExpirationHand
 
     @Override
     public void expired(ByteIdentify key, ByteIdentify value) {
-        handlerExpirationMessage(new DefaultMessage(key.getData(), value.getData()));
+        handlerExpirationMessage(new DefaultMessage(key, value));
     }
 }

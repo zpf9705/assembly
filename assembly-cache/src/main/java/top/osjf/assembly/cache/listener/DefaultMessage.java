@@ -1,6 +1,8 @@
 package top.osjf.assembly.cache.listener;
 
+import top.osjf.assembly.cache.serializer.CacheByteIdentify;
 import top.osjf.assembly.util.annotation.NotNull;
+import top.osjf.assembly.util.data.ByteIdentify;
 import top.osjf.assembly.util.serial.SerialUtils;
 
 import java.io.Serializable;
@@ -24,11 +26,16 @@ public final class DefaultMessage implements ByteMessage, ObjectMessage, Seriali
 
     private final Object valueSerialize;
 
-    public DefaultMessage(byte[] key, byte[] value) {
-        this.key = key;
-        this.value = value;
-        this.keySerialize = SerialUtils.deserialize(key);
-        this.valueSerialize = SerialUtils.deserialize(value);
+    public DefaultMessage(ByteIdentify key, ByteIdentify value) {
+        this.key = key.getData();
+        this.value = value.getData();
+        if (key instanceof CacheByteIdentify) {
+            this.keySerialize = ((CacheByteIdentify) key).getPairSerializer().deserialize(this.key);
+        } else this.keySerialize = SerialUtils.deserialize(this.key);
+        if (key instanceof CacheByteIdentify) {
+            this.valueSerialize = ((CacheByteIdentify) key).getPairSerializer().deserialize(this.value);
+        } else this.valueSerialize = SerialUtils.deserialize(this.value);
+
     }
 
     @Override
