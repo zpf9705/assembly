@@ -18,6 +18,10 @@ import java.util.concurrent.TimeUnit;
  */
 public interface CachePersistenceSolver<K, V> {
 
+    //default CachePersistenceSolver
+    @SuppressWarnings("rawtypes") // since 1.1.4
+    CachePersistenceSolver INSTANCE = new BytesCachePersistenceSolver();
+
     /**
      * Put {@code key} and {@code value} and {@code duration} and {@code timeUnit} in to persistence
      *
