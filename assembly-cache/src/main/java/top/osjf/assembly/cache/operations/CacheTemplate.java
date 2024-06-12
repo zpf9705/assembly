@@ -3,6 +3,7 @@ package top.osjf.assembly.cache.operations;
 import top.osjf.assembly.cache.command.CacheKeyCommands;
 import top.osjf.assembly.cache.factory.CacheFactory;
 import top.osjf.assembly.cache.factory.CacheFactoryAccessor;
+import top.osjf.assembly.cache.persistence.CachePersistenceThreadLocal;
 import top.osjf.assembly.cache.serializer.PairSerializer;
 import top.osjf.assembly.cache.serializer.StringPairSerializer;
 import top.osjf.assembly.util.annotation.CanNull;
@@ -31,6 +32,7 @@ import java.util.Map;
  * When the configuration is completed of this class are thread safe operation.
  * <p>
  * <b>his is the central class in Expiry support</b>
+ *
  * @param <K> The type of key.
  * @param <V> The type of value.
  * @author zpf
@@ -129,7 +131,19 @@ public class CacheTemplate<K, V> extends CacheFactoryAccessor implements CacheCo
 
         Asserts.notNull(factory, "There are no available cache factories.");
 
-        return action.doInExecutor(factory.executor());
+        T result;
+
+        CachePersistenceThreadLocal.putData(keySerialize, valueSerialize);
+
+        try {
+
+            result = action.doInExecutor(factory.executor());
+
+        } finally {
+
+            CachePersistenceThreadLocal.putData(null);
+        }
+        return result;
     }
 
     @CanNull
