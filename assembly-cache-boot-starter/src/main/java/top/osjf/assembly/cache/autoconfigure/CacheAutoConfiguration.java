@@ -150,7 +150,7 @@ public class CacheAutoConfiguration implements CacheBannerDisplayDevice, Environ
     }
 
     @Bean
-    @ConditionalOnProperty(prefix = "assembly.cache", name = "globeConfiguration.enablePersistence",
+    @ConditionalOnProperty(prefix = "assembly.cache", name = "globe-configuration.enable-persistence",
             havingValue = "true")
     @ConditionalOnBean(CacheTemplate.class)
     public PersistenceReductionProcess persistenceReductionProcess(
