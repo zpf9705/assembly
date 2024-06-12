@@ -30,7 +30,7 @@ public @interface PersistenceExec {
 
     /**
      * The processing of execution annotation corresponding interface implementation class type.
-     *
+     * <p>Use {@link CachePersistenceSolver#INSTANCE} directly instead.
      * @return Clazz of {@link CachePersistenceSolver}.
      * @deprecated Temporarily give up and may be deleted in the future.
      */
