@@ -1,5 +1,7 @@
 package top.osjf.assembly.cache.persistence;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import top.osjf.assembly.cache.command.CacheInvocationHandler;
 import top.osjf.assembly.cache.config.Configuration;
 import top.osjf.assembly.cache.exceptions.CachePersistenceException;
@@ -111,6 +113,8 @@ import java.util.stream.Collectors;
 public abstract class AbstractCachePersistence<K, V> extends AbstractPersistenceFileManager implements
         CachePersistenceWriteProcess<K, V>, CachePersistenceReduction, Serializable {
 
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     //The system configuration
     private static Configuration configuration;
 
@@ -134,7 +138,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
     private static final String DEALT = "$*&";
 
     //Open the persistent identifier
-    private static boolean OPEN_PERSISTENCE;
+    private static boolean enablePersistence;
 
     //Global information persistent cache
     private static final FilterMap<ObjectIdentify, PersistenceObj> CACHE_MAP = new FilterMap<>();
@@ -145,14 +149,6 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
     private final Lock readLock = readWriteLock.readLock();
 
     private final Lock writeLock = readWriteLock.writeLock();
-
-    static {
-        try {
-            loadConfiguration();
-        } catch (Exception e) {
-            Console.error("Load Configuration error {}", e.getMessage());
-        }
-    }
 
     private AbstractPersistenceStore<K, V> store;
 
@@ -257,9 +253,9 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
      */
     static void loadConfiguration() {
         configuration = Configuration.getConfiguration();
-        OPEN_PERSISTENCE = configuration.getOpenPersistence();
+        enablePersistence = configuration.isEnablePersistence();
         //if you open persistence will auto create directory
-        if (OPEN_PERSISTENCE) {
+        if (enablePersistence) {
             checkDirectory(configuration.getPersistencePath());
         }
     }
@@ -267,6 +263,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
     //************* constructs *********************//
 
     public AbstractCachePersistence() {
+        loadConfiguration();
     }
 
     public AbstractCachePersistence(AbstractPersistenceStore<K, V> store, String writePath) {
@@ -490,18 +487,18 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
         checkEntry(entry);
         //empty just pass
         if (entry.getDuration() == null || entry.getTimeUnit() == null) {
-            if (configuration.isDefaultCompareWithExpirePersistence()) {
+            if (configuration.isDefaultCompareWithCachePersistence()) {
                 return;
             }
             throw new CachePersistenceException("Default setting no support be persisted");
         }
         if (entry.getTimeUnit().toMillis(entry.getDuration()) >=
-                configuration.getDefaultNoPersistenceExpireTimeToMille()) {
+                configuration.getDefaultNonCachePersistentCriticalDurationToMille()) {
             return;
         }
         throw new CachePersistenceException("Only more than or == " +
-                configuration.getNoPersistenceOfExpireTime() + " " +
-                configuration.getNoPersistenceOfExpireTimeUnit() +
+                configuration.getNonCachePersistentCriticalDuration() + " " +
+                configuration.getNonCachePersistentCriticalDurationUnit() +
                 " can be persisted so key [" + entry.getKey() + "] value [" + entry.getValue() + "] no persisted ");
     }
 
@@ -534,7 +531,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
      * Check whether the open the persistent cache.
      */
     static void checkOpenPersistence() {
-        if (!OPEN_PERSISTENCE) {
+        if (!enablePersistence) {
             throw new OnOpenPersistenceException();
         }
     }
@@ -617,10 +614,10 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
      */
     private static Long plusCurrent(@CanNull Long duration, @CanNull TimeUnit timeUnit) {
         if (duration == null) {
-            duration = configuration.getDefaultExpireTime();
+            duration = configuration.getDefaultCacheDuration();
         }
         if (timeUnit == null) {
-            timeUnit = configuration.getDefaultExpireTimeUnit();
+            timeUnit = configuration.getDefaultCacheDurationUnit();
         }
         return System.currentTimeMillis() + timeUnit.toMillis(duration);
     }
