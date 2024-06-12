@@ -1013,6 +1013,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
      * @param pairSerializer Appoint pairSerializer. //@since 1.1.4
      * @param obj            The object to be deserialized.
      * @param <T>            Serialization type.
+     * @param <S>            Deserialized data type.
      * @return Deserialize Function.
      */
     protected abstract <T, S> S deserialize(PairSerializer<S> pairSerializer, T obj);
