@@ -34,7 +34,7 @@ public interface CacheBannerDisplayDevice extends InitializingBean, Banner, Envi
     Environment getEnvironment();
 
     /**
-     * Obtain a resource class object that can obtain the version.<br>
+     * Return a resource class object that can obtain the version.<br>
      * <p>If it is the original, it defaults to {@link CacheVersion} to
      * obtain the version of this project.
      *
@@ -46,8 +46,8 @@ public interface CacheBannerDisplayDevice extends InitializingBean, Banner, Envi
     }
 
     /**
-     * Obtain a {@link StartUpBanner} implementation class.
-     * @return Return the {@link StartUpBanner} associated with this assembly.
+     * Return a {@link StartUpBanner} implementation class.
+     * @return the {@link StartUpBanner} associated with this assembly.
      */
     @NotNull
     StartUpBanner getStartUpBanner();
