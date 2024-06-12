@@ -1,10 +1,11 @@
 package top.osjf.assembly.cache.persistence;
 
 import top.osjf.assembly.cache.exceptions.CachePersistenceException;
+import top.osjf.assembly.cache.serializer.DeserializeTypeErrorException;
+import top.osjf.assembly.cache.serializer.PairSerializer;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.json.FastJsonUtils;
 import top.osjf.assembly.util.lang.Asserts;
-import top.osjf.assembly.util.serial.SerialUtils;
 
 import java.util.List;
 
@@ -88,8 +89,11 @@ public class ByteCachePersistence extends AbstractCachePersistence<byte[], byte[
     }
 
     @Override
-    public <T> Object deserialize(T obj) {
-        return SerialUtils.deserialize((byte[]) obj);
+    public <T, S> S deserialize(PairSerializer<S> pairSerializer, T obj) {
+        if (!(obj instanceof byte[])) {
+            throw new DeserializeTypeErrorException(byte[].class, obj.getClass());
+        }
+        return pairSerializer.deserialize((byte[]) obj);
     }
 
     public static class BytePersistence extends AbstractPersistenceStore<byte[], byte[]> {
