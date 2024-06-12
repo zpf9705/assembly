@@ -9,6 +9,7 @@ import java.util.function.Predicate;
 /**
  * Persistent cache processing markup annotations are targeted at methods
  * that can generate changes to cache persistent files.
+ *
  * <p>The parameters will define the class {@link CachePersistenceSolver}
  * for cache processing, as well as some validation of related expected
  * values (such as cache execution results)
