@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -157,6 +158,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
     /*** Encapsulation object for persisting file content.*/
     private AbstractPersistenceStore<K, V> store;
 
+    /*** Used for caching serialization tool objects during cache recovery and cleaning after use.*/
     private static final Map<String, PairSerializer> SERIALIZER_CACHE = new ConcurrentHashMap<>();
 
     //**************** help classes ************************//
@@ -171,8 +173,8 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
         private static final long serialVersionUID = 5916681709307714445L;
         private Entry<K, V> entry;
         private Long expire;
-        private String keyPairSerializerName;
-        private String valuePairSerializerName;
+        private String keyPairSerializerName; //1.1.4
+        private String valuePairSerializerName; //1.1.4
         static final String FORMAT = AT + "\n" + "%s" + "\n" + AT;
 
         public AbstractPersistenceStore() {
@@ -882,9 +884,9 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
             return;
         }
         //Loop back
-        List<File> finalFiles = files;
+        List<File> lookFiles = files;
         //Start a new thread for file recovery operations
-        new Thread(() -> finalFiles.forEach(v -> {
+        CompletableFuture.runAsync(() -> lookFiles.forEach(v -> {
             try {
                 reductionUseFile(v);
             } catch (Throwable e) {
@@ -892,7 +894,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
                     log.warn("Restore cache file {}  error : {}", v.getName(), e.getMessage());
                 }
             }
-        }), "Assembly-Cache-Reduction-Thread").start();
+        })).whenComplete((unused, throwable) -> SERIALIZER_CACHE.clear());
     }
 
     @Override
