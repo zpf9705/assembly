@@ -1,7 +1,6 @@
 package top.osjf.assembly.cache.autoconfigure;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -65,22 +64,6 @@ import java.util.List;
 @Import(ExpiringMapConfiguration.class)
 public class CacheAutoConfiguration implements CacheBannerDisplayDevice, EnvironmentAware {
 
-    public static final String DEFAULT_SO_TEMPLATE = "DEFAULT_SO_TEMPLATE";
-
-    public static final String OPERATION = "_OPERATION";
-
-    public static final String OPERATION_E = "_OPERATION_E";
-
-    public static final String DEFAULT_SO_TEMPLATE_OPERATION = DEFAULT_SO_TEMPLATE + OPERATION;
-
-    public static final String DEFAULT_SO_TEMPLATE_OPERATION_E = DEFAULT_SO_TEMPLATE + OPERATION_E;
-
-    public static final String DEFAULT_SS_TEMPLATE = "DEFAULT_SS_TEMPLATE";
-
-    public static final String DEFAULT_SS_TEMPLATE_OPERATION = DEFAULT_SS_TEMPLATE + OPERATION;
-
-    public static final String DEFAULT_SS_TEMPLATE_OPERATION_E = DEFAULT_SS_TEMPLATE + OPERATION_E;
-
     private final CacheProperties properties;
 
     private final List<ConfigurationCustomizer> configurationCustomizers;
@@ -99,6 +82,7 @@ public class CacheAutoConfiguration implements CacheBannerDisplayDevice, Environ
         if (CollectionUtils.isNotEmpty(configurationCustomizers)) {
             configurationCustomizers.forEach(v -> v.customize(this.properties));
         }
+        top.osjf.assembly.cache.config.Configuration.setGlobalConfiguration(properties.getGlobeConfiguration());
     }
 
     @Override
@@ -126,61 +110,54 @@ public class CacheAutoConfiguration implements CacheBannerDisplayDevice, Environ
         return new CacheStarterBanner();
     }
 
-    @Bean(DEFAULT_SO_TEMPLATE)
-    @ConditionalOnMissingBean(name = DEFAULT_SO_TEMPLATE)
-    public CacheTemplate<String, Object> cacheTemplate(CacheFactory factory) {
+    @Bean
+    @ConditionalOnMissingBean
+    public CacheTemplate<String, Object> cacheTemplate(CacheFactory cacheFactory) {
         CacheTemplate<String, Object> template = new CacheTemplate<>();
-        template.setCacheFactory(factory);
+        template.setCacheFactory(cacheFactory);
         template.setKeySerializer(new StringPairSerializer());
         template.setValueSerializer(new SerializerAdapter<>(Object.class));
         return template;
     }
 
-    @Bean(DEFAULT_SS_TEMPLATE)
-    @ConditionalOnMissingBean(name = DEFAULT_SS_TEMPLATE)
-    public StringCacheTemplate stringCacheTemplate(CacheFactory factory) {
+    @Bean
+    @ConditionalOnMissingBean
+    public StringCacheTemplate stringCacheTemplate(CacheFactory cacheFactory) {
         StringCacheTemplate template = new StringCacheTemplate();
-        template.setCacheFactory(factory);
+        template.setCacheFactory(cacheFactory);
         return template;
     }
 
-    @Bean(DEFAULT_SO_TEMPLATE_OPERATION)
-    @ConditionalOnBean(name = DEFAULT_SO_TEMPLATE)
-    @ConditionalOnMissingBean(name = DEFAULT_SO_TEMPLATE_OPERATION)
-    public ValueOperations<String, Object> valueOperations(@Qualifier(DEFAULT_SO_TEMPLATE)
-                                                           CacheTemplate<String, Object> template) {
-        return template.opsForValue();
+    @Bean("StringObjectValueOperations")
+    @ConditionalOnMissingBean
+    public ValueOperations<String, Object> valueOperations(CacheTemplate<String, Object> cacheTemplate) {
+        return cacheTemplate.opsForValue();
     }
 
-    @Bean(DEFAULT_SS_TEMPLATE_OPERATION)
-    @ConditionalOnBean(name = DEFAULT_SS_TEMPLATE)
-    @ConditionalOnMissingBean(name = DEFAULT_SS_TEMPLATE_OPERATION)
-    public ValueOperations<String, String> valueOperations(@Qualifier(DEFAULT_SS_TEMPLATE)
-                                                           StringCacheTemplate template) {
-        return template.opsForValue();
+    @Bean("StringStringValueOperations")
+    @ConditionalOnMissingBean
+    public ValueOperations<String, String> valueOperations(StringCacheTemplate stringCacheTemplate) {
+        return stringCacheTemplate.opsForValue();
     }
 
-    @Bean(DEFAULT_SO_TEMPLATE_OPERATION_E)
-    @ConditionalOnBean(name = DEFAULT_SO_TEMPLATE)
-    @ConditionalOnMissingBean(name = DEFAULT_SO_TEMPLATE_OPERATION_E)
-    public TimeOperations<String, Object> timeOperations(@Qualifier(DEFAULT_SO_TEMPLATE)
-                                                         CacheTemplate<String, Object> template) {
-        return template.opsForTime();
+    @Bean("StringObjectTimeOperations")
+    @ConditionalOnMissingBean
+    public TimeOperations<String, Object> timeOperations(CacheTemplate<String, Object> cacheTemplate) {
+        return cacheTemplate.opsForTime();
     }
 
-    @Bean(DEFAULT_SS_TEMPLATE_OPERATION_E)
-    @ConditionalOnBean(name = DEFAULT_SS_TEMPLATE)
-    @ConditionalOnMissingBean(name = DEFAULT_SS_TEMPLATE_OPERATION_E)
-    public TimeOperations<String, String> timeOperations(@Qualifier(DEFAULT_SS_TEMPLATE)
-                                                         StringCacheTemplate template) {
-        return template.opsForTime();
+    @Bean("StringStringTimeOperations")
+    @ConditionalOnMissingBean
+    public TimeOperations<String, String> timeOperations(StringCacheTemplate stringCacheTemplate) {
+        return stringCacheTemplate.opsForTime();
     }
 
     @Bean
-    @ConditionalOnProperty(prefix = "assembly.cache", name = "open-persistence", havingValue = "true")
+    @ConditionalOnProperty(prefix = "assembly.cache", name = "globeConfiguration.enablePersistence",
+            havingValue = "true")
     @ConditionalOnBean(CacheTemplate.class)
-    public PersistenceReductionProcess assemblyCachePersistenceReduction(
+    public PersistenceReductionProcess persistenceReductionProcess(
             @Value("${assembly.cache.persistence-path:default}") String path) {
-        return new PersistenceReductionProcess(path, properties.getPersistenceReductionClass());
+        return new PersistenceReductionProcess(path);
     }
 }
