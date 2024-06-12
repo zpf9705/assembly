@@ -1,7 +1,3 @@
 # Auto Configure
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 top.osjf.assembly.cache.autoconfigure.CacheAutoConfiguration
-
-# Preparation before initialization
-org.springframework.boot.env.EnvironmentPostProcessor=\
-top.osjf.assembly.cache.autoconfigure.SourceEnvironmentPostProcessor
