@@ -78,9 +78,17 @@ public abstract class Runner implements MethodRunnableCapable {
 
         @Override
         public void run(@NotNull Runnable runnable, @NotNull Consumer<String> errorLoggerConsumer) {
-            CompletableFuture.runAsync(runnable)
-                    .whenComplete((s, e) -> {
-                        if (!EXCEPTION_PREDICATE.test(e)) errorLoggerConsumer.accept(e.getMessage());});
+            CachePersistenceThreadLocal.CachePersistenceThreadData data = CachePersistenceThreadLocal.getData();
+            CompletableFuture.runAsync(() -> {
+                        CachePersistenceThreadLocal.putData(data);
+                        try {
+                            runnable.run();
+                        } finally {
+                            CachePersistenceThreadLocal.putData(null);
+                        }
+                    }).whenComplete((s, e) -> {
+                        if (!EXCEPTION_PREDICATE.test(e)) errorLoggerConsumer.accept(e.getMessage());
+                    });
         }
     }
 }
