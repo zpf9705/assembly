@@ -26,7 +26,7 @@ public abstract class Runner implements MethodRunnableCapable {
     private static volatile MethodRunnableCapable capable;
 
     static {
-        async = Configuration.getConfiguration().getPersistenceAsync();
+        async = Configuration.getConfiguration().isEnablePersistenceAsync();
     }
 
     /**
