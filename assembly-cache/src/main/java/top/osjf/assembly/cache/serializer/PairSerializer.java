@@ -1,5 +1,7 @@
 package top.osjf.assembly.cache.serializer;
 
+import top.osjf.assembly.util.annotation.CanNull;
+
 import java.io.Serializable;
 
 /**
@@ -34,7 +36,7 @@ public interface PairSerializer<T> extends Serializable {
      * @param bytes The byte array to be deserialized.
      * @return entity deserialized from a byte array.
      */
-    T deserialize(byte[] bytes);
+    T deserialize(@CanNull byte[] bytes);
 
     /**
      * Returns a type object of the deserialized object.
