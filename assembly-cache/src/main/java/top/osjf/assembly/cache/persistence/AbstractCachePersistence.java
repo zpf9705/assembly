@@ -157,7 +157,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
     /*** Encapsulation object for persisting file content.*/
     private AbstractPersistenceStore<K, V> store;
 
-    /*** Used for caching serialization tool objects during cache recovery and cleaning after use.*/
+    /*** Used for caching serialization tool objects during cache recovery.*/
     private static final Map<String, PairSerializer> SERIALIZER_CACHE = new ConcurrentHashMap<>();
 
     //**************** help classes ************************//
