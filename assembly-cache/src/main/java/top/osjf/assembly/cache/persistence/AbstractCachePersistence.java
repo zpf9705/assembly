@@ -18,7 +18,6 @@ import top.osjf.assembly.util.encode.DigestUtils;
 import top.osjf.assembly.util.io.IoUtils;
 import top.osjf.assembly.util.json.FastJsonUtils;
 import top.osjf.assembly.util.lang.*;
-import top.osjf.assembly.util.logger.Console;
 import top.osjf.assembly.util.serial.SerialUtils;
 
 import java.io.*;
@@ -248,6 +247,8 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
 
     //*************** configuration ********************//
 
+    static { loadConfiguration(); }
+
     /**
      * Load cache persistence configuration classes.
      */
@@ -263,7 +264,6 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
     //************* constructs *********************//
 
     public AbstractCachePersistence() {
-        loadConfiguration();
     }
 
     public AbstractCachePersistence(AbstractPersistenceStore<K, V> store, String writePath) {
@@ -833,14 +833,16 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
         }
         List<File> files = null;
         if (StringUtils.isBlank(path)) {
-            Console.info("Path no be blank , but you provide null");
+            log.info("Path no be blank , but you provide null");
         } else {
             if (!isDirectory(path)) {
-                Console.info("This path [{}] belong file no a directory", path);
+                log.info("This path [{}] belong file no a directory", path);
             } else {
                 files = loopFiles(path, v -> v.isFile() && v.getName().endsWith(PREFIX_BEFORE));
                 if (CollectionUtils.isEmpty(files)) {
-                    Console.info("This path [{}] no found files", path);
+                    if (log.isDebugEnabled()) {
+                        log.debug("This path [{}] no found files", path);
+                    }
                 }
             }
         }
@@ -854,7 +856,9 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
             try {
                 reductionUseFile(v);
             } catch (Throwable e) {
-                Console.warn("Restore cache file {}  error : {}", v.getName(), e.getMessage());
+                if (log.isWarnEnabled()) {
+                    log.warn("Restore cache file {}  error : {}", v.getName(), e.getMessage());
+                }
             }
         }), "Assembly-Cache-Reduction-Thread").start();
     }
@@ -933,7 +937,9 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
                     recovery.recovery(key, value);
                     recovery.recovery(key, value, condition, entry.getTimeUnit());
                 } catch (Exception e) {
-                    Console.info("Cache recovery callback exception , throw an error : {}", e.getMessage());
+                    if (log.isWarnEnabled()) {
+                        log.warn("Cache recovery callback exception , throw an error : {}", e.getMessage());
+                    }
                 }
             }
         }

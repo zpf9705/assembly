@@ -1,11 +1,9 @@
 package top.osjf.assembly.cache.config;
 
 import top.osjf.assembly.cache.listener.ExpirationMessageListener;
-import top.osjf.assembly.cache.persistence.AbstractPersistenceFileManager;
 import top.osjf.assembly.cache.persistence.ListeningRecovery;
 import top.osjf.assembly.util.lang.ClassUtils;
 import top.osjf.assembly.util.lang.ReflectUtils;
-import top.osjf.assembly.util.lang.StringUtils;
 import top.osjf.assembly.util.system.SystemUtils;
 
 import java.util.ArrayList;
@@ -221,9 +219,6 @@ public class Configuration {
     }
 
     public void setPersistencePath(String persistencePath) {
-        if (StringUtils.isNotBlank(persistencePath)) {
-            AbstractPersistenceFileManager.checkDirectory(persistencePath);
-        }
         this.persistencePath = persistencePath;
     }
 
