@@ -4,11 +4,9 @@ import net.jodah.expiringmap.ExpiringMap;
 import top.osjf.assembly.cache.config.expiringmap.ExpiringMapClients;
 import top.osjf.assembly.cache.listener.ByteMessage;
 import top.osjf.assembly.cache.listener.DefaultExpiringmapExpirationListener;
-import top.osjf.assembly.cache.persistence.BytesCachePersistenceSolver;
 import top.osjf.assembly.cache.persistence.CachePersistenceSolver;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.data.ByteIdentify;
-import top.osjf.assembly.util.spi.SpiLoads;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -132,10 +130,6 @@ public class ExpireMapCenter extends AbstractRecordActivationCenter<ExpireMapCen
     @SuppressWarnings("unchecked")
     public void cleanSupportingElements(@NotNull ByteMessage message) {
         //Remove persistent cache
-        CachePersistenceSolver<byte[], byte[]> solver = SpiLoads.findSpi(CachePersistenceSolver.class)
-                .getSpecifiedServiceBySubClass(BytesCachePersistenceSolver.class);
-        if (solver != null) {
-            solver.removePersistenceWithKey(message.getByteKey());
-        }
+        CachePersistenceSolver.INSTANCE.removePersistenceWithKey(message.getByteKey());
     }
 }
