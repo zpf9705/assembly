@@ -9,6 +9,7 @@ import top.osjf.assembly.util.lang.MapUtils;
 import top.osjf.assembly.util.lang.ReflectUtils;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
@@ -72,7 +73,7 @@ public abstract class SdkUtils {
                 if (arg instanceof RequestParameter) {
                     Class<? extends Request> requestType = ((RequestParameter) arg).getRequestType();
                     if (requestType == null) throw new UnknownRequestParameterException();
-                    return invokeCreateRequestConstructorWhenFailedUseSet(requestType, arg);
+                    return invokeCreateRequestConstructorWhenFailedUseSet(requestType, method, arg);
                 }
                 throw new UnknownRequestParameterException();
             }
@@ -81,7 +82,7 @@ public abstract class SdkUtils {
             // exception for unknown parameter types when there are no annotations present.
             RequestParam requestParam = method.getAnnotation(RequestParam.class);
             if (requestParam != null) {
-                return invokeCreateRequestConstructorWhenFailedUseSet(requestParam.value(), args);
+                return invokeCreateRequestConstructorWhenFailedUseSet(requestParam.value(), method, args);
             }
             throw new UnknownRequestParameterException();
         }
@@ -117,6 +118,7 @@ public abstract class SdkUtils {
     }
 
     static Request<?> invokeCreateRequestConstructorWhenFailedUseSet(Class<? extends Request> requestType,
+                                                                     Method targetMethod,
                                                                      Object... args) {
         Request<?> request;
         try {
@@ -127,21 +129,26 @@ public abstract class SdkUtils {
             //This step determines whether the parameter is empty to
             // determine whether the above is an empty construction instantiation.
             if (ArrayUtils.isEmpty(args)) throw new RequestCreateException(e);
-            request = invokeCreateRequestUseSet(requestType, args);
+            request = invokeCreateRequestUseSet(requestType, targetMethod, args);
         }
         return request;
     }
 
     static Request<?> invokeCreateRequestUseSet(Class<? extends Request> requestType,
+                                                Method targetMethod,
                                                 Object... args) {
         Request<?> request;
         try {
             //When parameter construction fails, first use an empty
             // construction to instantiate, and then find the set method.
             request = ReflectUtils.newInstance(requestType);
-            for (Object arg : args) {
+            Parameter[] parameters = targetMethod.getParameters();
+            for (int i = 0; i < args.length; i++) {
+                Object arg = args[i];
+                String parameterName = parameters[i].getName();
                 ReflectUtils.invoke(request,
-                        SET_METHOD_PREFIX + arg.getClass().getSimpleName(), arg);
+                        SET_METHOD_PREFIX + Character.toUpperCase(parameterName.charAt(0))
+                                + parameterName.substring(1), arg);
             }
         } catch (Throwable e) {
             //There is no remedy at this step, simply throw an exception.
