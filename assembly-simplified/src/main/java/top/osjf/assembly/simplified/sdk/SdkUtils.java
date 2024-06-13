@@ -2,17 +2,19 @@ package top.osjf.assembly.simplified.sdk;
 
 import org.apache.http.entity.ContentType;
 import top.osjf.assembly.simplified.sdk.http.HttpResultResponse;
-import top.osjf.assembly.simplified.sdk.process.*;
+import top.osjf.assembly.simplified.sdk.process.Request;
+import top.osjf.assembly.simplified.sdk.process.Response;
 import top.osjf.assembly.simplified.sdk.proxy.*;
 import top.osjf.assembly.util.lang.ArrayUtils;
 import top.osjf.assembly.util.lang.MapUtils;
 import top.osjf.assembly.util.lang.ReflectUtils;
+import top.osjf.assembly.util.lang.StringUtils;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.*;
+import java.lang.reflect.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -73,7 +75,7 @@ public abstract class SdkUtils {
                 if (arg instanceof RequestParameter) {
                     Class<? extends Request> requestType = ((RequestParameter) arg).getRequestType();
                     if (requestType == null) throw new UnknownRequestParameterException();
-                    return invokeCreateRequestConstructorWhenFailedUseSet(requestType, method, arg);
+                    return invokeCreateRequestConstructorWhenFailedUseSet(requestType, arg);
                 }
                 throw new UnknownRequestParameterException();
             }
@@ -82,7 +84,7 @@ public abstract class SdkUtils {
             // exception for unknown parameter types when there are no annotations present.
             RequestParam requestParam = method.getAnnotation(RequestParam.class);
             if (requestParam != null) {
-                return invokeCreateRequestConstructorWhenFailedUseSet(requestParam.value(), method, args);
+                return invokeCreateRequestConstructorWhenFailedUseSet(requestParam.value(), args);
             }
             throw new UnknownRequestParameterException();
         }
@@ -118,7 +120,6 @@ public abstract class SdkUtils {
     }
 
     static Request<?> invokeCreateRequestConstructorWhenFailedUseSet(Class<? extends Request> requestType,
-                                                                     Method targetMethod,
                                                                      Object... args) {
         Request<?> request;
         try {
@@ -129,32 +130,67 @@ public abstract class SdkUtils {
             //This step determines whether the parameter is empty to
             // determine whether the above is an empty construction instantiation.
             if (ArrayUtils.isEmpty(args)) throw new RequestCreateException(e);
-            request = invokeCreateRequestUseSet(requestType, targetMethod, args);
+            request = invokeCreateRequestUseSet(requestType, args);
         }
         return request;
     }
 
     static Request<?> invokeCreateRequestUseSet(Class<? extends Request> requestType,
-                                                Method targetMethod,
                                                 Object... args) {
         Request<?> request;
         try {
             //When parameter construction fails, first use an empty
             // construction to instantiate, and then find the set method.
             request = ReflectUtils.newInstance(requestType);
-            Parameter[] parameters = targetMethod.getParameters();
-            for (int i = 0; i < args.length; i++) {
-                Object arg = args[i];
-                String parameterName = parameters[i].getName();
-                ReflectUtils.invoke(request,
-                        SET_METHOD_PREFIX + Character.toUpperCase(parameterName.charAt(0))
-                                + parameterName.substring(1), arg);
+            Field[] fields =
+                    ReflectUtils.getFields(requestType, field -> field.getAnnotation(RequestField.class) != null);
+            if (ArrayUtils.isEmpty(fields)) {
+                //When using methods for assignment, annotations must be identified.
+                throw new IllegalArgumentException("When no construction method is provided, please " +
+                        "use \"top.osjf.assembly.simplified.sdk.proxy.RequestField\" to mark the real" +
+                        " name of the field.");
+            }
+            for (int i = 0; i < fields.length; i++) {
+                Field field = fields[i];
+                RequestField requestField = field.getAnnotation(RequestField.class);
+                int order = getOrder(requestField, i, fields);
+                Object arg = args[order];
+                if (requestField.useReflect()) {
+                    //Directly assign values in the case of sequential reflection assignment.
+                    ReflectUtils.setFieldValue(request, field, arg);
+                } else {
+                    //The real name of the field cannot be empty at this time.
+                    String fieldName = requestField.value();
+                    if (StringUtils.isBlank(fieldName)) {
+                        throw new IllegalArgumentException("When using the set method to set a value, " +
+                                "the actual field name cannot be empty.");
+                    }
+                    //The set method performs an assignment.
+                    ReflectUtils.invoke(request,
+                            SET_METHOD_PREFIX + Character.toUpperCase(fieldName.charAt(0))
+                                    + fieldName.substring(1), arg);
+                }
             }
         } catch (Throwable e) {
             //There is no remedy at this step, simply throw an exception.
             throw new RequestCreateException(e);
         }
         return request;
+    }
+
+    static int getOrder(RequestField requestField, int i, Field[] fields) {
+        int order = requestField.order();
+        if (order == -1) {
+            //If the default value is used for sorting,
+            // it will be sorted in the default order of times.
+            order = i;
+        } else {
+            if (order >= fields.length) {
+                throw new ArrayIndexOutOfBoundsException("Current order " + order + "," +
+                        " parameter length " + fields.length + ".");
+            }
+        }
+        return order;
     }
 
     /**

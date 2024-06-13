@@ -15,6 +15,6 @@ public class RequestCreateException extends SdkException {
     private static final long serialVersionUID = -7492000953956318499L;
 
     public RequestCreateException(Throwable cause) {
-        super("Request class parameter creation failed.", new ReflectiveOperationException(cause));
+        super("Request class parameter creation failed.", cause);
     }
 }

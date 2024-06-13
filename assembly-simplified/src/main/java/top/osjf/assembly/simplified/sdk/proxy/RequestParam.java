@@ -17,7 +17,10 @@ import java.lang.annotation.*;
  *
  *  public class RequestImpl extends AbstractHttpRequestParams&lt;HttpResultResponse&lt;List&lt;Supplier&gt;&gt;&gt; {
  *
+ *      &#064;RequestField("queryDto")
  *      private QueryDto queryDto;
+ *
+ *      &#064;RequestField("token")
  *      private String token;
  *
  *      public RequestImpl(QueryDto queryDto,String token){
