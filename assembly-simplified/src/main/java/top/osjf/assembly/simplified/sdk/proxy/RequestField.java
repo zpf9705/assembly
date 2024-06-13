@@ -43,7 +43,7 @@ public @interface RequestField {
 
     /**
      * Whether to directly use reflection to assign values to fields.
-     * <p>If {@link true}, then the real name of the field {@link #value()}
+     * <p>If {@code true}, then the real name of the field {@link #value()}
      * is no longer required.
      *
      * @return result of use reflection to assign values to fields.
