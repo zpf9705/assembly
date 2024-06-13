@@ -15,9 +15,13 @@ public class CacheByteIdentify extends ByteIdentify {
 
     private final String pairSerializerName;
 
+    @SuppressWarnings("unchecked")
     public CacheByteIdentify(byte[] var, String pairSerializerName) {
         super(var);
         this.pairSerializerName = pairSerializerName;
+        PairSerializer pairSerializer = getPairSerializer();
+        setSerializeFc(pairSerializer::serialize);
+        setDeserializeFc(pairSerializer::deserialize);
     }
 
     public PairSerializer getPairSerializer() {
