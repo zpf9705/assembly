@@ -83,6 +83,13 @@ public abstract class AbstractOperations<K, V> {
         return valueSerializer().serialize(value);
     }
 
+    K deserializeKey(byte[] key) {
+        if (keySerializer() == null) {
+            return (K) key;
+        }
+        return keySerializer().deserialize(key);
+    }
+
     V deserializeValue(byte[] value) {
         if (valueSerializer() == null) {
             return (V) value;

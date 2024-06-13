@@ -595,7 +595,9 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
         if (key instanceof byte[]) {
             content = (byte[]) key;
         } else {
-            content = SerialUtils.serialize(key);
+            PairSerializer<Object> pairSerializer =
+                    getPairSerializerByName(CachePersistenceThreadLocal.getKeyPairSerializerName());
+            content = pairSerializer.serialize(key);
         }
         return DEALT + DigestUtils.md5Hex(content);
     }
