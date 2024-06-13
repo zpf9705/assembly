@@ -1,6 +1,7 @@
 package top.osjf.assembly.simplified.sdk.proxy;
 
 /**
+ * Throw an unknown parameter exception for a request parameter.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.6
  */

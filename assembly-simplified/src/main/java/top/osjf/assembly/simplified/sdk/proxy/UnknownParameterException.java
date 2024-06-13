@@ -3,6 +3,7 @@ package top.osjf.assembly.simplified.sdk.proxy;
 import top.osjf.assembly.simplified.sdk.SdkException;
 
 /**
+ * Throw an unknown parameter "exception" of the specified type.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.6
  */
