@@ -111,7 +111,7 @@ public abstract class AbstractSdkProxyBean<T> extends AbstractMultipleProxySuppo
      * @param args   The real parameters executed by the proxy method.
      * @return The result returned by the proxy execution method.
      */
-    protected Object handle0(@SuppressWarnings("unused") Object proxy, Method method, Object[] args) {
+    protected Object handle0(Object proxy, Method method, Object[] args) {
         if (!checkMethodCoverRanger(proxy, getType(), method, args))
             throw new UnsupportedSDKCallBackMethodException(method.getName());
         //Create a request class based on the extension.
