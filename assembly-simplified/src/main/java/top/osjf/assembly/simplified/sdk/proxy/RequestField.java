@@ -13,6 +13,7 @@ import java.lang.annotation.*;
  *
  * <p>For specific usage, please refer to {@link RequestParam}.
  *
+ * <p>Refer to {@code top.osjf.assembly.simplified.sdk.SdkUtils#invokeCreateRequestUseSet(Class, Object...)}
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.6
  */
