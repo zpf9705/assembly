@@ -41,6 +41,9 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
     /*** Default browser host address. */
     public static final String DEFAULT_HTTP_BROWSER_HOST = "127.0.0.1:80";
 
+    /*** Local browser host address. */
+    public static final String LOCAL_HTTP_BROWSER_HOST = "localhost";
+
     /*** Regular verification of domain names. */
     private static final Pattern DOMAIN_PATTERN =
             Pattern.compile("^(?!-)[A-Za-z0-9-]{1,63}(?<!-)\\.(?!-)[A-Za-z0-9-]{1,63}(?<!-)\\.[A-Za-z]{2,}$");
@@ -172,6 +175,9 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
     private boolean validationHost(String host) {
         if (StringUtils.isBlank(host)) {
             return false;
+        }
+        if (host.startsWith(LOCAL_HTTP_BROWSER_HOST + ":")) {
+            return true;
         }
         boolean result;
         if (host.contains(VALUE_SEPARATOR)) {
