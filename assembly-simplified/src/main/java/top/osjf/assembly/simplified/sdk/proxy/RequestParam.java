@@ -3,6 +3,7 @@ package top.osjf.assembly.simplified.sdk.proxy;
 import top.osjf.assembly.simplified.sdk.process.Request;
 
 import java.lang.annotation.*;
+import java.lang.reflect.Method;
 
 /**
  * Annotations for concise request parameters can be carried on proxy methods
@@ -64,6 +65,7 @@ import java.lang.annotation.*;
  * </pre>
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
+ * @see top.osjf.assembly.simplified.sdk.SdkUtils#invokeCreateRequest(Method, Object[])
  * @see RequestParameter
  * @since 2.2.6
  */
