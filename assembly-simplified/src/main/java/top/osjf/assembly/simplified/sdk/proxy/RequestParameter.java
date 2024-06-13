@@ -1,4 +1,6 @@
-package top.osjf.assembly.simplified.sdk.process;
+package top.osjf.assembly.simplified.sdk.proxy;
+
+import top.osjf.assembly.simplified.sdk.process.Request;
 
 /**
  * Only a single input parameter is supported to implement this

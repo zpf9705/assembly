@@ -10,7 +10,6 @@ import top.osjf.assembly.simplified.sdk.SdkUtils;
 import top.osjf.assembly.simplified.sdk.client.ClientExecutors;
 import top.osjf.assembly.simplified.sdk.process.Request;
 import top.osjf.assembly.simplified.sdk.process.RequestAttributes;
-import top.osjf.assembly.simplified.sdk.process.RequestParameter;
 import top.osjf.assembly.simplified.sdk.process.Response;
 import top.osjf.assembly.simplified.support.AbstractMultipleProxySupport;
 import top.osjf.assembly.util.annotation.NotNull;
@@ -104,8 +103,8 @@ public abstract class AbstractSdkProxyBean<T> extends AbstractMultipleProxySuppo
      * <p>Here, a default processing posture that conforms to SDK is provided.
      *
      * <p>Since version 2.2.6, support for {@link RequestParameter} and
-     * {@link top.osjf.assembly.simplified.sdk.process.RequestParam} and
-     * {@link top.osjf.assembly.simplified.sdk.process.ResponseData}has
+     * {@link RequestParam} and
+     * {@link ResponseData}has
      * been added.
      *
      * @param proxy  Proxy object.

@@ -1,4 +1,6 @@
-package top.osjf.assembly.simplified.sdk.process;
+package top.osjf.assembly.simplified.sdk.proxy;
+
+import top.osjf.assembly.simplified.sdk.process.Request;
 
 import java.lang.annotation.*;
 

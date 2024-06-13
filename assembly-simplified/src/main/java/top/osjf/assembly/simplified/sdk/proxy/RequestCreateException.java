@@ -4,8 +4,8 @@ import top.osjf.assembly.simplified.sdk.SdkException;
 
 /**
  * Create throw types for request class parameter exceptions based on
- * {@link top.osjf.assembly.simplified.sdk.process.RequestParam} and
- * {@link top.osjf.assembly.simplified.sdk.process.RequestParameter}.
+ * {@link RequestParam} and
+ * {@link RequestParameter}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.6
