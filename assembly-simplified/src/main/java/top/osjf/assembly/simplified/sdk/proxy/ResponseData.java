@@ -34,16 +34,13 @@ import top.osjf.assembly.simplified.sdk.process.Response;
 public interface ResponseData extends Response {
 
     /**
-     * Returns the data object at the time of successful request.
-     * <p>Failure returns {@literal null} directly.
-     * @return the data object at the time of successful request.
+     * Whether to check the success of the response after the
+     * request is completed.
+     *
+     * @return if {@code true} inspection to response result
+     * {@link #isSuccess()},otherwise.
      */
-    default Object getWhenSuccessData() {
-        if (isSuccess()) {
-            return getData();
-        }
-        return null;
-    }
+    boolean inspectionResponseResult();
 
     /**
      * Return Define the corresponding return data object.
