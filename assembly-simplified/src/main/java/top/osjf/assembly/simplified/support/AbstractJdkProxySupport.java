@@ -28,6 +28,11 @@ import java.lang.reflect.Method;
 public abstract class AbstractJdkProxySupport<T> implements FactoryBean<T>, InvocationHandler {
 
     /**
+     * The proxy object created.
+     */
+    private T proxy;
+
+    /**
      * The target type of dynamic proxy.
      */
     private Class<T> type;
@@ -62,7 +67,11 @@ public abstract class AbstractJdkProxySupport<T> implements FactoryBean<T>, Invo
 
     @Override
     public T getObject() {
-        return createProxy(type, this);
+        if (proxy != null) {
+            return proxy;
+        }
+        proxy = createProxy(type, this);
+        return proxy;
     }
 
     static <T> T createProxy(Class<T> type, InvocationHandler invocationHandler) {

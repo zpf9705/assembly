@@ -33,6 +33,11 @@ import java.lang.reflect.Method;
 public abstract class AbstractCglibProxySupport<T> implements FactoryBean<T>, MethodInterceptor {
 
     /**
+     * The proxy object created.
+     */
+    private T proxy;
+
+    /**
      * The target type of dynamic proxy.
      */
     private Class<T> type;
@@ -67,7 +72,11 @@ public abstract class AbstractCglibProxySupport<T> implements FactoryBean<T>, Me
 
     @Override
     public T getObject() {
-        return createProxy(type, this);
+        if (proxy != null) {
+            return proxy;
+        }
+        proxy = createProxy(type, this);
+        return proxy;
     }
 
     @SuppressWarnings("unchecked")
