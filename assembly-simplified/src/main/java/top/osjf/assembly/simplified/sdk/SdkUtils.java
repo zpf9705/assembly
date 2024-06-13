@@ -58,9 +58,9 @@ public abstract class SdkUtils {
      * @see RequestParam
      */
     public static Request<?> invokeCreateRequest(Method method, Object[] args) {
-        Objects.requireNonNull(args);
+        int length = ArrayUtils.isEmpty(args) ? 0 : args.length;
         Request<?> request;
-        if (args.length == 1) {
+        if (length == 1) {
             Object arg = args[0];
             if (arg instanceof Request) {
                 //Consider first whether it is the actual request parameter.
@@ -118,6 +118,9 @@ public abstract class SdkUtils {
             // construction method based on the parameters.
             request = ReflectUtils.newInstance(requestType, args);
         } catch (Throwable e) {
+            //This step determines whether the parameter is empty to
+            // determine whether the above is an empty construction instantiation.
+            if (ArrayUtils.isEmpty(args)) throw new RequestCreateException(e);
             request = invokeCreateRequestUseSet(requestType, args);
         }
         return request;

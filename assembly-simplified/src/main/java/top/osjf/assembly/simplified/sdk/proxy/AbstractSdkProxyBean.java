@@ -13,7 +13,6 @@ import top.osjf.assembly.simplified.sdk.process.RequestAttributes;
 import top.osjf.assembly.simplified.sdk.process.Response;
 import top.osjf.assembly.simplified.support.AbstractMultipleProxySupport;
 import top.osjf.assembly.util.annotation.NotNull;
-import top.osjf.assembly.util.lang.ArrayUtils;
 import top.osjf.assembly.util.lang.StringUtils;
 
 import java.lang.reflect.Method;
@@ -115,9 +114,6 @@ public abstract class AbstractSdkProxyBean<T> extends AbstractMultipleProxySuppo
     protected Object handle0(@SuppressWarnings("unused") Object proxy, Method method, Object[] args) {
         if (!checkMethodCoverRanger(proxy, getType(), method, args))
             throw new UnsupportedSDKCallBackMethodException(method.getName());
-        //The request parameter encapsulation must exist.
-        if (ArrayUtils.isEmpty(args))
-            throw new IllegalArgumentException("The required request parameters cannot be empty.");
         //Create a request class based on the extension.
         Request<?> request = SdkUtils.invokeCreateRequest(method, args);
         //Execute the request.
