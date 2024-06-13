@@ -4,7 +4,7 @@ package top.osjf.assembly.simplified.sdk.process;
  * Only a single input parameter is supported to implement this
  * interface to inform the proxy class of the type of request parameter.
  *
- * <p><h3>Examples of usage methods are as follows</h3></p>
+ * <div><h3>Examples of usage methods are as follows</h3></div>
  * <pre>
  *  public class QueryDto implements RequestParameter {
  *
