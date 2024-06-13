@@ -2,6 +2,8 @@ package top.osjf.assembly.simplified.sdk.proxy;
 
 import top.osjf.assembly.simplified.sdk.process.Response;
 
+import java.lang.reflect.Method;
+
 /**
  * In the case of proxy services, when there is no need to encapsulate
  * body return parameters and only need to return the truly needed object,
@@ -25,7 +27,7 @@ import top.osjf.assembly.simplified.sdk.process.Response;
  *     }
  *  }
  * </pre>
- *
+ * @see top.osjf.assembly.simplified.sdk.SdkUtils#getResponse(Method, Response)
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.6
  */
