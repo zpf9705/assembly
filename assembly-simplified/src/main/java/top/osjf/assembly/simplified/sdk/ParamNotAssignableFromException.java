@@ -12,6 +12,7 @@ import top.osjf.assembly.simplified.sdk.process.Response;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.5
  */
+@Deprecated
 public class ParamNotAssignableFromException extends SdkException {
 
     private static final long serialVersionUID = -229096675399838690L;
