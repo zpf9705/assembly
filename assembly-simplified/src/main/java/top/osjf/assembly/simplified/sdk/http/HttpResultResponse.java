@@ -61,15 +61,6 @@ public class HttpResultResponse<T> extends AbstractHttpResponse {
     }
 
     /**
-     * Create a success {@code HttpResultResponse} with message.
-     *
-     * @param message Result information.
-     */
-    public HttpResultResponse(String message) {
-        this(false, SC_OK, message, null);
-    }
-
-    /**
      * Create a failed {@code HttpResultResponse} with code and message.
      *
      * @param code    Result code.
@@ -167,7 +158,7 @@ public class HttpResultResponse<T> extends AbstractHttpResponse {
      * @return template of response.
      */
     public static <T> HttpResultResponse<T> failed() {
-        return new HttpResultResponse<>(FAILED_MESSAGE);
+        return failed(SC_INTERNAL_SERVER_ERROR, FAILED_MESSAGE);
     }
 
     /**
@@ -178,18 +169,19 @@ public class HttpResultResponse<T> extends AbstractHttpResponse {
      * @return template of response.
      */
     public static <T> HttpResultResponse<T> failed(String filedMsg) {
-        return new HttpResultResponse<>(filedMsg);
+        return failed(SC_INTERNAL_SERVER_ERROR, filedMsg);
     }
 
     /**
      * Static for create a failed {@code HttpResultResponse}.
      *
-     * @param <T>              data types.
-     * @param filedMsgSupplier error message supplier.
+     * @param <T>      data types.
+     * @param code     error result code.
+     * @param filedMsg error message supplier.
      * @return template of response.
      */
-    public static <T> HttpResultResponse<T> failed(@NotNull Supplier<String> filedMsgSupplier) {
-        return failed(filedMsgSupplier.get());
+    public static <T> HttpResultResponse<T> failed(Integer code, String filedMsg) {
+        return new HttpResultResponse<>(code, filedMsg);
     }
 
     //The get and set methods for attributes.
