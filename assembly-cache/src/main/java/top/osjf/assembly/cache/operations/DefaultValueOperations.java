@@ -1,10 +1,12 @@
 package top.osjf.assembly.cache.operations;
 
 import top.osjf.assembly.cache.factory.CacheExecutor;
-import top.osjf.assembly.util.serial.SerialUtils;
+import top.osjf.assembly.util.lang.CollectionUtils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 
 /**
@@ -90,12 +92,14 @@ public class DefaultValueOperations<K, V> extends AbstractOperations<K, V> imple
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public List<K> getSimilarKeys(K key) {
 
         byte[] rawKey = this.rawKey(key);
         List<byte[]> execute = this.execute((executor) -> executor.getSimilarKeys(rawKey));
-        return (List<K>) SerialUtils.deserializeAny(execute);
+        if (CollectionUtils.isNotEmpty(execute)){
+            return execute.stream().map(this::deserializeKey).collect(Collectors.toList());
+        }
+        return Collections.emptyList();
     }
 
     /*
