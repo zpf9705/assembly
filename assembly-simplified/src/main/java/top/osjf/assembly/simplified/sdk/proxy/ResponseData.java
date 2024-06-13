@@ -14,11 +14,9 @@ import top.osjf.assembly.simplified.sdk.process.Response;
  *
  *      private String token;
  *
- *      private boolean success;
- *
  *     &#064;Override
- *     public boolean isSuccess(){
- *         return success;
+ *     public boolean inspectionResponseResult(){
+ *         return true;
  *     }
  *
  *     &#064;Override
