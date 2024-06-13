@@ -7,6 +7,7 @@ import top.osjf.assembly.util.serial.SerialUtils;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * <h3>Hashcode Rewrite rule:</h3>
@@ -21,7 +22,8 @@ import java.util.Objects;
  * <p>Rewritten the {@link #equals(Object)} method, requiring the class class to
  * be {@link Identify} or its subclasses in order to perform {@code hashcode} calculations,
  * and requiring equality.
- * @param <T> The type of packaging data.
+ *
+ * @param <T>    The type of packaging data.
  * @param <SELF> Compare the types of data.
  * @author zpf
  * @since 1.0.0
@@ -31,6 +33,8 @@ public abstract class Identify<T, SELF> implements ComparableBool<SELF>, Seriali
 
     private final T data;
 
+    public Function<Object, byte[]> serializeFc = SerialUtils::serialize;
+
     public Identify(T data) {
         Objects.requireNonNull(data, "Identify data not be null");
         this.data = data;
@@ -38,6 +42,24 @@ public abstract class Identify<T, SELF> implements ComparableBool<SELF>, Seriali
 
     public T getData() {
         return data;
+    }
+
+    /**
+     * Set serialization function.
+     * @param serializeFc serialization function.
+     * @since 1.1.3
+     */
+    public void setSerializeFc(Function<Object, byte[]> serializeFc) {
+        this.serializeFc = serializeFc;
+    }
+
+    /**
+     * Return serialization function.
+     * @return  serialization function.
+     * @since 1.1.3
+     */
+    public Function<Object, byte[]> getSerializeFc() {
+        return serializeFc;
     }
 
     @Override
@@ -52,9 +74,8 @@ public abstract class Identify<T, SELF> implements ComparableBool<SELF>, Seriali
         if (data instanceof byte[]) {
             bytes = (byte[]) data;
         } else {
-            bytes = SerialUtils.serialize(data);
+            bytes = serializeFc.apply(data);
         }
-        Objects.requireNonNull(bytes, "Hash bytes not be null");
         return CityHash.hash32(bytes);
     }
 

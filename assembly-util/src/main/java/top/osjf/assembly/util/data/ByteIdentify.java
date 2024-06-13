@@ -1,10 +1,11 @@
 package top.osjf.assembly.util.data;
 
-import top.osjf.assembly.util.serial.SerialUtils;
 import top.osjf.assembly.util.annotation.NotNull;
+import top.osjf.assembly.util.serial.SerialUtils;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * The generic type of {@link Identify} is the {@code byte[]} implementation class.
@@ -21,8 +22,30 @@ public class ByteIdentify extends Identify<byte[], ByteIdentify> {
 
     private static final long serialVersionUID = -851217802015189183L;
 
+    public Function<byte[], Object> deserializeFc = SerialUtils::deserialize;
+
     public ByteIdentify(byte[] var) {
         super(var);
+    }
+
+    /**
+     * Set deserialize function.
+     *
+     * @param deserializeFc deserialize function.
+     * @since 1.1.3
+     */
+    public void setDeserializeFc(Function<byte[], Object> deserializeFc) {
+        this.deserializeFc = deserializeFc;
+    }
+
+    /**
+     * Return deserialize function.
+     *
+     * @return deserializeFc deserialize function.
+     * @since 1.1.3
+     */
+    public Function<byte[], Object> getDeserializeFc() {
+        return deserializeFc;
     }
 
     @Override
@@ -35,8 +58,8 @@ public class ByteIdentify extends Identify<byte[], ByteIdentify> {
         if (equals) {
             compareTo = 0;
         } else {
-            Object d0 = SerialUtils.deserialize(compare);
-            Object d0by = SerialUtils.deserialize(byCompare);
+            Object d0 = o.getDeserializeFc().apply(compare);
+            Object d0by = deserializeFc.apply(byCompare);
             if (d0by == null || d0 == null) {
                 compareTo = -1;
             } else {
@@ -70,6 +93,6 @@ public class ByteIdentify extends Identify<byte[], ByteIdentify> {
     @Override
     public String toString() {
         return String.format("Byte array = %s , real value = %s", Arrays.toString(getData()),
-                SerialUtils.deserialize(getData()));
+                deserializeFc.apply(getData()));
     }
 }
