@@ -99,12 +99,13 @@ public abstract class SdkUtils {
     public static Object getResponse(Method method, Response response) {
         Class<?> returnType = method.getReturnType();
         if (Response.class.isAssignableFrom(returnType)) {
+            //If the method returns a response class, then return it directly.
             return response;
         }
-        boolean success = response.isSuccess();
         if (response instanceof ResponseData) {
-            if (success) return ((ResponseData) response).getData();
-            return null;
+            //If the type value is specified, the data returned
+            // when the request is successful is obtained.
+            return ((ResponseData) response).getWhenSuccessData();
         }
         throw new UnknownResponseParameterException();
     }
