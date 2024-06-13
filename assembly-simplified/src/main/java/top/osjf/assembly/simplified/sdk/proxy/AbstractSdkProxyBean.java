@@ -6,10 +6,11 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.WebApplicationContext;
-import top.osjf.assembly.simplified.sdk.ParamNotAssignableFromException;
+import top.osjf.assembly.simplified.sdk.SdkUtils;
 import top.osjf.assembly.simplified.sdk.client.ClientExecutors;
 import top.osjf.assembly.simplified.sdk.process.Request;
 import top.osjf.assembly.simplified.sdk.process.RequestAttributes;
+import top.osjf.assembly.simplified.sdk.process.RequestParameter;
 import top.osjf.assembly.simplified.sdk.process.Response;
 import top.osjf.assembly.simplified.support.AbstractMultipleProxySupport;
 import top.osjf.assembly.util.annotation.NotNull;
@@ -102,6 +103,11 @@ public abstract class AbstractSdkProxyBean<T> extends AbstractMultipleProxySuppo
      * rewritten by subclasses, defined according to their own situation.
      * <p>Here, a default processing posture that conforms to SDK is provided.
      *
+     * <p>Since version 2.2.6, support for {@link RequestParameter} and
+     * {@link top.osjf.assembly.simplified.sdk.process.RequestParam} and
+     * {@link top.osjf.assembly.simplified.sdk.process.ResponseData}has
+     * been added.
+     *
      * @param proxy  Proxy object.
      * @param method The method object executed by the proxy class.
      * @param args   The real parameters executed by the proxy method.
@@ -113,13 +119,10 @@ public abstract class AbstractSdkProxyBean<T> extends AbstractMultipleProxySuppo
         //The request parameter encapsulation must exist.
         if (ArrayUtils.isEmpty(args))
             throw new IllegalArgumentException("The required request parameters cannot be empty.");
-        //And all encapsulated as one parameter.
-        Object param = args[0];
-        //Determine whether it is a request parameter and whether the
-        //class object that returns the value is a subclass of response.
-        if (!(param instanceof Request) || !Response.class.isAssignableFrom(method.getReturnType()))
-            throw new ParamNotAssignableFromException();
-        return doRequest((Request<?>) param);
+        //Create a request class based on the extension.
+        Request<?> request = SdkUtils.invokeCreateRequest(method, args);
+        //Execute the request.
+        return SdkUtils.getResponse(method, doRequest(request));
     }
 
     /**
