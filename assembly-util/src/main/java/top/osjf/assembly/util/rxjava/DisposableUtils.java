@@ -1,9 +1,10 @@
 package top.osjf.assembly.util.rxjava;
 
 import io.reactivex.rxjava3.disposables.Disposable;
+import top.osjf.assembly.util.annotation.NotNull;
+import top.osjf.assembly.util.concurrent.DefaultThreadPoolShutdownStrategy;
 import top.osjf.assembly.util.system.DefaultConsole;
 import top.osjf.assembly.util.system.SystemUtils;
-import top.osjf.assembly.util.annotation.NotNull;
 
 import java.util.List;
 import java.util.concurrent.*;
@@ -55,7 +56,7 @@ public abstract class DisposableUtils {
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override
             public void run() {
-                service.shutdownNow();
+                new DefaultThreadPoolShutdownStrategy(service).shutdown(10, TimeUnit.SECONDS);
             }
         }));
 
