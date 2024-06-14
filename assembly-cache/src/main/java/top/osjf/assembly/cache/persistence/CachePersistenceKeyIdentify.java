@@ -2,11 +2,10 @@ package top.osjf.assembly.cache.persistence;
 
 import top.osjf.assembly.cache.serializer.PairSerializer;
 import top.osjf.assembly.util.annotation.CanNull;
-import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.data.ByteIdentify;
-import top.osjf.assembly.util.data.ComparableBool;
 import top.osjf.assembly.util.data.Identify;
 import top.osjf.assembly.util.data.ObjectIdentify;
+import top.osjf.assembly.util.lang.SimilarAble;
 import top.osjf.assembly.util.lang.StringUtils;
 
 /**
@@ -17,8 +16,9 @@ import top.osjf.assembly.util.lang.StringUtils;
  * @since 1.1.4
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class CachePersistenceKeyIdentify<T> implements ComparableBool<CachePersistenceKeyIdentify<T>> {
+public class CachePersistenceKeyIdentify<T> implements SimilarAble<CachePersistenceKeyIdentify<T>> {
 
+    /*** The data identity information of the current key.*/
     private final Identify identify;
 
     /**
@@ -41,8 +41,8 @@ public class CachePersistenceKeyIdentify<T> implements ComparableBool<CachePersi
      */
     public CachePersistenceKeyIdentify(T data, @CanNull String keyPairSerializerName) {
         this(data, StringUtils.isNotBlank(keyPairSerializerName) ?
-                        AbstractCachePersistence.getPairSerializerByName(keyPairSerializerName)
-                        : null);
+                AbstractCachePersistence.getPairSerializerByName(keyPairSerializerName)
+                : null);
     }
 
     /**
@@ -83,12 +83,16 @@ public class CachePersistenceKeyIdentify<T> implements ComparableBool<CachePersi
         return this.hashCode() == obj.hashCode();
     }
 
-    public Identify getIdentify() {
-        return identify;
+    @Override
+    public boolean similarTo(CachePersistenceKeyIdentify<T> o) {
+        return identify.similarTo(o.getIdentify());
     }
 
-    @Override
-    public int compareTo(@NotNull CachePersistenceKeyIdentify<T> o) {
-        return identify.compareTo(o.getIdentify());
+    /**
+     * Return an identity information.
+     * @return an identity information.
+     */
+    public Identify getIdentify() {
+        return identify;
     }
 }
