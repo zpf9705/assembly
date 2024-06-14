@@ -475,7 +475,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
         if (obj == null)
             throw new CachePersistenceException("Key: [" + key + "] no exist cache persistence");
         CachePersistenceKeyIdentify<K> keyIdentify = new CachePersistenceKeyIdentify<>(key);
-        List<PersistenceObj> identifies = CACHE_MAP.filterValuesByKeys(keyIdentify::compareToReturnsBool);
+        List<PersistenceObj> identifies = CACHE_MAP.filterValuesByKeys(i -> i.similarTo(keyIdentify));
         if (CollectionUtils.isEmpty(identifies))
             throw new CachePersistenceException("Key: [" + key + "] no exist similar cache persistence");
 
