@@ -46,6 +46,12 @@ public class ExpireMapCenter extends AbstractRecordActivationCenter<ExpireMapCen
     private ExpiringMap<ByteIdentify, ByteIdentify> singleton;
 
     /**
+     * Format function for key/value.
+     */
+    private static final Function<Object[], ByteIdentify> wrapperFunction =
+            args -> new CacheByteIdentify((byte[]) args[0], (String) args[1]);
+
+    /**
      * Do not instance for no args construct.
      */
     private ExpireMapCenter() {
@@ -137,11 +143,11 @@ public class ExpireMapCenter extends AbstractRecordActivationCenter<ExpireMapCen
 
     @Override
     public Function<Object[], ByteIdentify> wrapperKeyFunction() {
-        return args -> new CacheByteIdentify((byte[]) args[0], (String) args[1]);
+        return wrapperFunction;
     }
 
     @Override
     public Function<Object[], ByteIdentify> wrapperValueFunction() {
-        return wrapperKeyFunction();
+        return wrapperFunction;
     }
 }
