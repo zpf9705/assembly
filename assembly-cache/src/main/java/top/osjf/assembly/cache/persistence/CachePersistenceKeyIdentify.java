@@ -1,13 +1,12 @@
 package top.osjf.assembly.cache.persistence;
 
 import top.osjf.assembly.cache.serializer.PairSerializer;
+import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.data.ByteIdentify;
 import top.osjf.assembly.util.data.ComparableBool;
 import top.osjf.assembly.util.data.Identify;
 import top.osjf.assembly.util.data.ObjectIdentify;
-
-import java.util.Objects;
 
 /**
  * Generate different {@link Identify} proxies based on the data
@@ -51,16 +50,17 @@ public class CachePersistenceKeyIdentify<T> implements ComparableBool<CachePersi
      * @param data              single data.
      * @param keyPairSerializer key PairSerializer.
      */
-    public CachePersistenceKeyIdentify(T data, PairSerializer<Object> keyPairSerializer) {
-        Objects.requireNonNull(keyPairSerializer, "keyPairSerializer");
+    public CachePersistenceKeyIdentify(T data, @CanNull PairSerializer<Object> keyPairSerializer) {
         if (data instanceof byte[]) {
             identify = new ByteIdentify((byte[]) data);
         } else {
             identify = new ObjectIdentify<>(data);
         }
-        identify.setSerializeFc(keyPairSerializer::serialize);
-        if (identify instanceof ByteIdentify) {
-            ((ByteIdentify) identify).setDeserializeFc(keyPairSerializer::deserialize);
+        if (keyPairSerializer != null) {
+            identify.setSerializeFc(keyPairSerializer::serialize);
+            if (identify instanceof ByteIdentify) {
+                ((ByteIdentify) identify).setDeserializeFc(keyPairSerializer::deserialize);
+            }
         }
     }
 
