@@ -17,17 +17,9 @@ import java.util.function.Predicate;
  */
 public abstract class Runner implements MethodRunnableCapable {
 
-    private static final boolean async;
-
-    private static final Object lock = new Object();
-
     private static final Predicate<Throwable> EXCEPTION_PREDICATE = (e) -> e instanceof OnOpenPersistenceException;
 
     private static volatile MethodRunnableCapable capable;
-
-    static {
-        async = Configuration.getGlobalConfiguration().isEnablePersistenceAsync();
-    }
 
     /**
      * Get a Singleton {@code MethodRunnableCapable}
@@ -38,16 +30,12 @@ public abstract class Runner implements MethodRunnableCapable {
      *
      * @return {@link MethodRunnableCapable}
      */
-    public static MethodRunnableCapable getCapable() {
+    public static synchronized MethodRunnableCapable getCapable() {
         if (capable == null) {
-            synchronized (lock) {
-                if (capable == null) {
-                    if (async) {
-                        capable = new ASyncPersistenceRunner();
-                    } else {
-                        capable = new SyncPersistenceRunner();
-                    }
-                }
+            if (Configuration.getGlobalConfiguration().isEnablePersistenceAsync()) {
+                capable = new ASyncPersistenceRunner();
+            } else {
+                capable = new SyncPersistenceRunner();
             }
         }
         return capable;
@@ -80,15 +68,15 @@ public abstract class Runner implements MethodRunnableCapable {
         public void run(@NotNull Runnable runnable, @NotNull Consumer<String> errorLoggerConsumer) {
             CachePersistenceThreadLocal.CachePersistenceThreadData data = CachePersistenceThreadLocal.getData();
             CompletableFuture.runAsync(() -> {
-                        CachePersistenceThreadLocal.putData(data);
-                        try {
-                            runnable.run();
-                        } finally {
-                            CachePersistenceThreadLocal.putData(null);
-                        }
-                    }).whenComplete((s, e) -> {
-                        if (!EXCEPTION_PREDICATE.test(e)) errorLoggerConsumer.accept(e.getMessage());
-                    });
+                CachePersistenceThreadLocal.putData(data);
+                try {
+                    runnable.run();
+                } finally {
+                    CachePersistenceThreadLocal.putData(null);
+                }
+            }).whenComplete((s, e) -> {
+                if (!EXCEPTION_PREDICATE.test(e)) errorLoggerConsumer.accept(e.getMessage());
+            });
         }
     }
 }
