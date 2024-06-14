@@ -6,6 +6,7 @@ import top.osjf.assembly.util.lang.ClassUtils;
 import top.osjf.assembly.util.lang.ReflectUtils;
 import top.osjf.assembly.util.system.SystemUtils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -127,11 +128,79 @@ public class Configuration {
      * */
     public static final String listeningRecoveriesKey = "assembly.cache.recover.listeners";
 
+    //———————————————————————————————— Dynamic configuration ——————————————————————————————————————————
+
+    /**
+     * The result of converting {@link #nonCachePersistentCriticalDuration} to millisecond units.
+     */
+    private long nonCachePersistentCriticalDurationToMille;
+
+    /**
+     * When there is no cache time unit, do you need to persist the cache.
+     */
+    private boolean noProviderTimeIsNeedCachePersistence;
+
     //———————————————————————————————— constant ——————————————————————————————————————————
     private final static String multipleSplitSymbols = ",";
-    private static long defaultNonCachePersistentCriticalDurationToMille;
-    private static boolean defaultCompareWithCachePersistence = false;
     private static volatile Configuration configuration;
+
+    //———————————————————————————————— default value —————————————————————————————————————
+
+    /**
+     * The default value of default cache time when no cache time limit is provided.
+     */
+    private static final Long defaultValueDefaultCacheDuration = 10L;
+
+    /**
+     * The default value of default cache time unit when no cache time unit limit is provided.
+     */
+    private static final TimeUnit defaultValueDefaultCacheDurationUnit = TimeUnit.SECONDS;
+
+    /**
+     * The default value of is cache persistence enabled.
+     */
+    private static final Boolean defaultValueEnablePersistence = false;
+
+    /**
+     * The default value of no persistent critical cache time.
+     */
+    private static final Long defaultValueNonCachePersistentCriticalDuration = 60L;
+    /**
+     * The default value of on persistent critical cache time unit.
+     */
+    private static final TimeUnit defaultValueNonCachePersistentCriticalDurationUnit = TimeUnit.SECONDS;
+
+    /**
+     * The default value of whether to enable asynchronous cache persistence.
+     */
+    private static final Boolean defaultValueEnablePersistenceAsync = false;
+
+    /**
+     * The default value of temporary storage path for cache persistent files.
+     */
+    private static final String defaultValueOfPersistencePath = SystemUtils.getCurrentProjectPath() +
+            File.separator + "expire" + File.separator;
+
+    /*** No parameter construction.*/
+    public Configuration() {
+        this.compareDefaultCompareWithCachePersistence();
+    }
+
+    /*** Construct based on parent configuration.
+     * @param parentConfiguration Parent configuration.
+     * */
+    public Configuration(Configuration parentConfiguration) {
+        this.defaultCacheDuration = parentConfiguration.getDefaultCacheDuration();
+        this.defaultCacheDurationUnit = parentConfiguration.getDefaultCacheDurationUnit();
+        this.enablePersistence = parentConfiguration.isEnablePersistence();
+        this.nonCachePersistentCriticalDuration = parentConfiguration.getNonCachePersistentCriticalDuration();
+        this.nonCachePersistentCriticalDurationUnit = parentConfiguration.getNonCachePersistentCriticalDurationUnit();
+        this.enablePersistenceAsync = parentConfiguration.isEnablePersistenceAsync();
+        this.persistencePath = parentConfiguration.getPersistencePath();
+        this.expirationMessageListeners.addAll(parentConfiguration.unmodifiableExpirationMessageListeners());
+        this.listeningRecoveries.addAll(parentConfiguration.unmodifiableListeningRecoveries());
+        this.compareDefaultCompareWithCachePersistence();
+    }
 
     /**
      * Set a global {@link Configuration}.
@@ -140,8 +209,7 @@ public class Configuration {
      */
     public static void setGlobalConfiguration(Configuration configuration) {
         if (configuration != null) {
-            Configuration.configuration = configuration;
-            Configuration.configuration.compareDefaultCompareWithCachePersistence();
+            Configuration.configuration = new Configuration(configuration);
         }
     }
 
@@ -150,37 +218,36 @@ public class Configuration {
      *
      * @return globally unique configuration object.
      */
-    public static synchronized Configuration getConfiguration() {
+    public static synchronized Configuration getGlobalConfiguration() {
         if (configuration == null) {
             configuration = new Configuration();
-            configuration.compareDefaultCompareWithCachePersistence();
         }
         return configuration;
     }
 
     /**
-     * Comparison when no input expiration time, the default Settings or default
-     * expiration and default not persistent value of the size of the timestamp.
+     * Calculate the millisecond value of the critical persistent cache
+     * time and determine whether the default cache time is greater than
+     * the critical persistent cache time when no cache time is provided
+     * to determine whether a default persistent cache is needed.
      */
     public void compareDefaultCompareWithCachePersistence() {
-        Configuration configuration = getConfiguration();
-        defaultNonCachePersistentCriticalDurationToMille =
-                configuration.getNonCachePersistentCriticalDurationUnit()
-                        .toMillis(configuration.getNonCachePersistentCriticalDuration());
-        defaultCompareWithCachePersistence = configuration.getDefaultCacheDurationUnit()
-                .toMillis(configuration.getDefaultCacheDuration())
-                >= defaultNonCachePersistentCriticalDurationToMille;
+        nonCachePersistentCriticalDurationToMille =
+                getNonCachePersistentCriticalDurationUnit().toMillis(getNonCachePersistentCriticalDuration());
+        noProviderTimeIsNeedCachePersistence = getDefaultCacheDurationUnit()
+                .toMillis(getDefaultCacheDuration()) >= nonCachePersistentCriticalDurationToMille;
     }
 
     /**
-     * Based on the comparison between the default cache time and the cache
-     * threshold, determine whether persistence markers are needed when no
-     * cache time is provided.
+     * Returns the flag indicating whether the key/value needs to persist
+     * caching when no caching time unit is provided, and the result is
+     * obtained based on the default caching time and critical persistent
+     * caching time unit.
      *
      * @return Persistent tags,if {@code true} need to be cache persistence.
      */
-    public boolean isDefaultCompareWithCachePersistence() {
-        return defaultCompareWithCachePersistence;
+    public boolean isNoProviderTimeIsNeedCachePersistence() {
+        return noProviderTimeIsNeedCachePersistence;
     }
 
     /**
@@ -188,8 +255,8 @@ public class Configuration {
      *
      * @return conversion of the persistent cache time threshold to milliseconds.
      */
-    public long getDefaultNonCachePersistentCriticalDurationToMille() {
-        return defaultNonCachePersistentCriticalDurationToMille;
+    public long getNonCachePersistentCriticalDurationToMille() {
+        return nonCachePersistentCriticalDurationToMille;
     }
 
     //———————————————————————————————— Set main setting ——————————————————————————————————————————
@@ -225,38 +292,41 @@ public class Configuration {
 //———————————————————————————————— get main setting ——————————————————————————————————————————
 
     public Long getDefaultCacheDuration() {
-        return getOrPropertyUpdate(defaultCacheDuration, defaultCacheDurationKey, Long::valueOf, 10L,
-                this::setDefaultCacheDuration);
+        return getOrPropertyUpdate(defaultCacheDuration, defaultCacheDurationKey, Long::valueOf,
+                defaultValueDefaultCacheDuration, this::setDefaultCacheDuration);
     }
 
     public TimeUnit getDefaultCacheDurationUnit() {
         return getOrPropertyUpdate(defaultCacheDurationUnit, defaultCacheDurationUnitKey, TimeUnit::valueOf,
-                TimeUnit.SECONDS, this::setDefaultCacheDurationUnit);
+                defaultValueDefaultCacheDurationUnit, this::setDefaultCacheDurationUnit);
     }
 
     public boolean isEnablePersistence() {
-        return getOrPropertyUpdate(enablePersistence, enablePersistenceKey, Boolean::valueOf, false,
+        return getOrPropertyUpdate(enablePersistence, enablePersistenceKey, Boolean::valueOf,
+                defaultValueEnablePersistence,
                 this::setEnablePersistence);
     }
 
     public Long getNonCachePersistentCriticalDuration() {
         return getOrPropertyUpdate(nonCachePersistentCriticalDuration, nonCachePersistentCriticalDurationKey,
-                Long::valueOf, 60L, this::setNonCachePersistentCriticalDuration);
+                Long::valueOf, defaultValueNonCachePersistentCriticalDuration,
+                this::setNonCachePersistentCriticalDuration);
     }
 
     public TimeUnit getNonCachePersistentCriticalDurationUnit() {
         return getOrPropertyUpdate(nonCachePersistentCriticalDurationUnit, nonCachePersistentCriticalDurationUnitKey,
-                TimeUnit::valueOf, TimeUnit.SECONDS, this::setNonCachePersistentCriticalDurationUnit);
+                TimeUnit::valueOf, defaultValueNonCachePersistentCriticalDurationUnit,
+                this::setNonCachePersistentCriticalDurationUnit);
     }
 
     public boolean isEnablePersistenceAsync() {
         return getOrPropertyUpdate(enablePersistenceAsync, enablePersistenceAsyncKey, Boolean::valueOf,
-                false, this::setEnablePersistenceAsync);
+                defaultValueEnablePersistenceAsync, this::setEnablePersistenceAsync);
     }
 
     public String getPersistencePath() {
         return getOrPropertyUpdate(persistencePath, persistencePathKey, String::valueOf,
-                SystemUtils.getCurrentProjectPath() + "/expire/",
+                defaultValueOfPersistencePath,
                 this::setPersistencePath);
     }
 

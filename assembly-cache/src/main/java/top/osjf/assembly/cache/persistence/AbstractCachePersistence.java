@@ -20,7 +20,6 @@ import top.osjf.assembly.util.encode.DigestUtils;
 import top.osjf.assembly.util.io.IoUtils;
 import top.osjf.assembly.util.json.FastJsonUtils;
 import top.osjf.assembly.util.lang.*;
-import top.osjf.assembly.util.serial.SerialUtils;
 
 import java.io.*;
 import java.net.URL;
@@ -282,7 +281,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
      * Load cache persistence configuration classes.
      */
     static void loadConfiguration() {
-        configuration = Configuration.getConfiguration();
+        configuration = Configuration.getGlobalConfiguration();
         enablePersistence = configuration.isEnablePersistence();
         //if you open persistence will auto create directory
         if (enablePersistence) {
@@ -520,13 +519,13 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
         checkEntry(entry);
         //empty just pass
         if (entry.getDuration() == null || entry.getTimeUnit() == null) {
-            if (configuration.isDefaultCompareWithCachePersistence()) {
+            if (configuration.isNoProviderTimeIsNeedCachePersistence()) {
                 return;
             }
             throw new CachePersistenceException("Default setting no support be persisted");
         }
         if (entry.getTimeUnit().toMillis(entry.getDuration()) >=
-                configuration.getDefaultNonCachePersistentCriticalDurationToMille()) {
+                configuration.getNonCachePersistentCriticalDurationToMille()) {
             return;
         }
         throw new CachePersistenceException("Only more than or == " +

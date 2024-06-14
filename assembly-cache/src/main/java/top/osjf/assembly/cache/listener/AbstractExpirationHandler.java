@@ -19,7 +19,7 @@ public abstract class AbstractExpirationHandler {
         if (message == null) {
             return;
         }
-        List<ExpirationMessageListener> listeners = Configuration.getConfiguration().
+        List<ExpirationMessageListener> listeners = Configuration.getGlobalConfiguration().
                 unmodifiableExpirationMessageListeners();
         if (CollectionUtils.isNotEmpty(listeners)) {
             listeners.forEach((listener) -> listener.onMessage(message));
