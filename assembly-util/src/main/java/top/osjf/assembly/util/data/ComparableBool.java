@@ -9,6 +9,7 @@ import top.osjf.assembly.util.annotation.NotNull;
  * @author zpf
  * @since 1.0.0
  */
+@Deprecated
 public interface ComparableBool<T> extends Comparable<T> {
 
     @Override

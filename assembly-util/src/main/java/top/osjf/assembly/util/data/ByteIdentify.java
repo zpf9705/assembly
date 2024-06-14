@@ -70,7 +70,7 @@ public class ByteIdentify extends Identify<byte[], ByteIdentify> {
             return true;
         }
         Object deserializeData = deserializeFc.apply(data);
-        Object deserializeDataChallenge = o.getDeserializeFc().apply(data);
+        Object deserializeDataChallenge = o.getDeserializeFc().apply(dataChallenge);
         if (deserializeData instanceof SimilarAble) {
             //Note type cast exceptions.
             return ((SimilarAble) deserializeData).similarTo(deserializeDataChallenge);
