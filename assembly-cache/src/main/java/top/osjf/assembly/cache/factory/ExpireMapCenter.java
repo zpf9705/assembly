@@ -5,11 +5,13 @@ import top.osjf.assembly.cache.config.expiringmap.ExpiringMapClients;
 import top.osjf.assembly.cache.listener.ByteMessage;
 import top.osjf.assembly.cache.listener.DefaultExpiringmapExpirationListener;
 import top.osjf.assembly.cache.persistence.CachePersistenceSolver;
+import top.osjf.assembly.cache.serializer.CacheByteIdentify;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.data.ByteIdentify;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 /**
  * Cache center based on {@link ExpiringMap}.
@@ -29,7 +31,7 @@ import java.util.concurrent.TimeUnit;
  * @author zpf
  * @since 1.0.0
  */
-public class ExpireMapCenter extends AbstractRecordActivationCenter<ExpireMapCenter, byte[], byte[]> {
+public class ExpireMapCenter extends AbstractRecordActivationCenter<ExpireMapCenter, ByteIdentify, ByteIdentify> {
 
     private static final long serialVersionUID = -7878806306402600655L;
 
@@ -118,12 +120,12 @@ public class ExpireMapCenter extends AbstractRecordActivationCenter<ExpireMapCen
     }
 
     @Override
-    public void reload(@NotNull byte[] key, @NotNull byte[] value, @NotNull Long duration,
+    public void reload(@NotNull ByteIdentify key, @NotNull ByteIdentify value, @NotNull Long duration,
                        @NotNull TimeUnit unit) {
         if (this.singleton == null) {
             return;
         }
-        this.singleton.put(new ByteIdentify(key), new ByteIdentify(value), duration, unit);
+        this.singleton.put(key, value, duration, unit);
     }
 
     @Override
@@ -131,5 +133,15 @@ public class ExpireMapCenter extends AbstractRecordActivationCenter<ExpireMapCen
     public void cleanSupportingElements(@NotNull ByteMessage message) {
         //Remove persistent cache
         CachePersistenceSolver.INSTANCE.removePersistenceWithKey(message.getByteKey());
+    }
+
+    @Override
+    public Function<Object[], ByteIdentify> wrapperKeyFunction() {
+        return args -> new CacheByteIdentify((byte[]) args[0], (String) args[1]);
+    }
+
+    @Override
+    public Function<Object[], ByteIdentify> wrapperValueFunction() {
+        return wrapperKeyFunction();
     }
 }

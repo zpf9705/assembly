@@ -994,10 +994,12 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
         //Calculate remaining time units
         Long condition = condition(currentTimeMillis, persistence.getExpire(), entry.getTimeUnit());
         //reload
-        AbstractRecordActivationCenter.getSingletonCenter().reload(entry.getKey(),
-                entry.getValue(),
-                condition,
-                entry.getTimeUnit());
+        Center center = AbstractRecordActivationCenter.getSingletonCenter();
+        K wrapperKey = (K) center.wrapperKeyFunction().apply(new Object[]{entry.getKey(),
+                persistence.getKeyPairSerializerName()});
+        V wrapperValue = (V) center.wrapperValueFunction().apply(new Object[]{entry.getValue(),
+                persistence.getValuePairSerializerName()});
+        center.reload(wrapperKey, wrapperValue, condition, entry.getTimeUnit());
         PairSerializer<K> keyPairSerializer = getPairSerializerByName(persistence.getKeyPairSerializerName());
         PairSerializer<V> valuePairSerializer = getPairSerializerByName(persistence.getValuePairSerializerName());
         //Callback for restoring cached keys and values
