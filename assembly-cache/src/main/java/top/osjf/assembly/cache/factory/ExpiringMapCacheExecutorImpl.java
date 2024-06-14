@@ -4,8 +4,9 @@ import top.osjf.assembly.cache.command.CacheKeyCommands;
 import top.osjf.assembly.cache.command.CachePairCommands;
 import top.osjf.assembly.cache.command.expiremap.ExpiringMapKeyCommands;
 import top.osjf.assembly.cache.command.expiremap.ExpiringMapPairCommands;
-import top.osjf.assembly.util.data.ByteIdentify;
 import top.osjf.assembly.util.annotation.CanNull;
+import top.osjf.assembly.util.data.ByteIdentify;
+import top.osjf.assembly.util.data.Identify;
 
 import java.util.HashMap;
 import java.util.List;
@@ -138,10 +139,11 @@ public class ExpiringMapCacheExecutorImpl extends AbstractCacheExecutor<ExpireMa
 
             @Override
             public List<byte[]> inHelp(ByteIdentify keyByteIdentify, ExpireMapCenter helpCenter) {
+
                 return helpCenter.getSingleton().keySet()
                         .stream()
-                        .filter(b -> b.similarTo(keyByteIdentify))
-                        .map(ByteIdentify::getData)
+                        .filter(identify -> identify.similarTo(keyByteIdentify))
+                        .map(Identify::getData)
                         .collect(Collectors.toList());
             }
         });
