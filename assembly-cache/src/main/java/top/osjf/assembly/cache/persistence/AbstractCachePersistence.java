@@ -15,7 +15,6 @@ import top.osjf.assembly.cache.serializer.PairSerializer;
 import top.osjf.assembly.cache.serializer.PairSerializerNotFoundException;
 import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
-import top.osjf.assembly.util.data.ObjectIdentify;
 import top.osjf.assembly.util.encode.DigestUtils;
 import top.osjf.assembly.util.io.IoUtils;
 import top.osjf.assembly.util.json.FastJsonUtils;
@@ -144,7 +143,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
     private static boolean enablePersistence;
 
     /*** Cache the necessary information filtering function's cache map.*/
-    private static final FilterMap<ObjectIdentify, PersistenceObj> CACHE_MAP = new FilterMap<>();
+    private static final FilterMap<CachePersistenceKeyIdentify, PersistenceObj> CACHE_MAP = new FilterMap<>();
 
     /*** Thread safe read and write locks for persistent file operations.*/
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
@@ -319,7 +318,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
      @NotNull Class<P> persistenceClass,
      @NotNull Entry<K, V> entry) {
         checkOf(entry);
-        ObjectIdentify<K> kIdentify = new ObjectIdentify<>(entry.getKey());
+        CachePersistenceKeyIdentify<K> kIdentify = new CachePersistenceKeyIdentify<>(entry.getKey());
         String persistenceFileName = rawPersistenceFileName(entry.getKey());
         String writePath = rawWritePath(persistenceFileName);
         AbstractCachePersistence<K, V> cachePersistence;
@@ -363,7 +362,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
         Entry<K, V> entry = persistence.entry;
         String persistenceFileName = rawPersistenceFileName(entry.getKey());
         AbstractCachePersistence<K, V> globePersistence =
-                CACHE_MAP.computeIfAbsent(new ObjectIdentify(entry.getKey()), v ->
+                CACHE_MAP.computeIfAbsent(new CachePersistenceKeyIdentify(entry.getKey()), v ->
                         new PersistenceObj(persistenceFileName,
                                 createCachePersistence(globePersistenceClass, persistence,
                                         rawWritePath(persistenceFileName))
@@ -452,7 +451,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
     public static <G extends AbstractCachePersistence, K, V> G ofGet(@NotNull K key,
                                                                      @NotNull Class<G> globePersistenceClass) {
         checkOpenPersistence();
-        PersistenceObj obj = CACHE_MAP.get(new ObjectIdentify(key));
+        PersistenceObj obj = CACHE_MAP.get(new CachePersistenceKeyIdentify(key));
         if (obj == null)
             throw new CachePersistenceException("Key: [" + key + "] no exist cache persistence");
         AbstractCachePersistence<K, V> cachePersistence = obj.getPersistence();
@@ -471,11 +470,11 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
      */
     public static <G extends AbstractCachePersistence, K> List<G> ofGetSimilar(@NotNull K key) {
         checkOpenPersistence();
-        PersistenceObj obj = CACHE_MAP.get(new ObjectIdentify(key));
+        PersistenceObj obj = CACHE_MAP.get(new CachePersistenceKeyIdentify(key));
         if (obj == null)
             throw new CachePersistenceException("Key: [" + key + "] no exist cache persistence");
-        List<PersistenceObj> identifies = CACHE_MAP.filterValuesByKeys(objectIdentify -> {
-            return objectIdentify.compareToReturnsBool(new ObjectIdentify<>(key));
+        List<PersistenceObj> identifies = CACHE_MAP.filterValuesByKeys(identify -> {
+            return identify.compareToReturnsBool(new CachePersistenceKeyIdentify<>(key));
         });
         if (CollectionUtils.isEmpty(identifies))
             throw new CachePersistenceException("Key: [" + key + "] no exist similar cache persistence");
@@ -839,7 +838,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
             //Delete the old file to add a new file
             this.delWithCurrentWritePath();
             //Delete the cache because the value changes
-            CACHE_MAP.remove(new ObjectIdentify(entry.getKey()));
+            CACHE_MAP.remove(new CachePersistenceKeyIdentify(entry.getKey()));
             //To write a cache file
             ofSet(getCachePersistenceClass(), getPersistenceClass(),
                     Entry.of(entry.getKey(), newValue, entry.getDuration(), entry.getTimeUnit())).write();
@@ -856,7 +855,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
             //Delete the persistent file
             this.delWithCurrentWritePath();
             //Delete the cache
-            CACHE_MAP.remove(new ObjectIdentify(entry.getKey()));
+            CACHE_MAP.remove(new CachePersistenceKeyIdentify(entry.getKey()));
         } finally {
             writeLock.unlock();
         }
