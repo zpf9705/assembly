@@ -4,7 +4,6 @@ import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.serial.SerialUtils;
 
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -49,45 +48,33 @@ public class ByteIdentify extends Identify<byte[], ByteIdentify> {
     }
 
     @Override
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public int compareTo(@NotNull ByteIdentify o) {
-        byte[] compare = o.getData();
-        byte[] byCompare = this.getData();
-        int compareTo;
-        boolean equals = Arrays.equals(compare, byCompare);
-        if (equals) {
-            compareTo = 0;
-        } else {
-            Object d0 = o.getDeserializeFc().apply(compare);
-            Object d0by = deserializeFc.apply(byCompare);
-            if (d0by == null || d0 == null) {
-                compareTo = -1;
-            } else {
-                if (!Objects.equals(d0by.getClass().getName(), d0.getClass().getName())) {
-                    compareTo = -1;
-                } else {
-                    if (!(d0by instanceof String)) {
-                        if (!(d0by instanceof Comparable)) {
-                            compareTo = -1;
-                        } else {
-                            compareTo = ((Comparable) d0).compareTo(d0by);
-                        }
-                    } else {
-                        String d0s = (String) d0;
-                        String d0bys = (String) d0by;
-                        // %% / %- / -%
-                        if (d0s.startsWith(d0bys)
-                                || d0s.endsWith(d0bys)
-                                || d0s.contains(d0bys)) {
-                            compareTo = 1;
-                        } else {
-                            compareTo = -1;
-                        }
-                    }
-                }
+        byte[] data = getData();
+        byte[] dataChallenge = o.getData();
+        int minLen = Math.min(data.length, dataChallenge.length);
+        for (int i = 0; i < minLen; i++) {
+            if (data[i] != dataChallenge[i]) {
+                return Byte.compare(data[i], dataChallenge[i]);
             }
         }
-        return compareTo;
+        return Integer.compare(data.length, dataChallenge.length);
+    }
+
+    @Override
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public boolean similarTo(ByteIdentify o) {
+        byte[] data = getData();
+        byte[] dataChallenge = o.getData();
+        if (Arrays.equals(data, dataChallenge)) {
+            return true;
+        }
+        Object deserializeData = deserializeFc.apply(data);
+        Object deserializeDataChallenge = o.getDeserializeFc().apply(data);
+        if (deserializeData instanceof SimilarAble) {
+            //Note type cast exceptions.
+            return ((SimilarAble) deserializeData).similarTo(deserializeDataChallenge);
+        }
+        return super.similarTo(o);
     }
 
     @Override

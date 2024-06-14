@@ -28,8 +28,10 @@ import java.util.function.Function;
  * @author zpf
  * @since 1.0.0
  */
-@SuppressWarnings("serial")
-public abstract class Identify<T, SELF> implements ComparableBool<SELF>, Serializable {
+public abstract class Identify<T, SELF extends Identify<T, SELF>> implements Comparable<SELF>, SimilarAble<SELF>,
+        Serializable {
+
+    private static final long serialVersionUID = -7461905822697156104L;
 
     private final T data;
 
@@ -44,8 +46,22 @@ public abstract class Identify<T, SELF> implements ComparableBool<SELF>, Seriali
         return data;
     }
 
+    @Override
+    public boolean similarTo(SELF o) {
+        T data = getData();
+        T dataChallenge = o.getData();
+        if (data instanceof String && dataChallenge instanceof String) {
+            String dataStr = (String) data;
+            String dataChallengeStr = (String) dataChallenge;
+            // == or %% or -% or %-
+            return dataChallengeStr.equals(dataStr) || dataChallengeStr.contains(dataStr);
+        }
+        return false;
+    }
+
     /**
      * Set serialization function.
+     *
      * @param serializeFc serialization function.
      * @since 1.1.3
      */
@@ -55,7 +71,8 @@ public abstract class Identify<T, SELF> implements ComparableBool<SELF>, Seriali
 
     /**
      * Return serialization function.
-     * @return  serialization function.
+     *
+     * @return serialization function.
      * @since 1.1.3
      */
     public Function<Object, byte[]> getSerializeFc() {
