@@ -58,6 +58,7 @@ public abstract class AbstractCacheExecutor<T> implements DefaultCacheExecutor {
      *
      * @param var A byte array,must not be {@literal null}.
      * @return Be a {@link ByteIdentify}.
+     * @since 1.1.4
      */
     protected ByteIdentify identifyKeyByteArray(byte[] var) {
         return identifyByteArray(var, SerializerOperationType.KEY);
@@ -68,6 +69,7 @@ public abstract class AbstractCacheExecutor<T> implements DefaultCacheExecutor {
      *
      * @param var A byte array,must not be {@literal null}.
      * @return Be a {@link ByteIdentify}.
+     * @since 1.1.4
      */
     protected ByteIdentify identifyValueByteArray(byte[] var) {
         return identifyByteArray(var, SerializerOperationType.VALUE);
@@ -80,6 +82,7 @@ public abstract class AbstractCacheExecutor<T> implements DefaultCacheExecutor {
      * @param type The type of serialization operation.
      * @param var  A byte array,must not be {@literal null}.
      * @return Be a {@link ByteIdentify}.
+     * @since 1.1.4
      */
     protected ByteIdentify identifyByteArray(byte[] var, SerializerOperationType type) {
         return new CacheByteIdentify(var, type.get());
