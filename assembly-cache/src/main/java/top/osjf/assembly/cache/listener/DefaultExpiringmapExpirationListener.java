@@ -11,7 +11,7 @@ import top.osjf.assembly.util.data.ByteIdentify;
 public class DefaultExpiringmapExpirationListener extends AbstractExpirationHandler implements
         ExpirationListener<ByteIdentify, ByteIdentify> {
 
-    public static final DefaultExpiringmapExpirationListener LISTENER = new DefaultExpiringmapExpirationListener();
+    public static final DefaultExpiringmapExpirationListener INSTANCE = new DefaultExpiringmapExpirationListener();
 
     private DefaultExpiringmapExpirationListener() {
     }

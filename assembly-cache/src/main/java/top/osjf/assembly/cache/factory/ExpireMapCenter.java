@@ -108,7 +108,7 @@ public class ExpireMapCenter extends AbstractRecordActivationCenter<ExpireMapCen
                 .expirationPolicy(clients.getExpirationPolicy())
                 .variableExpiration()
                 .build();
-        singleton.addExpirationListener(DefaultExpiringmapExpirationListener.LISTENER);
+        singleton.addExpirationListener(DefaultExpiringmapExpirationListener.INSTANCE);
         return new ExpireMapCenter(singleton);
     }
 
