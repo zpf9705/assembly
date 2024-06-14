@@ -68,9 +68,9 @@ public class CacheProperties {
         /**
          * Set a {@code expirationPolicy} for map.
          *
-         * <p>The default is {@code ExpirationPolicy.ACCESSED}.</p>
+         * <p>The default is {@code ExpirationPolicy.CREATED}.</p>
          */
-        private ExpirationPolicy expirationPolicy = ExpirationPolicy.ACCESSED;
+        private ExpirationPolicy expirationPolicy = ExpirationPolicy.CREATED;
 
         public Integer getMaxSize() {
             return maxSize;

@@ -92,7 +92,7 @@ public interface ExpiringMapClients {
         static final Integer DEFAULT_MAX_SIZE = 20 * 50;
         static final Long DEFAULT_EXPIRE_TIME = 30L;
         static final TimeUnit DEFAULT_EXPIRE_TIME_UNIT = TimeUnit.SECONDS;
-        static final ExpirationPolicy DEFAULT_EXPIRATION_POLICY = ExpirationPolicy.ACCESSED;
+        static final ExpirationPolicy DEFAULT_EXPIRATION_POLICY = ExpirationPolicy.CREATED;
 
         ExpiringMapClientsBuilder() {
         }
