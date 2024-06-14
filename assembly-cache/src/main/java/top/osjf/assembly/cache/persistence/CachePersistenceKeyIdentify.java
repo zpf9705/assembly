@@ -36,6 +36,22 @@ public class CachePersistenceKeyIdentify<T> implements ComparableBool<CachePersi
         }
     }
 
+    @Override
+    public int hashCode() {
+        return identify.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof CachePersistenceKeyIdentify)) {
+            return false;
+        }
+        return this.hashCode() == obj.hashCode();
+    }
+
     public Identify getIdentify() {
         return identify;
     }
