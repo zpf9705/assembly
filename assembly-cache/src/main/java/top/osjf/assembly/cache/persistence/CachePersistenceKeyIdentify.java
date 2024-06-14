@@ -21,18 +21,46 @@ public class CachePersistenceKeyIdentify<T> implements ComparableBool<CachePersi
 
     private final Identify identify;
 
+    /**
+     * The construction method of using a single data to create an identity
+     * object for a key is applicable during runtime.
+     *
+     * @param data single data.
+     */
     public CachePersistenceKeyIdentify(T data) {
-        PairSerializer<Object> pairSerializer = AbstractCachePersistence.getPairSerializerByName(
-                CachePersistenceThreadLocal.getKeyPairSerializerName());
-        Objects.requireNonNull(pairSerializer, "keyPairSerializer");
+        this(data, CachePersistenceThreadLocal.getKeyPairSerializerName());
+    }
+
+    /**
+     * A construction method for constructing identity objects using the
+     * serialized object names of individual data and keys, suitable for
+     * initialization.
+     *
+     * @param data                  single data.
+     * @param keyPairSerializerName serialized object names
+     */
+    public CachePersistenceKeyIdentify(T data, String keyPairSerializerName) {
+        this(data, AbstractCachePersistence.getPairSerializerByName(keyPairSerializerName));
+    }
+
+    /**
+     * The construction method of constructing the identity object of a key
+     * using a single data and specific serialized objects, with universal
+     * processing.
+     *
+     * @param data              single data.
+     * @param keyPairSerializer key PairSerializer.
+     */
+    public CachePersistenceKeyIdentify(T data, PairSerializer<Object> keyPairSerializer) {
+        Objects.requireNonNull(keyPairSerializer, "keyPairSerializer");
         if (data instanceof byte[]) {
             identify = new ByteIdentify((byte[]) data);
         } else {
             identify = new ObjectIdentify<>(data);
         }
-        identify.setSerializeFc(pairSerializer::serialize);
+        identify.setSerializeFc(keyPairSerializer::serialize);
         if (identify instanceof ByteIdentify) {
-            ((ByteIdentify) identify).setDeserializeFc(pairSerializer::deserialize);
+            ((ByteIdentify) identify).setDeserializeFc(keyPairSerializer::deserialize);
         }
     }
 

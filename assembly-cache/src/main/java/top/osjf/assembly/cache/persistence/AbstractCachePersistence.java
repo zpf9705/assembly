@@ -362,7 +362,8 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
         Entry<K, V> entry = persistence.entry;
         String persistenceFileName = rawPersistenceFileName(entry.getKey());
         AbstractCachePersistence<K, V> globePersistence =
-                CACHE_MAP.computeIfAbsent(new CachePersistenceKeyIdentify(entry.getKey()), v ->
+                CACHE_MAP.computeIfAbsent(new CachePersistenceKeyIdentify(entry.getKey(),
+                        persistence.keyPairSerializerName), v ->
                         new PersistenceObj(persistenceFileName,
                                 createCachePersistence(globePersistenceClass, persistence,
                                         rawWritePath(persistenceFileName))
