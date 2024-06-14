@@ -93,8 +93,15 @@ public abstract class Identify<T, SELF extends Identify<T, SELF>> implements Com
         if (o1 instanceof String && o2 instanceof String) {
             String dataStr = (String) o1;
             String dataChallengeStr = (String) o2;
-            // == or %% or -% or %-
-            return dataChallengeStr.equals(dataStr) || dataChallengeStr.contains(dataStr);
+            if (dataStr.equals(dataChallengeStr)) {
+                return true;
+            }
+            if (dataStr.length() < dataChallengeStr.length()) {
+                return false;
+            }
+            return dataStr.startsWith(dataChallengeStr)
+                    || dataStr.endsWith(dataChallengeStr)
+                    || dataStr.contains(dataChallengeStr);
         }
         return false;
     }
