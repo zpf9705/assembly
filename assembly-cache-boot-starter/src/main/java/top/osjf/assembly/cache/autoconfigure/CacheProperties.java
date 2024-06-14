@@ -68,6 +68,12 @@ public class CacheProperties {
         /**
          * Set a {@code expirationPolicy} for map.
          *
+         * <p>The {@link ExpirationPolicy#ACCESSED} policy is applicable
+         * to caching data whose access frequency affects its effectiveness.
+         * For example,frequently accessed data should be kept in cache, while
+         * infrequently accessed data can expire quickly to free up space,
+         * which can be chosen if needed.
+         *
          * <p>The default is {@code ExpirationPolicy.CREATED}.</p>
          */
         private ExpirationPolicy expirationPolicy = ExpirationPolicy.CREATED;
