@@ -2,6 +2,8 @@ package top.osjf.assembly.util.data;
 
 import cn.hutool.core.lang.hash.CityHash;
 import top.osjf.assembly.util.lang.ReflectUtils;
+import top.osjf.assembly.util.lang.SimilarAble;
+import top.osjf.assembly.util.lang.Similarator;
 import top.osjf.assembly.util.serial.SerialUtils;
 
 import java.io.Serializable;
@@ -23,13 +25,16 @@ import java.util.function.Function;
  * be {@link Identify} or its subclasses in order to perform {@code hashcode} calculations,
  * and requiring equality.
  *
+ * <p>From 1.1.4, add verification of similar identities {@link #similarTo(Object)} and
+ * {@link #similarTo(Object, Object)}.
+ *
  * @param <T>    The type of packaging data.
  * @param <SELF> Compare the types of data.
  * @author zpf
  * @since 1.0.0
  */
 public abstract class Identify<T, SELF extends Identify<T, SELF>> implements Comparable<SELF>, SimilarAble<SELF>,
-        Serializable {
+        Similarator<Object>, Serializable {
 
     private static final long serialVersionUID = -7461905822697156104L;
 
@@ -44,19 +49,6 @@ public abstract class Identify<T, SELF extends Identify<T, SELF>> implements Com
 
     public T getData() {
         return data;
-    }
-
-    @Override
-    public boolean similarTo(SELF o) {
-        T data = getData();
-        T dataChallenge = o.getData();
-        if (data instanceof String && dataChallenge instanceof String) {
-            String dataStr = (String) data;
-            String dataChallengeStr = (String) dataChallenge;
-            // == or %% or -% or %-
-            return dataChallengeStr.equals(dataStr) || dataChallengeStr.contains(dataStr);
-        }
-        return false;
     }
 
     /**
@@ -94,6 +86,17 @@ public abstract class Identify<T, SELF extends Identify<T, SELF>> implements Com
             bytes = serializeFc.apply(data);
         }
         return CityHash.hash32(bytes);
+    }
+
+    @Override
+    public boolean similarTo(Object o1, Object o2) {
+        if (o1 instanceof String && o2 instanceof String) {
+            String dataStr = (String) o1;
+            String dataChallengeStr = (String) o2;
+            // == or %% or -% or %-
+            return dataChallengeStr.equals(dataStr) || dataChallengeStr.contains(dataStr);
+        }
+        return false;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package top.osjf.assembly.util.data;
 
 import top.osjf.assembly.util.annotation.NotNull;
+import top.osjf.assembly.util.lang.SimilarAble;
 import top.osjf.assembly.util.serial.SerialUtils;
 
 import java.util.Arrays;
@@ -74,7 +75,7 @@ public class ByteIdentify extends Identify<byte[], ByteIdentify> {
             //Note type cast exceptions.
             return ((SimilarAble) deserializeData).similarTo(deserializeDataChallenge);
         }
-        return super.similarTo(o);
+        return super.similarTo(deserializeData, deserializeDataChallenge);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package top.osjf.assembly.util.data;
 
 import top.osjf.assembly.util.annotation.NotNull;
+import top.osjf.assembly.util.lang.SimilarAble;
 
 import java.util.Objects;
 
@@ -45,6 +46,6 @@ public class ObjectIdentify<T> extends Identify<T, ObjectIdentify<T>> {
             //Note type cast exceptions.
             return ((SimilarAble) data).similarTo(dataChallenge);
         }
-        return super.similarTo(o);
+        return super.similarTo(data, dataChallenge);
     }
 }
