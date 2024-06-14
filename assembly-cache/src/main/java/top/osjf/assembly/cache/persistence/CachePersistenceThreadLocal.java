@@ -57,6 +57,15 @@ public class CachePersistenceThreadLocal extends ThreadLocal<CachePersistenceThr
 
     /*
      * (non-Javadoc)
+     * @see CachePersistenceThreadData#getKeyPairSerializerName()
+     */
+    public static String getSafeKeyPairSerializerName() {
+        CachePersistenceThreadData data = getData();
+        return getData() != null ? data.getKeyPairSerializerName() : null;
+    }
+
+    /*
+     * (non-Javadoc)
      * @see CachePersistenceThreadData#getValuePairSerializerName()
      */
     public static String getValuePairSerializerName() {

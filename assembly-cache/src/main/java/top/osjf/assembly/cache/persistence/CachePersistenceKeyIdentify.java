@@ -28,7 +28,7 @@ public class CachePersistenceKeyIdentify<T> implements ComparableBool<CachePersi
      * @param data single data.
      */
     public CachePersistenceKeyIdentify(T data) {
-        this(data, CachePersistenceThreadLocal.getKeyPairSerializerName());
+        this(data, CachePersistenceThreadLocal.getSafeKeyPairSerializerName());
     }
 
     /**
