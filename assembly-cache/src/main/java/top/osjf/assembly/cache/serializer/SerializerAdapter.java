@@ -30,7 +30,7 @@ public class SerializerAdapter<T> implements PairSerializer<T> {
         T t = null;
         Object deserialize = SerialUtils.deserialize(bytes);
         if (deserialize != null) {
-            t = ConvertUtils.convert(this.type, deserialize);
+            t = ConvertUtils.convert(serializerType(), deserialize);
         }
         return t;
     }
