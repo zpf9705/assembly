@@ -1006,15 +1006,13 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
         List<ListeningRecovery> listeningRecoveries = configuration.unmodifiableListeningRecoveries();
         if (CollectionUtils.isNotEmpty(listeningRecoveries)) {
             for (ListeningRecovery recovery : listeningRecoveries) {
+                K key = deserialize(keyPairSerializer, entry.getKey());
+                V value = deserialize(valuePairSerializer, entry.getKey());
                 try {
-                    Object key = deserialize(keyPairSerializer, entry.getKey());
-                    Object value = deserialize(valuePairSerializer, entry.getValue());
-                    recovery.recovery(key, value);
                     recovery.recovery(key, value, condition, entry.getTimeUnit());
-                } catch (Exception e) {
-                    if (log.isWarnEnabled()) {
-                        log.warn("Cache recovery callback exception , throw an error : {}", e.getMessage());
-                    }
+                } catch (Throwable e) {
+                    log.error("Failed to recover cache key {} - value {}.", key, value);
+                    e.printStackTrace(System.err);
                 }
             }
         }

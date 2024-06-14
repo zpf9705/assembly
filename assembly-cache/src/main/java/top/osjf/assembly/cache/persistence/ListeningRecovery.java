@@ -6,29 +6,32 @@ import java.util.concurrent.TimeUnit;
  * After the project restarts, when the scheduled cache is restored,
  * listen for the restored content, including key value pairs and
  * corresponding time units.
- * @see top.osjf.assembly.cache.config.Configuration
+ *
  * @author zpf
  * @since 1.0.0
  */
 public interface ListeningRecovery {
 
     /**
-     * Restore cached keys and values.
+     * The key and value, as well as their remaining time information,
+     * have been restored to the cache center.
      *
-     * @param key   must not be {@literal null}.
-     * @param value must not be {@literal null}.
+     * @param key         The key to recover cache.
+     * @param value       The value to recover cache.
+     * @param surplusTime The remaining time to recover cache.
+     * @param timeUnit    The remaining time unit to recover cache.
      */
-    void recovery(Object key, Object value);
+    default void recovery(Object key, Object value, Long surplusTime, TimeUnit timeUnit) {
+        recovery(key, value);
+    }
 
     /**
-     * Provide renewal time after recovery based on {@link #recovery(Object, Object)}.
+     * The key and value have been restored to the cache center.
      *
-     * @param key      must not be {@literal null}.
-     * @param value    must not be {@literal null}.
-     * @param time     must not be {@literal null}.
-     * @param timeUnit must not be {@literal null}.
+     * @param key         The key to recover cache.
+     * @param value       The value to recover cache.
      */
-    default void recovery(Object key, Object value, Long time, TimeUnit timeUnit) {
+    default void recovery(Object key, Object value) {
 
     }
 }
