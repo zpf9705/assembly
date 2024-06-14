@@ -141,52 +141,62 @@ public class Configuration {
     private boolean noProviderTimeIsNeedCachePersistence;
 
     //———————————————————————————————— constant ——————————————————————————————————————————
-    private final static String multipleSplitSymbols = ",";
-    private static volatile Configuration configuration;
+    private final static String multipleSplitSymbols = ","; //     * @since 1.1.4
+    private static volatile Configuration configuration; //     * @since 1.1.4
 
     //———————————————————————————————— default value —————————————————————————————————————
 
     /**
      * The default value of default cache time when no cache time limit is provided.
+     * @since 1.1.4
      */
     private static final Long defaultValueDefaultCacheDuration = 10L;
 
     /**
      * The default value of default cache time unit when no cache time unit limit is provided.
+     * @since 1.1.4
      */
     private static final TimeUnit defaultValueDefaultCacheDurationUnit = TimeUnit.SECONDS;
 
     /**
      * The default value of is cache persistence enabled.
+     * @since 1.1.4
      */
     private static final Boolean defaultValueEnablePersistence = false;
 
     /**
      * The default value of no persistent critical cache time.
+     * @since 1.1.4
      */
     private static final Long defaultValueNonCachePersistentCriticalDuration = 60L;
     /**
      * The default value of on persistent critical cache time unit.
+     * @since 1.1.4
      */
     private static final TimeUnit defaultValueNonCachePersistentCriticalDurationUnit = TimeUnit.SECONDS;
 
     /**
      * The default value of whether to enable asynchronous cache persistence.
+     * @since 1.1.4
      */
     private static final Boolean defaultValueEnablePersistenceAsync = false;
 
     /**
      * The default value of temporary storage path for cache persistent files.
+     * @since 1.1.4
      */
     private static final String defaultValueOfPersistencePath = SystemUtils.getCurrentProjectPath() +
             File.separator + "expire" + File.separator;
 
-    /*** No parameter construction.*/
+    /***
+     * @since 1.1.4
+     * No parameter construction.*/
     public Configuration() {
         this.compareDefaultCompareWithCachePersistence();
     }
 
     /*** Construct based on parent configuration.
+     * @since 1.1.4
      * @param parentConfiguration Parent configuration.
      * */
     public Configuration(Configuration parentConfiguration) {
@@ -204,7 +214,7 @@ public class Configuration {
 
     /**
      * Set a global {@link Configuration}.
-     *
+     * @since 1.1.4
      * @param configuration global using configuration.
      */
     public static void setGlobalConfiguration(Configuration configuration) {
@@ -215,7 +225,7 @@ public class Configuration {
 
     /**
      * Returns a globally unique configuration object.
-     *
+     * @since 1.1.4
      * @return globally unique configuration object.
      */
     public static synchronized Configuration getGlobalConfiguration() {
@@ -261,69 +271,83 @@ public class Configuration {
 
     //———————————————————————————————— Set main setting ——————————————————————————————————————————
 
+    //@since 1.1.4
     public void setDefaultCacheDuration(Long defaultCacheDuration) {
         this.defaultCacheDuration = defaultCacheDuration;
     }
 
+    //@since 1.1.4
     public void setDefaultCacheDurationUnit(TimeUnit defaultCacheDurationUnit) {
         this.defaultCacheDurationUnit = defaultCacheDurationUnit;
     }
 
+    //@since 1.1.4
     public void setEnablePersistence(Boolean enablePersistence) {
         this.enablePersistence = enablePersistence;
     }
 
+    //@since 1.1.4
     public void setNonCachePersistentCriticalDuration(Long nonCachePersistentCriticalDuration) {
         this.nonCachePersistentCriticalDuration = nonCachePersistentCriticalDuration;
     }
 
+    //@since 1.1.4
     public void setNonCachePersistentCriticalDurationUnit(TimeUnit nonCachePersistentCriticalDurationUnit) {
         this.nonCachePersistentCriticalDurationUnit = nonCachePersistentCriticalDurationUnit;
     }
 
+    //@since 1.1.4
     public void setEnablePersistenceAsync(Boolean enablePersistenceAsync) {
         this.enablePersistenceAsync = enablePersistenceAsync;
     }
 
+    //@since 1.1.4
     public void setPersistencePath(String persistencePath) {
         this.persistencePath = persistencePath;
     }
 
 //———————————————————————————————— get main setting ——————————————————————————————————————————
 
+    //@since 1.1.4
     public Long getDefaultCacheDuration() {
         return getOrPropertyUpdate(defaultCacheDuration, defaultCacheDurationKey, Long::valueOf,
                 defaultValueDefaultCacheDuration, this::setDefaultCacheDuration);
     }
 
+    //@since 1.1.4
     public TimeUnit getDefaultCacheDurationUnit() {
         return getOrPropertyUpdate(defaultCacheDurationUnit, defaultCacheDurationUnitKey, TimeUnit::valueOf,
                 defaultValueDefaultCacheDurationUnit, this::setDefaultCacheDurationUnit);
     }
 
+    //@since 1.1.4
     public boolean isEnablePersistence() {
         return getOrPropertyUpdate(enablePersistence, enablePersistenceKey, Boolean::valueOf,
                 defaultValueEnablePersistence,
                 this::setEnablePersistence);
     }
 
+    //@since 1.1.4
     public Long getNonCachePersistentCriticalDuration() {
         return getOrPropertyUpdate(nonCachePersistentCriticalDuration, nonCachePersistentCriticalDurationKey,
                 Long::valueOf, defaultValueNonCachePersistentCriticalDuration,
                 this::setNonCachePersistentCriticalDuration);
     }
 
+    //@since 1.1.4
     public TimeUnit getNonCachePersistentCriticalDurationUnit() {
         return getOrPropertyUpdate(nonCachePersistentCriticalDurationUnit, nonCachePersistentCriticalDurationUnitKey,
                 TimeUnit::valueOf, defaultValueNonCachePersistentCriticalDurationUnit,
                 this::setNonCachePersistentCriticalDurationUnit);
     }
 
+    //@since 1.1.4
     public boolean isEnablePersistenceAsync() {
         return getOrPropertyUpdate(enablePersistenceAsync, enablePersistenceAsyncKey, Boolean::valueOf,
                 defaultValueEnablePersistenceAsync, this::setEnablePersistenceAsync);
     }
 
+    //@since 1.1.4
     public String getPersistencePath() {
         return getOrPropertyUpdate(persistencePath, persistencePathKey, String::valueOf,
                 defaultValueOfPersistencePath,
@@ -332,7 +356,7 @@ public class Configuration {
 
     /**
      * Add a cache expiration listener.
-     *
+     * @since 1.1.4
      * @param listener cache expiration listener.
      * @see #addExpirationMessageListeners(List)
      */
@@ -343,6 +367,7 @@ public class Configuration {
         }
     }
 
+    //@since 1.1.4
     public void addExpirationMessageListeners(List<ExpirationMessageListener> listeners) {
         synchronized (expirationMessageListeners) {
             expirationMessageListeners.removeAll(listeners);
@@ -352,7 +377,7 @@ public class Configuration {
 
     /**
      * Returns an immutable {@link ExpirationMessageListener} set.
-     *
+     * @since 1.1.4
      * @return immutable {@link ExpirationMessageListener} set.
      */
     public List<ExpirationMessageListener> unmodifiableExpirationMessageListeners() {
@@ -364,7 +389,7 @@ public class Configuration {
 
     /**
      * Add a cache recovery listener.
-     *
+     * @since 1.1.4
      * @param listener cache recovery listener.
      * @see #addListeningRecoveries(List)
      */
@@ -375,6 +400,7 @@ public class Configuration {
         }
     }
 
+    //@since 1.1.4
     public void addListeningRecoveries(List<ListeningRecovery> listeners) {
         synchronized (expirationMessageListeners) {
             listeningRecoveries.removeAll(listeners);
@@ -384,7 +410,7 @@ public class Configuration {
 
     /**
      * Returns an immutable {@link ListeningRecovery} set.
-     *
+     * @since 1.1.4
      * @return immutable {@link ListeningRecovery} set.
      */
     public List<ListeningRecovery> unmodifiableListeningRecoveries() {
@@ -395,6 +421,7 @@ public class Configuration {
 
     //———————————————————————————————— other ——————————————————————————————————————————
 
+    //@since 1.1.4
     @SuppressWarnings("unchecked")
     private <T> List<T> newInstanceMultipleSplit(String classNames) {
         List<T> ts = new ArrayList<>();
@@ -410,6 +437,7 @@ public class Configuration {
         return ts;
     }
 
+    //@since 1.1.4
     private <T> T getOrPropertyUpdate(T nowValue, String propertiesKey, Function<String, T> convert, T defaultValue,
                                       Consumer<T> propertyGetUpdate) {
         if (nowValue != null) {
