@@ -46,6 +46,7 @@ public interface ReloadCenter<K, V> {
      *                              parameter array is abnormal.
      * @throws NullPointerException Note the null exception in the
      *                              packaging parameter array.
+     * @since 1.1.4
      */
     default Function<Object[], K> wrapperKeyFunction() {
         return null;
@@ -61,6 +62,7 @@ public interface ReloadCenter<K, V> {
      *                              parameter array is abnormal.
      * @throws NullPointerException Note the null exception in the
      *                              packaging parameter array.
+     * @since 1.1.4
      */
     default Function<Object[], V> wrapperValueFunction() {
         return null;
