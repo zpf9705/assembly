@@ -7,6 +7,7 @@ import top.osjf.assembly.util.data.ByteIdentify;
 import top.osjf.assembly.util.data.ComparableBool;
 import top.osjf.assembly.util.data.Identify;
 import top.osjf.assembly.util.data.ObjectIdentify;
+import top.osjf.assembly.util.lang.StringUtils;
 
 /**
  * Generate different {@link Identify} proxies based on the data
@@ -38,8 +39,10 @@ public class CachePersistenceKeyIdentify<T> implements ComparableBool<CachePersi
      * @param data                  single data.
      * @param keyPairSerializerName serialized object names
      */
-    public CachePersistenceKeyIdentify(T data, String keyPairSerializerName) {
-        this(data, AbstractCachePersistence.getPairSerializerByName(keyPairSerializerName));
+    public CachePersistenceKeyIdentify(T data, @CanNull String keyPairSerializerName) {
+        this(data, StringUtils.isNotBlank(keyPairSerializerName) ?
+                        AbstractCachePersistence.getPairSerializerByName(keyPairSerializerName)
+                        : null);
     }
 
     /**
