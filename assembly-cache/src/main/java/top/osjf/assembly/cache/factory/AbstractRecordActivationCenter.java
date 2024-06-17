@@ -1,12 +1,17 @@
 package top.osjf.assembly.cache.factory;
 
-import top.osjf.assembly.util.lang.Asserts;
+import top.osjf.assembly.util.annotation.KeepThreadSafe;
+import top.osjf.assembly.util.annotation.NotNull;
 
 import java.io.Serializable;
 
 /**
- * Abstract function class: used to record the currently activated
- * cache center, providing static storage and retrieval.
+ * Abstract setting and storing the central class of the globally
+ * unique cache center to provide the cache center for use where needed.
+ *
+ * <p>The globally set cache object ensures thread safety during
+ * assignment and usage.
+ *
  * @param <C> The type of help center.
  * @param <K> The type of key.
  * @param <V> The type of value.
@@ -16,27 +21,27 @@ import java.io.Serializable;
 @SuppressWarnings({"rawtypes", "serial"})
 public abstract class AbstractRecordActivationCenter<C, K, V> implements Center<C, K, V>, Serializable {
 
-    protected static volatile Center center;
+    /**
+     * A globally unique cache center instance.
+     */
+    @KeepThreadSafe
+    protected static volatile Center globalCenter;
 
     /**
-     * Place it in a global cache center.
+     * Set a globally unique cache center.
      *
-     * @param value Must not be {@literal null}.
+     * @param center must not be {@literal null}.
      */
-    public static synchronized void setSingletonCenter(Center value) {
-        if (center != null) {
-            return;
-        }
-        Asserts.notNull(value, "Center set value must not be null");
-        center = value;
+    public static synchronized void setGlobalCenter(@NotNull Center center) {
+        if (globalCenter != null) globalCenter = center;
     }
 
     /**
-     * Obtain the global cache center.
+     * Return a globally unique cache center.
      *
-     * @return Returns a unique {@link Center} entity.
+     * @return a globally unique cache center.
      */
-    public static synchronized Center getSingletonCenter() {
-        return center;
+    public static synchronized Center getGlobalCenter() {
+        return globalCenter;
     }
 }
