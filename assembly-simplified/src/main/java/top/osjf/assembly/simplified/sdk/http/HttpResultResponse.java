@@ -37,6 +37,9 @@ public class HttpResultResponse<T> extends AbstractHttpResponse implements Inspe
     /*** Result data.*/
     private T data;
 
+    /*** The default value returned when the request fails.*/
+    private T failedSeatData;
+
     /**
      * No parameter construction, customized based on set and get.
      */
@@ -109,7 +112,7 @@ public class HttpResultResponse<T> extends AbstractHttpResponse implements Inspe
 
     @Override
     public Object failedSeatData() {
-        return null;
+        return failedSeatData;
     }
 
     /**
@@ -226,7 +229,10 @@ public class HttpResultResponse<T> extends AbstractHttpResponse implements Inspe
         this.data = data;
     }
 
-    //Override Object methods.
+    public void setFailedSeatData(T failedSeatData) {
+        this.failedSeatData = failedSeatData;
+    }
+//Override Object methods.
 
     @Override
     public String toString() {
