@@ -1005,9 +1005,17 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
         //Callback for restoring cached keys and values
         List<ListeningRecovery> listeningRecoveries = configuration.unmodifiableListeningRecoveries();
         if (CollectionUtils.isNotEmpty(listeningRecoveries)) {
+            K key;
+            V value;
+            try {
+                key = deserialize(keyPairSerializer, entry.getKey());
+                value = deserialize(valuePairSerializer, entry.getKey());
+            } catch (Throwable e) {
+                log.error("Deserialization failed.", e);
+                e.printStackTrace(System.err);
+                return;
+            }
             for (ListeningRecovery recovery : listeningRecoveries) {
-                K key = deserialize(keyPairSerializer, entry.getKey());
-                V value = deserialize(valuePairSerializer, entry.getKey());
                 try {
                     recovery.recovery(key, value, condition, entry.getTimeUnit());
                 } catch (Throwable e) {
