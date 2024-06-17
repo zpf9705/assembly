@@ -63,7 +63,7 @@ public interface ReloadCenter<K, V> {
      *                              packaging parameter array.
      * @since 1.1.4
      */
-    default Function<Object[], K> wrapperKeyFunction() {
+    default Function<Object[], K> wrapKeyFunc() {
         return defaultWrapper();
     }
 
@@ -79,7 +79,7 @@ public interface ReloadCenter<K, V> {
      *                              packaging parameter array.
      * @since 1.1.4
      */
-    default Function<Object[], V> wrapperValueFunction() {
+    default Function<Object[], V> wrapValueFunc() {
         return defaultWrapper();
     }
 }

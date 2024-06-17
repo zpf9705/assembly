@@ -995,9 +995,9 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
         Long condition = condition(currentTimeMillis, persistence.getExpire(), entry.getTimeUnit());
         //reload
         Center center = AbstractRecordActivationCenter.getGlobalCenter();
-        K wrapperKey = (K) center.wrapperKeyFunction().apply(new Object[]{entry.getKey(),
+        K wrapperKey = (K) center.wrapKeyFunc().apply(new Object[]{entry.getKey(),
                 persistence.getKeyPairSerializerName()});
-        V wrapperValue = (V) center.wrapperValueFunction().apply(new Object[]{entry.getValue(),
+        V wrapperValue = (V) center.wrapValueFunc().apply(new Object[]{entry.getValue(),
                 persistence.getValuePairSerializerName()});
         center.reload(wrapperKey, wrapperValue, condition, entry.getTimeUnit());
         PairSerializer<K> keyPairSerializer = getPairSerializerByName(persistence.getKeyPairSerializerName());

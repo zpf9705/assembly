@@ -113,12 +113,12 @@ public class ExpireMapCenter extends AbstractRecordActivationCenter<ExpireMapCen
     }
 
     @Override
-    public Function<Object[], ByteIdentify> wrapperKeyFunction() {
+    public Function<Object[], ByteIdentify> wrapKeyFunc() {
         return wrapperFunction;
     }
 
     @Override
-    public Function<Object[], ByteIdentify> wrapperValueFunction() {
+    public Function<Object[], ByteIdentify> wrapValueFunc() {
         return wrapperFunction;
     }
 }
