@@ -1,5 +1,6 @@
 package top.osjf.assembly.simplified.sdk.http;
 
+import top.osjf.assembly.simplified.sdk.process.InspectionResponseData;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.json.FastJsonUtils;
 import top.osjf.assembly.util.lang.StringUtils;
@@ -20,7 +21,7 @@ import java.util.function.Supplier;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.1.2
  */
-public class HttpResultResponse<T> extends AbstractHttpResponse {
+public class HttpResultResponse<T> extends AbstractHttpResponse implements InspectionResponseData {
 
     private static final long serialVersionUID = 3517854416942429708L;
 
