@@ -27,16 +27,20 @@ public interface PairSerializer<T> extends Serializable {
      *
      * @param obj The object value to be serialized.
      * @return serialized byte array.
+     * @throws PairSerializationException when the Serialization
+     *                                    process fails exception.
      */
-    byte[] serialize(T obj);
+    byte[] serialize(T obj) throws PairSerializationException;
 
     /**
      * Returns an object entity deserialized from a byte array.
      *
      * @param bytes The byte array to be deserialized.
      * @return entity deserialized from a byte array.
+     * @throws PairSerializationException when the Serialization
+     *                                    process fails exception.
      */
-    T deserialize(@CanNull byte[] bytes);
+    T deserialize(@CanNull byte[] bytes) throws PairSerializationException;
 
     /**
      * Returns a type object of the deserialized object.
