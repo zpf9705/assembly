@@ -1,12 +1,11 @@
-package top.osjf.assembly.simplified.sdk.proxy;
-
-import top.osjf.assembly.simplified.sdk.process.Request;
+package top.osjf.assembly.simplified.sdk.process;
 
 import java.lang.reflect.Method;
 
 /**
- * Only a single input parameter is supported to implement this
- * interface to inform the proxy class of the type of request parameter.
+ * The functional definition of this interface is applicable to knowing
+ * the type of request encapsulation class when calling the SDK function
+ * with a single parameter.
  *
  * <div><h3>Examples of usage methods are as follows</h3></div>
  * <pre>
