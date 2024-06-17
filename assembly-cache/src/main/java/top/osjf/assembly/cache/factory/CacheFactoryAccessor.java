@@ -20,7 +20,7 @@ public class CacheFactoryAccessor {
 
     public void setCacheFactory(CacheFactory factory) {
         if (factory == null)
-            throw new IllegalArgumentException("The settings for the cache factory cannot be empty.");
+            throw new IllegalArgumentException("cache factory cannot be null.");
         this.factory = factory;
     }
 }
