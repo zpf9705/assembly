@@ -1,11 +1,15 @@
 package top.osjf.assembly.simplified.sdk.process;
 
+import top.osjf.assembly.simplified.sdk.SdkUtils;
+
 import java.lang.reflect.Method;
 
 /**
  * The functional definition of this interface is applicable to knowing
  * the type of request encapsulation class when calling the SDK function
  * with a single parameter.
+ *
+ * <p>The analysis case can be viewed in {@link SdkUtils#invokeCreateRequest(Method, Object[])}.
  *
  * <div><h3>Examples of usage methods are as follows</h3></div>
  * <pre>

@@ -1,19 +1,27 @@
-package top.osjf.assembly.simplified.sdk.proxy;
+package top.osjf.assembly.simplified.sdk.process;
 
-import top.osjf.assembly.simplified.sdk.process.Request;
+import top.osjf.assembly.simplified.sdk.SdkUtils;
 
 import java.lang.annotation.*;
 import java.lang.reflect.Method;
 
 /**
- * Annotations for concise request parameters can be carried on proxy methods
- * to avoid directly encapsulating parameters using subclasses of {@link Request},
- * and instead focus directly on the body of business parameters.
+ * Used to mark the {@link Request} parameter type that needs to be
+ * encapsulated by the current request input parameter during the
+ * execution of the SDK method using annotations.
  *
- * <p>The specific usage method is as follows.
- * <div><h3>Supporting multiple parameters, first find the construction method
- * based on the order of parameters, and if there is no construction method,
- * find the set method.</h3></div>
+ * <p>On the basis of {@link RequestParameter},supporting multiple
+ * parameters, first find the construction method based on the order
+ * of parameters, and if there is no construction method, find the
+ * set method.Of course, these need to be used in conjunction with
+ * annotations {@link RequestField}.
+ *
+ * <p>The parsing scheme for implementing parameter diversification
+ * processing by combining two annotations can be customized. For
+ * the use of SDK proxies to parse the above annotations, you can
+ * refer to method {@link SdkUtils#invokeCreateRequest(Method, Object[])}
+ * and the following code examples.
+ *
  * <pre>
  *
  *  public class RequestImpl extends AbstractHttpRequestParams&lt;HttpResultResponse&lt;List&lt;Supplier&gt;&gt;&gt; {
