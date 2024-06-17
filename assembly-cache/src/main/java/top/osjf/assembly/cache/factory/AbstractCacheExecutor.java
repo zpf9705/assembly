@@ -92,17 +92,17 @@ public abstract class AbstractCacheExecutor<T> implements DefaultCacheExecutor {
 
     /*** Important information storage about creating {@link ByteIdentify}. */
     protected static final class Holder {
-        static Constructor<? extends ByteIdentify> CONSTRUCTOR;
+        static Constructor<? extends ByteIdentify> IDENTIFY_CONSTRUCTOR;
         static {
             try {
-                CONSTRUCTOR = CacheByteIdentify.class.getConstructor(byte[].class, String.class);
+                IDENTIFY_CONSTRUCTOR = CacheByteIdentify.class.getConstructor(byte[].class, String.class);
             } catch (Throwable ignored) {
             }
         }
         @SuppressWarnings("unchecked")
         public static <T extends ByteIdentify> T createByteIdentify(Object... args) {
             try {
-                return (T) CONSTRUCTOR.newInstance(args);
+                return (T) IDENTIFY_CONSTRUCTOR.newInstance(args);
             } catch (Throwable e) {
                 throw new RuntimeException(e);
             }
