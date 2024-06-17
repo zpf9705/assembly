@@ -31,7 +31,7 @@ public abstract class AbstractRecordActivationCenter<C, K, V> implements Center<
      * @param center must not be {@literal null}.
      */
     protected static synchronized void setGlobalCenter(@NotNull Center center) {
-        if (globalCenter != null) globalCenter = center;
+        if (globalCenter == null) globalCenter = center;
     }
 
     /**
