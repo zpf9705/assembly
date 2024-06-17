@@ -6,6 +6,8 @@ import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.data.ByteIdentify;
 
+import java.lang.reflect.Constructor;
+
 /**
  * Caching supports the abstract class of the Heart of Components method, introducing
  * intermediate abstraction {@link IdentifyKeyCallback} to convert byte array type
@@ -86,5 +88,24 @@ public abstract class AbstractCacheExecutor<T> implements DefaultCacheExecutor {
      */
     protected ByteIdentify identifyByteArray(byte[] var, SerializerOperationType type) {
         return new CacheByteIdentify(var, type.get());
+    }
+
+    /*** Important information storage about creating {@link ByteIdentify}. */
+    protected static final class Holder {
+        static Constructor<? extends ByteIdentify> CONSTRUCTOR;
+        static {
+            try {
+                CONSTRUCTOR = CacheByteIdentify.class.getConstructor(byte[].class, String.class);
+            } catch (Throwable ignored) {
+            }
+        }
+        @SuppressWarnings("unchecked")
+        public static <T extends ByteIdentify> T createByteIdentify(Object... args) {
+            try {
+                return (T) CONSTRUCTOR.newInstance(args);
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }
