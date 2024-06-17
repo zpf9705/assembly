@@ -5,13 +5,12 @@ import top.osjf.assembly.cache.config.expiringmap.ExpiringMapClients;
 import top.osjf.assembly.cache.listener.ByteMessage;
 import top.osjf.assembly.cache.listener.DefaultExpiringmapExpirationListener;
 import top.osjf.assembly.cache.persistence.CachePersistenceSolver;
-import top.osjf.assembly.cache.serializer.CacheByteIdentify;
 import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.data.ByteIdentify;
 
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Cache center based on {@link ExpiringMap}.
@@ -31,85 +30,53 @@ import java.util.function.Function;
  * @author zpf
  * @since 1.0.0
  */
-public class ExpireMapCenter extends AbstractRecordActivationCenter<ExpireMapCenter, ByteIdentify, ByteIdentify> {
+public class ExpireMapCenter extends AbstractRecordActivationCenter<ExpireMapCenter, ByteIdentify, ByteIdentify>
+        implements Supplier<ExpiringMap<ByteIdentify, ByteIdentify>> {
 
     private static final long serialVersionUID = -7878806306402600655L;
 
     /**
-     * Singleton for {@link ExpireMapCenter}.
+     * {@link ExpireMapCenter} of globally unique singletons.
      */
     private static volatile ExpireMapCenter expireMapCenter;
 
     /**
-     * Core for cache client {@link ExpiringMap}.
+     * The cache center supports the core of classes.
      */
-    private ExpiringMap<ByteIdentify, ByteIdentify> singleton;
+    private final ExpiringMap<ByteIdentify, ByteIdentify> expiringMap;
 
     /**
-     * Format function for key/value.
+     * Wrapper function for key/value.
      */
     private static final Function<Object[], ByteIdentify> wrapperFunction =
-            args -> new CacheByteIdentify((byte[]) args[0], (String) args[1]);
+            args -> AbstractCacheExecutor.Holder.createByteIdentify(args[0], args[1]);
 
     /**
-     * Do not instance for no args construct.
+     * Private Constructor use a singleton instance {@link ExpiringMap}.
+     *
+     * @param expiringMap A singleton object with {@link ExpiringMap}.
      */
-    private ExpireMapCenter() {
+    private ExpireMapCenter(ExpiringMap<ByteIdentify, ByteIdentify> expiringMap) {
+        this.expiringMap = expiringMap;
     }
 
     /**
-     * Instance for {@link ExpiringMap}.
+     * Create a cache center about {@link ExpiringMap} using
+     * custom configuration.
      *
-     * @param singleton A singleton object with {@link ExpiringMap}.
+     * @param clients Configuration of {@link ExpiringMap}.
+     * @return a cache center about {@link ExpiringMap}.
      */
-    private ExpireMapCenter(ExpiringMap<ByteIdentify, ByteIdentify> singleton) {
-        this.singleton = singleton;
-    }
-
-    /**
-     * Singleton with {@code ExpireMapClientConfiguration}.
-     *
-     * @param clients must not be {@literal null}.
-     * @return A {@link ExpiringMap}.
-     */
-    protected static ExpireMapCenter singletonWithConfiguration(@NotNull ExpiringMapClients clients) {
+    protected static synchronized ExpireMapCenter createExpireMapCenter(@NotNull ExpiringMapClients clients) {
         if (expireMapCenter == null) {
-            synchronized (ExpireMapCenter.class) {
-                if (expireMapCenter == null) {
-                    expireMapCenter = buildSingleton(clients);
-                    setSingletonCenter(expireMapCenter);
-                }
-            }
+            expireMapCenter = createExpireMapCenter0(clients);
+            setGlobalCenter(expireMapCenter);
         }
         return expireMapCenter;
     }
 
-    /**
-     * Get Singleton instance for {@code ExpireMapCenter}.
-     *
-     * @return A {@link ExpireMapCenter}.
-     */
-    public static ExpireMapCenter getExpireMapCenter() {
-        Objects.requireNonNull(expireMapCenter, "ExpireMapCenter no Initialize");
-        return expireMapCenter;
-    }
-
-    /**
-     * Get operation with a {@code ExpiringMap}.
-     *
-     * @return A {@link ExpiringMap}.
-     */
-    public ExpiringMap<ByteIdentify, ByteIdentify> getSingleton() {
-        return this.singleton;
-    }
-
-    /**
-     * Build Singleton with {@code ExpireMapClientConfiguration}.
-     *
-     * @param clients must not be {@literal null}.
-     * @return {@link ExpireMapCenter}.
-     */
-    private static ExpireMapCenter buildSingleton(@NotNull ExpiringMapClients clients) {
+    /* create ExpireMapCenter within ExpiringMapClients */
+    static ExpireMapCenter createExpireMapCenter0(ExpiringMapClients clients) {
         ExpiringMap<ByteIdentify, ByteIdentify> singleton = ExpiringMap.builder()
                 .maxSize(clients.getMaxSize())
                 .expiration(clients.getDefaultExpireTime(), clients.getDefaultExpireTimeUnit())
@@ -122,16 +89,20 @@ public class ExpireMapCenter extends AbstractRecordActivationCenter<ExpireMapCen
 
     @Override
     public ExpireMapCenter getHelpCenter() {
-        return getExpireMapCenter();
+        if (expireMapCenter == null) throw new CenterUninitializedException(ExpireMapCenter.class);
+        return expireMapCenter;
+    }
+
+    @Override
+    public ExpiringMap<ByteIdentify, ByteIdentify> get() {
+        return expiringMap;
     }
 
     @Override
     public void reload(@NotNull ByteIdentify key, @NotNull ByteIdentify value, @NotNull Long duration,
                        @NotNull TimeUnit unit) {
-        if (this.singleton == null) {
-            return;
-        }
-        this.singleton.put(key, value, duration, unit);
+        if (this.expiringMap == null) return;
+        this.expiringMap.put(key, value, duration, unit);
     }
 
     @Override
