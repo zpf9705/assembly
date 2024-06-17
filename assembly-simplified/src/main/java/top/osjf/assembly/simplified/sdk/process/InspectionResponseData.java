@@ -10,7 +10,7 @@ package top.osjf.assembly.simplified.sdk.process;
  */
 public interface InspectionResponseData extends ResponseData {
 
-    /*** {@inheritDoc}*/
+    /** {@inheritDoc}*/
     @Override
     default boolean inspectionResponseResult() {
         return true;
