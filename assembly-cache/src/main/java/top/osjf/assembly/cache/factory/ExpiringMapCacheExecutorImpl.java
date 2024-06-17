@@ -57,7 +57,7 @@ public class ExpiringMapCacheExecutorImpl extends AbstractCacheExecutor<ExpireMa
         return this.execute(new IdentifyKeyCallback<Boolean>(key) {
             @Override
             public Boolean inHelp(ByteIdentify keyByteIdentify, ExpireMapCenter helpCenter) {
-                helpCenter.getSingleton().put(keyByteIdentify, valueByteIdentify);
+                helpCenter.get().put(keyByteIdentify, valueByteIdentify);
                 return true;
             }
         });
@@ -75,7 +75,7 @@ public class ExpiringMapCacheExecutorImpl extends AbstractCacheExecutor<ExpireMa
         return this.execute(new IdentifyKeyCallback<Boolean>(key) {
             @Override
             public Boolean inHelp(ByteIdentify keyByteIdentify, ExpireMapCenter helpCenter) {
-                helpCenter.getSingleton().put(keyByteIdentify, valueByteIdentify, duration, unit);
+                helpCenter.get().put(keyByteIdentify, valueByteIdentify, duration, unit);
                 return true;
             }
         });
@@ -93,7 +93,7 @@ public class ExpiringMapCacheExecutorImpl extends AbstractCacheExecutor<ExpireMa
         return this.execute(new IdentifyKeyCallback<Boolean>(key) {
             @Override
             public Boolean inHelp(ByteIdentify keyByteIdentify, ExpireMapCenter helpCenter) {
-                return helpCenter.getSingleton().putIfAbsent(keyByteIdentify, valueByteIdentify) == null;
+                return helpCenter.get().putIfAbsent(keyByteIdentify, valueByteIdentify) == null;
             }
         });
     }
@@ -111,9 +111,9 @@ public class ExpiringMapCacheExecutorImpl extends AbstractCacheExecutor<ExpireMa
         return this.execute(new IdentifyKeyCallback<Boolean>(key) {
             @Override
             public Boolean inHelp(ByteIdentify keyByteIdentify, ExpireMapCenter helpCenter) {
-                ByteIdentify old = helpCenter.getSingleton().putIfAbsent(keyByteIdentify, valueByteIdentify);
+                ByteIdentify old = helpCenter.get().putIfAbsent(keyByteIdentify, valueByteIdentify);
                 if (old == null) {
-                    helpCenter.getSingleton().setExpiration(keyByteIdentify, duration, unit);
+                    helpCenter.get().setExpiration(keyByteIdentify, duration, unit);
                     return true;
                 }
                 return false;
@@ -128,7 +128,7 @@ public class ExpiringMapCacheExecutorImpl extends AbstractCacheExecutor<ExpireMa
     @Override
     public byte[] getVal(byte[] key) {
         ByteIdentify identify = this.execute((center) ->
-                center.getHelpCenter().getSingleton().get(identifyKeyByteArray(key)));
+                center.getHelpCenter().get().get(identifyKeyByteArray(key)));
         return identify == null ? null : identify.getData();
     }
 
@@ -140,7 +140,7 @@ public class ExpiringMapCacheExecutorImpl extends AbstractCacheExecutor<ExpireMa
             @Override
             public List<byte[]> inHelp(ByteIdentify keyByteIdentify, ExpireMapCenter helpCenter) {
 
-                return helpCenter.getSingleton().keySet()
+                return helpCenter.get().keySet()
                         .stream()
                         .filter(identify -> identify.similarTo(keyByteIdentify))
                         .map(Identify::getData)
@@ -161,7 +161,7 @@ public class ExpiringMapCacheExecutorImpl extends AbstractCacheExecutor<ExpireMa
         return this.execute(new IdentifyKeyCallback<byte[]>(key) {
             @Override
             public byte[] inHelp(ByteIdentify keyByteIdentify, ExpireMapCenter helpCenter) {
-                ByteIdentify identify = helpCenter.getSingleton().replace(keyByteIdentify, valueByteIdentify);
+                ByteIdentify identify = helpCenter.get().replace(keyByteIdentify, valueByteIdentify);
                 if (identify != null) {
                     return identify.getData();
                 }
@@ -180,7 +180,7 @@ public class ExpiringMapCacheExecutorImpl extends AbstractCacheExecutor<ExpireMa
         long count = 0L;
         for (byte[] key : keys) {
 
-            ByteIdentify removed = this.execute((center) -> center.getHelpCenter().getSingleton()
+            ByteIdentify removed = this.execute((center) -> center.getHelpCenter().get()
                     .remove(identifyKeyByteArray(key)));
 
             if (removed != null) {
@@ -201,7 +201,7 @@ public class ExpiringMapCacheExecutorImpl extends AbstractCacheExecutor<ExpireMa
 
         for (byte[] _key : keys) {
 
-            ByteIdentify removed = this.execute((center) -> center.getHelpCenter().getSingleton()
+            ByteIdentify removed = this.execute((center) -> center.getHelpCenter().get()
                     .remove(identifyKeyByteArray(key)));
 
             if (removed != null) {
@@ -220,7 +220,7 @@ public class ExpiringMapCacheExecutorImpl extends AbstractCacheExecutor<ExpireMa
         return this.execute(new IdentifyKeyCallback<Boolean>() {
             @Override
             public Boolean inHelp(ByteIdentify keyByteIdentify, ExpireMapCenter helpCenter) {
-                helpCenter.getSingleton().clear();
+                helpCenter.get().clear();
                 return true;
             }
         });
@@ -232,7 +232,7 @@ public class ExpiringMapCacheExecutorImpl extends AbstractCacheExecutor<ExpireMa
      */
     @Override
     public Boolean containsKey(byte[] key) {
-        return this.execute((center) -> center.getHelpCenter().getSingleton()
+        return this.execute((center) -> center.getHelpCenter().get()
                 .containsKey(identifyKeyByteArray(key)));
     }
 
@@ -242,7 +242,7 @@ public class ExpiringMapCacheExecutorImpl extends AbstractCacheExecutor<ExpireMa
      */
     @Override
     public Boolean containsValue(byte[] value) {
-        return this.execute((center) -> center.getHelpCenter().getSingleton()
+        return this.execute((center) -> center.getHelpCenter().get()
                 .containsValue(identifyValueByteArray(value)));
     }
 
@@ -252,7 +252,7 @@ public class ExpiringMapCacheExecutorImpl extends AbstractCacheExecutor<ExpireMa
      */
     @Override
     public Long getExpirationWithKey(byte[] key) {
-        return this.execute((center) -> center.getHelpCenter().getSingleton()
+        return this.execute((center) -> center.getHelpCenter().get()
                 .getExpiration(identifyKeyByteArray(key)));
     }
 
@@ -273,7 +273,7 @@ public class ExpiringMapCacheExecutorImpl extends AbstractCacheExecutor<ExpireMa
      */
     @Override
     public Long getExpectedExpirationWithKey(byte[] key) {
-        return this.execute((center) -> center.getHelpCenter().getSingleton()
+        return this.execute((center) -> center.getHelpCenter().get()
                 .getExpectedExpiration(identifyKeyByteArray(key)));
     }
 
@@ -298,7 +298,7 @@ public class ExpiringMapCacheExecutorImpl extends AbstractCacheExecutor<ExpireMa
         return this.execute(new IdentifyKeyCallback<Boolean>(key) {
             @Override
             public Boolean inHelp(ByteIdentify keyByteIdentify, ExpireMapCenter helpCenter) {
-                helpCenter.getSingleton().setExpiration(keyByteIdentify, duration, timeUnit);
+                helpCenter.get().setExpiration(keyByteIdentify, duration, timeUnit);
                 return true;
             }
         });
@@ -313,7 +313,7 @@ public class ExpiringMapCacheExecutorImpl extends AbstractCacheExecutor<ExpireMa
         return this.execute(new IdentifyKeyCallback<Boolean>(key) {
             @Override
             public Boolean inHelp(ByteIdentify keyByteIdentify, ExpireMapCenter helpCenter) {
-                helpCenter.getSingleton().resetExpiration(keyByteIdentify);
+                helpCenter.get().resetExpiration(keyByteIdentify);
                 return true;
             }
         });
