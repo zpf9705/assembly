@@ -1,4 +1,6 @@
-package top.osjf.assembly.simplified.sdk.proxy;
+package top.osjf.assembly.simplified.sdk.process;
+
+import top.osjf.assembly.simplified.sdk.proxy.RequestParam;
 
 import java.lang.annotation.*;
 
@@ -13,7 +15,10 @@ import java.lang.annotation.*;
  *
  * <p>For specific usage, please refer to {@link RequestParam}.
  *
- * <p>Refer to {@code top.osjf.assembly.simplified.sdk.SdkUtils#invokeCreateRequestUseSet(Class, Object...)}
+ * <p>Regarding the proxy analysis of SDK to implement the parsing of
+ * this annotation, please refer to {@code top.osjf.assembly.simplified.sdk.
+ * SdkUtils#invokeCreateRequestUseSet(Class, Object...)}
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.6
  */
