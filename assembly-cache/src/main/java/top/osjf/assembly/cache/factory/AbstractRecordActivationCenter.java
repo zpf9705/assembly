@@ -1,6 +1,5 @@
 package top.osjf.assembly.cache.factory;
 
-import top.osjf.assembly.util.annotation.KeepThreadSafe;
 import top.osjf.assembly.util.annotation.NotNull;
 
 import java.io.Serializable;
@@ -24,7 +23,6 @@ public abstract class AbstractRecordActivationCenter<C, K, V> implements Center<
     /**
      * A globally unique cache center instance.
      */
-    @KeepThreadSafe
     private static volatile Center globalCenter;
 
     /**
