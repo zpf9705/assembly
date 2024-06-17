@@ -69,7 +69,7 @@ public class ExpireMapCenter extends AbstractRecordActivationCenter<ExpireMapCen
     /**
      * Singleton with {@code ExpireMapClientConfiguration}.
      *
-     * @param clients must no be {@literal null}.
+     * @param clients must not be {@literal null}.
      * @return A {@link ExpiringMap}.
      */
     protected static ExpireMapCenter singletonWithConfiguration(@NotNull ExpiringMapClients clients) {
