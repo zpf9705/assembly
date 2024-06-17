@@ -35,7 +35,7 @@ public class ExpiringMapCacheFactory implements CacheFactory {
      */
     public ExpiringMapCacheExecutor doCreateExpiringMapExecutor(ExpiringMapClients clients) {
         //Real object generated singleton operation
-        ExpireMapCenter expireMapCenter = ExpireMapCenter.singletonWithConfiguration(clients);
+        ExpireMapCenter expireMapCenter = ExpireMapCenter.createExpireMapCenter(clients);
         //To approach the processor
         ExpiringMapInvocationHandler processor = new ExpiringMapInvocationHandler(
                 new ExpiringMapCacheExecutorImpl(() -> expireMapCenter));
