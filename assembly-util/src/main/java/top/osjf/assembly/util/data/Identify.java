@@ -25,7 +25,7 @@ import java.util.function.Function;
  * be {@link Identify} or its subclasses in order to perform {@code hashcode} calculations,
  * and requiring equality.
  *
- * <p>From 1.1.4, add verification of similar identities {@link #similarTo(Object)} and
+ * <p>From 1.1.3, add verification of similar identities {@link #similarTo(Object)} and
  * {@link #similarTo(Object, Object)}.
  *
  * @param <T>    The type of packaging data.
