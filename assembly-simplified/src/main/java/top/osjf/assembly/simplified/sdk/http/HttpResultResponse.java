@@ -232,7 +232,8 @@ public class HttpResultResponse<T> extends AbstractHttpResponse implements Inspe
     public void setFailedSeatData(T failedSeatData) {
         this.failedSeatData = failedSeatData;
     }
-//Override Object methods.
+
+    //Override Object methods.
 
     @Override
     public String toString() {
