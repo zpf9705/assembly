@@ -1,7 +1,7 @@
 package top.osjf.assembly.cache.autoconfigure;
 
 import org.springframework.beans.factory.InitializingBean;
-import top.osjf.assembly.cache.persistence.ByteCachePersistence;
+import top.osjf.assembly.cache.persistence.CachePersistenceReduction;
 
 /**
  * Cache the process information bean of the persistent file recovery class.
@@ -19,6 +19,6 @@ public class PersistenceReductionProcess implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        new ByteCachePersistence().reductionUsePath(path);
+        CachePersistenceReduction.INSTANCE.reductionUsePath(path);
     }
 }
