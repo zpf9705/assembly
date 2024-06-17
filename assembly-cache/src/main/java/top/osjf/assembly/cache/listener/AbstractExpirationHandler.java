@@ -15,6 +15,12 @@ import java.util.List;
  */
 public abstract class AbstractExpirationHandler {
 
+    /**
+     * Handle expired cache information, including expiration callbacks
+     * from listeners and possible persistent cache cleaning.
+     *
+     * @param message Expired information.
+     */
     protected void handlerExpirationMessage(DefaultMessage message) {
         if (message == null) {
             return;
