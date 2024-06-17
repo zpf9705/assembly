@@ -12,7 +12,7 @@ package top.osjf.assembly.util.lang;
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @see SimilarAble
- * @since 1.1.4
+ * @since 1.1.3
  */
 public interface Similarator<T> {
 
