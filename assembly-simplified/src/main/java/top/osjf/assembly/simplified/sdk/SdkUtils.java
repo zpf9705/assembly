@@ -2,8 +2,7 @@ package top.osjf.assembly.simplified.sdk;
 
 import org.apache.http.entity.ContentType;
 import top.osjf.assembly.simplified.sdk.http.HttpResultResponse;
-import top.osjf.assembly.simplified.sdk.process.Request;
-import top.osjf.assembly.simplified.sdk.process.Response;
+import top.osjf.assembly.simplified.sdk.process.*;
 import top.osjf.assembly.simplified.sdk.proxy.*;
 import top.osjf.assembly.util.lang.ArrayUtils;
 import top.osjf.assembly.util.lang.MapUtils;
@@ -147,7 +146,7 @@ public abstract class SdkUtils {
             if (ArrayUtils.isEmpty(fields)) {
                 //When using methods for assignment, annotations must be identified.
                 throw new IllegalArgumentException("When no construction method is provided, please " +
-                        "use \"top.osjf.assembly.simplified.sdk.proxy.RequestField\" to mark the real" +
+                        "use \"top.osjf.assembly.simplified.sdk.process.RequestField\" to mark the real" +
                         " name of the field.");
             }
             for (int i = 0; i < fields.length; i++) {
