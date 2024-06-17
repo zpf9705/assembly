@@ -3,6 +3,7 @@ package top.osjf.assembly.cache.factory;
 import top.osjf.assembly.cache.listener.ByteMessage;
 import top.osjf.assembly.cache.persistence.Entry;
 import top.osjf.assembly.util.annotation.NotNull;
+import top.osjf.assembly.util.lang.ArrayUtils;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -16,6 +17,7 @@ import java.util.function.Function;
  * @author zpf
  * @since 1.0.0
  */
+@SuppressWarnings("unchecked")
 public interface ReloadCenter<K, V> {
 
     /**
@@ -36,6 +38,19 @@ public interface ReloadCenter<K, V> {
      */
     void cleanSupportingElements(@NotNull ByteMessage message);
 
+
+    /**
+     * The default value wrapper function returns the first
+     * bit of the array set if it is not empty.
+     *
+     * @param <T> The type of wrapper.
+     * @return Wrap function.
+     * @since 1.1.4
+     */
+    static <T> Function<Object[], T> defaultWrapper() {
+        return objs -> ArrayUtils.isNotEmpty(objs) ? (T) objs[0] : null;
+    }
+
     /**
      * Define a wrapper function for the key. If it is empty,
      * simply fill in the original value. This method can add
@@ -49,7 +64,7 @@ public interface ReloadCenter<K, V> {
      * @since 1.1.4
      */
     default Function<Object[], K> wrapperKeyFunction() {
-        return null;
+        return defaultWrapper();
     }
 
     /**
@@ -65,6 +80,6 @@ public interface ReloadCenter<K, V> {
      * @since 1.1.4
      */
     default Function<Object[], V> wrapperValueFunction() {
-        return null;
+        return defaultWrapper();
     }
 }
