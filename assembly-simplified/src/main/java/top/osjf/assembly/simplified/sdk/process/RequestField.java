@@ -1,7 +1,5 @@
 package top.osjf.assembly.simplified.sdk.process;
 
-import top.osjf.assembly.simplified.sdk.proxy.RequestParam;
-
 import java.lang.annotation.*;
 
 /**
