@@ -30,6 +30,6 @@ public abstract class AbstractExpirationHandler {
         if (CollectionUtils.isNotEmpty(listeners)) {
             listeners.forEach((listener) -> listener.onMessage(message));
         }
-        AbstractRecordActivationCenter.getSingletonCenter().cleanSupportingElements(message);
+        AbstractRecordActivationCenter.getGlobalCenter().cleanSupportingElements(message);
     }
 }
