@@ -994,7 +994,7 @@ public abstract class AbstractCachePersistence<K, V> extends AbstractPersistence
         //Calculate remaining time units
         Long condition = condition(currentTimeMillis, persistence.getExpire(), entry.getTimeUnit());
         //reload
-        Center center = AbstractRecordActivationCenter.getSingletonCenter();
+        Center center = AbstractRecordActivationCenter.getGlobalCenter();
         K wrapperKey = (K) center.wrapperKeyFunction().apply(new Object[]{entry.getKey(),
                 persistence.getKeyPairSerializerName()});
         V wrapperValue = (V) center.wrapperValueFunction().apply(new Object[]{entry.getValue(),
