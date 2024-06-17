@@ -111,7 +111,7 @@ public class HttpResultResponse<T> extends AbstractHttpResponse implements Inspe
     }
 
     @Override
-    public Object failedSeatData() {
+    public T failedSeatData() {
         return failedSeatData;
     }
 
