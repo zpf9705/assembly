@@ -1,4 +1,4 @@
-package top.osjf.assembly.simplified.sdk.proxy;
+package top.osjf.assembly.simplified.sdk.process;
 
 /**
  * The default extension {@link ResponseData} is to check
