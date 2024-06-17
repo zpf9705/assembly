@@ -18,47 +18,57 @@ public final class DefaultMessage implements ByteMessage, ObjectMessage, Seriali
 
     private static final long serialVersionUID = 4530419948323277941L;
 
-    private final byte[] key;
+    private final byte[] bytesKey;
 
-    private final byte[] value;
+    private final byte[] bytesValue;
 
-    private final Object keySerialize;
+    private final Object objKey;
 
-    private final Object valueSerialize;
+    private final Object objValue;
 
     public DefaultMessage(ByteIdentify key, ByteIdentify value) {
-        this.key = key.getData();
-        this.value = value.getData();
-        if (key instanceof CacheByteIdentify) {
-            this.keySerialize = ((CacheByteIdentify) key).getPairSerializer().deserialize(this.key);
-        } else this.keySerialize = SerialUtils.deserialize(this.key);
-        if (key instanceof CacheByteIdentify) {
-            this.valueSerialize = ((CacheByteIdentify) key).getPairSerializer().deserialize(this.value);
-        } else this.valueSerialize = SerialUtils.deserialize(this.value);
+        bytesKey = key.getData();
+        bytesValue = value.getData();
+        objKey = ifDeserialize(key);
+        objValue = ifDeserialize(value);
+    }
 
+    /**
+     * Based on the type of {@link ByteIdentify}, clarify whether
+     * there is a specified deserialization type available for use,
+     * and use {@link SerialUtils#deserialize(byte[])} by default.
+     *
+     * @param identify Identity of type byte [].
+     * @return Deserialized object.
+     */
+    Object ifDeserialize(ByteIdentify identify) {
+        byte[] data = identify.getData();
+        if (identify instanceof CacheByteIdentify)
+            return ((CacheByteIdentify) identify).getPairSerializer().deserialize(data);
+        return SerialUtils.deserialize(data);
     }
 
     @Override
     @NotNull
     public byte[] getByteKey() {
-        return key;
+        return bytesKey;
     }
 
     @Override
     @NotNull
     public byte[] getByteValue() {
-        return value;
+        return bytesValue;
     }
 
     @Override
     @NotNull
     public Object getKey() {
-        return keySerialize;
+        return objKey;
     }
 
     @Override
     @NotNull
     public Object getValue() {
-        return valueSerialize;
+        return objValue;
     }
 }
