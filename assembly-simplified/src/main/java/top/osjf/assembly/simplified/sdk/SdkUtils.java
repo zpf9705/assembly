@@ -110,6 +110,15 @@ public abstract class SdkUtils {
                 // when the request is successful is obtained.
                 if (responseData.isSuccess()) {
                     return responseData.getData();
+                } else {
+                    //The default data returned when a customization request fails.
+                    if (responseData instanceof InspectionResponseData) {
+                        Object data = ((InspectionResponseData) responseData).failedSeatData();
+                        if (data != null) {
+                            //If it is empty, the requested data should prevail.
+                            return data;
+                        }
+                    }
                 }
             }
             //On the contrary, directly return the data result.

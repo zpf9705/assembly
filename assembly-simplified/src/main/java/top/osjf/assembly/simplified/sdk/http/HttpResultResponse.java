@@ -107,6 +107,11 @@ public class HttpResultResponse<T> extends AbstractHttpResponse implements Inspe
         }
     }
 
+    @Override
+    public Object failedSeatData() {
+        return null;
+    }
+
     /**
      * Provide other codes that can confirm successful requests.
      *
