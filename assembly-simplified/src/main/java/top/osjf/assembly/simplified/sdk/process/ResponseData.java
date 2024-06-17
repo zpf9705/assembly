@@ -1,14 +1,18 @@
-package top.osjf.assembly.simplified.sdk.proxy;
-
-import top.osjf.assembly.simplified.sdk.process.Response;
+package top.osjf.assembly.simplified.sdk.process;
 
 import java.lang.reflect.Method;
 
 /**
- * In the case of proxy services, when there is no need to encapsulate
- * body return parameters and only need to return the truly needed object,
- * this interface can be implemented to obtain the true return object on
- * the basis of successful request.
+ * The functional interface used to check the success of this
+ * request and obtain the return data of the request is defined
+ * in order for the caller to pay less attention to distinguishing
+ * {@link Response#isSuccess()} related situations, and can directly
+ * call a method to achieve request success check and data acquisition.
+ * Of course, this situation can be configured.
+ *
+ * <p>Of course, regarding the SDK proxy result analysis, an implementation
+ * of the interface definition concept has been added. You can focus on
+ * method {@link top.osjf.assembly.simplified.sdk.SdkUtils#getResponse(Method, Response)}.
  *
  * <div><h3>Examples of usage methods are as follows</h3></div>
  * <pre>
@@ -27,7 +31,7 @@ import java.lang.reflect.Method;
  *     }
  *  }
  * </pre>
- * @see top.osjf.assembly.simplified.sdk.SdkUtils#getResponse(Method, Response)
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.6
  */
