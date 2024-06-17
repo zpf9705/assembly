@@ -15,6 +15,7 @@ import java.util.Map;
  * @author zpf
  * @since 1.0.2
  */
+@Deprecated
 public class ThreadSafeClassMap<K, V> extends Hashtable<K, V> implements ClassMap<K, V> {
 
     private static final long serialVersionUID = 5009068502167306533L;
