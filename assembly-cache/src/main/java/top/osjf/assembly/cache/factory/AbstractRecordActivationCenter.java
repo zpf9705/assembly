@@ -25,14 +25,14 @@ public abstract class AbstractRecordActivationCenter<C, K, V> implements Center<
      * A globally unique cache center instance.
      */
     @KeepThreadSafe
-    protected static volatile Center globalCenter;
+    private static volatile Center globalCenter;
 
     /**
      * Set a globally unique cache center.
      *
      * @param center must not be {@literal null}.
      */
-    public static synchronized void setGlobalCenter(@NotNull Center center) {
+    protected static synchronized void setGlobalCenter(@NotNull Center center) {
         if (globalCenter != null) globalCenter = center;
     }
 
@@ -41,7 +41,7 @@ public abstract class AbstractRecordActivationCenter<C, K, V> implements Center<
      *
      * @return a globally unique cache center.
      */
-    public static synchronized Center getGlobalCenter() {
+    public static Center getGlobalCenter() {
         return globalCenter;
     }
 }
