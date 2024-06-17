@@ -14,6 +14,10 @@ import java.io.File;
  */
 public interface CachePersistenceReduction {
 
+    //default CachePersistenceSolver
+    //@since 1.1.4
+    CachePersistenceReduction INSTANCE = new ByteCachePersistence();
+
     /**
      * Restore cache files based on the provided file path.
      *
