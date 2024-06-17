@@ -84,8 +84,7 @@ public class CacheTemplate<K, V> extends CacheFactoryAccessor implements CacheCo
      * @param keySerializer key Serializer.
      */
     public void setKeySerializer(PairSerializer<K> keySerializer) {
-        Asserts.notNull(keySerializer,
-                "Please provide a non null key serialization.");
+        Asserts.notNull(keySerializer, "keySerializer must not be null.");
         this.keySerialize = keySerializer;
     }
 
@@ -95,8 +94,7 @@ public class CacheTemplate<K, V> extends CacheFactoryAccessor implements CacheCo
      * @param valueSerializer value Serializer.
      */
     public void setValueSerializer(PairSerializer<V> valueSerializer) {
-        Asserts.notNull(valueSerializer,
-                "Please provide a non null value serialization.");
+        Asserts.notNull(valueSerializer, "valueSerializer must not be null.");
         this.valueSerialize = valueSerializer;
     }
 
@@ -128,7 +126,7 @@ public class CacheTemplate<K, V> extends CacheFactoryAccessor implements CacheCo
 
         CacheFactory factory = getCacheFactory();
 
-        Asserts.notNull(factory, "There are no available cache factories.");
+        Asserts.notNull(factory, "cacheFactory must not be null.");
 
         T result;
 
@@ -197,7 +195,7 @@ public class CacheTemplate<K, V> extends CacheFactoryAccessor implements CacheCo
     }
 
     private byte[] rawKey(K key) {
-        Asserts.notNull(key, "Non null key required");
+        Asserts.notNull(key, "key must not be null.");
         byte[] v;
         if (this.keySerialize != null) {
             v = this.keySerialize.serialize(key);
@@ -221,7 +219,7 @@ public class CacheTemplate<K, V> extends CacheFactoryAccessor implements CacheCo
     }
 
     private byte[] rawValue(V value) {
-        Asserts.notNull(value, "Non null value required");
+        Asserts.notNull(value, "value must not be null.");
         byte[] v;
         if (this.valueSerialize != null) {
             v = this.valueSerialize.serialize(value);
