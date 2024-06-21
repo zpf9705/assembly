@@ -2,6 +2,7 @@ package top.osjf.assembly.simplified.sdk.proxy;
 
 import top.osjf.assembly.simplified.sdk.process.Request;
 import top.osjf.assembly.simplified.sdk.process.ResponseData;
+import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
 
 import java.lang.reflect.Method;
@@ -65,8 +66,8 @@ public interface HandlerPostProcessor {
      * @param proxyMethod The target method of the agent.
      * @return Customized response result.
      */
-    @NotNull
-    default Object postProcessResultAfterHandle(Object result, Class<?> targetType, Method proxyMethod) {
+    @CanNull
+    default Object postProcessResultAfterHandle(@CanNull Object result, Class<?> targetType, Method proxyMethod) {
         return result;
     }
 
