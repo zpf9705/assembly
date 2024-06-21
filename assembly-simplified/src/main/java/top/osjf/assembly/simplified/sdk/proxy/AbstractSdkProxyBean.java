@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.web.context.WebApplicationContext;
 import top.osjf.assembly.simplified.sdk.SdkUtils;
 import top.osjf.assembly.simplified.sdk.client.ClientExecutors;
@@ -14,6 +16,7 @@ import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.lang.StringUtils;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  * Inheriting {@link AbstractMultipleProxySupport} implements handing over
@@ -45,6 +48,20 @@ public abstract class AbstractSdkProxyBean<T> extends AbstractMultipleProxySuppo
 
     /*** The host address when calling SDK.*/
     private String host;
+
+    /*** Customized modifiers for the results of proxy processing.*/
+    private List<HandlerPostProcessor> postProcessors;
+
+    /**
+     * Set the collection of beans related to {@link HandlerPostProcessor} in the spring container.
+     * @since 2.2.7
+     * @param postProcessors modifiers for the results of proxy processing.
+     */
+    @Autowired(required = false)
+    public void setPostProcessors(List<HandlerPostProcessor> postProcessors) {
+        AnnotationAwareOrderComparator.sort(postProcessors);
+        this.postProcessors = postProcessors;
+    }
 
     /**
      * The construction method called when defining the scope of a normal bean
@@ -114,8 +131,17 @@ public abstract class AbstractSdkProxyBean<T> extends AbstractMultipleProxySuppo
             throw new UnsupportedSDKCallBackMethodException(method.getName());
         //Create a request class based on the extension.
         Request<?> request = SdkUtils.invokeCreateRequest(method, args);
+        //Dynamically customize request parameters.
+        for (HandlerPostProcessor postProcessor : postProcessors) {
+            request = postProcessor.postProcessRequestBeforeHandle(request, getType(), method);
+        }
         //Execute the request.
-        return SdkUtils.getResponse(method, doRequest(request));
+        Object result = SdkUtils.getResponse(method, doRequest(request));
+        //Dynamic customization of request response results.
+        for (HandlerPostProcessor postProcessor : postProcessors) {
+            result = postProcessor.postProcessResultAfterHandle(result, getType(), method);
+        }
+        return result;
     }
 
     /**

@@ -78,7 +78,7 @@ public abstract class ExecutableHttpClient<R extends HttpResponse> extends Abstr
             throwable = e;
             response = DefaultErrorResponse.parseErrorResponse(throwable, DefaultErrorResponse.ErrorType.SDK, request);
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
 
             //Capture unknown exceptions and provide a transition reminder.
             handlerUnKnowError(request, e);
