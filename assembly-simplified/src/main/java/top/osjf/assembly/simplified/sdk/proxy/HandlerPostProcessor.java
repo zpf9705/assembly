@@ -69,4 +69,16 @@ public interface HandlerPostProcessor {
     default Object postProcessResultAfterHandle(Object result, Class<?> targetType, Method proxyMethod) {
         return result;
     }
+
+    /**
+     * Returns the proxy type specified by this {@link HandlerPostProcessor}.
+     * <p>If you specify this type, then this {@link HandlerPostProcessor} will
+     * only serve this target type, and by default {@literal null} will serve
+     * all target types.
+     *
+     * @return the proxy type specified by this {@link HandlerPostProcessor}.
+     */
+    default Class<?> appointTarget() {
+        return null;
+    }
 }

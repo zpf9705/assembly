@@ -2,10 +2,12 @@ package top.osjf.assembly.simplified.sdk.proxy;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.web.context.WebApplicationContext;
 import top.osjf.assembly.simplified.sdk.SdkUtils;
@@ -16,6 +18,7 @@ import top.osjf.assembly.util.annotation.NotNull;
 import top.osjf.assembly.util.lang.StringUtils;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,26 +45,17 @@ import java.util.List;
  * @since 1.1.0
  */
 public abstract class AbstractSdkProxyBean<T> extends AbstractMultipleProxySupport<T> implements RequestAttributes,
-        InitializingBean, DisposableBean {
+        ApplicationContextAware, InitializingBean, DisposableBean {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
+
+    private ApplicationContext applicationContext;
 
     /*** The host address when calling SDK.*/
     private String host;
 
     /*** Customized modifiers for the results of proxy processing.*/
-    private List<HandlerPostProcessor> postProcessors;
-
-    /**
-     * Set the collection of beans related to {@link HandlerPostProcessor} in the spring container.
-     * @since 2.2.7
-     * @param postProcessors modifiers for the results of proxy processing.
-     */
-    @Autowired(required = false)
-    public void setPostProcessors(List<HandlerPostProcessor> postProcessors) {
-        AnnotationAwareOrderComparator.sort(postProcessors);
-        this.postProcessors = postProcessors;
-    }
+    private final List<HandlerPostProcessor> postProcessors = new ArrayList<>();
 
     /**
      * The construction method called when defining the scope of a normal bean
@@ -84,6 +78,11 @@ public abstract class AbstractSdkProxyBean<T> extends AbstractMultipleProxySuppo
     }
 
     @Override
+    public void setApplicationContext(@NotNull ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
+
+    @Override
     public void setHost(String host) {
         if (StringUtils.isBlank(host)) {
             throw new IllegalArgumentException("SDK access host address cannot be empty!");
@@ -98,7 +97,21 @@ public abstract class AbstractSdkProxyBean<T> extends AbstractMultipleProxySuppo
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        log.info("SDK proxy bean initialization action,please ask the subclass to rewrite it on its own.");
+        try {
+            for (HandlerPostProcessor postProcessor : applicationContext.getBeansOfType(HandlerPostProcessor.class)
+                    .values()) {
+                Class<?> appointType = postProcessor.appointTarget();
+                if (appointType != null) {
+                    //relation checkMethodCoverRanger
+                    if (getType().isAssignableFrom(appointType)) {
+                        postProcessors.add(postProcessor);
+                    }
+                } else postProcessors.add(postProcessor);
+            }
+            AnnotationAwareOrderComparator.sort(postProcessors);
+        } catch (BeansException ignored) {
+            // ...Ignoring undefined issues
+        }
     }
 
     @Override
