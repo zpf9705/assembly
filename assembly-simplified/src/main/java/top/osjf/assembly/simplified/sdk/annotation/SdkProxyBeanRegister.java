@@ -10,8 +10,10 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.Assert;
 import top.osjf.assembly.simplified.sdk.proxy.SdkCglibProxyBean;
 import top.osjf.assembly.simplified.sdk.proxy.SdkJDKProxyBean;
+import top.osjf.assembly.simplified.sdk.proxy.SdkProxyBean;
 import top.osjf.assembly.simplified.sdk.proxy.SdkProxyBeanUtils;
 import top.osjf.assembly.simplified.support.AnnotationTypeScanningCandidateImportBeanDefinitionRegistrar;
+import top.osjf.assembly.simplified.support.BeanProperty;
 import top.osjf.assembly.simplified.support.BeanPropertyUtils;
 import top.osjf.assembly.simplified.support.ProxyModel;
 import top.osjf.assembly.util.annotation.NotNull;
@@ -53,6 +55,41 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
             Pattern.compile(
                     "((25[0-5])|(2[0-4]\\d)|(1\\d\\d)|([1-9]\\d)|\\d)(\\.((25[0-5])|(2[0-4]\\d)|(1\\d\\d)|([1-9]\\d)|\\d)){3}");
 
+    /*** {@link Sdk#model()} annotation proxy model attr name.
+     * @since 2.2.7
+     * */
+    private static final String SDK_ATTR_PROXY_MODEL = "model";
+
+    /*** {@link Sdk#hostProperty()} annotation host property attr name.
+     * @since 2.2.7
+     * */
+    private static final String SDK_ATTR_HOST_PROPERTY = "hostProperty";
+
+    /*** {@link Sdk#model()} annotation sdk attr bean property attr name.
+     * @since 2.2.7
+     * */
+    private static final String SDK_ATTR_BEAN_PROPERTY = "sdkProxyBeanProperty";
+
+    /*** {@link BeanProperty#name()} annotation bean name attr name.
+     * @since 2.2.7
+     * */
+    private static final String SDK_ATTR_BEAN_NAME = "name";
+
+    /*** Sdk proxy bean host field name.
+     * @since 2.2.7
+     * */
+    private static final String SDK_PROXY_HOST_NAME = "host";
+
+    /*** Sdk proxy bean proxyModel field name.
+     * @since 2.2.7
+     * */
+    private static final String SDK_PROXY_MODEL_NAME = "proxyModel";
+
+    /*** Sdk proxy bean type field name.
+     * @since 2.2.7
+     * */
+    private static final String SDK_PROXY_TYPE_NAME = "type";
+
     @Override
     public BeanDefinitionHolder createBeanDefinitionHolder(AnnotationAttributes markedAnnotationAttributes,
                                                            AnnotationMetadata markedAnnotationMetadata) {
@@ -62,16 +99,17 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
     private BeanDefinitionHolder createBeanDefinitionHolder0(AnnotationAttributes markedAnnotationAttributes,
                                                              AnnotationMetadata markedAnnotationMetadata) {
         String className = markedAnnotationMetadata.getClassName();
-        ProxyModel model = markedAnnotationAttributes.getEnum("model");
+        ProxyModel model = markedAnnotationAttributes.getEnum(SDK_ATTR_PROXY_MODEL);
         BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(
-                markedAnnotationAttributes.getClass("proxyBeanType"));
-        builder.addPropertyValue("host",
-                getRequestHost(markedAnnotationAttributes.getString("hostProperty")));
-        builder.addPropertyValue("proxyModel", model);
-        builder.addPropertyValue("type", className);
+                /* since 2.2.7 Fixed proxy type Avoid proxy replacement support related issues */
+                SdkProxyBean.class);
+        builder.addPropertyValue(SDK_PROXY_HOST_NAME,
+                getRequestHost(markedAnnotationAttributes.getString(SDK_ATTR_HOST_PROPERTY)));
+        builder.addPropertyValue(SDK_PROXY_MODEL_NAME, model);
+        builder.addPropertyValue(SDK_PROXY_TYPE_NAME, className);
         AnnotationAttributes beanPropertyAttributes = markedAnnotationAttributes
-                .getAnnotation("sdkProxyBeanProperty");
-        String[] names = beanPropertyAttributes.getStringArray("name");
+                .getAnnotation(SDK_ATTR_BEAN_PROPERTY);
+        String[] names = beanPropertyAttributes.getStringArray(SDK_ATTR_BEAN_NAME);
         String beanName = SdkProxyBeanUtils.getTargetBeanName(BeanPropertyUtils.getBeanName(names), className);
         String[] alisaNames = BeanPropertyUtils.getAlisaNames(names);
         BeanDefinition beanDefinition =

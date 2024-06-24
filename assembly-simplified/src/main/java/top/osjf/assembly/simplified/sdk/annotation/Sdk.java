@@ -35,6 +35,9 @@ import java.lang.annotation.*;
  * {@link BeanDefinition} and the usage of injection models.
  * <p>Please refer to the introduction of {@link BeanProperty#autowire()}.
  *
+ * <p>It is recommended to use interfaces for proxy, as proxy for abstract
+ * classes can bring many problems.
+ *
  * @author zpf
  * @since 1.1.0
  */
@@ -96,7 +99,12 @@ public @interface Sdk {
      *
      * @return A proxy class , defaults to {@link SdkProxyBean}.
      * @since 2.0.9
+     * @deprecated Abandoned in 2.2.7, no longer supported, fixed as default value,
+     * request parameter extension support before and after viewing
+     * {@link top.osjf.assembly.simplified.sdk.proxy.HandlerPostProcessor},
+     * and will be removed in the next version.
      */
+    @Deprecated
     Class<? extends SdkProxyBean> proxyBeanType() default SdkProxyBean.class;
 
     /**
