@@ -102,7 +102,6 @@ public abstract class AbstractSdkProxyBean<T> extends AbstractMultipleProxySuppo
                     .values()) {
                 Class<?> appointType = postProcessor.appointTarget();
                 if (appointType != null) {
-                    //relation checkMethodCoverRanger
                     if (getType().isAssignableFrom(appointType)) {
                         postProcessors.add(postProcessor);
                     }
@@ -130,18 +129,19 @@ public abstract class AbstractSdkProxyBean<T> extends AbstractMultipleProxySuppo
      * <p>Here, a default processing posture that conforms to SDK is provided.
      *
      * <p>Since version 2.2.6, support for {@link RequestParameter} and
-     * {@link RequestParam} and
-     * {@link ResponseData}has
-     * been added.
+     * {@link RequestParam} and {@link ResponseData} has been added.
      *
      * @param proxy  Proxy object.
      * @param method The method object executed by the proxy class.
      * @param args   The real parameters executed by the proxy method.
      * @return The result returned by the proxy execution method.
      */
-    protected Object handle0(Object proxy, Method method, Object[] args) {
-        if (!checkMethodCoverRanger(proxy, getType(), method, args))
-            throw new UnsupportedSDKCallBackMethodException(method.getName());
+    private Object handle0(@SuppressWarnings("unused") Object proxy,
+                           Method method, Object[] args) {
+        /*
+         * if (!checkMethodCoverRanger(proxy, getType(), method, args))
+         *  throw new UnsupportedSDKCallBackMethodException(method.getName());
+         */
         //Create a request class based on the extension.
         Request<?> request = SdkUtils.invokeCreateRequest(method, args);
         //Dynamically customize request parameters.
@@ -167,8 +167,12 @@ public abstract class AbstractSdkProxyBean<T> extends AbstractMultipleProxySuppo
      * @return Returns {@code true}, indicating that it can be executed
      * subsequently, otherwise it is not supported.
      * @since 2.2.5
+     * @deprecated 2.2.7 No longer open such extensions and delete the next
+     * version.
      */
-    protected boolean checkMethodCoverRanger(Object proxy, Class<T> targetType, Method method, Object[] args) {
+    @Deprecated
+    protected boolean checkMethodCoverRanger(Object proxy, Class<T> targetType,
+                                             Method method, Object[] args) {
         return true;
     }
 
@@ -179,7 +183,7 @@ public abstract class AbstractSdkProxyBean<T> extends AbstractMultipleProxySuppo
      * @param request Think of {@link Request#getClientCls()}.
      * @return The result set of this request is encapsulated in {@link Response}.
      */
-    protected Response doRequest(@NotNull Request<?> request) {
+    private Response doRequest(@NotNull Request<?> request) {
         //private perm
         //change protected
         //son class can use
