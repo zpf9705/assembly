@@ -61,7 +61,7 @@ public abstract class AbstractSdkProxyBean<T> extends AbstractMultipleProxySuppo
 
     /*** The return value {@link #toString()} needs to be formatted.*/
     private static final String TO_STR_FORMAT =
-            "Proxy info ( target type %s | proxy type %s | host %s | proxy model %s )";
+            "Proxy info ( target type [%s] | proxy type [%s] | host [%s] | proxy model [%s] )";
 
     /**
      * The construction method called when defining the scope of a normal bean
