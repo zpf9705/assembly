@@ -47,8 +47,10 @@ import java.util.List;
 public abstract class AbstractSdkProxyBean<T> extends AbstractMultipleProxySupport<T> implements RequestAttributes,
         ApplicationContextAware, InitializingBean, DisposableBean {
 
+    /*** SLF4J logs.*/
     private final Logger log = LoggerFactory.getLogger(getClass());
 
+    /*** Spring container context object.*/
     private ApplicationContext applicationContext;
 
     /*** The host address when calling SDK.*/
@@ -56,6 +58,10 @@ public abstract class AbstractSdkProxyBean<T> extends AbstractMultipleProxySuppo
 
     /*** Customized modifiers for the results of proxy processing.*/
     private final List<HandlerPostProcessor> postProcessors = new ArrayList<>();
+
+    /*** The return value {@link #toString()} needs to be formatted.*/
+    private static final String TO_STR_FORMAT =
+            "Proxy info ( target type %s | proxy type %s | host %s | proxy model %s )";
 
     /**
      * The construction method called when defining the scope of a normal bean
@@ -138,23 +144,39 @@ public abstract class AbstractSdkProxyBean<T> extends AbstractMultipleProxySuppo
      */
     private Object handle0(@SuppressWarnings("unused") Object proxy,
                            Method method, Object[] args) {
+        //Supports toString and returns proxy metadata.
+        if ("toString".equals(method.getName())) return toString();
         /*
          * if (!checkMethodCoverRanger(proxy, getType(), method, args))
          *  throw new UnsupportedSDKCallBackMethodException(method.getName());
          */
+        //Get target type.
+        Class<T> targetType = getType();
         //Create a request class based on the extension.
         Request<?> request = SdkUtils.invokeCreateRequest(method, args);
         //Dynamically customize request parameters.
         for (HandlerPostProcessor postProcessor : postProcessors) {
-            request = postProcessor.postProcessRequestBeforeHandle(request, getType(), method);
+            request = postProcessor.postProcessRequestBeforeHandle(request, targetType, method);
         }
         //Execute the request.
         Object result = SdkUtils.getResponse(method, doRequest(request));
         //Dynamic customization of request response results.
         for (HandlerPostProcessor postProcessor : postProcessors) {
-            result = postProcessor.postProcessResultAfterHandle(result, getType(), method);
+            result = postProcessor.postProcessResultAfterHandle(result, targetType, method);
         }
         return result;
+    }
+
+    /**
+     * Return relevant information about this agent.
+     *
+     * @return relevant information about this agent.
+     * @see #TO_STR_FORMAT
+     */
+    @Override
+    public String toString() {
+        return String.format(TO_STR_FORMAT, getType().getName(),
+                getClass().getName(), getHost(), getProxyModel().name());
     }
 
     /**

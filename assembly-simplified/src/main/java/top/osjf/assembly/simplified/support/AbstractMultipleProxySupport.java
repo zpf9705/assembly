@@ -83,6 +83,15 @@ public abstract class AbstractMultipleProxySupport<T> implements FactoryBean<T>,
     }
 
     /**
+     * Return the model enumeration for this proxy.
+     * @since 2.2.7
+     * @return the model enumeration for this proxy.
+     */
+    public ProxyModel getProxyModel() {
+        return proxyModel;
+    }
+
+    /**
      * Set the object managed by this factory a singleton.
      *
      * @param singleton the object managed by this factory a singleton.
