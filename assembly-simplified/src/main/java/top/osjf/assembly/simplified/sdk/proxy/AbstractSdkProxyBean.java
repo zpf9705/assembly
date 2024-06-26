@@ -156,13 +156,15 @@ public abstract class AbstractSdkProxyBean<T> extends AbstractMultipleProxySuppo
         Request<?> request = SdkUtils.invokeCreateRequest(method, args);
         //Dynamically customize request parameters.
         for (HandlerPostProcessor postProcessor : postProcessors) {
-            request = postProcessor.postProcessRequestBeforeHandle(request, targetType, method);
+            request = postProcessor.postProcessRequestBeforeHandle(request, targetType,
+                    method, args);
         }
         //Execute the request.
         Object result = SdkUtils.getResponse(method, doRequest(request));
         //Dynamic customization of request response results.
         for (HandlerPostProcessor postProcessor : postProcessors) {
-            result = postProcessor.postProcessResultAfterHandle(result, targetType, method);
+            result = postProcessor.postProcessResultAfterHandle(result, targetType,
+                    method, args);
         }
         return result;
     }

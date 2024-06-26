@@ -9,14 +9,14 @@ import java.lang.reflect.Method;
 
 /**
  * When processing SDK proxy requests, at the method level, after creating {@link Request},
- * this interface method {@link #postProcessRequestBeforeHandle(Request, Class, Method)}
+ * this interface method {@link #postProcessRequestBeforeHandle(Request, Class, Method,Object[])}
  * can be used to customize the above {@link Request} parameters and obtain the final
  * request parameter result, which cannot be empty by default and returns the original
  * created request parameter.
  *
  * <p>When processing SDK proxy response data, at the method level, after obtaining the
  * response result (specified data type for {@link top.osjf.assembly.simplified.sdk.process.Response}
- * or {@link ResponseData}), this interface method {@link #postProcessResultAfterHandle(Object, Class, Method)}
+ * or {@link ResponseData}), this interface method {@link #postProcessResultAfterHandle(Object, Class, Method,Object[])}
  * can be used to customize and modify the above response result parameters, and obtain the
  * final request response result. The default cannot be empty, and return the original
  * processing to obtain the request response output parameter.
@@ -47,10 +47,13 @@ public interface HandlerPostProcessor {
      * @param request     The original request parameters.
      * @param targetType  The target type being represented.
      * @param proxyMethod The target method of the agent.
+     * @param args        The real parameters executed by the
+     *                    proxy method.
      * @return Customized request parameters.
      */
     @NotNull
-    default Request<?> postProcessRequestBeforeHandle(Request<?> request, Class<?> targetType, Method proxyMethod) {
+    default Request<?> postProcessRequestBeforeHandle(Request<?> request, Class<?> targetType, Method proxyMethod,
+                                                      @CanNull Object[] args) {
         return request;
     }
 
@@ -64,10 +67,13 @@ public interface HandlerPostProcessor {
      * @param result      The original corresponding parameters.
      * @param targetType  The target type being represented.
      * @param proxyMethod The target method of the agent.
+     * @param args        The real parameters executed by the
+     *                    proxy method.
      * @return Customized response result.
      */
     @CanNull
-    default Object postProcessResultAfterHandle(@CanNull Object result, Class<?> targetType, Method proxyMethod) {
+    default Object postProcessResultAfterHandle(@CanNull Object result, Class<?> targetType, Method proxyMethod,
+                                                @CanNull Object[] args) {
         return result;
     }
 
