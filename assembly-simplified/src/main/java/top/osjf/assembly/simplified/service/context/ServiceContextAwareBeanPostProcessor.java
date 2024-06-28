@@ -2,7 +2,9 @@ package top.osjf.assembly.simplified.service.context;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.Aware;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.core.Ordered;
 import top.osjf.assembly.util.annotation.CanNull;
 import top.osjf.assembly.util.annotation.NotNull;
@@ -29,7 +31,7 @@ import java.util.Objects;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.1
  */
-public class ServiceContextAwareBeanPostProcessor implements BeanPostProcessor, Ordered {
+public class ServiceContextAwareBeanPostProcessor implements BeanPostProcessor, BeanFactoryPostProcessor, Ordered {
 
     /*** The service context that has already been loaded.*/
     private final ServiceContext serviceContext;
@@ -54,6 +56,11 @@ public class ServiceContextAwareBeanPostProcessor implements BeanPostProcessor, 
             }
         }
         return BeanPostProcessor.super.postProcessAfterInitialization(bean, beanName);
+    }
+
+    @Override
+    public void postProcessBeanFactory(@NotNull ConfigurableListableBeanFactory beanFactory) throws BeansException {
+        beanFactory.ignoreDependencyInterface(ServiceContextAware.class);
     }
 
     @Override
