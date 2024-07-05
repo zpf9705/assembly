@@ -29,6 +29,7 @@ import java.lang.annotation.*;
 @Documented
 @Import({CronTaskRegisterPostProcessor.class})
 @EnableListenerAutoRegister //Since 2.2.5
+@EnableCronRuntimeRegistrant //since 2.2.8
 public @interface EnableCronTaskRegister2 {
 
     /**
