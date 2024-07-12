@@ -227,7 +227,10 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
             } catch (NumberFormatException e) {
                 $suffixIsInt = false;
             }
-            result = IP_PATTERN.matcher(hostAtt[0]).matches() && $suffixIsInt;
+            result = (IP_PATTERN.matcher(hostAtt[0]).matches()
+                    //Compatible with domain names and port numbers.
+                    || DOMAIN_PATTERN.matcher(hostAtt[0]).matches()
+            ) && $suffixIsInt;
         } else {
             result = DOMAIN_PATTERN.matcher(host).matches();
         }
