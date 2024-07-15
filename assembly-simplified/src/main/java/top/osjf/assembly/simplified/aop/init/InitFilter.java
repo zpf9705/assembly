@@ -9,6 +9,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @since 2.2.5
  */
 @FunctionalInterface
+@Deprecated
 public interface InitFilter {
 
     /**
