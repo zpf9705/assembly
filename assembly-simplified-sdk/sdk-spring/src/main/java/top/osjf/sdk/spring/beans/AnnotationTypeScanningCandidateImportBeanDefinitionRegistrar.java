@@ -28,6 +28,8 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import top.osjf.sdk.commons.annotation.NotNull;
+import top.osjf.sdk.spring.annotation.EnableSdkProxyRegister;
+import top.osjf.sdk.spring.annotation.Sdk;
 import top.osjf.sdk.spring.proxy.ConcentrateProxySupport;
 
 import java.lang.annotation.Annotation;
@@ -43,8 +45,8 @@ import java.util.Objects;
  * <p>This process can be enabled using an annotation switch.
  *
  * <p>For example, when the springboot program starts, if it detects that the container bean is
- * wearing {@link top.osjf.sdk.spring.EnableSdkProxyRegister} annotations,
- * it will automatically search for the wearing annotation {@link top.osjf.sdk.spring.Sdk}
+ * wearing {@link EnableSdkProxyRegister} annotations,
+ * it will automatically search for the wearing annotation {@link Sdk}
  * interface in this class and create an implementation class (refer to {@link ConcentrateProxySupport}).
  *
  * <p>The implementation process depends on the bean's registrar interface {@link ImportBeanDefinitionRegistrar}.
