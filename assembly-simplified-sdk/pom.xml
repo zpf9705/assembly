@@ -5,29 +5,26 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>top.osjf.validation.extension</groupId>
-        <artifactId>assembly-simplified-sdk</artifactId>
-        <version>1.0.0</version>
+        <groupId>top.osjf</groupId>
+        <artifactId>assembly</artifactId>
+        <version>2.0.4</version>
     </parent>
 
-    <groupId>top.osjf.sdk.core</groupId>
-    <artifactId>sdk-core</artifactId>
+    <groupId>top.osjf.validation.extension</groupId>
+    <artifactId>assembly-simplified-sdk</artifactId>
+    <packaging>pom</packaging>
     <version>1.0.0</version>
+
+    <modules>
+        <module>sdk-commons</module>
+        <module>sdk-core</module>
+        <module>sdk-http</module>
+        <module>sdk-spring</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <commons>1.0.0</commons>
     </properties>
-
-    <dependencies>
-
-        <dependency>
-            <groupId>top.osjf.sdk.commons</groupId>
-            <artifactId>sdk-commons</artifactId>
-            <version>${commons}</version>
-        </dependency>
-
-    </dependencies>
 </project>
