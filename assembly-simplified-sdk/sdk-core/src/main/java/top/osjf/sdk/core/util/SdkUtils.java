@@ -53,8 +53,9 @@ public abstract class SdkUtils {
     /**
      * Check if the existing request headers contain {@link #named}, and
      * if no default JSON is provided.
+     *
      * @param headers existing request headers.
-     * */
+     */
     public static void checkContentType(Map<String, String> headers) {
         if (MapUtils.isEmpty(headers)) {
             return;
@@ -233,6 +234,7 @@ public abstract class SdkUtils {
      * Return the corresponding class generic carried by the request class.
      *
      * @param request Current request.
+     * @param def     Default type value.
      * @return Object types.
      * @see Class#getGenericInterfaces()
      * @see Class#getGenericSuperclass()
