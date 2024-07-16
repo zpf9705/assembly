@@ -18,6 +18,7 @@ package top.osjf.sdk.core.process;
 
 import cn.hutool.core.exceptions.ExceptionUtil;
 import top.osjf.sdk.core.exception.DataConvertException;
+import top.osjf.sdk.core.util.JSONUtil;
 
 import java.util.Objects;
 
@@ -131,7 +132,7 @@ public final class DefaultErrorResponse extends AbstractResponse {
      */
     public static <R extends Response> R parseErrorResponse(Throwable error, ErrorType type, Request<R> request) {
         DefaultErrorResponse response = type.convertToDefaultErrorResponse(error);
-        R r = FastJsonUtils.parseObject(FastJsonUtils.toJSONString(response), request.getResponseRequiredType());
+        R r = JSONUtil.parseObject(JSONUtil.toJSONString(response), request.getResponseRequiredType());
         r.setErrorCode(response.getCode());
         r.setErrorMessage(response.getMessage());
         return r;
