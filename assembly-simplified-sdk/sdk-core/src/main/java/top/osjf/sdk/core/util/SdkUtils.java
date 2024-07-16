@@ -38,16 +38,23 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * About sdk helper tool class.
  *
- * @author zpf
- * @since 1.1.0
+ * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
+ * @since 1.0.0
  */
 @SuppressWarnings("rawtypes")
 public abstract class SdkUtils {
 
+    /*** content type name */
     public static final String named = "Content-Type";
 
+    /*** default Json content type */
     public static final String default_content_type = "application/json";
 
+    /**
+     * Check if the existing request headers contain {@link #named}, and
+     * if no default JSON is provided.
+     * @param headers existing request headers.
+     * */
     public static void checkContentType(Map<String, String> headers) {
         if (MapUtils.isEmpty(headers)) {
             return;
