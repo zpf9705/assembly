@@ -31,11 +31,15 @@ import top.osjf.sdk.commons.annotation.NotNull;
 import top.osjf.sdk.core.client.ClientExecutors;
 import top.osjf.sdk.core.process.*;
 import top.osjf.sdk.http.HttpSdkSupport;
-import top.osjf.sdk.spring.factory.HandlerPostProcessor;
+import top.osjf.sdk.spring.beans.DeterminantDisposableBean;
+import top.osjf.sdk.spring.beans.DeterminantInitializingBean;
+import top.osjf.sdk.spring.beans.HandlerPostProcessor;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * Inheriting {@link ConcentrateProxySupport} implements handing over
@@ -72,6 +76,9 @@ public abstract class AbstractSdkProxyBean<T> extends ConcentrateProxySupport<T>
 
     /*** Customized modifiers for the results of proxy processing.*/
     private final List<HandlerPostProcessor> postProcessors = new ArrayList<>();
+
+    /*** Custom specified current type in proxy class destruction logic..*/
+    private final List<DeterminantDisposableBean> disposableBeans = new ArrayList<>();
 
     /*** The return value {@link #toString()} needs to be formatted.*/
     private static final String TO_STR_FORMAT =
@@ -117,20 +124,48 @@ public abstract class AbstractSdkProxyBean<T> extends ConcentrateProxySupport<T>
 
     @Override
     public void afterPropertiesSet() throws Exception {
+
+        //Collect request post processors.
+        getBeansOfType(HandlerPostProcessor.class,
+                h -> h.appointTarget() != null && getType().isAssignableFrom(h.appointTarget()), postProcessors::add);
+
+        //Collect the destruction logic collection of proxy beans of the specified type.
+        getBeansOfType(DeterminantDisposableBean.class,
+                d -> getType().isAssignableFrom(d.getType()), disposableBeans::add);
+
+        //Collect the initialization logic collection of proxy beans of the specified type and execute it.
+        for (DeterminantInitializingBean initializingBean : getBeansOfType(DeterminantInitializingBean.class,
+                d -> getType().isAssignableFrom(d.getType()), null)) {
+            initializingBean.afterPropertiesSet();
+        }
+    }
+
+    /**
+     * Retrieve the bean collection from the Spring container according to the
+     * specified type and determine if it meets the criteria. After sorting,
+     * it can be executed concurrently.
+     *
+     * @param requiredType        Find the type of bean.
+     * @param assignableCondition Filter conditions.
+     * @param exec                Execute the consumption function.
+     * @param <R>                 Generic types.
+     * @return The filtered collection of type entities.
+     */
+    <R> List<R> getBeansOfType(Class<R> requiredType, Predicate<R> assignableCondition,
+                               Consumer<R> exec) {
+        List<R> beans = new ArrayList<>();
         try {
-            for (HandlerPostProcessor postProcessor : applicationContext.getBeansOfType(HandlerPostProcessor.class)
-                    .values()) {
-                Class<?> appointType = postProcessor.appointTarget();
-                if (appointType != null) {
-                    if (getType().isAssignableFrom(appointType)) {
-                        postProcessors.add(postProcessor);
-                    }
-                } else postProcessors.add(postProcessor);
+            for (R bean : applicationContext.getBeansOfType(requiredType).values()) {
+                if (assignableCondition.test(bean)) {
+                    beans.add(bean);
+                }
             }
-            AnnotationAwareOrderComparator.sort(postProcessors);
         } catch (BeansException ignored) {
             // ...Ignoring undefined issues
         }
+        AnnotationAwareOrderComparator.sort(beans);
+        if (exec != null) beans.forEach(exec);
+        return beans;
     }
 
     @Override
@@ -140,7 +175,9 @@ public abstract class AbstractSdkProxyBean<T> extends ConcentrateProxySupport<T>
 
     @Override
     public void destroy() throws Exception {
-        log.info("SDK's proxy bean destruction action,please ask the subclass to rewrite it on its own.");
+        for (DeterminantDisposableBean disposableBean : disposableBeans) {
+            disposableBean.destroy();
+        }
     }
 
     /**
