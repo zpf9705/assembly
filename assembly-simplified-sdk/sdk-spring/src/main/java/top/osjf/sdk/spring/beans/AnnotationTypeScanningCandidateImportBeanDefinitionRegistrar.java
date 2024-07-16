@@ -27,7 +27,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import top.osjf.sdk.commons.annotation.NotNull;
-import top.osjf.sdk.spring.proxy.AbstractMultipleProxySupport;
+import top.osjf.sdk.spring.proxy.ConcentrateProxySupport;
 
 import java.lang.annotation.Annotation;
 import java.util.Objects;
@@ -44,7 +44,7 @@ import java.util.Objects;
  * <p>For example, when the springboot program starts, if it detects that the container bean is
  * wearing {@link top.osjf.sdk.spring.EnableSdkProxyRegister} annotations,
  * it will automatically search for the wearing annotation {@link top.osjf.sdk.spring.Sdk}
- * interface in this class and create an implementation class (refer to {@link AbstractMultipleProxySupport}).
+ * interface in this class and create an implementation class (refer to {@link ConcentrateProxySupport}).
  *
  * <p>The implementation process depends on the bean's registrar interface {@link ImportBeanDefinitionRegistrar}.
  *
