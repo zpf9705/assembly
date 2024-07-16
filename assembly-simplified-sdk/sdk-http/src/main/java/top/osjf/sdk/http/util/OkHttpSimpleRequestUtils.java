@@ -16,7 +16,6 @@
 
 package top.osjf.sdk.http.util;
 
-import cn.hutool.core.exceptions.UtilException;
 import cn.hutool.core.io.IoUtil;
 import okhttp3.*;
 import okhttp3.internal.http.HttpMethod;
@@ -25,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.ContentType;
 import top.osjf.sdk.core.util.JSONUtil;
 import top.osjf.sdk.http.OkHttpClient;
+import top.osjf.sdk.http.excpetion.ResponseFailedException;
 
 import java.util.HashMap;
 import java.util.Map;
