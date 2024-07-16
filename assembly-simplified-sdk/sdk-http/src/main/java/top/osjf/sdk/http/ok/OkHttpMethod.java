@@ -33,7 +33,6 @@ public class OkHttpMethod implements HttpMethod {
     public static final HttpMethod INSTANCE = new OkHttpMethod();
 
     private OkHttpMethod() {
-        throw new AssertionError("No instance for you !");
     }
 
     @Override
