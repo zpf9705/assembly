@@ -1,3 +1,19 @@
+/*
+ * Copyright 2024-? the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package top.osjf.sdk.core.client;
 
 import cn.hutool.core.lang.Assert;
@@ -32,22 +48,26 @@ import java.util.function.Supplier;
 @SuppressWarnings({"rawtypes", "unchecked", "serial"})
 public abstract class AbstractClient<R extends Response> implements Client<R> {
 
-    //The use of object locks for client retrieval and caching.
+    /*** The use of object locks for client retrieval and caching.*/
     private static final Object lock = new Object();
 
-    //Cache request clients for each request object to prevent memory waste caused by multiple new requests
-    private static final Map<String, Client> CLIENT_CACHE = new ConcurrentHashMap<>(16);
+    /*** Cache request clients for each request object to prevent memory waste caused
+     * by multiple new requests*/
+    private static final Map<String, Client> cache = new ConcurrentHashMap<>(16);
 
-    //Save each request parameter and use it for subsequent requests
-    private static final ThreadLocal<Request> PARAM_NAMED_SAVER = new NamedThreadLocal<>("CURRENT REQUEST");
+    /*** Save each request parameter and use it for subsequent requests*/
+    private static final ThreadLocal<Request> local = new NamedThreadLocal<>("CURRENT REQUEST");
 
-    public AbstractClient(String key) {
-        Assert.notBlank(key, "Key not be null");
-        cache(key, this);
+    /*** Constructing for {@link Client} objects using access URLs.*/
+    public AbstractClient(String url) {
+        Assert.notBlank(url, "url not be null");
+        cache(url, this);
     }
 
     /**
-     * Caching {@link Client} with sign url and real {@link Client}.
+     * Use the URL address as the key, {@link Client} object
+     * as the value, and cache it in the current {@link #cache}
+     * to prepare for continuous access in the future.
      *
      * @param url    Cache link url.
      * @param client Real impl in {@link Client}.
@@ -56,44 +76,48 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
         if (StrUtil.isBlank(url) || client == null) {
             return;
         }
-        CLIENT_CACHE.putIfAbsent(url, client);
+        cache.putIfAbsent(url, client);
     }
 
-    /* ******* Static ***********/
-
     /**
-     * Put the current requested parameters into thread private variable storage.
+     * Regarding the placement of the {@link Request} parameter, it
+     * was first placed in {@link #local} to facilitate the retrieval
+     * of the current request parameter {@link Request} in the case of
+     * global constraints in this request.
      *
      * @param <R>     Data Generics for {@link Response}.
-     * @param request The parameter model of the current request is an implementation of {@link Request}.
+     * @param request The parameter model of the current request is
+     *                an implementation of {@link Request}.
      */
     static <R extends Response> void setCurrentParam(Request<R> request) {
         if (request == null) {
-            PARAM_NAMED_SAVER.remove();
+            local.remove();
         } else {
-            PARAM_NAMED_SAVER.set(request);
+            local.set(request);
         }
     }
 
     /**
-     * Retrieve the cache implementation of {@link Client} from the cache {@link #CLIENT_CACHE}.
+     * Return and cache a {@link Client}. When it does not exist based on the
+     * URL address, cache {@link Client}. Otherwise, retrieve it directly from
+     * the cache to ensure uniqueness.
      *
      * @param newClientSupplier New client provider,if not found, add it directly.
      * @param request           {@link Request} class model parameters of API.
-     * @param key               Cache a single {@link Client} to the key value of the map static cache.
+     * @param url               The real URL address accessed by the SDK.
      * @param <R>               Data Generics for {@link Response}.
      * @return {@link Client} 's singleton object, persistently requesting.
      */
     public static <R extends Response> Client<R> getAndSetClient(Supplier<Client<R>> newClientSupplier,
                                                                  Request<R> request,
-                                                                 String key) {
-        Assert.notBlank(key, "Key not be null");
-        Assert.notNull(request, "Request not be null");
+                                                                 String url) {
+        Assert.notBlank(url, "url not be null");
+        Assert.notNull(request, "request not be null");
         setCurrentParam(request);
-        Client<R> client = CLIENT_CACHE.get(key);
+        Client<R> client = cache.get(url);
         if (client == null) {
             synchronized (lock) {
-                client = CLIENT_CACHE.get(key);
+                client = cache.get(url);
                 if (client == null) {
                     client = newClientSupplier.get();
                 }
@@ -109,7 +133,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
      * @return Actual {@link Request} implementation.
      */
     public Request<R> getCurrentRequest() {
-        return PARAM_NAMED_SAVER.get();
+        return local.get();
     }
 
     @Override
