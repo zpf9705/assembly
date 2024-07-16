@@ -36,7 +36,7 @@ import java.lang.reflect.Proxy;
  * {@link FactoryBean} interface and dynamically register beans through
  * {@link org.springframework.beans.factory.support.BeanDefinitionRegistry}
  *
- * <p>If you want to standardize processing, you can access {@link AbstractMultipleProxySupport}.
+ * <p>If you want to standardize processing, you can access {@link ConcentrateProxySupport}.
  *
  * @param <T> The data type of the proxy class.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
