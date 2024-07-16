@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http;
+package top.osjf.sdk.http.apache;
 
-import top.osjf.sdk.http.util.ApacheHttpSimpleRequestUtils;
+import top.osjf.sdk.http.HttpMethod;
 
 import java.util.Map;
 

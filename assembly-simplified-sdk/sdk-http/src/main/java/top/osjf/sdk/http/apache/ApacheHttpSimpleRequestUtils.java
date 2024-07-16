@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http.util;
+package top.osjf.sdk.http.apache;
 
-import cn.hutool.core.exceptions.UtilException;
 import cn.hutool.core.io.IoUtil;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
