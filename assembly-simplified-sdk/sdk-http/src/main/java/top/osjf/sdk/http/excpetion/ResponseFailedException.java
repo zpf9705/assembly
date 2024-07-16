@@ -20,7 +20,7 @@ import java.io.IOException;
 
 
 /**
- * {@link okhttp3.OkHttpClient} for failed to throw ex to notify anything.
+ * Response failed to throw ex to notify anything.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
