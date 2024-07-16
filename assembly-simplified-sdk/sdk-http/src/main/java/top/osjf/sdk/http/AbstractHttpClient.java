@@ -28,7 +28,6 @@ import top.osjf.sdk.core.exception.SdkException;
 import top.osjf.sdk.core.process.DefaultErrorResponse;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.util.JSONUtil;
-import top.osjf.sdk.core.util.SdkUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -129,7 +128,7 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
             Map<String, String> headers = request.getHeadMap();
 
             //Execute this request, route according to the request type, and handle the parameters.
-            responseStr = doRequest(request.matchHttpSdk().getRequestMethod(), headers, requestParam,
+            responseStr = doRequest(request.matchSdkEnum().getRequestMethod(), headers, requestParam,
                     request.montage());
 
             //Preprocessing operation for request results.
@@ -173,7 +172,7 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
      * Use the existing parameters given by {@link HttpRequest} to conduct
      * an HTTP call and return the result.
      *
-     * @param method       {@link HttpRequest#matchHttpSdk()}
+     * @param method       {@link HttpRequest#matchSdkEnum()}
      * @param headers      {@link HttpRequest#getHeadMap()}
      * @param requestParam {@link HttpRequest#getRequestParam()}
      * @param montage      {@link HttpRequest#montage()}
@@ -182,7 +181,7 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
                                Map<String, String> headers,
                                Object requestParam,
                                Boolean montage) throws Exception {
-        SdkUtils.checkContentType(headers);
+        HttpSdkSupport.checkContentType(headers);
         return null;
     }
 
@@ -232,19 +231,21 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
     @Override
     public void handlerSdkError(HttpRequest<?> request, SdkException e) {
         sdkError().accept("Client request fail, apiName={}, error=[{}]",
-                SdkUtils.toLoggerArray(request.matchHttpSdk().name(), ExceptionUtil.stacktraceToOneLineString(e)));
+                HttpSdkSupport.toLoggerArray(request.matchSdkEnum().name(),
+                        ExceptionUtil.stacktraceToOneLineString(e)));
     }
 
     @Override
     public void handlerUnKnowError(HttpRequest<?> request, Throwable e) {
         unKnowError().accept("Client request fail, apiName={}, error=[{}]",
-                SdkUtils.toLoggerArray(request.matchHttpSdk().name(), ExceptionUtil.stacktraceToOneLineString(e)));
+                HttpSdkSupport.toLoggerArray(request.matchSdkEnum().name(),
+                        ExceptionUtil.stacktraceToOneLineString(e)));
     }
 
     @Override
     public void finallyHandler(HttpResultSolver.ExecuteInfo info) {
         HttpRequest<?> httpRequest = info.getHttpRequest();
-        String name = httpRequest.matchHttpSdk().name();
+        String name = httpRequest.matchSdkEnum().name();
         Object requestParam = httpRequest.getRequestParam();
         String body = requestParam != null ? requestParam.toString() : "";
         String response = info.getResponse();
@@ -252,11 +253,11 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
         if (info.noHappenError().get()) {
             String msgFormat = "Request end, name={}, request={}, response={}, time={}ms";
             normal().accept(msgFormat,
-                    SdkUtils.toLoggerArray(name, body, response, spendTotalTimeMillis));
+                    HttpSdkSupport.toLoggerArray(name, body, response, spendTotalTimeMillis));
         } else {
             String msgFormat = "Request fail, name={}, request={}, response={}, error={}, time={}ms";
             normal().accept(msgFormat,
-                    SdkUtils.toLoggerArray(name, body, response, info.getErrorMessage(), spendTotalTimeMillis));
+                    HttpSdkSupport.toLoggerArray(name, body, response, info.getErrorMessage(), spendTotalTimeMillis));
         }
     }
 }
