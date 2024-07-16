@@ -74,7 +74,9 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
     /*** HTTP requests the real access address.*/
     private final String url;
 
-    /*** Constructing for {@link HttpClient} objects using access URLs.*/
+    /*** Constructing for {@link HttpClient} objects using access URLs.
+     * @param url The real URL address of the SDK request.
+     * */
     public AbstractHttpClient(String url) {
         super(url);
         this.url = url;
@@ -176,6 +178,8 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
      * @param headers      {@link HttpRequest#getHeadMap()}
      * @param requestParam {@link HttpRequest#getRequestParam()}
      * @param montage      {@link HttpRequest#montage()}
+     * @throws Exception maybe exceptions when http request.
+     * @return http request result.
      */
     protected String doRequest(HttpRequestMethod method,
                                Map<String, String> headers,

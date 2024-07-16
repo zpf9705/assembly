@@ -58,7 +58,9 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
     /*** Save each request parameter and use it for subsequent requests*/
     private static final ThreadLocal<Request> local = new NamedThreadLocal<>("CURRENT REQUEST");
 
-    /*** Constructing for {@link Client} objects using access URLs.*/
+    /*** Constructing for {@link Client} objects using access URLs.
+     * @param url The real URL address of the SDK request.
+     * */
     public AbstractClient(String url) {
         Assert.notBlank(url, "url not be null");
         cache(url, this);
