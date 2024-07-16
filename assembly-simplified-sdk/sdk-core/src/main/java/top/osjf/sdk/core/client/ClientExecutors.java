@@ -1,3 +1,19 @@
+/*
+ * Copyright 2024-? the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package top.osjf.sdk.core.client;
 
 import cn.hutool.core.util.ReflectUtil;
@@ -5,7 +21,6 @@ import top.osjf.sdk.core.exception.ClientRuntimeCloseException;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
 
-import java.io.IOException;
 import java.util.function.Supplier;
 
 /**
@@ -47,7 +62,7 @@ public class ClientExecutors {
     public static <R extends Response> R executeRequestClient(String host, Request<R> request) {
         try (Client<R> client = getAndSetClient(request.getUrl(host), request)) {
             return client.request();
-        } catch (IOException e) {
+        } catch (Throwable e) {
             throw new ClientRuntimeCloseException(e);
         }
     }
@@ -57,15 +72,15 @@ public class ClientExecutors {
      * If it does not exist, it will be added to the cache.
      *
      * @param request {@link Request} class model parameters of API.
-     * @param key     Cache a single {@link Client} to the key value of the map static cache.
+     * @param url     Cache a single {@link Client} to the key value of the map static cache.
      * @param <R>     Data Generics for {@link Response}.
      * @return Returns a single instance {@link Client} distinguished by a key.
      */
     @SuppressWarnings("unchecked")
-    public static <R extends Response> Client<R> getAndSetClient(String key, Request<R> request) {
+    public static <R extends Response> Client<R> getAndSetClient(String url, Request<R> request) {
         return AbstractClient.getAndSetClient(() -> {
             //Building client objects through reflection based on client type (provided that they are not cached)
-            return ReflectUtil.newInstance(request.getClientCls(), key);
-        }, request, key);
+            return ReflectUtil.newInstance(request.getClientCls(), url);
+        }, request, url);
     }
 }
