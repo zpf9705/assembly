@@ -21,6 +21,7 @@ import top.osjf.sdk.commons.annotation.Nullable;
 import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.core.process.AbstractRequestParams;
 import top.osjf.sdk.core.util.JSONUtil;
+import top.osjf.sdk.http.apache.ApacheHttpClient;
 
 /**
  * Http request abstract node class, used to define the public parameters
