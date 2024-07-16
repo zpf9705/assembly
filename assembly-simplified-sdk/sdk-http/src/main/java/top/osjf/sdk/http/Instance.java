@@ -16,6 +16,9 @@
 
 package top.osjf.sdk.http;
 
+import top.osjf.sdk.http.apache.ApacheHttpMethod;
+import top.osjf.sdk.http.ok.OkHttpMethod;
+
 /**
  * Enums of http types with apache or ok.
  *
