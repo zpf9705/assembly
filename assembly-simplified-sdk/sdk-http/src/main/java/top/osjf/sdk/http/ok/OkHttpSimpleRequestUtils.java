@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http.util;
+package top.osjf.sdk.http.ok;
 
 import cn.hutool.core.io.IoUtil;
 import okhttp3.*;
@@ -23,7 +23,6 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.ContentType;
 import top.osjf.sdk.core.util.JSONUtil;
-import top.osjf.sdk.http.OkHttpClient;
 import top.osjf.sdk.http.excpetion.ResponseFailedException;
 
 import java.util.HashMap;
@@ -53,6 +52,7 @@ import java.util.Map;
 public final class OkHttpSimpleRequestUtils {
 
     private OkHttpSimpleRequestUtils() {
+        throw new AssertionError("No instance for you !");
     }
 
     /**

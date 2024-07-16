@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http;
+package top.osjf.sdk.http.ok;
 
-import top.osjf.sdk.http.util.OkHttpSimpleRequestUtils;
+import top.osjf.sdk.http.HttpMethod;
 
 import java.util.Map;
 
@@ -29,9 +29,11 @@ import java.util.Map;
  */
 public class OkHttpMethod implements HttpMethod {
 
+    /*** The only instance.*/
     public static final HttpMethod INSTANCE = new OkHttpMethod();
 
     private OkHttpMethod() {
+        throw new AssertionError("No instance for you !");
     }
 
     @Override
