@@ -117,13 +117,14 @@ public abstract class ScanningCandidateImportBeanDefinitionRegistrar<T extends B
                 }
                 if (log.isWarnEnabled()) {
                     log.warn("Unable to parse usable path information from import annotation, " +
-                            "default resource path is now used.");
+                            "annotate the package path where the tag class is located is now used.");
                 }
             }
         } else {
             scanningPackageNames = new String[]{getConfigClassMetadata().getPackageName()};
             if (log.isWarnEnabled()) {
-                log.warn("Import annotation no provider, default resource path is now used.");
+                log.warn("Import annotation no provider, annotate the package path where the tag class is " +
+                        "located is now used.");
             }
         }
         ClassPathScanningCandidateComponentProvider scanningCandidateProvider = getScanningCandidateProvider();
