@@ -17,7 +17,7 @@
 package top.osjf.sdk.core.client;
 
 import cn.hutool.core.util.ReflectUtil;
-import top.osjf.sdk.core.exception.ClientRuntimeCloseException;
+import top.osjf.sdk.core.exception.ClientRequestFailedException;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
 
@@ -63,7 +63,7 @@ public class ClientExecutors {
         try (Client<R> client = getAndSetClient(request.getUrl(host), request)) {
             return client.request();
         } catch (Throwable e) {
-            throw new ClientRuntimeCloseException(e);
+            throw new ClientRequestFailedException(e);
         }
     }
 
@@ -72,7 +72,7 @@ public class ClientExecutors {
      * If it does not exist, it will be added to the cache.
      *
      * @param request {@link Request} class model parameters of API.
-     * @param url     Cache a single {@link Client} to the key value of the map static cache.
+     * @param url     The real URL address accessed by the SDK.
      * @param <R>     Data Generics for {@link Response}.
      * @return Returns a single instance {@link Client} distinguished by a key.
      */
