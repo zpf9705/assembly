@@ -43,8 +43,11 @@ import java.util.Map;
  */
 public abstract class AbstractImportBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar {
 
-    /*** 2.2.5 add Log output, providing its own subclass usage.*/
+    /*** Log output, providing its own subclass usage.*/
     protected final Logger log = LoggerFactory.getLogger(getClass());
+
+    /*** Configure metadata information for the class where the annotation is located.*/
+    private ConfiguredClassMetadata configClassMetadata;
 
     @Override
     public void registerBeanDefinitions(@NotNull AnnotationMetadata metadata, @NotNull BeanDefinitionRegistry registry,
@@ -54,6 +57,7 @@ public abstract class AbstractImportBeanDefinitionRegistrar implements ImportBea
 
     @Override
     public void registerBeanDefinitions(@NotNull AnnotationMetadata metadata, @NotNull BeanDefinitionRegistry registry) {
+        this.configClassMetadata = ConfiguredClassMetadata.of(metadata);
         AnnotationAttributes importAnnotationAttributes;
         Class<? extends Annotation> importAnnotationType = getImportAnnotationType();
         if (importAnnotationType != null) {
@@ -75,6 +79,14 @@ public abstract class AbstractImportBeanDefinitionRegistrar implements ImportBea
             }
         }
         registerBeanDefinitions(importAnnotationAttributes, registry);
+    }
+
+    /**
+     * Return the prototype interface of the configured class extension properties.
+     * @return prototype interface of the configured class extension properties.
+     */
+    public ConfiguredClassMetadata getConfigClassMetadata() {
+        return configClassMetadata;
     }
 
     /**
