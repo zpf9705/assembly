@@ -29,9 +29,11 @@ import java.util.Map;
  */
 public class ApacheHttpMethod implements HttpMethod {
 
+    /*** The only instance.*/
     public static final HttpMethod INSTANCE = new ApacheHttpMethod();
 
     private ApacheHttpMethod() {
+        throw new AssertionError("No instance for you !");
     }
 
     @Override

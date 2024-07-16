@@ -58,6 +58,7 @@ import java.util.Map;
 public final class ApacheHttpSimpleRequestUtils {
 
     private ApacheHttpSimpleRequestUtils() {
+        throw new AssertionError("No instance for you !");
     }
 
     /**
