@@ -55,16 +55,6 @@ public abstract class BeanPropertyUtils {
     private static final String AUTOWIRE_CANDIDATE = "autowireCandidate";
 
     /**
-     * @see BeanProperty#initMethod()
-     */
-    private static final String INIT_METHOD = "initMethod";
-
-    /**
-     * @see BeanProperty#destroyMethod()
-     */
-    private static final String DESTROY_METHOD = "destroyMethod";
-
-    /**
      * @see BeanProperty#scope()
      */
     private static final String SCOPE = "scope";
@@ -233,8 +223,6 @@ public abstract class BeanPropertyUtils {
                                           AnnotationAttributes beanPropertyAttributes) {
         Autowire autowire = beanPropertyAttributes.getEnum(AUTOWIRE);
         boolean autowireCandidate = beanPropertyAttributes.getBoolean(AUTOWIRE_CANDIDATE);
-        String initMethod = beanPropertyAttributes.getString(INIT_METHOD);
-        String destroyMethod = beanPropertyAttributes.getString(DESTROY_METHOD);
         String scope = getMaybeAnnotationScope(annotationMetadata,
                 beanPropertyAttributes.getString(SCOPE));
         int role = getMaybeAnnotationRole(annotationMetadata,
@@ -246,8 +234,6 @@ public abstract class BeanPropertyUtils {
         //—————————————————————————— General attributes ——————————————————————————
         builder.setScope(scope);
         builder.setAutowireMode(autowire.value());
-        if (StringUtils.isNotBlank(initMethod)) builder.setInitMethodName(initMethod);
-        if (StringUtils.isNotBlank(destroyMethod)) builder.setDestroyMethodName(destroyMethod);
         builder.setRole(role);
         builder.setLazyInit(lazyInit);
         //—————————————————————————— Pre inspection ——————————————————————————

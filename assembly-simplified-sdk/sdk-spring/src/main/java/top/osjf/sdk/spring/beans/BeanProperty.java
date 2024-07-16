@@ -23,6 +23,7 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.AliasFor;
+import top.osjf.sdk.spring.annotation.Sdk;
 
 import java.lang.annotation.*;
 
@@ -36,10 +37,10 @@ import java.lang.annotation.*;
  *
  * <p>The basic purpose is to serve as a secondary attribute for special
  * bean registration services, such as setting properties for proxy beans
- * annotated with {@link top.osjf.sdk.spring.Sdk}.
+ * annotated with {@link Sdk}.
  *
- * @see BeanPropertyUtils
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
+ * @see BeanPropertyUtils
  * @since 1.0.0
  */
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
@@ -89,12 +90,22 @@ public @interface BeanProperty {
     boolean autowireCandidate() default true;
 
     /**
+     * If you want to use this annotation as a replacement for {@link Bean},
+     * then this property will still be effective in its usage with {@link Bean},
+     * but if you want to use it together with {@link Sdk}, it is invalid because
+     * the proxy class is fixed.
+     *
      * @return {@code org.springframework.context.annotation.Bean#initMethod()}
      */
     @AliasFor(annotation = Bean.class)
     String initMethod() default "";
 
     /**
+     * If you want to use this annotation as a replacement for {@link Bean},
+     * then this property will still be effective in its usage with {@link Bean},
+     * but if you want to use it together with {@link Sdk}, it is invalid because
+     * the proxy class is fixed.
+     *
      * @return {@code org.springframework.context.annotation.Bean#destroyMethod()}
      */
     @AliasFor(annotation = Bean.class)
