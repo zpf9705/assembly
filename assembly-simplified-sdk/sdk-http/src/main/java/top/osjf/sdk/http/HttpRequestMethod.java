@@ -21,43 +21,55 @@ import top.osjf.sdk.commons.annotation.NotNull;
 import java.util.Map;
 
 /**
- * Enumeration of HTTP request types.
- * <p>Implement the {@link HttpSdkEnum.Action} interface to define the
- * action methods for each request method.</p>
+ * Enumeration of HTTP request method types.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public enum HttpRequestMethod implements HttpSdkEnum.Action {
+public enum HttpRequestMethod {
 
     GET {
         @Override
-        public String doRequest(@NotNull Type type, @NotNull String url, Map<String, String> headers,
+        public String doRequest(@NotNull Instance instance, @NotNull String url, Map<String, String> headers,
                                 Object requestParam, Boolean montage) throws Exception {
-            return type.getInstance().get(url, headers, requestParam, montage);
+            return instance.getInstance().get(url, headers, requestParam, montage);
         }
     }, POST {
         @Override
-        public String doRequest(@NotNull Type type, @NotNull String url, Map<String, String> headers,
+        public String doRequest(@NotNull Instance instance, @NotNull String url, Map<String, String> headers,
                                 Object requestParam, Boolean montage) throws Exception {
-            return type.getInstance().post(url, headers, requestParam, montage);
+            return instance.getInstance().post(url, headers, requestParam, montage);
         }
     }, PUT {
         @Override
-        public String doRequest(@NotNull Type type, @NotNull String url, Map<String, String> headers,
+        public String doRequest(@NotNull Instance instance, @NotNull String url, Map<String, String> headers,
                                 Object requestParam, Boolean montage) throws Exception {
-            return type.getInstance().put(url, headers, requestParam, montage);
+            return instance.getInstance().put(url, headers, requestParam, montage);
         }
     }, DELETE {
         @Override
-        public String doRequest(@NotNull Type type, @NotNull String url, Map<String, String> headers,
+        public String doRequest(@NotNull Instance instance, @NotNull String url, Map<String, String> headers,
                                 Object requestParam, Boolean montage) throws Exception {
-            return type.getInstance().delete(url, headers, requestParam, montage);
+            return instance.getInstance().delete(url, headers, requestParam, montage);
         }
     };
 
-    @Override
-    public String doRequest(String url, Map<String, String> headers, Object requestParam, Boolean montage) {
+    /**
+     * General methods for HTTP request method types are implemented by subclass enumeration.
+     *
+     * @param instance     {@link Instance}
+     * @param url          {@link HttpRequest#getUrl(String)} ()}
+     * @param headers      {@link HttpRequest#getHeadMap()}
+     * @param requestParam {@link HttpRequest#getRequestParam()}
+     * @param montage      {@link HttpRequest#montage()}
+     * @return http request result.
+     * @throws Exception maybe exceptions when http request.
+     */
+    public String doRequest(@NotNull Instance instance,
+                            @NotNull String url,
+                            Map<String, String> headers,
+                            Object requestParam,
+                            Boolean montage) throws Exception {
         throw new UnsupportedOperationException();
     }
 }
