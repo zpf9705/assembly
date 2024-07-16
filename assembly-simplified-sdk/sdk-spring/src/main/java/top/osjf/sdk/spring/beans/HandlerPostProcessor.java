@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.spring;
+package top.osjf.sdk.spring.beans;
 
 import top.osjf.sdk.commons.annotation.NotNull;
 import top.osjf.sdk.commons.annotation.Nullable;
