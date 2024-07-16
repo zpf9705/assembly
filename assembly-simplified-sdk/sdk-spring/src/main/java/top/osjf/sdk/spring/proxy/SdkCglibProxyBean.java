@@ -18,8 +18,9 @@ package top.osjf.sdk.spring.proxy;
 
 import org.springframework.beans.factory.FactoryBean;
 import top.osjf.sdk.core.client.ClientExecutors;
-import top.osjf.sdk.spring.EnableSdkProxyRegister;
-import top.osjf.sdk.spring.Sdk;
+import top.osjf.sdk.spring.annotation.EnableSdkProxyRegister;
+import top.osjf.sdk.spring.annotation.Sdk;
+import top.osjf.sdk.spring.annotation.SdkProxyBeanRegister;
 import top.osjf.sdk.spring.beans.ScanningCandidateImportBeanDefinitionRegistrar;
 
 /**
@@ -33,7 +34,7 @@ import top.osjf.sdk.spring.beans.ScanningCandidateImportBeanDefinitionRegistrar;
  * interface classes wearing {@link EnableSdkProxyRegister} in
  * {@link ScanningCandidateImportBeanDefinitionRegistrar} through{@link Sdk}'s
  * switch annotations,and then create dynamic implementation classes for these
- * interfaces through {@link top.osjf.sdk.spring.SdkProxyBeanRegister}.
+ * interfaces through {@link SdkProxyBeanRegister}.
  *
  * <p>At this point, the implementation class is assigned a proxy object
  * created by the spring cglib dynamic proxy, and the proxy object is handed
