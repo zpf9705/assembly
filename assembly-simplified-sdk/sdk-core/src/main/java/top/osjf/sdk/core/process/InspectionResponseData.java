@@ -17,9 +17,7 @@
 package top.osjf.sdk.core.process;
 
 import top.osjf.sdk.commons.annotation.Nullable;
-import top.osjf.sdk.core.util.SdkUtils;
-
-import java.lang.reflect.Method;
+import top.osjf.sdk.core.support.SdkSupport;
 
 /**
  * The default extension {@link ResponseData} is to check
@@ -44,7 +42,7 @@ public interface InspectionResponseData extends ResponseData {
      * instead of {@literal null}, to enhance the applicability
      * of SDK calls.
      *
-     * <p>Analyze an example to see {@link SdkUtils#getResponse(Method, Response)}.
+     * <p>Analyze an example to see {@link SdkSupport#getResponse}.
      *
      * @return Placeholder returns data, which may be a global default
      * value,can be {@literal null}, adapted according to oneself.

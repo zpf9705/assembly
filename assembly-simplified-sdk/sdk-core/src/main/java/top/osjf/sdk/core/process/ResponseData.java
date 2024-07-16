@@ -16,9 +16,7 @@
 
 package top.osjf.sdk.core.process;
 
-import top.osjf.sdk.core.util.SdkUtils;
-
-import java.lang.reflect.Method;
+import top.osjf.sdk.core.support.SdkSupport;
 
 /**
  * The functional interface used to check the success of this
@@ -30,7 +28,7 @@ import java.lang.reflect.Method;
  *
  * <p>Of course, regarding the SDK proxy result analysis, an implementation
  * of the interface definition concept has been added. You can focus on
- * method {@link SdkUtils#getResponse(Method, Response)}.
+ * method {@link SdkSupport#getResponse}.
  *
  * <div><h3>Examples of usage methods are as follows</h3></div>
  * <pre>

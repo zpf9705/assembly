@@ -16,10 +16,9 @@
 
 package top.osjf.sdk.core.process;
 
-import top.osjf.sdk.core.util.SdkUtils;
+import top.osjf.sdk.core.support.SdkSupport;
 
 import java.lang.annotation.*;
-import java.lang.reflect.Method;
 
 /**
  * Used to mark the {@link Request} parameter type that needs to be
@@ -35,7 +34,7 @@ import java.lang.reflect.Method;
  * <p>The parsing scheme for implementing parameter diversification
  * processing by combining two annotations can be customized. For
  * the use of SDK proxies to parse the above annotations, you can
- * refer to method {@link SdkUtils#invokeCreateRequest(Method, Object[])}
+ * refer to method {@link SdkSupport#invokeCreateRequest}
  * and the following code examples.
  *
  * <pre>
@@ -89,7 +88,7 @@ import java.lang.reflect.Method;
  * </pre>
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @see SdkUtils#invokeCreateRequest(Method, Object[])
+ * @see SdkSupport#invokeCreateRequest
  * @see RequestParameter
  * @since 1.0.0
  */

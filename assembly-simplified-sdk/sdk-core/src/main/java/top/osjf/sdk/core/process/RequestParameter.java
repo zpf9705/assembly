@@ -16,7 +16,7 @@
 
 package top.osjf.sdk.core.process;
 
-import top.osjf.sdk.core.util.SdkUtils;
+import top.osjf.sdk.core.support.SdkSupport;
 
 import java.lang.reflect.Method;
 
@@ -25,7 +25,7 @@ import java.lang.reflect.Method;
  * the type of request encapsulation class when calling the SDK function
  * with a single parameter.
  *
- * <p>The analysis case can be viewed in {@link SdkUtils#invokeCreateRequest(Method, Object[])}.
+ * <p>The analysis case can be viewed in {@link SdkSupport#invokeCreateRequest}.
  *
  * <div><h3>Examples of usage methods are as follows</h3></div>
  * <pre>
@@ -41,7 +41,7 @@ import java.lang.reflect.Method;
  * </pre>
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @see SdkUtils#invokeCreateRequest(Method, Object[])
+ * @see SdkSupport#invokeCreateRequest
  * @see RequestParam
  * @since 1.0.0
  */

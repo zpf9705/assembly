@@ -20,6 +20,7 @@ import com.google.common.reflect.TypeToken;
 import top.osjf.sdk.commons.annotation.NotNull;
 import top.osjf.sdk.commons.annotation.Nullable;
 import top.osjf.sdk.core.client.Client;
+import top.osjf.sdk.core.enums.SdkEnum;
 import top.osjf.sdk.core.exception.SdkException;
 
 import java.io.Serializable;
@@ -54,7 +55,7 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
 
     /*** {@inheritDoc}*/
     @Override
-    @NotNull
+    @Nullable
     Object getRequestParam();
 
     /**
@@ -132,6 +133,13 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
         if (getResponseTypeToken() != null) return getResponseTypeToken().getType();
         throw new IllegalStateException("Unknown response type!");
     }
+
+    /**
+     * Return matching {@link SdkEnum} types.
+     *
+     * @return matching {@link SdkEnum} types.
+     */
+    SdkEnum matchSdkEnum();
 
     /**
      * When {@link #getResponseCls()} and {@link #getResponseTypeToken()}
