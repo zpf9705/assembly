@@ -219,7 +219,6 @@ public interface HttpResponse extends Response {
      * <p>This attribute is often related to the business due to inconsistent
      * definition types, so {@link Object} is used here as a universal replacement
      * for the type determination of the status code.
-     * @since 2.2.5
      * @return status code that defines the status of an HTTP request.
      * */
     Object getCode();

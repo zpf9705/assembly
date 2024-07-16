@@ -103,7 +103,6 @@ public class HttpResultResponse<T> extends AbstractHttpResponse implements Inspe
         return (super.isSuccess() || anySuccessCodes().contains(getCode())) && getSuccess();
     }
 
-    //Since 2.1.3
     @Override
     public void setErrorCode(Object code) {
         if (this.code == null) {
@@ -118,7 +117,6 @@ public class HttpResultResponse<T> extends AbstractHttpResponse implements Inspe
         }
     }
 
-    //Since 2.1.3
     @Override
     public void setErrorMessage(String message) {
         if (StringUtils.isBlank(this.message)) {
