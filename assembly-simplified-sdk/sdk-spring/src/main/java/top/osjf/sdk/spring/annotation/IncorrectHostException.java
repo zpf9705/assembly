@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.spring;
+package top.osjf.sdk.spring.annotation;
 
 /**
  * Exception with invalid host address.

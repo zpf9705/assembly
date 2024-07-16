@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.spring;
+package top.osjf.sdk.spring.annotation;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;

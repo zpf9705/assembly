@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.spring;
+package top.osjf.sdk.spring.annotation;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
