@@ -43,7 +43,7 @@ import java.lang.reflect.Method;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public abstract class AbstractMultipleProxySupport<T> implements FactoryBean<T>, MethodInterceptor,
+public abstract class ConcentrateProxySupport<T> implements FactoryBean<T>, MethodInterceptor,
         InvocationHandler, ProxyHandler {
 
     /**
@@ -160,16 +160,19 @@ public abstract class AbstractMultipleProxySupport<T> implements FactoryBean<T>,
         return proxy;
     }
 
+    /*** {@inheritDoc}*/
     @Override
     public Object intercept(Object proxy, Method method, Object[] args, MethodProxy methodProxy) {
         return handle(proxy, method, args);
     }
 
+    /*** {@inheritDoc}*/
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) {
         return handle(proxy, method, args);
     }
 
+    /*** {@inheritDoc}*/
     @Override
     public abstract Object handle(Object obj, Method method, Object[] args);
 }

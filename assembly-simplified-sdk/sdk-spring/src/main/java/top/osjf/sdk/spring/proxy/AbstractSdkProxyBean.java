@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Inheriting {@link AbstractMultipleProxySupport} implements handing over
+ * Inheriting {@link ConcentrateProxySupport} implements handing over
  * the object of the jdk dynamic proxy to the spring container for management.
  *
  * <p>When this object is called, the {@link #invoke(Object, Method, Object[])}
@@ -60,7 +60,7 @@ import java.util.List;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public abstract class AbstractSdkProxyBean<T> extends AbstractMultipleProxySupport<T> implements RequestAttributes,
+public abstract class AbstractSdkProxyBean<T> extends ConcentrateProxySupport<T> implements RequestAttributes,
         ApplicationContextAware, InitializingBean, DisposableBean {
 
     /*** SLF4J logs.*/
