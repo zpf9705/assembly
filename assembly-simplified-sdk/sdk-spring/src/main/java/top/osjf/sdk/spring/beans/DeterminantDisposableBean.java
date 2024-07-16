@@ -18,6 +18,7 @@ package top.osjf.sdk.spring.beans;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.DisposableBean;
+import top.osjf.sdk.commons.annotation.NotNull;
 
 /**
  * Interface to be implemented by beans that want to release resources on destruction.
@@ -37,6 +38,11 @@ import org.springframework.beans.factory.DisposableBean;
  * specified type of {@link #getType()}, and perform the corresponding destruction
  * operation at time {@link DisposableBean#destroy()}.
  *
+ * <p>When specifying multiple {@link DeterminantDisposableBean}, if you want to specify the
+ * execution order, you can use the concept of {@link org.springframework.core.annotation.Order}
+ * to specify it. Support for it has been added because the implementation class of this
+ * interface requires adding a Spring container to take effect.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @see org.springframework.beans.factory.DisposableBean
  * @since 1.0.0
@@ -46,13 +52,15 @@ public interface DeterminantDisposableBean {
     /**
      * @return Return the type of proxy service required.
      */
+    @NotNull
     Class<?> getType();
 
     /**
      * Copy from {@link org.springframework.beans.factory.DisposableBean}.
      * Invoked by the containing {@code BeanFactory} on destruction of a bean.
+     *
      * @throws Exception in case of shutdown errors. Exceptions will get logged
-     * but not rethrown to allow other beans to release their resources as well.
+     *                   but not rethrown to allow other beans to release their resources as well.
      */
-    void afterPropertiesSet() throws Exception;
+    void destroy() throws Exception;
 }

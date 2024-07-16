@@ -18,6 +18,7 @@ package top.osjf.sdk.spring.beans;
 
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.InitializingBean;
+import top.osjf.sdk.commons.annotation.NotNull;
 
 /**
  * Interface to be implemented by beans that need to react once all their properties
@@ -35,6 +36,11 @@ import org.springframework.beans.factory.InitializingBean;
  * type of {@link #getType()}, and perform the corresponding initialization operation at
  * time {@link InitializingBean#afterPropertiesSet()}.
  *
+ * <p>When specifying multiple {@link DeterminantInitializingBean}, if you want to specify the
+ * execution order, you can use the concept of {@link org.springframework.core.annotation.Order}
+ * to specify it. Support for it has been added because the implementation class of this
+ * interface requires adding a Spring container to take effect.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @see org.springframework.beans.factory.InitializingBean
  * @since 1.0.0
@@ -44,6 +50,7 @@ public interface DeterminantInitializingBean {
     /**
      * @return Return the type of proxy service required.
      */
+    @NotNull
     Class<?> getType();
 
     /**
