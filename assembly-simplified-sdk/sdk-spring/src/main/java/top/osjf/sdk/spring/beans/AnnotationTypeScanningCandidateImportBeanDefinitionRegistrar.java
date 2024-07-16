@@ -17,6 +17,7 @@
 package top.osjf.sdk.spring.beans;
 
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
@@ -51,12 +52,8 @@ import java.util.Objects;
  * <p>The lookup of annotated interfaces depends on the interface {@link ResourceLoader} and
  * {@link ClassPathScanningCandidateComponentProvider}.
  *
- * <p>Innovated in version {@code 2.0.9}, this registration scheme does not participate
- * in calling services such as {@link org.springframework.beans.factory.annotation.Autowired}
+ * <p>This registration scheme does not participate in calling services such as {@link Autowired}
  * before spring bean registration, and is executed as a registration scheme here.
- *
- * <p>For clarity of meaning, the name ‘AnnotationTypeScanningCandidateImportBeanDefinitionRegistrar’ was
- * changed to version 2.2.5.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0

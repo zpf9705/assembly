@@ -83,6 +83,7 @@ public abstract class AbstractImportBeanDefinitionRegistrar implements ImportBea
 
     /**
      * Return the prototype interface of the configured class extension properties.
+     *
      * @return prototype interface of the configured class extension properties.
      */
     public ConfiguredClassMetadata getConfigClassMetadata() {
@@ -94,9 +95,6 @@ public abstract class AbstractImportBeanDefinitionRegistrar implements ImportBea
      * here, present {@link AnnotationAttributes} in the form of an
      * encapsulated map, without providing a default method, and leave
      * it to the subclass to implement the processing logic.
-     *
-     * <p>For clarity of meaning, the name ‘registerBeanDefinitions’
-     * was changed to version 2.2.5.
      *
      * @param importAnnotationAttributes Pour {@link AnnotationAttributes} into the
      *                                   configuration annotation.
@@ -110,9 +108,6 @@ public abstract class AbstractImportBeanDefinitionRegistrar implements ImportBea
      * annotation to pour into the target annotation of the configuration,
      * and obtain it for analyzing the content for subsequent extension use.
      * <p>Must need Override and provider not be {@literal null}</p>
-     *
-     * <p>For clarity of meaning, the name ‘getImportAnnotationType’
-     * was changed to version 2.2.5.
      *
      * @return Annotation type,must not be {@literal null}.
      */

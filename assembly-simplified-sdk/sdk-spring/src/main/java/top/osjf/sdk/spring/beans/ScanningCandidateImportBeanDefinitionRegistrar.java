@@ -211,7 +211,6 @@ public abstract class ScanningCandidateImportBeanDefinitionRegistrar<T extends B
      *
      * @param property Attribute name.
      * @return If {@code true} is determined as an el expression , {@code false} otherwise.
-     * @since 2.1.4 version before change
      */
     protected boolean is$PropertyGet(String property) {
         if (StringUtils.isNotBlank(property)) {
