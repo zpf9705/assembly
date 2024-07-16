@@ -54,8 +54,6 @@ import java.util.List;
  * <p>Simply obtain the host parameter from the corresponding proxy class
  * entity to complete the SDK request.
  *
- * <p>For clearer meaning, it was renamed 'AbstractSdkProxyBean' since 2.2.5.
- *
  * @param <T> The data type of the proxy class.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
@@ -150,8 +148,8 @@ public abstract class AbstractSdkProxyBean<T> extends ConcentrateProxySupport<T>
      * rewritten by subclasses, defined according to their own situation.
      * <p>Here, a default processing posture that conforms to SDK is provided.
      *
-     * <p>Since version 2.2.6, support for {@link RequestParameter} and
-     * {@link top.osjf.sdk.core.process.RequestParam} and {@link ResponseData} has been added.
+     * <p>Support for {@link RequestParameter} and {@link RequestParam} and
+     * {@link ResponseData} has been added.
      *
      * @param proxy  Proxy object.
      * @param method The method object executed by the proxy class.
@@ -195,25 +193,6 @@ public abstract class AbstractSdkProxyBean<T> extends ConcentrateProxySupport<T>
     public String toString() {
         return String.format(TO_STR_FORMAT, getType().getName(),
                 getClass().getName(), getHost(), getProxyModel().name());
-    }
-
-    /**
-     * Check the scope of direct methods that can be proxied.
-     *
-     * @param proxy      Proxy object.
-     * @param targetType the target type created by this proxy.
-     * @param method     The method object executed by the proxy class.
-     * @param args       The real parameters executed by the proxy method.
-     * @return Returns {@code true}, indicating that it can be executed
-     * subsequently, otherwise it is not supported.
-     * @since 2.2.5
-     * @deprecated 2.2.7 No longer open such extensions and delete the next
-     * version.
-     */
-    @Deprecated
-    protected boolean checkMethodCoverRanger(Object proxy, Class<T> targetType,
-                                             Method method, Object[] args) {
-        return true;
     }
 
     /**

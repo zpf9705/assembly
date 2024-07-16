@@ -100,7 +100,6 @@ public abstract class ConcentrateProxySupport<T> implements FactoryBean<T>, Meth
 
     /**
      * Return the model enumeration for this proxy.
-     * @since 2.2.7
      * @return the model enumeration for this proxy.
      */
     public ProxyModel getProxyModel() {
