@@ -161,6 +161,10 @@ public abstract class AbstractSdkProxyBean<T> extends ConcentrateProxySupport<T>
                 }
             }
         } catch (BeansException ignored) {
+            if (log.isWarnEnabled()) {
+                log.warn("No bean collection of type {} was found from the Spring container.",
+                        requiredType.getName());
+            }
             // ...Ignoring undefined issues
         }
         AnnotationAwareOrderComparator.sort(beans);
