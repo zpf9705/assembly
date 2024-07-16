@@ -39,8 +39,8 @@ import java.util.regex.Pattern;
  *
  * <p>Annotations based on the switch {@link Sdk}, automatically equips
  * the proxy implementation class , and calls the method of unified direction
- * {@link SdkJDKProxyBean} or since 2.2.5 {@link SdkCglibProxyBean}to achieve
- * unified deployment of SDK proxy encapsulation.
+ * {@link SdkJDKProxyBean} or {@link SdkCglibProxyBean}to achieve unified
+ * deployment of SDK proxy encapsulation.
  *
  * <p>It mainly defines beans through {@link BeanDefinitionBuilder},
  * with variables including obtaining host addresses through spring's
@@ -68,37 +68,30 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
                     "((25[0-5])|(2[0-4]\\d)|(1\\d\\d)|([1-9]\\d)|\\d)(\\.((25[0-5])|(2[0-4]\\d)|(1\\d\\d)|([1-9]\\d)|\\d)){3}");
 
     /*** {@link Sdk#model()} annotation proxy model attr name.
-     * @since 2.2.7
      * */
     private static final String SDK_ATTR_PROXY_MODEL = "model";
 
     /*** {@link Sdk#hostProperty()} annotation host property attr name.
-     * @since 2.2.7
      * */
     private static final String SDK_ATTR_HOST_PROPERTY = "hostProperty";
 
     /*** {@link Sdk#model()} annotation sdk attr bean property attr name.
-     * @since 2.2.7
      * */
     private static final String SDK_ATTR_BEAN_PROPERTY = "sdkProxyBeanProperty";
 
     /*** {@link BeanProperty#name()} annotation bean name attr name.
-     * @since 2.2.7
      * */
     private static final String SDK_ATTR_BEAN_NAME = "name";
 
     /*** Sdk proxy bean host field name.
-     * @since 2.2.7
      * */
     private static final String SDK_PROXY_HOST_NAME = "host";
 
     /*** Sdk proxy bean proxyModel field name.
-     * @since 2.2.7
      * */
     private static final String SDK_PROXY_MODEL_NAME = "proxyModel";
 
     /*** Sdk proxy bean type field name.
-     * @since 2.2.7
      * */
     private static final String SDK_PROXY_TYPE_NAME = "type";
 
@@ -113,7 +106,6 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
         String className = markedAnnotationMetadata.getClassName();
         ProxyModel model = markedAnnotationAttributes.getEnum(SDK_ATTR_PROXY_MODEL);
         BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(
-                /* since 2.2.7 Fixed proxy type Avoid proxy replacement support related issues */
                 SdkProxyBean.class);
         builder.addPropertyValue(SDK_PROXY_HOST_NAME,
                 getRequestHost(markedAnnotationAttributes.getString(SDK_ATTR_HOST_PROPERTY)));
@@ -220,8 +212,6 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
         return host;
     }
 
-
-    //@since 2.1.1
     private boolean validationHost(String host) {
         if (StringUtils.isBlank(host)) {
             return false;

@@ -18,12 +18,10 @@ package top.osjf.sdk.spring;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Component;
 import top.osjf.sdk.spring.beans.BeanProperty;
 import top.osjf.sdk.spring.proxy.ProxyModel;
-import top.osjf.sdk.spring.proxy.SdkProxyBean;
 
 import java.lang.annotation.*;
 
@@ -42,14 +40,9 @@ import java.lang.annotation.*;
  * and here only the names, aliases, and injection modes of beans are
  * listed, as mentioned above regarding the bean injection properties of Spring.
  *
- * <p>Added some attributes related to {@link BeanDefinitionBuilder} from
- * version {@code 2.0.9}, and the remaining attributes that were not added
- * will not be added, making them useless for this component.
- *
- * <p>If you want to provide visible proxy classes{@link #proxyBeanType()},
- * then you need to understand {@link ImportBeanDefinitionRegistrar} registration
- * {@link BeanDefinition} and the usage of injection models.
- * <p>Please refer to the introduction of {@link BeanProperty#autowire()}.
+ * <p>Added some attributes related to {@link BeanDefinitionBuilder}
+ * and the remaining attributes that were not added will not be added,
+ * making them useless for this component.
  *
  * <p>It is recommended to use interfaces for proxy, as proxy for abstract
  * classes can bring many problems.
@@ -60,9 +53,7 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-//only support ui and no significance
-//@since 2.0.7
-@Component
+@Component //only support ui and no significance
 public @interface Sdk {
 
     /**
@@ -72,7 +63,6 @@ public @interface Sdk {
      *
      * @return {@link #hostProperty()}
      * @see #hostProperty()
-     * @since 2.2.5
      */
     @AliasFor("hostProperty")
     String value() default "";
@@ -93,36 +83,6 @@ public @interface Sdk {
     @AliasFor("value")
     String hostProperty() default "";
 
-    //The relevant bean properties of the spring proxy object created by oneself have default
-    // values that can be selected according to needs.
-    //Only the properties that may be used by the SDK proxy bean are listed.
-
-    /**
-     * Manually defining a class that can intuitively handle the {@link BeanDefinition}
-     * lifecycle requires passing in the corresponding class object.
-     * <p>If you have defined this class, you can intuitively use
-     * {@link BeanProperty#autowire()} to define the assembly pattern of the
-     * beans you introduce, and define the initialization and destruction
-     * methods {@link BeanProperty#initMethod()} and {@link BeanProperty#destroyMethod()}
-     * for {@link BeanDefinition}.
-     *
-     * <p>For clearer meaning, it was renamed 'proxyBeanType',represents
-     * the type of proxy class.
-     *
-     * <p>Select the specific type of proxy object to generate based on {@link #model()},
-     * if you provide this attribute, I hope you pay attention to the two construction
-     * methods of {@link SdkProxyBean}.
-     *
-     * @return A proxy class , defaults to {@link SdkProxyBean}.
-     * @since 2.0.9
-     * @deprecated Abandoned in 2.2.7, no longer supported, fixed as default value,
-     * request parameter extension support before and after viewing
-     * {@link HandlerPostProcessor},
-     * and will be removed in the next version.
-     */
-    @Deprecated
-    Class<? extends SdkProxyBean> proxyBeanType() default SdkProxyBean.class;
-
     /**
      * When selecting the type of proxy object to generate for the
      * SDK tag target, you need to pay attention to whether your tag
@@ -133,7 +93,6 @@ public @interface Sdk {
      * {@link ProxyModel#SPRING_CJ_LIB} to create a proxy class.
      *
      * @return The basic technical model for creating proxy classes.
-     * @since 2.2.5
      */
     ProxyModel model() default ProxyModel.JDK;
 
@@ -144,7 +103,6 @@ public @interface Sdk {
      * {@link BeanDefinition}.
      *
      * @return The bean properties of the SDK proxy class.
-     * @since 2.2.5
      */
     BeanProperty sdkProxyBeanProperty() default @BeanProperty;
 }
