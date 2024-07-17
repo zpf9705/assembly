@@ -26,7 +26,7 @@ public class CronLifeStyleException extends CronException {
 
     private static final long serialVersionUID = 7007036399239003429L;
 
-    public CronLifeStyleException(String message) {
-        super(message);
+    public CronLifeStyleException(Throwable cause) {
+        super(cause);
     }
 }
