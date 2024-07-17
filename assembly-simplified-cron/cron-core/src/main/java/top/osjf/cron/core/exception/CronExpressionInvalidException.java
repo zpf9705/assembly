@@ -27,7 +27,7 @@ public class CronExpressionInvalidException extends Exception {
 
     private static final long serialVersionUID = -5171659277961608828L;
 
-    public CronExpressionInvalidException(String expression) {
-        super("The provided cron expression " + expression + " is not a valid value.");
+    public CronExpressionInvalidException(String expression, Throwable cause) {
+        super("The provided cron expression " + expression + " is not a valid value.", cause);
     }
 }
