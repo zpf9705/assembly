@@ -30,10 +30,11 @@ public interface LifeStyle {
     /**
      * Activate scheduled task execution.
      *
+     * @param args Start the parameter.
      * @throws CronLifeStyleException The scheduled task
      *                                execution body started abnormally.
      */
-    void start() throws CronLifeStyleException;
+    void start(StartupArgs args) throws CronLifeStyleException;
 
     /**
      * Restart the scheduled task to run the managed component.
