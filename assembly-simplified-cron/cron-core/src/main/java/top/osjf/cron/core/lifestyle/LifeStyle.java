@@ -34,7 +34,7 @@ public interface LifeStyle {
      * @throws CronLifeStyleException The scheduled task
      *                                execution body started abnormally.
      */
-    void start(StartupArgs args) throws CronLifeStyleException;
+    void start(Object... args) throws CronLifeStyleException;
 
     /**
      * Restart the scheduled task to run the managed component.
