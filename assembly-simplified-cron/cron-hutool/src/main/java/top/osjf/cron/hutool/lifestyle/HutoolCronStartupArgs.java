@@ -16,6 +16,7 @@
 
 package top.osjf.cron.hutool.lifestyle;
 
+import org.apache.commons.lang3.ArrayUtils;
 import top.osjf.cron.core.lifestyle.StartupArgs;
 
 /**
@@ -24,7 +25,7 @@ import top.osjf.cron.core.lifestyle.StartupArgs;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class HutoolCronStartupArgs implements StartupArgs {
+public class HutoolCronStartupArgs {
 
     /**
      * Set whether to support second matching.
@@ -32,7 +33,7 @@ public class HutoolCronStartupArgs implements StartupArgs {
      * If it is true, the first digit in the timed task expression is seconds,
      * otherwise it is minutes, and the default is minutes.
      */
-    private final boolean isMatchSecond;
+    private boolean isMatchSecond = true;
 
     /**
      * Whether to start as a daemon thread.
@@ -40,11 +41,21 @@ public class HutoolCronStartupArgs implements StartupArgs {
      * {@link HutoolCronLifeStyle#stop()} method will end.
      * Otherwise, it will wait for the execution to complete before ending.
      */
-    private final boolean isDaemon;
+    private boolean isDaemon = false;
 
-    public HutoolCronStartupArgs(boolean isMatchSecond, boolean isDaemon) {
-        this.isMatchSecond = isMatchSecond;
-        this.isDaemon = isDaemon;
+    /**
+     * Analyze the array parameters in the order of {@link #isMatchSecond} first
+     * bit and {@link #isDaemon} second bit.
+     *
+     * @param args the array parameters.
+     * @return Analyze the results of parameter objects.
+     */
+    public static HutoolCronStartupArgs of(Object[] args) {
+        HutoolCronStartupArgs startupArgs = new HutoolCronStartupArgs();
+        if (ArrayUtils.isEmpty(args)) return startupArgs;
+        startupArgs.isMatchSecond = (boolean) args[0];
+        if (args.length > 1) startupArgs.isDaemon = (boolean) args[1];
+        return startupArgs;
     }
 
     public boolean isMatchSecond() {
