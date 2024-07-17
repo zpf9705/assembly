@@ -16,8 +16,6 @@
 
 package top.osjf.cron.spring.annotation;
 
-import cn.hutool.core.util.ReflectUtil;
-import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
@@ -37,18 +35,12 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
 import top.osjf.cron.core.annotation.NotNull;
 import top.osjf.cron.core.annotation.Nullable;
-import top.osjf.cron.core.exception.CronExpressionInvalidException;
 import top.osjf.cron.core.lifestyle.LifeStyle;
-import top.osjf.cron.core.repository.CronTaskRepository;
+import top.osjf.cron.spring.CronTaskRegistrant;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.BiConsumer;
-
 
 /**
  * Create a post processor for custom bean elements.
@@ -76,13 +68,13 @@ public class CronTaskRegisterPostProcessor implements ImportAware,
 
     private Map<String, Object> metadata;
 
-    private final CronTaskRepository taskRepository;
+    private final CronTaskRegistrant cronTaskRegistrant;
 
     private final LifeStyle lifeStyle;
 
-    public CronTaskRegisterPostProcessor(@Lazy CronTaskRepository taskRepository,
+    public CronTaskRegisterPostProcessor(@Lazy CronTaskRegistrant cronTaskRegistrant,
                                          @Lazy LifeStyle lifeStyle) {
-        this.taskRepository = taskRepository;
+        this.cronTaskRegistrant = cronTaskRegistrant;
         this.lifeStyle = lifeStyle;
     }
 
@@ -120,34 +112,7 @@ public class CronTaskRegisterPostProcessor implements ImportAware,
         } else {
             target = bean.getClass();
         }
-        Method[] methods = target.getDeclaredMethods();
-        String[] activeProfiles = environment.getActiveProfiles();
-        final BiConsumer<String, Runnable> registerConsumer = (expression, runnable) -> {
-            try {
-                taskRepository.register(expression, runnable);
-            } catch (CronExpressionInvalidException e) {
-                throw new RuntimeException(e);
-            }
-        };
-        //Determine if there is a timing method.
-        for (Method method : methods) {
-            if (!method.isAnnotationPresent(Cron.class)
-                    || Modifier.isStatic(method.getModifiers()) || !Modifier.isPublic(method.getModifiers())) {
-                continue;
-            }
-            CronAnnotationAttributes cronAttribute = CronAnnotationAttributes.of(method);
-            String expression = cronAttribute.getExpression();
-            Runnable rab = () -> ReflectUtil.invoke(bean, method);
-            if (ArrayUtils.isEmpty(activeProfiles)) {
-                //When the environment is not activated, it indicates that
-                // everything is applicable and can be registered directly.
-                registerConsumer.accept(expression, rab);
-            } else {
-                if (profilesCheck(cronAttribute.getProfiles(), activeProfiles)) {
-                    registerConsumer.accept(expression, rab);
-                }
-            }
-        }
+        cronTaskRegistrant.register(target, bean, environment);
         return bean;
     }
 
@@ -159,27 +124,5 @@ public class CronTaskRegisterPostProcessor implements ImportAware,
     @Override
     public int getOrder() {
         return Integer.MIN_VALUE + 16;
-    }
-
-    /**
-     * Check if the required operating environment is within the list of activated environments.
-     *
-     * @param providerProfiles The set of execution environment names that the
-     *                         registration task aims to satisfy.
-     * @param activeProfiles   The current set of activated environments.
-     * @return if {@code true} allow registration ,otherwise no allowed.
-     */
-    private boolean profilesCheck(String[] providerProfiles, String[] activeProfiles) {
-        if (ArrayUtils.isEmpty(activeProfiles)) {
-            //When the environment is not activated, it indicates that
-            // everything is applicable and can be registered directly.
-            return true;
-        }
-        if (ArrayUtils.isEmpty(providerProfiles)) {
-            //When no running environment is provided, register directly.
-            return true;
-        }
-        //Adaptation provides the presence of the required environment in the activated environment.
-        return Arrays.stream(providerProfiles).anyMatch(p -> Arrays.asList(activeProfiles).contains(p));
     }
 }
