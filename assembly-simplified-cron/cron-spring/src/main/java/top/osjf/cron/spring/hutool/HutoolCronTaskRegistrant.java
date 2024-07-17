@@ -59,7 +59,7 @@ public class HutoolCronTaskRegistrant extends AbstractCronTaskRegistrant {
                     || Modifier.isStatic(method.getModifiers()) || !Modifier.isPublic(method.getModifiers())) {
                 continue;
             }
-            CronAnnotationAttributes cronAttribute = CronAnnotationAttributes.of(method);
+            CronAnnotationAttributes cronAttribute = getCronAttribute(method);
             String expression = cronAttribute.getExpression();
             Runnable rab = () -> ReflectUtil.invoke(target, method);
             if (ArrayUtils.isEmpty(activeProfiles)) {
