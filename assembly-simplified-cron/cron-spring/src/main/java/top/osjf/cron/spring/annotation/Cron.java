@@ -34,7 +34,7 @@ import java.lang.annotation.*;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-@Target({ElementType.METHOD})
+@Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Cron {
@@ -43,14 +43,12 @@ public @interface Cron {
      * Provide a default cron expression. When the value of {@link #value()}
      * or {@link #expression()} is not filled in, the default execution cycle
      * for the current task is once every 1 second.
-     * @since 2.2.5
      */
     String DEFAULT_CRON_EXPRESSION = "0/1 * * * * ?";
 
     /**
      * After annotation mapping the map structure, map the key value of
      * the annotation attribute {@link #expression()}.
-     * @since 2.2.5
      */
     String SELECT_OF_EXPRESSION_NAME = "expression";
 
@@ -58,7 +56,6 @@ public @interface Cron {
     /**
      * After annotation mapping the map structure, map the key value of
      * the annotation attribute {@link #profiles()}.
-     * @since 2.2.5
      */
     String SELECT_OF_PROFILES_NAME = "profiles";
 
@@ -66,12 +63,11 @@ public @interface Cron {
      * Alias for {@link #expression}.
      * <p>Intended to be used when no other attributes are needed, for example:
      * {@code @Cron("0/1 * * * * ?")}.
+     *
      * @return an expression that can be parsed to a cron schedule.
      * @see #expression
-     * @since 2.2.5
      */
-    @AliasFor("expression")
-    String value() default "";
+    @AliasFor("expression") String value() default "";
 
     /**
      * Provide a cron expression that conforms to the rules.
@@ -94,12 +90,9 @@ public @interface Cron {
      * <li>day of week</li>
      * </ul>
      *
-     * <p>For clearer meaning, it was renamed 'expression' since 2.2.5.
-     *
      * @return an expression that can be parsed to a cron schedule.
      */
-    @AliasFor("value")
-    String expression() default "";
+    @AliasFor("value") String expression() default "";
 
     /**
      * Since the implementation of this annotation needs to be in the
