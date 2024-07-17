@@ -44,6 +44,7 @@ import top.osjf.cron.core.repository.CronTaskRepository;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.function.BiConsumer;
 
 
@@ -71,9 +72,7 @@ public class CronTaskRegisterPostProcessor implements ImportAware,
 
     private Environment environment;
 
-    private boolean isMatchSecond;
-
-    private boolean isDaemon;
+    private Map<String, Object> metadata;
 
     private CronTaskRepository taskRepository;
 
@@ -95,11 +94,9 @@ public class CronTaskRegisterPostProcessor implements ImportAware,
     }
 
     @Override
-    public void setImportMetadata(@NotNull AnnotationMetadata metadata) {
-        MappedAnnotationAttributes attributes = MappedAnnotationAttributes.of(metadata
-                .getAnnotationAttributes(EnableCronTaskRegister.class.getCanonicalName()));
-        isMatchSecond = attributes.getBoolean("isMatchSecond");
-        isDaemon = attributes.getBoolean("isDaemon");
+    public void setImportMetadata(@NotNull AnnotationMetadata annotationMetadata) {
+        metadata = MappedAnnotationAttributes.of(annotationMetadata
+                .getAnnotationAttributes(annotationMetadata.getClassName()));
     }
 
     @Override
@@ -151,7 +148,7 @@ public class CronTaskRegisterPostProcessor implements ImportAware,
 
     @Override
     public void onApplicationEvent(@NotNull ContextRefreshedEvent event) {
-        lifeStyle.start(isMatchSecond, isDaemon);
+        lifeStyle.start(metadata);
     }
 
     @Override
