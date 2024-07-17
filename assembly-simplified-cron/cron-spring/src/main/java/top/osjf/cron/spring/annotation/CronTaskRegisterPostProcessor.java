@@ -80,14 +80,12 @@ public class CronTaskRegisterPostProcessor implements ImportAware,
     private LifeStyle lifeStyle;
 
     @Autowired
-    @Lazy
-    public void setTaskRepository(CronTaskRepository taskRepository) {
+    public void setTaskRepository(@Lazy CronTaskRepository taskRepository) {
         this.taskRepository = taskRepository;
     }
 
     @Autowired
-    @Lazy
-    public void setLifeStyle(LifeStyle lifeStyle) {
+    public void setLifeStyle(@Lazy LifeStyle lifeStyle) {
         this.lifeStyle = lifeStyle;
     }
 
