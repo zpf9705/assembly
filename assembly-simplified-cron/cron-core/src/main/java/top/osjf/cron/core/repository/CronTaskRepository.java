@@ -16,6 +16,9 @@
 
 package top.osjf.cron.core.repository;
 
+import top.osjf.cron.core.exception.CronExpressionInvalidException;
+import top.osjf.cron.core.exception.CronTaskNoExistException;
+
 /**
  * The executor of the dynamic registration of scheduled tasks, developers
  * can call the method of this interface to register or update or remove a
@@ -33,8 +36,10 @@ public interface CronTaskRepository {
      *
      * @param cronExpression Expression in {@code Cron} format.
      * @param runnable       Timed execution of the runtime.
+     * @throws CronExpressionInvalidException The issue of infinite thrown
+     *                                        exceptions by cron expressions.
      */
-    String register(String cronExpression, Runnable runnable);
+    String register(String cronExpression, Runnable runnable) throws CronExpressionInvalidException;
 
     /**
      * Update a scheduled task based on the task ID and cron expression
@@ -42,14 +47,21 @@ public interface CronTaskRepository {
      *
      * @param taskId            Scheduled task ID.
      * @param newCronExpression New Expression in {@code Cron} format.
+     * @throws CronExpressionInvalidException The issue of infinite thrown
+     *                                        exceptions by cron expressions.
+     * @throws CronTaskNoExistException       Exception thrown when the task ID cannot
+     *                                        be found for the corresponding task.
      */
-    void update(String taskId, String newCronExpression);
+    void update(String taskId, String newCronExpression) throws CronExpressionInvalidException,
+            CronTaskNoExistException;
 
     /**
      * Delete a scheduled task based on the task ID generated
      * by the implementer.
      *
      * @param taskId Scheduled task ID.
+     * @throws CronTaskNoExistException Exception thrown when the task ID cannot
+     *                                  be found for the corresponding task.
      */
-    void remove(String taskId);
+    void remove(String taskId) throws CronTaskNoExistException;
 }
