@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>top.osjf.cron</groupId>
+        <artifactId>assembly-simplified-cron</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <groupId>top.osjf.cron.quartz</groupId>
+    <artifactId>cron-quartz</artifactId>
+    <packaging>jar</packaging>
+    <version>1.0.0</version>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <core>1.0.0</core>
+        <quartz>2.3.2</quartz>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>top.osjf.cron.core</groupId>
+            <artifactId>cron-core</artifactId>
+            <version>${core}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+            <version>${quartz}</version>
+        </dependency>
+    </dependencies>
+
+</project>
