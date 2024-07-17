@@ -16,8 +16,8 @@
 
 package top.osjf.sdk.core.process;
 
-import top.osjf.sdk.commons.annotation.Nullable;
 import top.osjf.sdk.core.support.SdkSupport;
+import top.osjf.sdk.core.util.Nullable;
 
 /**
  * The default extension {@link ResponseData} is to check

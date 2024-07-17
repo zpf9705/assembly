@@ -16,9 +16,9 @@
 
 package top.osjf.sdk.core.client;
 
-import top.osjf.sdk.commons.annotation.NotNull;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.util.NotNull;
 
 /**
  * A custom processing scheme for response string conversion {@link Response}.

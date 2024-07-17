@@ -16,9 +16,9 @@
 
 package top.osjf.sdk.core.client;
 
-import top.osjf.sdk.commons.annotation.NotNull;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.util.NotNull;
 
 /**
  * The preprocessing of response strings is mainly to lay the groundwork for

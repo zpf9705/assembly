@@ -17,11 +17,11 @@
 package top.osjf.sdk.core.process;
 
 import com.google.common.reflect.TypeToken;
-import top.osjf.sdk.commons.annotation.NotNull;
-import top.osjf.sdk.commons.annotation.Nullable;
 import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.core.enums.SdkEnum;
 import top.osjf.sdk.core.exception.SdkException;
+import top.osjf.sdk.core.util.NotNull;
+import top.osjf.sdk.core.util.Nullable;
 
 import java.io.Serializable;
 import java.util.Map;

@@ -16,7 +16,7 @@
 
 package top.osjf.sdk.core.process;
 
-import top.osjf.sdk.commons.annotation.Nullable;
+import top.osjf.sdk.core.util.Nullable;
 
 /**
  * Get request parameters of the specified type.
