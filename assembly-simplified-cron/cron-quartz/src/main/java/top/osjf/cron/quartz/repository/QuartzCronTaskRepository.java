@@ -74,7 +74,7 @@ public class QuartzCronTaskRepository implements CronTaskRepository<JobKey, JobD
         }
         JobKey key = jobDetail.getKey();
         TriggerBuilder<CronTrigger> triggerBuilder = TriggerBuilder.newTrigger()
-                .withIdentity(key.getName(), key.getGroup())
+                .withIdentity(key.getName())
                 .startNow()
                 .withSchedule(CronScheduleBuilder.cronSchedule(expression));
         try {
