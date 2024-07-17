@@ -16,8 +16,11 @@
 
 package top.osjf.cron.core.lifestyle;
 
+import top.osjf.cron.core.exception.CronLifeStyleException;
+
 /**
- * Interface for defining the execution lifecycle of scheduled tasks.
+ * The lifecycle definition interface for scheduled task execution
+ * line pools or managed execution components.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
@@ -25,17 +28,26 @@ package top.osjf.cron.core.lifestyle;
 public interface LifeStyle {
 
     /**
-     * Activate scheduled tasks.
+     * Activate scheduled task execution.
+     *
+     * @throws CronLifeStyleException The scheduled task
+     *                                execution body started abnormally.
      */
-    void start();
+    void start() throws CronLifeStyleException;
 
     /**
-     * Restart the scheduled task.
+     * Restart the scheduled task to run the managed component.
+     *
+     * @throws CronLifeStyleException The scheduled task
+     *                                execution body restart abnormally.
      */
-    void restart();
+    void restart() throws CronLifeStyleException;
 
     /**
-     * Stop scheduled tasks.
+     * Close the scheduled task to run the managed component.
+     *
+     * @throws CronLifeStyleException The scheduled task
+     *                                execution body stop abnormally.
      */
-    void stop();
+    void stop() throws CronLifeStyleException;
 }
