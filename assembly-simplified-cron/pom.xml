@@ -19,6 +19,7 @@
         <module>cron-hutool</module>
         <module>cron-spring</module>
         <module>cron-spring-boot-starter</module>
+        <module>cron-quartz</module>
     </modules>
 
     <properties>

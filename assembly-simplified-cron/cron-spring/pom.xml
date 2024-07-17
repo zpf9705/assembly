@@ -19,7 +19,7 @@
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring>5.3.12</spring>
-        <cron.hutool>1.0.0</cron.hutool>
+        <cron>1.0.0</cron>
     </properties>
 
     <dependencies>
@@ -27,7 +27,14 @@
         <dependency>
             <groupId>top.osjf.cron.hutool</groupId>
             <artifactId>cron-hutool</artifactId>
-            <version>${cron.hutool}</version>
+            <version>${cron}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>top.osjf.cron.quartz</groupId>
+            <artifactId>cron-quartz</artifactId>
+            <version>${cron}</version>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
