@@ -32,7 +32,7 @@ import top.osjf.cron.hutool.listener.HutoolCronListener;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class HutoolCronTaskRepository implements CronTaskRepository {
+public class HutoolCronTaskRepository implements CronTaskRepository<String, Runnable> {
 
     @Override
     public String register(String cronExpression, Runnable runnable) throws CronExpressionInvalidException {
