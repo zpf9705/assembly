@@ -42,6 +42,7 @@ public interface CronTaskRepository {
      *
      * @param cronExpression Expression in {@code Cron} format.
      * @param runnable       Timed execution of the runtime.
+     * @return Scheduled task ID.
      * @throws CronExpressionInvalidException The issue of infinite thrown
      *                                        exceptions by cron expressions.
      */
@@ -83,7 +84,7 @@ public interface CronTaskRepository {
      *
      * @param cronListeners scheduled task listeners.
      */
-    default void addCronListeners(List<CronListener> cronListeners){
+    default void addCronListeners(List<CronListener> cronListeners) {
         for (CronListener cronListener : cronListeners) {
             addCronListener(cronListener);
         }
@@ -94,7 +95,7 @@ public interface CronTaskRepository {
      *
      * @param cronListeners scheduled task listeners.
      */
-    default void addCronListeners(CronListener... cronListeners){
+    default void addCronListeners(CronListener... cronListeners) {
         addCronListeners(Arrays.asList(cronListeners));
     }
 }
