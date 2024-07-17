@@ -27,7 +27,6 @@ import top.osjf.cron.spring.annotation.CronAnnotationAttributes;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.function.BiConsumer;
 
 /**
  * Hutool of scheduled task registration actors.
@@ -42,17 +41,9 @@ public class HutoolCronTaskRegistrant extends AbstractCronTaskRegistrant {
     }
 
     @Override
-    public void register(Class<?> realTargetType, Object target, Environment environment) {
-        CronTaskRepository<String, Runnable> cronTaskRepository = getCronTaskRepository();
-        Method[] methods = realTargetType.getDeclaredMethods();
+    public void register(Class<?> realBeanType, Object bean, Environment environment) throws Exception {
+        Method[] methods = realBeanType.getDeclaredMethods();
         String[] activeProfiles = environment.getActiveProfiles();
-        final BiConsumer<String, Runnable> registerConsumer = (expression, runnable) -> {
-            try {
-                cronTaskRepository.register(expression, runnable);
-            } catch (CronExpressionInvalidException e) {
-                throw new RuntimeException(e);
-            }
-        };
         //Determine if there is a timing method.
         for (Method method : methods) {
             if (!method.isAnnotationPresent(Cron.class)
@@ -61,16 +52,21 @@ public class HutoolCronTaskRegistrant extends AbstractCronTaskRegistrant {
             }
             CronAnnotationAttributes cronAttribute = getCronAttribute(method);
             String expression = cronAttribute.getExpression();
-            Runnable rab = () -> ReflectUtil.invoke(target, method);
+            Runnable rab = () -> ReflectUtil.invoke(bean, method);
             if (ArrayUtils.isEmpty(activeProfiles)) {
                 //When the environment is not activated, it indicates that
                 // everything is applicable and can be registered directly.
-                registerConsumer.accept(expression, rab);
+                register0(expression, rab);
             } else {
                 if (profilesCheck(cronAttribute.getProfiles(), activeProfiles)) {
-                    registerConsumer.accept(expression, rab);
+                    register0(expression, rab);
                 }
             }
         }
+    }
+
+    void register0(String expression, Runnable runnable) throws CronExpressionInvalidException {
+        CronTaskRepository<String, Runnable> cronTaskRepository = getCronTaskRepository();
+        cronTaskRepository.register(expression, runnable);
     }
 }
