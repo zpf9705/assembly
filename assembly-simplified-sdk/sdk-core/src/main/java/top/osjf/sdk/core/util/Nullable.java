@@ -1,4 +1,4 @@
-package top.osjf.sdk.commons.annotation;
+package top.osjf.sdk.core.util;
 
 import javax.annotation.Nonnull;
 import javax.annotation.meta.TypeQualifierNickname;
@@ -6,6 +6,7 @@ import javax.annotation.meta.When;
 import java.lang.annotation.*;
 
 /**
+ * Copy form spring framework.
  * A common annotation to declare that annotated elements can be {@code null} under
  * some circumstance.
  *
