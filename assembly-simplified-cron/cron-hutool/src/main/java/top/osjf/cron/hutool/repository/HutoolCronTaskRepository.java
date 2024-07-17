@@ -19,9 +19,12 @@ package top.osjf.cron.hutool.repository;
 import cn.hutool.cron.CronException;
 import cn.hutool.cron.CronUtil;
 import cn.hutool.cron.pattern.CronPattern;
+import top.osjf.cron.core.annotation.NotNull;
 import top.osjf.cron.core.exception.CronExpressionInvalidException;
 import top.osjf.cron.core.exception.CronTaskNoExistException;
+import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.repository.CronTaskRepository;
+import top.osjf.cron.hutool.listener.HutoolCronListener;
 
 /**
  * The Hutool cron task {@link CronTaskRepository}.
@@ -62,5 +65,13 @@ public class HutoolCronTaskRepository implements CronTaskRepository {
             throw new CronTaskNoExistException(taskId);
         }
         CronUtil.remove(taskId);
+    }
+
+    @Override
+    @SuppressWarnings("rawtypes")
+    public void addCronListener(@NotNull CronListener cronListener) {
+        if (cronListener instanceof HutoolCronListener) {
+            CronUtil.getScheduler().addListener((HutoolCronListener) cronListener);
+        }
     }
 }
