@@ -19,6 +19,7 @@
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <hutool>5.8.29</hutool>
+        <core>1.0.0</core>
     </properties>
 
     <dependencies>
@@ -26,7 +27,7 @@
         <dependency>
             <groupId>top.osjf.cron.core</groupId>
             <artifactId>cron-core</artifactId>
-            <version>1.0.0</version>
+            <version>${core}</version>
         </dependency>
 
         <dependency>
