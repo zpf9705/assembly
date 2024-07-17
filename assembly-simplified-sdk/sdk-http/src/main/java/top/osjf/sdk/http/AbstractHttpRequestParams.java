@@ -16,8 +16,8 @@
 
 package top.osjf.sdk.http;
 
-import top.osjf.sdk.commons.annotation.NotNull;
-import top.osjf.sdk.commons.annotation.Nullable;
+import top.osjf.sdk.core.util.NotNull;
+import top.osjf.sdk.core.util.Nullable;
 import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.core.process.AbstractRequestParams;
 import top.osjf.sdk.core.util.JSONUtil;

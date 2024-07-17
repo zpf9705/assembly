@@ -17,9 +17,9 @@
 package top.osjf.sdk.http;
 
 import org.apache.commons.lang3.StringUtils;
-import top.osjf.sdk.commons.annotation.NotNull;
 import top.osjf.sdk.core.process.InspectionResponseData;
 import top.osjf.sdk.core.util.JSONUtil;
+import top.osjf.sdk.core.util.NotNull;
 
 import java.util.Collections;
 import java.util.List;

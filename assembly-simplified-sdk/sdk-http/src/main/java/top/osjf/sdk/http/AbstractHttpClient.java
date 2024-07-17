@@ -21,13 +21,13 @@ import cn.hutool.core.exceptions.ExceptionUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import top.osjf.sdk.commons.annotation.NotNull;
 import top.osjf.sdk.core.client.AbstractClient;
 import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.core.exception.SdkException;
 import top.osjf.sdk.core.process.DefaultErrorResponse;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.util.JSONUtil;
+import top.osjf.sdk.core.util.NotNull;
 
 import java.util.List;
 import java.util.Map;

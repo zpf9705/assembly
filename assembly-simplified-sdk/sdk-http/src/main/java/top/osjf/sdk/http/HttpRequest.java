@@ -16,8 +16,8 @@
 
 package top.osjf.sdk.http;
 
-import top.osjf.sdk.commons.annotation.NotNull;
 import top.osjf.sdk.core.process.Request;
+import top.osjf.sdk.core.util.NotNull;
 import top.osjf.sdk.http.apache.ApacheHttpClient;
 import top.osjf.sdk.http.excpetion.UnknownResponseRequiredTypeException;
 import top.osjf.sdk.http.ok.OkHttpClient;

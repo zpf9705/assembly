@@ -16,9 +16,9 @@
 
 package top.osjf.sdk.http;
 
-import top.osjf.sdk.commons.annotation.Nullable;
 import top.osjf.sdk.core.exception.SdkException;
 import top.osjf.sdk.core.process.Request;
+import top.osjf.sdk.core.util.Nullable;
 
 import java.util.function.Supplier;
 

@@ -27,8 +27,8 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import top.osjf.sdk.commons.annotation.NotNull;
 import top.osjf.sdk.core.util.JSONUtil;
+import top.osjf.sdk.core.util.NotNull;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;

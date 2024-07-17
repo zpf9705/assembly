@@ -16,7 +16,7 @@
 
 package top.osjf.sdk.http;
 
-import top.osjf.sdk.commons.annotation.NotNull;
+import top.osjf.sdk.core.util.NotNull;
 
 import java.util.Map;
 
