@@ -17,17 +17,17 @@
 package top.osjf.cron.core.exception;
 
 /**
- * When the execution expression of the registered scheduled task
- * is invalid, an exception prompt is given.
+ * Exception throwing class for scheduled tasks with specified
+ * ID that do not exist.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class CronExpressionInvalidException extends Exception {
+public class CronTaskNoExistException extends CronException {
 
-    private static final long serialVersionUID = -5171659277961608828L;
+    private static final long serialVersionUID = 1293692117333734934L;
 
-    public CronExpressionInvalidException(String expression) {
-        super("The provided cron expression " + expression + " is not a valid value.");
+    public CronTaskNoExistException(String taskId) {
+        super(taskId + " cron task not exist !");
     }
 }
