@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.cron.spring.configuration;
+package top.osjf.cron.spring.hutool;
 
 import org.springframework.context.annotation.Import;
 import top.osjf.cron.hutool.lifestyle.HutoolCronLifeStyle;

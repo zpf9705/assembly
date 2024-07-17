@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.cron.spring.configuration;
+package top.osjf.cron.spring.hutool;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
