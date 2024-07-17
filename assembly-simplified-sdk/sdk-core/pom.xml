@@ -25,7 +25,6 @@
         <jsr-305>3.0.2</jsr-305>
         <guava>32.1.3-jre</guava>
         <fastjson2>2.0.41</fastjson2>
-        <commons>1.0.0</commons>
     </properties>
 
     <dependencies>
