@@ -46,12 +46,4 @@ public class HutoolCronLifeStyle implements LifeStyle {
     public void stop() throws CronLifeStyleException {
         doLifeStyle(CronUtil::stop);
     }
-
-    public void doLifeStyle(Runnable runnable) throws CronLifeStyleException {
-        try {
-            runnable.run();
-        } catch (Throwable e) {
-            throw new CronLifeStyleException(e);
-        }
-    }
 }
