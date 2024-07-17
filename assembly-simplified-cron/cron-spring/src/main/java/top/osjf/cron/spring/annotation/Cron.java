@@ -31,7 +31,6 @@ import java.lang.annotation.*;
  * publicly county-wide, and annotated methods defined in the current
  * class as a timed runtime.
  *
- * @see EnableCronTaskRegister
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
