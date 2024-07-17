@@ -21,7 +21,7 @@ import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
+import java.lang.reflect.AnnotatedElement;
 import java.util.Map;
 
 /**
@@ -47,13 +47,13 @@ public final class CronAnnotationAttributes extends MappedAnnotationAttributes {
     }
 
     /**
-     * Static for Create a {@link CronAnnotationAttributes} using {@link Method cronMethod}.
+     * Static for Create a {@link CronAnnotationAttributes} using {@link AnnotatedElement element}.
      *
-     * @param cronMethod {@link Cron} proxy Method.
+     * @param element program elements that can carry annotations.
      * @return {@link Cron} Attributes.
      */
-    public static CronAnnotationAttributes of(Method cronMethod) {
-        return new CronAnnotationAttributes(of(cronMethod, Cron.class));
+    public static CronAnnotationAttributes of(AnnotatedElement element) {
+        return new CronAnnotationAttributes(of(element, Cron.class));
     }
 
     /**

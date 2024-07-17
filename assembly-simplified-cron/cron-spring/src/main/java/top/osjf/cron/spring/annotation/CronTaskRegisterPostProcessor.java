@@ -112,7 +112,11 @@ public class CronTaskRegisterPostProcessor implements ImportAware,
         } else {
             target = bean.getClass();
         }
-        cronTaskRegistrant.register(target, bean, environment);
+        try {
+            cronTaskRegistrant.register(target, bean, environment);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         return bean;
     }
 
