@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.cron.spring.configuration;
+package top.osjf.cron.spring.quartz;
 
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
