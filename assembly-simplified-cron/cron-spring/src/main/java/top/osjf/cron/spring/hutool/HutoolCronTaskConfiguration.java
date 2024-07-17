@@ -24,6 +24,7 @@ import top.osjf.cron.core.lifestyle.LifeStyle;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.hutool.lifestyle.HutoolCronLifeStyle;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
+import top.osjf.cron.spring.CronTaskRegistrant;
 
 /**
  * Regarding the configuration classes related to scheduled task
@@ -44,5 +45,10 @@ public class HutoolCronTaskConfiguration {
     @Bean
     public CronTaskRepository<String, Runnable> cronTaskRepository() {
         return new HutoolCronTaskRepository();
+    }
+
+    @Bean
+    public CronTaskRegistrant cronTaskRegistrant(CronTaskRepository<String, Runnable> cronTaskRepository){
+        return new HutoolCronTaskRegistrant(cronTaskRepository);
     }
 }
