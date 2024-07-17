@@ -21,7 +21,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.MergedBeanDefinitionPostProcessor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -33,6 +32,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Role;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
 import top.osjf.cron.core.annotation.NotNull;
@@ -41,10 +41,12 @@ import top.osjf.cron.core.exception.CronExpressionInvalidException;
 import top.osjf.cron.core.lifestyle.LifeStyle;
 import top.osjf.cron.core.repository.CronTaskRepository;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 
 
@@ -74,17 +76,13 @@ public class CronTaskRegisterPostProcessor implements ImportAware,
 
     private Map<String, Object> metadata;
 
-    private CronTaskRepository taskRepository;
+    private final CronTaskRepository taskRepository;
 
-    private LifeStyle lifeStyle;
+    private final LifeStyle lifeStyle;
 
-    @Autowired
-    public void setTaskRepository(@Lazy CronTaskRepository taskRepository) {
+    public CronTaskRegisterPostProcessor(@Lazy CronTaskRepository taskRepository,
+                                         @Lazy LifeStyle lifeStyle) {
         this.taskRepository = taskRepository;
-    }
-
-    @Autowired
-    public void setLifeStyle(@Lazy LifeStyle lifeStyle) {
         this.lifeStyle = lifeStyle;
     }
 
@@ -95,8 +93,15 @@ public class CronTaskRegisterPostProcessor implements ImportAware,
 
     @Override
     public void setImportMetadata(@NotNull AnnotationMetadata annotationMetadata) {
-        metadata = MappedAnnotationAttributes.of(annotationMetadata
-                .getAnnotationAttributes(annotationMetadata.getClassName()));
+        String canonicalName = null;
+        for (MergedAnnotation<Annotation> annotation : annotationMetadata.getAnnotations()) {
+            canonicalName = annotation.getType().getCanonicalName();
+            if (canonicalName.startsWith("top.osjf.cron.spring.configuration")) {
+                break;
+            }
+        }
+        Objects.requireNonNull(canonicalName, "import metadata acquisition failed");
+        metadata = MappedAnnotationAttributes.of(annotationMetadata.getAnnotationAttributes(canonicalName));
     }
 
     @Override
