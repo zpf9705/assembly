@@ -18,7 +18,7 @@ package top.osjf.sdk.spring.beans;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.DisposableBean;
-import top.osjf.sdk.commons.annotation.NotNull;
+import top.osjf.sdk.core.util.NotNull;
 
 /**
  * Interface to be implemented by beans that want to release resources on destruction.

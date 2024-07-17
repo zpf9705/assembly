@@ -16,8 +16,8 @@
 
 package top.osjf.sdk.spring.beans;
 
-import top.osjf.sdk.commons.annotation.NotNull;
-import top.osjf.sdk.commons.annotation.Nullable;
+import top.osjf.sdk.core.util.NotNull;
+import top.osjf.sdk.core.util.Nullable;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.ResponseData;
 

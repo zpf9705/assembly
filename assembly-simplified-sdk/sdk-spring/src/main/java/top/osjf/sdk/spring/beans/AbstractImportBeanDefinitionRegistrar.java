@@ -24,8 +24,8 @@ import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
-import top.osjf.sdk.commons.annotation.NotNull;
-import top.osjf.sdk.commons.annotation.Nullable;
+import top.osjf.sdk.core.util.NotNull;
+import top.osjf.sdk.core.util.Nullable;
 
 import java.lang.annotation.Annotation;
 import java.util.Map;

@@ -32,7 +32,7 @@ import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.filter.TypeFilter;
-import top.osjf.sdk.commons.annotation.NotNull;
+import top.osjf.sdk.core.util.NotNull;
 
 import java.util.Set;
 

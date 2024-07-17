@@ -18,7 +18,7 @@ package top.osjf.sdk.spring.beans;
 
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.InitializingBean;
-import top.osjf.sdk.commons.annotation.NotNull;
+import top.osjf.sdk.core.util.NotNull;
 
 /**
  * Interface to be implemented by beans that need to react once all their properties

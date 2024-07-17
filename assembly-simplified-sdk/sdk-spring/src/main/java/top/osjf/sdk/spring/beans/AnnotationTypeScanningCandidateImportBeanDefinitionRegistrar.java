@@ -27,7 +27,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
-import top.osjf.sdk.commons.annotation.NotNull;
+import top.osjf.sdk.core.util.NotNull;
 import top.osjf.sdk.spring.annotation.EnableSdkProxyRegister;
 import top.osjf.sdk.spring.annotation.Sdk;
 import top.osjf.sdk.spring.proxy.ConcentrateProxySupport;

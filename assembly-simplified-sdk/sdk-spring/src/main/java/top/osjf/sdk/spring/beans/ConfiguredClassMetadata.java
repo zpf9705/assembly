@@ -17,8 +17,8 @@
 package top.osjf.sdk.spring.beans;
 
 import org.springframework.core.type.ClassMetadata;
-import top.osjf.sdk.commons.annotation.NotNull;
-import top.osjf.sdk.commons.annotation.Nullable;
+import top.osjf.sdk.core.util.NotNull;
+import top.osjf.sdk.core.util.Nullable;
 
 /**
  * Interface that defines abstract metadata of a specific class,
