@@ -17,6 +17,7 @@
 package top.osjf.cron.spring.configuration;
 
 import org.springframework.context.annotation.Import;
+import top.osjf.cron.hutool.lifestyle.HutoolCronLifeStyle;
 import top.osjf.cron.spring.annotation.Cron;
 import top.osjf.cron.spring.annotation.CronTaskRegisterPostProcessor;
 
@@ -36,4 +37,24 @@ import java.lang.annotation.*;
 @Documented
 @Import({HutoolCronTaskConfiguration.class, CronTaskRegisterPostProcessor.class})
 public @interface EnableHutoolCronTaskRegister {
+
+    /**
+     * Set whether to support second matching.
+     * <p>This method is used to define whether to use the second matching mode.
+     * If it is true, the first digit in the timed task expression is seconds,
+     * otherwise it is minutes, and the default is minutes.
+     *
+     * @return Whether to support second matching.
+     */
+    boolean isMatchSecond() default true;
+
+    /**
+     * Whether to start as a daemon thread.
+     * <p>If true, the scheduled task executed immediately after calling the
+     * {@link HutoolCronLifeStyle#stop()} method will end.
+     * Otherwise, it will wait for the execution to complete before ending.
+     *
+     * @return Whether to start as a daemon thread.
+     */
+    boolean isDaemon() default false;
 }
