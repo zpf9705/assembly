@@ -26,6 +26,7 @@ import top.osjf.cron.core.lifestyle.LifeStyle;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.quartz.lifestyle.QuartzCronLifeStyle;
 import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
+import top.osjf.cron.spring.CronTaskRegistrant;
 
 /**
  * Regarding the configuration classes related to scheduled task
@@ -46,5 +47,10 @@ public class QuartzCronTaskConfiguration {
     @Bean
     public LifeStyle lifeStyle(CronTaskRepository<JobKey, JobDetail> cronTaskRepository) {
         return new QuartzCronLifeStyle(((QuartzCronTaskRepository) cronTaskRepository).getScheduler());
+    }
+
+    @Bean
+    public CronTaskRegistrant cronTaskRegistrant(CronTaskRepository<JobKey, JobDetail> cronTaskRepository) {
+        return new QuartzCronTaskRegistrant(cronTaskRepository);
     }
 }
