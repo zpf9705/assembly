@@ -42,7 +42,7 @@ public class HutoolCronTaskConfiguration {
     }
 
     @Bean
-    public CronTaskRepository cronTaskRepository() {
+    public CronTaskRepository<String, Runnable> cronTaskRepository() {
         return new HutoolCronTaskRepository();
     }
 }
