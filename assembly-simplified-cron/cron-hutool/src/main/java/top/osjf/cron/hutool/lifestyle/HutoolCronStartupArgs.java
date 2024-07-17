@@ -17,10 +17,9 @@
 package top.osjf.cron.hutool.lifestyle;
 
 import org.apache.commons.lang3.ArrayUtils;
-import top.osjf.cron.core.lifestyle.StartupArgs;
 
 /**
- * The Hutool cron task {@link StartupArgs} impl.
+ * The Hutool cron task Startup Args.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
