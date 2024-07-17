@@ -16,8 +16,10 @@
 
 package top.osjf.cron.core.repository;
 
+import top.osjf.cron.core.annotation.NotNull;
 import top.osjf.cron.core.exception.CronExpressionInvalidException;
 import top.osjf.cron.core.exception.CronTaskNoExistException;
+import top.osjf.cron.core.listener.CronListener;
 
 /**
  * The executor of the dynamic registration of scheduled tasks, developers
@@ -64,4 +66,12 @@ public interface CronTaskRepository {
      *                                  be found for the corresponding task.
      */
     void remove(String taskId) throws CronTaskNoExistException;
+
+    /**
+     * Add a scheduled task listener.
+     *
+     * @param cronListener a scheduled task listener.
+     */
+    @SuppressWarnings("rawtypes")
+    void addCronListener(@NotNull CronListener cronListener);
 }
