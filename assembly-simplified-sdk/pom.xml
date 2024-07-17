@@ -16,7 +16,6 @@
     <version>1.0.0</version>
 
     <modules>
-        <module>sdk-commons</module>
         <module>sdk-core</module>
         <module>sdk-http</module>
         <module>sdk-spring</module>
