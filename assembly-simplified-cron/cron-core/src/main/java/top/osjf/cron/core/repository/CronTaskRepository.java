@@ -21,6 +21,9 @@ import top.osjf.cron.core.exception.CronExpressionInvalidException;
 import top.osjf.cron.core.exception.CronTaskNoExistException;
 import top.osjf.cron.core.listener.CronListener;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * The executor of the dynamic registration of scheduled tasks, developers
  * can call the method of this interface to register or update or remove a
@@ -29,6 +32,7 @@ import top.osjf.cron.core.listener.CronListener;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
+@SuppressWarnings("rawtypes")
 public interface CronTaskRepository {
 
     /**
@@ -72,6 +76,25 @@ public interface CronTaskRepository {
      *
      * @param cronListener a scheduled task listener.
      */
-    @SuppressWarnings("rawtypes")
     void addCronListener(@NotNull CronListener cronListener);
+
+    /**
+     * Add scheduled task listeners.
+     *
+     * @param cronListeners scheduled task listeners.
+     */
+    default void addCronListeners(List<CronListener> cronListeners){
+        for (CronListener cronListener : cronListeners) {
+            addCronListener(cronListener);
+        }
+    }
+
+    /**
+     * Add scheduled task listeners.
+     *
+     * @param cronListeners scheduled task listeners.
+     */
+    default void addCronListeners(CronListener... cronListeners){
+        addCronListeners(Arrays.asList(cronListeners));
+    }
 }
