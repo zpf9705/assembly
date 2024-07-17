@@ -19,6 +19,7 @@
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.boot>2.5.6</spring.boot>
+        <cron.spring>1.0.0</cron.spring>
     </properties>
 
     <dependencies>
@@ -26,7 +27,7 @@
         <dependency>
             <groupId>top.osjf.cron.spring</groupId>
             <artifactId>cron-spring</artifactId>
-            <version>1.0.0</version>
+            <version>${cron.spring}</version>
         </dependency>
 
         <dependency>
