@@ -30,8 +30,13 @@ import top.osjf.cron.core.lifestyle.LifeStyle;
  */
 public class QuartzCronLifeStyle implements LifeStyle {
 
+    /*** the scheduled task management class of Quartz.*/
     private final Scheduler scheduler;
 
+    /**
+     * Construct for create {@link QuartzCronLifeStyle} using a {@link Scheduler}.
+     * @param scheduler {@link Scheduler}.
+     */
     public QuartzCronLifeStyle(@NotNull Scheduler scheduler) {
         this.scheduler = scheduler;
     }
