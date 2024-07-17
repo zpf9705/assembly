@@ -25,6 +25,9 @@ import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
 import top.osjf.cron.spring.configuration.EnableHutoolCronTaskRegister;
 
 /**
+ * The auto configuration class for cron tasks, which automatically configures
+ * based on the type of timed task input, defaults to registering hutool for
+ * timed configuration.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
