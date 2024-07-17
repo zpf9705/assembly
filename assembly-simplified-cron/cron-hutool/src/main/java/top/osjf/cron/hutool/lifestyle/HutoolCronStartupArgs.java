@@ -18,6 +18,8 @@ package top.osjf.cron.hutool.lifestyle;
 
 import org.apache.commons.lang3.ArrayUtils;
 
+import java.util.Map;
+
 /**
  * The Hutool cron task Startup Args.
  *
@@ -43,8 +45,15 @@ public class HutoolCronStartupArgs {
     private boolean isDaemon = false;
 
     /**
-     * Analyze the array parameters in the order of {@link #isMatchSecond} first
-     * bit and {@link #isDaemon} second bit.
+     * Analyze startup parameters and construct startup parameter objects.
+
+     * <p>Compatible with two situations:
+     * <ul>
+     *     <li>If only one parameter is passed in and of type {@link Map}, then
+     *     retrieve the value from this type.</li>
+     *     <li>If there is a value that matches {@link #isMatchSecond} first and is
+     *     greater than 1 value, then match {@link #isDaemon}.</li>
+     * </ul>
      *
      * @param args the array parameters.
      * @return Analyze the results of parameter objects.
@@ -52,8 +61,22 @@ public class HutoolCronStartupArgs {
     public static HutoolCronStartupArgs of(Object[] args) {
         HutoolCronStartupArgs startupArgs = new HutoolCronStartupArgs();
         if (ArrayUtils.isEmpty(args)) return startupArgs;
-        startupArgs.isMatchSecond = (boolean) args[0];
-        if (args.length > 1) startupArgs.isDaemon = (boolean) args[1];
+        if (args.length == 1) {
+            Object arg = args[0];
+            if (arg instanceof Map) {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> metadata = (Map<String, Object>) arg;
+                startupArgs.isMatchSecond = !metadata.containsKey("isMatchSecond") ||
+                        (boolean) metadata.get("isMatchSecond");
+                startupArgs.isDaemon = !metadata.containsKey("isDaemon") ||
+                        (boolean) metadata.get("isDaemon");
+            } else {
+                startupArgs.isMatchSecond = (boolean) arg;
+            }
+        } else {
+            startupArgs.isMatchSecond = (boolean) args[0];
+            startupArgs.isDaemon = (boolean) args[1];
+        }
         return startupArgs;
     }
 
