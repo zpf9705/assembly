@@ -23,7 +23,7 @@ import top.osjf.cron.core.annotation.NotNull;
 import top.osjf.cron.core.annotation.Nullable;
 import top.osjf.cron.core.exception.CronExpressionInvalidException;
 import top.osjf.cron.core.exception.CronTaskNoExistException;
-import top.osjf.cron.core.listener.CronListener;
+import top.osjf.cron.core.repository.CronListenerRepository;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.quartz.listener.QuartzCronListener;
 
@@ -36,10 +36,14 @@ import java.util.Properties;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class QuartzCronTaskRepository implements CronTaskRepository<JobKey, JobDetail> {
+public class QuartzCronTaskRepository implements CronTaskRepository<JobKey, JobDetail>,
+        CronListenerRepository<QuartzCronListener> {
 
     /*** the scheduled task management class of Quartz.*/
     private final Scheduler scheduler;
+
+    /*** The Quartz management interface for the listener.*/
+    private final ListenerManager listenerManager;
 
     /**
      * Create a construction method for {@link Scheduler} using a configuration properties.
@@ -54,6 +58,7 @@ public class QuartzCronTaskRepository implements CronTaskRepository<JobKey, JobD
             if (jobFactory != null) {
                 scheduler.setJobFactory(jobFactory);
             }
+            listenerManager = scheduler.getListenerManager();
         } catch (SchedulerException e) {
             throw new RuntimeException(e);
         }
@@ -102,10 +107,18 @@ public class QuartzCronTaskRepository implements CronTaskRepository<JobKey, JobD
     }
 
     @Override
-    @SuppressWarnings("rawtypes")
-    public void addCronListener(@NotNull CronListener cronListener) throws Exception {
-        if (cronListener instanceof QuartzCronListener) {
-            scheduler.getListenerManager().addJobListener((QuartzCronListener) cronListener);
-        }
+    public void addCronListener(@NotNull QuartzCronListener cronListener) {
+        listenerManager.addJobListener(cronListener);
+    }
+
+    @Override
+    public void removeCronListener(@NotNull QuartzCronListener cronListener) {
+        listenerManager.removeJobListener(cronListener.getName());
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public CronListenerRepository<QuartzCronListener> getCronListenerRepository() {
+        return this;
     }
 }
