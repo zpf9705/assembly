@@ -18,6 +18,7 @@ package top.osjf.cron.quartz.repository;
 
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
+import org.quartz.simpl.SimpleThreadPool;
 import org.quartz.spi.JobFactory;
 import top.osjf.cron.core.annotation.NotNull;
 import top.osjf.cron.core.annotation.Nullable;
@@ -40,7 +41,7 @@ public class QuartzCronTaskRepository implements CronTaskRepository<JobKey, JobD
         CronListenerRepository<QuartzCronListener> {
 
     /*** the scheduled task management class of Quartz.*/
-    private final Scheduler scheduler;
+    private Scheduler scheduler;
 
     /*** The Quartz management interface for the listener.*/
     private final ListenerManager listenerManager;
@@ -54,8 +55,7 @@ public class QuartzCronTaskRepository implements CronTaskRepository<JobKey, JobD
     public QuartzCronTaskRepository(Properties properties, @Nullable JobFactory jobFactory) {
         StdSchedulerFactory schedulerFactory = new StdSchedulerFactory();
         try {
-            schedulerFactory.initialize(properties);
-            scheduler = schedulerFactory.getScheduler();
+            getScheduler(schedulerFactory, properties);
             if (jobFactory != null) {
                 scheduler.setJobFactory(jobFactory);
             }
@@ -63,6 +63,35 @@ public class QuartzCronTaskRepository implements CronTaskRepository<JobKey, JobD
         } catch (SchedulerException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Set up a scheduled scheduler, and if there is a retrieval failure,
+     * adjust the scheduler factory parameters according to the abnormal
+     * situation and continue to retrieve.
+     *
+     * @param schedulerFactory Scheduling factory.
+     * @param properties       Configuration file object.
+     * @see SimpleThreadPool#initialize()
+     */
+    void getScheduler(StdSchedulerFactory schedulerFactory, Properties properties) throws SchedulerException {
+        SchedulerException getSchedulerIssue = null;
+        schedulerFactory.initialize(properties);
+        try {
+            scheduler = schedulerFactory.getScheduler();
+        } catch (SchedulerException e) {
+            getSchedulerIssue = e;
+        }
+        if (getSchedulerIssue == null) {
+            return;
+        }
+        String message = getSchedulerIssue.getMessage();
+        if (message.contains("Thread count must be > 0")) {
+            //If the number of threads is not configured, give a default value of 1.
+            properties.setProperty(StdSchedulerFactory.PROP_THREAD_POOL_PREFIX + ".threadCount", "1");
+        }
+        schedulerFactory.initialize(properties);
+        scheduler = schedulerFactory.getScheduler();
     }
 
     /**
