@@ -31,10 +31,9 @@
         </dependency>
 
         <dependency>
-            <groupId>top.osjf.cron.quartz</groupId>
-            <artifactId>cron-quartz</artifactId>
+            <groupId>top.osjf.cron.hutool</groupId>
+            <artifactId>cron-hutool</artifactId>
             <version>${cron}</version>
-            <optional>true</optional>
         </dependency>
 
         <dependency>
