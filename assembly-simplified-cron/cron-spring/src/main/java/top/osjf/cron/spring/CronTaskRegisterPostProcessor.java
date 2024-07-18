@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.cron.spring.annotation;
+package top.osjf.cron.spring;
 
 import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.aop.support.AopUtils;
@@ -26,21 +26,19 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportAware;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Role;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
 import top.osjf.cron.core.annotation.NotNull;
 import top.osjf.cron.core.annotation.Nullable;
 import top.osjf.cron.core.lifestyle.LifeStyle;
-import top.osjf.cron.spring.CronTaskRegistrant;
+import top.osjf.cron.spring.annotation.Cron;
+import top.osjf.cron.spring.annotation.MappedAnnotationAttributes;
 
-import java.lang.annotation.Annotation;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Create a post processor for custom bean elements.
@@ -68,14 +66,14 @@ public class CronTaskRegisterPostProcessor implements ImportAware,
 
     private Map<String, Object> metadata;
 
-    private final CronTaskRegistrant cronTaskRegistrant;
-
     private final LifeStyle lifeStyle;
 
-    public CronTaskRegisterPostProcessor(@Lazy CronTaskRegistrant cronTaskRegistrant,
-                                         @Lazy LifeStyle lifeStyle) {
-        this.cronTaskRegistrant = cronTaskRegistrant;
+    private final CronTaskRegistrant cronTaskRegistrant;
+
+    public CronTaskRegisterPostProcessor(LifeStyle lifeStyle,
+                                         CronTaskRegistrant cronTaskRegistrant) {
         this.lifeStyle = lifeStyle;
+        this.cronTaskRegistrant = cronTaskRegistrant;
     }
 
     @Override
@@ -85,15 +83,10 @@ public class CronTaskRegisterPostProcessor implements ImportAware,
 
     @Override
     public void setImportMetadata(@NotNull AnnotationMetadata annotationMetadata) {
-        String canonicalName = null;
-        for (MergedAnnotation<Annotation> annotation : annotationMetadata.getAnnotations()) {
-            canonicalName = annotation.getType().getCanonicalName();
-            if (canonicalName.startsWith("top.osjf.cron.spring.configuration")) {
-                break;
-            }
-        }
-        Objects.requireNonNull(canonicalName, "import metadata acquisition failed");
-        metadata = MappedAnnotationAttributes.of(annotationMetadata.getAnnotationAttributes(canonicalName));
+        metadata = new LinkedHashMap<>();
+        annotationMetadata.getAnnotations().forEach(annotation ->
+                metadata.putAll(MappedAnnotationAttributes.of(annotationMetadata.
+                        getAnnotationAttributes(annotation.getType().getCanonicalName()))));
     }
 
     @Override
