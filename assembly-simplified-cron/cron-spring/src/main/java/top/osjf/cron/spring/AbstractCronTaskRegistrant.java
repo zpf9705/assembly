@@ -47,13 +47,12 @@ public abstract class AbstractCronTaskRegistrant implements CronTaskRegistrant {
     /**
      * Return the timed task resource operation interface.
      *
-     * @param <ID>   The type of unique ID for scheduled tasks.
-     * @param <BODY> The type of scheduled task running entity.
+     * @param <T> Specific types of resources.
      * @return timed task resource operation interface.
      */
     @SuppressWarnings("unchecked")
-    public <ID, BODY> CronTaskRepository<ID, BODY> getCronTaskRepository() {
-        return cronTaskRepository;
+    public <T extends CronTaskRepository> T getCronTaskRepository() {
+        return (T) cronTaskRepository;
     }
 
     /**
