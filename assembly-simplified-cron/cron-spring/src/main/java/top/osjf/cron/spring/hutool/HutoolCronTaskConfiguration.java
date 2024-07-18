@@ -20,16 +20,13 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
-import top.osjf.cron.core.lifestyle.LifeStyle;
-import top.osjf.cron.core.repository.CronTaskRepository;
-import top.osjf.cron.hutool.lifestyle.HutoolCronLifeStyle;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
-import top.osjf.cron.spring.CronTaskRegistrant;
 
 /**
  * Regarding the configuration classes related to scheduled task
  * registration for hutool.
  *
+ * @see EnableHutoolCronTaskRegister
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
@@ -38,17 +35,20 @@ import top.osjf.cron.spring.CronTaskRegistrant;
 public class HutoolCronTaskConfiguration {
 
     @Bean
-    public LifeStyle lifeStyle() {
+    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+    public HutoolCronLifeStyle hutoolCronLifeStyle() {
         return new HutoolCronLifeStyle();
     }
 
     @Bean
-    public CronTaskRepository<String, Runnable> cronTaskRepository() {
-        return new HutoolCronTaskRepository();
+    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+    public HutoolCronTaskRegistrant cronTaskRegistrant() {
+        HutoolCronTaskRepository hutoolCronTaskRepository = new HutoolCronTaskRepository();
+        return new HutoolCronTaskRegistrant(hutoolCronTaskRepository);
     }
 
     @Bean
-    public CronTaskRegistrant cronTaskRegistrant(CronTaskRepository<String, Runnable> cronTaskRepository){
-        return new HutoolCronTaskRegistrant(cronTaskRepository);
+    public HutoolCronTaskRepository cronTaskRepository(HutoolCronTaskRegistrant cronTaskRegistrant) {
+        return cronTaskRegistrant.getCronTaskRepository();
     }
 }
