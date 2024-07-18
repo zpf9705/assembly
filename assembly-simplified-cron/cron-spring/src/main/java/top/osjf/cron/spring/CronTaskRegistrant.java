@@ -33,6 +33,8 @@ public interface CronTaskRegistrant {
      * @param realBeanType The true type of bean.
      * @param bean         Beans awaiting registration and inspection.
      * @param environment  Spring's environment variables.
+     * @throws Exception Possible abnormal issues that may arise from
+     *                   registration behavior.
      */
     void register(Class<?> realBeanType, Object bean, Environment environment) throws Exception;
 }

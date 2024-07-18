@@ -49,6 +49,7 @@ public class QuartzCronTaskRepository implements CronTaskRepository<JobKey, JobD
      * Create a construction method for {@link Scheduler} using a configuration properties.
      *
      * @param properties {@link StdSchedulerFactory} configuration properties.
+     * @param jobFactory Quartz task production factory.
      */
     public QuartzCronTaskRepository(Properties properties, @Nullable JobFactory jobFactory) {
         StdSchedulerFactory schedulerFactory = new StdSchedulerFactory();
