@@ -35,7 +35,7 @@ import top.osjf.cron.hutool.listener.HutoolCronListener;
 public class HutoolCronTaskRepository implements CronTaskRepository<String, Runnable> {
 
     @Override
-    public String register(String cronExpression, Runnable runnable) throws CronExpressionInvalidException {
+    public String register(String cronExpression, Runnable runnable) throws Exception {
         try {
             CronPattern.of(cronExpression);
         } catch (CronException e) {
@@ -45,8 +45,7 @@ public class HutoolCronTaskRepository implements CronTaskRepository<String, Runn
     }
 
     @Override
-    public void update(String taskId, String newCronExpression) throws CronExpressionInvalidException,
-            CronTaskNoExistException {
+    public void update(String taskId, String newCronExpression) throws Exception {
         if (CronUtil.getScheduler().getTask(taskId) == null) {
             throw new CronTaskNoExistException(taskId);
         }
@@ -60,7 +59,7 @@ public class HutoolCronTaskRepository implements CronTaskRepository<String, Runn
     }
 
     @Override
-    public void remove(String taskId) throws CronTaskNoExistException {
+    public void remove(String taskId) {
         if (CronUtil.getScheduler().getTask(taskId) == null) {
             throw new CronTaskNoExistException(taskId);
         }
