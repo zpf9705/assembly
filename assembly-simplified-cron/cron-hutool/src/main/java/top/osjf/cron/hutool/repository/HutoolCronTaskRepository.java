@@ -84,4 +84,10 @@ public class HutoolCronTaskRepository implements CronTaskRepository<String, Runn
     public void removeCronListener(@NotNull HutoolCronListener cronListener) {
         scheduler.removeListener(cronListener);
     }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public CronListenerRepository<HutoolCronListener> getCronListenerRepository() {
+        return this;
+    }
 }
