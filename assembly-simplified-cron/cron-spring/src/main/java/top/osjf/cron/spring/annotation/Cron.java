@@ -17,6 +17,7 @@
 package top.osjf.cron.spring.annotation;
 
 import org.springframework.core.annotation.AliasFor;
+import top.osjf.cron.spring.CronTaskRegisterPostProcessor;
 
 import java.lang.annotation.*;
 
