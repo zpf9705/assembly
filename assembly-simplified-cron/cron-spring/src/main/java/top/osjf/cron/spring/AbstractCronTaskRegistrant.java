@@ -52,7 +52,7 @@ public abstract class AbstractCronTaskRegistrant implements CronTaskRegistrant {
      * @return timed task resource operation interface.
      */
     @SuppressWarnings("unchecked")
-    protected <ID, BODY> CronTaskRepository<ID, BODY> getCronTaskRepository() {
+    public <ID, BODY> CronTaskRepository<ID, BODY> getCronTaskRepository() {
         return cronTaskRepository;
     }
 
