@@ -23,7 +23,6 @@ import top.osjf.cron.core.annotation.NotNull;
 import top.osjf.cron.core.annotation.Nullable;
 import top.osjf.cron.core.exception.CronExpressionInvalidException;
 import top.osjf.cron.core.exception.CronTaskNoExistException;
-import top.osjf.cron.core.exception.CronTaskRepositoryExecutionException;
 import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.quartz.listener.QuartzCronListener;
@@ -70,7 +69,7 @@ public class QuartzCronTaskRepository implements CronTaskRepository<JobKey, JobD
     }
 
     @Override
-    public JobKey register(String cronExpression, JobDetail jobDetail) throws CronExpressionInvalidException {
+    public JobKey register(String cronExpression, JobDetail jobDetail) throws Exception {
         CronExpression expression;
         try {
             expression = new CronExpression(cronExpression);
@@ -82,54 +81,31 @@ public class QuartzCronTaskRepository implements CronTaskRepository<JobKey, JobD
                 .withIdentity(key.getName())
                 .startNow()
                 .withSchedule(CronScheduleBuilder.cronSchedule(expression));
-        try {
-            scheduler.scheduleJob(jobDetail, triggerBuilder.build());
-        } catch (SchedulerException e) {
-            throw new CronTaskRepositoryExecutionException(e);
-        }
+        scheduler.scheduleJob(jobDetail, triggerBuilder.build());
         return jobDetail.getKey();
     }
 
     @Override
-    public void update(JobKey jobKey, String newCronExpression) throws CronExpressionInvalidException,
-            CronTaskNoExistException {
-        JobDetail jobDetail;
-        try {
-            jobDetail = scheduler.getJobDetail(jobKey);
-        } catch (SchedulerException e) {
-            throw new CronTaskRepositoryExecutionException(e);
-        }
+    public void update(JobKey jobKey, String newCronExpression) throws Exception {
+        JobDetail jobDetail = scheduler.getJobDetail(jobKey);
         remove(jobKey);
         register(newCronExpression, jobDetail);
     }
 
     @Override
-    public void remove(JobKey jobKey) throws CronTaskNoExistException {
-        JobDetail jobDetail;
-        try {
-            jobDetail = scheduler.getJobDetail(jobKey);
-        } catch (SchedulerException e) {
-            throw new CronTaskRepositoryExecutionException(e);
-        }
+    public void remove(JobKey jobKey) throws Exception {
+        JobDetail jobDetail = scheduler.getJobDetail(jobKey);
         if (jobDetail == null) {
             throw new CronTaskNoExistException(jobKey.toString());
         }
-        try {
-            scheduler.deleteJob(jobKey);
-        } catch (SchedulerException e) {
-            throw new CronTaskRepositoryExecutionException(e);
-        }
+        scheduler.deleteJob(jobKey);
     }
 
     @Override
     @SuppressWarnings("rawtypes")
-    public void addCronListener(@NotNull CronListener cronListener) {
+    public void addCronListener(@NotNull CronListener cronListener) throws Exception {
         if (cronListener instanceof QuartzCronListener) {
-            try {
-                scheduler.getListenerManager().addJobListener((QuartzCronListener) cronListener);
-            } catch (SchedulerException e) {
-                throw new CronTaskRepositoryExecutionException(e);
-            }
+            scheduler.getListenerManager().addJobListener((QuartzCronListener) cronListener);
         }
     }
 }
