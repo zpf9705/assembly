@@ -18,7 +18,9 @@ package top.osjf.cron.quartz.repository;
 
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
+import org.quartz.spi.JobFactory;
 import top.osjf.cron.core.annotation.NotNull;
+import top.osjf.cron.core.annotation.Nullable;
 import top.osjf.cron.core.exception.CronExpressionInvalidException;
 import top.osjf.cron.core.exception.CronTaskNoExistException;
 import top.osjf.cron.core.exception.CronTaskRepositoryExecutionException;
@@ -45,11 +47,14 @@ public class QuartzCronTaskRepository implements CronTaskRepository<JobKey, JobD
      *
      * @param properties {@link StdSchedulerFactory} configuration properties.
      */
-    public QuartzCronTaskRepository(Properties properties) {
+    public QuartzCronTaskRepository(Properties properties, @Nullable JobFactory jobFactory) {
         StdSchedulerFactory schedulerFactory = new StdSchedulerFactory();
         try {
             schedulerFactory.initialize(properties);
             scheduler = schedulerFactory.getScheduler();
+            if (jobFactory != null) {
+                scheduler.setJobFactory(jobFactory);
+            }
         } catch (SchedulerException e) {
             throw new RuntimeException(e);
         }
