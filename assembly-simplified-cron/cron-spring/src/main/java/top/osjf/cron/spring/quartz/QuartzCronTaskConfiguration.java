@@ -18,6 +18,8 @@ package top.osjf.cron.spring.quartz;
 
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
+import org.quartz.spi.JobFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,9 +41,15 @@ import top.osjf.cron.spring.CronTaskRegistrant;
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 public class QuartzCronTaskConfiguration {
 
+    @Bean("quartzJobFactory")
+    public JobFactory jobFactory() {
+        return new QuartzJobFactory();
+    }
+
     @Bean
-    public CronTaskRepository<JobKey, JobDetail> cronTaskRepository() {
-        return new QuartzCronTaskRepository(null);
+    public CronTaskRepository<JobKey, JobDetail> cronTaskRepository(@Qualifier("quartzJobFactory")
+                                                                    JobFactory jobFactory) {
+        return new QuartzCronTaskRepository(System.getProperties(), jobFactory);
     }
 
     @Bean
