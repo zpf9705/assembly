@@ -16,23 +16,20 @@
 
 package top.osjf.cron.core.repository;
 
-import top.osjf.cron.core.annotation.NotNull;
 import top.osjf.cron.core.exception.CronExpressionInvalidException;
 import top.osjf.cron.core.exception.CronTaskNoExistException;
 import top.osjf.cron.core.listener.CronListener;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * The executor of the dynamic registration of scheduled tasks, developers
  * can call the method of this interface to register or update or remove a
  * scheduled task to the current scheduled task center management at runtime.
  *
+ * @param <ID>   The type of unique ID for scheduled tasks.
+ * @param <BODY> The type of scheduled task running entity.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-@SuppressWarnings("rawtypes")
 public interface CronTaskRepository<ID, BODY> {
 
     /**
@@ -79,35 +76,13 @@ public interface CronTaskRepository<ID, BODY> {
     void remove(ID id) throws Exception;
 
     /**
-     * Add a scheduled task listener.
+     * Return the listener management class held by the scheduled
+     * task resource management class.
      *
-     * @param cronListener a scheduled task listener.
-     * @throws Exception The specified exception of the
-     *                   scheduled task component.
+     * @param <T> Implement the type of {@link CronListener}.
+     * @return the listener management class held by the scheduled
+     * task resource management class.
      */
-    void addCronListener(@NotNull CronListener cronListener) throws Exception;
-
-    /**
-     * Add scheduled task listeners.
-     *
-     * @param cronListeners scheduled task listeners.
-     * @throws Exception The specified exception of the
-     *                   scheduled task component.
-     */
-    default void addCronListeners(List<CronListener> cronListeners) throws Exception {
-        for (CronListener cronListener : cronListeners) {
-            addCronListener(cronListener);
-        }
-    }
-
-    /**
-     * Add scheduled task listeners.
-     *
-     * @param cronListeners scheduled task listeners.
-     * @throws Exception The specified exception of the
-     *                   scheduled task component.
-     */
-    default void addCronListeners(CronListener... cronListeners) throws Exception {
-        addCronListeners(Arrays.asList(cronListeners));
-    }
+    @SuppressWarnings("rawtypes")
+    <T extends CronListener> CronListenerRepository<T> getCronListenerRepository();
 }
