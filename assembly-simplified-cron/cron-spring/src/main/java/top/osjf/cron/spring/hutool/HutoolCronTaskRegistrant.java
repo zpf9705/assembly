@@ -19,7 +19,6 @@ package top.osjf.cron.spring.hutool;
 import cn.hutool.core.util.ReflectUtil;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.core.env.Environment;
-import top.osjf.cron.core.exception.CronExpressionInvalidException;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.spring.AbstractCronTaskRegistrant;
 import top.osjf.cron.spring.annotation.Cron;
@@ -65,7 +64,7 @@ public class HutoolCronTaskRegistrant extends AbstractCronTaskRegistrant {
         }
     }
 
-    void register0(String expression, Runnable runnable) throws CronExpressionInvalidException {
+    void register0(String expression, Runnable runnable) throws Exception {
         CronTaskRepository<String, Runnable> cronTaskRepository = getCronTaskRepository();
         cronTaskRepository.register(expression, runnable);
     }
