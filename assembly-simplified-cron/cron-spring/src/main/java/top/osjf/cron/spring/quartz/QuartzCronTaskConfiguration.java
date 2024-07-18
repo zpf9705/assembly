@@ -16,49 +16,54 @@
 
 package top.osjf.cron.spring.quartz;
 
-import org.quartz.JobDetail;
-import org.quartz.JobKey;
-import org.quartz.spi.JobFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
-import top.osjf.cron.core.lifestyle.LifeStyle;
-import top.osjf.cron.core.repository.CronTaskRepository;
-import top.osjf.cron.quartz.lifestyle.QuartzCronLifeStyle;
 import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
-import top.osjf.cron.spring.CronTaskRegistrant;
+import top.osjf.cron.spring.CronTaskRegisterPostProcessor;
 
 /**
  * Regarding the configuration classes related to scheduled task
  * registration for Quartz.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
+ * @see EnableQuartzCronTaskRegister
  * @since 1.0.0
  */
 @Configuration(proxyBeanMethods = false)
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 public class QuartzCronTaskConfiguration {
 
-    @Bean("quartzJobFactory")
-    public JobFactory jobFactory() {
+    @Bean
+    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+    public QuartzJobFactory quartzJobFactory() {
         return new QuartzJobFactory();
     }
 
     @Bean
-    public CronTaskRepository<JobKey, JobDetail> cronTaskRepository(@Qualifier("quartzJobFactory")
-                                                                    JobFactory jobFactory) {
-        return new QuartzCronTaskRepository(System.getProperties(), jobFactory);
-    }
-
-    @Bean
-    public LifeStyle lifeStyle(CronTaskRepository<JobKey, JobDetail> cronTaskRepository) {
-        return new QuartzCronLifeStyle(((QuartzCronTaskRepository) cronTaskRepository).getScheduler());
-    }
-
-    @Bean
-    public CronTaskRegistrant cronTaskRegistrant(CronTaskRepository<JobKey, JobDetail> cronTaskRepository) {
+    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+    public QuartzCronTaskRegistrant cronTaskRegistrant(QuartzJobFactory jobFactory) {
+        QuartzCronTaskRepository cronTaskRepository =
+                new QuartzCronTaskRepository(System.getProperties(), jobFactory);
         return new QuartzCronTaskRegistrant(cronTaskRepository);
+    }
+
+    @Bean
+    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+    public QuartzCronLifeStyle quartzCronLifeStyle(QuartzCronTaskRegistrant cronTaskRegistrant) {
+        return new QuartzCronLifeStyle(cronTaskRegistrant.<QuartzCronTaskRepository>getCronTaskRepository()
+                .getScheduler());
+    }
+
+    @Bean
+    public QuartzCronTaskRepository quartzCronTaskRepository(QuartzCronTaskRegistrant cronTaskRegistrant) {
+        return cronTaskRegistrant.getCronTaskRepository();
+    }
+
+    @Bean
+    public CronTaskRegisterPostProcessor cronTaskRegisterPostProcessor(QuartzCronLifeStyle lifeStyle,
+                                                                       QuartzCronTaskRegistrant cronTaskRegistrant) {
+        return new CronTaskRegisterPostProcessor(lifeStyle, cronTaskRegistrant);
     }
 }

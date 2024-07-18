@@ -18,7 +18,7 @@ package top.osjf.cron.spring.quartz;
 
 import org.springframework.context.annotation.Import;
 import top.osjf.cron.spring.annotation.Cron;
-import top.osjf.cron.spring.annotation.CronTaskRegisterPostProcessor;
+import top.osjf.cron.spring.CronTaskRegisterPostProcessor;
 
 import java.lang.annotation.*;
 
@@ -34,6 +34,6 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import({QuartzCronTaskConfiguration.class, CronTaskRegisterPostProcessor.class})
+@Import({QuartzCronTaskConfiguration.class})
 public @interface EnableQuartzCronTaskRegister {
 }

@@ -18,10 +18,8 @@ package top.osjf.cron.spring.quartz;
 
 import org.quartz.Job;
 import org.quartz.JobBuilder;
-import org.quartz.JobDetail;
-import org.quartz.JobKey;
 import org.springframework.core.env.Environment;
-import top.osjf.cron.core.repository.CronTaskRepository;
+import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
 import top.osjf.cron.spring.AbstractCronTaskRegistrant;
 import top.osjf.cron.spring.annotation.Cron;
 import top.osjf.cron.spring.annotation.CronAnnotationAttributes;
@@ -34,7 +32,7 @@ import top.osjf.cron.spring.annotation.CronAnnotationAttributes;
  */
 public class QuartzCronTaskRegistrant extends AbstractCronTaskRegistrant {
 
-    public QuartzCronTaskRegistrant(CronTaskRepository<JobKey, JobDetail> cronTaskRepository) {
+    public QuartzCronTaskRegistrant(QuartzCronTaskRepository cronTaskRepository) {
         super(cronTaskRepository);
     }
 
@@ -50,7 +48,7 @@ public class QuartzCronTaskRegistrant extends AbstractCronTaskRegistrant {
         if (!profilesCheck(cronAttribute.getProfiles(), activeProfiles)) {
             return;
         }
-        CronTaskRepository<JobKey, JobDetail> cronTaskRepository = getCronTaskRepository();
+        QuartzCronTaskRepository cronTaskRepository = getCronTaskRepository();
         cronTaskRepository.register(cronAttribute.getExpression(),
                 JobBuilder.newJob((Class<? extends Job>) realBeanType).build());
     }
