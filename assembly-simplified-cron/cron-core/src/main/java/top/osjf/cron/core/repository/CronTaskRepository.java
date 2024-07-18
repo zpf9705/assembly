@@ -43,10 +43,12 @@ public interface CronTaskRepository<ID, BODY> {
      * @param cronExpression Expression in {@code Cron} format.
      * @param runsBody       Timed execution of the runtime.
      * @return Scheduled task ID.
+     * @throws Exception                      The specified exception of the
+     *                                        scheduled task component.
      * @throws CronExpressionInvalidException The issue of infinite thrown
      *                                        exceptions by cron expressions.
      */
-    ID register(String cronExpression, BODY runsBody) throws CronExpressionInvalidException;
+    ID register(String cronExpression, BODY runsBody) throws Exception;
 
     /**
      * Update a scheduled task based on the task ID and cron expression
@@ -54,12 +56,14 @@ public interface CronTaskRepository<ID, BODY> {
      *
      * @param id                Scheduled task ID.
      * @param newCronExpression New Expression in {@code Cron} format.
+     * @throws Exception                      The specified exception of the
+     *                                        scheduled task component.
      * @throws CronExpressionInvalidException The issue of infinite thrown
      *                                        exceptions by cron expressions.
      * @throws CronTaskNoExistException       Exception thrown when the task ID cannot
      *                                        be found for the corresponding task.
      */
-    void update(ID id, String newCronExpression) throws CronExpressionInvalidException,
+    void update(ID id, String newCronExpression) throws Exception,
             CronTaskNoExistException;
 
     /**
@@ -67,24 +71,30 @@ public interface CronTaskRepository<ID, BODY> {
      * by the implementer.
      *
      * @param id Scheduled task ID.
+     * @throws Exception                The specified exception of the
+     *                                  scheduled task component.
      * @throws CronTaskNoExistException Exception thrown when the task ID cannot
      *                                  be found for the corresponding task.
      */
-    void remove(ID id) throws CronTaskNoExistException;
+    void remove(ID id) throws Exception;
 
     /**
      * Add a scheduled task listener.
      *
      * @param cronListener a scheduled task listener.
+     * @throws Exception The specified exception of the
+     *                   scheduled task component.
      */
-    void addCronListener(@NotNull CronListener cronListener);
+    void addCronListener(@NotNull CronListener cronListener) throws Exception;
 
     /**
      * Add scheduled task listeners.
      *
      * @param cronListeners scheduled task listeners.
+     * @throws Exception The specified exception of the
+     *                   scheduled task component.
      */
-    default void addCronListeners(List<CronListener> cronListeners) {
+    default void addCronListeners(List<CronListener> cronListeners) throws Exception {
         for (CronListener cronListener : cronListeners) {
             addCronListener(cronListener);
         }
@@ -94,8 +104,10 @@ public interface CronTaskRepository<ID, BODY> {
      * Add scheduled task listeners.
      *
      * @param cronListeners scheduled task listeners.
+     * @throws Exception The specified exception of the
+     *                   scheduled task component.
      */
-    default void addCronListeners(CronListener... cronListeners) {
+    default void addCronListeners(CronListener... cronListeners) throws Exception {
         addCronListeners(Arrays.asList(cronListeners));
     }
 }
