@@ -29,8 +29,14 @@ import top.osjf.cron.core.listener.CronListener;
  */
 public interface QuartzCronListener extends JobListener, CronListener<JobExecutionContext> {
 
+    /**
+     * @return The default value is the fully qualified name of the
+     * currently running class.
+     */
     @Override
-    String getName();
+    default String getName() {
+        return getClass().getName();
+    }
 
     @Override
     default void jobToBeExecuted(JobExecutionContext context) {
@@ -51,6 +57,13 @@ public interface QuartzCronListener extends JobListener, CronListener<JobExecuti
 
     }
 
+    /**
+     * When {@code JobExecutionException} is {@literal null}, it is judged to have
+     * run successfully, otherwise it will run unsuccessfully.
+     *
+     * @param context      {@inheritDoc}
+     * @param jobException {@inheritDoc}
+     */
     @Override
     default void jobWasExecuted(JobExecutionContext context, JobExecutionException jobException) {
         if (jobException != null) {
