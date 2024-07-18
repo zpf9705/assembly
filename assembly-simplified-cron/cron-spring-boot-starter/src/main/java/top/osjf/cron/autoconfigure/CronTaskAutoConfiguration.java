@@ -24,8 +24,8 @@ import top.osjf.cron.hutool.lifestyle.HutoolCronLifeStyle;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
 import top.osjf.cron.quartz.lifestyle.QuartzCronLifeStyle;
 import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
-import top.osjf.cron.spring.configuration.EnableHutoolCronTaskRegister;
-import top.osjf.cron.spring.configuration.EnableQuartzCronTaskRegister;
+import top.osjf.cron.spring.hutool.EnableHutoolCronTaskRegister;
+import top.osjf.cron.spring.quartz.EnableQuartzCronTaskRegister;
 
 /**
  * The auto configuration class for cron tasks, which automatically configures
