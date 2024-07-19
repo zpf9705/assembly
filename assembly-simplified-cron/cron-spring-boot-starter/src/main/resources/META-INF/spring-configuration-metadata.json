@@ -9,5 +9,15 @@
       "name": "spring.hutool.cron.daemon",
       "type": "java.lang.Boolean",
       "description": "Whether to start as a daemon thread."
+    },
+    {
+      "name": "spring.cron4j.cron.daemon",
+      "type": "java.lang.Boolean",
+      "description": "Whether to start as a daemon thread."
+    },
+    {
+      "name": "spring.cron4j.cron.zone",
+      "type": "java.lang.String",
+      "description": "A time zone for which the cron expression will be resolved."
     }
   ] }

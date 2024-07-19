@@ -44,6 +44,13 @@
         </dependency>
 
         <dependency>
+            <groupId>top.osjf.cron.cron4j</groupId>
+            <artifactId>cron-cron4j</artifactId>
+            <version>${cron}</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot</artifactId>
             <version>${spring.boot}</version>
