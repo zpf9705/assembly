@@ -20,6 +20,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
+import top.osjf.cron.hutool.lifestyle.HutoolCronLifeStyle;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
 
 /**
@@ -34,7 +35,7 @@ import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 public class HutoolCronTaskConfiguration {
 
-    @Bean
+    @Bean(destroyMethod = "stop")
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     public HutoolCronLifeStyle hutoolCronLifeStyle() {
         return new HutoolCronLifeStyle();

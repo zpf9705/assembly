@@ -20,6 +20,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
+import top.osjf.cron.quartz.lifestyle.QuartzCronLifeStyle;
 import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
 import top.osjf.cron.spring.CronTaskRegisterPostProcessor;
 
@@ -45,11 +46,11 @@ public class QuartzCronTaskConfiguration {
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     public QuartzCronTaskRegistrant cronTaskRegistrant(QuartzJobFactory jobFactory) {
         QuartzCronTaskRepository cronTaskRepository =
-                new QuartzCronTaskRepository(System.getProperties(), jobFactory);
+                new QuartzCronTaskRepository(null, jobFactory);
         return new QuartzCronTaskRegistrant(cronTaskRepository);
     }
 
-    @Bean
+    @Bean(destroyMethod = "stop")
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     public QuartzCronLifeStyle quartzCronLifeStyle(QuartzCronTaskRegistrant cronTaskRegistrant) {
         return new QuartzCronLifeStyle(cronTaskRegistrant.<QuartzCronTaskRepository>getCronTaskRepository()
