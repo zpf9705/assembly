@@ -18,14 +18,27 @@ package top.osjf.cron.autoconfigure;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.quartz.QuartzProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
+import org.springframework.core.env.Environment;
+import top.osjf.cron.core.annotation.NotNull;
 import top.osjf.cron.hutool.lifestyle.HutoolCronLifeStyle;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
 import top.osjf.cron.quartz.lifestyle.QuartzCronLifeStyle;
 import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
-import top.osjf.cron.spring.hutool.EnableHutoolCronTaskRegister;
-import top.osjf.cron.spring.quartz.EnableQuartzCronTaskRegister;
+import top.osjf.cron.spring.CronTaskRegisterPostProcessor;
+import top.osjf.cron.spring.hutool.HutoolCronTaskRegistrant;
+import top.osjf.cron.spring.quartz.QuartzCronTaskRegistrant;
+import top.osjf.cron.spring.quartz.QuartzJobFactory;
+
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * The auto configuration class for cron tasks, which automatically configures
@@ -39,19 +52,94 @@ import top.osjf.cron.spring.quartz.EnableQuartzCronTaskRegister;
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 public class CronTaskAutoConfiguration {
 
-    /*** Hutool cron configuration */
+    /*** Hutool cron auto configuration */
     @ConditionalOnClass({HutoolCronLifeStyle.class, HutoolCronTaskRepository.class})
     @Configuration(proxyBeanMethods = false)
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-    @EnableHutoolCronTaskRegister
-    public static class HutoolCronTaskAutoConfiguration {
+    public static class HutoolCronTaskAutoConfiguration implements EnvironmentAware {
+
+        private final Map<String, Object> metadata = new LinkedHashMap<>();
+
+        @Override
+        public void setEnvironment(@NotNull Environment environment) {
+            metadata.put("isMatchSecond", environment.getProperty("hutool.cron.match-second",
+                    boolean.class, true));
+            metadata.put("isDaemon", environment.getProperty("hutool.cron.daemon",
+                    boolean.class, false));
+        }
+
+        @Bean(destroyMethod = "stop")
+        @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+        public HutoolCronLifeStyle hutoolCronLifeStyle() {
+            return new HutoolCronLifeStyle();
+        }
+
+        @Bean
+        @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+        public HutoolCronTaskRegistrant cronTaskRegistrant() {
+            HutoolCronTaskRepository hutoolCronTaskRepository = new HutoolCronTaskRepository();
+            return new HutoolCronTaskRegistrant(hutoolCronTaskRepository);
+        }
+
+        @Bean
+        public HutoolCronTaskRepository cronTaskRepository(HutoolCronTaskRegistrant cronTaskRegistrant) {
+            return cronTaskRegistrant.getCronTaskRepository();
+        }
+
+        @Bean
+        public CronTaskRegisterPostProcessor cronTaskRegisterPostProcessor(HutoolCronLifeStyle lifeStyle,
+                                                                           HutoolCronTaskRegistrant cronTaskRegistrant) {
+            CronTaskRegisterPostProcessor postProcessor
+                    = new CronTaskRegisterPostProcessor(lifeStyle, cronTaskRegistrant);
+            postProcessor.setMetadata(metadata);
+            return postProcessor;
+        }
     }
 
-    /*** Quartz cron configuration */
+    /*** Quartz cron auto configuration */
     @ConditionalOnClass({QuartzCronLifeStyle.class, QuartzCronTaskRepository.class})
     @Configuration(proxyBeanMethods = false)
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-    @EnableQuartzCronTaskRegister
-    public static class QuartzCronTaskAutoConfiguration {
+    @EnableConfigurationProperties(QuartzProperties.class)
+    public static class QuartzCronTaskAutoConfiguration implements EnvironmentAware {
+
+        private final Properties properties = new Properties();
+
+        @Override
+        public void setEnvironment(@NotNull Environment environment) {
+            properties.putAll(environment.getProperty("spring.quartz.properties",
+                    HashMap.class, new HashMap<String, String>()));
+        }
+
+        @Bean
+        @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+        public QuartzJobFactory quartzJobFactory() {
+            return new QuartzJobFactory();
+        }
+
+        @Bean
+        @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+        public QuartzCronTaskRegistrant cronTaskRegistrant(QuartzJobFactory jobFactory) {
+            QuartzCronTaskRepository cronTaskRepository = new QuartzCronTaskRepository(properties, jobFactory);
+            return new QuartzCronTaskRegistrant(cronTaskRepository);
+        }
+
+        @Bean(destroyMethod = "stop")
+        @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+        public QuartzCronLifeStyle quartzCronLifeStyle(QuartzCronTaskRegistrant cronTaskRegistrant) {
+            return new QuartzCronLifeStyle(cronTaskRegistrant
+                    .<QuartzCronTaskRepository>getCronTaskRepository().getScheduler());
+        }
+
+        @Bean
+        public QuartzCronTaskRepository quartzCronTaskRepository(QuartzCronTaskRegistrant cronTaskRegistrant) {
+            return cronTaskRegistrant.getCronTaskRepository();
+        }
+
+        @Bean
+        public CronTaskRegisterPostProcessor cronTaskRegisterPostProcessor(QuartzCronLifeStyle lifeStyle,
+                                                                           QuartzCronTaskRegistrant cronTaskRegistrant) {
+            return new CronTaskRegisterPostProcessor(lifeStyle, cronTaskRegistrant);
+        }
     }
 }
