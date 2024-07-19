@@ -18,8 +18,6 @@ package top.osjf.cron.autoconfigure;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.quartz.QuartzProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -100,7 +98,6 @@ public class CronTaskAutoConfiguration {
     @ConditionalOnClass({QuartzCronLifeStyle.class, QuartzCronTaskRepository.class})
     @Configuration(proxyBeanMethods = false)
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-    @EnableConfigurationProperties(QuartzProperties.class)
     public static class QuartzCronTaskAutoConfiguration implements EnvironmentAware {
 
         private final Properties properties = new Properties();
