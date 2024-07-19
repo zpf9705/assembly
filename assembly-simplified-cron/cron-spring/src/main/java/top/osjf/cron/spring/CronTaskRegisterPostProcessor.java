@@ -70,10 +70,29 @@ public class CronTaskRegisterPostProcessor implements ImportAware,
 
     private final CronTaskRegistrant cronTaskRegistrant;
 
+    /**
+     * The construction methods of dependency lifecycle interface and registration
+     * interface are used to complete registration tasks and startup. This special
+     * bean depends on other objects, which will cause it to lose its automatic proxy
+     * function. Please mark the dependent bean as {@link BeanDefinition#ROLE_INFRASTRUCTURE}
+     * or use lazy loading {@link org.springframework.context.annotation.Lazy}.
+     *
+     * @param lifeStyle          Lifecycle implementation bean.
+     * @param cronTaskRegistrant Task registration implementation bean.
+     */
     public CronTaskRegisterPostProcessor(LifeStyle lifeStyle,
                                          CronTaskRegistrant cronTaskRegistrant) {
         this.lifeStyle = lifeStyle;
         this.cronTaskRegistrant = cronTaskRegistrant;
+    }
+
+    /**
+     * Manually set startup metadata.
+     *
+     * @param metadata startup metadata.
+     */
+    public void setMetadata(Map<String, Object> metadata) {
+        this.metadata = metadata;
     }
 
     @Override
