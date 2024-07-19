@@ -16,12 +16,19 @@
 
 package top.osjf.cron.spring;
 
+import cn.hutool.core.util.ReflectUtil;
 import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.core.env.Environment;
 import top.osjf.cron.core.repository.CronTaskRepository;
+import top.osjf.cron.spring.annotation.Cron;
 import top.osjf.cron.spring.annotation.CronAnnotationAttributes;
 
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Abstract {@link CronTaskRegistrant} provides some common constructs
@@ -64,6 +71,68 @@ public abstract class AbstractCronTaskRegistrant implements CronTaskRegistrant {
      */
     protected CronAnnotationAttributes getCronAttribute(AnnotatedElement element) {
         return CronAnnotationAttributes.of(element);
+    }
+
+    /**
+     * The generics applicable to {@link CronTaskRepository} are the
+     * registration processing of {@link String} and {@link Runnable}.
+     *
+     * @param realBeanType {@inheritDoc}
+     * @param bean         {@inheritDoc}
+     * @param environment  {@inheritDoc}
+     * @throws Exception {@inheritDoc}
+     */
+    @Override
+    public void register(Class<?> realBeanType, Object bean, Environment environment) throws Exception {
+        CronTaskRepository<String, Runnable> sRCronTaskRepository = getCronTaskRepository();
+        String[] activeProfiles = environment.getActiveProfiles();
+        for (AnnotatedElement element : findAndFilterAnnotatedElements(realBeanType)) {
+            CronAnnotationAttributes cronAttribute = getCronAttribute(element);
+            String expression = cronAttribute.getExpression();
+            Runnable rab = createRunnable(bean, element);
+            if (ArrayUtils.isEmpty(activeProfiles)) {
+                //When the environment is not activated, it indicates that
+                // everything is applicable and can be registered directly.
+                sRCronTaskRepository.register(expression, rab);
+            } else {
+                if (profilesCheck(cronAttribute.getProfiles(), activeProfiles)) {
+                    sRCronTaskRepository.register(expression, rab);
+                }
+            }
+        }
+    }
+
+    /**
+     * Return the collected and filtered {@link AnnotatedElement} collection.
+     *
+     * <p>This method defaults to {@link Method} executor.
+     *
+     * @param realBeanType {@link #register}.
+     * @return the collected and filtered {@link AnnotatedElement} collection.
+     */
+    protected List<AnnotatedElement> findAndFilterAnnotatedElements(Class<?> realBeanType) {
+        return Arrays.stream(realBeanType.getDeclaredMethods())
+                .filter(method -> {
+                    int modifiers = method.getModifiers();
+                    return method.isAnnotationPresent(Cron.class)
+                            && !Modifier.isStatic(modifiers)
+                            && Modifier.isPublic(modifiers);
+                }).collect(Collectors.toList());
+    }
+
+    /**
+     * Create a runtime {@link Runnable} based on the currently
+     * accessed bean and {@link AnnotatedElement}.
+     *
+     * <p>This method defaults to {@link Method} executor.
+     *
+     * @param bean    {@link #register}.
+     * @param element program elements that can carry annotations.
+     * @return a runtime {@link Runnable}.
+     */
+    protected Runnable createRunnable(Object bean, AnnotatedElement element) {
+        Method method = (Method) element;
+        return () -> ReflectUtil.invoke(bean, method);
     }
 
     /**
