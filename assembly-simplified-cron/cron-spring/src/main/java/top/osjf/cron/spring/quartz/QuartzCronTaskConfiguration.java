@@ -44,7 +44,7 @@ public class QuartzCronTaskConfiguration {
 
     @Bean
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-    public QuartzCronTaskRegistrant cronTaskRegistrant(QuartzJobFactory jobFactory) {
+    public QuartzCronTaskRegistrant quartzCronTaskRegistrant(QuartzJobFactory jobFactory) {
         QuartzCronTaskRepository cronTaskRepository =
                 new QuartzCronTaskRepository(null, jobFactory);
         return new QuartzCronTaskRegistrant(cronTaskRepository);
