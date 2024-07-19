@@ -38,11 +38,26 @@ public class Cron4jCronTaskRepository implements CronTaskRepository<String, Runn
     /*** scheduler management*/
     private final Scheduler scheduler;
 
-    /*** The construction method of scheduler management class {@link Scheduler}.*/
+    /*** The construction method of scheduler management class {@link Scheduler}
+     * @param scheduler scheduler management.
+     **/
     public Cron4jCronTaskRepository(@NotNull Scheduler scheduler) {
         this.scheduler = scheduler;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Cron4j itself does not support cron expressions precise to seconds.
+     * The cron expression of cron4j allows a maximum of 5 parts, each
+     * separated by a space, representing "minute", "hour", "day", "month",
+     * "week" from left to right, and does not include the second part.
+     *
+     * @param cronExpression {@inheritDoc}
+     * @param runnable       {@inheritDoc}
+     * @return {@inheritDoc}
+     * @throws Exception {@inheritDoc}
+     */
     @Override
     public String register(String cronExpression, Runnable runnable) throws Exception {
         try {
@@ -53,6 +68,18 @@ public class Cron4jCronTaskRepository implements CronTaskRepository<String, Runn
         return scheduler.schedule(cronExpression, runnable);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Cron4j itself does not support cron expressions precise to seconds.
+     * The cron expression of cron4j allows a maximum of 5 parts, each
+     * separated by a space, representing "minute", "hour", "day", "month",
+     * "week" from left to right, and does not include the second part.
+     *
+     * @param taskId            {@inheritDoc}
+     * @param newCronExpression {@inheritDoc}
+     * @throws Exception {@inheritDoc}
+     */
     @Override
     public void update(String taskId, String newCronExpression) throws Exception {
         if (scheduler.getTask(taskId) == null) {
