@@ -16,16 +16,8 @@
 
 package top.osjf.cron.spring.hutool;
 
-import cn.hutool.core.util.ReflectUtil;
-import org.apache.commons.lang3.ArrayUtils;
-import org.springframework.core.env.Environment;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
 import top.osjf.cron.spring.AbstractCronTaskRegistrant;
-import top.osjf.cron.spring.annotation.Cron;
-import top.osjf.cron.spring.annotation.CronAnnotationAttributes;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 
 /**
  * Hutool of scheduled task registration actors.
@@ -37,35 +29,5 @@ public class HutoolCronTaskRegistrant extends AbstractCronTaskRegistrant {
 
     public HutoolCronTaskRegistrant(HutoolCronTaskRepository cronTaskRepository) {
         super(cronTaskRepository);
-    }
-
-    @Override
-    public void register(Class<?> realBeanType, Object bean, Environment environment) throws Exception {
-        Method[] methods = realBeanType.getDeclaredMethods();
-        String[] activeProfiles = environment.getActiveProfiles();
-        //Determine if there is a timing method.
-        for (Method method : methods) {
-            if (!method.isAnnotationPresent(Cron.class)
-                    || Modifier.isStatic(method.getModifiers()) || !Modifier.isPublic(method.getModifiers())) {
-                continue;
-            }
-            CronAnnotationAttributes cronAttribute = getCronAttribute(method);
-            String expression = cronAttribute.getExpression();
-            Runnable rab = () -> ReflectUtil.invoke(bean, method);
-            if (ArrayUtils.isEmpty(activeProfiles)) {
-                //When the environment is not activated, it indicates that
-                // everything is applicable and can be registered directly.
-                register0(expression, rab);
-            } else {
-                if (profilesCheck(cronAttribute.getProfiles(), activeProfiles)) {
-                    register0(expression, rab);
-                }
-            }
-        }
-    }
-
-    void register0(String expression, Runnable runnable) throws Exception {
-        HutoolCronTaskRepository cronTaskRepository = getCronTaskRepository();
-        cronTaskRepository.register(expression, runnable);
     }
 }
