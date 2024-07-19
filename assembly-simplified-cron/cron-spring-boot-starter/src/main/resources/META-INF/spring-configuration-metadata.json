@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "hutool.cron.match-second",
+      "type": "java.lang.Boolean",
+      "description": "Whether to support second matching."
+    },
+    {
+      "name": "hutool.cron.daemon",
+      "type": "java.lang.Boolean",
+      "description": "Whether to start as a daemon thread."
+    }
+  ] }
