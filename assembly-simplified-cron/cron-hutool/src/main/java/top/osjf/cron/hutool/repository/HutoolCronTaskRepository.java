@@ -20,6 +20,7 @@ import cn.hutool.cron.CronException;
 import cn.hutool.cron.CronUtil;
 import cn.hutool.cron.Scheduler;
 import cn.hutool.cron.pattern.CronPattern;
+import cn.hutool.cron.pattern.parser.PatternParser;
 import top.osjf.cron.core.annotation.NotNull;
 import top.osjf.cron.core.exception.CronExpressionInvalidException;
 import top.osjf.cron.core.exception.CronTaskNoExistException;
@@ -47,7 +48,7 @@ public class HutoolCronTaskRepository implements CronTaskRepository<String, Runn
     @Override
     public String register(String cronExpression, Runnable runnable) throws Exception {
         try {
-            CronPattern.of(cronExpression);
+            PatternParser.parse(cronExpression);
         } catch (CronException e) {
             throw new CronExpressionInvalidException(cronExpression, e);
         }
