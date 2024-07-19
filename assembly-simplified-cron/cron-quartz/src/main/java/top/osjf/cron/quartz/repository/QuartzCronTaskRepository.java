@@ -52,10 +52,10 @@ public class QuartzCronTaskRepository implements CronTaskRepository<JobKey, JobD
      * @param properties {@link StdSchedulerFactory} configuration properties.
      * @param jobFactory Quartz task production factory.
      */
-    public QuartzCronTaskRepository(Properties properties, @Nullable JobFactory jobFactory) {
-        StdSchedulerFactory schedulerFactory = new StdSchedulerFactory();
+    public QuartzCronTaskRepository(@Nullable Properties properties, @Nullable JobFactory jobFactory) {
+        if (properties == null) properties = System.getProperties();
         try {
-            getScheduler(schedulerFactory, properties);
+            getScheduler(new StdSchedulerFactory(), properties);
             if (jobFactory != null) {
                 scheduler.setJobFactory(jobFactory);
             }
