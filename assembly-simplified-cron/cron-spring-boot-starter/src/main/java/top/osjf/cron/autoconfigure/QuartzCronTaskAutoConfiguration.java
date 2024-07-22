@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
 import top.osjf.cron.quartz.lifestyle.QuartzCronLifeStyle;
 import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
-import top.osjf.cron.spring.quartz.QuartzCronTaskRegistrant;
+import top.osjf.cron.spring.quartz.QuartzCronTaskRealRegistrant;
 import top.osjf.cron.spring.quartz.QuartzJobFactory;
 
 import java.util.HashMap;
@@ -60,8 +60,8 @@ public class QuartzCronTaskAutoConfiguration extends AbstractImplsCommonConfigur
     }
 
     @Bean
-    public QuartzCronTaskRegistrant quartzCronTaskRegistrant(QuartzCronTaskRepository quartzCronTaskRepository) {
-        return new QuartzCronTaskRegistrant(quartzCronTaskRepository);
+    public QuartzCronTaskRealRegistrant quartzCronTaskRealRegistrant(QuartzCronTaskRepository quartzCronTaskRepository) {
+        return new QuartzCronTaskRealRegistrant(quartzCronTaskRepository);
     }
 
     @Bean(destroyMethod = "stop")

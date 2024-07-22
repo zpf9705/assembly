@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Role;
 import org.springframework.core.env.Environment;
 import top.osjf.cron.hutool.lifestyle.HutoolCronLifeStyle;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
-import top.osjf.cron.spring.hutool.HutoolCronTaskRegistrant;
+import top.osjf.cron.spring.hutool.HutoolCronTaskRealRegistrant;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -68,7 +68,7 @@ public class HutoolCronTaskAutoConfiguration extends AbstractImplsCommonConfigur
     }
 
     @Bean
-    public HutoolCronTaskRegistrant hutoolCronTaskRegistrant(HutoolCronTaskRepository hutoolCronTaskRepository) {
-        return new HutoolCronTaskRegistrant(hutoolCronTaskRepository);
+    public HutoolCronTaskRealRegistrant hutoolCronTaskRealRegistrant(HutoolCronTaskRepository hutoolCronTaskRepository) {
+        return new HutoolCronTaskRealRegistrant(hutoolCronTaskRepository);
     }
 }

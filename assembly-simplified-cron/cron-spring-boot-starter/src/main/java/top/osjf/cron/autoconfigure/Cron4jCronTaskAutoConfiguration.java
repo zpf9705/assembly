@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Role;
 import org.springframework.core.env.Environment;
 import top.osjf.cron.cron4j.lifestyle.Cron4jCronLifeStyle;
 import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
-import top.osjf.cron.spring.cron4j.Cron4jCronTaskRegistrant;
+import top.osjf.cron.spring.cron4j.Cron4jCronTaskRealRegistrant;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -37,7 +37,7 @@ import java.util.Map;
  * @since 1.0.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({Cron4jCronLifeStyle.class, Cron4jCronTaskRegistrant.class})
+@ConditionalOnClass({Cron4jCronLifeStyle.class, Cron4jCronTaskRepository.class})
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 public class Cron4jCronTaskAutoConfiguration extends AbstractImplsCommonConfiguration implements InitializingBean {
 
@@ -68,7 +68,7 @@ public class Cron4jCronTaskAutoConfiguration extends AbstractImplsCommonConfigur
     }
 
     @Bean
-    public Cron4jCronTaskRegistrant cron4jCronTaskRegistrant(Cron4jCronTaskRepository cron4jCronTaskRepository) {
-        return new Cron4jCronTaskRegistrant(cron4jCronTaskRepository);
+    public Cron4jCronTaskRealRegistrant cron4jCronTaskRealRegistrant(Cron4jCronTaskRepository cron4jCronTaskRepository) {
+        return new Cron4jCronTaskRealRegistrant(cron4jCronTaskRepository);
     }
 }
