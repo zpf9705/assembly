@@ -16,6 +16,7 @@
 
 package top.osjf.cron.spring;
 
+import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.AopProxyUtils;
@@ -72,15 +73,17 @@ public class CronTaskRegisterPostProcessor implements ImportAware, ApplicationCo
 
     private Environment environment;
 
-    private Map<String, Object> metadata = new LinkedHashMap<>();
+    private final Map<String, Object> metadata = new LinkedHashMap<>();
 
     /**
      * Manually set startup metadata.
      *
      * @param metadata startup metadata.
      */
-    public void setMetadata(Map<String, Object> metadata) {
-        this.metadata = metadata;
+    public void setMetadata(@Nullable Map<String, Object> metadata) {
+        if (MapUtils.isNotEmpty(metadata)){
+            this.metadata.putAll(metadata);
+        }
     }
 
     @Override
