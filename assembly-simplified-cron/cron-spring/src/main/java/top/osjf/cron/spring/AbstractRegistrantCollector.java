@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public abstract class AbstractRegistrantCollector implements RegistrantCollector, Closeable {
+public abstract class AbstractRegistrantCollector implements RegistrantCollector {
 
     /*** The temporary collection set of {@link Registrant}. */
     private final List<Registrant> registrants = new ArrayList<>();
@@ -89,10 +89,9 @@ public abstract class AbstractRegistrantCollector implements RegistrantCollector
      * @param realBeanType {@inheritDoc}
      * @param bean         {@inheritDoc}
      * @param environment  {@inheritDoc}
-     * @throws Exception {@inheritDoc}
      */
     @Override
-    public void add(Class<?> realBeanType, Object bean, Environment environment) throws Exception {
+    public void add(Class<?> realBeanType, Object bean, Environment environment) {
         String[] activeProfiles = environment.getActiveProfiles();
         for (AnnotatedElement element : findAndFilterAnnotatedElements(realBeanType)) {
             CronAnnotationAttributes cronAttribute = getCronAttribute(element);

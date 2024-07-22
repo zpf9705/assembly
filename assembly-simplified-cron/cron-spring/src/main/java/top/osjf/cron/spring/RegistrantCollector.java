@@ -18,6 +18,7 @@ package top.osjf.cron.spring;
 
 import org.springframework.core.env.Environment;
 
+import java.io.Closeable;
 import java.util.Iterator;
 
 /**
@@ -26,7 +27,7 @@ import java.util.Iterator;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public interface RegistrantCollector extends Iterator<Registrant> {
+public interface RegistrantCollector extends Iterator<Registrant>, Closeable {
 
     /**
      * Add a scheduled task based on the bean's conditions.
