@@ -47,8 +47,8 @@ public class QuartzCronTaskConfiguration {
     }
 
     @Bean
-    public QuartzCronTaskRegistrant quartzCronTaskRegistrant(QuartzCronTaskRepository quartzCronTaskRepository) {
-        return new QuartzCronTaskRegistrant(quartzCronTaskRepository);
+    public QuartzCronTaskRealRegistrant quartzCronTaskRealRegistrant(QuartzCronTaskRepository quartzCronTaskRepository) {
+        return new QuartzCronTaskRealRegistrant(quartzCronTaskRepository);
     }
 
     @Bean(destroyMethod = "stop")
