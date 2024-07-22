@@ -35,6 +35,7 @@ public class QuartzCronLifeStyle implements LifeStyle {
 
     /**
      * Construct for create {@link QuartzCronLifeStyle} using a {@link Scheduler}.
+     *
      * @param scheduler {@link Scheduler}.
      */
     public QuartzCronLifeStyle(@NotNull Scheduler scheduler) {
@@ -51,23 +52,20 @@ public class QuartzCronLifeStyle implements LifeStyle {
     }
 
     @Override
-    public void restart() throws CronLifeStyleException {
+    public void stop() throws CronLifeStyleException {
         try {
-            if (scheduler.isStarted()) {
-                stop();
-            }
-            start();
+            scheduler.shutdown(true);
         } catch (SchedulerException e) {
             throw new CronLifeStyleException(e);
         }
     }
 
     @Override
-    public void stop() throws CronLifeStyleException {
+    public boolean isStarted() {
         try {
-            scheduler.shutdown(true);
+            return scheduler.isStarted();
         } catch (SchedulerException e) {
-            throw new CronLifeStyleException(e);
+            return false;
         }
     }
 }
