@@ -26,6 +26,7 @@ import org.springframework.core.env.Environment;
 import top.osjf.cron.hutool.lifestyle.HutoolCronLifeStyle;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
 import top.osjf.cron.spring.hutool.HutoolCronTaskRealRegistrant;
+import top.osjf.cron.spring.hutool.HutoolRegistrantCollector;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -55,6 +56,11 @@ public class HutoolCronTaskAutoConfiguration extends AbstractImplsCommonConfigur
     @Override
     public Map<String, Object> getMetadata() {
         return metadata;
+    }
+
+    @Bean
+    public HutoolRegistrantCollector hutoolRegistrantCollector(){
+        return new HutoolRegistrantCollector();
     }
 
     @Bean(destroyMethod = "stop")

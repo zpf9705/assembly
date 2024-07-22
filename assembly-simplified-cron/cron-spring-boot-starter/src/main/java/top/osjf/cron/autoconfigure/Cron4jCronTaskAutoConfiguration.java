@@ -26,6 +26,7 @@ import org.springframework.core.env.Environment;
 import top.osjf.cron.cron4j.lifestyle.Cron4jCronLifeStyle;
 import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
 import top.osjf.cron.spring.cron4j.Cron4jCronTaskRealRegistrant;
+import top.osjf.cron.spring.cron4j.Cron4jRegistrantCollector;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -55,6 +56,11 @@ public class Cron4jCronTaskAutoConfiguration extends AbstractImplsCommonConfigur
     @Override
     public Map<String, Object> getMetadata() {
         return metadata;
+    }
+
+    @Bean
+    public Cron4jRegistrantCollector cron4jRegistrantCollector(){
+        return new Cron4jRegistrantCollector();
     }
 
     @Bean

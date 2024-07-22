@@ -26,6 +26,7 @@ import top.osjf.cron.quartz.lifestyle.QuartzCronLifeStyle;
 import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
 import top.osjf.cron.spring.quartz.QuartzCronTaskRealRegistrant;
 import top.osjf.cron.spring.quartz.QuartzJobFactory;
+import top.osjf.cron.spring.quartz.QuartzRegistrantCollector;
 
 import java.util.HashMap;
 import java.util.Properties;
@@ -47,6 +48,11 @@ public class QuartzCronTaskAutoConfiguration extends AbstractImplsCommonConfigur
     public void afterPropertiesSet() {
         properties.putAll(getEnvironment().getProperty("spring.quartz.properties",
                 HashMap.class, new HashMap<String, String>()));
+    }
+
+    @Bean
+    public QuartzRegistrantCollector quartzRegistrantCollector(){
+        return new QuartzRegistrantCollector();
     }
 
     @Bean
