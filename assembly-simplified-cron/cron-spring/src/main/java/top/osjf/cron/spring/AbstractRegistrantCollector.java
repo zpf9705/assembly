@@ -24,7 +24,6 @@ import top.osjf.cron.spring.annotation.Cron;
 import top.osjf.cron.spring.annotation.CronAnnotationAttributes;
 import top.osjf.cron.spring.cron4j.Cron4jRegistrantCollector;
 
-import java.io.Closeable;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
