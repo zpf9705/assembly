@@ -37,6 +37,11 @@ import top.osjf.cron.spring.CronTaskRegisterPostProcessor;
 public class QuartzCronTaskConfiguration {
 
     @Bean
+    public QuartzRegistrantCollector quartzRegistrantCollector(){
+        return new QuartzRegistrantCollector();
+    }
+
+    @Bean
     public QuartzJobFactory quartzJobFactory() {
         return new QuartzJobFactory();
     }

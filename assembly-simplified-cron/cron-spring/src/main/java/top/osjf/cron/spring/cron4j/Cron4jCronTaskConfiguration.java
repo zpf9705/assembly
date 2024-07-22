@@ -36,6 +36,11 @@ import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
 public class Cron4jCronTaskConfiguration {
 
     @Bean
+    public Cron4jRegistrantCollector cron4jRegistrantCollector(){
+        return new Cron4jRegistrantCollector();
+    }
+
+    @Bean
     public Cron4jCronTaskRepository cron4jCronTaskRepository() {
         return new Cron4jCronTaskRepository();
     }
