@@ -31,7 +31,7 @@ import java.util.List;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class CronListenerRegistrant implements InitializingBean {
 
     private final CronListenerRepository cronListenerRepository;
@@ -48,7 +48,6 @@ public class CronListenerRegistrant implements InitializingBean {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void afterPropertiesSet() throws Exception {
         if (CollectionUtils.isNotEmpty(cronListeners)) {
             cronListenerRepository.addCronListeners(cronListeners);
