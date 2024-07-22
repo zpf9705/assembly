@@ -28,8 +28,8 @@ import top.osjf.cron.spring.CronTaskRegisterPostProcessor;
  * Regarding the configuration classes related to scheduled task
  * registration for Quartz.
  *
- * @see EnableQuartzCronTaskRegister
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
+ * @see EnableQuartzCronTaskRegister
  * @since 1.0.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -42,19 +42,18 @@ public class QuartzCronTaskConfiguration {
     }
 
     @Bean
-    public QuartzCronTaskRegistrant quartzCronTaskRegistrant(QuartzJobFactory jobFactory) {
-        QuartzCronTaskRepository cronTaskRepository = new QuartzCronTaskRepository(null, jobFactory);
-        return new QuartzCronTaskRegistrant(cronTaskRepository);
-    }
-
-    @Bean(destroyMethod = "stop")
-    public QuartzCronLifeStyle quartzCronLifeStyle(QuartzCronTaskRegistrant cronTaskRegistrant) {
-        return new QuartzCronLifeStyle(cronTaskRegistrant.<QuartzCronTaskRepository>getCronTaskRepository().getScheduler());
+    public QuartzCronTaskRepository quartzCronTaskRepository(QuartzJobFactory quartzJobFactory) {
+        return new QuartzCronTaskRepository(null, quartzJobFactory);
     }
 
     @Bean
-    public QuartzCronTaskRepository quartzCronTaskRepository(QuartzCronTaskRegistrant cronTaskRegistrant) {
-        return cronTaskRegistrant.getCronTaskRepository();
+    public QuartzCronTaskRegistrant quartzCronTaskRegistrant(QuartzCronTaskRepository quartzCronTaskRepository) {
+        return new QuartzCronTaskRegistrant(quartzCronTaskRepository);
+    }
+
+    @Bean(destroyMethod = "stop")
+    public QuartzCronLifeStyle quartzCronLifeStyle(QuartzCronTaskRepository quartzCronTaskRepository) {
+        return new QuartzCronLifeStyle(quartzCronTaskRepository.getScheduler());
     }
 
     @Bean
