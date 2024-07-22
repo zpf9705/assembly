@@ -27,8 +27,8 @@ import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
  * Regarding the configuration classes related to scheduled task
  * registration for hutool.
  *
- * @see EnableHutoolCronTaskRegister
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
+ * @see EnableHutoolCronTaskRegister
  * @since 1.0.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -46,7 +46,7 @@ public class HutoolCronTaskConfiguration {
     }
 
     @Bean
-    public HutoolCronTaskRegistrant hutoolCronTaskRegistrant(HutoolCronTaskRepository hutoolCronTaskRepository) {
-        return new HutoolCronTaskRegistrant(hutoolCronTaskRepository);
+    public HutoolCronTaskRealRegistrant hutoolCronTaskRealRegistrant(HutoolCronTaskRepository hutoolCronTaskRepository) {
+        return new HutoolCronTaskRealRegistrant(hutoolCronTaskRepository);
     }
 }
