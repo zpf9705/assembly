@@ -111,6 +111,7 @@ public class RecordServiceContext extends AbstractServiceContext implements Init
         @Override
         public void postProcessBeanFactory(@NonNull ConfigurableListableBeanFactory beanFactory)
                 throws BeansException {
+            beanFactory.registerScope(ServiceContextUtils.SERVICE_SCOPE, new ServiceScope());
         }
     }
 }

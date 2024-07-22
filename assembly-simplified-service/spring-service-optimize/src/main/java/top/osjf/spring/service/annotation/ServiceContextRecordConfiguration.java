@@ -16,10 +16,7 @@
 
 package top.osjf.spring.service.annotation;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
@@ -27,7 +24,10 @@ import org.springframework.context.annotation.*;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.lang.NonNull;
 import top.osjf.spring.service.ServiceContextUtils;
-import top.osjf.spring.service.context.*;
+import top.osjf.spring.service.context.AbstractServiceContext;
+import top.osjf.spring.service.context.RecordServiceContext;
+import top.osjf.spring.service.context.ServiceContext;
+import top.osjf.spring.service.context.ServiceContextAwareBeanPostProcessor;
 
 /**
  * The import configuration of {@link EnableServiceCollection} annotations, based on the storage name of
@@ -39,7 +39,7 @@ import top.osjf.spring.service.context.*;
  */
 @Configuration(proxyBeanMethods = false)
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-public class ServiceContextRecordConfiguration implements BeanFactoryPostProcessor {
+public class ServiceContextRecordConfiguration {
 
     @Bean(ServiceContextUtils.RECORD_BEAN_NAME)
     public ServiceContext serviceContext() {
@@ -53,11 +53,6 @@ public class ServiceContextRecordConfiguration implements BeanFactoryPostProcess
             @Lazy //Here, lazy loading is used to prevent dependent beans from losing the function of AOP weaving.
             ServiceContext serviceContext) {
         return new ServiceContextAwareBeanPostProcessor(serviceContext);
-    }
-
-    @Override
-    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-        beanFactory.registerScope(ServiceContextUtils.SERVICE_SCOPE, new ServiceScope());
     }
 
     /**
