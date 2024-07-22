@@ -41,13 +41,12 @@ public class HutoolCronTaskConfiguration {
     }
 
     @Bean
-    public HutoolCronTaskRegistrant hutoolCronTaskRegistrant() {
-        HutoolCronTaskRepository hutoolCronTaskRepository = new HutoolCronTaskRepository();
-        return new HutoolCronTaskRegistrant(hutoolCronTaskRepository);
+    public HutoolCronTaskRepository hutoolCronTaskRepository() {
+        return new HutoolCronTaskRepository();
     }
 
     @Bean
-    public HutoolCronTaskRepository hutoolCronTaskRepository(HutoolCronTaskRegistrant cronTaskRegistrant) {
-        return cronTaskRegistrant.getCronTaskRepository();
+    public HutoolCronTaskRegistrant hutoolCronTaskRegistrant(HutoolCronTaskRepository hutoolCronTaskRepository) {
+        return new HutoolCronTaskRegistrant(hutoolCronTaskRepository);
     }
 }
