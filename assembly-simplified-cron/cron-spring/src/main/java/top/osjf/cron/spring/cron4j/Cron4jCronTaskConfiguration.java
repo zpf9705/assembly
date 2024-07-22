@@ -27,8 +27,8 @@ import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
  * Regarding the configuration classes related to scheduled task
  * registration for Cron4j.
  *
- * @see EnableCron4jCronTaskRegister
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
+ * @see EnableCron4jCronTaskRegister
  * @since 1.0.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -46,7 +46,7 @@ public class Cron4jCronTaskConfiguration {
     }
 
     @Bean
-    public Cron4jCronTaskRegistrant cron4jCronTaskRegistrant(Cron4jCronTaskRepository cron4jCronTaskRepository) {
-        return new Cron4jCronTaskRegistrant(cron4jCronTaskRepository);
+    public Cron4jCronTaskRealRegistrant cron4jCronTaskRealRegistrant(Cron4jCronTaskRepository cron4jCronTaskRepository) {
+        return new Cron4jCronTaskRealRegistrant(cron4jCronTaskRepository);
     }
 }
