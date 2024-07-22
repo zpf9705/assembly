@@ -23,43 +23,91 @@ import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.spring.annotation.Cron;
 import top.osjf.cron.spring.annotation.CronAnnotationAttributes;
 
+import java.io.Closeable;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Abstract {@link CronTaskRegistrant} provides some common constructs
- * and methods for subclasses.
+ * Abstract {@link RegistrantCollector}, extract common methods, and use default
+ * {@link RunnableRegistrant} to add task classes to be registered.
+ *
+ * <p>Regarding the registration criteria for scheduled tasks, including the judgment
+ * of environment specified in the {@link Cron} annotation, the default {@link Registrant}
+ * mentioned above does not meet the requirements and can be further overridden by subclasses.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-@SuppressWarnings("rawtypes")
-public abstract class AbstractCronTaskRegistrant implements CronTaskRegistrant {
+public abstract class AbstractRegistrantCollector implements RegistrantCollector, Closeable {
 
-    private final CronTaskRepository cronTaskRepository;
+    /*** The temporary collection set of {@link Registrant}. */
+    private final List<Registrant> registrants = new ArrayList<>();
 
     /**
-     * Construct within {@link CronTaskRepository} to be a {@link CronTaskRegistrant}.
+     * Return the temporary collection of {@link Registrant}.
      *
-     * @param cronTaskRepository Scheduled task resource operation class.
+     * @return collection of {@link Registrant}.
      */
-    public AbstractCronTaskRegistrant(CronTaskRepository cronTaskRepository) {
-        this.cronTaskRepository = cronTaskRepository;
+    public List<Registrant> getRegistrants() {
+        return registrants;
+    }
+
+    @Override
+    public void close() {
+        registrants.clear();
+    }
+
+    @Override
+    public boolean hasNext() {
+        return registrants.iterator().hasNext();
+    }
+
+    @Override
+    public Registrant next() {
+        return registrants.iterator().next();
     }
 
     /**
-     * Return the timed task resource operation interface.
+     * The generics applicable to {@link CronTaskRepository} are the
+     * registration processing of {@link String} and {@link Runnable}.
      *
-     * @param <T> Specific types of resources.
-     * @return timed task resource operation interface.
+     * @param realBeanType {@inheritDoc}
+     * @param bean         {@inheritDoc}
+     * @param environment  {@inheritDoc}
+     * @throws Exception {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
-    public <T extends CronTaskRepository> T getCronTaskRepository() {
-        return (T) cronTaskRepository;
+    @Override
+    public void add(Class<?> realBeanType, Object bean, Environment environment) throws Exception {
+        String[] activeProfiles = environment.getActiveProfiles();
+        for (AnnotatedElement element : findAndFilterAnnotatedElements(realBeanType)) {
+            CronAnnotationAttributes cronAttribute = getCronAttribute(element);
+            String expression = cronAttribute.getExpression();
+            Runnable rab = createRunnable(bean, element);
+            if (ArrayUtils.isEmpty(activeProfiles)) {
+                //When the environment is not activated, it indicates that
+                // everything is applicable and can be registered directly.
+                addRegistrant(expression, rab);
+            } else {
+                if (profilesCheck(cronAttribute.getProfiles(), activeProfiles)) {
+                    addRegistrant(expression, rab);
+                }
+            }
+        }
+    }
+
+    /**
+     * Add a {@link Registrant}, default to using {@link RunnableRegistrant}.
+     *
+     * @param expression Cron expression.
+     * @param rab        run body.
+     */
+    protected void addRegistrant(String expression, Runnable rab) {
+        getRegistrants().add(new RunnableRegistrant(expression, rab));
     }
 
     /**
@@ -73,41 +121,13 @@ public abstract class AbstractCronTaskRegistrant implements CronTaskRegistrant {
         return CronAnnotationAttributes.of(element);
     }
 
-    /**
-     * The generics applicable to {@link CronTaskRepository} are the
-     * registration processing of {@link String} and {@link Runnable}.
-     *
-     * @param realBeanType {@inheritDoc}
-     * @param bean         {@inheritDoc}
-     * @param environment  {@inheritDoc}
-     * @throws Exception {@inheritDoc}
-     */
-    @Override
-    public void register(Class<?> realBeanType, Object bean, Environment environment) throws Exception {
-        CronTaskRepository<String, Runnable> sRCronTaskRepository = getCronTaskRepository();
-        String[] activeProfiles = environment.getActiveProfiles();
-        for (AnnotatedElement element : findAndFilterAnnotatedElements(realBeanType)) {
-            CronAnnotationAttributes cronAttribute = getCronAttribute(element);
-            String expression = cronAttribute.getExpression();
-            Runnable rab = createRunnable(bean, element);
-            if (ArrayUtils.isEmpty(activeProfiles)) {
-                //When the environment is not activated, it indicates that
-                // everything is applicable and can be registered directly.
-                sRCronTaskRepository.register(expression, rab);
-            } else {
-                if (profilesCheck(cronAttribute.getProfiles(), activeProfiles)) {
-                    sRCronTaskRepository.register(expression, rab);
-                }
-            }
-        }
-    }
 
     /**
      * Return the collected and filtered {@link AnnotatedElement} collection.
      *
      * <p>This method defaults to {@link Method} executor.
      *
-     * @param realBeanType {@link #register}.
+     * @param realBeanType {@link #add}.
      * @return the collected and filtered {@link AnnotatedElement} collection.
      */
     protected List<AnnotatedElement> findAndFilterAnnotatedElements(Class<?> realBeanType) {
@@ -126,7 +146,7 @@ public abstract class AbstractCronTaskRegistrant implements CronTaskRegistrant {
      *
      * <p>This method defaults to {@link Method} executor.
      *
-     * @param bean    {@link #register}.
+     * @param bean    {@link #add}.
      * @param element program elements that can carry annotations.
      * @return a runtime {@link Runnable}.
      */
