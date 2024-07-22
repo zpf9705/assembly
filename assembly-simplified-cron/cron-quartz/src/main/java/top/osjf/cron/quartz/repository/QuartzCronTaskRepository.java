@@ -87,8 +87,9 @@ public class QuartzCronTaskRepository implements CronTaskRepository<JobKey, JobD
         }
         String message = getSchedulerIssue.getMessage();
         if (message.contains("Thread count must be > 0")) {
-            //If the number of threads is not configured, give a default value of 1.
-            properties.setProperty(StdSchedulerFactory.PROP_THREAD_POOL_PREFIX + ".threadCount", "1");
+            //If the number of threads is not configured, give a default value of number of available cores+1.
+            properties.setProperty(StdSchedulerFactory.PROP_THREAD_POOL_PREFIX + ".threadCount",
+                    String.valueOf(Runtime.getRuntime().availableProcessors() + 1));
         }
         schedulerFactory.initialize(properties);
         scheduler = schedulerFactory.getScheduler();
