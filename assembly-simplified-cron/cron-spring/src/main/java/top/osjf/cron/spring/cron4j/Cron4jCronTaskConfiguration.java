@@ -35,20 +35,18 @@ import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 public class Cron4jCronTaskConfiguration {
 
+    @Bean
+    public Cron4jCronTaskRepository cron4jCronTaskRepository() {
+        return new Cron4jCronTaskRepository();
+    }
+
     @Bean(destroyMethod = "stop")
-    public Cron4jCronLifeStyle cron4jCronLifeStyle() {
-        return new Cron4jCronLifeStyle();
+    public Cron4jCronLifeStyle cron4jCronLifeStyle(Cron4jCronTaskRepository cronTaskRepository) {
+        return new Cron4jCronLifeStyle(cronTaskRepository.getScheduler());
     }
 
     @Bean
-    public Cron4jCronTaskRegistrant cron4jCronTaskRegistrant(Cron4jCronLifeStyle cron4jCronLifeStyle) {
-        Cron4jCronTaskRepository cron4jCronTaskRepository
-                = new Cron4jCronTaskRepository(cron4jCronLifeStyle.getScheduler());
+    public Cron4jCronTaskRegistrant cron4jCronTaskRegistrant(Cron4jCronTaskRepository cron4jCronTaskRepository) {
         return new Cron4jCronTaskRegistrant(cron4jCronTaskRepository);
-    }
-
-    @Bean
-    public Cron4jCronTaskRepository cron4jCronTaskRepository(Cron4jCronTaskRegistrant cronTaskRegistrant) {
-        return cronTaskRegistrant.getCronTaskRepository();
     }
 }
