@@ -63,13 +63,12 @@ public class HutoolCronTaskAutoConfiguration extends AbstractImplsCommonConfigur
     }
 
     @Bean
-    public HutoolCronTaskRegistrant cronTaskRegistrant() {
-        HutoolCronTaskRepository hutoolCronTaskRepository = new HutoolCronTaskRepository();
-        return new HutoolCronTaskRegistrant(hutoolCronTaskRepository);
+    public HutoolCronTaskRepository hutoolCronTaskRepository() {
+        return new HutoolCronTaskRepository();
     }
 
     @Bean
-    public HutoolCronTaskRepository cronTaskRepository(HutoolCronTaskRegistrant cronTaskRegistrant) {
-        return cronTaskRegistrant.getCronTaskRepository();
+    public HutoolCronTaskRegistrant hutoolCronTaskRegistrant(HutoolCronTaskRepository hutoolCronTaskRepository) {
+        return new HutoolCronTaskRegistrant(hutoolCronTaskRepository);
     }
 }

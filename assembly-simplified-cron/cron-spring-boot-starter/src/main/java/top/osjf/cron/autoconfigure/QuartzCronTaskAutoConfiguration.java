@@ -55,19 +55,17 @@ public class QuartzCronTaskAutoConfiguration extends AbstractImplsCommonConfigur
     }
 
     @Bean
-    public QuartzCronTaskRegistrant cronTaskRegistrant(QuartzJobFactory jobFactory) {
-        QuartzCronTaskRepository cronTaskRepository = new QuartzCronTaskRepository(properties, jobFactory);
-        return new QuartzCronTaskRegistrant(cronTaskRepository);
-    }
-
-    @Bean(destroyMethod = "stop")
-    public QuartzCronLifeStyle quartzCronLifeStyle(QuartzCronTaskRegistrant cronTaskRegistrant) {
-        return new QuartzCronLifeStyle(cronTaskRegistrant
-                .<QuartzCronTaskRepository>getCronTaskRepository().getScheduler());
+    public QuartzCronTaskRepository quartzCronTaskRepository(QuartzJobFactory quartzJobFactory) {
+        return new QuartzCronTaskRepository(properties, quartzJobFactory);
     }
 
     @Bean
-    public QuartzCronTaskRepository quartzCronTaskRepository(QuartzCronTaskRegistrant cronTaskRegistrant) {
-        return cronTaskRegistrant.getCronTaskRepository();
+    public QuartzCronTaskRegistrant quartzCronTaskRegistrant(QuartzCronTaskRepository quartzCronTaskRepository) {
+        return new QuartzCronTaskRegistrant(quartzCronTaskRepository);
+    }
+
+    @Bean(destroyMethod = "stop")
+    public QuartzCronLifeStyle quartzCronLifeStyle(QuartzCronTaskRepository quartzCronTaskRepository) {
+        return new QuartzCronLifeStyle(quartzCronTaskRepository.getScheduler());
     }
 }
