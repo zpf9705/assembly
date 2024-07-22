@@ -42,7 +42,7 @@ import top.osjf.spring.service.context.ServiceContextAwareBeanPostProcessor;
 public class ServiceContextRecordConfiguration {
 
     @Bean(ServiceContextUtils.RECORD_BEAN_NAME)
-    public ServiceContext serviceContext() {
+    public RecordServiceContext recordServiceContext() {
         return new RecordServiceContext();
     }
 
