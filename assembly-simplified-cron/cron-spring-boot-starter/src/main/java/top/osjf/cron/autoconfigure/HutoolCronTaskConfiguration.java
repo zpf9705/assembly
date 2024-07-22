@@ -40,7 +40,7 @@ import java.util.Map;
 @ConditionalOnClass({HutoolCronLifeStyle.class, HutoolCronTaskRepository.class})
 @Configuration(proxyBeanMethods = false)
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-public class HutoolCronTaskAutoConfiguration extends AbstractImplsCommonConfiguration implements InitializingBean {
+public class HutoolCronTaskConfiguration extends AbstractImplsCommonConfiguration implements InitializingBean {
 
     private final Map<String, Object> metadata = new LinkedHashMap<>();
 

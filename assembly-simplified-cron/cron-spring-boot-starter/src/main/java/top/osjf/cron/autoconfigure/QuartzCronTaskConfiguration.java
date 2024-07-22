@@ -40,7 +40,7 @@ import java.util.Properties;
 @ConditionalOnClass({QuartzCronLifeStyle.class, QuartzCronTaskRepository.class})
 @Configuration(proxyBeanMethods = false)
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-public class QuartzCronTaskAutoConfiguration extends AbstractImplsCommonConfiguration implements InitializingBean {
+public class QuartzCronTaskConfiguration extends AbstractImplsCommonConfiguration implements InitializingBean {
 
     private final Properties properties = new Properties();
 

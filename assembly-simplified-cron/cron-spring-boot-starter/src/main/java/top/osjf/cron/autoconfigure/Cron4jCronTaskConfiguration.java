@@ -40,7 +40,7 @@ import java.util.Map;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({Cron4jCronLifeStyle.class, Cron4jCronTaskRepository.class})
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-public class Cron4jCronTaskAutoConfiguration extends AbstractImplsCommonConfiguration implements InitializingBean {
+public class Cron4jCronTaskConfiguration extends AbstractImplsCommonConfiguration implements InitializingBean {
 
     private final Map<String, Object> metadata = new LinkedHashMap<>();
 
