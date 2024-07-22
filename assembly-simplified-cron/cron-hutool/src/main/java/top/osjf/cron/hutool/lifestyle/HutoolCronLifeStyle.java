@@ -38,27 +38,12 @@ public class HutoolCronLifeStyle implements LifeStyle {
     }
 
     @Override
-    public void restart() throws CronLifeStyleException {
-        doLifeStyle(CronUtil::restart);
-    }
-
-    @Override
     public void stop() throws CronLifeStyleException {
         doLifeStyle(CronUtil::stop);
     }
 
-    /**
-     * Execute the default method of {@link LifeStyle}.
-     *
-     * @param runnable Running body.
-     * @throws CronLifeStyleException The scheduled task
-     *                                execution body stop abnormally.
-     */
-    public void doLifeStyle(Runnable runnable) throws CronLifeStyleException {
-        try {
-            runnable.run();
-        } catch (Throwable e) {
-            throw new CronLifeStyleException(e);
-        }
+    @Override
+    public boolean isStarted() {
+        return CronUtil.getScheduler().isStarted();
     }
 }
