@@ -37,18 +37,32 @@ public interface LifeStyle {
     void start(Object... args) throws CronLifeStyleException;
 
     /**
-     * Restart the scheduled task to run the managed component.
-     *
-     * @throws CronLifeStyleException The scheduled task
-     *                                execution body restart abnormally.
-     */
-    void restart() throws CronLifeStyleException;
-
-    /**
      * Close the scheduled task to run the managed component.
      *
      * @throws CronLifeStyleException The scheduled task
      *                                execution body stop abnormally.
      */
     void stop() throws CronLifeStyleException;
+
+    /**
+     * Tests if this scheduler is started.
+     *
+     * @return true if the scheduler is started, false if it is stopped.
+     */
+    boolean isStarted();
+
+    /**
+     * Execute the default method of {@link LifeStyle}.
+     *
+     * @param runnable Running body.
+     * @throws CronLifeStyleException The scheduled task
+     *                                execution body stop abnormally.
+     */
+    default void doLifeStyle(Runnable runnable) throws CronLifeStyleException {
+        try {
+            runnable.run();
+        } catch (Throwable e) {
+            throw new CronLifeStyleException(e);
+        }
+    }
 }
