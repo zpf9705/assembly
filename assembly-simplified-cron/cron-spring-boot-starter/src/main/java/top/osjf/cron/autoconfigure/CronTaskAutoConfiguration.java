@@ -42,7 +42,8 @@ public class CronTaskAutoConfiguration {
     @Bean
     @ConditionalOnBean(CronListenerRepository.class)
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-    public CronListenerRegistrant cronListenerRegistrant() {
-        return new CronListenerRegistrant();
+    @SuppressWarnings("rawtypes")
+    public CronListenerRegistrant cronListenerRegistrant(CronListenerRepository cronListenerRepository) {
+        return new CronListenerRegistrant(cronListenerRepository);
     }
 }
