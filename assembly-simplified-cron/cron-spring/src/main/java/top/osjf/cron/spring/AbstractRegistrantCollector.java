@@ -29,6 +29,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,6 +49,9 @@ public abstract class AbstractRegistrantCollector implements RegistrantCollector
     /*** The temporary collection set of {@link Registrant}. */
     private final List<Registrant> registrants = new ArrayList<>();
 
+    /***  Iterator for {@link #registrants}. */
+    private Iterator<Registrant> iterator;
+
     /**
      * Return the temporary collection of {@link Registrant}.
      *
@@ -57,6 +61,11 @@ public abstract class AbstractRegistrantCollector implements RegistrantCollector
         return registrants;
     }
 
+    Iterator<Registrant> getIterator() {
+        if (iterator == null) iterator = registrants.iterator();
+        return iterator;
+    }
+
     @Override
     public void close() {
         registrants.clear();
@@ -64,12 +73,12 @@ public abstract class AbstractRegistrantCollector implements RegistrantCollector
 
     @Override
     public boolean hasNext() {
-        return registrants.iterator().hasNext();
+        return getIterator().hasNext();
     }
 
     @Override
     public Registrant next() {
-        return registrants.iterator().next();
+        return getIterator().next();
     }
 
     /**
