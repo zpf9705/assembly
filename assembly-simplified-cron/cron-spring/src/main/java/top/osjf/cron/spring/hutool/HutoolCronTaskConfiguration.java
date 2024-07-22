@@ -36,13 +36,11 @@ import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
 public class HutoolCronTaskConfiguration {
 
     @Bean(destroyMethod = "stop")
-    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     public HutoolCronLifeStyle hutoolCronLifeStyle() {
         return new HutoolCronLifeStyle();
     }
 
     @Bean
-    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     public HutoolCronTaskRegistrant hutoolCronTaskRegistrant() {
         HutoolCronTaskRepository hutoolCronTaskRepository = new HutoolCronTaskRepository();
         return new HutoolCronTaskRegistrant(hutoolCronTaskRepository);

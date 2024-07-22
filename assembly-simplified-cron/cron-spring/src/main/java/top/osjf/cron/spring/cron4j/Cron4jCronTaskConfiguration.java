@@ -36,13 +36,11 @@ import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
 public class Cron4jCronTaskConfiguration {
 
     @Bean(destroyMethod = "stop")
-    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     public Cron4jCronLifeStyle cron4jCronLifeStyle() {
         return new Cron4jCronLifeStyle();
     }
 
     @Bean
-    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     public Cron4jCronTaskRegistrant cron4jCronTaskRegistrant(Cron4jCronLifeStyle cron4jCronLifeStyle) {
         Cron4jCronTaskRepository cron4jCronTaskRepository
                 = new Cron4jCronTaskRepository(cron4jCronLifeStyle.getScheduler());

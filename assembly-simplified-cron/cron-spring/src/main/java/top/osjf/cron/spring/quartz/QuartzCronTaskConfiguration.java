@@ -28,8 +28,8 @@ import top.osjf.cron.spring.CronTaskRegisterPostProcessor;
  * Regarding the configuration classes related to scheduled task
  * registration for Quartz.
  *
- * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @see EnableQuartzCronTaskRegister
+ * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -37,24 +37,19 @@ import top.osjf.cron.spring.CronTaskRegisterPostProcessor;
 public class QuartzCronTaskConfiguration {
 
     @Bean
-    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     public QuartzJobFactory quartzJobFactory() {
         return new QuartzJobFactory();
     }
 
     @Bean
-    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     public QuartzCronTaskRegistrant quartzCronTaskRegistrant(QuartzJobFactory jobFactory) {
-        QuartzCronTaskRepository cronTaskRepository =
-                new QuartzCronTaskRepository(null, jobFactory);
+        QuartzCronTaskRepository cronTaskRepository = new QuartzCronTaskRepository(null, jobFactory);
         return new QuartzCronTaskRegistrant(cronTaskRepository);
     }
 
     @Bean(destroyMethod = "stop")
-    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     public QuartzCronLifeStyle quartzCronLifeStyle(QuartzCronTaskRegistrant cronTaskRegistrant) {
-        return new QuartzCronLifeStyle(cronTaskRegistrant.<QuartzCronTaskRepository>getCronTaskRepository()
-                .getScheduler());
+        return new QuartzCronLifeStyle(cronTaskRegistrant.<QuartzCronTaskRepository>getCronTaskRepository().getScheduler());
     }
 
     @Bean
@@ -63,8 +58,7 @@ public class QuartzCronTaskConfiguration {
     }
 
     @Bean
-    public CronTaskRegisterPostProcessor cronTaskRegisterPostProcessor(QuartzCronLifeStyle lifeStyle,
-                                                                       QuartzCronTaskRegistrant cronTaskRegistrant) {
-        return new CronTaskRegisterPostProcessor(lifeStyle, cronTaskRegistrant);
+    public CronTaskRegisterPostProcessor cronTaskRegisterPostProcessor() {
+        return new CronTaskRegisterPostProcessor();
     }
 }
