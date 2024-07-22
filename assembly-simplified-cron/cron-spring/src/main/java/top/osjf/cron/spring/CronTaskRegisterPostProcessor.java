@@ -16,12 +16,16 @@
 
 package top.osjf.cron.spring;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.MergedBeanDefinitionPostProcessor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Configuration;
@@ -59,32 +63,16 @@ import java.util.Map;
  */
 @Configuration(proxyBeanMethods = false)
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-public class CronTaskRegisterPostProcessor implements ImportAware,
+public class CronTaskRegisterPostProcessor implements ImportAware, ApplicationContextAware,
         ApplicationListener<ContextRefreshedEvent>, MergedBeanDefinitionPostProcessor, EnvironmentAware, Ordered {
+
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
+    private ApplicationContext applicationContext;
 
     private Environment environment;
 
-    private Map<String, Object> metadata;
-
-    private final LifeStyle lifeStyle;
-
-    private final CronTaskRegistrant cronTaskRegistrant;
-
-    /**
-     * The construction methods of dependency lifecycle interface and registration
-     * interface are used to complete registration tasks and startup. This special
-     * bean depends on other objects, which will cause it to lose its automatic proxy
-     * function. Please mark the dependent bean as {@link BeanDefinition#ROLE_INFRASTRUCTURE}
-     * or use lazy loading {@link org.springframework.context.annotation.Lazy}.
-     *
-     * @param lifeStyle          Lifecycle implementation bean.
-     * @param cronTaskRegistrant Task registration implementation bean.
-     */
-    public CronTaskRegisterPostProcessor(LifeStyle lifeStyle,
-                                         CronTaskRegistrant cronTaskRegistrant) {
-        this.lifeStyle = lifeStyle;
-        this.cronTaskRegistrant = cronTaskRegistrant;
-    }
+    private Map<String, Object> metadata = new LinkedHashMap<>();
 
     /**
      * Manually set startup metadata.
@@ -96,13 +84,17 @@ public class CronTaskRegisterPostProcessor implements ImportAware,
     }
 
     @Override
+    public void setApplicationContext(@NotNull ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
+
+    @Override
     public void setEnvironment(@NotNull Environment environment) {
         this.environment = environment;
     }
 
     @Override
     public void setImportMetadata(@NotNull AnnotationMetadata annotationMetadata) {
-        metadata = new LinkedHashMap<>();
         annotationMetadata.getAnnotations().forEach(annotation ->
                 metadata.putAll(MappedAnnotationAttributes.of(annotationMetadata.
                         getAnnotationAttributes(annotation.getType().getCanonicalName()))));
@@ -116,29 +108,45 @@ public class CronTaskRegisterPostProcessor implements ImportAware,
     @Nullable
     @Override
     public Object postProcessAfterInitialization(@NotNull Object bean, @NotNull String beanName) throws BeansException {
-        //If it is a dynamic proxy object, first obtain the class object of
+
         // its target object, and obtain it directly without the proxy.
-        Class<?> target;
+        Class<?> realBeanType;
+
         if (AopUtils.isAopProxy(bean)) {
-            target = AopProxyUtils.ultimateTargetClass(bean);
-        } else {
-            target = bean.getClass();
+            //If it is a dynamic proxy object, first obtain the class object of
+            realBeanType = AopProxyUtils.ultimateTargetClass(bean);
+        } else  /*its target object, and obtain it directly without the proxy.*/ realBeanType = bean.getClass();
+
+        //#applicationContext.getBean(CronTaskRegistrant.class) If the bean is not initialized,
+        // the current method flow will be repeated. In this case, return directly.
+        if (CronTaskRegistrant.class.isAssignableFrom(realBeanType)) {
+            return bean;
         }
+        /*
+         *      ⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️
+         * */
+        CronTaskRegistrant registrant = applicationContext.getBean(CronTaskRegistrant.class);
         try {
-            cronTaskRegistrant.register(target, bean, environment);
+            registrant.register(realBeanType, bean, environment);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            //Print the stack first.
+            e.printStackTrace(System.err);
+            if (log.isErrorEnabled()) {
+                log.error("Registration of timed task for the real type [{}] of bean [{}] failed," +
+                        " reason for failure: {}.", realBeanType.getName(), beanName, e.getMessage());
+            }
         }
         return bean;
     }
 
     @Override
     public void onApplicationEvent(@NotNull ContextRefreshedEvent event) {
+        LifeStyle lifeStyle = applicationContext.getBean(LifeStyle.class);
         lifeStyle.start(metadata);
     }
 
     @Override
     public int getOrder() {
-        return Integer.MIN_VALUE + 16;
+        return Integer.MIN_VALUE + 10;
     }
 }
