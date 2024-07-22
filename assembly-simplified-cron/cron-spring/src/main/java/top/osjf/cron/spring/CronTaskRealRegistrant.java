@@ -16,8 +16,6 @@
 
 package top.osjf.cron.spring;
 
-import org.springframework.core.env.Environment;
-
 /**
  * Timed task registration actor interface, dividing the registration
  * of different components.
@@ -25,16 +23,14 @@ import org.springframework.core.env.Environment;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public interface CronTaskRegistrant {
+public interface CronTaskRealRegistrant {
 
     /**
      * Register scheduled tasks based on the bean's conditions.
      *
-     * @param realBeanType The true type of bean.
-     * @param bean         Beans awaiting registration and inspection.
-     * @param environment  Spring's environment variables.
+     * @param registrant The true type of bean.
      * @throws Exception Possible abnormal issues that may arise from
      *                   registration behavior.
      */
-    void register(Class<?> realBeanType, Object bean, Environment environment) throws Exception;
+    void register(Registrant registrant) throws Exception;
 }
