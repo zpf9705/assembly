@@ -42,8 +42,7 @@ import top.osjf.cron.core.lifestyle.LifeStyle;
 import top.osjf.cron.spring.annotation.Cron;
 import top.osjf.cron.spring.annotation.MappedAnnotationAttributes;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Create a post processor for custom bean elements.
@@ -75,13 +74,15 @@ public class CronTaskRegisterPostProcessor implements ImportAware, ApplicationCo
 
     private final Map<String, Object> metadata = new LinkedHashMap<>();
 
+    private RegistrantCollector collector;
+
     /**
-     * Manually set startup metadata.
+     * Manually set important metadata.
      *
-     * @param metadata startup metadata.
+     * @param metadata important metadata.
      */
     public void setMetadata(@Nullable Map<String, Object> metadata) {
-        if (MapUtils.isNotEmpty(metadata)){
+        if (MapUtils.isNotEmpty(metadata)) {
             this.metadata.putAll(metadata);
         }
     }
@@ -120,22 +121,25 @@ public class CronTaskRegisterPostProcessor implements ImportAware, ApplicationCo
             realBeanType = AopProxyUtils.ultimateTargetClass(bean);
         } else  /*its target object, and obtain it directly without the proxy.*/ realBeanType = bean.getClass();
 
-        //#applicationContext.getBean(CronTaskRegistrant.class) If the bean is not initialized,
-        // the current method flow will be repeated. In this case, return directly.
-        if (CronTaskRegistrant.class.isAssignableFrom(realBeanType)) {
+        //The bean loading of RegistrantCollector does not implement subsequent conditional additions.
+        if (RegistrantCollector.class.isAssignableFrom(realBeanType)) {
             return bean;
         }
-        /*
-         *      ⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️
-         * */
-        CronTaskRegistrant registrant = applicationContext.getBean(CronTaskRegistrant.class);
+        //#applicationContext.getBean(CronTaskRegistrant.class) If the bean is not initialized,
+        // the current method flow will be repeated. In this case, return directly.
+        if (collector == null) {
+            /*
+             *      ⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️⬆️
+             * */
+            collector = applicationContext.getBean(RegistrantCollector.class);
+        }
         try {
-            registrant.register(realBeanType, bean, environment);
+            collector.add(realBeanType, bean, environment);
         } catch (Exception e) {
             //Print the stack first.
             e.printStackTrace(System.err);
             if (log.isErrorEnabled()) {
-                log.error("Registration of timed task for the real type [{}] of bean [{}] failed," +
+                log.error("Add of timed task for the real type [{}] of bean [{}] failed," +
                         " reason for failure: {}.", realBeanType.getName(), beanName, e.getMessage());
             }
         }
@@ -144,6 +148,20 @@ public class CronTaskRegisterPostProcessor implements ImportAware, ApplicationCo
 
     @Override
     public void onApplicationEvent(@NotNull ContextRefreshedEvent event) {
+        CronTaskRealRegistrant realRegistrant = applicationContext.getBean(CronTaskRealRegistrant.class);
+        while (collector.hasNext()) {
+            Registrant next = collector.next();
+            try {
+                realRegistrant.register(next);
+            } catch (Exception e) {
+                //Print the stack first.
+                e.printStackTrace(System.err);
+                if (log.isErrorEnabled()) {
+                    log.error("Registration type [{}] task failed, reason for failure [{}]",
+                            next.getClass().getName(), e.getMessage());
+                }
+            }
+        }
         LifeStyle lifeStyle = applicationContext.getBean(LifeStyle.class);
         lifeStyle.start(metadata);
     }
