@@ -38,11 +38,20 @@ public class Cron4jCronTaskRepository implements CronTaskRepository<String, Runn
     /*** scheduler management*/
     private final Scheduler scheduler;
 
-    /*** The construction method of scheduler management class {@link Scheduler}
-     * @param scheduler scheduler management.
-     **/
-    public Cron4jCronTaskRepository(@NotNull Scheduler scheduler) {
-        this.scheduler = scheduler;
+    /**
+     * Construct for create {@link Scheduler}.
+     */
+    public Cron4jCronTaskRepository() {
+        this.scheduler = new Scheduler();
+    }
+
+    /**
+     * Return the scheduled task management class of Cron4j.
+     *
+     * @return {@link Scheduler}.
+     */
+    public Scheduler getScheduler() {
+        return scheduler;
     }
 
     /**
