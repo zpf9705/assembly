@@ -22,15 +22,13 @@ import org.springframework.core.env.Environment;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.spring.annotation.Cron;
 import top.osjf.cron.spring.annotation.CronAnnotationAttributes;
+import top.osjf.cron.spring.cron4j.Cron4jRegistrantCollector;
 
 import java.io.Closeable;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -51,6 +49,9 @@ public abstract class AbstractRegistrantCollector implements RegistrantCollector
 
     /***  Iterator for {@link #registrants}. */
     private Iterator<Registrant> iterator;
+
+    /***  The expression for the shortest time interval supported by cron4j.. */
+    private static final String cron4jMinExpression = "* * * * *";
 
     /**
      * Return the temporary collection of {@link Registrant}.
@@ -96,6 +97,12 @@ public abstract class AbstractRegistrantCollector implements RegistrantCollector
         for (AnnotatedElement element : findAndFilterAnnotatedElements(realBeanType)) {
             CronAnnotationAttributes cronAttribute = getCronAttribute(element);
             String expression = cronAttribute.getExpression();
+            //When considering default values here, cron4j takes
+            // hierarchical default values.
+            if (Objects.equals(expression, Cron.DEFAULT_CRON_EXPRESSION)
+                    && getClass().equals(Cron4jRegistrantCollector.class)) {
+                expression = cron4jMinExpression;
+            }
             Runnable rab = createRunnable(bean, element);
             if (ArrayUtils.isEmpty(activeProfiles)) {
                 //When the environment is not activated, it indicates that
