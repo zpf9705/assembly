@@ -1,3 +1,19 @@
+/*
+ * Copyright 2024-? the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package top.osjf.spring.service.context;
 
 import cn.hutool.core.convert.Convert;
@@ -224,12 +240,6 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
      */
     public static class ServiceContextRunListener implements SpringApplicationRunListener {
 
-        /*** The package path where the spring main class is located.*/
-        private static String mainApplicationPackage;
-
-        /*** Spring configuration context caching.*/
-        private static ConfigurableApplicationContext context;
-
         /*** Do you want to set a new bean name generator.*/
         private static boolean enableCustomBeanNameGeneratorSet;
 
@@ -250,7 +260,6 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
 
             //Determine whether to add a custom bean name generator based on the existence of adaptive annotations.
             Class<?> mainApplicationClass = application.getMainApplicationClass();
-            mainApplicationPackage = mainApplicationClass.getPackage().getName();
 
             //There is one of the three annotations that requires setting a bean name generator.
             if (serviceCollectionExist(mainApplicationClass)) {
@@ -290,51 +299,16 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
         }
 
         /**
-         * Return the package path where the SpringBoot main class is located.
+         * Has a custom bean name generator been set up.
          *
-         * @return the package path where the SpringBoot main class is located.
+         * @return if {@code true} already set, otherwise not.
          */
-        public static String getMainApplicationPackage() {
-            return mainApplicationPackage;
-        }
-
-        /**
-         * Set the spring context object for initialization.
-         *
-         * @param context0 the spring context object for initialization.
-         */
-        public static void setConfigurableApplicationContext(ConfigurableApplicationContext context0) {
-            context = context0;
-        }
-
-        /**
-         * Return the spring context object for initialization.
-         *
-         * @return the spring context object for initialization.
-         */
-        public static ConfigurableApplicationContext getConfigurableApplicationContext() {
-            return context;
-        }
-
-        /**
-         * Clear the cache at runtime.
-         */
-        public static void clearCache() {
-            mainApplicationPackage = null;
-            context = null;
-            resetBeanNameGeneratorSwitch();
-        }
-
-        /**
-         * Clear the setting cache of the bean name registration machine.
-         */
-        public static void resetBeanNameGeneratorSwitch() {
-            if (enableCustomBeanNameGeneratorSet) enableCustomBeanNameGeneratorSet = false;
+        public static boolean enableCustomBeanNameGeneratorSet() {
+            return enableCustomBeanNameGeneratorSet;
         }
 
         @Override
         public void contextPrepared(ConfigurableApplicationContext context) {
-            setConfigurableApplicationContext(context);
             if (enableCustomBeanNameGeneratorSet) {
                 Method method = ReflectUtil.getMethod(context.getClass(), "setBeanNameGenerator",
                         BeanNameGenerator.class);
@@ -408,30 +382,12 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
     }
 
     /**
-     * Return the package path where the SpringBoot main class is located.
-     *
-     * @return the package path where the SpringBoot main class is located.
-     */
-    protected String getMainApplicationPackage() {
-        return ServiceContextRunListener.getMainApplicationPackage();
-    }
-
-    /**
      * Return the bean registration machine for Spring.
      *
      * @return the bean registration machine for Spring.
      */
     protected BeanDefinitionRegistry getBeanDefinitionRegistry() {
         return (BeanDefinitionRegistry) context;
-    }
-
-    /**
-     * Return the spring context object for initialization.
-     *
-     * @return the spring context object for initialization.
-     */
-    protected ConfigurableApplicationContext getConfigurableApplicationContext() {
-        return ServiceContextRunListener.getConfigurableApplicationContext();
     }
 
     /**
@@ -446,10 +402,12 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
     //———————————————————————————————————— clear op
 
     /**
-     * Clear {@link ServiceContextRunListener} intermediate variables.
+     * Has a custom bean name generator been set up.
+     *
+     * @return if {@code true} already set, otherwise not.
      */
-    protected void clearCache() {
-        ServiceContextRunListener.clearCache();
+    protected boolean enableCustomBeanNameGeneratorSet() {
+        return ServiceContextRunListener.enableCustomBeanNameGeneratorSet();
     }
 
     /**
