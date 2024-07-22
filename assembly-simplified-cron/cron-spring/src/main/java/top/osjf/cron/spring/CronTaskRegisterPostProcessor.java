@@ -42,7 +42,9 @@ import top.osjf.cron.core.lifestyle.LifeStyle;
 import top.osjf.cron.spring.annotation.Cron;
 import top.osjf.cron.spring.annotation.MappedAnnotationAttributes;
 
-import java.util.*;
+import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Create a post processor for custom bean elements.
@@ -148,13 +150,20 @@ public class CronTaskRegisterPostProcessor implements ImportAware, ApplicationCo
 
     @Override
     public void onApplicationEvent(@NotNull ContextRefreshedEvent event) {
+        if (event.getApplicationContext() == applicationContext) {
+            finishRegistration();
+        }
+    }
+
+    private void finishRegistration() {
+
+        //Complete registration.
         CronTaskRealRegistrant realRegistrant = applicationContext.getBean(CronTaskRealRegistrant.class);
         while (collector.hasNext()) {
             Registrant next = collector.next();
             try {
                 realRegistrant.register(next);
             } catch (Exception e) {
-                //Print the stack first.
                 e.printStackTrace(System.err);
                 if (log.isErrorEnabled()) {
                     log.error("Registration type [{}] task failed, reason for failure [{}]",
@@ -162,8 +171,16 @@ public class CronTaskRegisterPostProcessor implements ImportAware, ApplicationCo
                 }
             }
         }
+
+        //Start scheduled tasks.
         LifeStyle lifeStyle = applicationContext.getBean(LifeStyle.class);
         lifeStyle.start(metadata);
+
+        //Clean up temporary registration resources.
+        try {
+            collector.close();
+        } catch (IOException ignored) {
+        }
     }
 
     @Override
