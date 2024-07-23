@@ -68,11 +68,7 @@ public class Cron4jCronTaskRepository implements CronTaskRepository<String, Runn
      */
     @Override
     public String register(String cronExpression, Runnable runnable) throws Exception {
-        try {
-            new SchedulingPattern(cronExpression);
-        } catch (InvalidPatternException e) {
-            throw new CronExpressionInvalidException(cronExpression, e);
-        }
+        parseSchedulingPattern(cronExpression);
         return scheduler.schedule(cronExpression, runnable);
     }
 
@@ -90,24 +86,30 @@ public class Cron4jCronTaskRepository implements CronTaskRepository<String, Runn
      */
     @Override
     public void update(String taskId, String newCronExpression) throws Exception {
-        if (scheduler.getTask(taskId) == null) {
-            throw new CronTaskNoExistException(taskId);
-        }
-        SchedulingPattern newCronPattern;
-        try {
-            newCronPattern = new SchedulingPattern(newCronExpression);
-        } catch (InvalidPatternException e) {
-            throw new CronExpressionInvalidException(newCronExpression, e);
-        }
-        scheduler.reschedule(taskId, newCronPattern);
+        assertExist(taskId);
+        scheduler.reschedule(taskId, parseSchedulingPattern(newCronExpression));
     }
 
     @Override
     public void remove(String taskId) {
+        assertExist(taskId);
+        scheduler.deschedule(taskId);
+    }
+
+    void assertExist(String taskId) {
         if (scheduler.getTask(taskId) == null) {
             throw new CronTaskNoExistException(taskId);
         }
-        scheduler.deschedule(taskId);
+    }
+
+    SchedulingPattern parseSchedulingPattern(String strCronExpression) throws Exception {
+        SchedulingPattern schedulingPattern;
+        try {
+            schedulingPattern = new SchedulingPattern(strCronExpression);
+        } catch (InvalidPatternException e) {
+            throw new CronExpressionInvalidException(strCronExpression, e);
+        }
+        return schedulingPattern;
     }
 
     @Override
