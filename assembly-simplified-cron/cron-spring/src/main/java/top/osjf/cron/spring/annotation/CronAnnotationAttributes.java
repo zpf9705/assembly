@@ -16,9 +16,9 @@
 
 package top.osjf.cron.spring.annotation;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.AnnotationUtils;
+import top.osjf.cron.core.util.StringUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
