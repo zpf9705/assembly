@@ -16,7 +16,7 @@
 
 package top.osjf.cron.spring;
 
-import top.osjf.cron.core.annotation.NotNull;
+import org.springframework.lang.NonNull;
 
 /**
  * Register entity classes for cron tasks in the form
@@ -29,7 +29,7 @@ public class RunnableRegistrant extends CronRegistrant {
 
     private final Runnable runnable;
 
-    public RunnableRegistrant(String cronExpression, @NotNull Runnable runnable) {
+    public RunnableRegistrant(String cronExpression, @NonNull Runnable runnable) {
         super(cronExpression);
         this.runnable = runnable;
     }

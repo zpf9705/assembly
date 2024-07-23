@@ -16,7 +16,7 @@
 
 package top.osjf.cron.spring;
 
-import top.osjf.cron.core.annotation.NotNull;
+import org.springframework.lang.NonNull;
 
 /**
  * Implement {@link Registrant} with cron expression.
@@ -28,7 +28,7 @@ public class CronRegistrant implements Registrant {
 
     private final String cronExpression;
 
-    public CronRegistrant(@NotNull String cronExpression) {
+    public CronRegistrant(@NonNull String cronExpression) {
         this.cronExpression = cronExpression;
     }
 

@@ -35,8 +35,8 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
-import top.osjf.cron.core.annotation.NotNull;
-import top.osjf.cron.core.annotation.Nullable;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import top.osjf.cron.core.lifestyle.LifeStyle;
 import top.osjf.cron.core.util.MapUtils;
 import top.osjf.cron.spring.annotation.Cron;
@@ -90,30 +90,30 @@ public class CronTaskRegisterPostProcessor implements ImportAware, ApplicationCo
     }
 
     @Override
-    public void setApplicationContext(@NotNull ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
 
     @Override
-    public void setEnvironment(@NotNull Environment environment) {
+    public void setEnvironment(@NonNull Environment environment) {
         this.environment = environment;
     }
 
     @Override
-    public void setImportMetadata(@NotNull AnnotationMetadata annotationMetadata) {
+    public void setImportMetadata(@NonNull AnnotationMetadata annotationMetadata) {
         annotationMetadata.getAnnotations().forEach(annotation ->
                 metadata.putAll(MappedAnnotationAttributes.of(annotationMetadata.
                         getAnnotationAttributes(annotation.getType().getCanonicalName()))));
     }
 
     @Override
-    public void postProcessMergedBeanDefinition(@NotNull RootBeanDefinition beanDefinition, @NotNull Class<?> beanType,
-                                                @NotNull String beanName) {
+    public void postProcessMergedBeanDefinition(@NonNull RootBeanDefinition beanDefinition, @NonNull Class<?> beanType,
+                                                @NonNull String beanName) {
     }
 
     @Nullable
     @Override
-    public Object postProcessAfterInitialization(@NotNull Object bean, @NotNull String beanName) throws BeansException {
+    public Object postProcessAfterInitialization(@NonNull Object bean, @NonNull String beanName) throws BeansException {
 
         // its target object, and obtain it directly without the proxy.
         Class<?> realBeanType;
@@ -149,7 +149,7 @@ public class CronTaskRegisterPostProcessor implements ImportAware, ApplicationCo
     }
 
     @Override
-    public void onApplicationEvent(@NotNull ContextRefreshedEvent event) {
+    public void onApplicationEvent(@NonNull ContextRefreshedEvent event) {
         if (event.getApplicationContext() == applicationContext) {
             finishRegistration();
         }

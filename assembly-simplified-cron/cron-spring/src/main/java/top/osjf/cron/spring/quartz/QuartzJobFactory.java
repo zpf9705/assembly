@@ -23,7 +23,7 @@ import org.quartz.spi.TriggerFiredBundle;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import top.osjf.cron.core.annotation.NotNull;
+import org.springframework.lang.NonNull;
 
 /**
  * Custom Quartz {@link JobFactory} retrieves objects from Spring's
@@ -38,7 +38,7 @@ public class QuartzJobFactory implements JobFactory, ApplicationContextAware {
     private ApplicationContext applicationContext;
 
     @Override
-    public void setApplicationContext(@NotNull ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
 
