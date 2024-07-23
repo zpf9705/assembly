@@ -16,8 +16,6 @@
 
 package top.osjf.cron.core.listener;
 
-import top.osjf.cron.core.annotation.Nullable;
-
 /**
  * An interface for monitoring the execution status of scheduled tasks,
  * including startup, success, and failure.
@@ -35,14 +33,14 @@ public interface CronListener<T> {
      *
      * @param value The parameters passed.
      */
-    void onStart(@Nullable T value);
+    void onStart(T value);
 
     /**
      * Triggered when the task successfully ends.
      *
      * @param value The parameters passed.
      */
-    void onSucceeded(@Nullable T value);
+    void onSucceeded(T value);
 
     /**
      * Triggered when the task fails to start.
@@ -51,5 +49,5 @@ public interface CronListener<T> {
      * @param exception The specific exception captured by the
      *                  listener when a scheduled task is abnormal.
      */
-    void onFailed(@Nullable T value, Throwable exception);
+    void onFailed(T value, Throwable exception);
 }

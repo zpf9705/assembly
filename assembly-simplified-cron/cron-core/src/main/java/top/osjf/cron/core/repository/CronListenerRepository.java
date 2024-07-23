@@ -16,7 +16,6 @@
 
 package top.osjf.cron.core.repository;
 
-import top.osjf.cron.core.annotation.NotNull;
 import top.osjf.cron.core.listener.CronListener;
 
 import java.util.Arrays;
@@ -39,7 +38,7 @@ public interface CronListenerRepository<T extends CronListener> {
      * @throws Exception The specified exception of the
      *                   scheduled task component.
      */
-    void addCronListener(@NotNull T cronListener) throws Exception;
+    void addCronListener(T cronListener) throws Exception;
 
     /**
      * Remove a scheduled task listener.
@@ -48,7 +47,7 @@ public interface CronListenerRepository<T extends CronListener> {
      * @throws Exception The specified exception of the
      *                   scheduled task component.
      */
-    void removeCronListener(@NotNull T cronListener) throws Exception;
+    void removeCronListener(T cronListener) throws Exception;
 
     /**
      * Add scheduled task listeners.
