@@ -22,7 +22,7 @@
         <spring.boot>2.5.6</spring.boot>
         <commons-lang3>3.12.0</commons-lang3>
         <commons-collections4>4.4</commons-collections4>
-        <hutool-core>5.8.29</hutool-core>
+        <hutool-core>5.8.5</hutool-core>
         <commons-codec>1.15</commons-codec>
         <jsr305>3.0.2</jsr305>
     </properties>
