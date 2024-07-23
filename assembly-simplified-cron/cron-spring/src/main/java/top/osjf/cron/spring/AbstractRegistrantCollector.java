@@ -16,10 +16,9 @@
 
 package top.osjf.cron.spring;
 
-import cn.hutool.core.util.ReflectUtil;
-import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.core.env.Environment;
 import top.osjf.cron.core.repository.CronTaskRepository;
+import top.osjf.cron.core.util.ArrayUtils;
 import top.osjf.cron.spring.annotation.Cron;
 import top.osjf.cron.spring.annotation.CronAnnotationAttributes;
 import top.osjf.cron.spring.cron4j.Cron4jRegistrantCollector;
@@ -166,7 +165,13 @@ public abstract class AbstractRegistrantCollector implements RegistrantCollector
      */
     protected Runnable createRunnable(Object bean, AnnotatedElement element) {
         Method method = (Method) element;
-        return () -> ReflectUtil.invoke(bean, method);
+        return () -> {
+            try {
+                method.invoke(bean);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        };
     }
 
     /**

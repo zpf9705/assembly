@@ -16,7 +16,6 @@
 
 package top.osjf.cron.spring;
 
-import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.AopProxyUtils;
@@ -39,6 +38,7 @@ import org.springframework.core.type.AnnotationMetadata;
 import top.osjf.cron.core.annotation.NotNull;
 import top.osjf.cron.core.annotation.Nullable;
 import top.osjf.cron.core.lifestyle.LifeStyle;
+import top.osjf.cron.core.util.MapUtils;
 import top.osjf.cron.spring.annotation.Cron;
 import top.osjf.cron.spring.annotation.MappedAnnotationAttributes;
 
