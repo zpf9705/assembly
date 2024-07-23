@@ -34,7 +34,7 @@ public interface CronListenerRepository<T extends CronListener> {
     /**
      * Add a scheduled task listener.
      *
-     * @param cronListener a scheduled task listener.
+     * @param cronListener a scheduled task listener,must not be {@literal null}.
      * @throws Exception The specified exception of the
      *                   scheduled task component.
      */
@@ -43,7 +43,7 @@ public interface CronListenerRepository<T extends CronListener> {
     /**
      * Remove a scheduled task listener.
      *
-     * @param cronListener a scheduled task listener.
+     * @param cronListener a scheduled task listener,must not be {@literal null}.
      * @throws Exception The specified exception of the
      *                   scheduled task component.
      */
@@ -52,7 +52,7 @@ public interface CronListenerRepository<T extends CronListener> {
     /**
      * Add scheduled task listeners.
      *
-     * @param cronListeners scheduled task listeners.
+     * @param cronListeners scheduled task listeners,must not be {@literal null}.
      * @throws Exception The specified exception of the
      *                   scheduled task component.
      */
@@ -65,7 +65,7 @@ public interface CronListenerRepository<T extends CronListener> {
     /**
      * Add scheduled task listeners.
      *
-     * @param cronListeners scheduled task listeners.
+     * @param cronListeners scheduled task listeners,must not be {@literal null}.
      * @throws Exception The specified exception of the
      *                   scheduled task component.
      */
@@ -76,7 +76,7 @@ public interface CronListenerRepository<T extends CronListener> {
     /**
      * Remove scheduled task listeners.
      *
-     * @param cronListeners scheduled task listeners.
+     * @param cronListeners scheduled task listeners,must not be {@literal null}.
      * @throws Exception The specified exception of the
      *                   scheduled task component.
      */
@@ -89,7 +89,7 @@ public interface CronListenerRepository<T extends CronListener> {
     /**
      * Remove scheduled task listeners.
      *
-     * @param cronListeners scheduled task listeners.
+     * @param cronListeners scheduled task listeners,must not be {@literal null}.
      * @throws Exception The specified exception of the
      *                   scheduled task component.
      */
