@@ -18,17 +18,5 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jsr-305>3.0.2</jsr-305>
     </properties>
-
-    <dependencies>
-
-        <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
-            <version>${jsr-305}</version>
-        </dependency>
-
-    </dependencies>
-
 </project>
