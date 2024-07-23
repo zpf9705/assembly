@@ -20,7 +20,7 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.EnvironmentCapable;
-import top.osjf.cron.core.annotation.NotNull;
+import org.springframework.lang.NonNull;
 import top.osjf.cron.core.util.MapUtils;
 
 import java.util.Map;
@@ -36,12 +36,12 @@ public abstract class AbstractImplsCommonConfiguration implements EnvironmentAwa
     private Environment environment;
 
     @Override
-    public void setEnvironment(@NotNull Environment environment) {
+    public void setEnvironment(@NonNull Environment environment) {
         this.environment = environment;
     }
 
     @Override
-    @NotNull
+    @NonNull
     public Environment getEnvironment() {
         return environment;
     }
