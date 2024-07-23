@@ -21,7 +21,6 @@ import cn.hutool.cron.CronUtil;
 import cn.hutool.cron.Scheduler;
 import cn.hutool.cron.pattern.CronPattern;
 import cn.hutool.cron.pattern.parser.PatternParser;
-import top.osjf.cron.core.annotation.NotNull;
 import top.osjf.cron.core.exception.CronExpressionInvalidException;
 import top.osjf.cron.core.exception.CronTaskNoExistException;
 import top.osjf.cron.core.repository.CronListenerRepository;
@@ -77,12 +76,12 @@ public class HutoolCronTaskRepository implements CronTaskRepository<String, Runn
     }
 
     @Override
-    public void addCronListener(@NotNull HutoolCronListener cronListener) {
+    public void addCronListener(HutoolCronListener cronListener) {
         scheduler.addListener(cronListener);
     }
 
     @Override
-    public void removeCronListener(@NotNull HutoolCronListener cronListener) {
+    public void removeCronListener(HutoolCronListener cronListener) {
         scheduler.removeListener(cronListener);
     }
 
