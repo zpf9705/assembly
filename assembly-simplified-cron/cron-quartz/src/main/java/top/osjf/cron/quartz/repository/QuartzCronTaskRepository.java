@@ -104,35 +104,47 @@ public class QuartzCronTaskRepository implements CronTaskRepository<JobKey, JobD
 
     @Override
     public JobKey register(String cronExpression, JobDetail jobDetail) throws Exception {
-        CronExpression expression;
-        try {
-            expression = new CronExpression(cronExpression);
-        } catch (ParseException e) {
-            throw new CronExpressionInvalidException(cronExpression, e);
-        }
         JobKey key = jobDetail.getKey();
         TriggerBuilder<CronTrigger> triggerBuilder = TriggerBuilder.newTrigger()
                 .withIdentity(key.getName())
                 .startNow()
-                .withSchedule(CronScheduleBuilder.cronSchedule(expression));
+                .withSchedule(CronScheduleBuilder.cronSchedule(parseCronExpression(cronExpression)));
         scheduler.scheduleJob(jobDetail, triggerBuilder.build());
         return jobDetail.getKey();
     }
 
     @Override
     public void update(JobKey jobKey, String newCronExpression) throws Exception {
-        JobDetail jobDetail = scheduler.getJobDetail(jobKey);
-        remove(jobKey);
-        register(newCronExpression, jobDetail);
+        exist(jobKey);
+        String name = jobKey.getName();
+        scheduler.rescheduleJob(new TriggerKey(name), TriggerBuilder.newTrigger()
+                .withIdentity(name)
+                .startNow()
+                .withSchedule(CronScheduleBuilder.cronSchedule(parseCronExpression(newCronExpression)))
+                .build());
     }
 
     @Override
     public void remove(JobKey jobKey) throws Exception {
+        exist(jobKey);
+        scheduler.deleteJob(jobKey);
+    }
+
+    void exist(JobKey jobKey) throws Exception {
         JobDetail jobDetail = scheduler.getJobDetail(jobKey);
         if (jobDetail == null) {
             throw new CronTaskNoExistException(jobKey.toString());
         }
-        scheduler.deleteJob(jobKey);
+    }
+
+    CronExpression parseCronExpression(String strCronExpression) throws Exception {
+        CronExpression cronExpression;
+        try {
+            cronExpression = new CronExpression(strCronExpression);
+        } catch (ParseException e) {
+            throw new CronExpressionInvalidException(strCronExpression, e);
+        }
+        return cronExpression;
     }
 
     @Override
