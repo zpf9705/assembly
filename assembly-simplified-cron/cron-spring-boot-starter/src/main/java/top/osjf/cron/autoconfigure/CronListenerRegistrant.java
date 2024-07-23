@@ -16,11 +16,11 @@
 
 package top.osjf.cron.autoconfigure;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.repository.CronListenerRepository;
+import top.osjf.cron.core.util.CollectionUtils;
 
 import java.util.List;
 

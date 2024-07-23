@@ -16,12 +16,12 @@
 
 package top.osjf.cron.autoconfigure;
 
-import org.apache.commons.collections4.MapUtils;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.EnvironmentCapable;
 import top.osjf.cron.core.annotation.NotNull;
+import top.osjf.cron.core.util.MapUtils;
 
 import java.util.Map;
 
