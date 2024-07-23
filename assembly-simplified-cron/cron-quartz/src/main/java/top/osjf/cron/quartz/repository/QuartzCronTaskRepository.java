@@ -115,7 +115,7 @@ public class QuartzCronTaskRepository implements CronTaskRepository<JobKey, JobD
 
     @Override
     public void update(JobKey jobKey, String newCronExpression) throws Exception {
-        exist(jobKey);
+        assertExist(jobKey);
         String name = jobKey.getName();
         scheduler.rescheduleJob(new TriggerKey(name), TriggerBuilder.newTrigger()
                 .withIdentity(name)
@@ -126,11 +126,11 @@ public class QuartzCronTaskRepository implements CronTaskRepository<JobKey, JobD
 
     @Override
     public void remove(JobKey jobKey) throws Exception {
-        exist(jobKey);
+        assertExist(jobKey);
         scheduler.deleteJob(jobKey);
     }
 
-    void exist(JobKey jobKey) throws Exception {
+    void assertExist(JobKey jobKey) throws Exception {
         JobDetail jobDetail = scheduler.getJobDetail(jobKey);
         if (jobDetail == null) {
             throw new CronTaskNoExistException(jobKey.toString());
