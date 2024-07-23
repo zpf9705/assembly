@@ -17,9 +17,10 @@
 package top.osjf.cron.cron4j.lifestyle;
 
 import it.sauronsoftware.cron4j.Scheduler;
-import top.osjf.cron.core.annotation.NotNull;
 import top.osjf.cron.core.exception.CronLifeStyleException;
 import top.osjf.cron.core.lifestyle.LifeStyle;
+
+import java.util.Objects;
 
 /**
  * The Cron4j cron task {@link LifeStyle} impl.
@@ -35,7 +36,8 @@ public class Cron4jCronLifeStyle implements LifeStyle {
     /*** The construction method of scheduler management class {@link Scheduler}
      * @param scheduler scheduler management.
      **/
-    public Cron4jCronLifeStyle(@NotNull Scheduler scheduler) {
+    public Cron4jCronLifeStyle(Scheduler scheduler) {
+        Objects.requireNonNull(scheduler, "Cron4j Scheduler");
         this.scheduler = scheduler;
     }
 

@@ -19,7 +19,6 @@ package top.osjf.cron.cron4j.repository;
 import it.sauronsoftware.cron4j.InvalidPatternException;
 import it.sauronsoftware.cron4j.Scheduler;
 import it.sauronsoftware.cron4j.SchedulingPattern;
-import top.osjf.cron.core.annotation.NotNull;
 import top.osjf.cron.core.exception.CronExpressionInvalidException;
 import top.osjf.cron.core.exception.CronTaskNoExistException;
 import top.osjf.cron.core.repository.CronListenerRepository;
@@ -112,12 +111,12 @@ public class Cron4jCronTaskRepository implements CronTaskRepository<String, Runn
     }
 
     @Override
-    public void addCronListener(@NotNull Cron4jCronListener cronListener) {
+    public void addCronListener(Cron4jCronListener cronListener) {
         scheduler.addSchedulerListener(cronListener);
     }
 
     @Override
-    public void removeCronListener(@NotNull Cron4jCronListener cronListener) {
+    public void removeCronListener(Cron4jCronListener cronListener) {
         scheduler.removeSchedulerListener(cronListener);
     }
 
