@@ -18,7 +18,7 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <hutool>5.8.29</hutool>
+        <hutool-core>5.8.5</hutool-core>
         <commons-lang3>3.12.0</commons-lang3>
         <commons-collections4>4.4</commons-collections4>
         <jsr-305>3.0.2</jsr-305>
@@ -29,7 +29,7 @@
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-core</artifactId>
-            <version>${hutool}</version>
+            <version>${hutool-core}</version>
         </dependency>
 
         <dependency>
