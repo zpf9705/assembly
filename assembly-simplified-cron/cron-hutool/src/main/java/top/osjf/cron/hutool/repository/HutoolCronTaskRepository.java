@@ -20,7 +20,6 @@ import cn.hutool.cron.CronException;
 import cn.hutool.cron.CronUtil;
 import cn.hutool.cron.Scheduler;
 import cn.hutool.cron.pattern.CronPattern;
-import cn.hutool.cron.pattern.parser.PatternParser;
 import top.osjf.cron.core.exception.CronExpressionInvalidException;
 import top.osjf.cron.core.exception.CronTaskNoExistException;
 import top.osjf.cron.core.repository.CronListenerRepository;
@@ -46,11 +45,7 @@ public class HutoolCronTaskRepository implements CronTaskRepository<String, Runn
 
     @Override
     public String register(String cronExpression, Runnable runnable) throws Exception {
-        try {
-            PatternParser.parse(cronExpression);
-        } catch (CronException e) {
-            throw new CronExpressionInvalidException(cronExpression, e);
-        }
+        parseCronPattern(cronExpression);
         return scheduler.schedule(cronExpression, runnable);
     }
 
@@ -59,13 +54,17 @@ public class HutoolCronTaskRepository implements CronTaskRepository<String, Runn
         if (scheduler.getTask(taskId) == null) {
             throw new CronTaskNoExistException(taskId);
         }
-        CronPattern newCronPattern;
+        scheduler.updatePattern(taskId, parseCronPattern(newCronExpression));
+    }
+
+    CronPattern parseCronPattern(String srtCronExpression) throws Exception {
+        CronPattern cronPattern;
         try {
-            newCronPattern = CronPattern.of(newCronExpression);
+            cronPattern = CronPattern.of(srtCronExpression);
         } catch (CronException e) {
-            throw new CronExpressionInvalidException(newCronExpression, e);
+            throw new CronExpressionInvalidException(srtCronExpression, e);
         }
-        scheduler.updatePattern(taskId, newCronPattern);
+        return cronPattern;
     }
 
     @Override
