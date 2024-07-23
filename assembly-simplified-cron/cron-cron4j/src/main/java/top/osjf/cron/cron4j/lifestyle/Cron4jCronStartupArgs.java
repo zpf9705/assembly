@@ -16,7 +16,7 @@
 
 package top.osjf.cron.cron4j.lifestyle;
 
-import org.apache.commons.lang3.ArrayUtils;
+import top.osjf.cron.core.util.ArrayUtils;
 
 import java.util.Map;
 import java.util.TimeZone;
