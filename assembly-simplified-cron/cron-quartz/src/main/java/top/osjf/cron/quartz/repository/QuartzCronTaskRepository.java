@@ -20,8 +20,6 @@ import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.simpl.SimpleThreadPool;
 import org.quartz.spi.JobFactory;
-import top.osjf.cron.core.annotation.NotNull;
-import top.osjf.cron.core.annotation.Nullable;
 import top.osjf.cron.core.exception.CronExpressionInvalidException;
 import top.osjf.cron.core.exception.CronTaskNoExistException;
 import top.osjf.cron.core.repository.CronListenerRepository;
@@ -52,7 +50,7 @@ public class QuartzCronTaskRepository implements CronTaskRepository<JobKey, JobD
      * @param properties {@link StdSchedulerFactory} configuration properties.
      * @param jobFactory Quartz task production factory.
      */
-    public QuartzCronTaskRepository(@Nullable Properties properties, @Nullable JobFactory jobFactory) {
+    public QuartzCronTaskRepository(Properties properties, JobFactory jobFactory) {
         if (properties == null) properties = System.getProperties();
         try {
             getScheduler(new StdSchedulerFactory(), properties);
@@ -138,12 +136,12 @@ public class QuartzCronTaskRepository implements CronTaskRepository<JobKey, JobD
     }
 
     @Override
-    public void addCronListener(@NotNull QuartzCronListener cronListener) {
+    public void addCronListener(QuartzCronListener cronListener) {
         listenerManager.addJobListener(cronListener);
     }
 
     @Override
-    public void removeCronListener(@NotNull QuartzCronListener cronListener) {
+    public void removeCronListener(QuartzCronListener cronListener) {
         listenerManager.removeJobListener(cronListener.getName());
     }
 

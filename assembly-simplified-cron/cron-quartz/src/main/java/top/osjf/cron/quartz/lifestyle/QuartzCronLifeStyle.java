@@ -18,9 +18,10 @@ package top.osjf.cron.quartz.lifestyle;
 
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import top.osjf.cron.core.annotation.NotNull;
 import top.osjf.cron.core.exception.CronLifeStyleException;
 import top.osjf.cron.core.lifestyle.LifeStyle;
+
+import java.util.Objects;
 
 /**
  * The Quartz cron task {@link LifeStyle} impl.
@@ -38,7 +39,8 @@ public class QuartzCronLifeStyle implements LifeStyle {
      *
      * @param scheduler {@link Scheduler}.
      */
-    public QuartzCronLifeStyle(@NotNull Scheduler scheduler) {
+    public QuartzCronLifeStyle(Scheduler scheduler) {
+        Objects.requireNonNull(scheduler, "Quartz Scheduler");
         this.scheduler = scheduler;
     }
 
