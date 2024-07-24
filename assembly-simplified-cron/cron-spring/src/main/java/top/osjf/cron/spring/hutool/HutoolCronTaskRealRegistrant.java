@@ -17,7 +17,7 @@
 package top.osjf.cron.spring.hutool;
 
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
-import top.osjf.cron.spring.AbstractCronTaskRealRegistrant;
+import top.osjf.cron.spring.AbstractRunnableCronTaskRealRegistrant;
 
 /**
  * Hutool of scheduled task registration actors.
@@ -25,7 +25,7 @@ import top.osjf.cron.spring.AbstractCronTaskRealRegistrant;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class HutoolCronTaskRealRegistrant extends AbstractCronTaskRealRegistrant {
+public class HutoolCronTaskRealRegistrant extends AbstractRunnableCronTaskRealRegistrant {
 
     public HutoolCronTaskRealRegistrant(HutoolCronTaskRepository cronTaskRepository) {
         super(cronTaskRepository);

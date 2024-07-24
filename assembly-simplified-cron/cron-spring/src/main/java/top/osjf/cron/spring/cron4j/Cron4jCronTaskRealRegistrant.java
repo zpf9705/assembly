@@ -17,7 +17,7 @@
 package top.osjf.cron.spring.cron4j;
 
 import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
-import top.osjf.cron.spring.AbstractCronTaskRealRegistrant;
+import top.osjf.cron.spring.AbstractRunnableCronTaskRealRegistrant;
 
 /**
  * Cron4j of scheduled task registration actors.
@@ -25,7 +25,7 @@ import top.osjf.cron.spring.AbstractCronTaskRealRegistrant;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class Cron4jCronTaskRealRegistrant extends AbstractCronTaskRealRegistrant {
+public class Cron4jCronTaskRealRegistrant extends AbstractRunnableCronTaskRealRegistrant {
 
     public Cron4jCronTaskRealRegistrant(Cron4jCronTaskRepository cronTaskRepository) {
         super(cronTaskRepository);
