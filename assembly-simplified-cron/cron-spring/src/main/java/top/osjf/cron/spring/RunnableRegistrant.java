@@ -25,7 +25,7 @@ import org.springframework.lang.NonNull;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class RunnableRegistrant extends CronRegistrant {
+public abstract class RunnableRegistrant extends CronRegistrant {
 
     private final Runnable runnable;
 
