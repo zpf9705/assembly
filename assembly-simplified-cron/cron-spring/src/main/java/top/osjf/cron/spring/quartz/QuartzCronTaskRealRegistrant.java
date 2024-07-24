@@ -35,11 +35,14 @@ public class QuartzCronTaskRealRegistrant extends AbstractCronTaskRealRegistrant
     }
 
     @Override
+    public boolean supports(Registrant registrant) {
+        return registrant instanceof QuartzRegistrant;
+    }
+
+    @Override
     public void register(Registrant registrant) throws Exception {
-        if (registrant instanceof QuartzRegistrant) {
-            CronTaskRepository<String, JobDetail> cronTaskRepository = getCronTaskRepository();
-            QuartzRegistrant quartzRegistrant = (QuartzRegistrant) registrant;
-            cronTaskRepository.register(quartzRegistrant.getCronExpression(), quartzRegistrant.getJobDetail());
-        }
+        CronTaskRepository<String, JobDetail> cronTaskRepository = getCronTaskRepository();
+        QuartzRegistrant quartzRegistrant = (QuartzRegistrant) registrant;
+        cronTaskRepository.register(quartzRegistrant.getCronExpression(), quartzRegistrant.getJobDetail());
     }
 }
