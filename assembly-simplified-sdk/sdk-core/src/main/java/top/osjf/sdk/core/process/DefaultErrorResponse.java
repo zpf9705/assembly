@@ -16,10 +16,10 @@
 
 package top.osjf.sdk.core.process;
 
-import cn.hutool.core.exceptions.ExceptionUtil;
 import top.osjf.sdk.core.exception.DataConvertException;
 import top.osjf.sdk.core.util.JSONUtil;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -169,7 +169,7 @@ public final class DefaultErrorResponse extends AbstractResponse {
 
         @Override
         public String getStacktrace(Throwable error) {
-            return ExceptionUtil.stacktraceToOneLineString(error);
+            return Arrays.toString(error.getStackTrace());
         }
     }
 }
