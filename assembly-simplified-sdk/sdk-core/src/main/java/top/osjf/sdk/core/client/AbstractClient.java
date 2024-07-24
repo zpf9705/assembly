@@ -16,13 +16,12 @@
 
 package top.osjf.sdk.core.client;
 
-import cn.hutool.core.lang.Assert;
-import cn.hutool.core.thread.threadlocal.NamedThreadLocal;
-import cn.hutool.core.util.StrUtil;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.util.StringUtils;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
@@ -32,7 +31,7 @@ import java.util.function.Supplier;
  *
  * <p>At the level of public method assistance, the main solution is to cache
  * single instances {@link Client} and periodic processing of parameters.
- * <p>Therefore, static {@link ConcurrentHashMap} and {@link NamedThreadLocal}
+ * <p>Therefore, static {@link ConcurrentHashMap} and {@link ThreadLocal}
  * are introduced to achieve the above requirements, as well as some publicly
  * available methods for obtaining the above parameters, while ensuring thread
  * safety.
@@ -56,13 +55,13 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
     private static final Map<String, Client> cache = new ConcurrentHashMap<>(16);
 
     /*** Save each request parameter and use it for subsequent requests*/
-    private static final ThreadLocal<Request> local = new NamedThreadLocal<>("CURRENT REQUEST");
+    private static final ThreadLocal<Request> local = new ThreadLocal<>();
 
     /*** Constructing for {@link Client} objects using access URLs.
      * @param url The real URL address of the SDK request.
      * */
     public AbstractClient(String url) {
-        Assert.notBlank(url, "url not be null");
+        Objects.requireNonNull(url, "Client Url");
         cache(url, this);
     }
 
@@ -75,7 +74,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
      * @param client Real impl in {@link Client}.
      */
     void cache(String url, Client client) {
-        if (StrUtil.isBlank(url) || client == null) {
+        if (StringUtils.isBlank(url) || client == null) {
             return;
         }
         cache.putIfAbsent(url, client);
@@ -113,8 +112,8 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
     public static <R extends Response> Client<R> getAndSetClient(Supplier<Client<R>> newClientSupplier,
                                                                  Request<R> request,
                                                                  String url) {
-        Assert.notBlank(url, "url not be null");
-        Assert.notNull(request, "request not be null");
+        Objects.requireNonNull(url, "Client Url");
+        Objects.requireNonNull(request, "Client Request");
         setCurrentParam(request);
         Client<R> client = cache.get(url);
         if (client == null) {
