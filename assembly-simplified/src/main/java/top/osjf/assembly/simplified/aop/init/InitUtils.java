@@ -21,7 +21,9 @@ import java.util.Objects;
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2.2.5
+ * @deprecated 2.3.0 There are technical issues that need to be abandoned.
  */
+@Deprecated
 public class InitUtils implements ApplicationContextAware {
 
     /*** Configurable spring context..*/

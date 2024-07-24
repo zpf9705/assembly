@@ -4,7 +4,6 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
-import top.osjf.assembly.simplified.aop.init.InitUtils;
 import top.osjf.assembly.simplified.aop.init.AspectJInitSupport;
 
 /**
@@ -20,13 +19,7 @@ import top.osjf.assembly.simplified.aop.init.AspectJInitSupport;
 public class InitConfiguration {
 
     @Bean
-    public AspectJInitSupport aspectJInitSupport(){
+    public AspectJInitSupport aspectJInitSupport() {
         return new AspectJInitSupport();
-    }
-
-    //@Since 2.2.5
-    @Bean
-    public InitUtils initUtils(){
-        return new InitUtils();
     }
 }

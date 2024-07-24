@@ -11,7 +11,7 @@
 
     <artifactId>assembly-simplified</artifactId>
     <packaging>jar</packaging>
-    <version>2.2.8</version>
+    <version>2.2.9</version>
     <description>Easy to build packaging module, including scheduled tasks
         for Hutu package, SDK packaging, etc.
     </description>
