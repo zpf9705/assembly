@@ -18,7 +18,6 @@ package top.osjf.sdk.core.client;
 
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
-import top.osjf.sdk.core.util.NotNull;
 
 /**
  * A custom processing scheme for response string conversion {@link Response}.
@@ -43,6 +42,5 @@ public interface ResponseConvert<R extends Response> {
      * @return The converted response model data is implemented in
      * {@link Response} and cannot be {@literal null}.
      */
-    @NotNull
     R convertToResponse(Request<R> request, String responseStr);
 }

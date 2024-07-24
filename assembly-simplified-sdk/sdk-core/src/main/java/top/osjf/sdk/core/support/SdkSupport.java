@@ -16,16 +16,22 @@
 
 package top.osjf.sdk.core.support;
 
-import cn.hutool.core.util.ReflectUtil;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import top.osjf.sdk.core.exception.RequestCreateException;
 import top.osjf.sdk.core.exception.UnknownRequestParameterException;
 import top.osjf.sdk.core.exception.UnknownResponseParameterException;
 import top.osjf.sdk.core.process.*;
+import top.osjf.sdk.core.util.ArrayUtils;
+import top.osjf.sdk.core.util.CollectionUtils;
+import top.osjf.sdk.core.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * Support classes for SDK.
@@ -123,7 +129,7 @@ public abstract class SdkSupport {
         try {
             //First, directly instantiate the request class using the
             // construction method based on the parameters.
-            request = ReflectUtil.newInstance(requestType, args);
+            request = createRequest(requestType, args);
         } catch (Throwable e) {
             //This step determines whether the parameter is empty to
             // determine whether the above is an empty construction instantiation.
@@ -133,29 +139,42 @@ public abstract class SdkSupport {
         return request;
     }
 
+    static Request<?> createRequest(Class<? extends Request> requestType, Object... args)
+            throws Exception {
+        if (ArrayUtils.isEmpty(args)) {
+            return requestType.newInstance();
+        }
+        List<Class<?>> parameterTypes = new ArrayList<>();
+        for (Object arg : args) {
+            parameterTypes.add(arg.getClass());
+        }
+        return requestType.getConstructor(parameterTypes.toArray(new Class[]{}))
+                .newInstance(args);
+    }
+
     static Request<?> invokeCreateRequestUseSet(Class<? extends Request> requestType,
                                                 Object... args) {
         Request<?> request;
         try {
             //When parameter construction fails, first use an empty
             // construction to instantiate, and then find the set method.
-            request = ReflectUtil.newInstance(requestType);
-            Field[] fields =
-                    ReflectUtil.getFields(requestType, field -> field.getAnnotation(RequestField.class) != null);
-            if (ArrayUtils.isEmpty(fields)) {
+            request = requestType.newInstance();
+
+            List<Field> fields = getAndFilterRequestAndSuperDeclaredFields(requestType);
+            if (CollectionUtils.isEmpty(fields)) {
                 //When using methods for assignment, annotations must be identified.
                 throw new IllegalArgumentException("When no construction method is provided, please " +
                         "use \"top.osjf.assembly.simplified.sdk.process.RequestField\" to mark the real" +
                         " name of the field.");
             }
-            for (int i = 0; i < fields.length; i++) {
-                Field field = fields[i];
+            for (int i = 0; i < fields.size(); i++) {
+                Field field = fields.get(i);
                 RequestField requestField = field.getAnnotation(RequestField.class);
                 int order = getOrder(requestField, i, fields);
                 Object arg = args[order];
                 if (requestField.useReflect()) {
                     //Directly assign values in the case of sequential reflection assignment.
-                    ReflectUtil.setFieldValue(request, field, arg);
+                    setRequestFieldValue(request, field, arg);
                 } else {
                     //The real name of the field cannot be empty at this time.
                     String fieldName = requestField.value();
@@ -164,7 +183,7 @@ public abstract class SdkSupport {
                                 "the actual field name cannot be empty.");
                     }
                     //The set method performs an assignment.
-                    ReflectUtil.invoke(request,
+                    executeRequestFieldSetMethod(request, requestType,
                             SET_METHOD_PREFIX + Character.toUpperCase(fieldName.charAt(0))
                                     + fieldName.substring(1), arg);
                 }
@@ -176,16 +195,83 @@ public abstract class SdkSupport {
         return request;
     }
 
-    static int getOrder(RequestField requestField, int i, Field[] fields) {
+    static void executeRequestFieldSetMethod(Request<?> request, Class<? extends Request> requestType,
+                                             String methodName, Object arg) throws Exception {
+        List<Method> methods = getRequestDeclaredMethods(requestType);
+        for (Method method : methods) {
+            if (method.getName().equals(methodName) && method.getParameterTypes().length == 1
+                    && method.getParameterTypes()[0].equals(arg.getClass())) {
+                try {
+                    method.invoke(request, arg);
+                } catch (IllegalAccessException e) {
+                    method.setAccessible(true);
+                    method.invoke(request, arg);
+                    return;
+                }
+            }
+        }
+        throw new NoSuchMethodException(methodName);
+    }
+
+    static final Map<Class<? extends Request>, List<Method>> requestMethodCache = new ConcurrentHashMap<>();
+
+    static List<Method> getRequestDeclaredMethods(Class<? extends Request> requestType) {
+        return requestMethodCache.computeIfAbsent(requestType, SdkSupport::getRequestDeclaredMethods0);
+    }
+
+    static List<Method> getRequestDeclaredMethods0(Class<? extends Request> requestType) {
+        List<Method> allDeclaredMethods = new ArrayList<>();
+        Class<?> searchType = requestType;
+        while (searchType != null) {
+            Method[] declaredMethods = searchType.getDeclaredMethods();
+            if (ArrayUtils.isNotEmpty(declaredMethods)) {
+                allDeclaredMethods.addAll(Arrays.asList(declaredMethods));
+            }
+            searchType = Object.class.equals(searchType.getSuperclass()) ? null : searchType.getSuperclass();
+        }
+        return allDeclaredMethods;
+    }
+
+    static final Map<Class<? extends Request>, List<Field>> requestFilteredDeclaredFieldCache = new ConcurrentHashMap<>();
+
+    static List<Field> getAndFilterRequestAndSuperDeclaredFields(Class<? extends Request> requestType) {
+        return requestFilteredDeclaredFieldCache.computeIfAbsent(requestType,
+                SdkSupport::getAndFilterRequestAndSuperDeclaredFields0);
+    }
+
+    static List<Field> getAndFilterRequestAndSuperDeclaredFields0(Class<? extends Request> requestType) {
+        List<Field> allDeclaredFields = new ArrayList<>();
+        Class<?> searchType = requestType;
+        while (searchType != null) {
+            Field[] declaredFields = searchType.getDeclaredFields();
+            if (ArrayUtils.isNotEmpty(declaredFields)) {
+                allDeclaredFields.addAll(Arrays.asList(declaredFields));
+            }
+            searchType = Object.class.equals(searchType.getSuperclass()) ? null : searchType.getSuperclass();
+        }
+        return allDeclaredFields.stream()
+                .filter(field -> field.isAnnotationPresent(RequestField.class)).collect(Collectors.toList());
+    }
+
+    static void setRequestFieldValue(Request<?> request, Field field, Object arg) throws Exception {
+        try {
+            field.set(request, arg);
+        } catch (IllegalAccessException e) {
+            field.setAccessible(true);
+            field.set(request, arg);
+        }
+    }
+
+    static int getOrder(RequestField requestField, int i, List<Field> fields) {
         int order = requestField.order();
         if (order == -1) {
             //If the default value is used for sorting,
             // it will be sorted in the default order of times.
             order = i;
         } else {
-            if (order >= fields.length) {
+            if (order >= fields.size()) {
                 throw new ArrayIndexOutOfBoundsException("Current order " + order + "," +
-                        " parameter length " + fields.length + ".");
+                        " parameter length " + fields.size() + ".");
             }
         }
         return order;

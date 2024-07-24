@@ -18,7 +18,6 @@ package top.osjf.sdk.core.client;
 
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
-import top.osjf.sdk.core.util.NotNull;
 
 /**
  * The preprocessing of response strings is mainly to lay the groundwork for
@@ -45,6 +44,5 @@ public interface PreProcessingResponseHandler<R extends Response> {
      * @return The formatted string after special processing of the response
      * string cannot return {@literal null}.
      */
-    @NotNull
     String preResponseStrHandler(Request<R> request, String responseStr);
 }

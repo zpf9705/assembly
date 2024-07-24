@@ -16,8 +16,6 @@
 
 package top.osjf.sdk.core.process;
 
-import top.osjf.sdk.core.util.Nullable;
-
 /**
  * Get request parameters of the specified type.
  *
@@ -35,6 +33,5 @@ public interface RequestParamCapable<T> {
      *
      * @return the actual request parameters.
      */
-    @Nullable
     T getRequestParam();
 }

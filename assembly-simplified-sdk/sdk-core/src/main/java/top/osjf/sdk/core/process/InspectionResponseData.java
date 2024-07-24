@@ -17,7 +17,6 @@
 package top.osjf.sdk.core.process;
 
 import top.osjf.sdk.core.support.SdkSupport;
-import top.osjf.sdk.core.util.Nullable;
 
 /**
  * The default extension {@link ResponseData} is to check
@@ -47,6 +46,5 @@ public interface InspectionResponseData extends ResponseData {
      * @return Placeholder returns data, which may be a global default
      * value,can be {@literal null}, adapted according to oneself.
      */
-    @Nullable
     Object failedSeatData();
 }

@@ -20,8 +20,6 @@ import com.google.common.reflect.TypeToken;
 import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.core.enums.SdkEnum;
 import top.osjf.sdk.core.exception.SdkException;
-import top.osjf.sdk.core.util.NotNull;
-import top.osjf.sdk.core.util.Nullable;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -55,8 +53,9 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
 
     /*** {@inheritDoc}*/
     @Override
-    @Nullable
-    Object getRequestParam();
+    default Object getRequestParam() {
+        return null;
+    }
 
     /**
      * The SDK will perform custom validation on {@link #getRequestParam()}
@@ -79,7 +78,6 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      *
      * @return The class object of the response class encapsulated by this SDK.
      */
-    @Nullable
     default Class<R> getResponseCls() {
         return null;
     }
@@ -91,7 +89,6 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      *
      * @return Refer to {@link TypeToken}.
      */
-    @Nullable
     default TypeToken<R> getResponseTypeToken() {
         return null;
     }
@@ -110,9 +107,8 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      * definition of {@link Client} is open, and developers can customize
      * the relevant behavior of {@link Client}.
      *
-     * @return The type of {@link Client} held.
+     * @return The type of {@link Client} held,must not be {@literal null}.
      */
-    @NotNull
     @SuppressWarnings("rawtypes")
     Class<? extends Client> getClientCls();
 
@@ -127,7 +123,6 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      *
      * @return type object.
      */
-    @NotNull
     default Object getResponseRequiredType() {
         if (getResponseCls() != null) return getResponseCls();
         if (getResponseTypeToken() != null) return getResponseTypeToken().getType();

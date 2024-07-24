@@ -39,7 +39,13 @@ import top.osjf.sdk.core.exception.SdkException;
 public interface ErrorResponse {
 
     /**
-     * There are three fixed types defined here:
+     * <p>When dealing with SDK request exceptions, analyze the specific code obtained
+     * from the exception type.
+     *
+     * <p>When the request target does not have a clear success or failure type, the
+     * success status can be determined based on the code here.
+     *
+     * <p>There are three fixed types defined here:
      * <dl>
      *     <dt>{@link DefaultErrorResponse#SDK_ERROR_CODE}Sent {@link SdkException}
      *     when SDK is abnormal.</dt>
@@ -51,22 +57,19 @@ public interface ErrorResponse {
      *     or {@link ResponseConvert#convertToResponse(Request, String)} methods.</dt>
      * </dl>
      *
-     * <p>When and only when the request fails, the success of the request can be determined based
-     * on whether this method sends data.</p>
-     *
      * @param code Defined as an int type, it is fixed.
      */
     void setErrorCode(Object code);
 
     /**
-     * The setting of abnormal conversion information, with the help of tool
-     * {@link cn.hutool.core.exceptions.ExceptionUtil#stacktraceToOneLineString(Throwable)},
-     * converts the abnormal information after conversion.
+     * When dealing with SDK request exceptions, analyze the specific error information
+     * obtained from the exception type.
      *
-     * <p>When and only when the request fails, the success of the request can be determined based
-     * on whether this method sends data.</p>
+     * <p>When the request target does not have a clear success or failure type, the
+     * error message is processed based on the presence or absence of the message here.
      *
      * @param message Real message stack of {@link Throwable}.
+     * @see DefaultErrorResponse#parseErrorResponse(Throwable, DefaultErrorResponse.ErrorType, Request)
      */
     void setErrorMessage(String message);
 }
