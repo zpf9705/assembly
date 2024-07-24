@@ -16,10 +16,9 @@
 
 package top.osjf.sdk.http;
 
-import org.apache.commons.lang3.StringUtils;
 import top.osjf.sdk.core.process.InspectionResponseData;
 import top.osjf.sdk.core.util.JSONUtil;
-import top.osjf.sdk.core.util.NotNull;
+import top.osjf.sdk.core.util.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -165,11 +164,11 @@ public class HttpResultResponse<T> extends AbstractHttpResponse implements Inspe
     /**
      * Static for create a success {@code HttpResultResponse}.
      *
-     * @param dataSupplier data supplier.
+     * @param dataSupplier data supplier , must not be {@literal null}.
      * @param <T>          data types.
      * @return template of response.
      */
-    public static <T> HttpResultResponse<T> success(@NotNull Supplier<T> dataSupplier) {
+    public static <T> HttpResultResponse<T> success(Supplier<T> dataSupplier) {
         return success(dataSupplier.get());
     }
 

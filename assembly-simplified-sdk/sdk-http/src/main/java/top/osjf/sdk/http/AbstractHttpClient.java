@@ -16,9 +16,6 @@
 
 package top.osjf.sdk.http;
 
-import cn.hutool.core.date.StopWatch;
-import cn.hutool.core.exceptions.ExceptionUtil;
-import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.osjf.sdk.core.client.AbstractClient;
@@ -26,8 +23,8 @@ import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.core.exception.SdkException;
 import top.osjf.sdk.core.process.DefaultErrorResponse;
 import top.osjf.sdk.core.process.Request;
+import top.osjf.sdk.core.util.CollectionUtils;
 import top.osjf.sdk.core.util.JSONUtil;
-import top.osjf.sdk.core.util.NotNull;
 
 import java.util.List;
 import java.util.Map;
@@ -113,9 +110,8 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
         String responseStr = null;
         Throwable throwable = null;
 
-        //Enable request timing operation
-        StopWatch watch = new StopWatch();
-        watch.start();
+        //Record the initial time.
+        long startTimeMillis = System.currentTimeMillis();
 
         //Key operation steps: try the package.
         try {
@@ -155,13 +151,10 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
                     request);
 
         } finally {
-
-            //Stop timing.
-            watch.stop();
-
+            
             //Hand over the call information to the final processing project.
             finallyHandler(HttpResultSolver.ExecuteInfoBuild.builder().requestAccess(request)
-                    .spend(watch.getTotalTimeMillis())
+                    .spend(System.currentTimeMillis() - startTimeMillis)
                     .maybeError(throwable)
                     .response(responseStr)
                     .build());
@@ -178,8 +171,8 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
      * @param headers      {@link HttpRequest#getHeadMap()}
      * @param requestParam {@link HttpRequest#getRequestParam()}
      * @param montage      {@link HttpRequest#montage()}
-     * @throws Exception maybe exceptions when http request.
      * @return http request result.
+     * @throws Exception maybe exceptions when http request.
      */
     protected String doRequest(HttpRequestMethod method,
                                Map<String, String> headers,
@@ -190,13 +183,11 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
     }
 
     @Override
-    @NotNull
     public String preResponseStrHandler(Request<R> request, String responseStr) {
         return responseStr;
     }
 
     @Override
-    @NotNull
     public R convertToResponse(Request<R> request, String responseStr) {
         R response;
         Object type = request.getResponseRequiredType();
@@ -235,15 +226,13 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
     @Override
     public void handlerSdkError(HttpRequest<?> request, SdkException e) {
         sdkError().accept("Client request fail, apiName={}, error=[{}]",
-                HttpSdkSupport.toLoggerArray(request.matchSdkEnum().name(),
-                        ExceptionUtil.stacktraceToOneLineString(e)));
+                HttpSdkSupport.toLoggerArray(request.matchSdkEnum().name(), e.getMessage()));
     }
 
     @Override
     public void handlerUnKnowError(HttpRequest<?> request, Throwable e) {
         unKnowError().accept("Client request fail, apiName={}, error=[{}]",
-                HttpSdkSupport.toLoggerArray(request.matchSdkEnum().name(),
-                        ExceptionUtil.stacktraceToOneLineString(e)));
+                HttpSdkSupport.toLoggerArray(request.matchSdkEnum().name(), e.getMessage()));
     }
 
     @Override

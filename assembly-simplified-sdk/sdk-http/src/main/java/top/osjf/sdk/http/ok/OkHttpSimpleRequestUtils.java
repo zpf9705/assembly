@@ -16,13 +16,12 @@
 
 package top.osjf.sdk.http.ok;
 
-import cn.hutool.core.io.IoUtil;
 import okhttp3.*;
 import okhttp3.internal.http.HttpMethod;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.ContentType;
 import top.osjf.sdk.core.util.JSONUtil;
+import top.osjf.sdk.core.util.MapUtils;
+import top.osjf.sdk.core.util.StringUtils;
 import top.osjf.sdk.http.excpetion.ResponseFailedException;
 
 import java.util.HashMap;
@@ -157,7 +156,7 @@ public final class OkHttpSimpleRequestUtils {
                 throw new ResponseFailedException(response.message());
             }
         } finally {
-            IoUtil.close(response);
+            if (response != null) response.close();
         }
         return result;
     }

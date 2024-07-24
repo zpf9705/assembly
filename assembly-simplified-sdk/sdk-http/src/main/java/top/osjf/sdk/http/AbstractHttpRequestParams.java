@@ -16,8 +16,6 @@
 
 package top.osjf.sdk.http;
 
-import top.osjf.sdk.core.util.NotNull;
-import top.osjf.sdk.core.util.Nullable;
 import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.core.process.AbstractRequestParams;
 import top.osjf.sdk.core.util.JSONUtil;
@@ -68,7 +66,6 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
         implements HttpRequest<R> {
 
     @Override
-    @Nullable
     public Object getRequestParam() {
         Object param = getParam();
         if (param == null) {
@@ -87,7 +84,6 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
 
     @Override
     @SuppressWarnings("rawtypes")
-    @NotNull
     public Class<? extends Client> getClientCls() {
         return ApacheHttpClient.class;
     }
@@ -103,7 +99,6 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
      * @return Returns an input parameter object, which may have
      * multiple forms of existence or may be {@literal null}.
      */
-    @Nullable
     public Object getParam(){
         return null;
     }

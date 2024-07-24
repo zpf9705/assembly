@@ -16,11 +16,11 @@
 
 package top.osjf.sdk.http;
 
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
 import top.osjf.sdk.core.support.SdkSupport;
+import top.osjf.sdk.core.util.ArrayUtils;
+import top.osjf.sdk.core.util.MapUtils;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;

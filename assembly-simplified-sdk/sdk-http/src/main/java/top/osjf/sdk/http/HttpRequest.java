@@ -17,7 +17,6 @@
 package top.osjf.sdk.http;
 
 import top.osjf.sdk.core.process.Request;
-import top.osjf.sdk.core.util.NotNull;
 import top.osjf.sdk.http.apache.ApacheHttpClient;
 import top.osjf.sdk.http.excpetion.UnknownResponseRequiredTypeException;
 import top.osjf.sdk.http.ok.OkHttpClient;
@@ -122,7 +121,6 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
      * @return {@inheritDoc}
      */
     @Override
-    @NotNull
     default Object getResponseRequiredType() {
         Object responseRequiredType;
         try {

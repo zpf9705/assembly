@@ -16,9 +16,6 @@
 
 package top.osjf.sdk.http.apache;
 
-import cn.hutool.core.io.IoUtil;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.*;
 import org.apache.http.client.utils.URIBuilder;
@@ -28,7 +25,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import top.osjf.sdk.core.util.JSONUtil;
-import top.osjf.sdk.core.util.NotNull;
+import top.osjf.sdk.core.util.MapUtils;
+import top.osjf.sdk.core.util.StringUtils;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -140,7 +138,7 @@ public final class ApacheHttpSimpleRequestUtils {
      * @throws Exception Unknown exception.
      */
     public static String doRequest(CloseableHttpClient client,
-                                   @NotNull HttpRequestBase requestBase,
+                                   HttpRequestBase requestBase,
                                    Map<String, String> headers,
                                    Object requestParam) throws Exception {
         if (client == null) {
@@ -155,8 +153,8 @@ public final class ApacheHttpSimpleRequestUtils {
             HttpEntity entity = response.getEntity();
             result = EntityUtils.toString(entity, StandardCharsets.UTF_8);
         } finally {
-            IoUtil.close(response);
-            IoUtil.close(client);
+            if (response != null) response.close();
+            client.close();
         }
         return result;
     }
