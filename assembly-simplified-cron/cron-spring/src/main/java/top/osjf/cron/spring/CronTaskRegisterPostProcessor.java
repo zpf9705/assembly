@@ -42,7 +42,6 @@ import top.osjf.cron.core.util.MapUtils;
 import top.osjf.cron.spring.annotation.Cron;
 import top.osjf.cron.spring.annotation.MappedAnnotationAttributes;
 
-import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -160,14 +159,16 @@ public class CronTaskRegisterPostProcessor implements ImportAware, ApplicationCo
         //Complete registration.
         CronTaskRealRegistrant realRegistrant = applicationContext.getBean(CronTaskRealRegistrant.class);
         while (collector.hasNext()) {
-            Registrant next = collector.next();
-            try {
-                realRegistrant.register(next);
-            } catch (Exception e) {
-                e.printStackTrace(System.err);
-                if (log.isErrorEnabled()) {
-                    log.error("Registration type [{}] task failed, reason for failure [{}]",
-                            next.getClass().getName(), e.getMessage());
+            Registrant registrant = collector.next();
+            if (realRegistrant.supports(registrant)) {
+                try {
+                    realRegistrant.register(registrant);
+                } catch (Exception e) {
+                    e.printStackTrace(System.err);
+                    if (log.isErrorEnabled()) {
+                        log.error("Registration type [{}] task failed, reason for failure [{}]",
+                                registrant.getClass().getName(), e.getMessage());
+                    }
                 }
             }
         }
@@ -179,7 +180,7 @@ public class CronTaskRegisterPostProcessor implements ImportAware, ApplicationCo
         //Clean up temporary registration resources.
         try {
             collector.close();
-        } catch (IOException ignored) {
+        } catch (Exception ignored) {
         }
     }
 
