@@ -18,7 +18,7 @@ package top.osjf.sdk.spring.beans;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.DisposableBean;
-import top.osjf.sdk.core.util.NotNull;
+import org.springframework.lang.NonNull;
 
 /**
  * Interface to be implemented by beans that want to release resources on destruction.
@@ -52,7 +52,7 @@ public interface DeterminantDisposableBean {
     /**
      * @return Return the type of proxy service required.
      */
-    @NotNull
+    @NonNull
     Class<?> getType();
 
     /**

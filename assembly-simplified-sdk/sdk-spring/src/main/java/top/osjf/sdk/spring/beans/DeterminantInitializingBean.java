@@ -18,7 +18,7 @@ package top.osjf.sdk.spring.beans;
 
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.InitializingBean;
-import top.osjf.sdk.core.util.NotNull;
+import org.springframework.lang.NonNull;
 
 /**
  * Interface to be implemented by beans that need to react once all their properties
@@ -50,7 +50,7 @@ public interface DeterminantInitializingBean {
     /**
      * @return Return the type of proxy service required.
      */
-    @NotNull
+    @NonNull
     Class<?> getType();
 
     /**

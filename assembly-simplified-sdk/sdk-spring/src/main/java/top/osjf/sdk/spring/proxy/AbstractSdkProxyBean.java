@@ -16,7 +16,6 @@
 
 package top.osjf.sdk.spring.proxy;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -26,10 +25,11 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.lang.NonNull;
 import org.springframework.web.context.WebApplicationContext;
 import top.osjf.sdk.core.client.ClientExecutors;
 import top.osjf.sdk.core.process.*;
-import top.osjf.sdk.core.util.NotNull;
+import top.osjf.sdk.core.util.StringUtils;
 import top.osjf.sdk.http.HttpSdkSupport;
 import top.osjf.sdk.spring.beans.DeterminantDisposableBean;
 import top.osjf.sdk.spring.beans.DeterminantInitializingBean;
@@ -105,7 +105,7 @@ public abstract class AbstractSdkProxyBean<T> extends ConcentrateProxySupport<T>
     }
 
     @Override
-    public void setApplicationContext(@NotNull ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
 
@@ -243,7 +243,7 @@ public abstract class AbstractSdkProxyBean<T> extends ConcentrateProxySupport<T>
      * @param request Think of {@link Request#getClientCls()}.
      * @return The result set of this request is encapsulated in {@link Response}.
      */
-    private Response doRequest(@NotNull Request<?> request) {
+    private Response doRequest(@NonNull Request<?> request) {
         //private perm
         //change protected
         //son class can use

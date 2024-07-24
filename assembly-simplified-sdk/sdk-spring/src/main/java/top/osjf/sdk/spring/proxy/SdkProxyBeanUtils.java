@@ -16,13 +16,13 @@
 
 package top.osjf.sdk.spring.proxy;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import top.osjf.sdk.core.util.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -83,13 +83,12 @@ public abstract class SdkProxyBeanUtils {
      * @return The name of the proxy bean.
      */
     public static String getTargetBeanName(String beanName, String className) {
-        if (StringUtils.isAllBlank(beanName, className)) {
-            throw new IllegalArgumentException("When 'beanName' is not provided, please ensure that " +
-                    "'className' is built as the default name and cannot be empty.");
-        }
         if (StringUtils.isNotBlank(beanName)) {
             return beanName + BEAN_NAME_SUFFIX;
         }
+        if (StringUtils.isBlank(className))
+            throw new IllegalArgumentException("When 'beanName' is not provided, please ensure that " +
+                    "'className' is built as the default name and cannot be empty.");
         return className + BEAN_NAME_SUFFIX;
     }
 }

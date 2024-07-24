@@ -16,10 +16,6 @@
 
 package top.osjf.sdk.spring.beans;
 
-import cn.hutool.core.convert.Convert;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -30,6 +26,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.type.AnnotationMetadata;
+import top.osjf.sdk.core.util.ArrayUtils;
+import top.osjf.sdk.core.util.MapUtils;
+import top.osjf.sdk.core.util.StringUtils;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
@@ -193,6 +192,7 @@ public abstract class BeanPropertyUtils {
      * @param <T>                The type of the final parsed value.
      * @return Final logical value.
      */
+    @SuppressWarnings("unchecked")
     private static <A extends Annotation, T> T getMaybeAnnotationValue(AnnotationMetadata annotationMetadata,
                                                                        Class<A> annotationType,
                                                                        Class<T> valueType,
@@ -206,7 +206,12 @@ public abstract class BeanPropertyUtils {
         if (MapUtils.isEmpty(annotationAttributes)) {
             return defaultValue;
         }
-        return Convert.convert(valueType, annotationAttributes.get("value"));
+        Object value = annotationAttributes.get("value");
+        if (valueType.isAssignableFrom(value.getClass())) {
+            return (T) value;
+        }
+        throw new ClassCastException("Required type " + valueType.getName() + ", actual type " +
+                value.getClass().getName() + ".");
     }
 
     /**
@@ -219,8 +224,8 @@ public abstract class BeanPropertyUtils {
      * @return A BeanDefinition describes a bean instance after full use {@link BeanProperty}.
      */
     public static BeanDefinition fullBeanDefinition(BeanDefinitionBuilder builder,
-                                          AnnotationMetadata annotationMetadata,
-                                          AnnotationAttributes beanPropertyAttributes) {
+                                                    AnnotationMetadata annotationMetadata,
+                                                    AnnotationAttributes beanPropertyAttributes) {
         Autowire autowire = beanPropertyAttributes.getEnum(AUTOWIRE);
         boolean autowireCandidate = beanPropertyAttributes.getBoolean(AUTOWIRE_CANDIDATE);
         String scope = getMaybeAnnotationScope(annotationMetadata,

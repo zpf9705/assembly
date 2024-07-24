@@ -17,8 +17,8 @@
 package top.osjf.sdk.spring.beans;
 
 import org.springframework.core.type.ClassMetadata;
-import top.osjf.sdk.core.util.NotNull;
-import top.osjf.sdk.core.util.Nullable;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 /**
  * Interface that defines abstract metadata of a specific class,
@@ -65,7 +65,7 @@ public interface ConfiguredClassMetadata extends ClassMetadata {
         }
 
         @Override
-        @NotNull
+        @NonNull
         public String getClassName() {
             return classMetadata.getClassName();
         }
@@ -108,13 +108,13 @@ public interface ConfiguredClassMetadata extends ClassMetadata {
         }
 
         @Override
-        @NotNull
+        @NonNull
         public String[] getInterfaceNames() {
             return classMetadata.getInterfaceNames();
         }
 
         @Override
-        @NotNull
+        @NonNull
         public String[] getMemberClassNames() {
             return classMetadata.getMemberClassNames();
         }

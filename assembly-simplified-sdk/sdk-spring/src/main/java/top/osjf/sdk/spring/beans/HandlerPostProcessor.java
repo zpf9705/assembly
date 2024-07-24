@@ -16,8 +16,8 @@
 
 package top.osjf.sdk.spring.beans;
 
-import top.osjf.sdk.core.util.NotNull;
-import top.osjf.sdk.core.util.Nullable;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.ResponseData;
 
@@ -67,7 +67,7 @@ public interface HandlerPostProcessor {
      *                    proxy method.
      * @return Customized request parameters.
      */
-    @NotNull
+    @NonNull
     default Request<?> postProcessRequestBeforeHandle(Request<?> request, Class<?> targetType, Method proxyMethod,
                                                       @Nullable Object[] args) {
         return request;

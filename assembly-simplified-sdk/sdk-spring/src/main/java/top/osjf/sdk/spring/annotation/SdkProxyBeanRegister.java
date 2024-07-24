@@ -16,7 +16,6 @@
 
 package top.osjf.sdk.spring.annotation;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
@@ -24,8 +23,9 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
-import top.osjf.sdk.core.util.NotNull;
+import top.osjf.sdk.core.util.StringUtils;
 import top.osjf.sdk.spring.beans.AnnotationTypeScanningCandidateImportBeanDefinitionRegistrar;
 import top.osjf.sdk.spring.beans.BeanProperty;
 import top.osjf.sdk.spring.beans.BeanPropertyUtils;
@@ -132,7 +132,7 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
     }
 
     @Override
-    @NotNull
+    @NonNull
     public Class<Sdk> getFilterAnnotationType() {
         return Sdk.class;
     }

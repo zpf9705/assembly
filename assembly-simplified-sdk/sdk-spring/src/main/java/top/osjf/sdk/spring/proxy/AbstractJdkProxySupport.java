@@ -16,7 +16,6 @@
 
 package top.osjf.sdk.spring.proxy;
 
-import cn.hutool.core.util.ClassUtil;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.lang.Nullable;
 
@@ -93,7 +92,7 @@ public abstract class AbstractJdkProxySupport<T> implements FactoryBean<T>, Invo
 
     @SuppressWarnings("unchecked")
     static <T> T createProxy(Class<T> type, InvocationHandler invocationHandler) {
-        return (T) Proxy.newProxyInstance(ClassUtil.getClassLoader(), new Class[]{type}, invocationHandler);
+        return (T) Proxy.newProxyInstance(type.getClassLoader(), new Class[]{type}, invocationHandler);
     }
 
     @Override

@@ -16,9 +16,6 @@
 
 package top.osjf.sdk.spring.beans;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
@@ -32,7 +29,10 @@ import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.filter.TypeFilter;
-import top.osjf.sdk.core.util.NotNull;
+import org.springframework.lang.NonNull;
+import top.osjf.sdk.core.util.ArrayUtils;
+import top.osjf.sdk.core.util.CollectionUtils;
+import top.osjf.sdk.core.util.StringUtils;
 
 import java.util.Set;
 
@@ -87,12 +87,12 @@ public abstract class ScanningCandidateImportBeanDefinitionRegistrar<T extends B
     protected static final String DEFAULT_SCAN_PATH_ATTRIBUTE_NAME = "value";
 
     @Override
-    public void setEnvironment(@NotNull Environment environment) {
+    public void setEnvironment(@NonNull Environment environment) {
         this.environment = environment;
     }
 
     @Override
-    public void setResourceLoader(@NotNull ResourceLoader resourceLoader) {
+    public void setResourceLoader(@NonNull ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
     }
 
@@ -103,7 +103,7 @@ public abstract class ScanningCandidateImportBeanDefinitionRegistrar<T extends B
 
     @Override
     protected void registerBeanDefinitions(AnnotationAttributes importAnnotationAttributes,
-                                           @NotNull BeanDefinitionRegistry registry) {
+                                           @NonNull BeanDefinitionRegistry registry) {
         this.registry = registry;
         String[] scanningPackageNames;
         if (importAnnotationAttributes != null) {
@@ -162,7 +162,7 @@ public abstract class ScanningCandidateImportBeanDefinitionRegistrar<T extends B
      * have the ability to search for independent and non interface classes under the
      * defined package, specifying a filter {@link TypeFilter}.
      */
-    @NotNull
+    @NonNull
     protected abstract ClassPathScanningCandidateComponentProvider getScanningCandidateProvider();
 
     /**

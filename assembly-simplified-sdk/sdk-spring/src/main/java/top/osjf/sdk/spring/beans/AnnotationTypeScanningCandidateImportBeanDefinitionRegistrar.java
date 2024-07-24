@@ -27,7 +27,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
-import top.osjf.sdk.core.util.NotNull;
+import org.springframework.lang.NonNull;
 import top.osjf.sdk.spring.annotation.EnableSdkProxyRegister;
 import top.osjf.sdk.spring.annotation.Sdk;
 import top.osjf.sdk.spring.proxy.ConcentrateProxySupport;
@@ -63,7 +63,7 @@ import java.util.Objects;
 public abstract class AnnotationTypeScanningCandidateImportBeanDefinitionRegistrar
         extends ScanningCandidateImportBeanDefinitionRegistrar<AnnotatedBeanDefinition> {
 
-    @NotNull
+    @NonNull
     @Override
     protected ClassPathScanningCandidateComponentProvider getScanningCandidateProvider() {
         return new AnnotationTypeClassPathScanningCandidateComponentProvider(
@@ -96,7 +96,7 @@ public abstract class AnnotationTypeScanningCandidateImportBeanDefinitionRegistr
      * @return the search resource class to filter the type of annotation,
      * must not be {@literal null}.
      */
-    @NotNull
+    @NonNull
     protected abstract Class<? extends Annotation> getFilterAnnotationType();
 
     /**

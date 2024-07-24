@@ -16,7 +16,6 @@
 
 package top.osjf.sdk.spring.beans;
 
-import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -24,8 +23,9 @@ import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
-import top.osjf.sdk.core.util.NotNull;
-import top.osjf.sdk.core.util.Nullable;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
+import top.osjf.sdk.core.util.MapUtils;
 
 import java.lang.annotation.Annotation;
 import java.util.Map;
@@ -50,13 +50,13 @@ public abstract class AbstractImportBeanDefinitionRegistrar implements ImportBea
     private ConfiguredClassMetadata configClassMetadata;
 
     @Override
-    public void registerBeanDefinitions(@NotNull AnnotationMetadata metadata, @NotNull BeanDefinitionRegistry registry,
-                                        @NotNull BeanNameGenerator beanNameGenerator) {
+    public void registerBeanDefinitions(@NonNull AnnotationMetadata metadata, @NonNull BeanDefinitionRegistry registry,
+                                        @NonNull BeanNameGenerator beanNameGenerator) {
         this.registerBeanDefinitions(metadata, registry);
     }
 
     @Override
-    public void registerBeanDefinitions(@NotNull AnnotationMetadata metadata, @NotNull BeanDefinitionRegistry registry) {
+    public void registerBeanDefinitions(@NonNull AnnotationMetadata metadata, @NonNull BeanDefinitionRegistry registry) {
         this.configClassMetadata = ConfiguredClassMetadata.of(metadata);
         AnnotationAttributes importAnnotationAttributes;
         Class<? extends Annotation> importAnnotationType = getImportAnnotationType();
@@ -101,7 +101,7 @@ public abstract class AbstractImportBeanDefinitionRegistrar implements ImportBea
      * @param registry                   The registration machine for the bean.
      */
     protected abstract void registerBeanDefinitions(@Nullable AnnotationAttributes importAnnotationAttributes,
-                                                    @NotNull BeanDefinitionRegistry registry);
+                                                    @NonNull BeanDefinitionRegistry registry);
 
     /**
      * Provide {@link org.springframework.context.annotation.Import}
