@@ -24,26 +24,26 @@
     <dependencies>
 
         <dependency>
-            <groupId>top.osjf.cron.spring</groupId>
+            <groupId>top.osjf.cron</groupId>
             <artifactId>cron-spring</artifactId>
             <version>${cron}</version>
         </dependency>
 
         <dependency>
-            <groupId>top.osjf.cron.hutool</groupId>
+            <groupId>top.osjf.cron</groupId>
             <artifactId>cron-hutool</artifactId>
             <version>${cron}</version>
         </dependency>
 
         <dependency>
-            <groupId>top.osjf.cron.quartz</groupId>
+            <groupId>top.osjf.cron</groupId>
             <artifactId>cron-quartz</artifactId>
             <version>${cron}</version>
             <optional>true</optional>
         </dependency>
 
         <dependency>
-            <groupId>top.osjf.cron.cron4j</groupId>
+            <groupId>top.osjf.cron</groupId>
             <artifactId>cron-cron4j</artifactId>
             <version>${cron}</version>
             <optional>true</optional>

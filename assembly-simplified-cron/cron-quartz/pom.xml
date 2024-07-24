@@ -24,7 +24,7 @@
     <dependencies>
 
         <dependency>
-            <groupId>top.osjf.cron.core</groupId>
+            <groupId>top.osjf.cron</groupId>
             <artifactId>cron-core</artifactId>
             <version>${core}</version>
         </dependency>
