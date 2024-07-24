@@ -16,13 +16,14 @@
 
 package top.osjf.cron.spring;
 
+import cn.hutool.core.util.ReflectUtil;
 import top.osjf.cron.spring.annotation.Cron;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Registration abstraction processing for method {@link Method} execution.
@@ -30,27 +31,21 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class AbstractMethodRunnableRegistrantCollector extends AbstractRunnableRegistrantCollector<Method> {
+public abstract class AbstractMethodRunnableRegistrantCollector extends AbstractRunnableRegistrantCollector<Method> {
 
     @Override
     protected List<Method> findAndFilterAnnotatedElements(Class<?> realBeanType) {
-        return Arrays.stream(realBeanType.getDeclaredMethods())
-                .filter(method -> {
-                    int modifiers = method.getModifiers();
-                    return method.isAnnotationPresent(Cron.class)
-                            && !Modifier.isStatic(modifiers)
-                            && Modifier.isPublic(modifiers);
-                }).collect(Collectors.toList());
+        Method[] methods = ReflectUtil.getMethods(realBeanType, method -> {
+            int modifiers = method.getModifiers();
+            return method.isAnnotationPresent(Cron.class)
+                    && !Modifier.isStatic(modifiers)
+                    && Modifier.isPublic(modifiers);
+        });
+        return methods != null ? Arrays.asList(methods) : Collections.emptyList();
     }
 
     @Override
     protected Runnable createRunnable(Object bean, Method method) {
-        return () -> {
-            try {
-                method.invoke(bean);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        };
+        return () -> ReflectUtil.invoke(bean, method);
     }
 }
