@@ -26,6 +26,15 @@ package top.osjf.cron.spring;
 public interface CronTaskRealRegistrant {
 
     /**
+     * Returns whether the currently passed {@link Registrant} is a
+     * type that supports registration.
+     *
+     * @param registrant The true type of bean.
+     * @return whether the currently {@link Registrant} support register.
+     */
+    boolean supports(Registrant registrant);
+
+    /**
      * Register scheduled tasks based on the bean's conditions.
      *
      * @param registrant The true type of bean.
