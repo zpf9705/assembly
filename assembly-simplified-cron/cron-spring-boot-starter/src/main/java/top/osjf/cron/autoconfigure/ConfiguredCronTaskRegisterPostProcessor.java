@@ -18,8 +18,6 @@ package top.osjf.cron.autoconfigure;
 
 import top.osjf.cron.spring.CronTaskRegisterPostProcessor;
 
-import java.util.Map;
-
 /**
  * Automatically configured {@link CronTaskRegisterPostProcessor}.
  *
@@ -27,19 +25,4 @@ import java.util.Map;
  * @since 1.0.0
  */
 public class ConfiguredCronTaskRegisterPostProcessor extends CronTaskRegisterPostProcessor {
-
-    /**
-     * Simple empty construction.
-     */
-    public ConfiguredCronTaskRegisterPostProcessor() {
-    }
-
-    /**
-     * This construction method is used to set the metadata for initiating scheduled tasks.
-     *
-     * @param metadata metadata for initiating scheduled tasks
-     */
-    public ConfiguredCronTaskRegisterPostProcessor(Map<String, Object> metadata) {
-        setMetadata(metadata);
-    }
 }

@@ -21,7 +21,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.EnvironmentCapable;
 import org.springframework.lang.NonNull;
-import top.osjf.cron.core.util.MapUtils;
 
 import java.util.Map;
 
@@ -48,9 +47,9 @@ public abstract class AbstractImplsCommonConfiguration implements EnvironmentAwa
 
     @Bean
     public ConfiguredCronTaskRegisterPostProcessor cronTaskRegisterPostProcessor() {
-        Map<String, Object> metadata = getMetadata();
-        if (MapUtils.isEmpty(metadata)) return new ConfiguredCronTaskRegisterPostProcessor();
-        return new ConfiguredCronTaskRegisterPostProcessor(metadata);
+        ConfiguredCronTaskRegisterPostProcessor postProcessor = new ConfiguredCronTaskRegisterPostProcessor();
+        postProcessor.setMetadata(getMetadata());
+        return postProcessor;
     }
 
     /**
