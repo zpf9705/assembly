@@ -9,7 +9,6 @@
         <version>1.0.0</version>
     </parent>
 
-    <groupId>top.osjf.cron.spring</groupId>
     <artifactId>cron-spring</artifactId>
     <packaging>jar</packaging>
     <version>1.0.0</version>

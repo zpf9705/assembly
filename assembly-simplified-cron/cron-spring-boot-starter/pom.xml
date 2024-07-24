@@ -9,7 +9,6 @@
         <version>1.0.0</version>
     </parent>
 
-    <groupId>top.osjf.cron.autoconfiguration</groupId>
     <artifactId>cron-spring-boot-starter</artifactId>
     <packaging>jar</packaging>
     <version>1.0.0</version>
