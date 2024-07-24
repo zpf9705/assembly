@@ -76,7 +76,6 @@ public @interface EnableSdkProxyRegister {
      * Carrying the path where the {@link Sdk} class is located.
      * <p>If it is null, the default is to use springboot to start
      * the package path where the main class is located.
-     * <strong>_ _ _ _ Since 2.1.0 _ _ _ _</strong>
      * <p>Redirect this property to {@link ComponentScan#value()},
      * configure this property to display the injection source of the
      * bean during code editing, improve user experience.
@@ -86,7 +85,6 @@ public @interface EnableSdkProxyRegister {
      *
      * @return Alias for {{@link #basePackages()}} for {@link ComponentScan}.
      */
-    // update since 2.1.0
     @AliasFor(annotation = ComponentScan.class)
     String[] value() default {};
 
@@ -94,7 +92,6 @@ public @interface EnableSdkProxyRegister {
      * His value shifts to {@link #value()}, consistent with it.
      * <p>If it is null, the default is to use springboot to start
      * the package path where the main class is located.
-     * <strong>_ _ _ _ Since 2.1.0 _ _ _ _</strong>
      * <p>Redirect this property to {@link ComponentScan#basePackages()},
      * configure this property to display the injection source of the
      * bean during code editing, improve user experience.
@@ -104,7 +101,6 @@ public @interface EnableSdkProxyRegister {
      *
      * @return Alias for {{@link #value()}} for {@link ComponentScan}.
      */
-    // update since 2.1.0
     @AliasFor(annotation = ComponentScan.class)
     String[] basePackages() default {};
 }
