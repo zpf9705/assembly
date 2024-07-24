@@ -49,19 +49,4 @@ public abstract class AbstractCronTaskRealRegistrant implements CronTaskRealRegi
     public <T extends CronTaskRepository> T getCronTaskRepository() {
         return (T) cronTaskRepository;
     }
-
-    /**
-     * The generics applicable to {@link CronTaskRepository} are the
-     * registration processing of {@link RunnableRegistrant}.
-     *
-     * @throws Exception {@inheritDoc}
-     */
-    @Override
-    public void register(Registrant registrant) throws Exception {
-        if (registrant instanceof RunnableRegistrant) {
-            CronTaskRepository<String, Runnable> sRCronTaskRepository = getCronTaskRepository();
-            RunnableRegistrant runnableRegistrant = (RunnableRegistrant) registrant;
-            sRCronTaskRepository.register(runnableRegistrant.getCronExpression(), runnableRegistrant.getRunnable());
-        }
-    }
 }
