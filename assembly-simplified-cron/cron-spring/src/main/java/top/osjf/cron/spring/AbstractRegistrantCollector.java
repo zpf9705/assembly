@@ -16,23 +16,18 @@
 
 package top.osjf.cron.spring;
 
-import org.springframework.core.env.Environment;
-import top.osjf.cron.core.repository.CronTaskRepository;
+import org.springframework.lang.NonNull;
 import top.osjf.cron.core.util.ArrayUtils;
 import top.osjf.cron.spring.annotation.Cron;
 import top.osjf.cron.spring.annotation.CronAnnotationAttributes;
-import top.osjf.cron.spring.cron4j.Cron4jRegistrantCollector;
 
 import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 /**
- * Abstract {@link RegistrantCollector}, extract common methods, and use default
- * {@link RunnableRegistrant} to add task classes to be registered.
- *
  * <p>Regarding the registration criteria for scheduled tasks, including the judgment
  * of environment specified in the {@link Cron} annotation, the default {@link Registrant}
  * mentioned above does not meet the requirements and can be further overridden by subclasses.
@@ -47,9 +42,6 @@ public abstract class AbstractRegistrantCollector implements RegistrantCollector
 
     /***  Iterator for {@link #registrants}. */
     private Iterator<Registrant> iterator;
-
-    /***  The expression for the shortest time interval supported by cron4j.. */
-    private static final String cron4jMinExpression = "* * * * *";
 
     /**
      * Return the temporary collection of {@link Registrant}.
@@ -81,46 +73,12 @@ public abstract class AbstractRegistrantCollector implements RegistrantCollector
     }
 
     /**
-     * The generics applicable to {@link CronTaskRepository} are the
-     * registration processing of {@link String} and {@link Runnable}.
+     * Add a {@link Registrant}.
      *
-     * @param realBeanType {@inheritDoc}
-     * @param bean         {@inheritDoc}
-     * @param environment  {@inheritDoc}
+     * @param registrant Pending registration.
      */
-    @Override
-    public void add(Class<?> realBeanType, Object bean, Environment environment) {
-        String[] activeProfiles = environment.getActiveProfiles();
-        for (AnnotatedElement element : findAndFilterAnnotatedElements(realBeanType)) {
-            CronAnnotationAttributes cronAttribute = getCronAttribute(element);
-            String expression = cronAttribute.getExpression();
-            //When considering default values here, cron4j takes
-            // hierarchical default values.
-            if (Objects.equals(expression, Cron.DEFAULT_CRON_EXPRESSION)
-                    && getClass().equals(Cron4jRegistrantCollector.class)) {
-                expression = cron4jMinExpression;
-            }
-            Runnable rab = createRunnable(bean, element);
-            if (ArrayUtils.isEmpty(activeProfiles)) {
-                //When the environment is not activated, it indicates that
-                // everything is applicable and can be registered directly.
-                addRegistrant(expression, rab);
-            } else {
-                if (profilesCheck(cronAttribute.getProfiles(), activeProfiles)) {
-                    addRegistrant(expression, rab);
-                }
-            }
-        }
-    }
-
-    /**
-     * Add a {@link Registrant}, default to using {@link RunnableRegistrant}.
-     *
-     * @param expression Cron expression.
-     * @param rab        run body.
-     */
-    protected void addRegistrant(String expression, Runnable rab) {
-        getRegistrants().add(new RunnableRegistrant(expression, rab));
+    public void addRegistrant(@NonNull Registrant registrant) {
+        getRegistrants().add(registrant);
     }
 
     /**
@@ -132,46 +90,6 @@ public abstract class AbstractRegistrantCollector implements RegistrantCollector
      */
     protected CronAnnotationAttributes getCronAttribute(AnnotatedElement element) {
         return CronAnnotationAttributes.of(element);
-    }
-
-
-    /**
-     * Return the collected and filtered {@link AnnotatedElement} collection.
-     *
-     * <p>This method defaults to {@link Method} executor.
-     *
-     * @param realBeanType {@link #add}.
-     * @return the collected and filtered {@link AnnotatedElement} collection.
-     */
-    protected List<AnnotatedElement> findAndFilterAnnotatedElements(Class<?> realBeanType) {
-        return Arrays.stream(realBeanType.getDeclaredMethods())
-                .filter(method -> {
-                    int modifiers = method.getModifiers();
-                    return method.isAnnotationPresent(Cron.class)
-                            && !Modifier.isStatic(modifiers)
-                            && Modifier.isPublic(modifiers);
-                }).collect(Collectors.toList());
-    }
-
-    /**
-     * Create a runtime {@link Runnable} based on the currently
-     * accessed bean and {@link AnnotatedElement}.
-     *
-     * <p>This method defaults to {@link Method} executor.
-     *
-     * @param bean    {@link #add}.
-     * @param element program elements that can carry annotations.
-     * @return a runtime {@link Runnable}.
-     */
-    protected Runnable createRunnable(Object bean, AnnotatedElement element) {
-        Method method = (Method) element;
-        return () -> {
-            try {
-                method.invoke(bean);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        };
     }
 
     /**
