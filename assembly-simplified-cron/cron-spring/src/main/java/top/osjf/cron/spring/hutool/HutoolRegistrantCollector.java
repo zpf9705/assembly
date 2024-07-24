@@ -16,7 +16,8 @@
 
 package top.osjf.cron.spring.hutool;
 
-import top.osjf.cron.spring.AbstractRegistrantCollector;
+import top.osjf.cron.spring.AbstractMethodRunnableRegistrantCollector;
+import top.osjf.cron.spring.RunnableRegistrant;
 
 /**
  * Hutool's implementation of {@link top.osjf.cron.spring.RegistrantCollector}.
@@ -24,5 +25,10 @@ import top.osjf.cron.spring.AbstractRegistrantCollector;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class HutoolRegistrantCollector extends AbstractRegistrantCollector {
+public class HutoolRegistrantCollector extends AbstractMethodRunnableRegistrantCollector {
+
+    @Override
+    protected RunnableRegistrant addRunnableRegistrantInternal(String expression, Runnable rab) {
+        return new HutoolRegistrant(expression, rab);
+    }
 }

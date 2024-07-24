@@ -16,7 +16,11 @@
 
 package top.osjf.cron.spring.cron4j;
 
-import top.osjf.cron.spring.AbstractRegistrantCollector;
+import top.osjf.cron.spring.AbstractMethodRunnableRegistrantCollector;
+import top.osjf.cron.spring.RunnableRegistrant;
+import top.osjf.cron.spring.annotation.Cron;
+
+import java.util.Objects;
 
 /**
  * Cron4j's implementation of {@link top.osjf.cron.spring.RegistrantCollector}.
@@ -24,5 +28,18 @@ import top.osjf.cron.spring.AbstractRegistrantCollector;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class Cron4jRegistrantCollector extends AbstractRegistrantCollector {
+public class Cron4jRegistrantCollector extends AbstractMethodRunnableRegistrantCollector {
+
+    /***  The expression for the shortest time interval supported by cron4j.. */
+    private static final String cron4jMinExpression = "* * * * *";
+
+    @Override
+    public String ifGetDefaultExpression(String expression) {
+        return Objects.equals(expression, Cron.DEFAULT_CRON_EXPRESSION) ? cron4jMinExpression : expression;
+    }
+
+    @Override
+    protected RunnableRegistrant addRunnableRegistrantInternal(String expression, Runnable rab) {
+        return new Cron4jRegistrant(expression, rab);
+    }
 }
