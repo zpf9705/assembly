@@ -5,12 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>top.osjf.simplified.sdk</groupId>
+        <groupId>top.osjf.sdk</groupId>
         <artifactId>assembly-simplified-sdk</artifactId>
         <version>1.0.0</version>
     </parent>
 
-    <groupId>top.osjf.sdk.spring</groupId>
     <artifactId>sdk-spring</artifactId>
     <packaging>jar</packaging>
     <version>1.0.0</version>
@@ -25,7 +24,7 @@
     <dependencies>
 
         <dependency>
-            <groupId>top.osjf.sdk.http</groupId>
+            <groupId>top.osjf.sdk</groupId>
             <artifactId>sdk-http</artifactId>
             <version>1.0.0</version>
         </dependency>
