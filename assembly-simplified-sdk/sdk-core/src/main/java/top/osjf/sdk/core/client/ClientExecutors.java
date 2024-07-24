@@ -16,7 +16,6 @@
 
 package top.osjf.sdk.core.client;
 
-import cn.hutool.core.util.ReflectUtil;
 import top.osjf.sdk.core.exception.ClientRequestFailedException;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
@@ -76,11 +75,27 @@ public class ClientExecutors {
      * @param <R>     Data Generics for {@link Response}.
      * @return Returns a single instance {@link Client} distinguished by a key.
      */
-    @SuppressWarnings("unchecked")
     public static <R extends Response> Client<R> getAndSetClient(String url, Request<R> request) {
-        return AbstractClient.getAndSetClient(() -> {
-            //Building client objects through reflection based on client type (provided that they are not cached)
-            return ReflectUtil.newInstance(request.getClientCls(), url);
-        }, request, url);
+        return AbstractClient.getAndSetClient(() -> getNewClient(url, request), request, url);
+    }
+
+    /**
+     * Instantiate a {@link Client} use reflect by {@link AbstractClient#AbstractClient(String)}.
+     *
+     * @param request {@link Request} class model parameters of API.
+     * @param url     The real URL address accessed by the SDK.
+     * @param <R>     Data Generics for {@link Response}.
+     * @return {@link Client} instance.
+     */
+    @SuppressWarnings("unchecked")
+    private static <R extends Response> Client<R> getNewClient(String url, Request<R> request) {
+        try {
+            //Building client objects through reflection based
+            // on client type (provided that they are not cached)
+            return request.getClientCls().getConstructor(String.class).newInstance(url);
+        } catch (Exception e) {
+            //all Exceptions throw RuntimeException.
+            throw new RuntimeException(e);
+        }
     }
 }
