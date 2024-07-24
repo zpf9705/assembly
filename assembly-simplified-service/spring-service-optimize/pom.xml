@@ -9,7 +9,6 @@
         <version>1.0.0</version>
     </parent>
 
-    <groupId>top.osjf.spring.service</groupId>
     <artifactId>spring-service-optimize</artifactId>
     <packaging>jar</packaging>
     <version>1.0.0</version>
