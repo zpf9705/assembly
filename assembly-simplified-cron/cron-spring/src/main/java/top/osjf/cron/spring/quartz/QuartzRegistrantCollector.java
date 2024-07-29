@@ -30,30 +30,6 @@ import java.lang.reflect.Method;
  */
 public class QuartzRegistrantCollector extends AbstractMethodRunnableRegistrantCollector {
 
-//    @Override
-//    @SuppressWarnings("unchecked")
-//    public void add(Class<?> realBeanType, Object bean, Environment environment) {
-//
-//        List<Method> methods = findAndFilterAnnotatedElements(realBeanType);
-//
-//        if (!realBeanType.isAnnotationPresent(Cron.class)
-//                || !Job.class.isAssignableFrom(realBeanType)) {
-//            return;
-//        }
-//        if (CollectionUtils.isEmpty(methods)) {
-//            return;
-//        }
-//
-//        CronAnnotationAttributes cronAttribute = getCronAttribute(realBeanType);
-//        String[] activeProfiles = environment.getActiveProfiles();
-//        if (!profilesCheck(cronAttribute.getProfiles(), activeProfiles)) {
-//            return;
-//        }
-//
-//        getRegistrants().add(new QuartzRegistrant(cronAttribute.getExpression(),
-//                JobBuilder.newJob(MethodJob.class).withDescription("").build()));
-//    }
-
     @Override
     public void addRunnableRegistrant(String expression, Runnable rab, Method element) {
         addRegistrant(new QuartzRegistrant(expression, JobBuilder.newJob(MethodJob.class)
