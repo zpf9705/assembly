@@ -16,15 +16,16 @@
 
 package top.osjf.spring.service;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.DigestUtils;
 import top.osjf.spring.service.annotation.ServiceCollection;
 
 import java.lang.reflect.Modifier;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -290,15 +291,15 @@ public final class ServiceContextUtils {
         if (parent == null || StringUtils.isBlank(suffix) || StringUtils.isBlank(applicationId)) {
             return null;
         }
-        return DigestUtils.md5Hex(
+        return DigestUtils.md5DigestAsHex(
                 //Project name.
-                applicationId
+                (applicationId
                         + ARROW
                         //Possible service collection prefixes.
                         + getServiceCollectionPrefix(parent)
                         + ARROW
                         //Avoid using the same name and obtain the package path.
-                        + suffix) +
+                        + suffix).getBytes(StandardCharsets.UTF_8)) +
                 (StringUtils.isNotBlank(idSign) ? idSign : "");
     }
 

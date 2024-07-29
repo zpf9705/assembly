@@ -16,8 +16,6 @@
 
 package top.osjf.spring.service.context;
 
-import cn.hutool.core.convert.Convert;
-import cn.hutool.core.util.ReflectUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
@@ -35,9 +33,11 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationBeanNameGenerator;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.lang.NonNull;
+import org.springframework.util.ReflectionUtils;
 import top.osjf.spring.service.ServiceContextUtils;
 import top.osjf.spring.service.annotation.EnableServiceCollection;
 
@@ -310,10 +310,9 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
         @Override
         public void contextPrepared(ConfigurableApplicationContext context) {
             if (enableCustomBeanNameGeneratorSet) {
-                Method method = ReflectUtil.getMethod(context.getClass(), "setBeanNameGenerator",
-                        BeanNameGenerator.class);
+                Method method = ReflectionUtils.findMethod(context.getClass(), "setBeanNameGenerator");
                 if (method != null) {
-                    ReflectUtil.invoke(context, method, new ServiceContextBeanNameGenerator(context.getId()));
+                    ReflectionUtils.invokeMethod(method, context, new ServiceContextBeanNameGenerator(context.getId()));
                 }
             }
         }
@@ -351,7 +350,7 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
             if (obj == null) {
                 return null;
             }
-            return Convert.convert(requiredType, obj);
+            return context.getBean(ConversionService.class).convert(obj, requiredType);
         };
     }
 
