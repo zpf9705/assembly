@@ -1,3 +1,0 @@
-# Application Run Listener
-org.springframework.boot.SpringApplicationRunListener=\
-top.osjf.spring.service.context.AbstractServiceContext.ServiceContextRunListener
