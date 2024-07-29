@@ -16,7 +16,6 @@
 
 package top.osjf.spring.service.context;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
@@ -37,6 +36,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.lang.NonNull;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
 import top.osjf.spring.service.ServiceContextUtils;
 import top.osjf.spring.service.annotation.EnableServiceCollection;
@@ -298,15 +298,6 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
             return false;
         }
 
-        /**
-         * Has a custom bean name generator been set up.
-         *
-         * @return if {@code true} already set, otherwise not.
-         */
-        public static boolean enableCustomBeanNameGeneratorSet() {
-            return enableCustomBeanNameGeneratorSet;
-        }
-
         @Override
         public void contextPrepared(ConfigurableApplicationContext context) {
             if (enableCustomBeanNameGeneratorSet) {
@@ -399,15 +390,6 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
     }
 
     //———————————————————————————————————— clear op
-
-    /**
-     * Has a custom bean name generator been set up.
-     *
-     * @return if {@code true} already set, otherwise not.
-     */
-    protected boolean enableCustomBeanNameGeneratorSet() {
-        return ServiceContextRunListener.enableCustomBeanNameGeneratorSet();
-    }
 
     /**
      * Clear the name of the bean named by the rule.
