@@ -20,6 +20,7 @@ import top.osjf.cron.spring.AbstractMethodRunnableRegistrantCollector;
 import top.osjf.cron.spring.RunnableRegistrant;
 import top.osjf.cron.spring.annotation.Cron;
 
+import java.lang.reflect.Method;
 import java.util.Objects;
 
 /**
@@ -39,7 +40,7 @@ public class Cron4jRegistrantCollector extends AbstractMethodRunnableRegistrantC
     }
 
     @Override
-    protected RunnableRegistrant addRunnableRegistrantInternal(String expression, Runnable rab) {
+    protected RunnableRegistrant addRunnableRegistrantInternal(String expression, Runnable rab, Method element) {
         return new Cron4jRegistrant(expression, rab);
     }
 }
