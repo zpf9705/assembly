@@ -53,10 +53,10 @@ public abstract class AbstractRunnableRegistrantCollector<T extends AnnotatedEle
             if (ArrayUtils.isEmpty(activeProfiles)) {
                 //When the environment is not activated, it indicates that
                 // everything is applicable and can be registered directly.
-                addRunnableRegistrant(expression, rab);
+                addRunnableRegistrant(expression, rab, element);
             } else {
                 if (profilesCheck(cronAttribute.getProfiles(), activeProfiles)) {
-                    addRunnableRegistrant(expression, rab);
+                    addRunnableRegistrant(expression, rab, element);
                 }
             }
         }
@@ -79,9 +79,10 @@ public abstract class AbstractRunnableRegistrantCollector<T extends AnnotatedEle
      *
      * @param expression Cron expression.
      * @param rab        run body.
+     * @param element    Annotated element.
      */
-    public void addRunnableRegistrant(String expression, Runnable rab) {
-        addRegistrant(addRunnableRegistrantInternal(expression, rab));
+    public void addRunnableRegistrant(String expression, Runnable rab, T element) {
+        addRegistrant(addRunnableRegistrantInternal(expression, rab, element));
     }
 
     /**
@@ -89,9 +90,10 @@ public abstract class AbstractRunnableRegistrantCollector<T extends AnnotatedEle
      *
      * @param expression Cron expression.
      * @param rab        run body.
+     * @param element    Annotated element.
      * @return Subclass for {@link RunnableRegistrant}.
      */
-    protected abstract RunnableRegistrant addRunnableRegistrantInternal(String expression, Runnable rab);
+    protected abstract RunnableRegistrant addRunnableRegistrantInternal(String expression, Runnable rab, T element);
 
     /**
      * Return the collected and filtered {@link AnnotatedElement} collection.
