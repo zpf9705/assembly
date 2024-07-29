@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.spring.service.context;
+package top.osjf.optimize.service_bean.context;
 
 import org.springframework.context.ApplicationContext;
 
@@ -24,7 +24,7 @@ import java.io.Closeable;
  * The central interface for obtaining service context configuration.
  *
  * <p>The underlying implementation utilizes the bean query function method of spring
- * context central interface {@link org.springframework.context.ApplicationContext}.
+ * context central interface {@link ApplicationContext}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.spring.service;
+package top.osjf.optimize.service_bean;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ClassUtils;
@@ -22,7 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
-import top.osjf.spring.service.annotation.ServiceCollection;
+import top.osjf.optimize.service_bean.annotation.ServiceCollection;
 
 import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;

@@ -14,21 +14,26 @@
  * limitations under the License.
  */
 
-package top.osjf.spring.service.context;
+package top.osjf.optimize.service_bean.annotation;
 
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import java.lang.annotation.*;
 
 /**
- * An exception thrown when the service is not queried.
+ * The annotation that needs to be annotated for service interfaces/abstract classes
+ * is mainly used to tell you that once the class is annotated, its implementation
+ * class or subclass can be automatically collected, provided that it has been added
+ * to the Spring container and can be collected.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class NoSuchServiceException extends NoSuchBeanDefinitionException {
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface ServiceCollection {
 
-    private static final long serialVersionUID = 922435911357767431L;
-    public NoSuchServiceException(String serviceName, Class<?> requiredType) {
-        super("Required type " + requiredType.getName() + " no service named " + serviceName +
-                " was found from the service context");
-    }
+    /**
+     * @return Service name prefix,the default is {@link Class#getName()}.
+     */
+    String prefix() default "";
 }

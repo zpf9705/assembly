@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.spring.service.context;
+package top.osjf.optimize.service_bean.context;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.ObjectFactory;

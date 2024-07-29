@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.spring.service.annotation;
+package top.osjf.optimize.service_bean.annotation;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -23,15 +23,14 @@ import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.context.annotation.*;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.lang.NonNull;
-import top.osjf.spring.service.ServiceContextUtils;
-import top.osjf.spring.service.context.AbstractServiceContext;
-import top.osjf.spring.service.context.RecordServiceContext;
-import top.osjf.spring.service.context.ServiceContext;
-import top.osjf.spring.service.context.ServiceContextAwareBeanPostProcessor;
+import top.osjf.optimize.service_bean.ServiceContextUtils;
+import top.osjf.optimize.service_bean.context.RecordServiceContext;
+import top.osjf.optimize.service_bean.context.ServiceContext;
+import top.osjf.optimize.service_bean.context.ServiceContextAwareBeanPostProcessor;
 
 /**
  * The import configuration of {@link EnableServiceCollection} annotations, based on the storage name of
- * {@link AbstractServiceContext.ServiceContextBeanNameGenerator},
+ * {@link top.osjf.optimize.service_bean.context.AbstractServiceContext.ServiceContextBeanNameGenerator},
  * manages the storage of beans after refreshing the context of the spring container.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>

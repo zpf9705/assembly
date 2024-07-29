@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package top.osjf.spring.service.annotation;
+package top.osjf.optimize.service_bean.annotation;
 
 import org.springframework.context.annotation.Import;
-import top.osjf.spring.service.ServiceContextUtils;
+import top.osjf.optimize.service_bean.ServiceContextUtils;
 
 import java.lang.annotation.*;
 

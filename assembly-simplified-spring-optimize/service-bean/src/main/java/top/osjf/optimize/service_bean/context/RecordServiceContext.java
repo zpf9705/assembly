@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.spring.service.context;
+package top.osjf.optimize.service_bean.context;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
@@ -27,7 +27,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.lang.NonNull;
 import org.springframework.util.CollectionUtils;
-import top.osjf.spring.service.ServiceContextUtils;
+import top.osjf.optimize.service_bean.ServiceContextUtils;
 
 import java.util.ArrayList;
 import java.util.List;
