@@ -16,11 +16,13 @@
 
 package top.osjf.cron.spring;
 
-import cn.hutool.core.util.ReflectUtil;
+import org.springframework.util.ReflectionUtils;
+import top.osjf.cron.core.util.ArrayUtils;
 import top.osjf.cron.spring.annotation.Cron;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -35,17 +37,20 @@ public abstract class AbstractMethodRunnableRegistrantCollector extends Abstract
 
     @Override
     protected List<Method> findAndFilterAnnotatedElements(Class<?> realBeanType) {
-        Method[] methods = ReflectUtil.getMethods(realBeanType, method -> {
+
+        Method[] uniqueDeclaredMethods = ReflectionUtils.getUniqueDeclaredMethods(realBeanType, method -> {
             int modifiers = method.getModifiers();
             return method.isAnnotationPresent(Cron.class)
                     && !Modifier.isStatic(modifiers)
                     && Modifier.isPublic(modifiers);
         });
-        return methods != null ? Arrays.asList(methods) : Collections.emptyList();
+
+        return ArrayUtils.isEmpty(uniqueDeclaredMethods) ? Collections.emptyList() :
+                new ArrayList<>(Arrays.asList(uniqueDeclaredMethods));
     }
 
     @Override
     protected Runnable createRunnable(Object bean, Method method) {
-        return () -> ReflectUtil.invoke(bean, method);
+        return () -> ReflectionUtils.invokeMethod(method, bean);
     }
 }

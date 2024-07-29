@@ -16,8 +16,6 @@
 
 package top.osjf.cron.spring.quartz;
 
-import cn.hutool.core.util.ClassUtil;
-import cn.hutool.core.util.ReflectUtil;
 import org.quartz.Job;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
@@ -25,6 +23,7 @@ import org.quartz.Scheduler;
 import org.quartz.spi.JobFactory;
 import org.quartz.spi.TriggerFiredBundle;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -33,6 +32,11 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.lang.NonNull;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils;
+import top.osjf.cron.core.exception.CronException;
+
+import java.lang.reflect.Method;
 
 /**
  * Custom Quartz {@link JobFactory} retrieves objects from Spring's
@@ -42,11 +46,13 @@ import org.springframework.lang.NonNull;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class QuartzJobFactory implements JobFactory, ApplicationContextAware {
+public class QuartzJobFactory implements JobFactory, ApplicationContextAware, BeanClassLoaderAware {
 
     private ApplicationContext applicationContext;
 
     private BeanDefinitionRegistry beanDefinitionRegistry;
+
+    private ClassLoader classLoader;
 
     @Override
     public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
@@ -54,6 +60,12 @@ public class QuartzJobFactory implements JobFactory, ApplicationContextAware {
         this.applicationContext = applicationContext;
 
         this.beanDefinitionRegistry = (BeanDefinitionRegistry) applicationContext;
+    }
+
+    @Override
+    public void setBeanClassLoader(@NonNull ClassLoader classLoader) {
+
+        this.classLoader = classLoader;
     }
 
     @Override
@@ -65,7 +77,7 @@ public class QuartzJobFactory implements JobFactory, ApplicationContextAware {
         return applicationContext.getBean(jobDetail.getJobClass());
     }
 
-    DynamicMethodJob getMethodJobBean(JobDetail jobDetail) {
+    private DynamicMethodJob getMethodJobBean(JobDetail jobDetail) {
 
         JobKey key = jobDetail.getKey();
 
@@ -79,7 +91,7 @@ public class QuartzJobFactory implements JobFactory, ApplicationContextAware {
         return registerAndInitialize(key, beanName);
     }
 
-    DynamicMethodJob registerAndInitialize(JobKey key, String beanName) {
+    private DynamicMethodJob registerAndInitialize(JobKey key, String beanName) {
 
         BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(DynamicMethodJob.class)
                 .setScope(BeanDefinition.SCOPE_SINGLETON)
@@ -91,8 +103,17 @@ public class QuartzJobFactory implements JobFactory, ApplicationContextAware {
         return applicationContext.getBean(beanName, DynamicMethodJob.class);
     }
 
-    Runnable getRunnable(String beanClassName, String methodName) {
+    private Runnable getRunnable(String beanClassName, String methodName) {
 
-        return () -> ReflectUtil.invoke(applicationContext.getBean(ClassUtil.loadClass(beanClassName)), methodName);
+        return () -> {
+
+            Class<?> clazz = ClassUtils.resolveClassName(beanClassName, classLoader);
+
+            Method method = ReflectionUtils.findMethod(clazz, methodName);
+
+            if (method == null) throw new CronException(new NoSuchMethodException(methodName));
+
+            ReflectionUtils.invokeMethod(method, applicationContext.getBean(clazz));
+        };
     }
 }
