@@ -32,7 +32,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationBeanNameGenerator;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.lang.NonNull;
@@ -341,7 +340,7 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
             if (obj == null) {
                 return null;
             }
-            return context.getBean(ConversionService.class).convert(obj, requiredType);
+            return requiredType.cast(obj);
         };
     }
 
