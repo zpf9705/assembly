@@ -16,12 +16,11 @@
 
 package top.osjf.cron.spring.quartz;
 
-import org.quartz.Job;
 import org.quartz.JobBuilder;
-import org.springframework.core.env.Environment;
-import top.osjf.cron.spring.AbstractRegistrantCollector;
-import top.osjf.cron.spring.annotation.Cron;
-import top.osjf.cron.spring.annotation.CronAnnotationAttributes;
+import top.osjf.cron.spring.AbstractMethodRunnableRegistrantCollector;
+import top.osjf.cron.spring.RunnableRegistrant;
+
+import java.lang.reflect.Method;
 
 /**
  * Quartz's implementation of {@link top.osjf.cron.spring.RegistrantCollector}.
@@ -29,21 +28,40 @@ import top.osjf.cron.spring.annotation.CronAnnotationAttributes;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class QuartzRegistrantCollector extends AbstractRegistrantCollector {
+public class QuartzRegistrantCollector extends AbstractMethodRunnableRegistrantCollector {
+
+//    @Override
+//    @SuppressWarnings("unchecked")
+//    public void add(Class<?> realBeanType, Object bean, Environment environment) {
+//
+//        List<Method> methods = findAndFilterAnnotatedElements(realBeanType);
+//
+//        if (!realBeanType.isAnnotationPresent(Cron.class)
+//                || !Job.class.isAssignableFrom(realBeanType)) {
+//            return;
+//        }
+//        if (CollectionUtils.isEmpty(methods)) {
+//            return;
+//        }
+//
+//        CronAnnotationAttributes cronAttribute = getCronAttribute(realBeanType);
+//        String[] activeProfiles = environment.getActiveProfiles();
+//        if (!profilesCheck(cronAttribute.getProfiles(), activeProfiles)) {
+//            return;
+//        }
+//
+//        getRegistrants().add(new QuartzRegistrant(cronAttribute.getExpression(),
+//                JobBuilder.newJob(MethodJob.class).withDescription("").build()));
+//    }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public void add(Class<?> realBeanType, Object bean, Environment environment) {
-        if (!realBeanType.isAnnotationPresent(Cron.class)
-                || !Job.class.isAssignableFrom(realBeanType)) {
-            return;
-        }
-        CronAnnotationAttributes cronAttribute = getCronAttribute(realBeanType);
-        String[] activeProfiles = environment.getActiveProfiles();
-        if (!profilesCheck(cronAttribute.getProfiles(), activeProfiles)) {
-            return;
-        }
-        getRegistrants().add(new QuartzRegistrant(cronAttribute.getExpression(),
-                JobBuilder.newJob((Class<? extends Job>) realBeanType).build()));
+    public void addRunnableRegistrant(String expression, Runnable rab, Method element) {
+        addRegistrant(new QuartzRegistrant(expression, JobBuilder.newJob(MethodJob.class)
+                .withIdentity(element.getName(), element.getDeclaringClass().getName()).build()));
+    }
+
+    @Override
+    protected RunnableRegistrant addRunnableRegistrantInternal(String expression, Runnable rab, Method element) {
+        throw new UnsupportedOperationException();
     }
 }

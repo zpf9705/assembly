@@ -16,11 +16,20 @@
 
 package top.osjf.cron.spring.quartz;
 
+import cn.hutool.core.util.ClassUtil;
+import cn.hutool.core.util.ReflectUtil;
 import org.quartz.Job;
+import org.quartz.JobDetail;
+import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.spi.JobFactory;
 import org.quartz.spi.TriggerFiredBundle;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanDefinitionHolder;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.lang.NonNull;
@@ -37,13 +46,53 @@ public class QuartzJobFactory implements JobFactory, ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
+    private BeanDefinitionRegistry beanDefinitionRegistry;
+
     @Override
     public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
+
         this.applicationContext = applicationContext;
+
+        this.beanDefinitionRegistry = (BeanDefinitionRegistry) applicationContext;
     }
 
     @Override
     public Job newJob(TriggerFiredBundle bundle, Scheduler scheduler) {
-        return applicationContext.getBean(bundle.getJobDetail().getJobClass());
+        JobDetail jobDetail = bundle.getJobDetail();
+        if (MethodJob.class.isAssignableFrom(jobDetail.getJobClass())) {
+            return getMethodJobBean(jobDetail);
+        }
+        return applicationContext.getBean(jobDetail.getJobClass());
+    }
+
+    DynamicMethodJob getMethodJobBean(JobDetail jobDetail) {
+
+        JobKey key = jobDetail.getKey();
+
+        String beanName = key.toString();
+
+        if (applicationContext.containsBean(beanName)) {
+
+            return applicationContext.getBean(beanName, DynamicMethodJob.class);
+        }
+
+        return registerAndInitialize(key, beanName);
+    }
+
+    DynamicMethodJob registerAndInitialize(JobKey key, String beanName) {
+
+        BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(DynamicMethodJob.class)
+                .setScope(BeanDefinition.SCOPE_SINGLETON)
+                .addConstructorArgValue(getRunnable(key.getGroup(), key.getName()));
+
+        BeanDefinitionReaderUtils.registerBeanDefinition(new BeanDefinitionHolder(builder.getBeanDefinition(),
+                beanName), beanDefinitionRegistry);
+
+        return applicationContext.getBean(beanName, DynamicMethodJob.class);
+    }
+
+    Runnable getRunnable(String beanClassName, String methodName) {
+
+        return () -> ReflectUtil.invoke(applicationContext.getBean(ClassUtil.loadClass(beanClassName)), methodName);
     }
 }
