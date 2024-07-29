@@ -1,0 +1,3 @@
+# Application Run Listener
+org.springframework.boot.SpringApplicationRunListener=\
+top.osjf.optimize.service_bean.context.AbstractServiceContext.ServiceContextRunListener
