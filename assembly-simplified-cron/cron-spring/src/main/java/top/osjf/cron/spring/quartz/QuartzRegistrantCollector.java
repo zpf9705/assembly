@@ -16,7 +16,6 @@
 
 package top.osjf.cron.spring.quartz;
 
-import org.quartz.JobBuilder;
 import top.osjf.cron.spring.AbstractMethodRunnableRegistrantCollector;
 import top.osjf.cron.spring.RunnableRegistrant;
 
@@ -32,8 +31,7 @@ public class QuartzRegistrantCollector extends AbstractMethodRunnableRegistrantC
 
     @Override
     public void addRunnableRegistrant(String expression, Runnable rab, Method element) {
-        addRegistrant(new QuartzRegistrant(expression, JobBuilder.newJob(MethodJob.class)
-                .withIdentity(element.getName(), element.getDeclaringClass().getName()).build()));
+        addRegistrant(new QuartzMethodLevelRegistrant(expression, element));
     }
 
     @Override
