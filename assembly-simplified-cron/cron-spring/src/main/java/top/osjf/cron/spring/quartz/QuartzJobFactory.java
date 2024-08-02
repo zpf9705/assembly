@@ -43,6 +43,11 @@ import java.lang.reflect.Method;
  * context container based on the filled {@link Job} type, ensuring
  * unique reuse of the objects.
  *
+ * <p>Convert Quartz's scheduled tasks for class structure to method level,
+ * use the registered {@link JobDetail} to obtain the specific method for
+ * executing the bean, and dynamically create a bean to execute the scheduled
+ * task. The structure can be viewed from {@link DynamicMethodJob}.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
@@ -56,24 +61,27 @@ public class QuartzJobFactory implements JobFactory, ApplicationContextAware, Be
 
     @Override
     public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
-
         this.applicationContext = applicationContext;
-
         this.beanDefinitionRegistry = (BeanDefinitionRegistry) applicationContext;
     }
 
     @Override
     public void setBeanClassLoader(@NonNull ClassLoader classLoader) {
-
         this.classLoader = classLoader;
     }
 
     @Override
     public Job newJob(TriggerFiredBundle bundle, Scheduler scheduler) {
         JobDetail jobDetail = bundle.getJobDetail();
+
+        // MethodJob assignable is method level scheduled task
+        //Dynamically create beans and execute them
         if (MethodJob.class.isAssignableFrom(jobDetail.getJobClass())) {
             return getMethodJobBean(jobDetail);
         }
+
+        //If an operation class is used and a Job task is directly registered,
+        // it can still be obtained directly from the Spring container.
         return applicationContext.getBean(jobDetail.getJobClass());
     }
 
