@@ -44,6 +44,6 @@ public class IntervalTask extends org.springframework.scheduling.config.Interval
 
     @Override
     public SchedulingInfo getSchedulingInfo() {
-        return schedulingRunnable.getInfo();
+        return schedulingRunnable.getSchedulingInfo();
     }
 }

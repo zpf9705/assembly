@@ -44,6 +44,6 @@ public class TriggerTask extends org.springframework.scheduling.config.TriggerTa
 
     @Override
     public SchedulingInfo getSchedulingInfo() {
-        return schedulingRunnable.getInfo();
+        return schedulingRunnable.getSchedulingInfo();
     }
 }

@@ -43,6 +43,6 @@ public class CronTask extends org.springframework.scheduling.config.CronTask imp
 
     @Override
     public SchedulingInfo getSchedulingInfo() {
-        return schedulingRunnable.getInfo();
+        return schedulingRunnable.getSchedulingInfo();
     }
 }
