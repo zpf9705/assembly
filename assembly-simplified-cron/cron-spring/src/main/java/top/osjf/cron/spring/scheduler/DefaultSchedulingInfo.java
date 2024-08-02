@@ -17,18 +17,18 @@
 package top.osjf.cron.spring.scheduler;
 
 /**
- * Default impl for {@link TaskInfo}.
+ * Default impl for {@link SchedulingInfo}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class DefaultTaskInfo implements TaskInfo {
+public class DefaultSchedulingInfo implements SchedulingInfo {
 
     private final String id;
 
     private final Runnable runnable;
 
-    public DefaultTaskInfo(String id, Runnable runnable) {
+    public DefaultSchedulingInfo(String id, Runnable runnable) {
         this.id = id;
         this.runnable = runnable;
     }
