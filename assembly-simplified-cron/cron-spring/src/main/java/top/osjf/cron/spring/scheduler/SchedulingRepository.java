@@ -159,6 +159,9 @@ public class SchedulingRepository extends AnyTaskSupport implements CronTaskRepo
 
     @Override
     public TriggerTask newTriggerTask(org.springframework.scheduling.config.TriggerTask triggerTask) {
+        if (triggerTask instanceof TriggerTask){
+            return (TriggerTask) triggerTask;
+        }
         return new TriggerTask(
                 new SchedulingRunnable(generateID(), triggerTask.getRunnable(), getSchedulingListeners()),
                 triggerTask.getTrigger());
@@ -166,6 +169,9 @@ public class SchedulingRepository extends AnyTaskSupport implements CronTaskRepo
 
     @Override
     public CronTask newCronTask(org.springframework.scheduling.config.CronTask cronTask) {
+        if (cronTask instanceof CronTask){
+            return (CronTask) cronTask;
+        }
         return new CronTask(
                 new SchedulingRunnable(generateID(), cronTask.getRunnable(), getSchedulingListeners()),
                 cronTask.getExpression());
@@ -173,6 +179,9 @@ public class SchedulingRepository extends AnyTaskSupport implements CronTaskRepo
 
     @Override
     public FixedDelayTask newFixedDelayTask(org.springframework.scheduling.config.FixedDelayTask fixedDelayTask) {
+        if (fixedDelayTask instanceof FixedDelayTask){
+            return (FixedDelayTask) fixedDelayTask;
+        }
         return new FixedDelayTask(
                 new SchedulingRunnable(generateID(), fixedDelayTask.getRunnable(), getSchedulingListeners()),
                 fixedDelayTask.getInterval(), fixedDelayTask.getInitialDelay());
@@ -180,6 +189,9 @@ public class SchedulingRepository extends AnyTaskSupport implements CronTaskRepo
 
     @Override
     public FixedRateTask newFixedRateTask(org.springframework.scheduling.config.FixedRateTask fixedRateTask) {
+        if (fixedRateTask instanceof FixedRateTask){
+            return (FixedRateTask) fixedRateTask;
+        }
         return new FixedRateTask(
                 new SchedulingRunnable(generateID(), fixedRateTask.getRunnable(), getSchedulingListeners()),
                 fixedRateTask.getInterval(), fixedRateTask.getInitialDelay());
