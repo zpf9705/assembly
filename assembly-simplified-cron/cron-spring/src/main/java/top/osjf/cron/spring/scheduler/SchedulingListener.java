@@ -25,13 +25,4 @@ import top.osjf.cron.core.listener.CronListener;
  * @since 1.0.0
  */
 public interface SchedulingListener extends CronListener<SchedulingInfo> {
-
-    @Override
-    void onStart(SchedulingInfo value);
-
-    @Override
-    void onSucceeded(SchedulingInfo value);
-
-    @Override
-    void onFailed(SchedulingInfo value, Throwable exception);
 }
