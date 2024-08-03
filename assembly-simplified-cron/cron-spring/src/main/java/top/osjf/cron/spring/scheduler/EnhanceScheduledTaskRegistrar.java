@@ -19,6 +19,11 @@ package top.osjf.cron.spring.scheduler;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.config.*;
+import org.springframework.util.ReflectionUtils;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.util.Map;
 
 /**
  * The enhanced version of {@link ScheduledTaskRegistrar} added {@link SchedulingListener}
@@ -29,7 +34,14 @@ import org.springframework.scheduling.config.*;
  */
 public class EnhanceScheduledTaskRegistrar extends ScheduledTaskRegistrar {
 
+    /*** Scheduling repository.*/
     private final SchedulingRepository repository;
+
+    /*** {@code ScheduledTaskRegistrar#unresolvedTasks}.*/
+    private Map<Task, ScheduledTask> unresolvedTasks;
+
+    /*** Constructor for {@link ScheduledTask}.*/
+    private Constructor<ScheduledTask> constructor;
 
     public EnhanceScheduledTaskRegistrar(SchedulingRepository repository) {
         this.repository = repository;
@@ -38,52 +50,128 @@ public class EnhanceScheduledTaskRegistrar extends ScheduledTaskRegistrar {
     @Nullable
     @Override
     public ScheduledTask scheduleTriggerTask(@NonNull TriggerTask task) {
-        return registerScheduledTask(task, super.scheduleTriggerTask(task));
+        if (getScheduler() == null) {
+            ScheduledTask scheduledTask = getScheduledTask(task);
+            top.osjf.cron.spring.scheduler.task.TriggerTask triggerTask = repository.newTriggerTask(task);
+            getParentUnresolvedTasks().put(triggerTask, scheduledTask);
+            addTriggerTask(triggerTask);
+            return scheduledTask;
+        }
+        ScheduledTask scheduledTask = getParentUnresolvedTasks().get(task);
+        super.scheduleTriggerTask(task);
+        return registerScheduledTask(task, scheduledTask);
     }
 
     @Nullable
     @Override
     public ScheduledTask scheduleCronTask(@NonNull CronTask task) {
-        return registerScheduledTask(task, super.scheduleCronTask(task));
+        if (getScheduler() == null) {
+            ScheduledTask scheduledTask = getScheduledTask(task);
+            top.osjf.cron.spring.scheduler.task.CronTask cronTask = repository.newCronTask(task);
+            getParentUnresolvedTasks().put(cronTask, scheduledTask);
+            addCronTask(cronTask);
+            return scheduledTask;
+        }
+        ScheduledTask scheduledTask = getParentUnresolvedTasks().get(task);
+        super.scheduleCronTask(task);
+        return registerScheduledTask(task, scheduledTask);
     }
 
     @Nullable
     @Override
     public ScheduledTask scheduleFixedRateTask(@NonNull org.springframework.scheduling.config.FixedRateTask task) {
-        return registerScheduledTask(task, super.scheduleFixedRateTask(task));
+        if (getScheduler() == null) {
+            ScheduledTask scheduledTask = getScheduledTask(task);
+            top.osjf.cron.spring.scheduler.task.FixedRateTask fixedRateTask = repository.newFixedRateTask(task);
+            getParentUnresolvedTasks().put(fixedRateTask, scheduledTask);
+            addFixedRateTask(fixedRateTask);
+            return scheduledTask;
+        }
+        ScheduledTask scheduledTask = getParentUnresolvedTasks().get(task);
+        super.scheduleFixedRateTask(task);
+        return registerScheduledTask(task, scheduledTask);
     }
 
     @Nullable
     @Override
     public ScheduledTask scheduleFixedDelayTask(@NonNull org.springframework.scheduling.config.FixedDelayTask task) {
-        return registerScheduledTask(task, super.scheduleFixedDelayTask(task));
+        if (getScheduler() == null) {
+            ScheduledTask scheduledTask = getScheduledTask(task);
+            top.osjf.cron.spring.scheduler.task.FixedDelayTask fixedDelayTask = repository.newFixedDelayTask(task);
+            getParentUnresolvedTasks().put(fixedDelayTask, scheduledTask);
+            addFixedDelayTask(fixedDelayTask);
+            return scheduledTask;
+        }
+        ScheduledTask scheduledTask = getParentUnresolvedTasks().get(task);
+        super.scheduleFixedDelayTask(task);
+        return registerScheduledTask(task, scheduledTask);
     }
 
-    ScheduledTask registerScheduledTask(Task task, ScheduledTask scheduledTask) {
+    /**
+     * Return a new {@link ScheduledTask} using reflect {@code ScheduledTask#ScheduledTask}.
+     *
+     * @param task spring task.
+     * @return Spring scheduling task.
+     */
+    private ScheduledTask getScheduledTask(Task task) {
+        ScheduledTask scheduledTask = getParentUnresolvedTasks().remove(task);
+        if (scheduledTask == null) {
+            try {
+                Constructor<ScheduledTask> constructor = getScheduledTaskConstructor();
+                ReflectionUtils.makeAccessible(constructor);
+                scheduledTask = constructor.newInstance(task);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return scheduledTask;
+    }
+
+    /**
+     * Return a {@link ScheduledTask} default constructor using reflect.
+     *
+     * @return default constructor {@link ScheduledTask}.
+     */
+    private Constructor<ScheduledTask> getScheduledTaskConstructor() {
+        if (constructor == null) {
+            try {
+                constructor = ScheduledTask.class.getDeclaredConstructor(Task.class);
+            } catch (Exception ignored) {
+            }
+        }
+        return constructor;
+    }
+
+    /**
+     * Return the private property field {@code unresolvedTasks } inherited
+     * from the parent class {@link ScheduledTaskRegistrar}.
+     *
+     * @return unresolved Tasks.
+     */
+    @SuppressWarnings("unchecked")
+    private Map<Task, ScheduledTask> getParentUnresolvedTasks() {
+        if (unresolvedTasks == null) {
+            Field field = ReflectionUtils.findField(getClass().getSuperclass(), "unresolvedTasks");
+            if (field != null) {
+                ReflectionUtils.makeAccessible(field);
+                unresolvedTasks = (Map<Task, ScheduledTask>) ReflectionUtils.getField(field, this);
+            }
+        }
+        return unresolvedTasks;
+    }
+
+    /**
+     * Register a {@link ScheduledTask} within {@code key} is {@link Task}.
+     *
+     * @param task          Spring  task.
+     * @param scheduledTask Spring scheduling task.
+     * @return Spring scheduling task.
+     */
+    private ScheduledTask registerScheduledTask(Task task, ScheduledTask scheduledTask) {
         if (task instanceof SchedulingInfoCapable) {
             SchedulingInfo schedulingInfo = ((SchedulingInfoCapable) task).getSchedulingInfo();
             repository.registerScheduledTask(schedulingInfo.getId(), scheduledTask);
         }
         return scheduledTask;
-    }
-
-    @Override
-    public void addTriggerTask(@NonNull TriggerTask task) {
-        super.addTriggerTask(repository.newTriggerTask(task));
-    }
-
-    @Override
-    public void addCronTask(@NonNull CronTask task) {
-        super.addCronTask(repository.newCronTask(task));
-    }
-
-    @Override
-    public void addFixedRateTask(@NonNull IntervalTask task) {
-        super.addFixedRateTask(repository.newFixedRateTask((FixedRateTask) task));
-    }
-
-    @Override
-    public void addFixedDelayTask(@NonNull IntervalTask task) {
-        super.addFixedDelayTask(repository.newFixedDelayTask((FixedDelayTask) task));
     }
 }
