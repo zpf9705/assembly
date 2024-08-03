@@ -16,6 +16,8 @@
 
 package top.osjf.cron.spring.scheduler.task;
 
+import top.osjf.cron.spring.scheduler.SchedulingInfo;
+import top.osjf.cron.spring.scheduler.SchedulingInfoCapable;
 import top.osjf.cron.spring.scheduler.SchedulingRunnable;
 
 /**
@@ -24,7 +26,9 @@ import top.osjf.cron.spring.scheduler.SchedulingRunnable;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class FixedDelayTask extends IntervalTask {
+public class FixedDelayTask extends org.springframework.scheduling.config.FixedDelayTask implements SchedulingInfoCapable {
+
+    private final SchedulingRunnable schedulingRunnable;
 
     /**
      * Create a new {@code IntervalTask}.
@@ -35,5 +39,11 @@ public class FixedDelayTask extends IntervalTask {
      */
     public FixedDelayTask(SchedulingRunnable runnable, long interval, long initialDelay) {
         super(runnable, interval, initialDelay);
+        this.schedulingRunnable = runnable;
+    }
+
+    @Override
+    public SchedulingInfo getSchedulingInfo() {
+        return schedulingRunnable.getSchedulingInfo();
     }
 }

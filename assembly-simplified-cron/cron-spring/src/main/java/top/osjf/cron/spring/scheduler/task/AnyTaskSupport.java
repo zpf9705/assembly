@@ -39,6 +39,7 @@ public abstract class AnyTaskSupport {
 
     /**
      * Return a new {@link SchedulingRunnable} created using the original {@link Runnable}.
+     * @param runnable raw runnable.
      * @return new {@link SchedulingRunnable}.
      */
     protected abstract SchedulingRunnable newSchedulingRunnable(Runnable runnable);
