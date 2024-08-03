@@ -36,7 +36,8 @@ import top.osjf.cron.core.repository.CronListenerRepository;
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 @Import({HutoolCronTaskConfiguration.class,
         QuartzCronTaskConfiguration.class,
-        Cron4jCronTaskConfiguration.class})
+        Cron4jCronTaskConfiguration.class,
+        SchedulingAutoConfiguration.class})
 public class CronTaskAutoConfiguration {
 
     @Bean
