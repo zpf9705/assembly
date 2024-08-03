@@ -16,7 +16,6 @@
 
 package top.osjf.cron.spring.scheduler;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,8 +24,6 @@ import org.springframework.context.annotation.Role;
 import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.scheduling.config.TaskManagementConfigUtils;
-
-import java.util.List;
 
 /**
  * Enhanced version configuration {@link org.springframework.scheduling.annotation.SchedulingConfiguration}.
@@ -40,24 +37,18 @@ public class SchedulingConfiguration {
 
     /**
      * @return {@link ScheduledAnnotationBeanPostProcessor}
+     * @param schedulingRepository scheduling repository.
      * @see ScheduledAnnotationBeanPostProcessor#ScheduledAnnotationBeanPostProcessor(ScheduledTaskRegistrar)
      */
     @Bean(name = TaskManagementConfigUtils.SCHEDULED_ANNOTATION_PROCESSOR_BEAN_NAME)
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-    public ScheduledAnnotationBeanPostProcessor scheduledAnnotationProcessor(@Lazy EnhanceScheduledTaskRegistrar
-                                                                                     enhanceScheduledTaskRegistrar) {
-        return new ScheduledAnnotationBeanPostProcessor(enhanceScheduledTaskRegistrar);
+    public ScheduledAnnotationBeanPostProcessor scheduledAnnotationProcessor(@Lazy SchedulingRepository
+                                                                                     schedulingRepository) {
+        return new ScheduledAnnotationBeanPostProcessor(schedulingRepository.getTaskRegistrar());
     }
 
     @Bean
-    public EnhanceScheduledTaskRegistrar enhanceScheduledTaskRegistrar(SchedulingRepository repository) {
-        return new EnhanceScheduledTaskRegistrar(repository);
-    }
-
-    @Bean
-    public SchedulingRepository schedulingRepository(ObjectProvider<List<SchedulingListener>> provider) {
-        SchedulingRepository taskRepository = new SchedulingRepository();
-        taskRepository.addSchedulingListeners(provider.getIfAvailable());
-        return taskRepository;
+    public SchedulingRepository schedulingRepository() {
+        return new SchedulingRepository();
     }
 }
