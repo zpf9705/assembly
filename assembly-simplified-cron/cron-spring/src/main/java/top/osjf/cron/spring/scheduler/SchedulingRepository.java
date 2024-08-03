@@ -23,6 +23,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.lang.NonNull;
 import org.springframework.scheduling.config.ScheduledTask;
+import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.scheduling.support.CronExpression;
 import top.osjf.cron.core.exception.CronExpressionInvalidException;
 import top.osjf.cron.core.exception.CronTaskNoExistException;
@@ -43,8 +44,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class SchedulingRepository implements CronTaskRepository<String, Runnable>, TaskEnhanceConvertFactory,
-        CronListenerRepository<SchedulingListener>, ApplicationContextAware, InitializingBean {
+public class SchedulingRepository extends AnyTaskSupport implements CronTaskRepository<String, Runnable>,
+        TaskEnhanceConvertFactory, CronListenerRepository<SchedulingListener>, ApplicationContextAware, InitializingBean {
 
     /*** Internally, {@link ScheduledTask} is assigned an actual ID storage map to
      * record the unique ID of the task, in order to facilitate the implementation
@@ -87,7 +88,7 @@ public class SchedulingRepository implements CronTaskRepository<String, Runnable
      * and in subsequent {@link CronTaskRepository} operations, update,
      * delete, and perform other operations based on the ID.
      *
-     * @param id unique ID of {@link ScheduledTask}.
+     * @param id            unique ID of {@link ScheduledTask}.
      * @param scheduledTask spring scheduledTask.
      */
     public void registerScheduledTask(String id, ScheduledTask scheduledTask) {
@@ -96,6 +97,7 @@ public class SchedulingRepository implements CronTaskRepository<String, Runnable
 
     /**
      * Return enhanced version of timed task registration class.
+     *
      * @return {@link EnhanceScheduledTaskRegistrar}.
      */
     public EnhanceScheduledTaskRegistrar getTaskRegistrar() {
@@ -105,14 +107,9 @@ public class SchedulingRepository implements CronTaskRepository<String, Runnable
     @Override
     public String register(String cronExpression, Runnable runsBody) throws Exception {
         isValidExpression(cronExpression);
-        String id = ID.get();
-        if (StringUtils.isBlank(id)) {
-            id = UUID.randomUUID().toString();
-        } else ID.remove();
-        ScheduledTask scheduledTask = taskRegistrar
-                .scheduleCronTask(new CronTask(new SchedulingRunnable(id, runsBody, schedulingListeners), cronExpression));
-        scheduledTaskMap.put(id, scheduledTask);
-        return id;
+        SchedulingRunnable schedulingRunnable = newSchedulingRunnable(runsBody);
+        taskRegistrar.scheduleCronTask(new CronTask(schedulingRunnable, cronExpression));
+        return schedulingRunnable.getSchedulingInfo().getId();
     }
 
     @Override
@@ -144,6 +141,20 @@ public class SchedulingRepository implements CronTaskRepository<String, Runnable
     @SuppressWarnings("unchecked")
     public CronListenerRepository<SchedulingListener> getCronListenerRepository() {
         return this;
+    }
+
+    @Override
+    protected ScheduledTaskRegistrar getScheduledTaskRegistrar() {
+        return taskRegistrar;
+    }
+
+    @Override
+    protected SchedulingRunnable newSchedulingRunnable(Runnable runnable) {
+        String id = ID.get();
+        if (StringUtils.isBlank(id)) {
+            id = UUID.randomUUID().toString();
+        } else ID.remove();
+        return new SchedulingRunnable(id, runnable, getSchedulingListeners());
     }
 
     @Override
