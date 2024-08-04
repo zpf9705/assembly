@@ -32,10 +32,7 @@ import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.core.util.StringUtils;
 import top.osjf.cron.spring.scheduler.task.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -72,15 +69,6 @@ public class SchedulingRepository extends AnyTaskSupport implements CronTaskRepo
     @Override
     public void afterPropertiesSet() {
         schedulingListeners.addAll(applicationContext.getBeansOfType(SchedulingListener.class).values());
-    }
-
-    /**
-     * Return to the Spring container and custom added listeners.
-     *
-     * @return Spring container and custom added listeners.
-     */
-    public List<SchedulingListener> getSchedulingListeners() {
-        return schedulingListeners;
     }
 
     /**
@@ -129,7 +117,9 @@ public class SchedulingRepository extends AnyTaskSupport implements CronTaskRepo
 
     @Override
     public void addCronListener(SchedulingListener cronListener) {
-        schedulingListeners.add(cronListener);
+        if (!schedulingListeners.contains(cronListener)) {
+            schedulingListeners.add(cronListener);
+        }
     }
 
     @Override
@@ -154,46 +144,46 @@ public class SchedulingRepository extends AnyTaskSupport implements CronTaskRepo
         if (StringUtils.isBlank(id)) {
             id = UUID.randomUUID().toString();
         } else ID.remove();
-        return new SchedulingRunnable(id, runnable, getSchedulingListeners());
+        return new SchedulingRunnable(id, runnable, schedulingListeners);
     }
 
     @Override
     public TriggerTask newTriggerTask(org.springframework.scheduling.config.TriggerTask triggerTask) {
-        if (triggerTask instanceof TriggerTask){
+        if (triggerTask instanceof TriggerTask) {
             return (TriggerTask) triggerTask;
         }
         return new TriggerTask(
-                new SchedulingRunnable(generateID(), triggerTask.getRunnable(), getSchedulingListeners()),
+                new SchedulingRunnable(generateID(), triggerTask.getRunnable(), schedulingListeners),
                 triggerTask.getTrigger());
     }
 
     @Override
     public CronTask newCronTask(org.springframework.scheduling.config.CronTask cronTask) {
-        if (cronTask instanceof CronTask){
+        if (cronTask instanceof CronTask) {
             return (CronTask) cronTask;
         }
         return new CronTask(
-                new SchedulingRunnable(generateID(), cronTask.getRunnable(), getSchedulingListeners()),
+                new SchedulingRunnable(generateID(), cronTask.getRunnable(), schedulingListeners),
                 cronTask.getExpression());
     }
 
     @Override
     public FixedDelayTask newFixedDelayTask(org.springframework.scheduling.config.FixedDelayTask fixedDelayTask) {
-        if (fixedDelayTask instanceof FixedDelayTask){
+        if (fixedDelayTask instanceof FixedDelayTask) {
             return (FixedDelayTask) fixedDelayTask;
         }
         return new FixedDelayTask(
-                new SchedulingRunnable(generateID(), fixedDelayTask.getRunnable(), getSchedulingListeners()),
+                new SchedulingRunnable(generateID(), fixedDelayTask.getRunnable(), schedulingListeners),
                 fixedDelayTask.getInterval(), fixedDelayTask.getInitialDelay());
     }
 
     @Override
     public FixedRateTask newFixedRateTask(org.springframework.scheduling.config.FixedRateTask fixedRateTask) {
-        if (fixedRateTask instanceof FixedRateTask){
+        if (fixedRateTask instanceof FixedRateTask) {
             return (FixedRateTask) fixedRateTask;
         }
         return new FixedRateTask(
-                new SchedulingRunnable(generateID(), fixedRateTask.getRunnable(), getSchedulingListeners()),
+                new SchedulingRunnable(generateID(), fixedRateTask.getRunnable(), schedulingListeners),
                 fixedRateTask.getInterval(), fixedRateTask.getInitialDelay());
     }
 
