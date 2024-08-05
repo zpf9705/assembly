@@ -92,6 +92,15 @@ public class SchedulingRepository extends AnyTaskSupport implements CronTaskRepo
         return taskRegistrar;
     }
 
+    /**
+     * Return a list of immutable listener collections.
+     *
+     * @return list of immutable listener collections.
+     */
+    public List<SchedulingListener> getSchedulingListeners() {
+        return Collections.unmodifiableList(schedulingListeners);
+    }
+
     @Override
     public String register(String cronExpression, Runnable runsBody) throws Exception {
         isValidExpression(cronExpression);
@@ -144,7 +153,7 @@ public class SchedulingRepository extends AnyTaskSupport implements CronTaskRepo
         if (StringUtils.isBlank(id)) {
             id = UUID.randomUUID().toString();
         } else ID.remove();
-        return new SchedulingRunnable(id, runnable, schedulingListeners);
+        return new SchedulingRunnable(id, runnable, getSchedulingListeners());
     }
 
     @Override
@@ -153,7 +162,7 @@ public class SchedulingRepository extends AnyTaskSupport implements CronTaskRepo
             return (TriggerTask) triggerTask;
         }
         return new TriggerTask(
-                new SchedulingRunnable(generateID(), triggerTask.getRunnable(), schedulingListeners),
+                new SchedulingRunnable(generateID(), triggerTask.getRunnable(), getSchedulingListeners()),
                 triggerTask.getTrigger());
     }
 
@@ -163,7 +172,7 @@ public class SchedulingRepository extends AnyTaskSupport implements CronTaskRepo
             return (CronTask) cronTask;
         }
         return new CronTask(
-                new SchedulingRunnable(generateID(), cronTask.getRunnable(), schedulingListeners),
+                new SchedulingRunnable(generateID(), cronTask.getRunnable(), getSchedulingListeners()),
                 cronTask.getExpression());
     }
 
@@ -173,7 +182,7 @@ public class SchedulingRepository extends AnyTaskSupport implements CronTaskRepo
             return (FixedDelayTask) fixedDelayTask;
         }
         return new FixedDelayTask(
-                new SchedulingRunnable(generateID(), fixedDelayTask.getRunnable(), schedulingListeners),
+                new SchedulingRunnable(generateID(), fixedDelayTask.getRunnable(), getSchedulingListeners()),
                 fixedDelayTask.getInterval(), fixedDelayTask.getInitialDelay());
     }
 
@@ -183,7 +192,7 @@ public class SchedulingRepository extends AnyTaskSupport implements CronTaskRepo
             return (FixedRateTask) fixedRateTask;
         }
         return new FixedRateTask(
-                new SchedulingRunnable(generateID(), fixedRateTask.getRunnable(), schedulingListeners),
+                new SchedulingRunnable(generateID(), fixedRateTask.getRunnable(), getSchedulingListeners()),
                 fixedRateTask.getInterval(), fixedRateTask.getInitialDelay());
     }
 
