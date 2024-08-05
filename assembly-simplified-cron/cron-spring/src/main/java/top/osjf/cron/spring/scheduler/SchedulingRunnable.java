@@ -18,6 +18,7 @@ package top.osjf.cron.spring.scheduler;
 
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import top.osjf.cron.core.util.CollectionUtils;
 
 import java.util.List;
 
@@ -37,6 +38,9 @@ public class SchedulingRunnable implements Runnable, SchedulingInfoCapable {
 
     private final List<SchedulingListener> schedulingListeners;
 
+    /*** Is {@link #schedulingListeners} empty. */
+    private final boolean hasSchedulingListener;
+
     /**
      * Create a new {@code SchedulingRunnable} within any task info.
      *
@@ -49,21 +53,22 @@ public class SchedulingRunnable implements Runnable, SchedulingInfoCapable {
         this.runnable = runnable;
         this.info = new DefaultSchedulingInfo(id, runnable);
         this.schedulingListeners = schedulingListeners;
+        this.hasSchedulingListener = CollectionUtils.isNotEmpty(schedulingListeners);
     }
 
     /*** Execute the callback that is ready to start.*/
     void onStart() {
-        if (schedulingListeners != null) schedulingListeners.forEach(c -> c.onStart(info));
+        if (hasSchedulingListener) schedulingListeners.forEach(c -> c.onStart(info));
     }
 
     /*** Successful callback execution.*/
     void onSucceeded() {
-        if (schedulingListeners != null) schedulingListeners.forEach(c -> c.onSucceeded(info));
+        if (hasSchedulingListener) schedulingListeners.forEach(c -> c.onSucceeded(info));
     }
 
     /*** The callback that failed to execute.*/
     void onFailed(Throwable e) {
-        if (schedulingListeners != null) schedulingListeners.forEach(c -> c.onFailed(info, e));
+        if (hasSchedulingListener) schedulingListeners.forEach(c -> c.onFailed(info, e));
     }
 
     @Override
