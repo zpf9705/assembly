@@ -18,9 +18,7 @@ package top.osjf.cron.spring.scheduler;
 
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import top.osjf.cron.core.util.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,25 +34,38 @@ public class SchedulingRunnable implements Runnable, SchedulingInfoCapable {
 
     private final Runnable runnable;
 
-    private final List<SchedulingListener> schedulingListeners = new ArrayList<>();
+    private final List<SchedulingListener> schedulingListeners;
 
     public SchedulingRunnable(@NonNull String id, @NonNull Runnable runnable,
-                              @Nullable List<SchedulingListener> springCronListeners) {
+                              @Nullable List<SchedulingListener> schedulingListeners) {
         this.runnable = runnable;
         this.info = new DefaultSchedulingInfo(id, runnable);
-        if (CollectionUtils.isNotEmpty(springCronListeners)) {
-            this.schedulingListeners.addAll(springCronListeners);
-        }
+        this.schedulingListeners = schedulingListeners;
+    }
+
+    /*** Execute the callback that is ready to start.*/
+    void onStart() {
+        if (schedulingListeners != null) schedulingListeners.forEach(c -> c.onStart(info));
+    }
+
+    /*** Successful callback execution.*/
+    void onSucceeded() {
+        if (schedulingListeners != null) schedulingListeners.forEach(c -> c.onSucceeded(info));
+    }
+
+    /*** The callback that failed to execute.*/
+    void onFailed(Throwable e) {
+        if (schedulingListeners != null) schedulingListeners.forEach(c -> c.onFailed(info, e));
     }
 
     @Override
     public void run() {
-        schedulingListeners.forEach(c -> c.onStart(info));
+        onStart();
         try {
             runnable.run();
-            schedulingListeners.forEach(c -> c.onSucceeded(info));
+            onSucceeded();
         } catch (Throwable e) {
-            schedulingListeners.forEach(c -> c.onFailed(info, e));
+            onFailed(e);
         }
     }
 
