@@ -30,12 +30,20 @@ import java.util.List;
  */
 public class SchedulingRunnable implements Runnable, SchedulingInfoCapable {
 
+    /*** Task scheduled info */
     private final SchedulingInfo info;
 
     private final Runnable runnable;
 
     private final List<SchedulingListener> schedulingListeners;
 
+    /**
+     * Create a new {@code SchedulingRunnable} within any task info.
+     *
+     * @param id                  The unique ID of the task.
+     * @param runnable            The executor of the task.
+     * @param schedulingListeners The collection of listeners for the task.
+     */
     public SchedulingRunnable(@NonNull String id, @NonNull Runnable runnable,
                               @Nullable List<SchedulingListener> schedulingListeners) {
         this.runnable = runnable;
