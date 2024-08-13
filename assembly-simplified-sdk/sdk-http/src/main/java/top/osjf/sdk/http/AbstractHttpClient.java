@@ -193,13 +193,8 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
                                 Object requestParam,
                                 boolean montage) throws Exception {
         HttpSdkSupport.checkContentType(headers);
-        HttpRequestExecutor executor = getRequestExecutor();
-        return executor.getClass()
-                .getMethod(method.name().toLowerCase(),
-                        String.class,
-                        Map.class,
-                        Object.class,
-                        boolean.class).invoke(executor, getUrl(), headers, requestParam, montage).toString();
+        return getRequestExecutor()
+                .unifiedDoRequest(method.name().toLowerCase(), getUrl(), headers, requestParam, montage);
     }
 
     @Override
