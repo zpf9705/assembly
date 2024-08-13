@@ -32,6 +32,7 @@ public class ApacheHttpRequestExecutor implements HttpRequestExecutor {
     /*** The only instance.*/
     public static final HttpRequestExecutor INSTANCE = new ApacheHttpRequestExecutor();
 
+    /*** Just use {@link #INSTANCE} directly.*/
     private ApacheHttpRequestExecutor() {
     }
 
@@ -53,5 +54,25 @@ public class ApacheHttpRequestExecutor implements HttpRequestExecutor {
     @Override
     public String delete(String url, Map<String, String> headers, Object requestParam, boolean montage) throws Exception {
         return ApacheHttpSimpleRequestUtils.delete(url, headers, requestParam, montage);
+    }
+
+    @Override
+    public String trace(String url, Map<String, String> headers, Object requestParam, boolean montage) throws Exception {
+        return ApacheHttpSimpleRequestUtils.trace(url, headers, requestParam, montage);
+    }
+
+    @Override
+    public String options(String url, Map<String, String> headers, Object requestParam, boolean montage) throws Exception {
+        return ApacheHttpSimpleRequestUtils.options(url, headers, requestParam, montage);
+    }
+
+    @Override
+    public String head(String url, Map<String, String> headers, Object requestParam, boolean montage) throws Exception {
+        return ApacheHttpSimpleRequestUtils.head(url, headers, requestParam, montage);
+    }
+
+    @Override
+    public String patch(String url, Map<String, String> headers, Object requestParam, boolean montage) throws Exception {
+        return ApacheHttpSimpleRequestUtils.patch(url, headers, requestParam, montage);
     }
 }

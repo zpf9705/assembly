@@ -32,6 +32,7 @@ public class OkHttpHttpRequestExecutor implements HttpRequestExecutor {
     /*** The only instance.*/
     public static final HttpRequestExecutor INSTANCE = new OkHttpHttpRequestExecutor();
 
+    /*** Just use {@link #INSTANCE} directly.*/
     private OkHttpHttpRequestExecutor() {
     }
 
@@ -53,5 +54,25 @@ public class OkHttpHttpRequestExecutor implements HttpRequestExecutor {
     @Override
     public String delete(String url, Map<String, String> headers, Object requestParam, boolean montage) throws Exception {
         return OkHttpSimpleRequestUtils.delete(url, headers, requestParam, montage);
+    }
+
+    @Override
+    public String trace(String url, Map<String, String> headers, Object requestParam, boolean montage) throws Exception {
+        return OkHttpSimpleRequestUtils.trace(url, headers, requestParam, montage);
+    }
+
+    @Override
+    public String options(String url, Map<String, String> headers, Object requestParam, boolean montage) throws Exception {
+        return OkHttpSimpleRequestUtils.options(url, headers, requestParam, montage);
+    }
+
+    @Override
+    public String head(String url, Map<String, String> headers, Object requestParam, boolean montage) throws Exception {
+        return OkHttpSimpleRequestUtils.head(url, headers, requestParam, montage);
+    }
+
+    @Override
+    public String patch(String url, Map<String, String> headers, Object requestParam, boolean montage) throws Exception {
+        return OkHttpSimpleRequestUtils.patch(url, headers, requestParam, montage);
     }
 }
