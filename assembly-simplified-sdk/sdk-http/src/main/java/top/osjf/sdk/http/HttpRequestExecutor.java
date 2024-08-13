@@ -24,7 +24,7 @@ import java.util.Map;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public interface HttpMethod {
+public interface HttpRequestExecutor {
 
     /**
      * HTTP request method for {@code Get}.
@@ -77,12 +77,4 @@ public interface HttpMethod {
      * @throws Exception unknown exception.
      */
     String delete(String url, Map<String, String> headers, Object param, boolean montage) throws Exception;
-
-    /**
-     * Obtain singleton objects for different HTTP request patterns.
-     */
-    interface InstanceCapable {
-
-        HttpMethod getInstance();
-    }
 }
