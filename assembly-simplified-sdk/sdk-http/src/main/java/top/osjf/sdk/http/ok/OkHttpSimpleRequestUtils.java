@@ -126,6 +126,78 @@ public final class OkHttpSimpleRequestUtils {
     }
 
     /**
+     * Square's HTTP request for {@code trace}.
+     * <p>
+     * The default format is {@link OkHttpClient} in <pre>{@code new OkHttpClient().newBuilder().build()}</pre>
+     *
+     * @param url          The actual request address,must not be {@literal null}.
+     * @param headers      Header information map,can be {@literal null}.
+     * @param requestParam Request parameters,can be {@literal null}.
+     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
+     * @return The {@code String} type of the return value.
+     * @throws Exception Unknown exception.
+     */
+    public static String trace(String url, Map<String, String> headers, Object requestParam, boolean montage)
+            throws Exception {
+        return doRequest(null, getRequestBuilder(url, requestParam, montage, headers, "TRACE"),
+                headers);
+    }
+
+    /**
+     * Square's HTTP request for {@code options}.
+     * <p>
+     * The default format is {@link OkHttpClient} in <pre>{@code new OkHttpClient().newBuilder().build()}</pre>
+     *
+     * @param url          The actual request address,must not be {@literal null}.
+     * @param headers      Header information map,can be {@literal null}.
+     * @param requestParam Request parameters,can be {@literal null}.
+     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
+     * @return The {@code String} type of the return value.
+     * @throws Exception Unknown exception.
+     */
+    public static String options(String url, Map<String, String> headers, Object requestParam, boolean montage)
+            throws Exception {
+        return doRequest(null, getRequestBuilder(url, requestParam, montage, headers, "OPTIONS"),
+                headers);
+    }
+
+    /**
+     * Square's HTTP request for {@code head}.
+     * <p>
+     * The default format is {@link OkHttpClient} in <pre>{@code new OkHttpClient().newBuilder().build()}</pre>
+     *
+     * @param url          The actual request address,must not be {@literal null}.
+     * @param headers      Header information map,can be {@literal null}.
+     * @param requestParam Request parameters,can be {@literal null}.
+     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
+     * @return The {@code String} type of the return value.
+     * @throws Exception Unknown exception.
+     */
+    public static String head(String url, Map<String, String> headers, Object requestParam, boolean montage)
+            throws Exception {
+        return doRequest(null, getRequestBuilder(url, requestParam, montage, headers, "HEAD"),
+                headers);
+    }
+
+    /**
+     * Square's HTTP request for {@code patch}.
+     * <p>
+     * The default format is {@link OkHttpClient} in <pre>{@code new OkHttpClient().newBuilder().build()}</pre>
+     *
+     * @param url          The actual request address,must not be {@literal null}.
+     * @param headers      Header information map,can be {@literal null}.
+     * @param requestParam Request parameters,can be {@literal null}.
+     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
+     * @return The {@code String} type of the return value.
+     * @throws Exception Unknown exception.
+     */
+    public static String patch(String url, Map<String, String> headers, Object requestParam, boolean montage)
+            throws Exception {
+        return doRequest(null, getRequestBuilder(url, requestParam, montage, headers, "PATCH"),
+                headers);
+    }
+
+    /**
      * The HTTP request sending method includes the entire lifecycle of HTTP requests.
      *
      * @param client  Square's HTTP request client,can be {@literal null}.
@@ -264,6 +336,14 @@ public final class OkHttpSimpleRequestUtils {
             case "DELETE":
                 requestBuild = requestBuild.delete(body);
                 break;
+            case "TRACE":
+                requestBuild = requestBuild.method("TRACE", body);
+            case "OPTIONS":
+                requestBuild = requestBuild.method("OPTIONS", body);
+            case "HEAD":
+                requestBuild = requestBuild.head();
+            case "PATCH":
+                requestBuild = requestBuild.patch(body);
         }
         return requestBuild;
     }
