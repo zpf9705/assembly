@@ -42,7 +42,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
- * Inheriting {@link ConcentrateProxySupport} implements handing over
+ * Inheriting {@link HierarchicalProxySupport} implements handing over
  * the object of the jdk dynamic proxy to the spring container for management.
  *
  * <p>When this object is called, the {@link #invoke(Object, Method, Object[])}
@@ -62,7 +62,7 @@ import java.util.function.Predicate;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public abstract class AbstractSdkProxyBean<T> extends ConcentrateProxySupport<T> implements RequestAttributes,
+public abstract class AbstractSdkProxyBean<T> extends HierarchicalProxySupport<T> implements RequestAttributes,
         ApplicationContextAware, InitializingBean, DisposableBean {
 
     /*** SLF4J logs.*/
@@ -85,14 +85,6 @@ public abstract class AbstractSdkProxyBean<T> extends ConcentrateProxySupport<T>
             "Proxy info ( target type [%s] | proxy type [%s] | host [%s] | proxy model [%s] )";
 
     /**
-     * The construction method called when defining the scope of a normal bean
-     * , such as {@link org.springframework.beans.factory.config.BeanDefinition#SCOPE_PROTOTYPE}
-     * {@link org.springframework.beans.factory.config.BeanDefinition#SCOPE_SINGLETON}.
-     */
-    public AbstractSdkProxyBean() {
-    }
-
-    /**
      * When defining a special scope bean, such as {@link WebApplicationContext#SCOPE_REQUEST}
      * {@link WebApplicationContext#SCOPE_APPLICATION} {@link WebApplicationContext#SCOPE_SESSION},
      * call this constructor to pass the type in advance.
@@ -101,7 +93,7 @@ public abstract class AbstractSdkProxyBean<T> extends ConcentrateProxySupport<T>
      *             {@link FactoryBean#getObjectType()}.
      */
     public AbstractSdkProxyBean(Class<T> type) {
-        setType(type);
+        super(type);
     }
 
     @Override
