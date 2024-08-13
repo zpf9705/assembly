@@ -30,7 +30,7 @@ import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.lang.NonNull;
 import top.osjf.sdk.spring.annotation.EnableSdkProxyRegister;
 import top.osjf.sdk.spring.annotation.Sdk;
-import top.osjf.sdk.spring.proxy.ConcentrateProxySupport;
+import top.osjf.sdk.spring.proxy.HierarchicalProxySupport;
 
 import java.lang.annotation.Annotation;
 import java.util.Objects;
@@ -47,7 +47,7 @@ import java.util.Objects;
  * <p>For example, when the springboot program starts, if it detects that the container bean is
  * wearing {@link EnableSdkProxyRegister} annotations,
  * it will automatically search for the wearing annotation {@link Sdk}
- * interface in this class and create an implementation class (refer to {@link ConcentrateProxySupport}).
+ * interface in this class and create an implementation class (refer to {@link HierarchicalProxySupport}).
  *
  * <p>The implementation process depends on the bean's registrar interface {@link ImportBeanDefinitionRegistrar}.
  *
