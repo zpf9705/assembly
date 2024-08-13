@@ -57,12 +57,12 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
     /*** Save each request parameter and use it for subsequent requests*/
     private static final ThreadLocal<Request> local = new ThreadLocal<>();
 
-    /*** Constructing for {@link Client} objects using access URLs.
-     * @param url The real URL address of the SDK request.
+    /*** Constructing for {@link Client} objects using unique identifier.
+     * @param unique The unique identifier string for this client's cache.
      * */
-    public AbstractClient(String url) {
-        Objects.requireNonNull(url, "Client Url");
-        cache(url, this);
+    public AbstractClient(String unique) {
+        Objects.requireNonNull(unique, "Client unique");
+        cache(unique, this);
     }
 
     /**
@@ -70,14 +70,15 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
      * as the value, and cache it in the current {@link #cache}
      * to prepare for continuous access in the future.
      *
-     * @param url    Cache link url.
+     * @param unique The unique identifier string for this
+     *               client's cache.
      * @param client Real impl in {@link Client}.
      */
-    void cache(String url, Client client) {
-        if (StringUtils.isBlank(url) || client == null) {
+    void cache(String unique, Client client) {
+        if (StringUtils.isBlank(unique) || client == null) {
             return;
         }
-        cache.putIfAbsent(url, client);
+        cache.putIfAbsent(unique, client);
     }
 
     /**
@@ -105,20 +106,20 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
      *
      * @param newClientSupplier New client provider,if not found, add it directly.
      * @param request           {@link Request} class model parameters of API.
-     * @param url               The real URL address accessed by the SDK.
+     * @param unique            The unique identifier string for this client's cache.
      * @param <R>               Data Generics for {@link Response}.
      * @return {@link Client} 's singleton object, persistently requesting.
      */
     public static <R extends Response> Client<R> getAndSetClient(Supplier<Client<R>> newClientSupplier,
                                                                  Request<R> request,
-                                                                 String url) {
-        Objects.requireNonNull(url, "Client Url");
+                                                                 String unique) {
+        Objects.requireNonNull(unique, "Client unique");
         Objects.requireNonNull(request, "Client Request");
         setCurrentParam(request);
-        Client<R> client = cache.get(url);
+        Client<R> client = cache.get(unique);
         if (client == null) {
             synchronized (lock) {
-                client = cache.get(url);
+                client = cache.get(unique);
                 if (client == null) {
                     client = newClientSupplier.get();
                 }

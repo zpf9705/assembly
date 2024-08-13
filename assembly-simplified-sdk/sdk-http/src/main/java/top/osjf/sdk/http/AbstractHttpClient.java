@@ -25,7 +25,7 @@ import top.osjf.sdk.core.process.DefaultErrorResponse;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.util.CollectionUtils;
 import top.osjf.sdk.core.util.JSONUtil;
-import top.osjf.sdk.http.apache.ApacheHttpMethod;
+import top.osjf.sdk.http.apache.ApacheHttpRequestExecutor;
 
 import java.util.List;
 import java.util.Map;
@@ -70,8 +70,8 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
     /*** HTTP requests the real access address.*/
     private final String url;
 
-    /*** Http request method,defaults to {@link ApacheHttpMethod}*/
-    private HttpMethod httpMethod = ApacheHttpMethod.INSTANCE;
+    /*** Http request executor,defaults to {@link ApacheHttpRequestExecutor}*/
+    private HttpRequestExecutor requestExecutor = ApacheHttpRequestExecutor.INSTANCE;
 
     /*** Constructing for {@link HttpClient} objects using access URLs.
      * @param url The real URL address of the SDK request.
@@ -82,23 +82,23 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
     }
 
     /**
-     * Set a {@code HttpMethod}.
+     * Set a {@code HttpRequestExecutor}.
      *
-     * @param httpMethod a {@code HttpMethod}.
+     * @param requestExecutor a {@code HttpRequestExecutor}.
      */
-    public void setHttpMethod(HttpMethod httpMethod) {
-        if (httpMethod != null){
-            this.httpMethod = httpMethod;
+    public void setRequestExecutor(HttpRequestExecutor requestExecutor) {
+        if (requestExecutor != null) {
+            this.requestExecutor = requestExecutor;
         }
     }
 
     /**
-     * Return a not null {@code HttpMethod}.
+     * Return a not null {@code HttpRequestExecutor}.
      *
-     * @return a not null {@code HttpMethod}.
+     * @return a not null {@code HttpRequestExecutor}.
      */
-    public HttpMethod getHttpMethod() {
-        return httpMethod;
+    public HttpRequestExecutor getRequestExecutor() {
+        return requestExecutor;
     }
 
     /**
@@ -193,7 +193,13 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
                                 Object requestParam,
                                 Boolean montage) throws Exception {
         HttpSdkSupport.checkContentType(headers);
-        return method.doRequest(getHttpMethod(), getUrl(), headers, requestParam, montage);
+        HttpRequestExecutor executor = getRequestExecutor();
+        return executor.getClass()
+                .getMethod(method.name().toLowerCase(),
+                        String.class,
+                        Map.class,
+                        Object.class,
+                        Boolean.class).invoke(executor, getUrl(), headers, requestParam, montage).toString();
     }
 
     @Override
