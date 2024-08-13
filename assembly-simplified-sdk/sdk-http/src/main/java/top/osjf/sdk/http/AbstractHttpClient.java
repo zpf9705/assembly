@@ -163,17 +163,6 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
         return response;
     }
 
-    /**
-     * Use the existing parameters given by {@link HttpRequest} to conduct
-     * an HTTP call and return the result.
-     *
-     * @param method       {@link HttpRequest#matchSdkEnum()}
-     * @param headers      {@link HttpRequest#getHeadMap()}
-     * @param requestParam {@link HttpRequest#getRequestParam()}
-     * @param montage      {@link HttpRequest#montage()}
-     * @return http request result.
-     * @throws Exception maybe exceptions when http request.
-     */
     @Override
     public String doHttpRequest(HttpRequestMethod method,
                                Map<String, String> headers,
