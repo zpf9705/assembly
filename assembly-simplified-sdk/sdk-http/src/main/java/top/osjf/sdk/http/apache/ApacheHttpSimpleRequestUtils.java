@@ -128,6 +128,74 @@ public final class ApacheHttpSimpleRequestUtils {
     }
 
     /**
+     * Apache HTTP request for {@code trace}.
+     * <p>
+     * The default format is {@link CloseableHttpClient} in <pre>{@code HttpClients.custom().build()}</pre>
+     *
+     * @param url          The actual request address,must not be {@literal null}.
+     * @param headers      Header information map,can be {@literal null}.
+     * @param requestParam Request parameters,can be {@literal null}.
+     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
+     * @return The {@code String} type of the return value.
+     * @throws Exception Unknown exception.
+     */
+    public static String trace(String url, Map<String, String> headers, Object requestParam, boolean montage)
+            throws Exception {
+        return doRequest(null, new HttpTrace(getUri(url, requestParam, montage)), headers, requestParam);
+    }
+
+    /**
+     * Apache HTTP request for {@code options}.
+     * <p>
+     * The default format is {@link CloseableHttpClient} in <pre>{@code HttpClients.custom().build()}</pre>
+     *
+     * @param url          The actual request address,must not be {@literal null}.
+     * @param headers      Header information map,can be {@literal null}.
+     * @param requestParam Request parameters,can be {@literal null}.
+     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
+     * @return The {@code String} type of the return value.
+     * @throws Exception Unknown exception.
+     */
+    public static String options(String url, Map<String, String> headers, Object requestParam, boolean montage)
+            throws Exception {
+        return doRequest(null, new HttpOptions(getUri(url, requestParam, montage)), headers, requestParam);
+    }
+
+    /**
+     * Apache HTTP request for {@code head}.
+     * <p>
+     * The default format is {@link CloseableHttpClient} in <pre>{@code HttpClients.custom().build()}</pre>
+     *
+     * @param url          The actual request address,must not be {@literal null}.
+     * @param headers      Header information map,can be {@literal null}.
+     * @param requestParam Request parameters,can be {@literal null}.
+     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
+     * @return The {@code String} type of the return value.
+     * @throws Exception Unknown exception.
+     */
+    public static String head(String url, Map<String, String> headers, Object requestParam, boolean montage)
+            throws Exception {
+        return doRequest(null, new HttpHead(getUri(url, requestParam, montage)), headers, requestParam);
+    }
+
+    /**
+     * Apache HTTP request for {@code patch}.
+     * <p>
+     * The default format is {@link CloseableHttpClient} in <pre>{@code HttpClients.custom().build()}</pre>
+     *
+     * @param url          The actual request address,must not be {@literal null}.
+     * @param headers      Header information map,can be {@literal null}.
+     * @param requestParam Request parameters,can be {@literal null}.
+     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
+     * @return The {@code String} type of the return value.
+     * @throws Exception Unknown exception.
+     */
+    public static String patch(String url, Map<String, String> headers, Object requestParam, boolean montage)
+            throws Exception {
+        return doRequest(null, new HttpPatch(getUri(url, requestParam, montage)), headers, requestParam);
+    }
+
+    /**
      * The HTTP request sending method includes the entire lifecycle of HTTP requests.
      *
      * @param client       Apache's HTTP request client.
