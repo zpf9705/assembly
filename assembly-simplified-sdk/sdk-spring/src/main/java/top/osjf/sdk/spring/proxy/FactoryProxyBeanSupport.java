@@ -17,6 +17,7 @@
 package top.osjf.sdk.spring.proxy;
 
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 /**
@@ -36,7 +37,7 @@ public abstract class FactoryProxyBeanSupport<T> implements FactoryBean<T> {
     /**
      * The target type of dynamic proxy.
      */
-    private Class<T> type;
+    private final Class<T> type;
 
     /**
      * Is the object managed by this factory a singleton.
@@ -44,11 +45,11 @@ public abstract class FactoryProxyBeanSupport<T> implements FactoryBean<T> {
     public boolean isSingleton = true;
 
     /**
-     * Set the target type for this proxy creation.
+     * Constructor for a {@code Class} type.
      *
-     * @param type the target type for this proxy creation.
+     * @param type a {@code Class} type
      */
-    public void setType(Class<T> type) {
+    public FactoryProxyBeanSupport(@NonNull Class<T> type) {
         this.type = type;
     }
 
