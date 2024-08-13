@@ -36,6 +36,6 @@ public class ApacheHttpClient<R extends HttpResponse> extends AbstractHttpClient
 
     public ApacheHttpClient(String url) {
         super(url);
-        setHttpMethod(ApacheHttpMethod.INSTANCE);
+        setRequestExecutor(ApacheHttpRequestExecutor.INSTANCE);
     }
 }

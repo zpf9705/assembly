@@ -16,23 +16,23 @@
 
 package top.osjf.sdk.http.ok;
 
-import top.osjf.sdk.http.HttpMethod;
+import top.osjf.sdk.http.HttpRequestExecutor;
 
 import java.util.Map;
 
 /**
- * One of the implementation classes of {@link HttpMethod}, please
+ * One of the implementation classes of {@link HttpRequestExecutor}, please
  * refer to {@link OkHttpSimpleRequestUtils} for implementation.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class OkHttpMethod implements HttpMethod {
+public class OkHttpHttpRequestExecutor implements HttpRequestExecutor {
 
     /*** The only instance.*/
-    public static final HttpMethod INSTANCE = new OkHttpMethod();
+    public static final HttpRequestExecutor INSTANCE = new OkHttpHttpRequestExecutor();
 
-    private OkHttpMethod() {
+    private OkHttpHttpRequestExecutor() {
     }
 
     @Override

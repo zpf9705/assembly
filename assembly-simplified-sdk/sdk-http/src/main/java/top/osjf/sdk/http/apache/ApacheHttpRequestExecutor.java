@@ -16,23 +16,23 @@
 
 package top.osjf.sdk.http.apache;
 
-import top.osjf.sdk.http.HttpMethod;
+import top.osjf.sdk.http.HttpRequestExecutor;
 
 import java.util.Map;
 
 /**
- * One of the implementation classes of {@link HttpMethod}, please
+ * One of the implementation classes of {@link HttpRequestExecutor}, please
  * refer to{@link ApacheHttpSimpleRequestUtils} for implementation.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class ApacheHttpMethod implements HttpMethod {
+public class ApacheHttpRequestExecutor implements HttpRequestExecutor {
 
     /*** The only instance.*/
-    public static final HttpMethod INSTANCE = new ApacheHttpMethod();
+    public static final HttpRequestExecutor INSTANCE = new ApacheHttpRequestExecutor();
 
-    private ApacheHttpMethod() {
+    private ApacheHttpRequestExecutor() {
     }
 
     @Override
