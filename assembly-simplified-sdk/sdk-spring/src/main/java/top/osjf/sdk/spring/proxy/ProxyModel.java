@@ -22,15 +22,25 @@ package top.osjf.sdk.spring.proxy;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public enum ProxyModel {
+public enum ProxyModel implements ProxyObjectFactory {
 
     /**
      * The enumeration representation of the JDK dynamic proxy model.
      */
-    JDK,
+    JDK {
+        @Override
+        public <T> T getProxyObject(Object... args) {
+            return ProxyUtils.createJdkProxy(args);
+        }
+    },
 
     /**
      * The enumeration representation of cglib dynamic proxy based on Spring.
      */
-    SPRING_CJ_LIB
+    SPRING_CJ_LIB {
+        @Override
+        public <T> T getProxyObject(Object... args) {
+            return ProxyUtils.createCglibProxy(args);
+        }
+    }
 }
