@@ -25,6 +25,7 @@ import top.osjf.sdk.core.process.DefaultErrorResponse;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.util.CollectionUtils;
 import top.osjf.sdk.core.util.JSONUtil;
+import top.osjf.sdk.http.apache.ApacheHttpMethod;
 
 import java.util.List;
 import java.util.Map;
@@ -69,12 +70,34 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
     /*** HTTP requests the real access address.*/
     private final String url;
 
+    /*** Http request method*/
+    private HttpMethod httpMethod;
+
     /*** Constructing for {@link HttpClient} objects using access URLs.
      * @param url The real URL address of the SDK request.
      * */
     public AbstractHttpClient(String url) {
         super(url);
         this.url = url;
+    }
+
+    /**
+     * Set a {@code HttpMethod}.
+     *
+     * @param httpMethod a {@code HttpMethod}.
+     */
+    public void setHttpMethod(HttpMethod httpMethod) {
+        if (httpMethod == null) httpMethod = ApacheHttpMethod.INSTANCE;
+        this.httpMethod = httpMethod;
+    }
+
+    /**
+     * Return a not null {@code HttpMethod},defaults to {@link ApacheHttpMethod}.
+     *
+     * @return a not null {@code HttpMethod}.
+     */
+    public HttpMethod getHttpMethod() {
+        return httpMethod == null ? ApacheHttpMethod.INSTANCE : httpMethod;
     }
 
     /**
@@ -165,11 +188,11 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
 
     @Override
     public String doHttpRequest(HttpRequestMethod method,
-                               Map<String, String> headers,
-                               Object requestParam,
-                               Boolean montage) throws Exception {
+                                Map<String, String> headers,
+                                Object requestParam,
+                                Boolean montage) throws Exception {
         HttpSdkSupport.checkContentType(headers);
-        return null;
+        return method.doRequest(getHttpMethod(), getUrl(), headers, requestParam, montage);
     }
 
     @Override
