@@ -17,7 +17,6 @@
 package top.osjf.sdk.spring.proxy;
 
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.cglib.proxy.Callback;
 import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
@@ -39,70 +38,18 @@ import java.lang.reflect.Method;
  * {@link FactoryBean} interface and dynamically register beans through
  * {@link org.springframework.beans.factory.support.BeanDefinitionRegistry}
  *
- * <p>If you want to standardize processing, you can access {@link ConcentrateProxySupport}.
+ * <p>If you want to standardize processing, you can access {@link HierarchicalProxySupport}.
  *
  * @param <T> The data type of the proxy class.
- * @see Enhancer
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
+ * @see Enhancer
  * @since 1.0.0
  */
-public abstract class AbstractCglibProxySupport<T> implements FactoryBean<T>, MethodInterceptor {
+public abstract class AbstractCglibProxySupport<T> extends FactoryProxyBeanSupport<T> implements MethodInterceptor {
 
-    /**
-     * The proxy object created.
-     */
-    private T proxy;
-
-    /**
-     * The target type of dynamic proxy.
-     */
-    private Class<T> type;
-
-    /**
-     * Is the object managed by this factory a singleton.
-     */
-    public boolean isSingleton = true;
-
-    public void setType(Class<T> type) {
-        this.type = type;
-    }
-
-    public Class<T> getType() {
-        return type;
-    }
-
-    public void setSingleton(boolean singleton) {
-        isSingleton = singleton;
-    }
-
+    @Override
     @Nullable
-    @Override
-    public Class<?> getObjectType() {
-        return type;
+    protected T getObject0() {
+        return ProxyUtils.createCglibProxy(getType(), this);
     }
-
-    @Override
-    public boolean isSingleton() {
-        return isSingleton;
-    }
-
-    @Override
-    public T getObject() {
-        if (proxy != null) {
-            return proxy;
-        }
-        proxy = createProxy(type, this);
-        return proxy;
-    }
-
-    @SuppressWarnings("unchecked")
-    static <T> T createProxy(Class<T> type, Callback callback) {
-        final Enhancer enhancer = new Enhancer();
-        enhancer.setSuperclass(type);
-        enhancer.setCallback(callback);
-        return (T) enhancer.create();
-    }
-
-    @Override
-    public abstract Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy);
 }
