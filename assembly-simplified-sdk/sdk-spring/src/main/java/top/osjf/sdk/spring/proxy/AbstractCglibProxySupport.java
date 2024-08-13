@@ -20,6 +20,7 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 import java.lang.reflect.Method;
@@ -46,6 +47,16 @@ import java.lang.reflect.Method;
  * @since 1.0.0
  */
 public abstract class AbstractCglibProxySupport<T> extends FactoryProxyBeanSupport<T> implements MethodInterceptor {
+
+
+    /**
+     * Constructor for a {@code Class} type.
+     *
+     * @param type a {@code Class} type
+     */
+    public AbstractCglibProxySupport(@NonNull Class<T> type) {
+        super(type);
+    }
 
     @Override
     @Nullable

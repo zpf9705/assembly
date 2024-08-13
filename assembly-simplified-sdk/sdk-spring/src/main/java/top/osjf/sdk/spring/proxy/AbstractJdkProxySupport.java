@@ -17,6 +17,7 @@
 package top.osjf.sdk.spring.proxy;
 
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 import java.lang.reflect.InvocationHandler;
@@ -41,6 +42,15 @@ import java.lang.reflect.Method;
  * @since 1.0.0
  */
 public abstract class AbstractJdkProxySupport<T> extends FactoryProxyBeanSupport<T> implements InvocationHandler {
+
+    /**
+     * Constructor for a {@code Class} type.
+     *
+     * @param type a {@code Class} type
+     */
+    public AbstractJdkProxySupport(@NonNull Class<T> type) {
+        super(type);
+    }
 
     @Override
     @Nullable
