@@ -54,8 +54,7 @@ import java.util.function.BiConsumer;
  *
  * <p>If this type is inherited, it can be rewritten.
  *
- * <p>Of course, you can define your request based on the
- * {@link #doRequest(HttpRequestMethod, Map, Object, Boolean)} method.
+ * <p>Of course, you can define your request based on the {@link #doHttpRequest} method.
  *
  * @param <R> Implement a unified response class data type.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
