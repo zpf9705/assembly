@@ -91,10 +91,6 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
      * */
     private static final String SDK_PROXY_MODEL_NAME = "proxyModel";
 
-    /*** Sdk proxy bean type field name.
-     * */
-    private static final String SDK_PROXY_TYPE_NAME = "type";
-
     @Override
     public BeanDefinitionHolder createBeanDefinitionHolder(AnnotationAttributes markedAnnotationAttributes,
                                                            AnnotationMetadata markedAnnotationMetadata) {
@@ -110,7 +106,7 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
         builder.addPropertyValue(SDK_PROXY_HOST_NAME,
                 getRequestHost(markedAnnotationAttributes.getString(SDK_ATTR_HOST_PROPERTY)));
         builder.addPropertyValue(SDK_PROXY_MODEL_NAME, model);
-        builder.addPropertyValue(SDK_PROXY_TYPE_NAME, className);
+        builder.addConstructorArgValue(className);
         AnnotationAttributes beanPropertyAttributes = markedAnnotationAttributes
                 .getAnnotation(SDK_ATTR_BEAN_PROPERTY);
         String[] names = beanPropertyAttributes.getStringArray(SDK_ATTR_BEAN_NAME);
@@ -122,8 +118,7 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
                 beanDefinition,
                 beanName,
                 alisaNames,
-                getBeanDefinitionRegistry(),
-                () -> builder.addConstructorArgValue(className));
+                getBeanDefinitionRegistry());
     }
 
     @Override
