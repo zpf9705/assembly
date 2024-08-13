@@ -24,5 +24,5 @@ package top.osjf.sdk.http;
  */
 public enum HttpRequestMethod {
 
-    GET, POST, PUT, DELETE
+    GET, POST, PUT, DELETE, TRACE, OPTIONS, HEAD, PATCH
 }

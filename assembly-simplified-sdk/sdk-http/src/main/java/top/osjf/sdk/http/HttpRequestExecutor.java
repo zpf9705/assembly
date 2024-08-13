@@ -77,4 +77,56 @@ public interface HttpRequestExecutor {
      * @throws Exception unknown exception.
      */
     String delete(String url, Map<String, String> headers, Object param, boolean montage) throws Exception;
+
+    /**
+     * HTTP request method for {@code trace}.
+     *
+     * @param url     The actual request address,must not be {@literal null}.
+     * @param headers Header information map,can be {@literal null}.
+     * @param param   Request parameters with type {@link Object},can be {@literal null}.
+     * @param montage Whether to concatenate parameters in the form of {@link Map} or {@code Json}
+     *                as key/value after the URL.
+     * @return The {@code String} type of the return value
+     * @throws Exception unknown exception.
+     */
+    String trace(String url, Map<String, String> headers, Object param, boolean montage) throws Exception;
+
+    /**
+     * HTTP request method for {@code options}.
+     *
+     * @param url     The actual request address,must not be {@literal null}.
+     * @param headers Header information map,can be {@literal null}.
+     * @param param   Request parameters with type {@link Object},can be {@literal null}.
+     * @param montage Whether to concatenate parameters in the form of {@link Map} or {@code Json}
+     *                as key/value after the URL.
+     * @return The {@code String} type of the return value
+     * @throws Exception unknown exception.
+     */
+    String options(String url, Map<String, String> headers, Object param, boolean montage) throws Exception;
+
+    /**
+     * HTTP request method for {@code head}.
+     *
+     * @param url     The actual request address,must not be {@literal null}.
+     * @param headers Header information map,can be {@literal null}.
+     * @param param   Request parameters with type {@link Object},can be {@literal null}.
+     * @param montage Whether to concatenate parameters in the form of {@link Map} or {@code Json}
+     *                as key/value after the URL.
+     * @return The {@code String} type of the return value
+     * @throws Exception unknown exception.
+     */
+    String head(String url, Map<String, String> headers, Object param, boolean montage) throws Exception;
+
+    /**
+     * HTTP request method for {@code patch}.
+     *
+     * @param url     The actual request address,must not be {@literal null}.
+     * @param headers Header information map,can be {@literal null}.
+     * @param param   Request parameters with type {@link Object},can be {@literal null}.
+     * @param montage Whether to concatenate parameters in the form of {@link Map} or {@code Json}
+     *                as key/value after the URL.
+     * @return The {@code String} type of the return value
+     * @throws Exception unknown exception.
+     */
+    String patch(String url, Map<String, String> headers, Object param, boolean montage) throws Exception;
 }
