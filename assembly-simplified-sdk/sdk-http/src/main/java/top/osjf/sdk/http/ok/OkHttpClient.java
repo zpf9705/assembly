@@ -17,11 +17,7 @@
 package top.osjf.sdk.http.ok;
 
 import top.osjf.sdk.http.AbstractHttpClient;
-import top.osjf.sdk.http.HttpRequestMethod;
 import top.osjf.sdk.http.HttpResponse;
-import top.osjf.sdk.http.Instance;
-
-import java.util.Map;
 
 
 /**
@@ -33,17 +29,14 @@ import java.util.Map;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-@SuppressWarnings("serial")
 public class OkHttpClient<R extends HttpResponse> extends AbstractHttpClient<R> {
+
+    private static final long serialVersionUID = 9030529850666460725L;
+
+    /* ******* Construct ***********/
 
     public OkHttpClient(String url) {
         super(url);
-    }
-
-    @Override
-    public String doHttpRequest(HttpRequestMethod method, Map<String, String> headers, Object requestParam,
-                            Boolean montage) throws Exception {
-        super.doHttpRequest(method, headers, requestParam, montage);
-        return method.doRequest(Instance.OK_HTTP, getUrl(), headers, requestParam, montage);
+        setHttpMethod(OkHttpMethod.INSTANCE);
     }
 }
