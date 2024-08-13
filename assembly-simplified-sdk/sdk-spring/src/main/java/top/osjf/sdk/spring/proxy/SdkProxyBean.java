@@ -52,10 +52,6 @@ import top.osjf.sdk.spring.beans.ScanningCandidateImportBeanDefinitionRegistrar;
  */
 public class SdkProxyBean<T> extends AbstractSdkProxyBean<T> {
 
-    public SdkProxyBean() {
-        super();
-    }
-
     public SdkProxyBean(Class<T> type) {
         super(type);
     }

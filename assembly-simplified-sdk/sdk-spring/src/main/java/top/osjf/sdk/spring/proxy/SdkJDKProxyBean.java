@@ -58,14 +58,6 @@ import top.osjf.sdk.spring.beans.ScanningCandidateImportBeanDefinitionRegistrar;
  */
 public class SdkJDKProxyBean<T> extends AbstractSdkProxyBean<T> {
 
-    /**
-     * The construction method for setting the proxy model {@link ProxyModel} to cglib.
-     */
-    public SdkJDKProxyBean() {
-        super();
-        setProxyModel(ProxyModel.JDK);
-    }
-
     public SdkJDKProxyBean(Class<T> type) {
         super(type);
         setProxyModel(ProxyModel.JDK);

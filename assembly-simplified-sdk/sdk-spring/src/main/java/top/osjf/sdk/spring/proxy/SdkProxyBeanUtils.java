@@ -51,26 +51,21 @@ public abstract class SdkProxyBeanUtils {
      * {@link BeanDefinitionHolder}. If it is a special scope outside of this range,
      * a proxy bean will be created first to meet the special scope.
      *
-     * @param definition                     The builder of {@link BeanDefinitionBuilder}.
-     * @param beanName                       The name of the proxy bean.
-     * @param alisa                          The alias set of proxy beans.
-     * @param registry                       the bean definition registry.
-     * @param beanDefinitionScopeProxyUpdate The custom {@link BeanDefinition} update action
-     *                                       given when the currently registered bean is a
-     *                                       scope that needs to be proxied.
+     * @param definition The builder of {@link BeanDefinitionBuilder}.
+     * @param beanName   The name of the proxy bean.
+     * @param alisa      The alias set of proxy beans.
+     * @param registry   the bean definition registry.
      * @return The information registration body of {@link BeanDefinition}.
      * @see ScopedProxyUtils#createScopedProxy(BeanDefinitionHolder, BeanDefinitionRegistry, boolean)
      */
     public static BeanDefinitionHolder createBeanDefinitionHolderDistinguishScope(BeanDefinition definition,
                                                                                   String beanName,
                                                                                   String[] alisa,
-                                                                                  BeanDefinitionRegistry registry,
-                                                                                  Runnable beanDefinitionScopeProxyUpdate) {
+                                                                                  BeanDefinitionRegistry registry) {
         BeanDefinitionHolder holder = new BeanDefinitionHolder(definition, beanName, alisa);
         if (ROUTINE_SCOPES.stream().anyMatch(sc -> Objects.equals(sc, definition.getScope()))) {
             return holder;
         }
-        if (beanDefinitionScopeProxyUpdate != null) beanDefinitionScopeProxyUpdate.run();
         return ScopedProxyUtils.createScopedProxy(holder, registry, true);
     }
 
