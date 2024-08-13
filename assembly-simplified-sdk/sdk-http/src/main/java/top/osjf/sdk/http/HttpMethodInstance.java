@@ -25,7 +25,7 @@ import top.osjf.sdk.http.ok.OkHttpMethod;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public enum Instance implements HttpMethod.InstanceCapable {
+public enum HttpMethodInstance implements HttpMethod.InstanceCapable {
 
     APACHE_HTTP {
         @Override
