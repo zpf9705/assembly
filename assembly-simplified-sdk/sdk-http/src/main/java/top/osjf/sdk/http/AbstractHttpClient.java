@@ -191,7 +191,7 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
     public String doHttpRequest(HttpRequestMethod method,
                                 Map<String, String> headers,
                                 Object requestParam,
-                                Boolean montage) throws Exception {
+                                boolean montage) throws Exception {
         HttpSdkSupport.checkContentType(headers);
         HttpRequestExecutor executor = getRequestExecutor();
         return executor.getClass()
@@ -199,7 +199,7 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
                         String.class,
                         Map.class,
                         Object.class,
-                        Boolean.class).invoke(executor, getUrl(), headers, requestParam, montage).toString();
+                        boolean.class).invoke(executor, getUrl(), headers, requestParam, montage).toString();
     }
 
     @Override

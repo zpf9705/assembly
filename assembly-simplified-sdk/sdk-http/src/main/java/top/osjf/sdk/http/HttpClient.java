@@ -41,5 +41,5 @@ public interface HttpClient<R extends Response> extends Client<R>, HttpResultSol
      * @throws Exception maybe exceptions when http request.
      */
     String doHttpRequest(HttpRequestMethod method, Map<String, String> headers,
-                         Object requestParam, Boolean montage) throws Exception;
+                         Object requestParam, boolean montage) throws Exception;
 }
