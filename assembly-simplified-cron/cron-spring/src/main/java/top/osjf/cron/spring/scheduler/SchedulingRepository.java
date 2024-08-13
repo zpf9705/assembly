@@ -151,7 +151,7 @@ public class SchedulingRepository extends AnyTaskSupport implements CronTaskRepo
     protected SchedulingRunnable newSchedulingRunnable(Runnable runnable) {
         String id = ID.get();
         if (StringUtils.isBlank(id)) {
-            id = UUID.randomUUID().toString();
+            id = generateID();
         } else ID.remove();
         return new SchedulingRunnable(id, runnable, getSchedulingListeners());
     }
@@ -161,9 +161,7 @@ public class SchedulingRepository extends AnyTaskSupport implements CronTaskRepo
         if (triggerTask instanceof TriggerTask) {
             return (TriggerTask) triggerTask;
         }
-        return new TriggerTask(
-                new SchedulingRunnable(generateID(), triggerTask.getRunnable(), getSchedulingListeners()),
-                triggerTask.getTrigger());
+        return new TriggerTask(newSchedulingRunnable(triggerTask.getRunnable()), triggerTask.getTrigger());
     }
 
     @Override
@@ -171,9 +169,7 @@ public class SchedulingRepository extends AnyTaskSupport implements CronTaskRepo
         if (cronTask instanceof CronTask) {
             return (CronTask) cronTask;
         }
-        return new CronTask(
-                new SchedulingRunnable(generateID(), cronTask.getRunnable(), getSchedulingListeners()),
-                cronTask.getExpression());
+        return new CronTask(newSchedulingRunnable(cronTask.getRunnable()), cronTask.getExpression());
     }
 
     @Override
@@ -181,8 +177,7 @@ public class SchedulingRepository extends AnyTaskSupport implements CronTaskRepo
         if (fixedDelayTask instanceof FixedDelayTask) {
             return (FixedDelayTask) fixedDelayTask;
         }
-        return new FixedDelayTask(
-                new SchedulingRunnable(generateID(), fixedDelayTask.getRunnable(), getSchedulingListeners()),
+        return new FixedDelayTask(newSchedulingRunnable(fixedDelayTask.getRunnable()),
                 fixedDelayTask.getInterval(), fixedDelayTask.getInitialDelay());
     }
 
@@ -191,8 +186,7 @@ public class SchedulingRepository extends AnyTaskSupport implements CronTaskRepo
         if (fixedRateTask instanceof FixedRateTask) {
             return (FixedRateTask) fixedRateTask;
         }
-        return new FixedRateTask(
-                new SchedulingRunnable(generateID(), fixedRateTask.getRunnable(), getSchedulingListeners()),
+        return new FixedRateTask(newSchedulingRunnable(fixedRateTask.getRunnable()),
                 fixedRateTask.getInterval(), fixedRateTask.getInitialDelay());
     }
 
