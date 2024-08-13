@@ -41,5 +41,5 @@ import java.io.Serializable;
  * @since 1.0.0
  */
 public interface Client<R extends Response> extends RequestCore<R>, PreProcessingResponseHandler<R>,
-        ResponseConvert<R>, LoggerConsumer, Closeable, Serializable {
+        ResponseConvert<R>, LoggerConsumer, AutoCloseable, Serializable {
 }
