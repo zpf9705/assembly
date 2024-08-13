@@ -27,6 +27,30 @@ import java.util.Map;
 public interface HttpRequestExecutor {
 
     /**
+     * Use lowercase HTTP method names to map the request method names of
+     * the current class and make unified method calls.
+     *
+     * @param methodName Http method name map to this class method name.
+     * @param url        The actual request address,must not be {@literal null}.
+     * @param headers    Header information map,can be {@literal null}.
+     * @param param      Request parameters with type {@link Object},can be {@literal null}.
+     * @param montage    Whether to concatenate parameters in the form of {@link Map} or {@code Json}
+     *                   as key/value after the URL.
+     * @return The {@code String} type of the return value
+     * @throws Exception unknown exception.
+     */
+    default String unifiedDoRequest(String methodName,
+                                    String url,
+                                    Map<String, String> headers, Object param, boolean montage)
+            throws Exception {
+        return getClass().getMethod(methodName,
+                String.class,
+                Map.class,
+                Object.class,
+                boolean.class).invoke(this, url, headers, param, montage).toString();
+    }
+
+    /**
      * HTTP request method for {@code Get}.
      *
      * @param url     The actual request address,must not be {@literal null}.
