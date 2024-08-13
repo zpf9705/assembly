@@ -16,11 +16,8 @@
 
 package top.osjf.sdk.spring.proxy;
 
-import org.springframework.beans.factory.FactoryBean;
-import org.springframework.cglib.proxy.Callback;
 import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
-import org.springframework.lang.Nullable;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -38,12 +35,12 @@ import java.lang.reflect.Method;
  * into {@link ProxyHandler}, allowing both proxies to use the same callback,
  * facilitating subsequent proxy execution calls.
  *
+ * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @see AbstractJdkProxySupport
  * @see AbstractCglibProxySupport
- * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public abstract class ConcentrateProxySupport<T> implements FactoryBean<T>, MethodInterceptor,
+public abstract class HierarchicalProxySupport<T> extends FactoryProxyBeanSupport<T> implements MethodInterceptor,
         InvocationHandler, ProxyHandler {
 
     /**
@@ -57,39 +54,6 @@ public abstract class ConcentrateProxySupport<T> implements FactoryBean<T>, Meth
     private ProxyModel proxyModel = DEFAULT_PROXY_MODEL;
 
     /**
-     * The proxy object created.
-     */
-    private T proxy;
-
-    /**
-     * The target type of dynamic proxy.
-     */
-    private Class<T> type;
-
-    /**
-     * Is the object managed by this factory a singleton.
-     */
-    private boolean isSingleton = true;
-
-    /**
-     * Set the target type for this proxy creation.
-     *
-     * @param type the target type for this proxy creation.
-     */
-    public void setType(Class<T> type) {
-        this.type = type;
-    }
-
-    /**
-     * Return the target type created by this proxy.
-     *
-     * @return the target type created by this proxy.
-     */
-    public Class<T> getType() {
-        return type;
-    }
-
-    /**
      * Set the model enumeration for this proxy.
      *
      * @param proxyModel the model enumeration for this proxy.
@@ -100,63 +64,16 @@ public abstract class ConcentrateProxySupport<T> implements FactoryBean<T>, Meth
 
     /**
      * Return the model enumeration for this proxy.
+     *
      * @return the model enumeration for this proxy.
      */
     public ProxyModel getProxyModel() {
         return proxyModel;
     }
 
-    /**
-     * Set the object managed by this factory a singleton.
-     *
-     * @param singleton the object managed by this factory a singleton.
-     */
-    public void setSingleton(boolean singleton) {
-        isSingleton = singleton;
-    }
-
-    @Nullable
     @Override
-    public Class<?> getObjectType() {
-        return type;
-    }
-
-    @Override
-    public boolean isSingleton() {
-        return isSingleton;
-    }
-
-    @Nullable
-    @Override
-    public T getObject() {
-        if (proxy != null) {
-            return proxy;
-        }
-        proxy = getObject0();
-        return proxy;
-    }
-
-    /**
-     * Create different proxy objects based on different proxy models.
-     *
-     * @return different proxy models.
-     * @see AbstractCglibProxySupport#createProxy(Class, Callback)
-     * @see AbstractJdkProxySupport#createProxy(Class, InvocationHandler)
-     */
-    private T getObject0() {
-        T proxy;
-        switch (proxyModel) {
-            case JDK:
-                proxy = AbstractJdkProxySupport.createProxy(type, this);
-                break;
-            case SPRING_CJ_LIB:
-                proxy = AbstractCglibProxySupport.createProxy(type, this);
-                break;
-            default:
-                proxy = null;
-                break;
-        }
-        return proxy;
+    public T getObject0() {
+        return null;
     }
 
     /*** {@inheritDoc}*/
