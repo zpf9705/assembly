@@ -62,8 +62,7 @@ import java.util.function.BiConsumer;
  * @since 1.0.0
  */
 @SuppressWarnings("serial")
-public abstract class AbstractHttpClient<R extends HttpResponse> extends AbstractClient<R>
-        implements HttpClient<R>, HttpResultSolver {
+public abstract class AbstractHttpClient<R extends HttpResponse> extends AbstractClient<R> implements HttpClient<R> {
 
     /*** default slf4j logger with {@link Client} */
     private static final Logger log = LoggerFactory.getLogger(Client.class);
@@ -126,7 +125,9 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
             Map<String, String> headers = request.getHeadMap();
 
             //Execute this request, route according to the request type, and handle the parameters.
-            responseStr = doRequest(request.matchSdkEnum().getRequestMethod(), headers, requestParam,
+            responseStr = doHttpRequest(request.matchSdkEnum().getRequestMethod(),
+                    headers,
+                    requestParam,
                     request.montage());
 
             //Preprocessing operation for request results.
@@ -151,7 +152,7 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
                     request);
 
         } finally {
-            
+
             //Hand over the call information to the final processing project.
             finallyHandler(HttpResultSolver.ExecuteInfoBuild.builder().requestAccess(request)
                     .spend(System.currentTimeMillis() - startTimeMillis)
@@ -174,7 +175,8 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
      * @return http request result.
      * @throws Exception maybe exceptions when http request.
      */
-    protected String doRequest(HttpRequestMethod method,
+    @Override
+    public String doHttpRequest(HttpRequestMethod method,
                                Map<String, String> headers,
                                Object requestParam,
                                Boolean montage) throws Exception {

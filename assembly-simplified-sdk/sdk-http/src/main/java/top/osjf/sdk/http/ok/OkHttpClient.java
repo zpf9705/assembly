@@ -41,9 +41,9 @@ public class OkHttpClient<R extends HttpResponse> extends AbstractHttpClient<R> 
     }
 
     @Override
-    public String doRequest(HttpRequestMethod method, Map<String, String> headers, Object requestParam,
+    public String doHttpRequest(HttpRequestMethod method, Map<String, String> headers, Object requestParam,
                             Boolean montage) throws Exception {
-        super.doRequest(method, headers, requestParam, montage);
+        super.doHttpRequest(method, headers, requestParam, montage);
         return method.doRequest(Instance.OK_HTTP, getUrl(), headers, requestParam, montage);
     }
 }

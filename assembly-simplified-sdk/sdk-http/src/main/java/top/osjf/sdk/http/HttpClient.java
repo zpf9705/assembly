@@ -19,15 +19,27 @@ package top.osjf.sdk.http;
 import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.core.process.Response;
 
+import java.util.Map;
+
 /**
  * Interface to provide configuration for a http client.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public interface HttpClient<R extends Response> extends Client<R> {
+public interface HttpClient<R extends Response> extends Client<R>, HttpResultSolver {
 
-    /*** {@inheritDoc}*/
-    @Override
-    R request();
+    /**
+     * Use the existing parameters given by {@link HttpRequest} to conduct
+     * an HTTP call and return the result.
+     *
+     * @param method       {@link HttpRequest#matchSdkEnum()}
+     * @param headers      {@link HttpRequest#getHeadMap()}
+     * @param requestParam {@link HttpRequest#getRequestParam()}
+     * @param montage      {@link HttpRequest#montage()}
+     * @return http request result.
+     * @throws Exception maybe exceptions when http request.
+     */
+    String doHttpRequest(HttpRequestMethod method, Map<String, String> headers,
+                         Object requestParam, Boolean montage) throws Exception;
 }
