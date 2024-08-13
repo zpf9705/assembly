@@ -70,8 +70,8 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
     /*** HTTP requests the real access address.*/
     private final String url;
 
-    /*** Http request method*/
-    private HttpMethod httpMethod;
+    /*** Http request method,defaults to {@link ApacheHttpMethod}*/
+    private HttpMethod httpMethod = ApacheHttpMethod.INSTANCE;
 
     /*** Constructing for {@link HttpClient} objects using access URLs.
      * @param url The real URL address of the SDK request.
@@ -87,17 +87,18 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
      * @param httpMethod a {@code HttpMethod}.
      */
     public void setHttpMethod(HttpMethod httpMethod) {
-        if (httpMethod == null) httpMethod = ApacheHttpMethod.INSTANCE;
-        this.httpMethod = httpMethod;
+        if (httpMethod != null){
+            this.httpMethod = httpMethod;
+        }
     }
 
     /**
-     * Return a not null {@code HttpMethod},defaults to {@link ApacheHttpMethod}.
+     * Return a not null {@code HttpMethod}.
      *
      * @return a not null {@code HttpMethod}.
      */
     public HttpMethod getHttpMethod() {
-        return httpMethod == null ? ApacheHttpMethod.INSTANCE : httpMethod;
+        return httpMethod;
     }
 
     /**
