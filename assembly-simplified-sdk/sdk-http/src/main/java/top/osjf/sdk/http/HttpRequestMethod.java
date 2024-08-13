@@ -16,58 +16,13 @@
 
 package top.osjf.sdk.http;
 
-import java.util.Map;
-
 /**
- * Enumeration of HTTP request method types.
+ * The supported HTTP request enumeration types.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
 public enum HttpRequestMethod {
 
-    GET {
-        @Override
-        public String doRequest(Instance instance, String url, Map<String, String> headers,
-                                Object requestParam, Boolean montage) throws Exception {
-            return instance.getInstance().get(url, headers, requestParam, montage);
-        }
-    }, POST {
-        @Override
-        public String doRequest(Instance instance, String url, Map<String, String> headers,
-                                Object requestParam, Boolean montage) throws Exception {
-            return instance.getInstance().post(url, headers, requestParam, montage);
-        }
-    }, PUT {
-        @Override
-        public String doRequest(Instance instance, String url, Map<String, String> headers,
-                                Object requestParam, Boolean montage) throws Exception {
-            return instance.getInstance().put(url, headers, requestParam, montage);
-        }
-    }, DELETE {
-        @Override
-        public String doRequest(Instance instance, String url, Map<String, String> headers,
-                                Object requestParam, Boolean montage) throws Exception {
-            return instance.getInstance().delete(url, headers, requestParam, montage);
-        }
-    };
-
-    /**
-     * General methods for HTTP request method types are implemented by subclass enumeration.
-     *
-     * @param instance     {@link Instance} , must not be {@literal null}.
-     * @param url          {@link HttpRequest#getUrl(String)}} , must not be {@literal null}.
-     * @param headers      {@link HttpRequest#getHeadMap()}
-     * @param requestParam {@link HttpRequest#getRequestParam()}
-     * @param montage      {@link HttpRequest#montage()}
-     * @return http request result.
-     * @throws Exception maybe exceptions when http request.
-     */
-    public String doRequest(Instance instance,
-                            String url,
-                            Map<String, String> headers,
-                            Object requestParam,
-                            Boolean montage) throws Exception {
-        throw new UnsupportedOperationException();
-    }
+    GET, POST, PUT, DELETE
 }
