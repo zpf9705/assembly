@@ -16,11 +16,7 @@
 
 package top.osjf.sdk.spring.proxy;
 
-import org.springframework.cglib.proxy.MethodInterceptor;
-import org.springframework.cglib.proxy.MethodProxy;
-
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
+import org.springframework.lang.NonNull;
 
 /**
  * The functionality of this abstract class is based on a fusion version
@@ -40,8 +36,11 @@ import java.lang.reflect.Method;
  * @see AbstractCglibProxySupport
  * @since 1.0.0
  */
-public abstract class HierarchicalProxySupport<T> extends FactoryProxyBeanSupport<T> implements MethodInterceptor,
-        InvocationHandler, ProxyHandler {
+public abstract class HierarchicalProxySupport<T> extends FactoryProxyBeanSupport<T>
+        implements
+        JdkProxyHandler,
+        CglibProxyHandler
+{
 
     /**
      * The default proxy mode, JDK dynamic proxy.
@@ -52,6 +51,15 @@ public abstract class HierarchicalProxySupport<T> extends FactoryProxyBeanSuppor
      * Dynamic proxy model.
      */
     private ProxyModel proxyModel = DEFAULT_PROXY_MODEL;
+
+    /**
+     * Constructor for a {@code Class} type.
+     *
+     * @param type a {@code Class} type
+     */
+    public HierarchicalProxySupport(@NonNull Class<T> type) {
+        super(type);
+    }
 
     /**
      * Set the model enumeration for this proxy.
@@ -73,22 +81,6 @@ public abstract class HierarchicalProxySupport<T> extends FactoryProxyBeanSuppor
 
     @Override
     public T getObject0() {
-        return null;
+        return proxyModel.getProxyObject(getType(), this);
     }
-
-    /*** {@inheritDoc}*/
-    @Override
-    public Object intercept(Object proxy, Method method, Object[] args, MethodProxy methodProxy) {
-        return handle(proxy, method, args);
-    }
-
-    /*** {@inheritDoc}*/
-    @Override
-    public Object invoke(Object proxy, Method method, Object[] args) {
-        return handle(proxy, method, args);
-    }
-
-    /*** {@inheritDoc}*/
-    @Override
-    public abstract Object handle(Object obj, Method method, Object[] args);
 }
