@@ -23,40 +23,50 @@ import top.osjf.sdk.core.process.Response;
 import java.util.function.Supplier;
 
 /**
- * Regarding the request executor of {@link Client}, instantiation is not
- * allowed and only its static methods can be called.
+ * The {@code ClientExecutors} class provides static methods for executing client requests.
+ * It does not allow instantiation and only provides static methods to execute requests
+ * through host names and request parameters.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
 public class ClientExecutors {
 
+    /**
+     * Private constructor to prevent external instantiation of this class.
+     * <p>
+     * Throwing an AttributeError exception to indicate that instantiation of this class is not allowed.
+     */
     private ClientExecutors() {
         throw new AssertionError("No instance for you !");
     }
 
     /**
-     * The static method executed by SDK is functionally placed in
-     * the host name {@link Supplier} and executed through the host
-     * name and {@link Request} parameters.
+     * Execute client requests using the hostname supplier and request object.
+     * <p>
+     * This method first converts the host name vendor into an actual host name
+     * string, and then calls the overloaded executeRequestClient method.
      *
-     * @param request {@link Request} class model parameters of API.
-     * @param host    The host name of the SDK link to {@link Supplier}.
-     * @param <R>     Data Generics for {@link Response}.
-     * @return Returns a defined {@link Response} class object.
+     * @param host    The supplier of hostname, used to dynamically obtain the hostname.
+     * @param request object, containing API parameters.
+     * @param <R>     is a generic type that responds to data.
+     * @return Returns a response object of the specified type.
      */
     public static <R extends Response> R executeRequestClient(Supplier<String> host, Request<R> request) {
         return executeRequestClient(host.get(), request);
     }
 
     /**
-     * The static method executed by SDK is executed through the
-     * host name and {@link Request} parameters.
+     * Execute client requests using the host name and request object.
+     * <p>
+     * This method retrieves or sets a client instance based on the given
+     * host name and request object, and sends the request.
      *
-     * @param request {@link Request} class model parameters of API.
-     * @param host    The host name of the SDK.
-     * @param <R>     Data Generics for {@link Response}.
-     * @return Returns a defined {@link Response} class object.
+     * @param host    The name of the link to the host SDK.
+     * @param request object, containing API parameters.
+     * @param <R>     is a generic type that responds to data.
+     * @return Returns a response object of the specified type.
+     * If the request execution fails, throw this exception.
      */
     public static <R extends Response> R executeRequestClient(String host, Request<R> request) {
         try (Client<R> client = getAndSetClient(request.getUrl(host), request)) {
@@ -67,25 +77,32 @@ public class ClientExecutors {
     }
 
     /**
-     * Returns a {@link Client} client using a {@link java.net.URL},
-     * If it does not exist, it will be added to the cache.
+     * Retrieve or set a client instance using the given URL and request object.
+     * <p>
+     * If it does not exist in the cache, a new client is instantiated through
+     * reflection and added to the cache.
      *
-     * @param request {@link Request} class model parameters of API.
-     * @param url     The real URL address accessed by the SDK.
-     * @param <R>     Data Generics for {@link Response}.
-     * @return Returns a single instance {@link Client} distinguished by a key.
+     * @param url     The actual URL address accessed by the SDK.
+     * @param request object, containing API parameters.
+     * @param <R>     is a generic type that responds to data.
+     * @return returns the client instance distinguished by a unique key.
      */
     public static <R extends Response> Client<R> getAndSetClient(String url, Request<R> request) {
         return AbstractClient.getAndSetClient(() -> getNewClient(url, request), request, url);
     }
 
     /**
-     * Instantiate a {@link Client} use reflect by {@link AbstractClient#AbstractClient(String)}.
+     * Instantiate a new client based on the given URL and request object using
+     * reflection mechanism.
+     * <p>
+     * This method calls the {@code Request#getClientCls()} method of the request
+     * object to retrieve the client class and create its instance through reflection.
      *
-     * @param request {@link Request} class model parameters of API.
-     * @param url     The real URL address accessed by the SDK.
-     * @param <R>     Data Generics for {@link Response}.
-     * @return {@link Client} instance.
+     * @param url     The actual URL address accessed by the SDK.
+     * @param request object, containing API parameters.
+     * @param <R>     is a generic type that responds to data.
+     * @return returns the newly created client instance.
+     * If any exception occurs during instantiation, throw this runtime exception.
      */
     @SuppressWarnings("unchecked")
     private static <R extends Response> Client<R> getNewClient(String url, Request<R> request) {
