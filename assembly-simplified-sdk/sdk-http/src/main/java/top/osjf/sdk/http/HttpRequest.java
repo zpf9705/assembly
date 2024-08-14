@@ -17,9 +17,6 @@
 package top.osjf.sdk.http;
 
 import top.osjf.sdk.core.process.Request;
-import top.osjf.sdk.http.apache.ApacheHttpClient;
-import top.osjf.sdk.http.excpetion.UnknownResponseRequiredTypeException;
-import top.osjf.sdk.http.ok.OkHttpClient;
 
 /**
  * Request node information interface defined by SDK of http type.
@@ -36,9 +33,6 @@ import top.osjf.sdk.http.ok.OkHttpClient;
  * <p>The body input here is set to {@link Object} to mask all parameter differences
  * and be processed uniformly in the future, Through the {@link #getClientCls()}
  * method, you can customize the request process for {@link top.osjf.sdk.core.client.Client}.
- *
- * <p>Here is a written HTTP based client solution.{@link ApacheHttpClient}
- * and {@link OkHttpClient}.
  *
  * <p>Of course, the final conversion is still the response implementation
  * class {@link HttpRequest} that you defined for {@link #getResponseCls()}.
