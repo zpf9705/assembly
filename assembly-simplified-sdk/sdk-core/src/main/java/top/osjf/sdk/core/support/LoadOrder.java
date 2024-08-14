@@ -62,6 +62,7 @@ public @interface LoadOrder {
     /**
      * The order value.
      * <p>Default is {@link Integer#MAX_VALUE}.
+     * @return int order value.
      */
     int value() default Integer.MAX_VALUE;
 }
