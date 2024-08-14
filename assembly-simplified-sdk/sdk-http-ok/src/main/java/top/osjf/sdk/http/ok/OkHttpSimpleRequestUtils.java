@@ -22,7 +22,7 @@ import org.apache.http.entity.ContentType;
 import top.osjf.sdk.core.util.JSONUtil;
 import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.core.util.StringUtils;
-import top.osjf.sdk.http.excpetion.ResponseFailedException;
+import top.osjf.sdk.http.ResponseFailedException;
 
 import java.util.HashMap;
 import java.util.Map;
