@@ -16,13 +16,16 @@
 
 package top.osjf.sdk.core.client;
 
-import top.osjf.sdk.core.exception.SdkException;
-
 import java.util.function.BiConsumer;
 
 /**
- * Log consumers can easily specify log output for each {@link Client}
- * using the function {@link BiConsumer}.
+ * The LoggerConsumer interface defines consumer interfaces for handling different
+ * types of log recording.It contains three methods for logging normal entries, SDK
+ * exception logs, and unknown exception logs.Each method returns a {@code BiConsumer<String, Object[]>}
+ * that allows logging in the form of a message template and an array of arguments.
+ *
+ * <p>This design makes log recording more flexible and easier to integrate into different
+ * logging frameworks.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
@@ -30,23 +33,44 @@ import java.util.function.BiConsumer;
 public interface LoggerConsumer {
 
     /**
-     * Regular log entries, user normal log output.
+     * Regular log entries, used for recording normal log output.
+     * This method returns a {@code BiConsumer<String, Object[]>} that allows logging
+     * in the form of a message template and an array of arguments.
      *
-     * @return For example: {@code org.slf4j.Logger#info(String, Object...)}
+     * <p>It is similar to the `Logger#info(String, Object...)` method in SLF4J but
+     * encapsulated in a functional programming style using `BiConsumer`.
+     *
+     * @return A `BiConsumer` that accepts a log message template and an array of
+     * arguments for recording normal logs.
      */
     BiConsumer<String, Object[]> normal();
 
     /**
-     * {@link SdkException} Exclusive log item, log output for user SDK exceptions.
+     * SDK exception-exclusive log item, used for logging exceptions that occur
+     * within the user's SDK.
      *
-     * @return For example: {@code org.slf4j.Logger#error(String, Object...)}
+     * <p>This method also returns a {@code BiConsumer<String, Object[]>} that allows
+     * logging SDK-related exception logs in the form of an error message template
+     * and an array of arguments.
+     * It is similar to the `Logger#error(String, Object...)` method in SLF4J but
+     * focused on SDK exception logging.
+     *
+     * @return A `BiConsumer` that accepts an error message template and an array
+     * of arguments for recording SDK exception logs.
      */
     BiConsumer<String, Object[]> sdkError();
 
     /**
-     * Unknown exception log output except for SDK.
+     * Unknown exception log output, used for logging all other exceptions except
+     * for SDK exceptions.
      *
-     * @return For example: {@code org.slf4j.Logger#error(String, Object...)}
+     * <p>This method returns a {@code BiConsumer<String, Object[]>} that allows logging unknown
+     * exception logs in the form of an error message template and an array of arguments.
+     * It is similar to the `Logger#error(String, Object...)` method in SLF4J but focused
+     * on non-SDK exception logging.
+     *
+     * @return A `BiConsumer` that accepts an error message template and an array of
+     * arguments for recording unknown exception logs.
      */
     BiConsumer<String, Object[]> unKnowError();
 }
