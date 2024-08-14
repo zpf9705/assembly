@@ -192,6 +192,14 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
                                 Map<String, String> headers,
                                 Object requestParam,
                                 boolean montage) throws Exception {
+        HttpRequestExecutor executor = getRequestExecutor();
+        if (executor == null) {
+            if (log.isErrorEnabled()) {
+                log.error("An executable {} must be provided for {}.",
+                        HttpRequestExecutor.class.getName(), getClass().getName());
+            }
+            throw new NullPointerException("HttpRequestExecutor must not be null !");
+        }
         HttpSdkSupport.checkContentType(headers);
         return getRequestExecutor()
                 .unifiedDoRequest(method.name().toLowerCase(), getUrl(), headers, requestParam, montage);
