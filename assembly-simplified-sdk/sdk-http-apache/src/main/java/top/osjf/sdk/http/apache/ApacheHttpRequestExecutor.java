@@ -16,6 +16,7 @@
 
 package top.osjf.sdk.http.apache;
 
+import top.osjf.sdk.core.support.LoadOrder;
 import top.osjf.sdk.http.HttpRequestExecutor;
 
 import java.util.Map;
@@ -27,14 +28,8 @@ import java.util.Map;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
+@LoadOrder(Integer.MIN_VALUE + 10)
 public class ApacheHttpRequestExecutor implements HttpRequestExecutor {
-
-    /*** The only instance.*/
-    public static final HttpRequestExecutor INSTANCE = new ApacheHttpRequestExecutor();
-
-    /*** Just use {@link #INSTANCE} directly.*/
-    private ApacheHttpRequestExecutor() {
-    }
 
     @Override
     public String get(String url, Map<String, String> headers, Object requestParam, boolean montage) throws Exception {
