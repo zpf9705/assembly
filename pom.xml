@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>top.osjf</groupId>
     <artifactId>assembly</artifactId>
-    <version>2.0.3</version>
+    <version>2.0.4</version>
     <packaging>pom</packaging>
     <name>assembly</name>
     <url>https://github.com/zpf9705/assembly</url>
@@ -16,6 +16,9 @@
         <module>assembly-cache</module>
         <module>assembly-cache-boot-starter</module>
         <module>assembly-codes</module>
+        <module>assembly-simplified-sdk</module>
+        <module>assembly-simplified-cron</module>
+        <module>assembly-simplified-spring-optimize</module>
     </modules>
     <!--less description-->
     <description>
