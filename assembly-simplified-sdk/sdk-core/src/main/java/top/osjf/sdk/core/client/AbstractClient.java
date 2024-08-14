@@ -44,8 +44,10 @@ import java.util.function.Supplier;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-@SuppressWarnings({"rawtypes", "unchecked", "serial"})
+@SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class AbstractClient<R extends Response> implements Client<R> {
+
+    private static final long serialVersionUID = -6931093876869566743L;
 
     /*** The use of object locks for client retrieval and caching.*/
     private static final Object lock = new Object();
