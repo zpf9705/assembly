@@ -71,11 +71,19 @@ public abstract class HttpSdkSupport extends SdkSupport {
     }
 
     /**
-     * Return the corresponding class generic carried by the request class.
+     * Retrieves the required response type for a given request.
      *
-     * @param request Current request.
-     * @param def     Default type value.
-     * @return Object types.
+     * <p>This method determines and returns the required response type based on the
+     * passed request object and its inheritance hierarchy.
+     * It first attempts to retrieve the type from a cache, and if not found, traverses
+     * the class hierarchy (including interfaces and parent classes)
+     * of the request object to find a matching response type. If a matching generic type
+     * is found, it is returned; otherwise,
+     * if no matching type is found, the default type is returned.</p>
+     *
+     * @param request The request object used to determine the required response type.
+     * @param def     The default type to return if no matching response type is found.
+     * @return The required response type for the request, or the default type if none is found.
      * @see Class#getGenericInterfaces()
      * @see Class#getGenericSuperclass()
      */
