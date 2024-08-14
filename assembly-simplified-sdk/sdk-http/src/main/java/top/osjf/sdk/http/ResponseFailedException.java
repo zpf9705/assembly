@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http.excpetion;
+package top.osjf.sdk.http;
 
-import top.osjf.sdk.core.exception.SdkException;
+import java.io.IOException;
+
 
 /**
- * Exception throwing class with unknown response type.
+ * Response failed to throw ex to notify anything.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class UnknownResponseRequiredTypeException extends SdkException {
+public class ResponseFailedException extends IOException {
 
-    private static final long serialVersionUID = 8387664892991324499L;
+    private static final long serialVersionUID = 2367808447118437245L;
 
-    public UnknownResponseRequiredTypeException(Throwable cause) {
-        super(cause);
+    public ResponseFailedException(String message) {
+        super(message);
     }
 }
