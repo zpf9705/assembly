@@ -19,7 +19,13 @@ package top.osjf.sdk.http;
 import top.osjf.sdk.core.exception.SdkException;
 
 /**
- * Exception throwing class with unknown response type.
+ * Unknown response required type exception class.
+ *
+ * <p>This class is a custom exception class that inherits from
+ * {@link SdkException} and is used to represent exceptions thrown when
+ * encountering unknown response types in the SDK,It is mainly
+ * used to encapsulate and handle error situations caused by
+ * response types that do not meet expectations.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
@@ -28,6 +34,14 @@ public class UnknownResponseRequiredTypeException extends SdkException {
 
     private static final long serialVersionUID = 8387664892991324499L;
 
+    /**
+     * <p>Creates a new instance of {@code UnknownResponseRequiredTypeException} to
+     * encapsulate the given cause.
+     *
+     * @param cause the cause (which is being wrapped by this exception, enabling
+     *              it to be passed along to the caller).
+     *              It can be <code>null</code> if the cause is nonexistent or unknown.
+     */
     public UnknownResponseRequiredTypeException(Throwable cause) {
         super(cause);
     }
