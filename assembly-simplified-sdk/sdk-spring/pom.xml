@@ -19,14 +19,22 @@
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring>5.3.12</spring>
+        <sdk-http>1.0.0</sdk-http>
     </properties>
 
     <dependencies>
 
         <dependency>
             <groupId>top.osjf.sdk</groupId>
-            <artifactId>sdk-http</artifactId>
+            <artifactId>sdk-http-apache</artifactId>
             <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>top.osjf.sdk</groupId>
+            <artifactId>sdk-http-ok</artifactId>
+            <version>1.0.0</version>
+            <optional>true</optional>
         </dependency>
 
         <dependency>

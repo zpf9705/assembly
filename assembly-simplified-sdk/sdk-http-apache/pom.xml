@@ -19,7 +19,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <apache.http.core>4.4.16</apache.http.core>
         <apache.http.client>4.5.14</apache.http.client>
-        <http>1.0.0</http>
+        <sdk-http>1.0.0</sdk-http>
     </properties>
 
 
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>top.osjf.sdk</groupId>
             <artifactId>sdk-http</artifactId>
-            <version>${http}</version>
+            <version>${sdk-http}</version>
         </dependency>
 
         <dependency>
