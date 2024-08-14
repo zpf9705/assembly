@@ -16,6 +16,7 @@
 
 package top.osjf.sdk.http;
 
+import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.core.process.AbstractRequestParams;
 import top.osjf.sdk.core.util.JSONUtil;
 
@@ -59,6 +60,7 @@ import top.osjf.sdk.core.util.JSONUtil;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
+@SuppressWarnings("rawtypes")
 public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> extends AbstractRequestParams<R>
         implements HttpRequest<R> {
 
@@ -79,6 +81,11 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
     @Override
     public boolean montage() {
         return false;
+    }
+
+    @Override
+    public Class<? extends Client> getClientCls() {
+        return DefaultHttpClient.class;
     }
 
     /**

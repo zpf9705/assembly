@@ -23,6 +23,7 @@ import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.core.exception.SdkException;
 import top.osjf.sdk.core.process.DefaultErrorResponse;
 import top.osjf.sdk.core.process.Request;
+import top.osjf.sdk.core.support.ServiceLoadManager;
 import top.osjf.sdk.core.util.CollectionUtils;
 import top.osjf.sdk.core.util.JSONUtil;
 
@@ -194,11 +195,20 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
                                 boolean montage) throws Exception {
         HttpRequestExecutor executor = getRequestExecutor();
         if (executor == null) {
-            if (log.isErrorEnabled()) {
-                log.error("An executable {} must be provided for {}.",
-                        HttpRequestExecutor.class.getName(), getClass().getName());
+            executor = ServiceLoadManager.loadHighPriority(HttpRequestExecutor.class);
+            if (executor != null) {
+                setRequestExecutor(executor);
+                if (log.isDebugEnabled()) {
+                    log.debug("Use the service to retrieve and find the highest priority {}.",
+                            executor.getClass().getName());
+                }
+            } else {
+                if (log.isErrorEnabled()) {
+                    log.error("An executable {} must be provided for {}.",
+                            HttpRequestExecutor.class.getName(), getClass().getName());
+                }
+                throw new NullPointerException("HttpRequestExecutor must not be null !");
             }
-            throw new NullPointerException("HttpRequestExecutor must not be null !");
         }
         HttpSdkSupport.checkContentType(headers);
         return getRequestExecutor()
