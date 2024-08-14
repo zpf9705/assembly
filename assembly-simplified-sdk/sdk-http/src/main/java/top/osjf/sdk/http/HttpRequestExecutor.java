@@ -16,6 +16,7 @@
 
 package top.osjf.sdk.http;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 /**
@@ -43,11 +44,18 @@ public interface HttpRequestExecutor {
                                     String url,
                                     Map<String, String> headers, Object param, boolean montage)
             throws Exception {
-        return getClass().getMethod(methodName,
-                String.class,
-                Map.class,
-                Object.class,
-                boolean.class).invoke(this, url, headers, param, montage).toString();
+        try {
+            return getClass().getMethod(methodName,
+                    String.class,
+                    Map.class,
+                    Object.class,
+                    boolean.class).invoke(this, url, headers, param, montage).toString();
+        } catch (InvocationTargetException e) {
+            //If it is an execution exception of InvocationTargetException,
+            // convert it to a reflection exception of the parent class and
+            // put the target exception in the cause.
+            throw new ReflectiveOperationException(e.getTargetException());
+        }
     }
 
     /**
