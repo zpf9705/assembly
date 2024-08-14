@@ -27,13 +27,13 @@ import java.util.Map;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class OkHttpHttpRequestExecutor implements HttpRequestExecutor {
+public class OkHttpRequestExecutor implements HttpRequestExecutor {
 
     /*** The only instance.*/
-    public static final HttpRequestExecutor INSTANCE = new OkHttpHttpRequestExecutor();
+    public static final HttpRequestExecutor INSTANCE = new OkHttpRequestExecutor();
 
     /*** Just use {@link #INSTANCE} directly.*/
-    private OkHttpHttpRequestExecutor() {
+    private OkHttpRequestExecutor() {
     }
 
     @Override

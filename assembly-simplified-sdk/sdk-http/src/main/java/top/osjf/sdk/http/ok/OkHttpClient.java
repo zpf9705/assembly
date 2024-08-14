@@ -37,6 +37,6 @@ public class OkHttpClient<R extends HttpResponse> extends AbstractHttpClient<R> 
 
     public OkHttpClient(String url) {
         super(url);
-        setRequestExecutor(OkHttpHttpRequestExecutor.INSTANCE);
+        setRequestExecutor(OkHttpRequestExecutor.INSTANCE);
     }
 }
