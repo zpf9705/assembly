@@ -68,7 +68,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
     }
 
     /**
-     * Use the URL address as the key, {@link Client} object
+     * Use the unique sign as the key, {@link Client} object
      * as the value, and cache it in the current {@link #cache}
      * to prepare for continuous access in the future.
      *
@@ -103,7 +103,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
 
     /**
      * Return and cache a {@link Client}. When it does not exist based on the
-     * URL address, cache {@link Client}. Otherwise, retrieve it directly from
+     * unique sign, cache {@link Client}. Otherwise, retrieve it directly from
      * the cache to ensure uniqueness.
      *
      * @param newClientSupplier New client provider,if not found, add it directly.
