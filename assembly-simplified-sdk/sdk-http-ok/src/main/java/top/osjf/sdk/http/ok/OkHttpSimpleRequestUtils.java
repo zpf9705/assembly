@@ -17,8 +17,6 @@
 package top.osjf.sdk.http.ok;
 
 import okhttp3.*;
-import okhttp3.internal.http.HttpMethod;
-import org.apache.http.entity.ContentType;
 import top.osjf.sdk.core.util.JSONUtil;
 import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.core.util.StringUtils;
@@ -266,9 +264,7 @@ public final class OkHttpSimpleRequestUtils {
             throw new IllegalArgumentException("Url is not valid");
         }
         HttpUrl.Builder urlBuilder = httpUrl.newBuilder();
-        boolean montageOn = false;
         if (montage && requestParam != null) {
-            montageOn = true;
             if (!(requestParam instanceof Map) && !(requestParam instanceof String))
                 throw new IllegalArgumentException("If you need to concatenate parameters onto the HttpUrl.Builder " +
                         "to addQueryParameter, please provide parameters of map type or JSON type of key/value " +
@@ -292,33 +288,14 @@ public final class OkHttpSimpleRequestUtils {
             }
         }
         Request.Builder requestBuild = new Request.Builder().url(urlBuilder.build());
-        boolean permits = HttpMethod.requiresRequestBody(method);
-        // If the parameters have already been concatenated onto the URL, then this type of requirement does not
-        // allow for further setting of the request body.
-        // However, according to the okhttp specification,
-        // if {@link HttpMethod#requiresRequestBody(String)} is met, the request body must be required,
-        // so you need to weigh it at this point.
-        if (montageOn) {
-            if (permits) throw new IllegalStateException(
-                    "According to the specification requirements of OKHTTP, if you concatenate parameter " +
-                            "links, you must meet the current request type that does not require a body," +
-                            "which can be seen in the class [okhttp3.internal.http.HttpMethod]");
-        } else {
-            if (permits) {
-                if (requestParam == null) throw new IllegalStateException(
-                        "According to the specification requirements of okhttp, " +
-                                "the current request type must have a request body, which can be seen " +
-                                "in the class [okhttp3.internal.http.HttpMethod]");
-            }
-        }
         String value;
         if (MapUtils.isNotEmpty(headers)) {
             value = headers.get("Content-type");
             if (StringUtils.isBlank(value)) {
-                value = ContentType.APPLICATION_JSON.getMimeType();
+                value = "application/json";
             }
         } else {
-            value = ContentType.APPLICATION_JSON.getMimeType();
+            value = "application/json";
         }
         value = value.concat(";charset=utf-8");
         RequestBody body = RequestBody.create(MediaType.parse(value),
