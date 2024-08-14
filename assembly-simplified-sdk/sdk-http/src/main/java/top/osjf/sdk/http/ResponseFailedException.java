@@ -20,7 +20,14 @@ import java.io.IOException;
 
 
 /**
- * Response failed to throw ex to notify anything.
+ * Response failed exception class.
+ *
+ * <p>This class is a subclass of IOException, specifically designed to be
+ * thrown when a response fails to return successfully as expected during
+ * network requests or communication processes.
+ *
+ * <p>It provides a mechanism to encapsulate and pass specific information
+ * about response failures, helping developers diagnose the problem.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
@@ -29,6 +36,15 @@ public class ResponseFailedException extends IOException {
 
     private static final long serialVersionUID = 2367808447118437245L;
 
+    /**
+     * <p>Creates a new instance of {@code ResponseFailedException} to
+     * represent a failed response scenario,accompanied by a detailed message
+     * describing the cause of the failure.
+     *
+     * @param message the error message that describes the reason for the response
+     *                failure. This message will be included with the exception and
+     *                can be used in error logs or user interfaces.
+     */
     public ResponseFailedException(String message) {
         super(message);
     }
