@@ -16,10 +16,8 @@
 
 package top.osjf.sdk.http;
 
-import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.core.process.AbstractRequestParams;
 import top.osjf.sdk.core.util.JSONUtil;
-import top.osjf.sdk.http.apache.ApacheHttpClient;
 
 /**
  * Http request abstract node class, used to define the public parameters
@@ -61,9 +59,10 @@ import top.osjf.sdk.http.apache.ApacheHttpClient;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-@SuppressWarnings("serial")
 public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> extends AbstractRequestParams<R>
         implements HttpRequest<R> {
+
+    private static final long serialVersionUID = 7487068349280012103L;
 
     @Override
     public Object getRequestParam() {
@@ -80,12 +79,6 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
     @Override
     public boolean montage() {
         return false;
-    }
-
-    @Override
-    @SuppressWarnings("rawtypes")
-    public Class<? extends Client> getClientCls() {
-        return ApacheHttpClient.class;
     }
 
     /**

@@ -25,7 +25,6 @@ import top.osjf.sdk.core.process.DefaultErrorResponse;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.util.CollectionUtils;
 import top.osjf.sdk.core.util.JSONUtil;
-import top.osjf.sdk.http.apache.ApacheHttpRequestExecutor;
 
 import java.util.List;
 import java.util.Map;
@@ -61,8 +60,9 @@ import java.util.function.BiConsumer;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-@SuppressWarnings("serial")
 public abstract class AbstractHttpClient<R extends HttpResponse> extends AbstractClient<R> implements HttpClient<R> {
+
+    private static final long serialVersionUID = -7793213059840466979L;
 
     /*** default slf4j logger with {@link Client} */
     private static final Logger log = LoggerFactory.getLogger(Client.class);
@@ -70,8 +70,8 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
     /*** HTTP requests the real access address.*/
     private final String url;
 
-    /*** Http request executor,defaults to {@link ApacheHttpRequestExecutor}*/
-    private HttpRequestExecutor requestExecutor = ApacheHttpRequestExecutor.INSTANCE;
+    /*** Http request executor*/
+    private HttpRequestExecutor requestExecutor;
 
     /*** Constructing for {@link HttpClient} objects using access URLs.
      * @param url The real URL address of the SDK request.

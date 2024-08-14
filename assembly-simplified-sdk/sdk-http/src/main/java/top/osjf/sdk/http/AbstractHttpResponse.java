@@ -57,12 +57,14 @@ import java.util.Objects;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-@SuppressWarnings("serial")
 public abstract class AbstractHttpResponse extends AbstractResponse implements HttpResponse {
+
+    private static final long serialVersionUID = 5815281226315499244L;
 
     public static final String SUCCESS_MESSAGE = "Congratulations";
 
     public static final String FAILED_MESSAGE = "Internal system error";
+
 
     /** {@code isSuccess} and {@code  getMessage} define http success situation.*/
 

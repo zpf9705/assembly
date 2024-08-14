@@ -16,6 +16,7 @@
 
 package top.osjf.sdk.http;
 
+import java.io.Serializable;
 import java.util.function.Supplier;
 
 /**
@@ -25,7 +26,9 @@ import java.util.function.Supplier;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class DefaultExecuteInfo implements HttpResultSolver.ExecuteInfo {
+public class DefaultExecuteInfo implements HttpResultSolver.ExecuteInfo, Serializable {
+
+    private static final long serialVersionUID = -3011908612537080908L;
 
     private final long spendTotalTimeMillis;
 
