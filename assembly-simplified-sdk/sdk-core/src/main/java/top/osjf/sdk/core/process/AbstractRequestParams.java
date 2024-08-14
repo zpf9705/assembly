@@ -29,8 +29,9 @@ import java.util.Map;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-@SuppressWarnings("serial")
 public abstract class AbstractRequestParams<R extends AbstractResponse> implements Request<R> {
+
+    private static final long serialVersionUID = 6875912567896987011L;
 
     /**
      * {@inheritDoc}

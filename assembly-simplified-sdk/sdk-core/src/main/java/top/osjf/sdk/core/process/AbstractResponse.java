@@ -26,8 +26,9 @@ package top.osjf.sdk.core.process;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-@SuppressWarnings("serial")
 public abstract class AbstractResponse implements Response {
+
+    private static final long serialVersionUID = 4294123081630652115L;
 
     private static final boolean DEFAULT_IS_SUCCESS = false;
 
