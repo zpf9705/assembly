@@ -116,8 +116,7 @@ public final class ServiceLoadManager {
      * @param <T>  The generic type, indicating the type of the instances to be loaded.
      * @param type The Class object of the type of instances to be loaded.
      * @param sort A boolean indicating whether to sort the loaded instances. If true, sorts the instances
-     *             based on the value of the
-     *             LoadOrder annotation.
+     *             based on the value of the {@code LoadOrder} annotation.
      * @return A list containing all loaded instances, sorted by the value of the LoadOrder annotation if
      * sorting is specified and the instances have the annotation.
      */
