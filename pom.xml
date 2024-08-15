@@ -11,11 +11,6 @@
     <name>assembly</name>
     <url>https://github.com/zpf9705/assembly</url>
     <modules>
-        <module>assembly-util</module>
-        <module>assembly-simplified</module>
-        <module>assembly-cache</module>
-        <module>assembly-cache-boot-starter</module>
-        <module>assembly-codes</module>
         <module>assembly-simplified-sdk</module>
         <module>assembly-simplified-cron</module>
         <module>assembly-simplified-spring-optimize</module>
