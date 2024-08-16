@@ -33,7 +33,7 @@ import java.lang.reflect.Proxy;
 public abstract class ProxyUtils {
 
     /**
-     * Using a {@code class} and {@code InvocationHandler} build a JDK dynamic proxy object.
+     * Using an interface {@code class} and {@code InvocationHandler} build a JDK dynamic proxy object.
      *
      * @param clazz             Proxy type.
      * @param invocationHandler Callback interface.
@@ -41,11 +41,15 @@ public abstract class ProxyUtils {
      * @return JDK dynamic proxy object
      */
     public static <T> T createJdkProxy(Class<T> clazz, InvocationHandler invocationHandler) {
+        if (!clazz.isInterface()) {
+            throw new IllegalArgumentException(clazz.getName() + " is not an interface, JDK dynamic " +
+                    "proxy can only proxy interfaces.");
+        }
         return (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class[]{clazz}, invocationHandler);
     }
 
     /**
-     * Using a {@code class} and {@code InvocationHandler} build a JDK dynamic proxy object.
+     * Using an interface {@code class} and {@code InvocationHandler} build a JDK dynamic proxy object.
      *
      * @param args The conditions for creating a proxy object.
      * @param <T>  type.
@@ -58,7 +62,7 @@ public abstract class ProxyUtils {
             if (type != null && invocationHandler != null) {
                 break;
             }
-            if (arg instanceof Class) {
+            if (arg instanceof Class && /* is Interface */ ((Class<?>) arg).isInterface()) {
                 type = (Class<T>) arg;
             }
             if (arg instanceof InvocationHandler) {
