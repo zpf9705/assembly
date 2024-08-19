@@ -1,2 +1,5 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   top.osjf.optimize.service_bean.autoconfigure.ServiceBeanAutoConfiguration
+
+org.springframework.context.ApplicationContextInitializer=\
+  top.osjf.optimize.service_bean.autoconfigure.EarlyAllowCustomBeanNameGeneratorInitializer
