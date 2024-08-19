@@ -17,6 +17,8 @@
 package top.osjf.optimize.service_bean.context;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -91,6 +93,8 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
     private ApplicationContext context;
 
     private final Map<String, Object> contextMap = new ConcurrentHashMap<>(16);
+
+    private static final Logger logger = LoggerFactory.getLogger(ServiceContext.class);
 
     //************************* Help classes ******************************
 
@@ -298,11 +302,26 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
         }
 
         @Override
+        //<!-- https://mvnrepository.com/artifact/top.osjf.spring.optimize/service-bean Fix the errors in this method-->
         public void contextPrepared(ConfigurableApplicationContext context) {
             if (enableCustomBeanNameGeneratorSet) {
-                Method method = ReflectionUtils.findMethod(context.getClass(), "setBeanNameGenerator");
+                Class<? extends ConfigurableApplicationContext> contextClass = context.getClass();
+                Method method = ReflectionUtils
+                        .findMethod(contextClass, "setBeanNameGenerator", BeanNameGenerator.class);
                 if (method != null) {
                     ReflectionUtils.invokeMethod(method, context, new ServiceContextBeanNameGenerator(context.getId()));
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Put the custom bean name generator [{}] into the Spring context [{}].",
+                                contextClass.getName(), ServiceContextBeanNameGenerator.class.getName());
+                    }
+                } else {
+                    if (logger.isWarnEnabled()) {
+                        logger.warn("Method [{}] was not found in the Spring context [{}]," +
+                                " therefore [{}] component failed!",
+                                "setBeanNameGenerator(BeanNameGenerator)",
+                                contextClass,
+                                "service-bean");
+                    }
                 }
             }
         }
