@@ -9,32 +9,29 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>service-bean</artifactId>
+    <artifactId>service-bean-boot-starter</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.0-repair</version>
+    <version>1.0.0</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <service_bean>1.0.0-repair</service_bean>
     </properties>
 
     <dependencies>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot</artifactId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
             <optional>true</optional>
         </dependency>
 
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
+            <groupId>top.osjf.spring.optimize</groupId>
+            <artifactId>service-bean</artifactId>
+            <version>1.0.0-repair</version>
         </dependency>
 
     </dependencies>
