@@ -32,6 +32,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationBeanNameGenerator;
+import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.type.AnnotationMetadata;
@@ -243,8 +244,8 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
      */
     public static class ServiceContextRunListener implements SpringApplicationRunListener {
 
-        /*** Do you want to set a new bean name generator.*/
-        private static boolean enableCustomBeanNameGeneratorSet;
+        /*** The main class for launching the Spring framework.*/
+        private Class<?> mainApplicationClass;
 
         /**
          * The empty structure here is mainly used for configuration purposes.
@@ -262,21 +263,15 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
         public ServiceContextRunListener(SpringApplication application, String[] args) {
 
             //Determine whether to add a custom bean name generator based on the existence of adaptive annotations.
-            Class<?> mainApplicationClass = application.getMainApplicationClass();
-
-            //There is one of the three annotations that requires setting a bean name generator.
-            if (serviceCollectionExist(mainApplicationClass)) {
-                enableCustomBeanNameGeneratorSet = true;
-            }
+            mainApplicationClass = application.getMainApplicationClass();
         }
 
         /**
          * Returns whether the current project indicates a service annotation.
          *
-         * @param mainApplicationClass The main class for launching the Spring framework.
          * @return If {@code true} the current project indicates a service annotation,otherwise not.
          */
-        private static boolean serviceCollectionExist(Class<?> mainApplicationClass) {
+        private boolean serviceCollectionExistInMainApplicationClassPackage() {
             Class<EnableServiceCollection> type = EnableServiceCollection.class;
             if (mainApplicationClass.isAnnotationPresent(type)) {
                 return true;
@@ -304,24 +299,48 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
         @Override
         //<!-- https://mvnrepository.com/artifact/top.osjf.spring.optimize/service-bean Fix the errors in this method-->
         public void contextPrepared(ConfigurableApplicationContext context) {
-            if (enableCustomBeanNameGeneratorSet) {
-                Class<? extends ConfigurableApplicationContext> contextClass = context.getClass();
-                Method method = ReflectionUtils
-                        .findMethod(contextClass, "setBeanNameGenerator", BeanNameGenerator.class);
-                if (method != null) {
-                    ReflectionUtils.invokeMethod(method, context, new ServiceContextBeanNameGenerator(context.getId()));
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Put the custom bean name generator [{}] into the Spring context [{}].",
-                                contextClass.getName(), ServiceContextBeanNameGenerator.class.getName());
-                    }
-                } else {
-                    if (logger.isWarnEnabled()) {
-                        logger.warn("Method [{}] was not found in the Spring context [{}]," +
-                                " therefore [{}] component failed!",
-                                "setBeanNameGenerator(BeanNameGenerator)",
-                                contextClass,
-                                "service-bean");
-                    }
+            //Check if the following method for placing bean name generator has been called.
+            if (context.getBeanFactory().containsBean(AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR)) {
+                return;
+            }
+            //The existence of @EnableServiceCollection will be scanned based on the package
+            // path where the main class is launched.
+            if (serviceCollectionExistInMainApplicationClassPackage()) {
+                setForApplicationContextCustomBeanNameGenerator(context);
+            }
+        }
+
+        /**
+         * Set up a custom bean name generator {@code BeanNameGenerator} for
+         * {@link ConfigurableApplicationContext}, mainly to adapt to the current
+         * framework components.
+         *
+         * <p>Users can call this method at different stages of Spring's startup
+         * lifecycle to set custom {@code BeanNameGenerator}, but if you need to define
+         * it in advance, be sure to do so before the {@link #contextPrepared} method,
+         * otherwise the existence of {@code @EnableServiceCollection} will be scanned based
+         * on the package path where the main class is launched.
+         *
+         * @since 1.0.0-repair
+         * @param context Spring context.
+         */
+        public static void setForApplicationContextCustomBeanNameGenerator(ConfigurableApplicationContext context) {
+            Class<? extends ConfigurableApplicationContext> contextClass = context.getClass();
+            Method method = ReflectionUtils
+                    .findMethod(contextClass, "setBeanNameGenerator", BeanNameGenerator.class);
+            if (method != null) {
+                ReflectionUtils.invokeMethod(method, context, new ServiceContextBeanNameGenerator(context.getId()));
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Put the custom bean name generator [{}] into the Spring context [{}].",
+                            contextClass.getName(), ServiceContextBeanNameGenerator.class.getName());
+                }
+            } else {
+                if (logger.isWarnEnabled()) {
+                    logger.warn("Method [{}] was not found in the Spring context [{}]," +
+                                    " therefore [{}] component failed!",
+                            "setBeanNameGenerator(BeanNameGenerator)",
+                            contextClass,
+                            "service-bean");
                 }
             }
         }
