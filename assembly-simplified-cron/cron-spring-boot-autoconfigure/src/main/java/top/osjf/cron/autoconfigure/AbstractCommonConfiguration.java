@@ -16,11 +16,8 @@
 
 package top.osjf.cron.autoconfigure;
 
-import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.env.Environment;
-import org.springframework.core.env.EnvironmentCapable;
-import org.springframework.lang.NonNull;
+import top.osjf.cron.spring.CronTaskRegisterPostProcessor;
 
 import java.util.Map;
 
@@ -30,24 +27,21 @@ import java.util.Map;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public abstract class AbstractImplsCommonConfiguration implements EnvironmentAware, EnvironmentCapable {
+public abstract class AbstractCommonConfiguration {
 
-    private Environment environment;
+    private final CronProperties cronProperties;
 
-    @Override
-    public void setEnvironment(@NonNull Environment environment) {
-        this.environment = environment;
+    public AbstractCommonConfiguration(CronProperties cronProperties) {
+        this.cronProperties = cronProperties;
     }
 
-    @Override
-    @NonNull
-    public Environment getEnvironment() {
-        return environment;
+    public CronProperties getCronProperties() {
+        return cronProperties;
     }
 
     @Bean
-    public ConfiguredCronTaskRegisterPostProcessor cronTaskRegisterPostProcessor() {
-        ConfiguredCronTaskRegisterPostProcessor postProcessor = new ConfiguredCronTaskRegisterPostProcessor();
+    public CronTaskRegisterPostProcessor cronTaskRegisterPostProcessor() {
+        CronTaskRegisterPostProcessor postProcessor = new CronTaskRegisterPostProcessor();
         postProcessor.setMetadata(getMetadata());
         return postProcessor;
     }
