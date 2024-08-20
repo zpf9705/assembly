@@ -27,6 +27,9 @@ import top.osjf.cron.spring.scheduler.EnableScheduling;
  * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration}
  * for enhance {@link org.springframework.scheduling.annotation.EnableScheduling}.
  *
+ * <p>There is no default selection for {@code CronTaskRepository} during automatic
+ * assembly.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
