@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>top.osjf.cron</groupId>
+        <artifactId>assembly-simplified-cron</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>cron-spring-boot-autoconfigure</artifactId>
+    <packaging>jar</packaging>
+    <!-- Starting from version 1.0.1, automatic assembly follows -->
+    <version>1.0.1</version>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <spring.boot>2.5.6</spring.boot>
+        <cron>1.0.0</cron>
+        <cron.spring>1.0.1</cron.spring>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>top.osjf.cron</groupId>
+            <artifactId>cron-spring</artifactId>
+            <version>${cron.spring}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>top.osjf.cron</groupId>
+            <artifactId>cron-hutool</artifactId>
+            <version>${cron}</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>top.osjf.cron</groupId>
+            <artifactId>cron-quartz</artifactId>
+            <version>${cron}</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>top.osjf.cron</groupId>
+            <artifactId>cron-cron4j</artifactId>
+            <version>${cron}</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+            <version>${spring.boot}</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <version>${spring.boot}</version>
+            <optional>true</optional>
+        </dependency>
+
+    </dependencies>
+
+</project>
