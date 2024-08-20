@@ -16,15 +16,15 @@
 
 package top.osjf.cron.autoconfigure;
 
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Role;
 import top.osjf.cron.cron4j.lifestyle.Cron4jCronLifeStyle;
 import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
 import top.osjf.cron.spring.cron4j.Cron4jCronTaskConfiguration;
-
-import java.util.Map;
 
 /**
  * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration}
@@ -35,16 +35,13 @@ import java.util.Map;
  */
 @Configuration(proxyBeanMethods = false)
 @Import(Cron4jCronTaskConfiguration.class)
+@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 @ConditionalOnClass({Cron4jCronLifeStyle.class, Cron4jCronTaskRepository.class})
 @ConditionalOnProperty(name = "spring.schedule.cron.client-type", havingValue = "cron4j", matchIfMissing = true)
 public class Cron4jCronTaskAutoConfiguration extends AbstractCommonConfiguration {
 
-    public Cron4jCronTaskAutoConfiguration(CronProperties cronProperties) {
-        super(cronProperties);
-    }
-
     @Override
-    public Map<String, Object> getMetadata() {
-        return getCronProperties().getCron4j().toMetadata();
+    public CronProperties.ClientType getClientType() {
+        return CronProperties.ClientType.CRON4J;
     }
 }
