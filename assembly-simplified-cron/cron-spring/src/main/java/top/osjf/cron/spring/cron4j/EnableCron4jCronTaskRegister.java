@@ -20,7 +20,6 @@ import org.springframework.context.annotation.Import;
 import top.osjf.cron.cron4j.lifestyle.Cron4jCronLifeStyle;
 import top.osjf.cron.spring.CronTaskRegisterPostProcessor;
 import top.osjf.cron.spring.annotation.Cron;
-import top.osjf.cron.spring.hutool.HutoolCronTaskConfiguration;
 
 import java.lang.annotation.*;
 
@@ -36,7 +35,7 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import({HutoolCronTaskConfiguration.class,
+@Import({Cron4jCronTaskConfiguration.class,
         CronTaskRegisterPostProcessor.class})
 public @interface EnableCron4jCronTaskRegister {
 
