@@ -34,6 +34,7 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import({QuartzCronTaskConfiguration.class})
+@Import({QuartzCronTaskConfiguration.class,
+        CronTaskRegisterPostProcessor.class})
 public @interface EnableQuartzCronTaskRegister {
 }

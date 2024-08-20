@@ -16,13 +16,15 @@
 
 package top.osjf.cron.spring.quartz;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
 import top.osjf.cron.quartz.lifestyle.QuartzCronLifeStyle;
 import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
-import top.osjf.cron.spring.CronTaskRegisterPostProcessor;
+
+import java.util.Properties;
 
 /**
  * Regarding the configuration classes related to scheduled task
@@ -37,7 +39,7 @@ import top.osjf.cron.spring.CronTaskRegisterPostProcessor;
 public class QuartzCronTaskConfiguration {
 
     @Bean
-    public QuartzRegistrantCollector quartzRegistrantCollector(){
+    public QuartzRegistrantCollector quartzRegistrantCollector() {
         return new QuartzRegistrantCollector();
     }
 
@@ -47,8 +49,12 @@ public class QuartzCronTaskConfiguration {
     }
 
     @Bean
-    public QuartzCronTaskRepository quartzCronTaskRepository(QuartzJobFactory quartzJobFactory) {
-        return new QuartzCronTaskRepository(null, quartzJobFactory);
+    public QuartzCronTaskRepository quartzCronTaskRepository(ObjectProvider<QuartzPropertiesGainer> provider,
+                                                             QuartzJobFactory quartzJobFactory) {
+        Properties properties = null;
+        QuartzPropertiesGainer gainer = provider.getIfAvailable();
+        if (gainer != null) properties = gainer.getQuartzProperties();
+        return new QuartzCronTaskRepository(properties, quartzJobFactory);
     }
 
     @Bean
@@ -59,10 +65,5 @@ public class QuartzCronTaskConfiguration {
     @Bean(destroyMethod = "stop")
     public QuartzCronLifeStyle quartzCronLifeStyle(QuartzCronTaskRepository quartzCronTaskRepository) {
         return new QuartzCronLifeStyle(quartzCronTaskRepository.getScheduler());
-    }
-
-    @Bean
-    public CronTaskRegisterPostProcessor cronTaskRegisterPostProcessor() {
-        return new CronTaskRegisterPostProcessor();
     }
 }
