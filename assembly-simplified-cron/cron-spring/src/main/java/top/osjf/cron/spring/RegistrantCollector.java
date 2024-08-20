@@ -38,4 +38,8 @@ public interface RegistrantCollector extends Iterator<Registrant>, AutoCloseable
      *                   registration behavior.
      */
     void add(Class<?> realBeanType, Object bean, Environment environment) throws Exception;
+
+    /** {@inheritDoc}*/
+    @Override
+    void close();
 }

@@ -178,10 +178,7 @@ public class CronTaskRegisterPostProcessor implements ImportAware, ApplicationCo
         lifeStyle.start(metadata);
 
         //Clean up temporary registration resources.
-        try {
-            collector.close();
-        } catch (Exception ignored) {
-        }
+        collector.close();
     }
 
     @Override
