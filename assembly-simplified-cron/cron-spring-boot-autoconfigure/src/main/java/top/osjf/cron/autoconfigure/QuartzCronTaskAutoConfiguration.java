@@ -17,11 +17,10 @@
 package top.osjf.cron.autoconfigure;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.*;
 import top.osjf.cron.quartz.lifestyle.QuartzCronLifeStyle;
 import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
 import top.osjf.cron.spring.quartz.QuartzCronTaskConfiguration;
@@ -39,18 +38,21 @@ import java.util.Properties;
  */
 @Configuration(proxyBeanMethods = false)
 @Import(QuartzCronTaskConfiguration.class)
+@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 @ConditionalOnClass({QuartzCronLifeStyle.class, QuartzCronTaskRepository.class})
 @ConditionalOnProperty(name = "spring.schedule.cron.client-type", havingValue = "quartz", matchIfMissing = true)
 public class QuartzCronTaskAutoConfiguration extends AbstractCommonConfiguration {
 
-    public QuartzCronTaskAutoConfiguration(CronProperties cronProperties) {
-        super(cronProperties);
+    @Override
+    public CronProperties.ClientType getClientType() {
+        return CronProperties.ClientType.QUARTZ;
     }
 
     @Bean
-    public QuartzPropertiesGainer quartzPropertiesGainer(ObjectProvider<List<QuartzPropertiesCustomizer>> provider) {
+    public QuartzPropertiesGainer quartzPropertiesGainer(ObjectProvider<List<QuartzPropertiesCustomizer>> provider,
+                                                         CronProperties cronProperties) {
         Properties properties = new Properties();
-        properties.putAll(getCronProperties().getQuartz().getProperties());
+        properties.putAll(cronProperties.getQuartz().getProperties());
         provider.orderedStream()
                 .forEach(customizers -> customizers.forEach(c -> c.customize(properties)));
         return QuartzPropertiesGainer.of(properties);
