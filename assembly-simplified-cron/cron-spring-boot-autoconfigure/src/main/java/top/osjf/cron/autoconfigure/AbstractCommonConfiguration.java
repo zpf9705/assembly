@@ -17,9 +17,7 @@
 package top.osjf.cron.autoconfigure;
 
 import org.springframework.context.annotation.Bean;
-import top.osjf.cron.spring.CronTaskRegisterPostProcessor;
-
-import java.util.Map;
+import org.springframework.context.annotation.Lazy;
 
 /**
  * The common configuration class for timed task components.
@@ -29,29 +27,11 @@ import java.util.Map;
  */
 public abstract class AbstractCommonConfiguration {
 
-    private final CronProperties cronProperties;
-
-    public AbstractCommonConfiguration(CronProperties cronProperties) {
-        this.cronProperties = cronProperties;
-    }
-
-    public CronProperties getCronProperties() {
-        return cronProperties;
-    }
-
     @Bean
-    public CronTaskRegisterPostProcessor cronTaskRegisterPostProcessor() {
-        CronTaskRegisterPostProcessor postProcessor = new CronTaskRegisterPostProcessor();
-        postProcessor.setMetadata(getMetadata());
-        return postProcessor;
+    public ConfigurableCronTaskRegisterPostProcessor configurableCronTaskRegisterPostProcessor(
+            @Lazy CronProperties cronProperties) {
+        return new ConfigurableCronTaskRegisterPostProcessor(cronProperties, getClientType());
     }
 
-    /**
-     * Return metadata information of the post processor for scheduled tasks.
-     *
-     * @return metadata information.
-     */
-    public Map<String, Object> getMetadata() {
-        return null;
-    }
+    public abstract CronProperties.ClientType getClientType();
 }
