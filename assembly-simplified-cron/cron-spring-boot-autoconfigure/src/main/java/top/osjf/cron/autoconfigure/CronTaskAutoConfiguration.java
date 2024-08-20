@@ -18,6 +18,7 @@ package top.osjf.cron.autoconfigure;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -25,18 +26,18 @@ import org.springframework.context.annotation.Role;
 import top.osjf.cron.core.repository.CronListenerRepository;
 
 /**
- * The auto configuration class for cron tasks, which automatically configures
- * based on the type of timed task input, defaults to registering hutool for
- * timed configuration.
+ * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration}
+ * for Cron Task , include Hutool ,Quartz ,Cron4j ,enhance Scheduling .
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
 @Configuration(proxyBeanMethods = false)
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-@Import({HutoolCronTaskConfiguration.class,
-        QuartzCronTaskConfiguration.class,
-        Cron4jCronTaskConfiguration.class,
+@EnableConfigurationProperties(CronProperties.class)
+@Import({HutoolCronTaskAutoConfiguration.class,
+        QuartzCronTaskAutoConfiguration.class,
+        Cron4jCronTaskAutoConfiguration.class,
         SchedulingAutoConfiguration.class})
 public class CronTaskAutoConfiguration {
 
