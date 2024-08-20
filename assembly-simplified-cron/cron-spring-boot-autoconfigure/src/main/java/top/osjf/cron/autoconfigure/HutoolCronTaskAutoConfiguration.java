@@ -16,15 +16,15 @@
 
 package top.osjf.cron.autoconfigure;
 
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Role;
 import top.osjf.cron.hutool.lifestyle.HutoolCronLifeStyle;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
 import top.osjf.cron.spring.hutool.HutoolCronTaskConfiguration;
-
-import java.util.Map;
 
 /**
  * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration}
@@ -35,16 +35,13 @@ import java.util.Map;
  */
 @Configuration(proxyBeanMethods = false)
 @Import(HutoolCronTaskConfiguration.class)
+@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 @ConditionalOnClass({HutoolCronLifeStyle.class, HutoolCronTaskRepository.class})
 @ConditionalOnProperty(name = "spring.schedule.cron.client-type", havingValue = "hutool", matchIfMissing = true)
 public class HutoolCronTaskAutoConfiguration extends AbstractCommonConfiguration {
 
-    public HutoolCronTaskAutoConfiguration(CronProperties cronProperties) {
-        super(cronProperties);
-    }
-
     @Override
-    public Map<String, Object> getMetadata() {
-        return getCronProperties().getHutool().toMetadata();
+    public CronProperties.ClientType getClientType() {
+        return CronProperties.ClientType.HUTOOL;
     }
 }
