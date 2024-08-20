@@ -82,7 +82,7 @@ public class CronTaskRegisterPostProcessor implements ImportAware, ApplicationCo
      *
      * @param metadata important metadata.
      */
-    public void setMetadata(@Nullable Map<String, Object> metadata) {
+    public void addMetadata(@Nullable Map<String, Object> metadata) {
         if (MapUtils.isNotEmpty(metadata)) {
             this.metadata.putAll(metadata);
         }
@@ -123,7 +123,7 @@ public class CronTaskRegisterPostProcessor implements ImportAware, ApplicationCo
         } else  /*its target object, and obtain it directly without the proxy.*/ realBeanType = bean.getClass();
 
         //The bean loading of RegistrantCollector does not implement subsequent conditional additions.
-        if (RegistrantCollector.class.isAssignableFrom(realBeanType)) {
+        if (collector == null && advanceApprovalOfCondition(realBeanType)) {
             return bean;
         }
         //#applicationContext.getBean(CronTaskRegistrant.class) If the bean is not initialized,
@@ -154,7 +154,16 @@ public class CronTaskRegisterPostProcessor implements ImportAware, ApplicationCo
         }
     }
 
-    private void finishRegistration() {
+    /**
+     * Determine whether it is a type that needs to skip registration in advance.
+     * @param realBeanType bean real type.
+     * @return If {@code true} skips registration and returns registration detection.
+     */
+    protected boolean advanceApprovalOfCondition(Class<?> realBeanType) {
+        return RegistrantCollector.class.isAssignableFrom(realBeanType);
+    }
+
+    protected void finishRegistration() {
 
         //Complete registration.
         CronTaskRealRegistrant realRegistrant = applicationContext.getBean(CronTaskRealRegistrant.class);
