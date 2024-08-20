@@ -16,13 +16,11 @@
 
 package top.osjf.cron.autoconfigure;
 
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Role;
 import top.osjf.cron.core.repository.CronListenerRepository;
 
 /**
@@ -33,18 +31,16 @@ import top.osjf.cron.core.repository.CronListenerRepository;
  * @since 1.0.0
  */
 @Configuration(proxyBeanMethods = false)
-@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 @EnableConfigurationProperties(CronProperties.class)
 @Import({HutoolCronTaskAutoConfiguration.class,
         QuartzCronTaskAutoConfiguration.class,
         Cron4jCronTaskAutoConfiguration.class,
         SchedulingAutoConfiguration.class})
+@SuppressWarnings("rawtypes")
 public class CronTaskAutoConfiguration {
 
     @Bean
     @ConditionalOnBean(CronListenerRepository.class)
-    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-    @SuppressWarnings("rawtypes")
     public CronListenerRegistrant cronListenerRegistrant(CronListenerRepository cronListenerRepository) {
         return new CronListenerRegistrant(cronListenerRepository);
     }

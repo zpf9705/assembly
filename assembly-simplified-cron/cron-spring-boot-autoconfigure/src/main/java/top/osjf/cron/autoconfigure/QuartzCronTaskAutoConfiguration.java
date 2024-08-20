@@ -16,6 +16,7 @@
 
 package top.osjf.cron.autoconfigure;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +27,7 @@ import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
 import top.osjf.cron.spring.quartz.QuartzCronTaskConfiguration;
 import top.osjf.cron.spring.quartz.QuartzPropertiesGainer;
 
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -46,9 +48,11 @@ public class QuartzCronTaskAutoConfiguration extends AbstractCommonConfiguration
     }
 
     @Bean
-    public QuartzPropertiesGainer quartzPropertiesGainer() {
+    public QuartzPropertiesGainer quartzPropertiesGainer(ObjectProvider<List<QuartzPropertiesCustomizer>> provider) {
         Properties properties = new Properties();
         properties.putAll(getCronProperties().getQuartz().getProperties());
+        provider.orderedStream()
+                .forEach(customizers -> customizers.forEach(c -> c.customize(properties)));
         return QuartzPropertiesGainer.of(properties);
     }
 }
