@@ -11,54 +11,40 @@
 
     <artifactId>cron-spring-boot-starter</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.boot>2.5.6</spring.boot>
-        <cron>1.0.0</cron>
+        <cron.autoconfigure>1.0.0</cron.autoconfigure>
+        <cron.hutool>1.0.0</cron.hutool>
     </properties>
 
     <dependencies>
 
         <dependency>
-            <groupId>top.osjf.cron</groupId>
-            <artifactId>cron-spring</artifactId>
-            <version>${cron}</version>
+            <groupId>top.osjf.cron.autoconfigure</groupId>
+            <artifactId>cron-spring-boot-autoconfigure</artifactId>
+            <version>${cron.autoconfigure}</version>
         </dependency>
 
         <dependency>
             <groupId>top.osjf.cron</groupId>
             <artifactId>cron-hutool</artifactId>
-            <version>${cron}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>top.osjf.cron</groupId>
-            <artifactId>cron-quartz</artifactId>
-            <version>${cron}</version>
-            <optional>true</optional>
-        </dependency>
-
-        <dependency>
-            <groupId>top.osjf.cron</groupId>
-            <artifactId>cron-cron4j</artifactId>
-            <version>${cron}</version>
-            <optional>true</optional>
+            <version>${cron.hutool}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot</artifactId>
+            <artifactId>spring-boot-starter</artifactId>
             <version>${spring.boot}</version>
-            <optional>true</optional>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-autoconfigure</artifactId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
             <version>${spring.boot}</version>
             <optional>true</optional>
         </dependency>
