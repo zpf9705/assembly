@@ -40,7 +40,7 @@ import java.util.Properties;
 @Configuration(proxyBeanMethods = false)
 @Import(QuartzCronTaskConfiguration.class)
 @ConditionalOnClass({QuartzCronLifeStyle.class, QuartzCronTaskRepository.class})
-@ConditionalOnProperty(prefix = "spring.schedule.cron.client-type", havingValue = "quartz", matchIfMissing = true)
+@ConditionalOnProperty(name = "spring.schedule.cron.client-type", havingValue = "quartz", matchIfMissing = true)
 public class QuartzCronTaskAutoConfiguration extends AbstractCommonConfiguration {
 
     public QuartzCronTaskAutoConfiguration(CronProperties cronProperties) {

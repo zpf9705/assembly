@@ -36,7 +36,7 @@ import java.util.Map;
 @Configuration(proxyBeanMethods = false)
 @Import(HutoolCronTaskConfiguration.class)
 @ConditionalOnClass({HutoolCronLifeStyle.class, HutoolCronTaskRepository.class})
-@ConditionalOnProperty(prefix = "spring.schedule.cron.client-type", havingValue = "hutool", matchIfMissing = true)
+@ConditionalOnProperty(name = "spring.schedule.cron.client-type", havingValue = "hutool", matchIfMissing = true)
 public class HutoolCronTaskAutoConfiguration extends AbstractCommonConfiguration {
 
     public HutoolCronTaskAutoConfiguration(CronProperties cronProperties) {

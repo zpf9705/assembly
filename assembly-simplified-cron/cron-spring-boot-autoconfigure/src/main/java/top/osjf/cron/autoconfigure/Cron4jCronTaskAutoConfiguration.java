@@ -36,7 +36,7 @@ import java.util.Map;
 @Configuration(proxyBeanMethods = false)
 @Import(Cron4jCronTaskConfiguration.class)
 @ConditionalOnClass({Cron4jCronLifeStyle.class, Cron4jCronTaskRepository.class})
-@ConditionalOnProperty(prefix = "spring.schedule.cron.client-type", havingValue = "cron4j", matchIfMissing = true)
+@ConditionalOnProperty(name = "spring.schedule.cron.client-type", havingValue = "cron4j", matchIfMissing = true)
 public class Cron4jCronTaskAutoConfiguration extends AbstractCommonConfiguration {
 
     public Cron4jCronTaskAutoConfiguration(CronProperties cronProperties) {
