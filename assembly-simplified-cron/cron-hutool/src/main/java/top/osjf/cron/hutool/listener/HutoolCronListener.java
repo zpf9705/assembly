@@ -27,13 +27,4 @@ import top.osjf.cron.core.listener.CronListener;
  * @since 1.0.0
  */
 public interface HutoolCronListener extends TaskListener, CronListener<TaskExecutor> {
-
-    @Override
-    void onStart(TaskExecutor executor);
-
-    @Override
-    void onSucceeded(TaskExecutor executor);
-
-    @Override
-    void onFailed(TaskExecutor executor, Throwable exception);
 }
