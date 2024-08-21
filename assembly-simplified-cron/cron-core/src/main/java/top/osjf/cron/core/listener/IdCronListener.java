@@ -35,27 +35,27 @@ public interface IdCronListener<ID> {
      * This method is called when a scheduled task with a specific ID starts
      * execution.
      *
-     * @param value The unique identifier of the scheduled task, used to identify
-     *              and track the task.
+     * @param id The unique identifier of the scheduled task, used to identify
+     *           and track the task.
      */
-    void onStartWithId(ID value);
+    void onStartWithId(ID id);
 
     /**
      * This method is called when a scheduled task with a specific ID successfully
      * completes.
      *
-     * @param value The unique identifier of the scheduled task, indicating the task
-     *              that has been successfully completed.
+     * @param id The unique identifier of the scheduled task, indicating the task
+     *           that has been successfully completed.
      */
-    void onSucceededWithId(ID value);
+    void onSucceededWithId(ID id);
 
     /**
      * This method is called when a scheduled task with a specific ID fails to execute.
      *
-     * @param value     The unique identifier of the scheduled task, identifying the
+     * @param id     The unique identifier of the scheduled task, identifying the
      *                  task that failed to execute.
      * @param exception The captured exception, indicating the reason for the failure
      *                  of the scheduled task to execute.
      */
-    void onFailedWithId(ID value, Throwable exception);
+    void onFailedWithId(ID id, Throwable exception);
 }
