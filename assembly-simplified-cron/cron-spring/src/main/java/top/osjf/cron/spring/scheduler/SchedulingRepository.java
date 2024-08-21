@@ -24,9 +24,6 @@ import org.springframework.core.NamedThreadLocal;
 import org.springframework.lang.NonNull;
 import org.springframework.scheduling.config.ScheduledTask;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
-import org.springframework.scheduling.support.CronExpression;
-import top.osjf.cron.core.exception.CronExpressionInvalidException;
-import top.osjf.cron.core.exception.CronTaskNoExistException;
 import top.osjf.cron.core.repository.CronListenerRepository;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.core.util.StringUtils;
@@ -41,8 +38,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class SchedulingRepository extends AnyTaskSupport implements CronTaskRepository<String, Runnable>,
-        TaskEnhanceConvertFactory, CronListenerRepository<SchedulingListener>, ApplicationContextAware, InitializingBean {
+public class SchedulingRepository extends AnyTaskSupport
+        implements CronTaskRepository<String, Runnable>, CronListenerRepository<SchedulingListener>,
+        TaskEnhanceConvertFactory, ApplicationContextAware, InitializingBean
+{
 
     /*** Internally, {@link ScheduledTask} is assigned an actual ID storage map to
      * record the unique ID of the task, in order to facilitate the implementation
@@ -103,7 +102,6 @@ public class SchedulingRepository extends AnyTaskSupport implements CronTaskRepo
 
     @Override
     public String register(String cronExpression, Runnable runsBody) throws Exception {
-        isValidExpression(cronExpression);
         SchedulingRunnable schedulingRunnable = newSchedulingRunnable(runsBody);
         taskRegistrar.scheduleCronTask(new CronTask(schedulingRunnable, cronExpression));
         return schedulingRunnable.getSchedulingInfo().getId();
@@ -111,8 +109,6 @@ public class SchedulingRepository extends AnyTaskSupport implements CronTaskRepo
 
     @Override
     public void update(String id, String newCronExpression) throws Exception {
-        exist(id);
-        isValidExpression(newCronExpression);
         remove(id);
         ID.set(id);
         register(newCronExpression, scheduledTaskMap.get(id).getTask().getRunnable());
@@ -120,8 +116,10 @@ public class SchedulingRepository extends AnyTaskSupport implements CronTaskRepo
 
     @Override
     public void remove(String id) {
-        exist(id);
-        scheduledTaskMap.get(id).cancel();
+        ScheduledTask scheduledTask = scheduledTaskMap.get(id);
+        if (scheduledTask != null) {
+            scheduledTask.cancel();
+        }
     }
 
     @Override
@@ -134,12 +132,6 @@ public class SchedulingRepository extends AnyTaskSupport implements CronTaskRepo
     @Override
     public void removeCronListener(SchedulingListener cronListener) {
         schedulingListeners.remove(cronListener);
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public CronListenerRepository<SchedulingListener> getCronListenerRepository() {
-        return this;
     }
 
     @Override
@@ -193,21 +185,5 @@ public class SchedulingRepository extends AnyTaskSupport implements CronTaskRepo
     //generate ID using UUID
     private String generateID() {
         return UUID.randomUUID().toString();
-    }
-
-    //Valid cron Expression
-    private void isValidExpression(String srtCronExpression) throws Exception {
-        try {
-            CronExpression.parse(srtCronExpression);
-        } catch (Exception e) {
-            throw new CronExpressionInvalidException(srtCronExpression, e);
-        }
-    }
-
-    //check id exist
-    private void exist(String id) {
-        if (!scheduledTaskMap.containsKey(id)) {
-            throw new CronTaskNoExistException(id);
-        }
     }
 }
