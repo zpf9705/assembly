@@ -72,13 +72,4 @@ public interface QuartzCronListener extends JobListener, CronListener<JobExecuti
             onSucceeded(context);
         }
     }
-
-    @Override
-    void onStart(JobExecutionContext value);
-
-    @Override
-    void onSucceeded(JobExecutionContext value);
-
-    @Override
-    void onFailed(JobExecutionContext value, Throwable exception);
 }

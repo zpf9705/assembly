@@ -20,13 +20,10 @@ import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.simpl.SimpleThreadPool;
 import org.quartz.spi.JobFactory;
-import top.osjf.cron.core.exception.CronExpressionInvalidException;
-import top.osjf.cron.core.exception.CronTaskNoExistException;
 import top.osjf.cron.core.repository.CronListenerRepository;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.quartz.listener.QuartzCronListener;
 
-import java.text.ParseException;
 import java.util.Properties;
 
 /**
@@ -36,7 +33,8 @@ import java.util.Properties;
  * @since 1.0.0
  */
 public class QuartzCronTaskRepository implements CronTaskRepository<JobKey, JobDetail>,
-        CronListenerRepository<QuartzCronListener> {
+        CronListenerRepository<QuartzCronListener>
+{
 
     /*** the scheduled task management class of Quartz.*/
     private Scheduler scheduler;
@@ -108,43 +106,24 @@ public class QuartzCronTaskRepository implements CronTaskRepository<JobKey, JobD
         TriggerBuilder<CronTrigger> triggerBuilder = TriggerBuilder.newTrigger()
                 .withIdentity(key.getName())
                 .startNow()
-                .withSchedule(CronScheduleBuilder.cronSchedule(parseCronExpression(cronExpression)));
+                .withSchedule(CronScheduleBuilder.cronSchedule(cronExpression));
         scheduler.scheduleJob(jobDetail, triggerBuilder.build());
         return jobDetail.getKey();
     }
 
     @Override
     public void update(JobKey jobKey, String newCronExpression) throws Exception {
-        assertExist(jobKey);
         String name = jobKey.getName();
         scheduler.rescheduleJob(new TriggerKey(name), TriggerBuilder.newTrigger()
                 .withIdentity(name)
                 .startNow()
-                .withSchedule(CronScheduleBuilder.cronSchedule(parseCronExpression(newCronExpression)))
+                .withSchedule(CronScheduleBuilder.cronSchedule(newCronExpression))
                 .build());
     }
 
     @Override
     public void remove(JobKey jobKey) throws Exception {
-        assertExist(jobKey);
         scheduler.deleteJob(jobKey);
-    }
-
-    void assertExist(JobKey jobKey) throws Exception {
-        JobDetail jobDetail = scheduler.getJobDetail(jobKey);
-        if (jobDetail == null) {
-            throw new CronTaskNoExistException(jobKey.toString());
-        }
-    }
-
-    CronExpression parseCronExpression(String strCronExpression) throws Exception {
-        CronExpression cronExpression;
-        try {
-            cronExpression = new CronExpression(strCronExpression);
-        } catch (ParseException e) {
-            throw new CronExpressionInvalidException(strCronExpression, e);
-        }
-        return cronExpression;
     }
 
     @Override
@@ -155,11 +134,5 @@ public class QuartzCronTaskRepository implements CronTaskRepository<JobKey, JobD
     @Override
     public void removeCronListener(QuartzCronListener cronListener) {
         listenerManager.removeJobListener(cronListener.getName());
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public CronListenerRepository<QuartzCronListener> getCronListenerRepository() {
-        return this;
     }
 }
