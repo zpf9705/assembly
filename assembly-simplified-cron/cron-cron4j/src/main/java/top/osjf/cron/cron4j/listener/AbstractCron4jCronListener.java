@@ -20,6 +20,8 @@ import it.sauronsoftware.cron4j.Task;
 import it.sauronsoftware.cron4j.TaskExecutor;
 import top.osjf.cron.core.listener.IdCronListener;
 
+import java.lang.reflect.Field;
+
 /**
  * The abstract service class of the listener for {@code Cron4j} includes the
  * stage method passing that specifies the task ID.
@@ -64,7 +66,9 @@ public abstract class AbstractCron4jCronListener implements Cron4jCronListener, 
     private String getTaskId(TaskExecutor value) {
         Task task = value.getTask();
         try {
-            return Task.class.getDeclaredField("id").get(task).toString();
+            Field idField = Task.class.getDeclaredField("id");
+            idField.setAccessible(true);
+            return idField.get(task).toString();
         } catch (Exception e) {
             throw new IllegalArgumentException(e);
         }
