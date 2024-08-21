@@ -21,13 +21,13 @@ import org.quartz.JobKey;
 import top.osjf.cron.core.listener.IdCronListener;
 
 /**
- * The abstract service class of the listener for {@code Hutool} includes the
+ * The abstract service class of the listener for {@code Quartz} includes the
  * stage method passing that specifies the task ID.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.1
  */
-public abstract class AbstractHutoolCronListener implements QuartzCronListener, IdCronListener<JobKey> {
+public abstract class AbstractQuartzCronListener implements QuartzCronListener, IdCronListener<JobKey> {
 
     @Override
     public void onStart(JobExecutionContext value) {
