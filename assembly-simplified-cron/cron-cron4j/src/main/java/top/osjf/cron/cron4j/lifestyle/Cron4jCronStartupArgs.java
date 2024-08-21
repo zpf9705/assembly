@@ -16,9 +16,7 @@
 
 package top.osjf.cron.cron4j.lifestyle;
 
-import top.osjf.cron.core.util.ArrayUtils;
-
-import java.util.Map;
+import java.util.Properties;
 import java.util.TimeZone;
 
 /**
@@ -41,38 +39,34 @@ public class Cron4jCronStartupArgs {
     private TimeZone timezone = TimeZone.getDefault();
 
     /**
-     * Analyze startup parameters and construct startup parameter objects.
+     * Creates a new instance of {@link Cron4jCronStartupArgs} initialized with the specified properties.
      *
-     * <p>Compatible with two situations:
+     * <p>This static factory method creates a new {@link Cron4jCronStartupArgs} object and initializes
+     * its fields based on the given
+     * {@link Properties} object. The following properties are recognized and used to configure the startup
+     * arguments:</p>
+     *
      * <ul>
-     *     <li>If only one parameter is passed in and of type {@link Map}, then
-     *     retrieve the value from this type.</li>
-     *     <li>If there is a value that matches {@link #daemon} first and is
-     *     greater than 1 value, then match {@link #timezone}.</li>
+     *     <li><strong>daemon</strong> (optional, boolean): Indicates whether the cron job should run as a
+     *     daemon process. If not specified,
+     *     defaults to <code>false</code>.</li>
+     *     <li><strong>timezone</strong> (optional, {@link TimeZone}): Specifies the time zone in which the
+     *     cron job should operate. If not
+     *     specified, defaults to the system's default time zone.</li>
      * </ul>
      *
-     * @param args the array parameters.
-     * @return Analyze the results of parameter objects.
+     * @param properties The {@link Properties} object containing the configuration settings for the
+     *                   cron job startup.
+     * @return A newly created and initialized {@link Cron4jCronStartupArgs} instance.
+     * @throws ClassCastException   If the value for the "daemon" property cannot be cast to a {@code boolean}.
+     * @throws NullPointerException If the value for the "timezone" property is null and cannot be defaulted
+     *                              to the system's default time zone.(Note: This should not happen with the current
+     *                              implementation, but is included for completeness.)
      */
-    public static Cron4jCronStartupArgs of(Object[] args) {
+    public static Cron4jCronStartupArgs of(Properties properties) {
         Cron4jCronStartupArgs startupArgs = new Cron4jCronStartupArgs();
-        if (ArrayUtils.isEmpty(args)) return startupArgs;
-        if (args.length == 1) {
-            Object arg = args[0];
-            if (arg instanceof Map) {
-                @SuppressWarnings("unchecked")
-                Map<String, Object> metadata = (Map<String, Object>) arg;
-                startupArgs.daemon = !metadata.containsKey("daemon") ||
-                        (boolean) metadata.get("daemon");
-                startupArgs.timezone = !metadata.containsKey("timezone") ?
-                        (TimeZone) metadata.get("timezone") : TimeZone.getDefault();
-            } else {
-                startupArgs.daemon = (boolean) arg;
-            }
-        } else {
-            startupArgs.timezone = (TimeZone) args[0];
-            startupArgs.daemon = (boolean) args[1];
-        }
+        startupArgs.daemon = (boolean) properties.getOrDefault("daemon", false);
+        startupArgs.timezone = (TimeZone) properties.getOrDefault("timezone", TimeZone.getDefault());
         return startupArgs;
     }
 

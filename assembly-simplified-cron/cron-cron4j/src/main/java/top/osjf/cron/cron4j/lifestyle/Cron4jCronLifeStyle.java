@@ -19,7 +19,7 @@ package top.osjf.cron.cron4j.lifestyle;
 import it.sauronsoftware.cron4j.Scheduler;
 import top.osjf.cron.core.exception.CronLifeStyleException;
 import top.osjf.cron.core.lifestyle.LifeStyle;
-import top.osjf.cron.core.lifestyle.StartupMetadata;
+import top.osjf.cron.core.lifestyle.StartupProperties;
 
 import java.util.Objects;
 
@@ -43,8 +43,8 @@ public class Cron4jCronLifeStyle implements LifeStyle {
     }
 
     @Override
-    public void start(StartupMetadata metadata) throws CronLifeStyleException {
-        Cron4jCronStartupArgs startupArgs = Cron4jCronStartupArgs.of(metadata.getStartUpArgs());
+    public void start(StartupProperties properties) throws CronLifeStyleException {
+        Cron4jCronStartupArgs startupArgs = Cron4jCronStartupArgs.of(properties.getStartUpProperties());
         scheduler.setDaemon(startupArgs.isDaemon());
         scheduler.setTimeZone(startupArgs.getTimezone());
         doLifeStyle(scheduler::start);
