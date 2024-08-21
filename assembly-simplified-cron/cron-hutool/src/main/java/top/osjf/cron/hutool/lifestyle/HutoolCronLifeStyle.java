@@ -19,6 +19,7 @@ package top.osjf.cron.hutool.lifestyle;
 import cn.hutool.cron.CronUtil;
 import top.osjf.cron.core.exception.CronLifeStyleException;
 import top.osjf.cron.core.lifestyle.LifeStyle;
+import top.osjf.cron.core.lifestyle.StartupMetadata;
 
 /**
  * The Hutool cron task {@link LifeStyle} impl.
@@ -29,9 +30,9 @@ import top.osjf.cron.core.lifestyle.LifeStyle;
 public class HutoolCronLifeStyle implements LifeStyle {
 
     @Override
-    public void start(Object... args) throws CronLifeStyleException {
+    public void start(StartupMetadata metadata) throws CronLifeStyleException {
         doLifeStyle(() -> {
-            HutoolCronStartupArgs startupArgs = HutoolCronStartupArgs.of(args);
+            HutoolCronStartupArgs startupArgs = HutoolCronStartupArgs.of(metadata.getStartUpArgs());
             CronUtil.setMatchSecond(startupArgs.isMatchSecond());
             CronUtil.start(startupArgs.isDaemon());
         });

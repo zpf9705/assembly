@@ -30,7 +30,7 @@ public interface LifeStyle {
     /**
      * Activate scheduled task execution.
      *
-     * @param metadata Start the parameter.
+     * @param metadata Start the parameter,must not be {@literal null}.
      * @throws CronLifeStyleException The scheduled task
      *                                execution body started abnormally.
      */

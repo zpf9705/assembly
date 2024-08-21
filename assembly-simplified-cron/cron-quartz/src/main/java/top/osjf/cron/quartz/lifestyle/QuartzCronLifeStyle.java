@@ -20,6 +20,7 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import top.osjf.cron.core.exception.CronLifeStyleException;
 import top.osjf.cron.core.lifestyle.LifeStyle;
+import top.osjf.cron.core.lifestyle.StartupMetadata;
 
 import java.util.Objects;
 
@@ -45,7 +46,7 @@ public class QuartzCronLifeStyle implements LifeStyle {
     }
 
     @Override
-    public void start(Object... args) throws CronLifeStyleException {
+    public void start(StartupMetadata metadata) throws CronLifeStyleException {
         try {
             scheduler.start();
         } catch (SchedulerException e) {
