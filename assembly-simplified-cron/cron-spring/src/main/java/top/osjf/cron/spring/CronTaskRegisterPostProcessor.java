@@ -33,17 +33,25 @@ import org.springframework.context.annotation.ImportAware;
 import org.springframework.context.annotation.Role;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import top.osjf.cron.core.lifestyle.LifeStyle;
-import top.osjf.cron.core.lifestyle.StartupMetadata;
+import top.osjf.cron.core.lifestyle.StartupProperties;
 import top.osjf.cron.spring.annotation.Cron;
 import top.osjf.cron.spring.annotation.MappedAnnotationAttributes;
+import top.osjf.cron.spring.cron4j.EnableCron4jCronTaskRegister;
+import top.osjf.cron.spring.hutool.EnableHutoolCronTaskRegister;
+import top.osjf.cron.spring.quartz.EnableQuartzCronTaskRegister;
 
+import java.lang.annotation.Annotation;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Create a post processor for custom bean elements.
@@ -75,7 +83,12 @@ public class CronTaskRegisterPostProcessor implements ImportAware, ApplicationCo
 
     private RegistrantCollector collector;
 
-    private final StartupMetadata metadata = StartupMetadata.of();
+    private final StartupProperties properties = StartupProperties.of();
+
+    private final List<Class<?>> annotationClasses = Stream
+            .of(EnableHutoolCronTaskRegister.class,
+                    EnableCron4jCronTaskRegister.class,
+                    EnableQuartzCronTaskRegister.class).collect(Collectors.toList());
 
     @Override
     public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
@@ -90,10 +103,13 @@ public class CronTaskRegisterPostProcessor implements ImportAware, ApplicationCo
     @Override
     public void setImportMetadata(@NonNull AnnotationMetadata annotationMetadata) {
         Map<String, Object> map = new HashMap<>();
-        annotationMetadata.getAnnotations().forEach(annotation ->
+        for (MergedAnnotation<Annotation> annotation : annotationMetadata.getAnnotations()) {
+            if (annotationClasses.contains(annotation.getType())) {
                 map.putAll(MappedAnnotationAttributes.of(annotationMetadata.
-                        getAnnotationAttributes(annotation.getType().getCanonicalName()))));
-        metadata.addStartupArg(map);
+                        getAnnotationAttributes(annotation.getType().getCanonicalName())));
+            }
+        }
+        properties.addStartupProperties(map);
     }
 
     @Override
@@ -178,12 +194,12 @@ public class CronTaskRegisterPostProcessor implements ImportAware, ApplicationCo
         LifeStyle lifeStyle = applicationContext.getBean(LifeStyle.class);
 
         //start up metadata find in container
-        for (StartupMetadata value : applicationContext.getBeansOfType(StartupMetadata.class).values()) {
-            metadata.addStartupArgs(value.getStartUpArgs());
+        for (StartupProperties value : applicationContext.getBeansOfType(StartupProperties.class).values()) {
+            properties.addStartupProperties(value);
         }
 
         //start up
-        lifeStyle.start(metadata);
+        lifeStyle.start(properties);
 
         //Clean up temporary registration resources.
         collector.close();
