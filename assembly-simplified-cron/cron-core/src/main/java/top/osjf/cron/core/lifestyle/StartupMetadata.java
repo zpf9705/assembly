@@ -18,6 +18,10 @@ package top.osjf.cron.core.lifestyle;
 
 import top.osjf.cron.core.util.ArrayUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * The StartupMetadata interface defines a method for retrieving startup arguments.
  *
@@ -64,27 +68,18 @@ public interface StartupMetadata {
     void addStartupArg(Object arg);
 
     /**
-     * Default method to add multiple startup arguments in bulk.
+     * Adds multiple startup arguments.
      *
-     * <p>This method provides a convenient way to add multiple startup arguments at once. It
-     * accepts a varargs (variable arguments) array, iterates over the array, and calls the
-     * {@link #addStartupArg(Object)} method to add each argument to the collection of startup
-     * arguments.</p>
+     * <p>This method allows adding multiple startup arguments to the collection of startup arguments
+     * for the application in a single call. It accepts a varargs (variable arguments) array, iterates
+     * over the array, and adds each argument to the collection of startup arguments.</p>
      *
      * <p>If the passed argument array is null or has a length of 0, this method does not perform
      * any operation.</p>
      *
      * @param args The array of startup arguments to add, which can be null or have a length of 0.
-     * @see ArrayUtils#isEmpty(Object[]) A utility method used to check if the array is null or empty
-     * (assuming ArrayUtils is a class from Apache Commons Lang, or a similar custom utility class).
      */
-    default void addStartupArgs(Object... args) {
-        if (!ArrayUtils.isEmpty(args)) {
-            for (Object arg : args) {
-                addStartupArg(arg);
-            }
-        }
-    }
+    void addStartupArgs(Object... args);
 
     /**
      * Static factory method for {@link StartupMetadata} to create a
@@ -102,20 +97,29 @@ public interface StartupMetadata {
      */
     class DefaultStartupMetadata implements StartupMetadata {
 
-        private final Object[] args;
+        private final List<Object> listArgs = new ArrayList<>();
 
         public DefaultStartupMetadata(Object[] args) {
-            this.args = args;
+            addStartupArgs(args);
         }
 
         @Override
         public Object[] getStartUpArgs() {
-            return args;
+            return listArgs.toArray();
         }
 
         @Override
         public void addStartupArg(Object arg) {
-            ArrayUtils.add(args, arg);
+            if (arg != null) {
+                listArgs.add(arg);
+            }
+        }
+
+        @Override
+        public void addStartupArgs(Object... args) {
+            if (!ArrayUtils.isEmpty(args)) {
+                listArgs.addAll(Arrays.asList(args));
+            }
         }
     }
 }
