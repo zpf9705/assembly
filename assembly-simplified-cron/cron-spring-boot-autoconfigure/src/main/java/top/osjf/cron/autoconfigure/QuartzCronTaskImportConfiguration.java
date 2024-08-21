@@ -17,10 +17,11 @@
 package top.osjf.cron.autoconfigure;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import top.osjf.cron.quartz.lifestyle.QuartzCronLifeStyle;
 import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
 import top.osjf.cron.spring.quartz.QuartzCronTaskConfiguration;
@@ -30,19 +31,16 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration}
- * for Quartz Cron Task.
+ * {@link Import Import Configuration} for Quartz Cron Task.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.1
  */
 @Configuration(proxyBeanMethods = false)
 @Import(QuartzCronTaskConfiguration.class)
-@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 @ConditionalOnClass({QuartzCronLifeStyle.class, QuartzCronTaskRepository.class})
 @ConditionalOnProperty(name = "spring.schedule.cron.client-type", havingValue = "quartz", matchIfMissing = true)
-@CronProperties.Client(CronProperties.ClientType.QUARTZ)
-public class QuartzCronTaskAutoConfiguration extends AbstractCommonConfiguration {
+public class QuartzCronTaskImportConfiguration {
 
     @Bean
     public QuartzPropertiesGainer quartzPropertiesGainer(ObjectProvider<List<QuartzPropertiesCustomizer>> provider,

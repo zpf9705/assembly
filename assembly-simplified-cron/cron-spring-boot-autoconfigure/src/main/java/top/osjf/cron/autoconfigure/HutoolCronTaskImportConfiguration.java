@@ -16,28 +16,30 @@
 
 package top.osjf.cron.autoconfigure;
 
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Role;
-import top.osjf.cron.cron4j.lifestyle.Cron4jCronLifeStyle;
-import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
-import top.osjf.cron.spring.cron4j.Cron4jCronTaskConfiguration;
+import top.osjf.cron.core.lifestyle.StartupMetadata;
+import top.osjf.cron.hutool.lifestyle.HutoolCronLifeStyle;
+import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
+import top.osjf.cron.spring.hutool.HutoolCronTaskConfiguration;
 
 /**
- * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration}
- * for Cron4j Cron Task.
+ * {@link Import Import Configuration} for Hutool Cron Task.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.1
  */
 @Configuration(proxyBeanMethods = false)
-@Import(Cron4jCronTaskConfiguration.class)
-@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-@ConditionalOnClass({Cron4jCronLifeStyle.class, Cron4jCronTaskRepository.class})
-@ConditionalOnProperty(name = "spring.schedule.cron.client-type", havingValue = "cron4j", matchIfMissing = true)
-@CronProperties.Client(CronProperties.ClientType.CRON4J)
-public class Cron4jCronTaskAutoConfiguration extends AbstractCommonConfiguration {
+@Import(HutoolCronTaskConfiguration.class)
+@ConditionalOnClass({HutoolCronLifeStyle.class, HutoolCronTaskRepository.class})
+@ConditionalOnProperty(name = "spring.schedule.cron.client-type", havingValue = "hutool", matchIfMissing = true)
+public class HutoolCronTaskImportConfiguration {
+
+    @Bean
+    public StartupMetadata hutoolStartupMetadata(CronProperties cronProperties) {
+        return StartupMetadata.of(cronProperties.getHutool().toMetadata());
+    }
 }

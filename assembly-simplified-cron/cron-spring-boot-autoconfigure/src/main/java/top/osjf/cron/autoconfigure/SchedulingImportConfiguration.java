@@ -19,15 +19,16 @@ package top.osjf.cron.autoconfigure;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Role;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.spring.scheduler.EnableScheduling;
 
 /**
- * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration}
+ * {@link Import Import Configuration}
  * for enhance {@link org.springframework.scheduling.annotation.EnableScheduling}.
  *
- * <p>There is no default selection for {@code CronTaskRepository} during automatic
+ * <p>There is no default selection for {@code CronTaskRepository} during import
  * assembly.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
@@ -37,5 +38,5 @@ import top.osjf.cron.spring.scheduler.EnableScheduling;
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 @EnableScheduling
 @ConditionalOnMissingBean(CronTaskRepository.class)
-public class SchedulingAutoConfiguration {
+public class SchedulingImportConfiguration {
 }

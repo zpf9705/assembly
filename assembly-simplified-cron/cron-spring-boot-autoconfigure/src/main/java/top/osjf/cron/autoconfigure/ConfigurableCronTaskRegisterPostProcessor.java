@@ -32,26 +32,10 @@ import java.lang.reflect.Method;
  */
 public class ConfigurableCronTaskRegisterPostProcessor extends CronTaskRegisterPostProcessor {
 
-    private final CronProperties cronProperties;
-
-    private final CronProperties.ClientType clientType;
-
-    public ConfigurableCronTaskRegisterPostProcessor(CronProperties cronProperties,
-                                                     CronProperties.ClientType clientType) {
-        this.cronProperties = cronProperties;
-        this.clientType = clientType;
-    }
-
     @Override
     protected boolean advanceApprovalOfCondition(Class<?> realBeanType) {
         return super.advanceApprovalOfCondition(realBeanType)
                 || advanceApprovalOfCondition0(realBeanType);
-    }
-
-    @Override
-    protected void finishRegistration() {
-        addMetadata(cronProperties.withClientToMetadata(clientType));
-        super.finishRegistration();
     }
 
     /**
