@@ -17,37 +17,42 @@
 package top.osjf.cron.core.listener;
 
 /**
- * An interface for monitoring the execution status of scheduled tasks,
- * including startup, success, and failure.
+ * The CronListener interface defines the event listening methods
+ * during the execution of scheduled tasks.
  *
- * <p>And in each execution stage, specified generic parameters can be carried.
+ * <p>Classes implementing this interface can listen to the start, successful
+ * completion, and failure events of scheduled tasks,and perform corresponding
+ * processing accordingly.
  *
- * @param <T> The specified generic parameter.
+ * @param <T> The generic T represents the data type passed to the listener methods,
+ *            allowing different tasks to pass different data.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
 public interface CronListener<T> {
 
     /**
-     * Triggered when a scheduled task starts.
+     * This method is triggered when a scheduled task starts.
      *
-     * @param value The parameters passed.
+     * @param value The parameters passed when starting the scheduled task.
      */
     void onStart(T value);
 
     /**
-     * Triggered when the task successfully ends.
+     * This method is triggered when the scheduled task successfully ends.
      *
-     * @param value The parameters passed.
+     * @param value The parameters passed when the scheduled task successfully
+     *              completes.
      */
     void onSucceeded(T value);
 
     /**
-     * Triggered when the task fails to start.
+     * This method is triggered when the scheduled task fails to start.
      *
-     * @param value     The parameters passed.
-     * @param exception The specific exception captured by the
-     *                  listener when a scheduled task is abnormal.
+     * @param value     The parameters passed when attempting to start the
+     *                  scheduled task.
+     * @param exception The specific exception captured by the listener, indicating
+     *                  the reason for the failure of the scheduled task to start.
      */
     void onFailed(T value, Throwable exception);
 }
