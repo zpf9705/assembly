@@ -21,7 +21,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import top.osjf.cron.core.lifestyle.StartupMetadata;
+import top.osjf.cron.core.lifestyle.StartupProperties;
 import top.osjf.cron.cron4j.lifestyle.Cron4jCronLifeStyle;
 import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
 import top.osjf.cron.spring.cron4j.Cron4jCronTaskConfiguration;
@@ -39,7 +39,7 @@ import top.osjf.cron.spring.cron4j.Cron4jCronTaskConfiguration;
 public class Cron4jCronTaskImportConfiguration {
 
     @Bean
-    public StartupMetadata cron4jStartupMetadata(CronProperties cronProperties) {
-        return StartupMetadata.of(cronProperties.getCron4j().toMetadata());
+    public StartupProperties cron4jStartupProperties(CronProperties cronProperties) {
+        return StartupProperties.of(cronProperties.getCron4j().toMetadata());
     }
 }

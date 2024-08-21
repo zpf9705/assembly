@@ -35,7 +35,8 @@ import top.osjf.cron.core.repository.CronListenerRepository;
 @Import({HutoolCronTaskImportConfiguration.class,
         QuartzCronTaskImportConfiguration.class,
         Cron4jCronTaskImportConfiguration.class,
-        SchedulingImportConfiguration.class})
+        SchedulingImportConfiguration.class,
+        ConfigurableCronTaskRegisterPostProcessor.class})
 @SuppressWarnings("rawtypes")
 public class CronTaskAutoConfiguration {
 
@@ -43,10 +44,5 @@ public class CronTaskAutoConfiguration {
     @ConditionalOnBean(CronListenerRepository.class)
     public CronListenerRegistrant cronListenerRegistrant(CronListenerRepository cronListenerRepository) {
         return new CronListenerRegistrant(cronListenerRepository);
-    }
-
-    @Bean
-    public ConfigurableCronTaskRegisterPostProcessor configurableCronTaskRegisterPostProcessor() {
-        return new ConfigurableCronTaskRegisterPostProcessor();
     }
 }
