@@ -22,9 +22,15 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * The resource management interface of the scheduled task lifecycle
- * listener, which can be used to add or delete listener resources.
+ * Cron Listener Repository Interface, used for managing Cron task listeners.
  *
+ * <p>This interface provides methods for adding and removing single or multiple
+ * Cron listeners.
+ *
+ * <p>It uses a generic type T to specify the type of listener, which must extend
+ * from the CronListener interface.
+ *
+ * @param <T> The type of cron listener.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
@@ -32,68 +38,56 @@ import java.util.List;
 public interface CronListenerRepository<T extends CronListener> {
 
     /**
-     * Add a scheduled task listener.
+     * Adds a Cron listener to the repository.
      *
-     * @param cronListener a scheduled task listener,must not be {@literal null}.
-     * @throws Exception The specified exception of the
-     *                   scheduled task component.
+     * @param cronListener The Cron listener instance to be added.
      */
-    void addCronListener(T cronListener) throws Exception;
+    void addCronListener(T cronListener);
 
     /**
-     * Remove a scheduled task listener.
+     * Removes a Cron listener from the repository.
      *
-     * @param cronListener a scheduled task listener,must not be {@literal null}.
-     * @throws Exception The specified exception of the
-     *                   scheduled task component.
+     * @param cronListener The Cron listener instance to be removed.
      */
-    void removeCronListener(T cronListener) throws Exception;
+    void removeCronListener(T cronListener);
 
     /**
-     * Add scheduled task listeners.
+     * Adds multiple Cron listeners to the repository.
      *
-     * @param cronListeners scheduled task listeners,must not be {@literal null}.
-     * @throws Exception The specified exception of the
-     *                   scheduled task component.
+     * @param cronListeners The list of Cron listener instances to be added.
      */
-    default void addCronListeners(List<T> cronListeners) throws Exception {
+    default void addCronListeners(List<T> cronListeners) {
         for (T cronListener : cronListeners) {
             addCronListener(cronListener);
         }
     }
 
     /**
-     * Add scheduled task listeners.
+     * Adds multiple Cron listeners to the repository, passed as a varargs list.
      *
-     * @param cronListeners scheduled task listeners,must not be {@literal null}.
-     * @throws Exception The specified exception of the
-     *                   scheduled task component.
+     * @param cronListeners The array of Cron listener instances to be added.
      */
-    default void addCronListeners(T... cronListeners) throws Exception {
+    default void addCronListeners(T... cronListeners) {
         addCronListeners(Arrays.asList(cronListeners));
     }
 
     /**
-     * Remove scheduled task listeners.
+     * Removes multiple Cron listeners from the repository.
      *
-     * @param cronListeners scheduled task listeners,must not be {@literal null}.
-     * @throws Exception The specified exception of the
-     *                   scheduled task component.
+     * @param cronListeners The list of Cron listener instances to be removed.
      */
-    default void removeCronListeners(List<T> cronListeners) throws Exception {
+    default void removeCronListeners(List<T> cronListeners) {
         for (T cronListener : cronListeners) {
             removeCronListener(cronListener);
         }
     }
 
     /**
-     * Remove scheduled task listeners.
+     * Removes multiple Cron listeners from the repository, passed as a varargs list.
      *
-     * @param cronListeners scheduled task listeners,must not be {@literal null}.
-     * @throws Exception The specified exception of the
-     *                   scheduled task component.
+     * @param cronListeners The array of Cron listener instances to be removed.
      */
-    default void removeCronListeners(T... cronListeners) throws Exception {
+    default void removeCronListeners(T... cronListeners) {
         removeCronListeners(Arrays.asList(cronListeners));
     }
 }
