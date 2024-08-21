@@ -16,11 +16,7 @@
 
 package top.osjf.cron.cron4j.repository;
 
-import it.sauronsoftware.cron4j.InvalidPatternException;
 import it.sauronsoftware.cron4j.Scheduler;
-import it.sauronsoftware.cron4j.SchedulingPattern;
-import top.osjf.cron.core.exception.CronExpressionInvalidException;
-import top.osjf.cron.core.exception.CronTaskNoExistException;
 import top.osjf.cron.core.repository.CronListenerRepository;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.cron4j.listener.Cron4jCronListener;
@@ -32,7 +28,8 @@ import top.osjf.cron.cron4j.listener.Cron4jCronListener;
  * @since 1.0.0
  */
 public class Cron4jCronTaskRepository implements CronTaskRepository<String, Runnable>,
-        CronListenerRepository<Cron4jCronListener> {
+        CronListenerRepository<Cron4jCronListener>
+{
 
     /*** scheduler management*/
     private final Scheduler scheduler;
@@ -64,11 +61,9 @@ public class Cron4jCronTaskRepository implements CronTaskRepository<String, Runn
      * @param cronExpression {@inheritDoc}
      * @param runnable       {@inheritDoc}
      * @return {@inheritDoc}
-     * @throws Exception {@inheritDoc}
      */
     @Override
-    public String register(String cronExpression, Runnable runnable) throws Exception {
-        parseSchedulingPattern(cronExpression);
+    public String register(String cronExpression, Runnable runnable) {
         return scheduler.schedule(cronExpression, runnable);
     }
 
@@ -82,34 +77,15 @@ public class Cron4jCronTaskRepository implements CronTaskRepository<String, Runn
      *
      * @param taskId            {@inheritDoc}
      * @param newCronExpression {@inheritDoc}
-     * @throws Exception {@inheritDoc}
      */
     @Override
-    public void update(String taskId, String newCronExpression) throws Exception {
-        assertExist(taskId);
-        scheduler.reschedule(taskId, parseSchedulingPattern(newCronExpression));
+    public void update(String taskId, String newCronExpression) {
+        scheduler.reschedule(taskId, newCronExpression);
     }
 
     @Override
     public void remove(String taskId) {
-        assertExist(taskId);
         scheduler.deschedule(taskId);
-    }
-
-    void assertExist(String taskId) {
-        if (scheduler.getTask(taskId) == null) {
-            throw new CronTaskNoExistException(taskId);
-        }
-    }
-
-    SchedulingPattern parseSchedulingPattern(String strCronExpression) throws Exception {
-        SchedulingPattern schedulingPattern;
-        try {
-            schedulingPattern = new SchedulingPattern(strCronExpression);
-        } catch (InvalidPatternException e) {
-            throw new CronExpressionInvalidException(strCronExpression, e);
-        }
-        return schedulingPattern;
     }
 
     @Override
@@ -120,11 +96,5 @@ public class Cron4jCronTaskRepository implements CronTaskRepository<String, Runn
     @Override
     public void removeCronListener(Cron4jCronListener cronListener) {
         scheduler.removeSchedulerListener(cronListener);
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public CronListenerRepository<Cron4jCronListener> getCronListenerRepository() {
-        return this;
     }
 }

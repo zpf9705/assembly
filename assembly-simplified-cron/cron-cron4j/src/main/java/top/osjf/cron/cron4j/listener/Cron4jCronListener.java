@@ -27,6 +27,7 @@ import top.osjf.cron.core.listener.CronListener;
  * @since 1.0.0
  */
 public interface Cron4jCronListener extends SchedulerListener, CronListener<TaskExecutor> {
+
     @Override
     default void taskLaunching(TaskExecutor executor) {
         onStart(executor);
@@ -41,13 +42,4 @@ public interface Cron4jCronListener extends SchedulerListener, CronListener<Task
     default void taskFailed(TaskExecutor executor, Throwable exception) {
         onFailed(executor, exception);
     }
-
-    @Override
-    void onStart(TaskExecutor executor);
-
-    @Override
-    void onSucceeded(TaskExecutor executor);
-
-    @Override
-    void onFailed(TaskExecutor executor, Throwable exception);
 }
