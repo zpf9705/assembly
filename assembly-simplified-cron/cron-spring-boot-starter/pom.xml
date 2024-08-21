@@ -6,26 +6,30 @@
     <parent>
         <groupId>top.osjf.cron</groupId>
         <artifactId>assembly-simplified-cron</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </parent>
 
     <artifactId>cron-spring-boot-starter</artifactId>
     <packaging>jar</packaging>
     <version>1.0.1</version>
+    <description>
+        Integrate the Spring Boot framework with cron tasks.
+        Encapsulated as a Spring-Boot-Starter package without code, it exists as an adaptation package.
+    </description>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.boot>2.5.6</spring.boot>
-        <cron.autoconfigure>1.0.0</cron.autoconfigure>
-        <cron.hutool>1.0.0</cron.hutool>
+        <cron.autoconfigure>1.0.1</cron.autoconfigure>
+        <cron.hutool>1.0.1</cron.hutool>
     </properties>
 
     <dependencies>
 
         <dependency>
-            <groupId>top.osjf.cron.autoconfigure</groupId>
+            <groupId>top.osjf.cron</groupId>
             <artifactId>cron-spring-boot-autoconfigure</artifactId>
             <version>${cron.autoconfigure}</version>
         </dependency>
