@@ -16,9 +16,7 @@
 
 package top.osjf.cron.hutool.lifestyle;
 
-import top.osjf.cron.core.util.ArrayUtils;
-
-import java.util.Map;
+import java.util.Properties;
 
 /**
  * The Hutool cron task Startup Args.
@@ -45,38 +43,23 @@ public class HutoolCronStartupArgs {
     private boolean isDaemon = false;
 
     /**
-     * Analyze startup parameters and construct startup parameter objects.
-
-     * <p>Compatible with two situations:
-     * <ul>
-     *     <li>If only one parameter is passed in and of type {@link Map}, then
-     *     retrieve the value from this type.</li>
-     *     <li>If there is a value that matches {@link #isMatchSecond} first and is
-     *     greater than 1 value, then match {@link #isDaemon}.</li>
-     * </ul>
+     * Creates a new instance of {@link HutoolCronStartupArgs} initialized with properties from the
+     * given {@link Properties} object.
+     * This method parses the provided properties to set the initial state of the startup arguments
+     * for Hutool cron jobs.
      *
-     * @param args the array parameters.
-     * @return Analyze the results of parameter objects.
+     * @param properties A {@link Properties} object containing the initial values for the startup arguments.
+     *                   The properties should include "isMatchSecond" and "isDaemon" keys, with their corresponding
+     *                   boolean values.If a property is not found, default values will be used: "isMatchSecond"
+     *                   defaults to {@code true},and "isDaemon" defaults to {@code true}.
+     * @return A new {@link HutoolCronStartupArgs} instance initialized with the properties from the given
+     * {@link Properties} object.
+     * @throws ClassCastException If the values for "isMatchSecond" or "isDaemon" cannot be cast to boolean.
      */
-    public static HutoolCronStartupArgs of(Object[] args) {
+    public static HutoolCronStartupArgs of(Properties properties) {
         HutoolCronStartupArgs startupArgs = new HutoolCronStartupArgs();
-        if (ArrayUtils.isEmpty(args)) return startupArgs;
-        if (args.length == 1) {
-            Object arg = args[0];
-            if (arg instanceof Map) {
-                @SuppressWarnings("unchecked")
-                Map<String, Object> metadata = (Map<String, Object>) arg;
-                startupArgs.isMatchSecond = !metadata.containsKey("isMatchSecond") ||
-                        (boolean) metadata.get("isMatchSecond");
-                startupArgs.isDaemon = !metadata.containsKey("isDaemon") ||
-                        (boolean) metadata.get("isDaemon");
-            } else {
-                startupArgs.isMatchSecond = (boolean) arg;
-            }
-        } else {
-            startupArgs.isMatchSecond = (boolean) args[0];
-            startupArgs.isDaemon = (boolean) args[1];
-        }
+        startupArgs.isMatchSecond = (boolean) properties.getOrDefault("isMatchSecond", true);
+        startupArgs.isDaemon = (boolean) properties.getOrDefault("isDaemon", true);
         return startupArgs;
     }
 
