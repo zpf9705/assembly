@@ -16,12 +16,9 @@
 
 package top.osjf.cron.hutool.repository;
 
-import cn.hutool.cron.CronException;
 import cn.hutool.cron.CronUtil;
 import cn.hutool.cron.Scheduler;
 import cn.hutool.cron.pattern.CronPattern;
-import top.osjf.cron.core.exception.CronExpressionInvalidException;
-import top.osjf.cron.core.exception.CronTaskNoExistException;
 import top.osjf.cron.core.repository.CronListenerRepository;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.hutool.listener.HutoolCronListener;
@@ -33,7 +30,8 @@ import top.osjf.cron.hutool.listener.HutoolCronListener;
  * @since 1.0.0
  */
 public class HutoolCronTaskRepository implements CronTaskRepository<String, Runnable>,
-        CronListenerRepository<HutoolCronListener> {
+        CronListenerRepository<HutoolCronListener>
+{
 
     /*** scheduler management*/
     private final Scheduler scheduler;
@@ -44,34 +42,18 @@ public class HutoolCronTaskRepository implements CronTaskRepository<String, Runn
     }
 
     @Override
-    public String register(String cronExpression, Runnable runnable) throws Exception {
-        parseCronPattern(cronExpression);
+    public String register(String cronExpression, Runnable runnable) {
         return scheduler.schedule(cronExpression, runnable);
     }
 
     @Override
-    public void update(String taskId, String newCronExpression) throws Exception {
-        if (scheduler.getTask(taskId) == null) {
-            throw new CronTaskNoExistException(taskId);
-        }
-        scheduler.updatePattern(taskId, parseCronPattern(newCronExpression));
-    }
-
-    CronPattern parseCronPattern(String srtCronExpression) throws Exception {
-        CronPattern cronPattern;
-        try {
-            cronPattern = CronPattern.of(srtCronExpression);
-        } catch (CronException e) {
-            throw new CronExpressionInvalidException(srtCronExpression, e);
-        }
-        return cronPattern;
+    public void update(String taskId, String newCronExpression) {
+        scheduler.updatePattern(taskId, new CronPattern(newCronExpression));
     }
 
     @Override
     public void remove(String taskId) {
-        if (!scheduler.descheduleWithStatus(taskId)) {
-            throw new CronTaskNoExistException(taskId);
-        }
+        scheduler.descheduleWithStatus(taskId);
     }
 
     @Override
@@ -82,11 +64,5 @@ public class HutoolCronTaskRepository implements CronTaskRepository<String, Runn
     @Override
     public void removeCronListener(HutoolCronListener cronListener) {
         scheduler.removeListener(cronListener);
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public CronListenerRepository<HutoolCronListener> getCronListenerRepository() {
-        return this;
     }
 }
