@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Lazy;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.1
  */
-public abstract class AbstractCommonConfiguration {
+public abstract class CronTaskScanRegisterConfiguration {
 
     @Bean
     public ConfigurableCronTaskRegisterPostProcessor configurableCronTaskRegisterPostProcessor(
