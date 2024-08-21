@@ -38,11 +38,11 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import top.osjf.cron.core.lifestyle.LifeStyle;
-import top.osjf.cron.core.util.MapUtils;
+import top.osjf.cron.core.lifestyle.StartupMetadata;
 import top.osjf.cron.spring.annotation.Cron;
 import top.osjf.cron.spring.annotation.MappedAnnotationAttributes;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -73,20 +73,9 @@ public class CronTaskRegisterPostProcessor implements ImportAware, ApplicationCo
 
     private Environment environment;
 
-    private final Map<String, Object> metadata = new LinkedHashMap<>();
-
     private RegistrantCollector collector;
 
-    /**
-     * Manually set important metadata.
-     *
-     * @param metadata important metadata.
-     */
-    public void addMetadata(@Nullable Map<String, Object> metadata) {
-        if (MapUtils.isNotEmpty(metadata)) {
-            this.metadata.putAll(metadata);
-        }
-    }
+    private final StartupMetadata metadata = StartupMetadata.of();
 
     @Override
     public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
@@ -100,9 +89,11 @@ public class CronTaskRegisterPostProcessor implements ImportAware, ApplicationCo
 
     @Override
     public void setImportMetadata(@NonNull AnnotationMetadata annotationMetadata) {
+        Map<String, Object> map = new HashMap<>();
         annotationMetadata.getAnnotations().forEach(annotation ->
-                metadata.putAll(MappedAnnotationAttributes.of(annotationMetadata.
+                map.putAll(MappedAnnotationAttributes.of(annotationMetadata.
                         getAnnotationAttributes(annotation.getType().getCanonicalName()))));
+        metadata.addStartupArg(map);
     }
 
     @Override
@@ -156,6 +147,7 @@ public class CronTaskRegisterPostProcessor implements ImportAware, ApplicationCo
 
     /**
      * Determine whether it is a type that needs to skip registration in advance.
+     *
      * @param realBeanType bean real type.
      * @return If {@code true} skips registration and returns registration detection.
      */
@@ -184,6 +176,13 @@ public class CronTaskRegisterPostProcessor implements ImportAware, ApplicationCo
 
         //Start scheduled tasks.
         LifeStyle lifeStyle = applicationContext.getBean(LifeStyle.class);
+
+        //start up metadata find in container
+        for (StartupMetadata value : applicationContext.getBeansOfType(StartupMetadata.class).values()) {
+            metadata.addStartupArgs(value.getStartUpArgs());
+        }
+
+        //start up
         lifeStyle.start(metadata);
 
         //Clean up temporary registration resources.
