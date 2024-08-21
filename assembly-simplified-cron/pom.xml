@@ -12,7 +12,10 @@
     <groupId>top.osjf.cron</groupId>
     <artifactId>assembly-simplified-cron</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
+    <description>
+        Parent of cron task.
+    </description>
 
     <modules>
         <module>cron-core</module>
@@ -20,6 +23,7 @@
         <module>cron-quartz</module>
         <module>cron-cron4j</module>
         <module>cron-spring</module>
+        <module>cron-spring-boot-autoconfigure</module>
         <module>cron-spring-boot-starter</module>
     </modules>
 
