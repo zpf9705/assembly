@@ -45,15 +45,15 @@ public abstract class AbstractCron4jCronListener implements Cron4jCronListener, 
     }
 
     @Override
-    public void onStartWithId(String value) {
+    public void onStartWithId(String id) {
     }
 
     @Override
-    public void onSucceededWithId(String value) {
+    public void onSucceededWithId(String id) {
     }
 
     @Override
-    public void onFailedWithId(String value, Throwable exception) {
+    public void onFailedWithId(String id, Throwable exception) {
     }
 
     /**
