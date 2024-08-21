@@ -29,7 +29,7 @@ import java.util.List;
  * corresponding scheduled task component.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 1.0.1
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class CronListenerRegistrant implements InitializingBean {

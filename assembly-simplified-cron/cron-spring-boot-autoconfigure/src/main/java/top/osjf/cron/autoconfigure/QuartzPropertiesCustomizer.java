@@ -7,7 +7,7 @@ import java.util.Properties;
  * {@link java.util.Properties Quartz Properties} before it is used.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 1.0.1
  */
 public interface QuartzPropertiesCustomizer {
 

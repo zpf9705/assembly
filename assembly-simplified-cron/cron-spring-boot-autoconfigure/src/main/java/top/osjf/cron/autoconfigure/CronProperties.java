@@ -19,6 +19,7 @@ package top.osjf.cron.autoconfigure;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import top.osjf.cron.hutool.lifestyle.HutoolCronLifeStyle;
 
+import java.lang.annotation.*;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -28,7 +29,7 @@ import java.util.TimeZone;
  * Cron schedule properties.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 1.0.1
  */
 @ConfigurationProperties(prefix = "spring.schedule.cron")
 public class CronProperties {
@@ -65,10 +66,13 @@ public class CronProperties {
     }
 
     public Map<String, Object> withClientToMetadata(ClientType clientType) {
-        switch (clientType){
-            case HUTOOL: return hutool.toMetadata();
-            case CRON4J: return cron4j.toMetadata();
-            case QUARTZ: return null;
+        switch (clientType) {
+            case HUTOOL:
+                return hutool.toMetadata();
+            case CRON4J:
+                return cron4j.toMetadata();
+            case QUARTZ:
+                return null;
         }
         return null;
     }
@@ -92,6 +96,18 @@ public class CronProperties {
          * Use the cron4j cron client.
          */
         CRON4J
+    }
+
+    /**
+     * Annotations that support caching task client types.
+     */
+    @Target(ElementType.TYPE)
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    @Inherited
+    public @interface Client {
+
+        CronProperties.ClientType value();
     }
 
     public interface MetadataConvert {

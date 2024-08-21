@@ -28,7 +28,7 @@ import java.lang.reflect.Method;
  * Configurable {@link CronTaskRegisterPostProcessor} for more flexible assembly expansion.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 1.0.1
  */
 public class ConfigurableCronTaskRegisterPostProcessor extends CronTaskRegisterPostProcessor {
 

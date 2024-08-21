@@ -23,15 +23,14 @@ import org.springframework.context.annotation.Lazy;
  * The common configuration class for timed task components.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 1.0.1
  */
 public abstract class AbstractCommonConfiguration {
 
     @Bean
     public ConfigurableCronTaskRegisterPostProcessor configurableCronTaskRegisterPostProcessor(
             @Lazy CronProperties cronProperties) {
-        return new ConfigurableCronTaskRegisterPostProcessor(cronProperties, getClientType());
+        CronProperties.Client client = getClass().getAnnotation(CronProperties.Client.class);
+        return new ConfigurableCronTaskRegisterPostProcessor(cronProperties, client.value());
     }
-
-    public abstract CronProperties.ClientType getClientType();
 }

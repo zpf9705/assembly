@@ -31,17 +31,13 @@ import top.osjf.cron.spring.hutool.HutoolCronTaskConfiguration;
  * for Hutool Cron Task.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 1.0.1
  */
 @Configuration(proxyBeanMethods = false)
 @Import(HutoolCronTaskConfiguration.class)
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 @ConditionalOnClass({HutoolCronLifeStyle.class, HutoolCronTaskRepository.class})
 @ConditionalOnProperty(name = "spring.schedule.cron.client-type", havingValue = "hutool", matchIfMissing = true)
+@CronProperties.Client(CronProperties.ClientType.HUTOOL)
 public class HutoolCronTaskAutoConfiguration extends AbstractCommonConfiguration {
-
-    @Override
-    public CronProperties.ClientType getClientType() {
-        return CronProperties.ClientType.HUTOOL;
-    }
 }

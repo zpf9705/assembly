@@ -28,7 +28,7 @@ import top.osjf.cron.core.repository.CronListenerRepository;
  * for Cron Task , include Hutool ,Quartz ,Cron4j ,enhance Scheduling .
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 1.0.1
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(CronProperties.class)

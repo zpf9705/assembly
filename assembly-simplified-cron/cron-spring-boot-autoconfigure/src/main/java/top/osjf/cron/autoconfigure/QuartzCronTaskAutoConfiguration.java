@@ -34,19 +34,15 @@ import java.util.Properties;
  * for Quartz Cron Task.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 1.0.1
  */
 @Configuration(proxyBeanMethods = false)
 @Import(QuartzCronTaskConfiguration.class)
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 @ConditionalOnClass({QuartzCronLifeStyle.class, QuartzCronTaskRepository.class})
 @ConditionalOnProperty(name = "spring.schedule.cron.client-type", havingValue = "quartz", matchIfMissing = true)
+@CronProperties.Client(CronProperties.ClientType.QUARTZ)
 public class QuartzCronTaskAutoConfiguration extends AbstractCommonConfiguration {
-
-    @Override
-    public CronProperties.ClientType getClientType() {
-        return CronProperties.ClientType.QUARTZ;
-    }
 
     @Bean
     public QuartzPropertiesGainer quartzPropertiesGainer(ObjectProvider<List<QuartzPropertiesCustomizer>> provider,

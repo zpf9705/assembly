@@ -31,17 +31,13 @@ import top.osjf.cron.spring.cron4j.Cron4jCronTaskConfiguration;
  * for Cron4j Cron Task.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 1.0.1
  */
 @Configuration(proxyBeanMethods = false)
 @Import(Cron4jCronTaskConfiguration.class)
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 @ConditionalOnClass({Cron4jCronLifeStyle.class, Cron4jCronTaskRepository.class})
 @ConditionalOnProperty(name = "spring.schedule.cron.client-type", havingValue = "cron4j", matchIfMissing = true)
+@CronProperties.Client(CronProperties.ClientType.CRON4J)
 public class Cron4jCronTaskAutoConfiguration extends AbstractCommonConfiguration {
-
-    @Override
-    public CronProperties.ClientType getClientType() {
-        return CronProperties.ClientType.CRON4J;
-    }
 }
