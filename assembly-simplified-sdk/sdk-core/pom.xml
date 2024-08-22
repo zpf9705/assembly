@@ -7,12 +7,12 @@
     <parent>
         <groupId>top.osjf.sdk</groupId>
         <artifactId>assembly-simplified-sdk</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </parent>
 
     <artifactId>sdk-core</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
