@@ -16,11 +16,8 @@
 
 package top.osjf.cron.cron4j.listener;
 
-import it.sauronsoftware.cron4j.Task;
 import it.sauronsoftware.cron4j.TaskExecutor;
 import top.osjf.cron.core.listener.IdCronListener;
-
-import java.lang.reflect.Field;
 
 /**
  * The abstract service class of the listener for {@code Cron4j} includes the
@@ -33,17 +30,17 @@ public abstract class AbstractCron4jCronListener implements Cron4jCronListener, 
 
     @Override
     public void onStart(TaskExecutor value) {
-        onStartWithId(getTaskId(value));
+        onStartWithId(value.getTask().getId().toString());
     }
 
     @Override
     public void onSucceeded(TaskExecutor value) {
-        onSucceededWithId(getTaskId(value));
+        onSucceededWithId(value.getTask().getId().toString());
     }
 
     @Override
     public void onFailed(TaskExecutor value, Throwable exception) {
-        onFailedWithId(getTaskId(value), exception);
+        onFailedWithId(value.getTask().getId().toString(), exception);
     }
 
     @Override
@@ -56,21 +53,5 @@ public abstract class AbstractCron4jCronListener implements Cron4jCronListener, 
 
     @Override
     public void onFailedWithId(String id, Throwable exception) {
-    }
-
-    /**
-     * Return Cron4j task id.
-     *
-     * @param value Cron4j task executor.
-     */
-    private String getTaskId(TaskExecutor value) {
-        Task task = value.getTask();
-        try {
-            Field idField = Task.class.getDeclaredField("id");
-            idField.setAccessible(true);
-            return idField.get(task).toString();
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e);
-        }
     }
 }
