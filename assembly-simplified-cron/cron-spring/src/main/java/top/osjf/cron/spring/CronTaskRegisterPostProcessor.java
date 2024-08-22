@@ -49,10 +49,7 @@ import top.osjf.cron.spring.hutool.EnableHutoolCronTaskRegister;
 import top.osjf.cron.spring.quartz.EnableQuartzCronTaskRegister;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -179,7 +176,7 @@ public class CronTaskRegisterPostProcessor implements ImportAware, ApplicationCo
      * This method is responsible for finishing the registration of collected form tasks
      * and executing a series of startup tasks.
      */
-    @SuppressWarnings({"rawtypes","unchecked"})
+    @SuppressWarnings({"rawtypes", "unchecked"})
     protected void finishRegistration() {
 
         //Retrieve the true registrant instance from the Spring application context to
@@ -219,6 +216,10 @@ public class CronTaskRegisterPostProcessor implements ImportAware, ApplicationCo
         }
 
         //Start scheduled tasks using prepared attributes.
+        if (lifeStyle.isStarted()) {
+            throw new IllegalStateException
+                    ("Detected that the task scheduler has started without parameter preparation.");
+        }
         lifeStyle.start(properties);
 
         //Clean up temporary registration resources and close the collector.
