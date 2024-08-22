@@ -4,17 +4,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>top.osjf.cron</groupId>
-        <artifactId>assembly-simplified-cron</artifactId>
-        <version>1.0.1</version>
+        <groupId>top.osjf</groupId>
+        <artifactId>assembly</artifactId>
+        <version>2.0.5</version>
     </parent>
 
-    <artifactId>cron-spring-boot-autoconfigure</artifactId>
+    <artifactId>assembly-spring-boot-autoconfigure</artifactId>
     <packaging>jar</packaging>
-    <!-- Starting from version 1.0.1, automatic assembly follows -->
     <version>1.0.1</version>
     <description>
-        Integrate the Spring Boot framework with cron tasks.
+        The automatic assembly project of integrating springboot framework with related components.
     </description>
 
     <properties>
@@ -66,6 +65,13 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
             <version>${spring.boot}</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>top.osjf.spring.optimize</groupId>
+            <artifactId>service-bean</artifactId>
+            <version>1.0.0-repair</version>
             <optional>true</optional>
         </dependency>
 
