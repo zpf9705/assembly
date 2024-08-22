@@ -22,11 +22,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
 import top.osjf.cron.quartz.lifestyle.QuartzCronLifeStyle;
-import top.osjf.cron.quartz.listener.QuartzCronListener;
 import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Properties;
 
 /**
@@ -53,14 +50,11 @@ public class QuartzCronTaskConfiguration {
 
     @Bean
     public QuartzCronTaskRepository quartzCronTaskRepository(ObjectProvider<QuartzPropertiesGainer> provider,
-                                                             ObjectProvider<List<QuartzCronListener>> listenerProvider,
                                                              QuartzJobFactory quartzJobFactory) {
         Properties properties = null;
         QuartzPropertiesGainer gainer = provider.getIfAvailable();
         if (gainer != null) properties = gainer.getQuartzProperties();
-        QuartzCronTaskRepository repository = new QuartzCronTaskRepository(properties, quartzJobFactory);
-        repository.addCronListeners(listenerProvider.getIfAvailable(Collections::emptyList));
-        return repository;
+        return new QuartzCronTaskRepository(properties, quartzJobFactory);
     }
 
     @Bean

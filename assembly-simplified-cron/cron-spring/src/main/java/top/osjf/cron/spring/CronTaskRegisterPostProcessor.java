@@ -40,6 +40,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import top.osjf.cron.core.lifestyle.LifeStyle;
 import top.osjf.cron.core.lifestyle.StartupProperties;
+import top.osjf.cron.core.listener.CronListener;
+import top.osjf.cron.core.repository.CronListenerRepository;
 import top.osjf.cron.spring.annotation.Cron;
 import top.osjf.cron.spring.annotation.MappedAnnotationAttributes;
 import top.osjf.cron.spring.cron4j.EnableCron4jCronTaskRegister;
@@ -47,6 +49,7 @@ import top.osjf.cron.spring.hutool.EnableHutoolCronTaskRegister;
 import top.osjf.cron.spring.quartz.EnableQuartzCronTaskRegister;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -171,17 +174,26 @@ public class CronTaskRegisterPostProcessor implements ImportAware, ApplicationCo
         return RegistrantCollector.class.isAssignableFrom(realBeanType);
     }
 
+    /**
+     * Completes the registration process.
+     * This method is responsible for finishing the registration of collected form tasks
+     * and executing a series of startup tasks.
+     */
     protected void finishRegistration() {
 
-        //Complete registration.
+        //Retrieve the true registrant instance from the Spring application context to
+        // complete the registration of the form.
         CronTaskRealRegistrant realRegistrant = applicationContext.getBean(CronTaskRealRegistrant.class);
+
         while (collector.hasNext()) {
             Registrant registrant = collector.next();
             if (realRegistrant.supports(registrant)) {
                 try {
                     realRegistrant.register(registrant);
                 } catch (Exception e) {
+                    //Print exception stack information to standard error stream
                     e.printStackTrace(System.err);
+                    //If the logging system enables error logging, record error information
                     if (log.isErrorEnabled()) {
                         log.error("Registration type [{}] task failed, reason for failure [{}]",
                                 registrant.getClass().getName(), e.getMessage());
@@ -190,18 +202,25 @@ public class CronTaskRegisterPostProcessor implements ImportAware, ApplicationCo
             }
         }
 
-        //Start scheduled tasks.
+        //Retrieve listener repository instances from the Spring application context and register
+        // all known Cron listeners.
+        CronListenerRepository listenerRepository = applicationContext.getBean(CronListenerRepository.class);
+        listenerRepository.addCronListeners(new ArrayList<>(applicationContext.getBeansOfType(CronListener.class)
+                .values()));
+
+        //Retrieve lifecycle instances from the Spring application context for initiating scheduled tasks.
         LifeStyle lifeStyle = applicationContext.getBean(LifeStyle.class);
 
-        //start up metadata find in container
+        //Prepare startup parameters, retrieve all Startup Properties
+        //instances from the Spring application context, and add them to the property collection.
         for (StartupProperties value : applicationContext.getBeansOfType(StartupProperties.class).values()) {
             properties.addStartupProperties(value);
         }
 
-        //start up
+        //Start scheduled tasks using prepared attributes.
         lifeStyle.start(properties);
 
-        //Clean up temporary registration resources.
+        //Clean up temporary registration resources and close the collector.
         collector.close();
     }
 

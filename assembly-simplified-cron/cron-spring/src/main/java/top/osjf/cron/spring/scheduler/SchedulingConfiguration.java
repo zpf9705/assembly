@@ -16,7 +16,6 @@
 
 package top.osjf.cron.spring.scheduler;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,9 +24,6 @@ import org.springframework.context.annotation.Role;
 import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.scheduling.config.TaskManagementConfigUtils;
-
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Enhanced version configuration {@link org.springframework.scheduling.annotation.SchedulingConfiguration}.
@@ -52,9 +48,7 @@ public class SchedulingConfiguration {
     }
 
     @Bean
-    public SchedulingRepository schedulingRepository(ObjectProvider<List<SchedulingListener>> listenerProvider) {
-        SchedulingRepository repository = new SchedulingRepository();
-        repository.addCronListeners(listenerProvider.getIfAvailable(Collections::emptyList));
-        return repository;
+    public SchedulingRepository schedulingRepository() {
+        return new SchedulingRepository();
     }
 }
