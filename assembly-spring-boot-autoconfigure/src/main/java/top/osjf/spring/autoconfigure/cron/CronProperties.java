@@ -64,18 +64,6 @@ public class CronProperties {
         return cron4j;
     }
 
-    private Map<String, Object> withClientToMetadata(ClientType clientType) {
-        if (this.clientType != null) clientType = this.clientType;
-        switch (clientType) {
-            case HUTOOL:
-                return hutool.toMetadata();
-            case CRON4J:
-                return cron4j.toMetadata();
-            default:
-                return null;
-        }
-    }
-
     /**
      * Type of Cron client to use.
      */
