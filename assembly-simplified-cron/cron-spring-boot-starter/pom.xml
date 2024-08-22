@@ -22,16 +22,16 @@
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.boot>2.5.6</spring.boot>
-        <cron.autoconfigure>1.0.1</cron.autoconfigure>
+        <assembly.autoconfigure>1.0.1</assembly.autoconfigure>
         <cron.hutool>1.0.1</cron.hutool>
     </properties>
 
     <dependencies>
 
         <dependency>
-            <groupId>top.osjf.cron</groupId>
-            <artifactId>cron-spring-boot-autoconfigure</artifactId>
-            <version>${cron.autoconfigure}</version>
+            <groupId>top.osjf</groupId>
+            <artifactId>assembly-spring-boot-autoconfigure</artifactId>
+            <version>${assembly.autoconfigure}</version>
         </dependency>
 
         <dependency>
