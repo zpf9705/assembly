@@ -6,13 +6,13 @@
     <parent>
         <groupId>top.osjf</groupId>
         <artifactId>assembly</artifactId>
-        <version>2.0.4</version>
+        <version>2.0.5</version>
     </parent>
 
     <groupId>top.osjf.spring.optimize</groupId>
     <artifactId>assembly-simplified-spring-optimize</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <modules>
         <module>service-bean</module>
         <module>service-bean-boot-starter</module>
