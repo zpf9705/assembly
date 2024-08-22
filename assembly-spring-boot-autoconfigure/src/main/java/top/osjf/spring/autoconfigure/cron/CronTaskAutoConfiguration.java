@@ -16,12 +16,9 @@
 
 package top.osjf.spring.autoconfigure.cron;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import top.osjf.cron.core.repository.CronListenerRepository;
 
 /**
  * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration}
@@ -37,12 +34,5 @@ import top.osjf.cron.core.repository.CronListenerRepository;
         Cron4jCronTaskImportConfiguration.class,
         SchedulingImportConfiguration.class,
         ConfigurableCronTaskRegisterPostProcessor.class})
-@SuppressWarnings("rawtypes")
 public class CronTaskAutoConfiguration {
-
-    @Bean
-    @ConditionalOnBean(CronListenerRepository.class)
-    public CronListenerRegistrant cronListenerRegistrant(CronListenerRepository cronListenerRepository) {
-        return new CronListenerRegistrant(cronListenerRepository);
-    }
 }

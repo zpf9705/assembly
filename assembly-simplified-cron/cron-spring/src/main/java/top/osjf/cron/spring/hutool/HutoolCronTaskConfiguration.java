@@ -16,12 +16,17 @@
 
 package top.osjf.cron.spring.hutool;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
 import top.osjf.cron.hutool.lifestyle.HutoolCronLifeStyle;
+import top.osjf.cron.hutool.listener.HutoolCronListener;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Regarding the configuration classes related to scheduled task
@@ -46,8 +51,11 @@ public class HutoolCronTaskConfiguration {
     }
 
     @Bean
-    public HutoolCronTaskRepository hutoolCronTaskRepository() {
-        return new HutoolCronTaskRepository();
+    public HutoolCronTaskRepository hutoolCronTaskRepository(ObjectProvider<List<HutoolCronListener>> listenerProvider)
+    {
+        HutoolCronTaskRepository repository = new HutoolCronTaskRepository();
+        repository.addCronListeners(listenerProvider.getIfAvailable(Collections::emptyList));
+        return repository;
     }
 
     @Bean

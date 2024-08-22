@@ -16,12 +16,17 @@
 
 package top.osjf.cron.spring.cron4j;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
 import top.osjf.cron.cron4j.lifestyle.Cron4jCronLifeStyle;
+import top.osjf.cron.cron4j.listener.Cron4jCronListener;
 import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Regarding the configuration classes related to scheduled task
@@ -41,8 +46,11 @@ public class Cron4jCronTaskConfiguration {
     }
 
     @Bean
-    public Cron4jCronTaskRepository cron4jCronTaskRepository() {
-        return new Cron4jCronTaskRepository();
+    public Cron4jCronTaskRepository cron4jCronTaskRepository(ObjectProvider<List<Cron4jCronListener>> listenerProvider)
+    {
+        Cron4jCronTaskRepository repository = new Cron4jCronTaskRepository();
+        repository.addCronListeners(listenerProvider.getIfAvailable(Collections::emptyList));
+        return repository;
     }
 
     @Bean(destroyMethod = "stop")
