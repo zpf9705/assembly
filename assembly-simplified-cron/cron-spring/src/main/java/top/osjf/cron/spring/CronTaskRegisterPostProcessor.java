@@ -179,6 +179,7 @@ public class CronTaskRegisterPostProcessor implements ImportAware, ApplicationCo
      * This method is responsible for finishing the registration of collected form tasks
      * and executing a series of startup tasks.
      */
+    @SuppressWarnings({"rawtypes","unchecked"})
     protected void finishRegistration() {
 
         //Retrieve the true registrant instance from the Spring application context to
