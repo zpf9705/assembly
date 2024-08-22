@@ -19,6 +19,7 @@ package top.osjf.spring.autoconfigure.optimize.service_bean;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.lang.NonNull;
+import org.springframework.util.ClassUtils;
 import top.osjf.optimize.service_bean.context.AbstractServiceContext;
 
 /**
@@ -32,8 +33,23 @@ import top.osjf.optimize.service_bean.context.AbstractServiceContext;
 public class EarlyAllowCustomBeanNameGeneratorInitializer
         implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
+    private static boolean isPresent;
+
+    static {
+        //Determine whether a service optimization interface has been
+        // introduced to determine whether optimization should be performed.
+        try {
+            isPresent = ClassUtils.isPresent("top.osjf.optimize.service_bean.context.ServiceContext",
+                    null);
+        } catch (Throwable e) {
+            isPresent = false;
+        }
+    }
+
     @Override
     public void initialize(@NonNull ConfigurableApplicationContext context) {
-        AbstractServiceContext.ServiceContextRunListener.setForApplicationContextCustomBeanNameGenerator(context);
+        if (isPresent) {
+            AbstractServiceContext.ServiceContextRunListener.setForApplicationContextCustomBeanNameGenerator(context);
+        }
     }
 }

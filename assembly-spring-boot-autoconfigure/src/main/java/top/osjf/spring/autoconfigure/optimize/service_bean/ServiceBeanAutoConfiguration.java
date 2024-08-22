@@ -16,10 +16,9 @@
 
 package top.osjf.spring.autoconfigure.optimize.service_bean;
 
-import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Role;
 import top.osjf.optimize.service_bean.annotation.EnableServiceCollection;
 import top.osjf.optimize.service_bean.context.ServiceContext;
 
@@ -30,8 +29,8 @@ import top.osjf.optimize.service_bean.context.ServiceContext;
  * @since 1.0.1
  */
 @Configuration(proxyBeanMethods = false)
-@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-@EnableServiceCollection
+@ConditionalOnClass(ServiceContext.class)
 @ConditionalOnMissingBean(ServiceContext.class)
+@EnableServiceCollection
 public class ServiceBeanAutoConfiguration {
 }
