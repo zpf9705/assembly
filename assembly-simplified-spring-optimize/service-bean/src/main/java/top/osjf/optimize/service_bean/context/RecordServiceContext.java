@@ -21,9 +21,11 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.lang.NonNull;
 import org.springframework.util.CollectionUtils;
@@ -62,6 +64,7 @@ public class RecordServiceContext extends AbstractServiceContext implements Init
      * Rewrite the service retrieval method to point to the beans saved in the specified
      * scope, whether to use the method of the parent class to retrieve beans that have
      * not changed the scope.
+     *
      * @see ServiceScope
      */
     @Override
@@ -78,6 +81,44 @@ public class RecordServiceContext extends AbstractServiceContext implements Init
             }
         }
         return super.getService(serviceName, requiredType);
+    }
+
+    @Override
+    protected <S> BeanDefinitionBuilder getBeanDefinitionBuilder(String beanName, List<String> beanAlisaNames,
+                                                                 Class<S> requiredType) {
+        return super.getBeanDefinitionBuilder(beanName, beanAlisaNames, requiredType)
+                .setScope(ServiceContextUtils.SERVICE_SCOPE);
+    }
+
+    @Override
+    public <S> boolean containsService(String serviceName, Class<S> requiredType) {
+        ApplicationContext applicationContext = getApplicationContext();
+        boolean containsResult
+                = ServiceContextUtils.getCandidateServiceNames(serviceName, requiredType, applicationContext.getId())
+                .stream()
+                .anyMatch(applicationContext::containsBean);
+        if (!containsResult) {
+            containsResult = super.containsService(serviceName, requiredType);
+        }
+        return containsResult;
+    }
+
+    @Override
+    public <S> boolean removeService(String serviceName, Class<S> requiredType) {
+        ApplicationContext applicationContext = getApplicationContext();
+        boolean removeResult = false;
+        for (String name
+                : ServiceContextUtils.getCandidateServiceNames(serviceName, requiredType, applicationContext.getId())) {
+            if (applicationContext.containsBean(name)) {
+                ((ConfigurableApplicationContext) applicationContext).getBeanFactory().destroyScopedBean(name);
+                removeResult = true;
+                break;
+            }
+        }
+        if (!removeResult) {
+            removeResult = super.removeService(serviceName, requiredType);
+        }
+        return removeResult;
     }
 
     @Override
