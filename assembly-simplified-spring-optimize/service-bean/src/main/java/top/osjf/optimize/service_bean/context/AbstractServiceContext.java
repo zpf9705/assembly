@@ -376,6 +376,10 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
 
         Objects.requireNonNull(serviceType, "serviceType no be null");
 
+        if (serviceType.isInterface()) {
+            throw new IllegalStateException("Specified class is an interface");
+        }
+
         ApplicationContext applicationContext = getApplicationContext();
 
         //Details can be viewed #addService
