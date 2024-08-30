@@ -19,10 +19,12 @@ package top.osjf.optimize.service_bean;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
 import top.osjf.optimize.service_bean.annotation.ServiceCollection;
+import top.osjf.optimize.service_bean.context.ServicePair;
 
 import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
@@ -72,17 +74,21 @@ public final class ServiceContextUtils {
      * @param applicationId Application ID.
      * @param getFun        The equation for obtaining services.
      * @param <S>           Service type.
-     * @return The converted service type may be {@literal null}.
+     * @return The {@link Pair} with service encode name and service. //1.0.2
      * @see #formatId(Class, String, String)
      * @see #formatAlisa(Class, String, String)
      */
     //Obtain service objects based on the provided elements.
-    public static <S> S getService(String serviceName, Class<S> requiredType,
-                                   String applicationId, Function<String, S> getFun) {
-        if (StringUtils.isBlank(serviceName) || requiredType == null || getFun == null ||
+    public static <S> ServicePair<S> getService(String serviceName, Class<S> requiredType,
+                                                String applicationId, Function<String, S> getFun) {
+
+        if (StringUtils.isBlank(serviceName) ||
+                requiredType == null ||
+                getFun == null ||
                 StringUtils.isBlank(applicationId)) {
-            return null;
+            return ServicePair.empty();
         }
+        String encodeServiceName = null;
         //Priority is given to direct queries.
         S service = getFun.apply(serviceName);
         if (service == null) {
@@ -93,9 +99,14 @@ public final class ServiceContextUtils {
                 //Finally, encode the alias.
                 String alisa = formatAlisa(requiredType, serviceName, applicationId);
                 service = getFun.apply(alisa);
+                if (service != null) encodeServiceName = alisa;
+            } else {
+                encodeServiceName = id;
             }
+        } else {
+            encodeServiceName = serviceName;
         }
-        return service;
+        return ServicePair.of(encodeServiceName, service);
     }
 
     /**
