@@ -21,6 +21,8 @@ import org.springframework.beans.factory.Aware;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.Ordered;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -40,23 +42,44 @@ import java.util.Objects;
  * If you also encounter this problem, you can refer to <a href="https://learn.skyofit.com/archives/2020">
  * Spring - BeanPostProcessor Unable to Use AOP - Reason/Solution</a>.
  *
- * @see org.springframework.context.annotation.Lazy
+ * <p>The current class dependency {@link ServiceContext} can easily cause the
+ * above-mentioned problems.Therefore, since version 1.0.2, when placing the bean
+ * that first implements{@link ServiceContextAware}, it is necessary to obtain
+ * {@link ServiceContext} and initialize it.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class ServiceContextAwareBeanPostProcessor implements BeanPostProcessor, BeanFactoryPostProcessor, Ordered {
+public class ServiceContextAwareBeanPostProcessor implements BeanPostProcessor, BeanFactoryPostProcessor,
+        ApplicationContextAware, Ordered {
 
     /*** The service context that has already been loaded.*/
-    private final ServiceContext serviceContext;
+    private ServiceContext serviceContext;
+
+    private ApplicationContext applicationContext;
+
+    /**
+     * A constructor without parameters.
+     * @since 1.0.2
+     */
+    public ServiceContextAwareBeanPostProcessor() {
+    }
 
     /**
      * The construction method of carrying service context.
      *
      * @param serviceContext carrying service context
+     * @deprecated 1.0.2
      */
+    @Deprecated
     public ServiceContextAwareBeanPostProcessor(ServiceContext serviceContext) {
         Objects.requireNonNull(serviceContext, "ServiceContext must not be null");
         this.serviceContext = serviceContext;
+    }
+
+    @Override
+    public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 
     @Nullable
@@ -64,6 +87,9 @@ public class ServiceContextAwareBeanPostProcessor implements BeanPostProcessor, 
     public Object postProcessBeforeInitialization(@NonNull Object bean, @NonNull String beanName) throws BeansException {
         if (bean instanceof Aware) {
             if (bean instanceof ServiceContextAware) {
+                if (serviceContext == null) {
+                    serviceContext = applicationContext.getBean(ServiceContext.class);
+                }
                 ((ServiceContextAware) bean).setServiceContext(serviceContext);
             }
         }

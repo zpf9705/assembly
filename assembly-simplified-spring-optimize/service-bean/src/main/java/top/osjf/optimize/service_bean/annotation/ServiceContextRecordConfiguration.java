@@ -20,12 +20,14 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
+import org.springframework.context.annotation.Role;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.lang.NonNull;
 import top.osjf.optimize.service_bean.ServiceContextUtils;
 import top.osjf.optimize.service_bean.context.RecordServiceContext;
-import top.osjf.optimize.service_bean.context.ServiceContext;
 import top.osjf.optimize.service_bean.context.ServiceContextAwareBeanPostProcessor;
 
 /**
@@ -48,10 +50,8 @@ public class ServiceContextRecordConfiguration {
     //—————————————————————————— mv form SimplifiedAutoConfiguration
     @Bean(ServiceContextUtils.SC_AWARE_BPP_NANE)
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-    public ServiceContextAwareBeanPostProcessor serviceContextAwareBeanPostProcessor(
-            @Lazy //Here, lazy loading is used to prevent dependent beans from losing the function of AOP weaving.
-            ServiceContext serviceContext) {
-        return new ServiceContextAwareBeanPostProcessor(serviceContext);
+    public ServiceContextAwareBeanPostProcessor serviceContextAwareBeanPostProcessor() {
+        return new ServiceContextAwareBeanPostProcessor();
     }
 
     /**
