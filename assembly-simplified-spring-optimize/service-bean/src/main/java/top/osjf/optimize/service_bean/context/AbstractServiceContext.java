@@ -374,7 +374,7 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
     @Override
     public <S> boolean addService(@Nullable String serviceName, Class<S> serviceType) {
 
-        Objects.requireNonNull(serviceType, "serviceType no be null");
+        Objects.requireNonNull(serviceType, "ServiceType no be null");
 
         if (serviceType.isInterface()) {
             throw new IllegalStateException("Specified class is an interface");
