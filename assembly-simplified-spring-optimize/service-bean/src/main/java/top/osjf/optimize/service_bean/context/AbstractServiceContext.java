@@ -380,15 +380,6 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
             throw new IllegalStateException("Specified class is an interface");
         }
 
-        ApplicationContext applicationContext = getApplicationContext();
-
-        //Details can be viewed #addService
-        if (CollectionUtils.isEmpty(applicationContext.getBeansOfType(serviceType))) {
-            throw new IllegalStateException
-                    ("Only supports dynamic addition of beans that have not been automatically scanned " +
-                            "and added to this context during Spring container startup.");
-        }
-
         List<Class<?>> filterServices = ServiceContextUtils.getFilterServices(serviceType);
         /*
          * When adding a service entity, it is necessary to ensure that its parent class or
@@ -404,6 +395,7 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
             return false;
         }
 
+        ApplicationContext applicationContext = getApplicationContext();
         String applicationId = applicationContext.getId();
 
         //Get the format prefix of the alias encoding.
