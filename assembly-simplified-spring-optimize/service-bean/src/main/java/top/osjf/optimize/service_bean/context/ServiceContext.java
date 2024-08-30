@@ -64,14 +64,14 @@ public interface ServiceContext extends Closeable {
      * which means only dynamic bean registration is supported. Container objects that have been
      * recognized by Spring will be automatically added to the current context, so this must be noted.
      *
-     * @param serviceName  the name of the service to retrieve,can be empty, when empty,
-     *                     use a type qualified name instead.
-     * @param requiredType type the bean must match; can be an interface or superclass.
-     * @param <S>          types of required.
+     * @param serviceName the name of the service to retrieve,can be empty, when empty,
+     *                    use a type qualified name instead.
+     * @param serviceType real and instantiated service types.
+     * @param <S>         types of required.
      * @return If {@code true} is returned, it indicates successful addition; otherwise,
      * it indicates failed addition.
      */
-    <S> boolean addService(@Nullable String serviceName, Class<S> requiredType);
+    <S> boolean addService(@Nullable String serviceName, Class<S> serviceType);
 
     /**
      * Returns a Boolean value representing the result of the containing operation, which re

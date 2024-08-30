@@ -365,12 +365,27 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
         return servicePair.getService();
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The search logic for service tags automatically scans in the same way
+     * {@link ServiceContextBeanNameGenerator#generateBeanName}.
+     */
     @Override
-    public <S> boolean addService(@Nullable String serviceName, Class<S> requiredType) {
+    public <S> boolean addService(@Nullable String serviceName, Class<S> serviceType) {
 
-        Objects.requireNonNull(requiredType, "requiredType no be null");
+        Objects.requireNonNull(serviceType, "serviceType no be null");
 
-        List<Class<?>> filterServices = ServiceContextUtils.getFilterServices(requiredType);
+        ApplicationContext applicationContext = getApplicationContext();
+
+        //Details can be viewed #addService
+        if (CollectionUtils.isEmpty(applicationContext.getBeansOfType(serviceType))) {
+            throw new IllegalStateException
+                    ("Only supports dynamic addition of beans that have not been automatically scanned " +
+                            "and added to this context during Spring container startup.");
+        }
+
+        List<Class<?>> filterServices = ServiceContextUtils.getFilterServices(serviceType);
         /*
          * When adding a service entity, it is necessary to ensure that its parent class or
          *  implementation interface has a specific identifier for the service to obtain annotations.
@@ -380,21 +395,19 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
         if (CollectionUtils.isEmpty(filterServices)) {
             if (logger.isWarnEnabled()) {
                 logger.warn("No annotation {} was found on the related parent class or interface of type {}.",
-                        requiredType.getName(), ServiceCollection.class.getName());
+                        serviceType.getName(), ServiceCollection.class.getName());
             }
             return false;
         }
 
-        ApplicationContext applicationContext = getApplicationContext();
-
         String applicationId = applicationContext.getId();
 
         //Get the format prefix of the alias encoding.
-        List<String> classAlisa = ServiceContextUtils.analyzeClassAlias(requiredType, true);
+        List<String> classAlisa = ServiceContextUtils.analyzeClassAlias(serviceType, true);
 
         //Prioritize formatting based on the provided service name, followed by
         // limiting the name based on the type.
-        String encodeSuffix = StringUtils.isNotBlank(serviceName) ? serviceName : requiredType.getName();
+        String encodeSuffix = StringUtils.isNotBlank(serviceName) ? serviceName : serviceType.getName();
 
         //Collection list of aliases.
         List<String> beanAlisaNames = new ArrayList<>();
@@ -423,16 +436,16 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
 
         //Because beans that can be recognized by the Spring container will already be automatically
         // added to the collection column, dynamic bean creation is required here.
-        BeanDefinitionBuilder builder = getBeanDefinitionBuilder(beanName, beanAlisaNames, requiredType);
+        BeanDefinitionBuilder builder = getBeanDefinitionBuilder(beanName, beanAlisaNames, serviceType);
         BeanDefinitionReaderUtils.registerBeanDefinition
                 (new BeanDefinitionHolder(builder.getBeanDefinition(), beanName,
                         beanAlisaNames.toArray(new String[]{})), (BeanDefinitionRegistry) applicationContext);
 
         //After registration, activate the bean and initialize it.
-        applicationContext.getBean(beanName, requiredType);
+        applicationContext.getBean(beanName, serviceType);
 
         if (logger.isInfoEnabled()) {
-            logger.info("Created a dynamic bean for name {} and type {}.", beanName, requiredType.getName());
+            logger.info("Created a dynamic bean for name {} and type {}.", beanName, serviceType.getName());
         }
         return true;
     }
