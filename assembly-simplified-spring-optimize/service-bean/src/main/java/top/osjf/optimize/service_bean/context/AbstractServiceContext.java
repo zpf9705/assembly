@@ -392,23 +392,18 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
         //Get the format prefix of the alias encoding.
         List<String> classAlisa = ServiceContextUtils.analyzeClassAlias(requiredType, true);
 
-        String className = requiredType.getName();
+        //Prioritize formatting based on the provided service name, followed by
+        // limiting the name based on the type.
+        String encodeSuffix = StringUtils.isNotBlank(serviceName) ? serviceName : requiredType.getName();
 
         //Collection list of aliases.
         List<String> beanAlisaNames = new ArrayList<>();
 
-        //If a service name is provided, use the one already provided as the main bean name. Otherwise,
-        // use the first inherited interface or parent class to name it according to a fixed format.
+        //Directly implemented interfaces or parent classes are preferred for
+        // formatting bean main names.
         Class<?> ms = filterServices.get(0);
-        String maybeBeanName = ServiceContextUtils.formatId(ms, className, applicationId);
-        String beanName;
-        //If the service name is specified, the formatted ID is used as the first alias.
-        if (StringUtils.isNotBlank(serviceName)) {
-            beanName = serviceName;
-            beanAlisaNames.add(maybeBeanName);
-        } else {
-            beanName = maybeBeanName;
-        }
+
+        String beanName = ServiceContextUtils.formatId(ms, encodeSuffix, applicationId);
 
         //All parent classes or interfaces carrying specific tags need to be encoded
         // and formatted according to specific alias rules.
@@ -419,7 +414,7 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
         filterServices.remove(0);
         if (!CollectionUtils.isEmpty(filterServices)) {
             for (Class<?> filterService : filterServices) {
-                beanAlisaNames.add(ServiceContextUtils.formatAlisa(filterService, className, applicationId));
+                beanAlisaNames.add(ServiceContextUtils.formatAlisa(filterService, encodeSuffix, applicationId));
                 for (String ca : classAlisa) {
                     beanAlisaNames.add(ServiceContextUtils.formatAlisa(filterService, ca, applicationId));
                 }
