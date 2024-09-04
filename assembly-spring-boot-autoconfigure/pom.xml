@@ -23,6 +23,8 @@
         <spring.boot>2.5.6</spring.boot>
         <cron.impl>1.0.1</cron.impl>
         <cron.spring>1.0.1</cron.spring>
+        <service_bean>1.0.2</service_bean>
+        <sshd>2.13.2</sshd>
     </properties>
 
     <dependencies>
@@ -71,7 +73,14 @@
         <dependency>
             <groupId>top.osjf.spring.optimize</groupId>
             <artifactId>service-bean</artifactId>
-            <version>1.0.0-repair</version>
+            <version>${service_bean}</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.sshd</groupId>
+            <artifactId>sshd-core</artifactId>
+            <version>${sshd}</version>
             <optional>true</optional>
         </dependency>
 
