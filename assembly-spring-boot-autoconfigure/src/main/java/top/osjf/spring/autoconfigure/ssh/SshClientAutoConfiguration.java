@@ -41,6 +41,7 @@ import org.apache.sshd.common.signature.Signature;
 import org.apache.sshd.server.forward.ForwardingFilter;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.CollectionUtils;
@@ -56,7 +57,18 @@ import java.util.List;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({SshClient.class})
-public class SshAutoConfiguration {
+public class SshClientAutoConfiguration {
+
+    @Bean
+    @ConditionalOnMissingBean(SshClient.class)
+    public SshClient sshClient(ClientBuilder clientBuilder) {
+        return clientBuilder.build(true);
+    }
+
+    @Bean
+    public SshClientLifecycle sshClientLifecycle(SshClient sshClient) {
+        return new SshClientLifecycle(sshClient);
+    }
 
     @Bean
     public ClientBuilder sshclientBuilder(
@@ -187,16 +199,6 @@ public class SshAutoConfiguration {
         }
 
         return builder;
-    }
-
-    @Bean
-    public SshClient sshClient(ClientBuilder clientBuilder) {
-        return clientBuilder.build(true);
-    }
-
-    @Bean
-    public SshClientLifecycle sshClientLifecycle(SshClient sshClient) {
-        return new SshClientLifecycle(sshClient);
     }
 
     private <T> List<T> orderedStreamList(ObjectProvider<List<T>> provider) {
