@@ -37,23 +37,23 @@ import java.net.SocketAddress;
 public interface SshClientService<T> {
 
     /**
-     * Resolves the <U>effective</U> {@link HostConfigEntry} and connects to it
+     * Resolves the <U>effective</U> {@link HostConfigEntry} and connects to it.
      *
-     * @param uri The server uri to connect to
-     * @return A {@link ConnectFuture}
-     * @throws IOException If failed to resolve the effective target or connect to it
+     * @param uri The server uri to connect to.
+     * @return A {@link ConnectFuture} differentiated structure.
+     * @throws IOException If failed to resolve the effective target or connect to it.
      * @see #connect(HostConfigEntry)
      */
     T connect(String uri) throws IOException;
 
     /**
-     * Resolves the <U>effective</U> {@link HostConfigEntry} and connects to it
+     * Resolves the <U>effective</U> {@link HostConfigEntry} and connects to it.
      *
-     * @param username The intended username
-     * @param host     The target host name/address - never {@code null}/empty
-     * @param port     The target port
-     * @return A {@link ConnectFuture}
-     * @throws IOException If failed to resolve the effective target or connect to it
+     * @param username The intended username.
+     * @param host     The target host name/address - never {@code null}/empty.
+     * @param port     The target port.
+     * @return A {@link ConnectFuture} differentiated structure.
+     * @throws IOException If failed to resolve the effective target or connect to it.
      * @see #connect(HostConfigEntry)
      */
     default T connect(String username, String host, int port) throws IOException {
@@ -61,15 +61,15 @@ public interface SshClientService<T> {
     }
 
     /**
-     * Resolves the <U>effective</U> {@link HostConfigEntry} and connects to it
+     * Resolves the <U>effective</U> {@link HostConfigEntry} and connects to it.
      *
-     * @param username The intended username
-     * @param host     The target host name/address - never {@code null}/empty
-     * @param port     The target port
+     * @param username The intended username.
+     * @param host     The target host name/address - never {@code null}/empty.
+     * @param port     The target port.
      * @param context  An optional &quot;context&quot; to be attached to the established session if successfully
-     *                 connected
-     * @return A {@link ConnectFuture}
-     * @throws IOException If failed to resolve the effective target or connect to it
+     *                 connected.
+     * @return A {@link ConnectFuture} differentiated structure.
+     * @throws IOException If failed to resolve the effective target or connect to it.
      */
     default T connect(
             String username, String host, int port, AttributeRepository context)
@@ -80,13 +80,13 @@ public interface SshClientService<T> {
     /**
      * Resolves the <U>effective</U> {@link HostConfigEntry} and connects to it
      *
-     * @param username     The intended username
-     * @param host         The target host name/address - never {@code null}/empty
-     * @param port         The target port
-     * @param localAddress The local address to use - if {@code null} an automatic ephemeral port and bind address is
+     * @param username     The intended username.
+     * @param host         The target host name/address - never {@code null}/empty.
+     * @param port         The target port.
+     * @param localAddress The local address to use - if {@code null} an automatic ephemeral port and bind address is.
      *                     used
-     * @return A {@link ConnectFuture}
-     * @throws IOException If failed to resolve the effective target or connect to it
+     * @return A {@link ConnectFuture} differentiated structure.
+     * @throws IOException If failed to resolve the effective target or connect to it.
      * @see #connect(HostConfigEntry)
      */
     default T connect(
@@ -96,31 +96,31 @@ public interface SshClientService<T> {
     }
 
     /**
-     * Resolves the <U>effective</U> {@link HostConfigEntry} and connects to it
+     * Resolves the <U>effective</U> {@link HostConfigEntry} and connects to it.
      *
-     * @param username     The intended username
-     * @param host         The target host name/address - never {@code null}/empty
-     * @param port         The target port
+     * @param username     The intended username.
+     * @param host         The target host name/address - never {@code null}/empty.
+     * @param port         The target port.
      * @param context      An optional &quot;context&quot; to be attached to the established session if successfully
-     *                     connected
+     *                     connected.
      * @param localAddress The local address to use - if {@code null} an automatic ephemeral port and bind address is
-     *                     used
-     * @return A {@link ConnectFuture}
-     * @throws IOException If failed to resolve the effective target or connect to it
+     *                     used.
+     * @return A {@link ConnectFuture} differentiated structure.
+     * @throws IOException If failed to resolve the effective target or connect to it.
      */
     T connect(
             String username, String host, int port, AttributeRepository context, SocketAddress localAddress)
             throws IOException;
 
     /**
-     * Resolves the <U>effective</U> {@link HostConfigEntry} and connects to it
+     * Resolves the <U>effective</U> {@link HostConfigEntry} and connects to it.
      *
-     * @param username The intended username
+     * @param username The intended username.
      * @param address  The intended {@link SocketAddress} - never {@code null}. If this is an
      *                 {@link java.net.InetSocketAddress} then the <U>effective</U> {@link HostConfigEntry} is
      *                 resolved and used.
-     * @return A {@link ConnectFuture}
-     * @throws IOException If failed to resolve the effective target or connect to it
+     * @return A {@link ConnectFuture} differentiated structure.
+     * @throws IOException If failed to resolve the effective target or connect to it.
      * @see #connect(HostConfigEntry)
      */
     default T connect(String username, SocketAddress address) throws IOException {
@@ -128,16 +128,16 @@ public interface SshClientService<T> {
     }
 
     /**
-     * Resolves the <U>effective</U> {@link HostConfigEntry} and connects to it
+     * Resolves the <U>effective</U> {@link HostConfigEntry} and connects to it.
      *
-     * @param username The intended username
+     * @param username The intended username.
      * @param address  The intended {@link SocketAddress} - never {@code null}. If this is an
      *                 {@link java.net.InetSocketAddress} then the <U>effective</U> {@link HostConfigEntry} is
      *                 resolved and used.
      * @param context  An optional &quot;context&quot; to be attached to the established session if successfully
-     *                 connected
-     * @return A {@link ConnectFuture}
-     * @throws IOException If failed to resolve the effective target or connect to it
+     *                 connected.
+     * @return A {@link ConnectFuture} differentiated structure.
+     * @throws IOException If failed to resolve the effective target or connect to it.
      */
     default T connect(
             String username, SocketAddress address, AttributeRepository context)
@@ -146,16 +146,16 @@ public interface SshClientService<T> {
     }
 
     /**
-     * Resolves the <U>effective</U> {@link HostConfigEntry} and connects to it
+     * Resolves the <U>effective</U> {@link HostConfigEntry} and connects to it.
      *
-     * @param username      The intended username
+     * @param username      The intended username.
      * @param targetAddress The intended target {@link SocketAddress} - never {@code null}. If this is an
      *                      {@link java.net.InetSocketAddress} then the <U>effective</U> {@link HostConfigEntry} is
      *                      resolved and used.
      * @param localAddress  The local address to use - if {@code null} an automatic ephemeral port and bind address is
-     *                      used
-     * @return A {@link ConnectFuture}
-     * @throws IOException If failed to resolve the effective target or connect to it
+     *                      used.
+     * @return A {@link ConnectFuture} differentiated structure.
+     * @throws IOException If failed to resolve the effective target or connect to it.
      * @see #connect(HostConfigEntry)
      */
     default T connect(
@@ -165,18 +165,18 @@ public interface SshClientService<T> {
     }
 
     /**
-     * Resolves the <U>effective</U> {@link HostConfigEntry} and connects to it
+     * Resolves the <U>effective</U> {@link HostConfigEntry} and connects to it.
      *
-     * @param username      The intended username
+     * @param username      The intended username.
      * @param targetAddress The intended target {@link SocketAddress} - never {@code null}. If this is an
      *                      {@link java.net.InetSocketAddress} then the <U>effective</U> {@link HostConfigEntry} is
      *                      resolved and used.
      * @param context       An optional &quot;context&quot; to be attached to the established session if successfully
-     *                      connected
+     *                      connected.
      * @param localAddress  The local address to use - if {@code null} an automatic ephemeral port and bind address is
-     *                      used
-     * @return A {@link ConnectFuture}
-     * @throws IOException If failed to resolve the effective target or connect to it
+     *                      used.
+     * @return A {@link ConnectFuture} differentiated structure.
+     * @throws IOException If failed to resolve the effective target or connect to it.
      */
     T connect(
             String username, SocketAddress targetAddress, AttributeRepository context, SocketAddress localAddress)
@@ -185,9 +185,9 @@ public interface SshClientService<T> {
     /**
      * Resolves the <U>effective</U> {@link HostConfigEntry} and connects to it.
      *
-     * @param hostConfig The effective {@link HostConfigEntry} to connect to - never {@code null}
-     * @return A {@link ConnectFuture}
-     * @throws IOException If failed to create the connection future
+     * @param hostConfig The effective {@link HostConfigEntry} to connect to - never {@code null}.
+     * @return A {@link ConnectFuture} differentiated structure.
+     * @throws IOException If failed to create the connection future.
      */
     default T connect(HostConfigEntry hostConfig) throws IOException {
         return connect(hostConfig, (AttributeRepository) null);
@@ -198,9 +198,9 @@ public interface SshClientService<T> {
      *
      * @param hostConfig The effective {@link HostConfigEntry} to connect to - never {@code null}
      * @param context    An optional &quot;context&quot; to be attached to the established session if successfully
-     *                   connected
-     * @return A {@link ConnectFuture}
-     * @throws IOException If failed to create the connection future
+     *                   connected.
+     * @return A {@link ConnectFuture} differentiated structure.
+     * @throws IOException If failed to create the connection future.
      */
     default T connect(HostConfigEntry hostConfig, AttributeRepository context) throws IOException {
         return connect(hostConfig, context, null);
@@ -212,7 +212,7 @@ public interface SshClientService<T> {
      * @param hostConfig   The effective {@link HostConfigEntry} to connect to - never {@code null}
      * @param localAddress The local address to use - if {@code null} an automatic ephemeral port and bind address is
      *                     used
-     * @return A {@link ConnectFuture}
+     * @return A {@link ConnectFuture} differentiated structure.
      * @throws IOException If failed to create the connection future
      */
     default T connect(HostConfigEntry hostConfig, SocketAddress localAddress) throws IOException {
@@ -222,13 +222,13 @@ public interface SshClientService<T> {
     /**
      * Resolves the <U>effective</U> {@link HostConfigEntry} and connects to it.
      *
-     * @param hostConfig   The effective {@link HostConfigEntry} to connect to - never {@code null}
+     * @param hostConfig   The effective {@link HostConfigEntry} to connect to - never {@code null}.
      * @param context      An optional &quot;context&quot; to be attached to the established session if successfully
-     *                     connected
+     *                     connected.
      * @param localAddress The local address to use - if {@code null} an automatic ephemeral port and bind address is
-     *                     used
-     * @return A {@link ConnectFuture}
-     * @throws IOException If failed to create the connection future
+     *                     used.
+     * @return A {@link ConnectFuture} differentiated structure.
+     * @throws IOException If failed to create the connection future.
      */
     T connect(
             HostConfigEntry hostConfig, AttributeRepository context, SocketAddress localAddress)
