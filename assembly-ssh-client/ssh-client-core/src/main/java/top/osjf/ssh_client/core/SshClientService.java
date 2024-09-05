@@ -19,7 +19,6 @@ package top.osjf.ssh_client.core;
 import org.apache.sshd.client.config.hosts.HostConfigEntry;
 import org.apache.sshd.client.future.ConnectFuture;
 import org.apache.sshd.common.AttributeRepository;
-import org.apache.sshd.common.SshConstants;
 
 import java.io.IOException;
 import java.net.SocketAddress;
@@ -37,8 +36,6 @@ import java.net.SocketAddress;
  */
 public interface SshClientService<T> {
 
-    int DEFAULT_PORT = SshConstants.DEFAULT_PORT;
-
     /**
      * Resolves the <U>effective</U> {@link HostConfigEntry} and connects to it.
      *
@@ -48,19 +45,6 @@ public interface SshClientService<T> {
      * @see #connect(HostConfigEntry)
      */
     T connect(String uri) throws IOException;
-
-    /**
-     * Resolves the <U>effective</U> {@link HostConfigEntry} and connects to it.
-     *
-     * @param username The intended username.
-     * @param host     The target host name/address - never {@code null}/empty.
-     * @return A {@link ConnectFuture} differentiated structure.
-     * @throws IOException If failed to resolve the effective target or connect to it.
-     * @see #connect(HostConfigEntry)
-     */
-    default T connect(String username, String host) throws IOException {
-        return connect(username, host, DEFAULT_PORT);
-    }
 
     /**
      * Resolves the <U>effective</U> {@link HostConfigEntry} and connects to it.
