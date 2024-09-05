@@ -17,7 +17,6 @@
 package top.osjf.ssh_client.core.session;
 
 import org.apache.sshd.client.config.hosts.HostConfigEntry;
-import org.apache.sshd.client.future.ConnectFuture;
 import org.apache.sshd.client.session.ClientSession;
 import org.apache.sshd.common.AttributeRepository;
 import top.osjf.ssh_client.core.SshClientService;
@@ -32,40 +31,38 @@ import java.net.SocketAddress;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class DefaultSshPasswordIdentityClientSessionService extends DefaultSshClientSessionService
-        implements SshPasswordIdentityClientSessionService {
+public class DefaultSshPasswordIdentityClientSessionService implements SshPasswordIdentityClientSessionService {
 
-    public DefaultSshPasswordIdentityClientSessionService(SshClientService<ConnectFuture> sshClientService) {
-        super(sshClientService);
+    private final SshClientSessionService sshClientSessionService;
+
+    public DefaultSshPasswordIdentityClientSessionService(SshClientSessionService sshClientSessionService) {
+        this.sshClientSessionService = sshClientSessionService;
     }
 
     @Override
-    public ClientSession connectServer(String uri, String password) throws IOException {
-        return verify(connect(uri), password);
+    public PasswordIdentityClientSession connect(String uri) throws IOException {
+        return wrapper(sshClientSessionService.connect(uri));
     }
 
     @Override
-    public ClientSession connectServer(String username, String host, int port, AttributeRepository context,
-                                       SocketAddress localAddress, String password) throws IOException {
-
-        return verify(connect(username, host, port, context, localAddress), password);
+    public PasswordIdentityClientSession connect(String username, String host, int port,
+                                                 AttributeRepository context, SocketAddress localAddress) throws IOException {
+        return wrapper(sshClientSessionService.connect(username, host, port, context, localAddress));
     }
 
     @Override
-    public ClientSession connectServer(String username, SocketAddress targetAddress,
-                                       AttributeRepository context, SocketAddress localAddress, String password) throws IOException {
-        return verify(connect(username, targetAddress, context, localAddress), password);
+    public PasswordIdentityClientSession connect(String username, SocketAddress targetAddress,
+                                                 AttributeRepository context, SocketAddress localAddress) throws IOException {
+        return wrapper(sshClientSessionService.connect(username, targetAddress, context, localAddress));
     }
 
     @Override
-    public ClientSession connectServer(HostConfigEntry hostConfig, AttributeRepository context,
-                                       SocketAddress localAddress, String password) throws IOException {
-        return verify(connect(hostConfig, context, localAddress), password);
+    public PasswordIdentityClientSession connect(HostConfigEntry hostConfig,
+                                                 AttributeRepository context, SocketAddress localAddress) throws IOException {
+        return wrapper(sshClientSessionService.connect(hostConfig, context, localAddress));
     }
 
-    private ClientSession verify(ClientSession clientSession, String password) throws IOException {
-        clientSession.addPasswordIdentity(password);
-        clientSession.auth().verify();
-        return clientSession;
+    private PasswordIdentityClientSession wrapper(ClientSession clientSession) {
+        return new DefaultPasswordIdentityClientSession(clientSession);
     }
 }
