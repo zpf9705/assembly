@@ -18,6 +18,7 @@ package top.osjf.ssh_client.core.session;
 
 import org.apache.sshd.client.auth.password.PasswordIdentityProvider;
 import org.apache.sshd.client.config.hosts.HostConfigEntry;
+import org.apache.sshd.client.future.ConnectFuture;
 import org.apache.sshd.client.session.ClientSession;
 import org.apache.sshd.common.AttributeRepository;
 
@@ -35,6 +36,19 @@ public interface SshPasswordIdentityClientSessionService extends SshClientSessio
 
     /**
      * On the basis of {@link #connect}, perform server password verification for {@link ClientSession}.
+     *
+     * @param uri The server uri to connect to.
+     * @param password Password to be added - may not be {@code null}/empty. <B>Note:</B> this password is <U>in
+     *                 addition</U> to whatever passwords are available via the {@link PasswordIdentityProvider} (if
+     *                 any)
+     * @return A {@link ConnectFuture} differentiated structure.
+     * @throws IOException If failed to resolve the effective target or connect to it.
+     * @see #connect(HostConfigEntry)
+     */
+    ClientSession connectServer(String uri,String password) throws IOException;
+
+    /**
+     * On the basis of {@link #connect}, perform server password verification for {@link ClientSession}.
      * @param username     The intended username.
      * @param host         The target host name/address - never {@code null}/empty.
      * @param port         The target port.
@@ -48,7 +62,7 @@ public interface SshPasswordIdentityClientSessionService extends SshClientSessio
      * @return A password authentication {@link ClientSession}.
      * @throws IOException If failed to resolve the effective target or connect to it.
      */
-    ClientSession connect(String username, String host, int port, AttributeRepository context,
+    ClientSession connectServer(String username, String host, int port, AttributeRepository context,
                           SocketAddress localAddress, String password) throws IOException;
 
     /**
@@ -67,7 +81,7 @@ public interface SshPasswordIdentityClientSessionService extends SshClientSessio
      * @return A password authentication {@link ClientSession}.
      * @throws IOException If failed to resolve the effective target or connect to it.
      */
-    ClientSession connect(String username, SocketAddress targetAddress, AttributeRepository context,
+    ClientSession connectServer(String username, SocketAddress targetAddress, AttributeRepository context,
                           SocketAddress localAddress, String password) throws IOException;
 
     /**
@@ -83,6 +97,6 @@ public interface SshPasswordIdentityClientSessionService extends SshClientSessio
      * @return A password authentication {@link ClientSession}.
      * @throws IOException If failed to resolve the effective target or connect to it.
      */
-    ClientSession connect(HostConfigEntry hostConfig, AttributeRepository context,
+    ClientSession connectServer(HostConfigEntry hostConfig, AttributeRepository context,
                           SocketAddress localAddress, String password) throws IOException;
 }
