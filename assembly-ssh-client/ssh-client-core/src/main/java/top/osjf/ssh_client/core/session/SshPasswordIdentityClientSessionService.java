@@ -45,7 +45,7 @@ public interface SshPasswordIdentityClientSessionService extends SshClientSessio
      * @throws IOException If failed to resolve the effective target or connect to it.
      * @see #connect(HostConfigEntry)
      */
-    ClientSession connectServer(String uri,String password) throws IOException;
+    ClientSession connectServer(String uri, String password) throws IOException;
 
     /**
      * On the basis of {@link #connect}, perform server password verification for {@link ClientSession}.
