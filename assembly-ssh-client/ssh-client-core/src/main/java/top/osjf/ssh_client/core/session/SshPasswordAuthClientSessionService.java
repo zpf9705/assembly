@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.ssh_client.core;
+package top.osjf.ssh_client.core.session;
 
 import org.apache.sshd.client.config.hosts.HostConfigEntry;
 import org.apache.sshd.client.session.ClientSession;

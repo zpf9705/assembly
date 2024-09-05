@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package top.osjf.ssh_client.core;
+package top.osjf.ssh_client.core.session;
 
 import org.apache.sshd.client.config.hosts.HostConfigEntry;
 import org.apache.sshd.client.session.ClientSession;
 import org.apache.sshd.common.AttributeRepository;
+import top.osjf.ssh_client.core.SshClientService;
 
 import java.io.IOException;
 import java.net.SocketAddress;
