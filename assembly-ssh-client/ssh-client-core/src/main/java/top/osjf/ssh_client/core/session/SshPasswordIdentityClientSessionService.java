@@ -46,6 +46,102 @@ public interface SshPasswordIdentityClientSessionService extends SshClientSessio
      * @return A password verification is required to obtain the real {@link ClientSession}.
      */
     @Override
+    default PasswordIdentityClientSession connect(String username, String host, int port) throws IOException {
+        return connect(username, host, port, (AttributeRepository) null);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return A password verification is required to obtain the real {@link ClientSession}.
+     */
+    @Override
+    default PasswordIdentityClientSession connect(String username, String host, int port,
+                                                  AttributeRepository context) throws IOException {
+        return connect(username, host, port, context, null);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return A password verification is required to obtain the real {@link ClientSession}.
+     */
+    @Override
+    default PasswordIdentityClientSession connect(String username, String host, int port,
+                                                  SocketAddress localAddress) throws IOException {
+        return connect(username, host, port, null, localAddress);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return A password verification is required to obtain the real {@link ClientSession}.
+     */
+    @Override
+    default PasswordIdentityClientSession connect(String username, SocketAddress address) throws IOException {
+        return connect(username, address, (AttributeRepository) null);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return A password verification is required to obtain the real {@link ClientSession}.
+     */
+    @Override
+    default PasswordIdentityClientSession connect(String username, SocketAddress address,
+                                                  AttributeRepository context) throws IOException {
+        return connect(username, address, context, null);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return A password verification is required to obtain the real {@link ClientSession}.
+     */
+    @Override
+    default PasswordIdentityClientSession connect(String username, SocketAddress targetAddress,
+                                                  SocketAddress localAddress) throws IOException {
+        return connect(username, targetAddress, null, localAddress);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return A password verification is required to obtain the real {@link ClientSession}.
+     */
+    @Override
+    default PasswordIdentityClientSession connect(HostConfigEntry hostConfig) throws IOException {
+        return connect(hostConfig, (AttributeRepository) null);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return A password verification is required to obtain the real {@link ClientSession}.
+     */
+    @Override
+    default PasswordIdentityClientSession connect(HostConfigEntry hostConfig,
+                                                  AttributeRepository context) throws IOException {
+        return connect(hostConfig, context, null);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return A password verification is required to obtain the real {@link ClientSession}.
+     */
+    @Override
+    default PasswordIdentityClientSession connect(HostConfigEntry hostConfig,
+                                                  SocketAddress localAddress) throws IOException {
+        return connect(hostConfig, null, localAddress);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return A password verification is required to obtain the real {@link ClientSession}.
+     */
+    @Override
     PasswordIdentityClientSession connect(String username, String host, int port,
                                           AttributeRepository context, SocketAddress localAddress) throws IOException;
 
