@@ -62,4 +62,19 @@ public class DefaultSshClientService implements SshClientService<ConnectFuture> 
     public ConnectFuture connect(HostConfigEntry hostConfig, AttributeRepository context, SocketAddress localAddress) throws IOException {
         return sshClient.connect(hostConfig, context, localAddress);
     }
+
+    @Override
+    public void start() {
+        sshClient.start();
+    }
+
+    @Override
+    public void stop() {
+        sshClient.stop();
+    }
+
+    @Override
+    public boolean isRunning() {
+        return sshClient.isStarted();
+    }
 }

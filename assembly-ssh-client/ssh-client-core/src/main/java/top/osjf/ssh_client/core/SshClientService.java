@@ -34,7 +34,7 @@ import java.net.SocketAddress;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public interface SshClientService<T> {
+public interface SshClientService<T> extends Lifecycle {
 
     /**
      * Resolves the <U>effective</U> {@link HostConfigEntry} and connects to it.

@@ -62,6 +62,21 @@ public class DefaultSshPasswordIdentityClientSessionService implements SshPasswo
         return wrapper(sshClientSessionService.connect(hostConfig, context, localAddress));
     }
 
+    @Override
+    public void start() {
+        sshClientSessionService.start();
+    }
+
+    @Override
+    public void stop() {
+        sshClientSessionService.stop();
+    }
+
+    @Override
+    public boolean isRunning() {
+        return sshClientSessionService.isRunning();
+    }
+
     private PasswordIdentityClientSession wrapper(ClientSession clientSession) {
         return new DefaultPasswordIdentityClientSession(clientSession);
     }

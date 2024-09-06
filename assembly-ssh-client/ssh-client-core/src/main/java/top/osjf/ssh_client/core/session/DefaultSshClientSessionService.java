@@ -62,4 +62,19 @@ public class DefaultSshClientSessionService implements SshClientSessionService {
             throws IOException {
         return sshClientService.connect(hostConfig, context, localAddress).getClientSession();
     }
+
+    @Override
+    public void start() {
+        sshClientService.start();
+    }
+
+    @Override
+    public void stop() {
+        sshClientService.stop();
+    }
+
+    @Override
+    public boolean isRunning() {
+        return sshClientService.isRunning();
+    }
 }
