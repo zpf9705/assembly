@@ -11,7 +11,7 @@
 
     <artifactId>assembly-spring-boot-autoconfigure</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <description>
         The automatic assembly project of integrating springboot framework with related components.
     </description>
