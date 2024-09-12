@@ -49,8 +49,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.List;
 
 /**
- * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration}
- * for apache {@link SshClient}.
+ * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration} for Apache ssh {@link SshClient}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
