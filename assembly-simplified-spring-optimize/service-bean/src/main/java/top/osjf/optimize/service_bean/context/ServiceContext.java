@@ -70,6 +70,7 @@ public interface ServiceContext extends Closeable {
      * @param <S>         types of required.
      * @return If {@code true} is returned, it indicates successful addition; otherwise,
      * it indicates failed addition.
+     * @since 1.0.2
      */
     <S> boolean addService(@Nullable String serviceName, Class<S> serviceType);
 
