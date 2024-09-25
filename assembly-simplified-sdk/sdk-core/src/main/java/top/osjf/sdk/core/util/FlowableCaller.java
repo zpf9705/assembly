@@ -202,24 +202,24 @@ public class FlowableCaller<R extends Response> implements Runnable {
     }
 
     /**
-     * Set an operation object representing an asynchronous data stream.
+     * Set an operation object representing a data stream.
      *
-     * <p>This method returns an instance of type {@link Flowable<R>},
+     * <p>This method returns an instance of type {@link Flowable},
      * where<code>R</code>is the type of the element in the data stream.
      *
-     * @param flowable an instance of {@link Flowable<R>}.
+     * @param flowable an instance of {@link Flowable}.
      */
     protected void setFlowable(Flowable<R> flowable) {
         this.flowable = flowable;
     }
 
     /**
-     * Get an operation object representing an asynchronous data stream.
+     * Get an operation object representing a data stream.
      *
-     * <p>This method returns an instance of type {@link Flowable<R>},
+     * <p>This method returns an instance of type {@link Flowable},
      * where<code>R</code>is the type of the element in the data stream.
      *
-     * @return Return an instance of {@link Flowable<R>}.
+     * @return Return an instance of {@link Flowable}.
      */
     protected Flowable<R> getFlowable() {
         return flowable;
