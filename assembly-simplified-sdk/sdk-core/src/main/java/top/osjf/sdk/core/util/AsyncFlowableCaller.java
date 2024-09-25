@@ -99,6 +99,109 @@ public class AsyncFlowableCaller<R extends Response> extends FlowableCaller<R> {
         this.customObserveExecutor = customObserveExecutor;
     }
 
+    /**
+     * A static method for SDK calls using the API of {@code AsyncFlowableCaller}.
+     *
+     * @param runBody                    {@code FlowableCaller#runBody}.
+     * @param customSubscriptionExecutor {@link #customSubscriptionExecutor}.
+     * @param customObserveExecutor      {@link #customObserveExecutor}.
+     * @param <R>                        Generic R represents the type returned by an operation, which must
+     *                                   inherit from the {@link Response} class.
+     */
+    public static <R extends Response> void call(Supplier<R> runBody,
+                                                 Executor customSubscriptionExecutor,
+                                                 Executor customObserveExecutor) {
+        call(runBody, 0, customSubscriptionExecutor, customObserveExecutor);
+    }
+
+    /**
+     * A static method for SDK calls using the API of {@code AsyncFlowableCaller}.
+     *
+     * @param runBody                    {@code FlowableCaller#runBody}.
+     * @param retryTimes                 {@code FlowableCaller#retryTimes}.
+     * @param customSubscriptionExecutor {@link #customSubscriptionExecutor}.
+     * @param customObserveExecutor      {@link #customObserveExecutor}.
+     * @param <R>                        Generic R represents the type returned by an operation, which must
+     *                                   inherit from the {@link Response} class.
+     */
+    public static <R extends Response> void call(Supplier<R> runBody,
+                                                 int retryTimes,
+                                                 Executor customSubscriptionExecutor,
+                                                 Executor customObserveExecutor) {
+        call(runBody, retryTimes, false, customSubscriptionExecutor,
+                customObserveExecutor);
+    }
+
+    /**
+     * A static method for SDK calls using the API of {@code AsyncFlowableCaller}.
+     *
+     * @param runBody                     {@code FlowableCaller#runBody}.
+     * @param retryTimes                  {@code FlowableCaller#retryTimes}.
+     * @param whenResponseNonSuccessRetry {@code FlowableCaller#whenResponseNonSuccessRetry}.
+     * @param customSubscriptionExecutor  {@link #customSubscriptionExecutor}.
+     * @param customObserveExecutor       {@link #customObserveExecutor}.
+     * @param <R>                         Generic R represents the type returned by an operation, which must
+     *                                    inherit from the {@link Response} class.
+     */
+    public static <R extends Response> void call(Supplier<R> runBody,
+                                                 int retryTimes,
+                                                 boolean whenResponseNonSuccessRetry,
+                                                 Executor customSubscriptionExecutor,
+                                                 Executor customObserveExecutor) {
+        call(runBody, retryTimes, whenResponseNonSuccessRetry, null,
+                customSubscriptionExecutor, customObserveExecutor);
+    }
+
+    /**
+     * A static method for SDK calls using the API of {@code AsyncFlowableCaller}.
+     *
+     * @param runBody                       {@code FlowableCaller#runBody}.
+     * @param retryTimes                    {@code FlowableCaller#retryTimes}.
+     * @param whenResponseNonSuccessRetry   {@code FlowableCaller#whenResponseNonSuccessRetry}.
+     * @param customRetryExceptionPredicate {@code FlowableCaller#customRetryExceptionPredicate}.
+     * @param customSubscriptionExecutor    {@link #customSubscriptionExecutor}.
+     * @param customObserveExecutor         {@link #customObserveExecutor}.
+     * @param <R>                           Generic R represents the type returned by an operation, which must
+     *                                      inherit from the {@link Response} class.
+     */
+    public static <R extends Response> void call(Supplier<R> runBody,
+                                                 int retryTimes,
+                                                 boolean whenResponseNonSuccessRetry,
+                                                 Predicate<? super Throwable> customRetryExceptionPredicate,
+                                                 Executor customSubscriptionExecutor,
+                                                 Executor customObserveExecutor) {
+        call(runBody, retryTimes, whenResponseNonSuccessRetry, customRetryExceptionPredicate,
+                null,
+                null, customSubscriptionExecutor, customObserveExecutor);
+    }
+
+    /**
+     * A static method for SDK calls using the API of {@code AsyncFlowableCaller}.
+     *
+     * @param runBody                             {@code FlowableCaller#runBody}.
+     * @param retryTimes                          {@code FlowableCaller#retryTimes}.
+     * @param whenResponseNonSuccessRetry         {@code FlowableCaller#whenResponseNonSuccessRetry}.
+     * @param customRetryExceptionPredicate       {@code FlowableCaller#customRetryExceptionPredicate}.
+     * @param customSubscriptionRegularConsumer   {@code FlowableCaller#customSubscriptionRegularConsumer}.
+     * @param customSubscriptionExceptionConsumer {@code FlowableCaller#customSubscriptionExceptionConsumer}.
+     * @param customSubscriptionExecutor          {@link #customSubscriptionExecutor}.
+     * @param customObserveExecutor               {@link #customObserveExecutor}.
+     * @param <R>                                 Generic R represents the type returned by an operation, which must
+     *                                            inherit from the {@link Response} class.
+     */
+    public static <R extends Response> void call(Supplier<R> runBody,
+                                                 int retryTimes,
+                                                 boolean whenResponseNonSuccessRetry,
+                                                 Predicate<? super Throwable> customRetryExceptionPredicate,
+                                                 Consumer<R> customSubscriptionRegularConsumer,
+                                                 Consumer<Throwable> customSubscriptionExceptionConsumer,
+                                                 Executor customSubscriptionExecutor,
+                                                 Executor customObserveExecutor) {
+        new AsyncFlowableCaller<>(runBody, retryTimes, whenResponseNonSuccessRetry, customRetryExceptionPredicate,
+                customSubscriptionRegularConsumer, customSubscriptionExceptionConsumer, customSubscriptionExecutor,
+                customObserveExecutor).run();
+    }
+
     @Override
     protected Flowable<R> createFlowable() {
 
