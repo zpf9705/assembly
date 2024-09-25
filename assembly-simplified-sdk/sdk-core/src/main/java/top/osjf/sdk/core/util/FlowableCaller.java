@@ -75,7 +75,7 @@ public class FlowableCaller<R extends Response> implements Runnable {
 
     /*** Flowable object, representing an observable data flow, can asynchronously emit zero or
      *  more data items. */
-    private final Flowable<R> flowable;
+    private Flowable<R> flowable;
 
     /*** Counter, used to control the synchronization of certain operations, may be used here to
      * wait for the completion of an event or condition. */
@@ -199,6 +199,30 @@ public class FlowableCaller<R extends Response> implements Runnable {
                                                  Consumer<Throwable> customSubscriptionExceptionConsumer) {
         new FlowableCaller<>(runBody, retryTimes, whenResponseNonSuccessRetry, customRetryExceptionPredicate,
                 customSubscriptionRegularConsumer, customSubscriptionExceptionConsumer).run();
+    }
+
+    /**
+     * Set an operation object representing an asynchronous data stream.
+     *
+     * <p>This method returns an instance of type {@link Flowable<R>},
+     * where<code>R</code>is the type of the element in the data stream.
+     *
+     * @param flowable an instance of {@link Flowable<R>}.
+     */
+    protected void setFlowable(Flowable<R> flowable) {
+        this.flowable = flowable;
+    }
+
+    /**
+     * Get an operation object representing an asynchronous data stream.
+     *
+     * <p>This method returns an instance of type {@link Flowable<R>},
+     * where<code>R</code>is the type of the element in the data stream.
+     *
+     * @return Return an instance of {@link Flowable<R>}.
+     */
+    protected Flowable<R> getFlowable() {
+        return flowable;
     }
 
     /*** The {@link BackpressureStrategy} backpressure selection system cache key value for {@link Flowable}.*/

@@ -97,6 +97,40 @@ public class AsyncFlowableCaller<R extends Response> extends FlowableCaller<R> {
                 customSubscriptionRegularConsumer, customSubscriptionExceptionConsumer);
         this.customSubscriptionExecutor = customSubscriptionExecutor;
         this.customObserveExecutor = customObserveExecutor;
+        perfectFlowable();
+    }
+
+    /**
+     * Optimize the execution thread of {@link Flowable}.
+     *
+     * <p>This method aims to adjust the execution and observation strategies of Flowable
+     * to improve performance or meet specific thread requirements.
+     * It first obtains the current Flowable instance, and then adjusts it through the '
+     * subscribeOn' and 'observeOn' operators The thread that subscribes and executes callbacks.
+     *
+     * <p>If a custom Subscription Executor is provided, use it to specify
+     * The thread at the time of Flowable subscription (i.e. before starting to process data).
+     * If not provided, the {@link Schedulers#trampoline()} will be used by default,
+     * It attempts to execute immediately in the current thread, but allows recursive calls without
+     * causing stack overflow.
+     *
+     * <p>Similarly, if a custom ObserveExecutor is provided, use it to specify
+     * The thread that receives data and triggers callbacks (such as onNext, onError, onComplete).
+     * If not provided, the {@link Schedulers#trampoline()} is also used by default.
+     *
+     * <p>Finally, the method sets the adjusted Flowable instance back to its original position.
+     */
+    protected void perfectFlowable() {
+
+        Flowable<R> flowable = getFlowable();
+
+        Flowable<R> asyncFlowable = flowable
+                .subscribeOn(customSubscriptionExecutor != null ?
+                        Schedulers.from(customSubscriptionExecutor) : Schedulers.trampoline())
+                .observeOn(customObserveExecutor != null ?
+                        Schedulers.from(customObserveExecutor) : Schedulers.trampoline());
+
+        setFlowable(asyncFlowable);
     }
 
     /**
@@ -200,21 +234,5 @@ public class AsyncFlowableCaller<R extends Response> extends FlowableCaller<R> {
         new AsyncFlowableCaller<>(runBody, retryTimes, whenResponseNonSuccessRetry, customRetryExceptionPredicate,
                 customSubscriptionRegularConsumer, customSubscriptionExceptionConsumer, customSubscriptionExecutor,
                 customObserveExecutor).run();
-    }
-
-    @Override
-    protected Flowable<R> createFlowable() {
-
-        Flowable<R> flowable = super.createFlowable();
-
-        if (this.customSubscriptionExecutor != null) {
-            flowable = flowable.subscribeOn(Schedulers.from(customSubscriptionExecutor));
-        }
-
-        if (this.customObserveExecutor != null) {
-            flowable = flowable.observeOn(Schedulers.from(customObserveExecutor));
-        }
-
-        return flowable;
     }
 }
