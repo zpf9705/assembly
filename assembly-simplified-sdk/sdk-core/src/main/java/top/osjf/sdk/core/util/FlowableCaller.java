@@ -121,6 +121,86 @@ public class FlowableCaller<R extends Response> implements Runnable {
         this.flowable = createFlowable();
     }
 
+    /**
+     * A static method for SDK calls using the API of {@code FlowableCaller}.
+     *
+     * @param runBody {@link #runBody}.
+     * @param <R>     Generic R represents the type returned by an operation, which must
+     *                inherit from the {@link Response} class.
+     */
+    public static <R extends Response> void call(Supplier<R> runBody) {
+        call(runBody, 0);
+    }
+
+    /**
+     * A static method for SDK calls using the API of {@code FlowableCaller}.
+     *
+     * @param runBody    {@link #runBody}.
+     * @param retryTimes {@link #retryTimes}.
+     * @param <R>        Generic R represents the type returned by an operation, which must
+     *                   inherit from the {@link Response} class.
+     */
+    public static <R extends Response> void call(Supplier<R> runBody,
+                                                 int retryTimes) {
+        call(runBody, retryTimes, false);
+    }
+
+    /**
+     * A static method for SDK calls using the API of {@code FlowableCaller}.
+     *
+     * @param runBody                     {@link #runBody}.
+     * @param retryTimes                  {@link #retryTimes}.
+     * @param whenResponseNonSuccessRetry {@link #whenResponseNonSuccessRetry}.
+     * @param <R>                         Generic R represents the type returned by an operation, which must
+     *                                    inherit from the {@link Response} class.
+     */
+    public static <R extends Response> void call(Supplier<R> runBody,
+                                                 int retryTimes,
+                                                 boolean whenResponseNonSuccessRetry) {
+        call(runBody, retryTimes, whenResponseNonSuccessRetry, null);
+    }
+
+    /**
+     * A static method for SDK calls using the API of {@code FlowableCaller}.
+     *
+     * @param runBody                       {@link #runBody}.
+     * @param retryTimes                    {@link #retryTimes}.
+     * @param whenResponseNonSuccessRetry   {@link #whenResponseNonSuccessRetry}.
+     * @param customRetryExceptionPredicate {@link #customRetryExceptionPredicate}.
+     * @param <R>                           Generic R represents the type returned by an operation, which must
+     *                                      inherit from the {@link Response} class.
+     */
+    public static <R extends Response> void call(Supplier<R> runBody,
+                                                 int retryTimes,
+                                                 boolean whenResponseNonSuccessRetry,
+                                                 Predicate<? super Throwable> customRetryExceptionPredicate) {
+        call(runBody, retryTimes, whenResponseNonSuccessRetry, customRetryExceptionPredicate,
+                null,
+                null);
+    }
+
+    /**
+     * A static method for SDK calls using the API of {@code FlowableCaller}.
+     *
+     * @param runBody                             {@link #runBody}.
+     * @param retryTimes                          {@link #retryTimes}.
+     * @param whenResponseNonSuccessRetry         {@link #whenResponseNonSuccessRetry}.
+     * @param customRetryExceptionPredicate       {@link #customRetryExceptionPredicate}.
+     * @param customSubscriptionRegularConsumer   {@link #customSubscriptionRegularConsumer}.
+     * @param customSubscriptionExceptionConsumer {@link #customSubscriptionExceptionConsumer}.
+     * @param <R>                                 Generic R represents the type returned by an operation, which must
+     *                                            inherit from the {@link Response} class.
+     */
+    public static <R extends Response> void call(Supplier<R> runBody,
+                                                 int retryTimes,
+                                                 boolean whenResponseNonSuccessRetry,
+                                                 Predicate<? super Throwable> customRetryExceptionPredicate,
+                                                 Consumer<R> customSubscriptionRegularConsumer,
+                                                 Consumer<Throwable> customSubscriptionExceptionConsumer) {
+        new FlowableCaller<>(runBody, retryTimes, whenResponseNonSuccessRetry, customRetryExceptionPredicate,
+                customSubscriptionRegularConsumer, customSubscriptionExceptionConsumer).run();
+    }
+
     /*** The {@link BackpressureStrategy} backpressure selection system cache key value for {@link Flowable}.*/
     public static final String BACKPRESSURE_STRATEGY_PROPERTY = "io.reactivex.rxjava3.core.BackpressureStrategy.item";
 
