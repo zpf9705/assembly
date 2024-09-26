@@ -133,6 +133,11 @@ public class AsyncFlowableCaller<R extends Response> extends FlowableCaller<R> {
         setFlowable(asyncFlowable);
     }
 
+    @Override
+    public void run() {
+        new Thread(AsyncFlowableCaller.super::run, "Async - Flowable - Caller").start();
+    }
+
     /**
      * A static method for SDK calls using the API of {@code AsyncFlowableCaller}.
      *
