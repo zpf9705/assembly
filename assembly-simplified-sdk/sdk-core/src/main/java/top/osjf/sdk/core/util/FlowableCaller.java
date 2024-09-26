@@ -46,7 +46,7 @@ import java.util.logging.Logger;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-public class FlowableCaller<R extends Response> implements Runnable, AutoCloseable {
+public class FlowableCaller<R extends Response> implements Runnable {
 
     protected final Logger LOGGER = Logger.getLogger(getClass().getName());
 
@@ -194,11 +194,9 @@ public class FlowableCaller<R extends Response> implements Runnable, AutoCloseab
                                                  Predicate<? super Throwable> customRetryExceptionPredicate,
                                                  Consumer<R> customSubscriptionRegularConsumer,
                                                  Consumer<Throwable> customSubscriptionExceptionConsumer) {
-        try (FlowableCaller<R> flowableCaller = new FlowableCaller<>(runBody, retryTimes,
+        new FlowableCaller<>(runBody, retryTimes,
                 whenResponseNonSuccessRetry, customRetryExceptionPredicate, customSubscriptionRegularConsumer,
-                customSubscriptionExceptionConsumer)) {
-            flowableCaller.run();
-        }
+                customSubscriptionExceptionConsumer).run();
     }
 
     /**
@@ -282,19 +280,29 @@ public class FlowableCaller<R extends Response> implements Runnable, AutoCloseab
     @Override
     public void run() {
         this.disposable = flowable.subscribe(getOnNext(), getOnError());
+        if (disposeSync()) dispose();
     }
 
     /**
-     * @see top.osjf.sdk.core.util.AsyncFlowableCaller.OnNext
+     * Return Boolean markers indicating whether to synchronize resource
+     * release related operations.
+     * @return Boolean markers indicating.
+     */
+    protected boolean disposeSync() {
+        return true;
+    }
+
+    /**
      * @return {@link OnNext}.
+     * @see top.osjf.sdk.core.util.FlowableCaller.OnNext
      */
     protected OnNext getOnNext() {
         return new OnNext();
     }
 
     /**
-     * @see top.osjf.sdk.core.util.AsyncFlowableCaller.OnError
      * @return {@link OnError}.
+     * @see top.osjf.sdk.core.util.FlowableCaller.OnError
      */
     protected OnError getOnError() {
         return new OnError();
@@ -303,6 +311,7 @@ public class FlowableCaller<R extends Response> implements Runnable, AutoCloseab
     /*** It happened after {@link Flowable#subscribe(io.reactivex.rxjava3.functions.Consumer,
      *  io.reactivex.rxjava3.functions.Consumer)})} onNext.*/
     protected class OnNext implements io.reactivex.rxjava3.functions.Consumer<R> {
+
         @Override
         public void accept(R r) {
             if (customSubscriptionRegularConsumer != null) {
@@ -314,6 +323,7 @@ public class FlowableCaller<R extends Response> implements Runnable, AutoCloseab
     /*** It happened after {@link Flowable#subscribe(io.reactivex.rxjava3.functions.Consumer,
      *  io.reactivex.rxjava3.functions.Consumer)})} onError.*/
     protected class OnError implements io.reactivex.rxjava3.functions.Consumer<Throwable> {
+
         @Override
         public void accept(Throwable e) {
             if (customSubscriptionExceptionConsumer != null) {
@@ -322,15 +332,14 @@ public class FlowableCaller<R extends Response> implements Runnable, AutoCloseab
         }
     }
 
-    @Override
-    public void close() {
+    /**
+     * Check if the disposable object has not been disposed of yet, and if so,
+     * proceed with the disposal operation.
+     * This is to ensure that resources can be released correctly even in the event of
+     * an exception, avoiding resource leakage.
+     */
+    public void dispose() {
 
-        /*
-         * Check if the disposable object has not been disposed of yet, and if so,
-         * proceed with the disposal operation
-         * This is to ensure that resources can be released correctly even in the event of
-         * an exception, avoiding resource leakage
-         * */
         if (!disposable.isDisposed()) {
             disposable.dispose();
             LOGGER.log(Level.INFO, "Resource release completed");

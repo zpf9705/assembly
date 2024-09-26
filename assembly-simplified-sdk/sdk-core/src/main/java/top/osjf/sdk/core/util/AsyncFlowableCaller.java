@@ -20,13 +20,10 @@ import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import top.osjf.sdk.core.process.Response;
 
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The Asynchronous FlowableCaller class extends {@link FlowableCaller}, providing
@@ -41,8 +38,6 @@ import java.util.logging.Logger;
  * @since 1.0.2
  */
 public class AsyncFlowableCaller<R extends Response> extends FlowableCaller<R> {
-
-    private static final Logger LOGGER = Logger.getLogger(AsyncFlowableCaller.class.getName());
 
     /**
      * A custom subscription executor that handles asynchronous tasks related to subscriptions.
@@ -62,9 +57,14 @@ public class AsyncFlowableCaller<R extends Response> extends FlowableCaller<R> {
      */
     private final Executor customObserveExecutor;
 
-    /*** Counter, used to control the synchronization of certain operations, may be used here to
-     * wait for the completion of an event or condition. */
-    private CountDownLatch count;
+    /**
+     * Since the above thread pool is not required to be provided, when it is not provided, it
+     * will still be executed synchronously like {@link FlowableCaller}, and the corresponding
+     * subscription resources will be released and executed synchronously.
+     *
+     * <p>This flag is used to indicate whether the above thread pool is provided.
+     */
+    private boolean disposeSync = true;
 
     /**
      * Construct a {@code AsyncFlowableCaller} instance.
@@ -133,24 +133,19 @@ public class AsyncFlowableCaller<R extends Response> extends FlowableCaller<R> {
 
         Flowable<R> flowable = getFlowable();
 
-        boolean processAsync = false;
-
         if (customSubscriptionExecutor != null) {
 
             flowable = flowable.subscribeOn(Schedulers.from(customSubscriptionExecutor));
 
-            processAsync = true;
-
+            disposeSync = false;
         }
 
         if (customObserveExecutor != null) {
 
             flowable = flowable.observeOn(Schedulers.from(customObserveExecutor));
 
-            processAsync = true;
+            disposeSync = false;
         }
-
-        if (processAsync) count = new CountDownLatch(1);
 
         setFlowable(flowable);
     }
@@ -167,71 +162,33 @@ public class AsyncFlowableCaller<R extends Response> extends FlowableCaller<R> {
 
     /*** Ensure that thread counters can be operated after executing the
      * next notification asynchronously. */
-    class OnNext extends FlowableCaller<R>.OnNext {
+    private class OnNext extends FlowableCaller<R>.OnNext {
         @Override
         public void accept(R r) {
             try {
                 super.accept(r);
             } finally {
-                if (count != null && count.getCount() > 0) count.countDown();
+                dispose();
             }
         }
     }
 
     /*** Ensure that thread counters, including errors in the next step, can be
      * operated after executing error notifications asynchronously.*/
-    class OnError extends FlowableCaller<R>.OnError {
+    private class OnError extends FlowableCaller<R>.OnError {
         @Override
         public void accept(Throwable e) {
             try {
                 super.accept(e);
             } finally {
-                if (count != null && count.getCount() > 0) count.countDown();
+                dispose();
             }
         }
     }
 
     @Override
-    public void run() {
-
-        Runnable run0 = super::run;
-
-        if (count == null) {
-
-            //When there is no asynchronous support for the RXJava3 framework, manually start a thread.
-            new Thread(run0, "Async - Flowable - Caller").start();
-        } else {
-
-            //On the contrary, run directly.
-            run0.run();
-        }
-    }
-
-    @Override
-    public void close() {
-
-        if (count != null) {
-
-            try {
-
-                /*
-                 * Waiting for the designated consumer to complete the execution is to ensure
-                 * the smooth release of resources occupied by the subscription relationship in the future.
-                 * */
-                count.await();
-            } catch (InterruptedException e) {
-
-                // Restoring the interrupted state is important!
-                Thread.currentThread().interrupt();
-
-                LOGGER.log(Level.INFO, "Interrupted while waiting for count, continuing execution...", e);
-            } finally {
-
-                super.close();
-            }
-
-        } else super.close();
-
+    protected boolean disposeSync() {
+        return disposeSync;
     }
 
     /**
@@ -332,11 +289,9 @@ public class AsyncFlowableCaller<R extends Response> extends FlowableCaller<R> {
                                                  Consumer<Throwable> customSubscriptionExceptionConsumer,
                                                  Executor customSubscriptionExecutor,
                                                  Executor customObserveExecutor) {
-        try (AsyncFlowableCaller<R> asyncFlowableCaller = new AsyncFlowableCaller<>(runBody, retryTimes,
+        new AsyncFlowableCaller<>(runBody, retryTimes,
                 whenResponseNonSuccessRetry, customRetryExceptionPredicate,
                 customSubscriptionRegularConsumer, customSubscriptionExceptionConsumer, customSubscriptionExecutor,
-                customObserveExecutor)) {
-            asyncFlowableCaller.run();
-        }
+                customObserveExecutor).run();
     }
 }
