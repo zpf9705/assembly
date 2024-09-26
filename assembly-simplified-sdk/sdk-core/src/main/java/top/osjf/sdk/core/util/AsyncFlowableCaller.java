@@ -196,17 +196,14 @@ public class AsyncFlowableCaller<R extends Response> extends FlowableCaller<R> {
 
         Runnable run0 = super::run;
 
-        //Prioritize using the publisher's thread pool to submit this task.
-        if (customSubscriptionExecutor != null) {
-            customSubscriptionExecutor.execute(run0);
+        if (count == null) {
 
-            //Next, use the observer's thread pool to submit this task.
-        } else if (customObserveExecutor != null) {
-            customObserveExecutor.execute(run0);
+            //When there is no asynchronous support for the RXJava3 framework, manually start a thread.
+            new Thread(run0, "Async - Flowable - Caller").start();
         } else {
 
-            //Without the former, create a new thread directly to submit the task.
-            new Thread(AsyncFlowableCaller.super::run, "Async - Flowable - Caller").start();
+            //On the contrary, run directly.
+            run0.run();
         }
     }
 
