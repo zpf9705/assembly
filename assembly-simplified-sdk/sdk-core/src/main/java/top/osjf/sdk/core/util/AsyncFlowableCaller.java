@@ -20,10 +20,13 @@ import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import top.osjf.sdk.core.process.Response;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The Asynchronous FlowableCaller class extends {@link FlowableCaller}, providing
@@ -38,6 +41,8 @@ import java.util.function.Supplier;
  * @since 1.0.2
  */
 public class AsyncFlowableCaller<R extends Response> extends FlowableCaller<R> {
+
+    private static final Logger LOGGER = Logger.getLogger(AsyncFlowableCaller.class.getName());
 
     /**
      * A custom subscription executor that handles asynchronous tasks related to subscriptions.
@@ -56,6 +61,10 @@ public class AsyncFlowableCaller<R extends Response> extends FlowableCaller<R> {
      * <p>If it is empty, to observe will be executed in the main thread.
      */
     private final Executor customObserveExecutor;
+
+    /*** Counter, used to control the synchronization of certain operations, may be used here to
+     * wait for the completion of an event or condition. */
+    private CountDownLatch count;
 
     /**
      * Construct a {@code AsyncFlowableCaller} instance.
@@ -124,13 +133,26 @@ public class AsyncFlowableCaller<R extends Response> extends FlowableCaller<R> {
 
         Flowable<R> flowable = getFlowable();
 
-        Flowable<R> asyncFlowable = flowable
-                .subscribeOn(customSubscriptionExecutor != null ?
-                        Schedulers.from(customSubscriptionExecutor) : Schedulers.trampoline())
-                .observeOn(customObserveExecutor != null ?
-                        Schedulers.from(customObserveExecutor) : Schedulers.trampoline());
+        boolean processAsync = false;
 
-        setFlowable(asyncFlowable);
+        if (customSubscriptionExecutor != null) {
+
+            flowable = flowable.subscribeOn(Schedulers.from(customSubscriptionExecutor));
+
+            processAsync = true;
+
+        }
+
+        if (customObserveExecutor != null) {
+
+            flowable = flowable.observeOn(Schedulers.from(customObserveExecutor));
+
+            processAsync = true;
+        }
+
+        if (processAsync) count = new CountDownLatch(1);
+
+        setFlowable(flowable);
     }
 
     @Override
@@ -150,6 +172,33 @@ public class AsyncFlowableCaller<R extends Response> extends FlowableCaller<R> {
             //Without the former, create a new thread directly to submit the task.
             new Thread(AsyncFlowableCaller.super::run, "Async - Flowable - Caller").start();
         }
+    }
+
+    @Override
+    public void close() {
+
+        if (count != null) {
+
+            try {
+
+                /*
+                 * Waiting for the designated consumer to complete the execution is to ensure
+                 * the smooth release of resources occupied by the subscription relationship in the future.
+                 * */
+                count.await();
+            } catch (InterruptedException e) {
+
+                // Restoring the interrupted state is important!
+                Thread.currentThread().interrupt();
+
+                LOGGER.log(Level.INFO, "Interrupted while waiting for count, continuing execution...", e);
+            } finally {
+
+                super.close();
+            }
+
+        } else super.close();
+
     }
 
     /**
@@ -250,8 +299,11 @@ public class AsyncFlowableCaller<R extends Response> extends FlowableCaller<R> {
                                                  Consumer<Throwable> customSubscriptionExceptionConsumer,
                                                  Executor customSubscriptionExecutor,
                                                  Executor customObserveExecutor) {
-        new AsyncFlowableCaller<>(runBody, retryTimes, whenResponseNonSuccessRetry, customRetryExceptionPredicate,
+        try (AsyncFlowableCaller<R> asyncFlowableCaller = new AsyncFlowableCaller<>(runBody, retryTimes,
+                whenResponseNonSuccessRetry, customRetryExceptionPredicate,
                 customSubscriptionRegularConsumer, customSubscriptionExceptionConsumer, customSubscriptionExecutor,
-                customObserveExecutor).run();
+                customObserveExecutor)) {
+            asyncFlowableCaller.run();
+        }
     }
 }

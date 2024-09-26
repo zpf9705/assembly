@@ -20,17 +20,13 @@ import io.reactivex.rxjava3.core.BackpressureStrategy;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import org.reactivestreams.Publisher;
-import top.osjf.sdk.core.exception.SdkCallerException;
 import top.osjf.sdk.core.exception.SdkResponseNonSuccessException;
 import top.osjf.sdk.core.process.Response;
 
 import java.util.Objects;
-import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The {@code FlowableCaller} class is a utility class used to perform asynchronous operations
@@ -48,9 +44,7 @@ import java.util.logging.Logger;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-public class FlowableCaller<R extends Response> implements Runnable {
-
-    private static final Logger LOGGER = Logger.getLogger(FlowableCaller.class.getName());
+public class FlowableCaller<R extends Response> implements Runnable, AutoCloseable {
 
     /*** The provider of the running entity, the subject used to generate or execute tasks. */
     private final Supplier<R> runBody;
@@ -77,9 +71,8 @@ public class FlowableCaller<R extends Response> implements Runnable {
      *  more data items. */
     private Flowable<R> flowable;
 
-    /*** Counter, used to control the synchronization of certain operations, may be used here to
-     * wait for the completion of an event or condition. */
-    private final CountDownLatch count = new CountDownLatch(1);
+    /*** The Disposable object represents the 'handle' of the subscription.*/
+    private Disposable disposable;
 
     /*** The default response unsuccessful retry predicate is used to determine whether an exception
      *  is caused by a response unsuccessful and trigger a retry.When the exception is an instance of
@@ -197,8 +190,11 @@ public class FlowableCaller<R extends Response> implements Runnable {
                                                  Predicate<? super Throwable> customRetryExceptionPredicate,
                                                  Consumer<R> customSubscriptionRegularConsumer,
                                                  Consumer<Throwable> customSubscriptionExceptionConsumer) {
-        new FlowableCaller<>(runBody, retryTimes, whenResponseNonSuccessRetry, customRetryExceptionPredicate,
-                customSubscriptionRegularConsumer, customSubscriptionExceptionConsumer).run();
+        try (FlowableCaller<R> flowableCaller = new FlowableCaller<>(runBody, retryTimes,
+                whenResponseNonSuccessRetry, customRetryExceptionPredicate, customSubscriptionRegularConsumer,
+                customSubscriptionExceptionConsumer)) {
+            flowableCaller.run();
+        }
     }
 
     /**
@@ -281,55 +277,42 @@ public class FlowableCaller<R extends Response> implements Runnable {
 
     @Override
     public void run() {
+        this.disposable = flowable.subscribe(new onNext(), new onError());
+    }
 
-        //Execute custom consumers at a specified stage and subtract the current
-        // thread count after execution to wait for resource cleanup in the future.
-
-        Disposable disposable = flowable.subscribe(r -> {
+    /*** It happened after {@link Flowable#subscribe(io.reactivex.rxjava3.functions.Consumer,
+     *  io.reactivex.rxjava3.functions.Consumer)})} onNext.*/
+    protected class onNext implements io.reactivex.rxjava3.functions.Consumer<R> {
+        @Override
+        public void accept(R r) {
             if (customSubscriptionRegularConsumer != null) {
-                try {
-                    customSubscriptionRegularConsumer.accept(r);
-                } finally {
-                    count.countDown();
-                }
-            } else count.countDown();
-        }, throwable -> {
+                customSubscriptionRegularConsumer.accept(r);
+            }
+        }
+    }
+
+    /*** It happened after {@link Flowable#subscribe(io.reactivex.rxjava3.functions.Consumer,
+     *  io.reactivex.rxjava3.functions.Consumer)})} onError.*/
+    protected class onError implements io.reactivex.rxjava3.functions.Consumer<Throwable> {
+        @Override
+        public void accept(Throwable e) {
             if (customSubscriptionExceptionConsumer != null) {
-                try {
-                    customSubscriptionExceptionConsumer.accept(throwable);
-                } finally {
-                    count.countDown();
-                }
-            } else {
-                count.countDown();
-                throw new SdkCallerException(throwable);
+                customSubscriptionExceptionConsumer.accept(e);
             }
-        });
+        }
+    }
 
+    @Override
+    public void close() {
 
-        try {
-            /*
-             * Waiting for the designated consumer to complete the execution is to ensure
-             * the smooth release of resources occupied by the subscription relationship in the future.
-             * */
-            count.await();
-        } catch (InterruptedException e) {
-
-            // Restoring the interrupted state is important!
-            Thread.currentThread().interrupt();
-
-            LOGGER.log(Level.INFO, "Interrupted while waiting for count, continuing execution...", e);
-        } finally {
-
-            /*
-             * Check if the disposable object has not been disposed of yet, and if so,
-             * proceed with the disposal operation
-             * This is to ensure that resources can be released correctly even in the event of
-             * an exception, avoiding resource leakage
-             * */
-            if (!disposable.isDisposed()) {
-                disposable.dispose();
-            }
+        /*
+         * Check if the disposable object has not been disposed of yet, and if so,
+         * proceed with the disposal operation
+         * This is to ensure that resources can be released correctly even in the event of
+         * an exception, avoiding resource leakage
+         * */
+        if (!disposable.isDisposed()) {
+            disposable.dispose();
         }
     }
 
