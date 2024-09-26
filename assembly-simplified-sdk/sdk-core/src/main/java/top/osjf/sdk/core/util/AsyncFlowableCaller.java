@@ -156,6 +156,42 @@ public class AsyncFlowableCaller<R extends Response> extends FlowableCaller<R> {
     }
 
     @Override
+    protected FlowableCaller<R>.OnNext getOnNext() {
+        return new OnNext();
+    }
+
+    @Override
+    protected FlowableCaller<R>.OnError getOnError() {
+        return new OnError();
+    }
+
+    /*** Ensure that thread counters can be operated after executing the
+     * next notification asynchronously. */
+    class OnNext extends FlowableCaller<R>.OnNext {
+        @Override
+        public void accept(R r) {
+            try {
+                super.accept(r);
+            } finally {
+                if (count != null && count.getCount() > 0) count.countDown();
+            }
+        }
+    }
+
+    /*** Ensure that thread counters, including errors in the next step, can be
+     * operated after executing error notifications asynchronously.*/
+    class OnError extends FlowableCaller<R>.OnError {
+        @Override
+        public void accept(Throwable e) {
+            try {
+                super.accept(e);
+            } finally {
+                if (count != null && count.getCount() > 0) count.countDown();
+            }
+        }
+    }
+
+    @Override
     public void run() {
 
         Runnable run0 = super::run;

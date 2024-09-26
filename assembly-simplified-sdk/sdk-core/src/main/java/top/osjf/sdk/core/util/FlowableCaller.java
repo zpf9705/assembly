@@ -27,6 +27,8 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The {@code FlowableCaller} class is a utility class used to perform asynchronous operations
@@ -45,6 +47,8 @@ import java.util.function.Supplier;
  * @since 1.0.2
  */
 public class FlowableCaller<R extends Response> implements Runnable, AutoCloseable {
+
+    protected final Logger LOGGER = Logger.getLogger(getClass().getName());
 
     /*** The provider of the running entity, the subject used to generate or execute tasks. */
     private final Supplier<R> runBody;
@@ -277,12 +281,28 @@ public class FlowableCaller<R extends Response> implements Runnable, AutoCloseab
 
     @Override
     public void run() {
-        this.disposable = flowable.subscribe(new onNext(), new onError());
+        this.disposable = flowable.subscribe(getOnNext(), getOnError());
+    }
+
+    /**
+     * @see top.osjf.sdk.core.util.AsyncFlowableCaller.OnNext
+     * @return {@link OnNext}.
+     */
+    protected OnNext getOnNext() {
+        return new OnNext();
+    }
+
+    /**
+     * @see top.osjf.sdk.core.util.AsyncFlowableCaller.OnError
+     * @return {@link OnError}.
+     */
+    protected OnError getOnError() {
+        return new OnError();
     }
 
     /*** It happened after {@link Flowable#subscribe(io.reactivex.rxjava3.functions.Consumer,
      *  io.reactivex.rxjava3.functions.Consumer)})} onNext.*/
-    protected class onNext implements io.reactivex.rxjava3.functions.Consumer<R> {
+    protected class OnNext implements io.reactivex.rxjava3.functions.Consumer<R> {
         @Override
         public void accept(R r) {
             if (customSubscriptionRegularConsumer != null) {
@@ -293,7 +313,7 @@ public class FlowableCaller<R extends Response> implements Runnable, AutoCloseab
 
     /*** It happened after {@link Flowable#subscribe(io.reactivex.rxjava3.functions.Consumer,
      *  io.reactivex.rxjava3.functions.Consumer)})} onError.*/
-    protected class onError implements io.reactivex.rxjava3.functions.Consumer<Throwable> {
+    protected class OnError implements io.reactivex.rxjava3.functions.Consumer<Throwable> {
         @Override
         public void accept(Throwable e) {
             if (customSubscriptionExceptionConsumer != null) {
@@ -313,6 +333,9 @@ public class FlowableCaller<R extends Response> implements Runnable, AutoCloseab
          * */
         if (!disposable.isDisposed()) {
             disposable.dispose();
+            LOGGER.log(Level.INFO, "Resource release completed");
+        } else {
+            LOGGER.log(Level.INFO, "The resource has been automatically released");
         }
     }
 
