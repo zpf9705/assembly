@@ -11,14 +11,14 @@
 
     <artifactId>sdk-http-ok</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <ok.http>3.14.9</ok.http>
-        <sdk-http>1.0.1</sdk-http>
+        <sdk-http>1.0.2</sdk-http>
     </properties>
 
     <dependencies>

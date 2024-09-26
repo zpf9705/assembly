@@ -19,7 +19,7 @@
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring>5.3.12</spring>
-        <sdk-http>1.0.1</sdk-http>
+        <sdk-http>1.0.2</sdk-http>
     </properties>
 
     <dependencies>
