@@ -29,4 +29,8 @@ public class SdkResponseNonSuccessException extends SdkCallerException {
     public SdkResponseNonSuccessException() {
         super();
     }
+
+    public SdkResponseNonSuccessException(String s) {
+        super(s);
+    }
 }
