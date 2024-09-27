@@ -30,7 +30,7 @@ public class SdkCallerException extends SdkException {
         super();
     }
 
-    public SdkCallerException(Throwable cause) {
-        super(cause);
+    public SdkCallerException(String s) {
+        super(s);
     }
 }
