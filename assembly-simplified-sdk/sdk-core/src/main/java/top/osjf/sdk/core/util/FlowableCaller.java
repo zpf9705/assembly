@@ -46,7 +46,7 @@ import java.util.logging.Logger;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-public class FlowableCaller<R extends Response> implements Runnable {
+public class FlowableCaller<R extends Response> implements Runnable, Disposable {
 
     protected final Logger LOGGER = Logger.getLogger(getClass().getName());
 
@@ -193,14 +193,20 @@ public class FlowableCaller<R extends Response> implements Runnable {
      * This is to ensure that resources can be released correctly even in the event of
      * an exception, avoiding resource leakage.
      */
+    @Override
     public void dispose() {
 
-        if (!disposable.isDisposed()) {
+        if (!isDisposed()) {
             disposable.dispose();
             LOGGER.log(Level.INFO, "Resource release completed");
         } else {
             LOGGER.log(Level.INFO, "The resource has been automatically released");
         }
+    }
+
+    @Override
+    public boolean isDisposed() {
+        return disposable.isDisposed();
     }
 
     /**
@@ -233,6 +239,7 @@ public class FlowableCaller<R extends Response> implements Runnable {
 
     /**
      * A static method for creating a new auxiliary construct for {@link FlowableCaller}.
+     *
      * @param <R> Generic R represents the type returned by an operation, which must
      *            inherit from the {@link Response} class.
      * @return a new auxiliary construct.
@@ -513,6 +520,7 @@ public class FlowableCaller<R extends Response> implements Runnable {
 
         /**
          * Perform final processing based on parameter {@link #whenResponseNonSuccessFinalThrow}.
+         *
          * @param response Sdk response.
          */
         void finalResolve(R response) {
