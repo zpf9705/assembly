@@ -51,33 +51,33 @@ public class FlowableCaller<R extends Response> implements Runnable {
     protected final Logger LOGGER = Logger.getLogger(getClass().getName());
 
     /*** The provider of the running entity, the subject used to generate or execute tasks. */
-    private final Supplier<R> runBody;
+    protected final Supplier<R> runBody;
 
     /*** The maximum number of retries to attempt to re execute a task after it has failed. */
-    private int retryTimes;
+    protected int retryTimes;
 
     /*** The flag indicating whether to retry when the response is unsuccessful. If true, attempt
      *  to retry when the response does not meet the success criteria. */
-    private final boolean whenResponseNonSuccessRetry;
+    protected final boolean whenResponseNonSuccessRetry;
 
     /*** Do we need to throw an exception boolean symbol when the latest response result is
      * unsuccessful.*/
-    private final boolean whenResponseNonSuccessFinalThrow;
+    protected final boolean whenResponseNonSuccessFinalThrow;
 
     /*** Custom retry exception predicate used to determine which exception types should trigger
      * the retry mechanism. */
-    private final Predicate<? super Throwable> customRetryExceptionPredicate;
+    protected final Predicate<? super Throwable> customRetryExceptionPredicate;
 
     /*** Customized subscription for regular consumers, used to handle normal response results. */
-    private final Consumer<R> customSubscriptionRegularConsumer;
+    protected final Consumer<R> customSubscriptionRegularConsumer;
 
     /*** Custom subscription exception consumers, used to handle exceptions that occur during the
      * subscription process. */
-    private final Consumer<Throwable> customSubscriptionExceptionConsumer;
+    protected final Consumer<Throwable> customSubscriptionExceptionConsumer;
 
     /*** Flowable object, representing an observable data flow, can asynchronously emit zero or
      *  more data items. */
-    private Flowable<R> flowable;
+    protected Flowable<R> flowable;
 
     /*** The Disposable object represents the 'handle' of the subscription.*/
     private Disposable disposable;
@@ -125,30 +125,6 @@ public class FlowableCaller<R extends Response> implements Runnable {
         this.customSubscriptionRegularConsumer = customSubscriptionRegularConsumer;
         this.customSubscriptionExceptionConsumer = customSubscriptionExceptionConsumer;
         this.flowable = createFlowable();
-    }
-
-    /**
-     * Set an operation object representing a data stream.
-     *
-     * <p>This method returns an instance of type {@link Flowable},
-     * where<code>R</code>is the type of the element in the data stream.
-     *
-     * @param flowable an instance of {@link Flowable}.
-     */
-    protected void setFlowable(Flowable<R> flowable) {
-        this.flowable = flowable;
-    }
-
-    /**
-     * Get an operation object representing a data stream.
-     *
-     * <p>This method returns an instance of type {@link Flowable},
-     * where<code>R</code>is the type of the element in the data stream.
-     *
-     * @return Return an instance of {@link Flowable}.
-     */
-    protected Flowable<R> getFlowable() {
-        return flowable;
     }
 
     /*** The {@link BackpressureStrategy} backpressure selection system cache key value for {@link Flowable}.*/

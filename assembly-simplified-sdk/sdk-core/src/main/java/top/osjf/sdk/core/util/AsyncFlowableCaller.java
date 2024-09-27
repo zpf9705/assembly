@@ -127,8 +127,6 @@ public class AsyncFlowableCaller<R extends Response> extends FlowableCaller<R> {
      */
     protected void perfectFlowable() {
 
-        Flowable<R> flowable = getFlowable();
-
         if (customSubscriptionExecutor != null) {
 
             flowable = flowable.subscribeOn(Schedulers.from(customSubscriptionExecutor));
@@ -142,8 +140,6 @@ public class AsyncFlowableCaller<R extends Response> extends FlowableCaller<R> {
 
             disposeSync = false;
         }
-
-        setFlowable(flowable);
     }
 
     @Override
@@ -185,6 +181,70 @@ public class AsyncFlowableCaller<R extends Response> extends FlowableCaller<R> {
     @Override
     protected boolean disposeSync() {
         return disposeSync;
+    }
+
+    /**
+     * The Builder class is used to build instances of {@link AsyncFlowableCaller},
+     * which extends from {@link FlowableCaller.Builder} to support customization of
+     * asynchronous flow operations.
+     * Through this builder, users can set custom subscription executors and observation
+     * executors to control the execution and result processing of asynchronous operations.
+     *
+     * @param <R> Generic R represents the type returned by an operation, which must
+     *            inherit from the {@link Response} class.
+     */
+    public static class Builder<R extends Response> extends FlowableCaller.Builder<R> {
+
+        /*** {@link AsyncFlowableCaller#customSubscriptionExecutor}*/
+        private Executor customSubscriptionExecutor;
+
+        /*** {@link AsyncFlowableCaller#customObserveExecutor}*/
+        private Executor customObserveExecutor;
+
+        /**
+         * Set a {@link #customSubscriptionExecutor} for {@link Builder}.
+         *
+         * @param customSubscriptionExecutor {@link AsyncFlowableCaller#customSubscriptionExecutor}
+         * @return this.
+         */
+        public Builder<R> customSubscriptionExecutor(Executor customSubscriptionExecutor) {
+            this.customSubscriptionExecutor = customSubscriptionExecutor;
+            return this;
+        }
+
+        /**
+         * Set a {@link #customObserveExecutor} for {@link Builder}.
+         *
+         * @param customObserveExecutor {@link AsyncFlowableCaller#customObserveExecutor}
+         * @return this.
+         */
+        public Builder<R> customObserveExecutor(Executor customObserveExecutor) {
+            this.customObserveExecutor = customObserveExecutor;
+            return this;
+        }
+
+        @Override
+        public AsyncFlowableCaller<R> build() {
+            FlowableCaller<R> flowableCaller = super.build();
+            return new AsyncFlowableCaller<>
+                    (flowableCaller.runBody, flowableCaller.retryTimes, flowableCaller.whenResponseNonSuccessRetry,
+                            flowableCaller.whenResponseNonSuccessFinalThrow,
+                            flowableCaller.customRetryExceptionPredicate,
+                            flowableCaller.customSubscriptionRegularConsumer,
+                            flowableCaller.customSubscriptionExceptionConsumer,
+                            customSubscriptionExecutor, customObserveExecutor);
+        }
+    }
+
+    /**
+     * A static method for creating a new auxiliary construct for {@link AsyncFlowableCaller}.
+     *
+     * @param <R> Generic R represents the type returned by an operation, which must
+     *            inherit from the {@link Response} class.
+     * @return a new auxiliary construct.
+     */
+    public static <R extends Response> Builder<R> newBuilder() {
+        return new Builder<>();
     }
 
     /**
