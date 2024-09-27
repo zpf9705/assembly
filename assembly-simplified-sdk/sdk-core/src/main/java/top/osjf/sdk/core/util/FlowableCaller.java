@@ -241,7 +241,8 @@ public class FlowableCaller<R extends Response> implements Runnable {
 
     /**
      * A static method for creating a new auxiliary construct for {@link FlowableCaller}.
-     *
+     * @param <R> Generic R represents the type returned by an operation, which must
+     *            inherit from the {@link Response} class.
      * @return a new auxiliary construct.
      */
     public static <R extends Response> Builder<R> newBuilder() {
