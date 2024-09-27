@@ -201,6 +201,51 @@ public class AsyncFlowableCaller<R extends Response> extends FlowableCaller<R> {
         /*** {@link AsyncFlowableCaller#customObserveExecutor}*/
         private Executor customObserveExecutor;
 
+        @Override
+        public Builder<R> runBody(Supplier<R> runBody) {
+            super.runBody(runBody);
+            return this;
+        }
+
+        @Override
+        public Builder<R> retryTimes(int retryTimes) {
+            super.retryTimes(retryTimes);
+            return this;
+        }
+
+        @Override
+        public Builder<R> whenResponseNonSuccessRetry() {
+            super.whenResponseNonSuccessRetry();
+            return this;
+        }
+
+        @Override
+        public Builder<R> whenResponseNonSuccessFinalThrow() {
+            super.whenResponseNonSuccessFinalThrow();
+            return this;
+        }
+
+        @Override
+        public Builder<R> customRetryExceptionPredicate
+                (Predicate<? super Throwable> customRetryExceptionPredicate) {
+            super.customRetryExceptionPredicate(customRetryExceptionPredicate);
+            return this;
+        }
+
+        @Override
+        public Builder<R> customSubscriptionRegularConsumer
+                (Consumer<R> customSubscriptionRegularConsumer) {
+            super.customSubscriptionRegularConsumer(customSubscriptionRegularConsumer);
+            return this;
+        }
+
+        @Override
+        public Builder<R> customSubscriptionExceptionConsumer
+                (Consumer<Throwable> customSubscriptionExceptionConsumer) {
+            super.customSubscriptionExceptionConsumer(customSubscriptionExceptionConsumer);
+            return this;
+        }
+
         /**
          * Set a {@link #customSubscriptionExecutor} for {@link Builder}.
          *
