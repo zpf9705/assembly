@@ -188,6 +188,22 @@ public class FlowableCaller<R extends Response> implements Runnable {
     }
 
     /**
+     * Check if the disposable object has not been disposed of yet, and if so,
+     * proceed with the disposal operation.
+     * This is to ensure that resources can be released correctly even in the event of
+     * an exception, avoiding resource leakage.
+     */
+    public void dispose() {
+
+        if (!disposable.isDisposed()) {
+            disposable.dispose();
+            LOGGER.log(Level.INFO, "Resource release completed");
+        } else {
+            LOGGER.log(Level.INFO, "The resource has been automatically released");
+        }
+    }
+
+    /**
      * Return Boolean markers indicating whether to synchronize resource
      * release related operations.
      *
@@ -330,18 +346,6 @@ public class FlowableCaller<R extends Response> implements Runnable {
                 customSubscriptionRegularConsumer, customSubscriptionExceptionConsumer).run();
     }
 
-    /*** It happened after {@link Flowable#subscribe(io.reactivex.rxjava3.functions.Consumer,
-     *  io.reactivex.rxjava3.functions.Consumer)})} onNext.*/
-    protected class OnNext implements io.reactivex.rxjava3.functions.Consumer<R> {
-
-        @Override
-        public void accept(R r) {
-            if (customSubscriptionRegularConsumer != null) {
-                customSubscriptionRegularConsumer.accept(r);
-            }
-        }
-    }
-
     /* FlowableCaller help class */
 
     /**
@@ -460,6 +464,18 @@ public class FlowableCaller<R extends Response> implements Runnable {
     }
 
     /*** It happened after {@link Flowable#subscribe(io.reactivex.rxjava3.functions.Consumer,
+     *  io.reactivex.rxjava3.functions.Consumer)})} onNext.*/
+    protected class OnNext implements io.reactivex.rxjava3.functions.Consumer<R> {
+
+        @Override
+        public void accept(R r) {
+            if (customSubscriptionRegularConsumer != null) {
+                customSubscriptionRegularConsumer.accept(r);
+            }
+        }
+    }
+
+    /*** It happened after {@link Flowable#subscribe(io.reactivex.rxjava3.functions.Consumer,
      *  io.reactivex.rxjava3.functions.Consumer)})} onError.*/
     protected class OnError implements io.reactivex.rxjava3.functions.Consumer<Throwable> {
 
@@ -468,22 +484,6 @@ public class FlowableCaller<R extends Response> implements Runnable {
             if (customSubscriptionExceptionConsumer != null) {
                 customSubscriptionExceptionConsumer.accept(e);
             }
-        }
-    }
-
-    /**
-     * Check if the disposable object has not been disposed of yet, and if so,
-     * proceed with the disposal operation.
-     * This is to ensure that resources can be released correctly even in the event of
-     * an exception, avoiding resource leakage.
-     */
-    public void dispose() {
-
-        if (!disposable.isDisposed()) {
-            disposable.dispose();
-            LOGGER.log(Level.INFO, "Resource release completed");
-        } else {
-            LOGGER.log(Level.INFO, "The resource has been automatically released");
         }
     }
 
