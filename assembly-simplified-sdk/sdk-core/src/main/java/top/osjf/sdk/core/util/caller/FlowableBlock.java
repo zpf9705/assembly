@@ -39,4 +39,17 @@ public interface FlowableBlock<R extends Response> {
      * @return a {@link Response}.
      */
     R get();
+
+    /**
+     * Return the response result of subscription blocking transmission
+     * and convert it into the required type.
+     *
+     * @param requiredType the required type.
+     * @param <T>          The type of required response type.
+     * @return a required {@link Response}.
+     * @throws ClassCastException Pay attention to the conversion of result
+     *                            types, as this error will be thrown when the
+     *                            provided types are inconsistent.
+     */
+    <T> T get(Class<T> requiredType);
 }

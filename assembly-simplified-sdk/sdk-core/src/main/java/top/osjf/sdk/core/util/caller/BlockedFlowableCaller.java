@@ -53,6 +53,11 @@ public class BlockedFlowableCaller<R extends Response> extends AbstractFlowableC
         return getFlowable().blockingSingle();
     }
 
+    @Override
+    public <T> T get(Class<T> requiredType) {
+        return requiredType.cast(get());
+    }
+
     /**
      * A retrieve the response body static method for SDK calls using the API of {@code FlowableCaller}.
      *
