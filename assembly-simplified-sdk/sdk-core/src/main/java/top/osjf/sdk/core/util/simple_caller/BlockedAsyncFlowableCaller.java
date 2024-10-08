@@ -35,6 +35,9 @@ import java.util.function.Supplier;
  * Suitable for scenarios where asynchronous operations need to be performed in a specific thread context
  * , such as when network requests or database operations need to be processed in a specific thread pool
  *
+ * <p>When the subscription execution thread pool is not provided, it is called in the current main thread
+ * as {@link BlockedFlowableCaller}.
+ *
  * @param <R> The type of response result must be the Response class or its subclass.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
