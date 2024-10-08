@@ -29,6 +29,7 @@ import java.util.function.Consumer;
  * By implementing this interface, specific behaviors can be configured for stream processing
  * elements to execute corresponding logic when receiving normal responses or encountering exceptions.
  *
+ * @param <R> The type of response result must be the Response class or its subclass.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
