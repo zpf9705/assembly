@@ -26,6 +26,7 @@ import java.util.function.Supplier;
  * can receive the response content after the subscriber sends the response body
  * (provided that no final exception occurs).
  *
+ * @param <R> The type of response result must be the Response class or its subclass.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
