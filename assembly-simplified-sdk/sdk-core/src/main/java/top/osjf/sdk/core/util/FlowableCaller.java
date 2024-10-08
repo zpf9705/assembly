@@ -27,7 +27,6 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -46,34 +45,37 @@ import java.util.logging.Logger;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-public class FlowableCaller<R extends Response> implements Runnable, Disposable {
+public class FlowableCaller<R extends Response> implements Runnable, Supplier<R>, Disposable {
 
     protected final Logger LOGGER = Logger.getLogger(getClass().getName());
 
     /*** The provider of the running entity, the subject used to generate or execute tasks. */
-    protected final Supplier<R> runBody;
+    private final Supplier<R> runBody;
 
     /*** The maximum number of retries to attempt to re execute a task after it has failed. */
-    protected int retryTimes;
+    private int retryTimes;
+
+    /*** The value of the millisecond interval between retries.*/
+    private final long retryIntervalMilliseconds;
 
     /*** The flag indicating whether to retry when the response is unsuccessful. If true, attempt
      *  to retry when the response does not meet the success criteria. */
-    protected final boolean whenResponseNonSuccessRetry;
+    private final boolean whenResponseNonSuccessRetry;
 
     /*** Do we need to throw an exception boolean symbol when the latest response result is
      * unsuccessful.*/
-    protected final boolean whenResponseNonSuccessFinalThrow;
+    private final boolean whenResponseNonSuccessFinalThrow;
 
     /*** Custom retry exception predicate used to determine which exception types should trigger
      * the retry mechanism. */
-    protected final Predicate<? super Throwable> customRetryExceptionPredicate;
+    private final Predicate<? super Throwable> customRetryExceptionPredicate;
 
     /*** Customized subscription for regular consumers, used to handle normal response results. */
-    protected final Consumer<R> customSubscriptionRegularConsumer;
+    private final Consumer<R> customSubscriptionRegularConsumer;
 
     /*** Custom subscription exception consumers, used to handle exceptions that occur during the
      * subscription process. */
-    protected final Consumer<Throwable> customSubscriptionExceptionConsumer;
+    private final Consumer<Throwable> customSubscriptionExceptionConsumer;
 
     /*** Flowable object, representing an observable data flow, can asynchronously emit zero or
      *  more data items. */
@@ -95,6 +97,7 @@ public class FlowableCaller<R extends Response> implements Runnable, Disposable 
      *                                            subscribed to,and returns the operation result.
      * @param retryTimes                          The number of retries upon failure, 0 indicates no automatic
      *                                            retries,negative values will be treated as 1 retry.
+     * @param retryIntervalMilliseconds           The interval in milliseconds between retries.
      * @param whenResponseNonSuccessRetry         Do we need to retry when the response to the request is unsuccessful
      *                                            {@code Response#isSuccess() == false}.
      * @param whenResponseNonSuccessFinalThrow    Deciding a Boolean marker when the response is ultimately
@@ -110,6 +113,7 @@ public class FlowableCaller<R extends Response> implements Runnable, Disposable 
      */
     public FlowableCaller(Supplier<R> runBody,
                           int retryTimes,
+                          long retryIntervalMilliseconds,
                           boolean whenResponseNonSuccessRetry,
                           boolean whenResponseNonSuccessFinalThrow,
                           Predicate<? super Throwable> customRetryExceptionPredicate,
@@ -119,6 +123,11 @@ public class FlowableCaller<R extends Response> implements Runnable, Disposable 
         Objects.requireNonNull(runBody, "sdk runBody");
         this.runBody = runBody;
         this.retryTimes = Math.max(retryTimes, 0);
+        this.retryIntervalMilliseconds = Math.max(retryIntervalMilliseconds, 0);
+        if (this.retryTimes == 0 && this.retryIntervalMilliseconds > 0) {
+            LOGGER.warning
+                    ("When there is no retry, providing the retry interval parameter will be meaningless.");
+        }
         this.whenResponseNonSuccessRetry = whenResponseNonSuccessRetry;
         this.whenResponseNonSuccessFinalThrow = whenResponseNonSuccessFinalThrow;
         this.customRetryExceptionPredicate = customRetryExceptionPredicate;
@@ -181,10 +190,47 @@ public class FlowableCaller<R extends Response> implements Runnable, Disposable 
         });
     }
 
+    public Supplier<R> getRunBody() {
+        return runBody;
+    }
+
+    public int getRetryTimes() {
+        return retryTimes;
+    }
+
+    public long getRetryIntervalMilliseconds() {
+        return retryIntervalMilliseconds;
+    }
+
+    public boolean isWhenResponseNonSuccessRetry() {
+        return whenResponseNonSuccessRetry;
+    }
+
+    public boolean isWhenResponseNonSuccessFinalThrow() {
+        return whenResponseNonSuccessFinalThrow;
+    }
+
+    public Predicate<? super Throwable> getCustomRetryExceptionPredicate() {
+        return customRetryExceptionPredicate;
+    }
+
+    public Consumer<R> getCustomSubscriptionRegularConsumer() {
+        return customSubscriptionRegularConsumer;
+    }
+
+    public Consumer<Throwable> getCustomSubscriptionExceptionConsumer() {
+        return customSubscriptionExceptionConsumer;
+    }
+
     @Override
     public void run() {
         this.disposable = flowable.subscribe(getOnNext(), getOnError());
         if (disposeSync()) dispose();
+    }
+
+    @Override
+    public R get() {
+        return flowable.blockingSingle();
     }
 
     /**
@@ -198,9 +244,9 @@ public class FlowableCaller<R extends Response> implements Runnable, Disposable 
 
         if (!isDisposed()) {
             disposable.dispose();
-            LOGGER.log(Level.INFO, "Resource release completed");
+            LOGGER.info("Resource release completed");
         } else {
-            LOGGER.log(Level.INFO, "The resource has been automatically released");
+            LOGGER.info("The resource has been automatically released");
         }
     }
 
@@ -253,17 +299,6 @@ public class FlowableCaller<R extends Response> implements Runnable, Disposable 
     /**
      * A static method for SDK calls using the API of {@code FlowableCaller}.
      *
-     * @param runBody {@link #runBody}.
-     * @param <R>     Generic R represents the type returned by an operation, which must
-     *                inherit from the {@link Response} class.
-     */
-    public static <R extends Response> void call(Supplier<R> runBody) {
-        call(runBody, 0);
-    }
-
-    /**
-     * A static method for SDK calls using the API of {@code FlowableCaller}.
-     *
      * @param runBody    {@link #runBody}.
      * @param retryTimes {@link #retryTimes}.
      * @param <R>        Generic R represents the type returned by an operation, which must
@@ -271,7 +306,22 @@ public class FlowableCaller<R extends Response> implements Runnable, Disposable 
      */
     public static <R extends Response> void call(Supplier<R> runBody,
                                                  int retryTimes) {
-        call(runBody, retryTimes, false);
+        call(runBody, retryTimes, 0);
+    }
+
+    /**
+     * A static method for SDK calls using the API of {@code FlowableCaller}.
+     *
+     * @param runBody                   {@link #runBody}.
+     * @param retryTimes                {@link #retryTimes}.
+     * @param retryIntervalMilliseconds {@link #retryIntervalMilliseconds}.
+     * @param <R>                       Generic R represents the type returned by an operation, which must
+     *                                  inherit from the {@link Response} class.
+     */
+    public static <R extends Response> void call(Supplier<R> runBody,
+                                                 int retryTimes,
+                                                 long retryIntervalMilliseconds) {
+        call(runBody, retryTimes, retryIntervalMilliseconds, false);
     }
 
     /**
@@ -279,14 +329,17 @@ public class FlowableCaller<R extends Response> implements Runnable, Disposable 
      *
      * @param runBody                     {@link #runBody}.
      * @param retryTimes                  {@link #retryTimes}.
+     * @param retryIntervalMilliseconds   {@link #retryIntervalMilliseconds}.
      * @param whenResponseNonSuccessRetry {@link #whenResponseNonSuccessRetry}.
      * @param <R>                         Generic R represents the type returned by an operation, which must
      *                                    inherit from the {@link Response} class.
      */
     public static <R extends Response> void call(Supplier<R> runBody,
                                                  int retryTimes,
+                                                 long retryIntervalMilliseconds,
                                                  boolean whenResponseNonSuccessRetry) {
-        call(runBody, retryTimes, whenResponseNonSuccessRetry, false);
+        call(runBody, retryTimes, retryIntervalMilliseconds,
+                whenResponseNonSuccessRetry, false);
     }
 
     /**
@@ -294,6 +347,7 @@ public class FlowableCaller<R extends Response> implements Runnable, Disposable 
      *
      * @param runBody                          {@link #runBody}.
      * @param retryTimes                       {@link #retryTimes}.
+     * @param retryIntervalMilliseconds        {@link #retryIntervalMilliseconds}.
      * @param whenResponseNonSuccessRetry      {@link #whenResponseNonSuccessRetry}.
      * @param whenResponseNonSuccessFinalThrow {@link #whenResponseNonSuccessFinalThrow}.
      * @param <R>                              Generic R represents the type returned by an operation, which must
@@ -301,10 +355,11 @@ public class FlowableCaller<R extends Response> implements Runnable, Disposable 
      */
     public static <R extends Response> void call(Supplier<R> runBody,
                                                  int retryTimes,
+                                                 long retryIntervalMilliseconds,
                                                  boolean whenResponseNonSuccessRetry,
                                                  boolean whenResponseNonSuccessFinalThrow) {
-        call(runBody, retryTimes, whenResponseNonSuccessRetry, whenResponseNonSuccessFinalThrow,
-                null);
+        call(runBody, retryTimes, retryIntervalMilliseconds,
+                whenResponseNonSuccessRetry, whenResponseNonSuccessFinalThrow, null);
     }
 
     /**
@@ -312,6 +367,7 @@ public class FlowableCaller<R extends Response> implements Runnable, Disposable 
      *
      * @param runBody                          {@link #runBody}.
      * @param retryTimes                       {@link #retryTimes}.
+     * @param retryIntervalMilliseconds        {@link #retryIntervalMilliseconds}.
      * @param whenResponseNonSuccessRetry      {@link #whenResponseNonSuccessRetry}.
      * @param whenResponseNonSuccessFinalThrow {@link #whenResponseNonSuccessFinalThrow}.
      * @param customRetryExceptionPredicate    {@link #customRetryExceptionPredicate}.
@@ -320,12 +376,13 @@ public class FlowableCaller<R extends Response> implements Runnable, Disposable 
      */
     public static <R extends Response> void call(Supplier<R> runBody,
                                                  int retryTimes,
+                                                 long retryIntervalMilliseconds,
                                                  boolean whenResponseNonSuccessRetry,
                                                  boolean whenResponseNonSuccessFinalThrow,
                                                  Predicate<? super Throwable> customRetryExceptionPredicate) {
-        call(runBody, retryTimes, whenResponseNonSuccessRetry, whenResponseNonSuccessFinalThrow,
-                customRetryExceptionPredicate, null,
-                null);
+        call(runBody, retryTimes, retryIntervalMilliseconds,
+                whenResponseNonSuccessRetry, whenResponseNonSuccessFinalThrow,
+                customRetryExceptionPredicate, null, null);
     }
 
     /**
@@ -333,6 +390,7 @@ public class FlowableCaller<R extends Response> implements Runnable, Disposable 
      *
      * @param runBody                             {@link #runBody}.
      * @param retryTimes                          {@link #retryTimes}.
+     * @param retryIntervalMilliseconds           {@link #retryIntervalMilliseconds}
      * @param whenResponseNonSuccessRetry         {@link #whenResponseNonSuccessRetry}.
      * @param whenResponseNonSuccessFinalThrow    {@link #whenResponseNonSuccessFinalThrow}.
      * @param customRetryExceptionPredicate       {@link #customRetryExceptionPredicate}.
@@ -343,12 +401,13 @@ public class FlowableCaller<R extends Response> implements Runnable, Disposable 
      */
     public static <R extends Response> void call(Supplier<R> runBody,
                                                  int retryTimes,
+                                                 long retryIntervalMilliseconds,
                                                  boolean whenResponseNonSuccessRetry,
                                                  boolean whenResponseNonSuccessFinalThrow,
                                                  Predicate<? super Throwable> customRetryExceptionPredicate,
                                                  Consumer<R> customSubscriptionRegularConsumer,
                                                  Consumer<Throwable> customSubscriptionExceptionConsumer) {
-        new FlowableCaller<>(runBody, retryTimes,
+        new FlowableCaller<>(runBody, retryTimes, retryIntervalMilliseconds,
                 whenResponseNonSuccessRetry, whenResponseNonSuccessFinalThrow, customRetryExceptionPredicate,
                 customSubscriptionRegularConsumer, customSubscriptionExceptionConsumer).run();
     }
@@ -371,6 +430,8 @@ public class FlowableCaller<R extends Response> implements Runnable, Disposable 
         private Supplier<R> runBody;
         /*** {@link FlowableCaller#retryTimes}*/
         private int retryTimes;
+        /*** {@link FlowableCaller#retryIntervalMilliseconds}*/
+        private long retryIntervalMilliseconds;
         /*** {@link FlowableCaller#whenResponseNonSuccessRetry}*/
         private boolean whenResponseNonSuccessRetry;
         /*** {@link FlowableCaller#whenResponseNonSuccessFinalThrow}*/
@@ -401,6 +462,17 @@ public class FlowableCaller<R extends Response> implements Runnable, Disposable 
          */
         public Builder<R> retryTimes(int retryTimes) {
             this.retryTimes = retryTimes;
+            return this;
+        }
+
+        /**
+         * Set a {@link #retryIntervalMilliseconds} for {@link Builder}.
+         *
+         * @param retryIntervalMilliseconds {@link FlowableCaller#retryIntervalMilliseconds}
+         * @return this.
+         */
+        public Builder<R> retryIntervalMilliseconds(long retryIntervalMilliseconds) {
+            this.retryIntervalMilliseconds = retryIntervalMilliseconds;
             return this;
         }
 
@@ -464,7 +536,8 @@ public class FlowableCaller<R extends Response> implements Runnable, Disposable 
          */
         public FlowableCaller<R> build() {
             return new FlowableCaller<>
-                    (runBody, retryTimes, whenResponseNonSuccessRetry, whenResponseNonSuccessFinalThrow,
+                    (runBody, retryTimes, retryIntervalMilliseconds, whenResponseNonSuccessRetry,
+                            whenResponseNonSuccessFinalThrow,
                             customRetryExceptionPredicate, customSubscriptionRegularConsumer,
                             customSubscriptionExceptionConsumer);
         }
@@ -506,8 +579,16 @@ public class FlowableCaller<R extends Response> implements Runnable, Disposable 
                 if (whenResponseNonSuccessRetry) {
                     if (retryTimes > 0) {
                         retryTimes--;
-                        //Is throwing an exception here for exception retry.
-                        throw new SdkResponseNonSuccessException();
+                        if (retryIntervalMilliseconds > 0) {
+                            try {
+                                Thread.sleep(retryIntervalMilliseconds);
+                            } catch (InterruptedException ignored) {
+                                //When the thread sleep is interrupted, a retry is triggered directly.
+                            }
+                            triggerNonSuccessRetry();
+                        } else {
+                            triggerNonSuccessRetry();
+                        }
                     } else {
                         finalResolve(response);
                     }
@@ -516,6 +597,12 @@ public class FlowableCaller<R extends Response> implements Runnable, Disposable 
                 }
             }
             return response;
+        }
+
+        /*** Triggering an unsuccessful interrupt exception.*/
+        void triggerNonSuccessRetry() {
+            //Is throwing an exception here for exception retry.
+            throw new SdkResponseNonSuccessException();
         }
 
         /**
