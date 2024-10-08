@@ -70,18 +70,26 @@ public class FlowableCaller<R extends Response> implements Supplier<R>, Disposab
      * the retry mechanism. */
     private final Predicate<? super Throwable> customRetryExceptionPredicate;
 
-    /*** Customized subscription for regular consumers, used to handle normal response results. */
+    /*** Customized subscription for regular consumers, used to handle normal response results.
+     * <p>When it is necessary to block the acquisition of messages sent by subscribers, the setting
+     * of this value will no longer have reference significance.</p>
+     * */
     private final Consumer<R> customSubscriptionRegularConsumer;
 
     /*** Custom subscription exception consumers, used to handle exceptions that occur during the
-     * subscription process. */
+     * subscription process.
+     * <p>When it is necessary to block the acquisition of messages sent by subscribers, the setting
+     * of this value will no longer have reference significance.</p>
+     * */
     private final Consumer<Throwable> customSubscriptionExceptionConsumer;
 
     /*** Flowable object, representing an observable data flow, can asynchronously emit zero or
      *  more data items. */
     protected Flowable<R> flowable;
 
-    /*** The Disposable object represents the 'handle' of the subscription.*/
+    /*** The Disposable object represents the 'handle' of the subscription.
+     * <p>It only exists after a subscription relationship has occurred.</p>
+     * */
     private Disposable disposable;
 
     /*** The default response unsuccessful retry predicate is used to determine whether an exception

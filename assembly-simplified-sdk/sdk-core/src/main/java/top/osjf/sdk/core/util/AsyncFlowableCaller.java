@@ -54,6 +54,9 @@ public class AsyncFlowableCaller<R extends Response> extends FlowableCaller<R> {
      * operations (e.g., responding to events, handling callbacks, etc.).
      *
      * <p>If it is empty, to observe will be executed in the main thread.
+     *
+     * <p>When it is necessary to block the acquisition of messages sent by subscribers, the setting
+     * of this value will no longer have reference significance.</p>
      */
     private final Executor customObserveExecutor;
 
