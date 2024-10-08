@@ -45,7 +45,7 @@ import java.util.logging.Logger;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-public class FlowableCaller<R extends Response> implements Runnable, Supplier<R>, Disposable {
+public class FlowableCaller<R extends Response> implements Supplier<R>, DisposableRunnable {
 
     protected final Logger LOGGER = Logger.getLogger(getClass().getName());
 
@@ -290,8 +290,8 @@ public class FlowableCaller<R extends Response> implements Runnable, Supplier<R>
      *            inherit from the {@link Response} class.
      * @return a new auxiliary construct.
      */
-    public static <R extends Response> Builder<R> newBuilder() {
-        return new Builder<>();
+    public static <R extends Response> FlowableCallerBuilder<R> newBuilder() {
+        return new FlowableCallerBuilder<>();
     }
 
     /* FlowableCaller void static method */
@@ -412,136 +412,99 @@ public class FlowableCaller<R extends Response> implements Runnable, Supplier<R>
                 customSubscriptionRegularConsumer, customSubscriptionExceptionConsumer).run();
     }
 
-    /* FlowableCaller help class */
+    /* FlowableCaller returned static method */
 
     /**
-     * The Builder class is used to build {@link FlowableCaller} instances.
-     * Set various configuration parameters through chain calls, including execution body,
-     * retry count, retry behavior in case of response failure, whether to ultimately throw
-     * an exception in case of response failure Customize retry exception judgment logic,
-     * as well as normal and abnormal subscription consumption logic.
+     * A retrieve the response body static method for SDK calls using the API of {@code FlowableCaller}.
      *
-     * @param <R> Generic R represents the type returned by an operation, which must
-     *            inherit from the {@link Response} class.
+     * @param runBody    {@link #runBody}.
+     * @param retryTimes {@link #retryTimes}.
+     * @param <R>        Generic R represents the type returned by an operation, which must
+     *                   inherit from the {@link Response} class.
      */
-    public static class Builder<R extends Response> {
-
-        /*** {@link FlowableCaller#runBody}*/
-        private Supplier<R> runBody;
-        /*** {@link FlowableCaller#retryTimes}*/
-        private int retryTimes;
-        /*** {@link FlowableCaller#retryIntervalMilliseconds}*/
-        private long retryIntervalMilliseconds;
-        /*** {@link FlowableCaller#whenResponseNonSuccessRetry}*/
-        private boolean whenResponseNonSuccessRetry;
-        /*** {@link FlowableCaller#whenResponseNonSuccessFinalThrow}*/
-        private boolean whenResponseNonSuccessFinalThrow;
-        /*** {@link FlowableCaller#customRetryExceptionPredicate}*/
-        private Predicate<? super Throwable> customRetryExceptionPredicate;
-        /*** {@link FlowableCaller#customSubscriptionRegularConsumer}*/
-        private Consumer<R> customSubscriptionRegularConsumer;
-        /*** {@link FlowableCaller#customSubscriptionExceptionConsumer}*/
-        private Consumer<Throwable> customSubscriptionExceptionConsumer;
-
-        /**
-         * Set a {@link #runBody} for {@link Builder}.
-         *
-         * @param runBody {@link FlowableCaller#runBody}
-         * @return this.
-         */
-        public Builder<R> runBody(Supplier<R> runBody) {
-            this.runBody = runBody;
-            return this;
-        }
-
-        /**
-         * Set a {@link #retryTimes} for {@link Builder}.
-         *
-         * @param retryTimes {@link FlowableCaller#retryTimes}
-         * @return this.
-         */
-        public Builder<R> retryTimes(int retryTimes) {
-            this.retryTimes = retryTimes;
-            return this;
-        }
-
-        /**
-         * Set a {@link #retryIntervalMilliseconds} for {@link Builder}.
-         *
-         * @param retryIntervalMilliseconds {@link FlowableCaller#retryIntervalMilliseconds}
-         * @return this.
-         */
-        public Builder<R> retryIntervalMilliseconds(long retryIntervalMilliseconds) {
-            this.retryIntervalMilliseconds = retryIntervalMilliseconds;
-            return this;
-        }
-
-        /**
-         * Set {@code true} value to {@code whenResponseNonSuccessRetry} for {@link Builder}.
-         *
-         * @return this.
-         */
-        public Builder<R> whenResponseNonSuccessRetry() {
-            this.whenResponseNonSuccessRetry = true;
-            return this;
-        }
-
-        /**
-         * Set {@code true} value to {@code whenResponseNonSuccessFinalThrow} for {@link Builder}.
-         *
-         * @return this.
-         */
-        public Builder<R> whenResponseNonSuccessFinalThrow() {
-            this.whenResponseNonSuccessFinalThrow = true;
-            return this;
-        }
-
-        /**
-         * Set a {@link #customRetryExceptionPredicate} for {@link Builder}.
-         *
-         * @param customRetryExceptionPredicate {@link FlowableCaller#customRetryExceptionPredicate}
-         * @return this.
-         */
-        public Builder<R> customRetryExceptionPredicate(Predicate<? super Throwable> customRetryExceptionPredicate) {
-            this.customRetryExceptionPredicate = customRetryExceptionPredicate;
-            return this;
-        }
-
-        /**
-         * Set a {@link #customSubscriptionRegularConsumer} for {@link Builder}.
-         *
-         * @param customSubscriptionRegularConsumer {@link FlowableCaller#customSubscriptionRegularConsumer}
-         * @return this.
-         */
-        public Builder<R> customSubscriptionRegularConsumer(Consumer<R> customSubscriptionRegularConsumer) {
-            this.customSubscriptionRegularConsumer = customSubscriptionRegularConsumer;
-            return this;
-        }
-
-        /**
-         * Set a {@link #customSubscriptionExceptionConsumer} for {@link Builder}.
-         *
-         * @param customSubscriptionExceptionConsumer {@link FlowableCaller#customSubscriptionRegularConsumer}
-         * @return this.
-         */
-        public Builder<R> customSubscriptionExceptionConsumer(Consumer<Throwable> customSubscriptionExceptionConsumer) {
-            this.customSubscriptionExceptionConsumer = customSubscriptionExceptionConsumer;
-            return this;
-        }
-
-        /**
-         * Build and return a {@link FlowableCaller} instance based on the current configuration.
-         *
-         * @return {@link FlowableCaller}.
-         */
-        public FlowableCaller<R> build() {
-            return new FlowableCaller<>
-                    (runBody, retryTimes, retryIntervalMilliseconds, whenResponseNonSuccessRetry,
-                            whenResponseNonSuccessFinalThrow,
-                            customRetryExceptionPredicate, customSubscriptionRegularConsumer,
-                            customSubscriptionExceptionConsumer);
-        }
+    public static <R extends Response> R get(Supplier<R> runBody,
+                                             int retryTimes) {
+        return get(runBody, retryTimes, 0);
     }
+
+    /**
+     * A retrieve the response body static method for SDK calls using the API of {@code FlowableCaller}.
+     *
+     * @param runBody                   {@link #runBody}.
+     * @param retryTimes                {@link #retryTimes}.
+     * @param retryIntervalMilliseconds {@link #retryIntervalMilliseconds}.
+     * @param <R>                       Generic R represents the type returned by an operation, which must
+     *                                  inherit from the {@link Response} class.
+     */
+    public static <R extends Response> R get(Supplier<R> runBody,
+                                             int retryTimes,
+                                             long retryIntervalMilliseconds) {
+        return get(runBody, retryTimes, retryIntervalMilliseconds, false);
+    }
+
+    /**
+     * A retrieve the response body static method for SDK calls using the API of {@code FlowableCaller}.
+     *
+     * @param runBody                     {@link #runBody}.
+     * @param retryTimes                  {@link #retryTimes}.
+     * @param retryIntervalMilliseconds   {@link #retryIntervalMilliseconds}.
+     * @param whenResponseNonSuccessRetry {@link #whenResponseNonSuccessRetry}.
+     * @param <R>                         Generic R represents the type returned by an operation, which must
+     *                                    inherit from the {@link Response} class.
+     */
+    public static <R extends Response> R get(Supplier<R> runBody,
+                                             int retryTimes,
+                                             long retryIntervalMilliseconds,
+                                             boolean whenResponseNonSuccessRetry) {
+        return get(runBody, retryTimes, retryIntervalMilliseconds,
+                whenResponseNonSuccessRetry, false);
+    }
+
+    /**
+     * A retrieve the response body static method for SDK calls using the API of {@code FlowableCaller}.
+     *
+     * @param runBody                          {@link #runBody}.
+     * @param retryTimes                       {@link #retryTimes}.
+     * @param retryIntervalMilliseconds        {@link #retryIntervalMilliseconds}.
+     * @param whenResponseNonSuccessRetry      {@link #whenResponseNonSuccessRetry}.
+     * @param whenResponseNonSuccessFinalThrow {@link #whenResponseNonSuccessFinalThrow}.
+     * @param <R>                              Generic R represents the type returned by an operation, which must
+     *                                         inherit from the {@link Response} class.
+     */
+    public static <R extends Response> R get(Supplier<R> runBody,
+                                             int retryTimes,
+                                             long retryIntervalMilliseconds,
+                                             boolean whenResponseNonSuccessRetry,
+                                             boolean whenResponseNonSuccessFinalThrow) {
+        return get(runBody, retryTimes, retryIntervalMilliseconds,
+                whenResponseNonSuccessRetry, whenResponseNonSuccessFinalThrow, null);
+    }
+
+    /**
+     * A retrieve the response body static method for SDK calls using the API of {@code FlowableCaller}.
+     *
+     * @param runBody                          {@link #runBody}.
+     * @param retryTimes                       {@link #retryTimes}.
+     * @param retryIntervalMilliseconds        {@link #retryIntervalMilliseconds}
+     * @param whenResponseNonSuccessRetry      {@link #whenResponseNonSuccessRetry}.
+     * @param whenResponseNonSuccessFinalThrow {@link #whenResponseNonSuccessFinalThrow}.
+     * @param customRetryExceptionPredicate    {@link #customRetryExceptionPredicate}.
+     * @param <R>                              Generic R represents the type returned by an operation, which must
+     *                                         inherit from the {@link Response} class.
+     */
+    public static <R extends Response> R get(Supplier<R> runBody,
+                                             int retryTimes,
+                                             long retryIntervalMilliseconds,
+                                             boolean whenResponseNonSuccessRetry,
+                                             boolean whenResponseNonSuccessFinalThrow,
+                                             Predicate<? super Throwable> customRetryExceptionPredicate) {
+        return new FlowableCaller<>(runBody, retryTimes, retryIntervalMilliseconds,
+                whenResponseNonSuccessRetry, whenResponseNonSuccessFinalThrow, customRetryExceptionPredicate,
+                null, null).get();
+    }
+
+
+    /* FlowableCaller help class */
 
     /*** It happened after {@link Flowable#subscribe(io.reactivex.rxjava3.functions.Consumer,
      *  io.reactivex.rxjava3.functions.Consumer)})} onNext.*/
