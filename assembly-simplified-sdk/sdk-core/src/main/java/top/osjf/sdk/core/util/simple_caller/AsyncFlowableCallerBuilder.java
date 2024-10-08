@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.core.util;
+package top.osjf.sdk.core.util.simple_caller;
 
 import top.osjf.sdk.core.process.Response;
 
@@ -24,9 +24,9 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
- * The Builder class is used to build instances of {@link AsyncFlowableCaller},
- * which extends from {@link FlowableCallerBuilder} to support customization of
- * asynchronous flow operations.
+ * The Builder class is used to build instances of {@link AsyncFlowableCaller}
+ * or {@link BlockedAsyncFlowableCaller}, which extends from {@link FlowableCallerBuilder}
+ * to support customization of asynchronous flow operations.
  * Through this builder, users can set custom subscription executors and observation
  * executors to control the execution and result processing of asynchronous operations.
  *
@@ -128,5 +128,21 @@ public class AsyncFlowableCallerBuilder<R extends Response> extends FlowableCall
                         flowableCaller.getCustomSubscriptionRegularConsumer(),
                         flowableCaller.getCustomSubscriptionExceptionConsumer(),
                         customSubscriptionExecutor, customObserveExecutor);
+    }
+
+    /**
+     * Build and return a {@link BlockedAsyncFlowableCaller} instance based on the current configuration.
+     *
+     * @return {@link BlockedAsyncFlowableCaller}.
+     */
+    public BlockedAsyncFlowableCaller<R> buildBlock() {
+        FlowableCaller<R> flowableCaller = super.build();
+        return new BlockedAsyncFlowableCaller<>
+                (flowableCaller.getRunBody(), flowableCaller.getRetryTimes(),
+                        flowableCaller.getRetryIntervalMilliseconds(),
+                        flowableCaller.isWhenResponseNonSuccessRetry(),
+                        flowableCaller.isWhenResponseNonSuccessFinalThrow(),
+                        flowableCaller.getCustomRetryExceptionPredicate(),
+                        customSubscriptionExecutor);
     }
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.core.util;
+package top.osjf.sdk.core.util.simple_caller;
 
 import top.osjf.sdk.core.process.Response;
 
@@ -23,8 +23,8 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
- * The Builder class is used to build {@link FlowableCaller} instances.
- * Set various configuration parameters through chain calls, including execution body,
+ * The Builder class is used to build {@link FlowableCaller} or {@link BlockedFlowableCaller}
+ * instances.Set various configuration parameters through chain calls, including execution body,
  * retry count, retry behavior in case of response failure, whether to ultimately throw
  * an exception in case of response failure Customize retry exception judgment logic,
  * as well as normal and abnormal subscription consumption logic.
@@ -151,5 +151,17 @@ public class FlowableCallerBuilder<R extends Response> {
                         whenResponseNonSuccessFinalThrow,
                         customRetryExceptionPredicate, customSubscriptionRegularConsumer,
                         customSubscriptionExceptionConsumer);
+    }
+
+    /**
+     * Build and return a {@link BlockedFlowableCaller} instance based on the current configuration.
+     *
+     * @return {@link BlockedFlowableCaller}.
+     */
+    public BlockedFlowableCaller<R> buildBlock() {
+        return new BlockedFlowableCaller<>
+                (runBody, retryTimes, retryIntervalMilliseconds, whenResponseNonSuccessRetry,
+                        whenResponseNonSuccessFinalThrow,
+                        customRetryExceptionPredicate);
     }
 }
