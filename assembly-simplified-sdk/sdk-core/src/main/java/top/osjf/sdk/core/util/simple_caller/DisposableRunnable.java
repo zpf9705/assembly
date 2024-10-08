@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.core.util;
+package top.osjf.sdk.core.util.simple_caller;
 
 import io.reactivex.rxjava3.disposables.Disposable;
 
