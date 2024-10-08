@@ -236,6 +236,12 @@ public class FlowableCaller<R extends Response> implements Supplier<R>, Disposab
         if (disposeSync()) dispose();
     }
 
+    /**
+     * This method will block until the response message sent by the subscriber is received.
+     * When there is only one response message, it will be successfully obtained.
+     * If there are multiple or zero response messages, it will violate the specifications of RXJava3.
+     * @return The response body sent by the subscriber thread.
+     */
     @Override
     public R get() {
         return flowable.blockingSingle();
