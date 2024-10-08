@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.core.util;
+package top.osjf.sdk.core.util.simple_caller;
 
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -37,27 +37,13 @@ import java.util.function.Supplier;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-public class AsyncFlowableCaller<R extends Response> extends FlowableCaller<R> {
+public class AsyncFlowableCaller<R extends Response>
+        extends FlowableCaller<R> implements ResponseAsyncFlowableCallerElement<R> {
 
-    /**
-     * A custom subscription executor that handles asynchronous tasks related to subscriptions.
-     * It allows users to customize the execution thread or thread pool for subscription
-     * operations (e.g., subscribing to messages, events, etc.).
-     *
-     * <p>If it is empty, the subscription will be executed in the main thread.
-     */
+    /*** {@link ResponseAsyncFlowableCallerElement#getCustomSubscriptionExecutor()}*/
     private final Executor customSubscriptionExecutor;
 
-    /**
-     * A custom observe executor that handles asynchronous tasks related to observation or responses.
-     * It allows users to customize the execution thread or thread pool for observation
-     * operations (e.g., responding to events, handling callbacks, etc.).
-     *
-     * <p>If it is empty, to observe will be executed in the main thread.
-     *
-     * <p>When it is necessary to block the acquisition of messages sent by subscribers, the setting
-     * of this value will no longer have reference significance.</p>
-     */
+    /*** {@link ResponseAsyncFlowableCallerElement#getCustomObserveExecutor()} ()}*/
     private final Executor customObserveExecutor;
 
     /**
@@ -69,31 +55,7 @@ public class AsyncFlowableCaller<R extends Response> extends FlowableCaller<R> {
      */
     private boolean disposeSync = true;
 
-    /**
-     * Construct a {@code AsyncFlowableCaller} instance.
-     *
-     * @param runBody                             {@code FlowableCaller#runBody}.
-     * @param retryTimes                          {@code FlowableCaller#retryTimes}.
-     * @param retryIntervalMilliseconds           {@code FlowableCaller#retryIntervalMilliseconds}.
-     * @param whenResponseNonSuccessRetry         {@code FlowableCaller#whenResponseNonSuccessRetry}.
-     * @param whenResponseNonSuccessFinalThrow    {@code FlowableCaller#whenResponseNonSuccessFinalThrow}.
-     * @param customRetryExceptionPredicate       {@code FlowableCaller#customRetryExceptionPredicate}.
-     * @param customSubscriptionRegularConsumer   {@code FlowableCaller#customSubscriptionRegularConsumer}.
-     * @param customSubscriptionExceptionConsumer {@code FlowableCaller#customSubscriptionExceptionConsumer}.
-     * @param customSubscriptionExecutor          Custom Subscription Executor. This parameter is typically used
-     *                                            to specify an executor that is responsible for executing code
-     *                                            or tasks when a subscription occurs (e.g., in reactive programming
-     *                                            , when a subscription to a stream is made). It allows developers
-     *                                            to control the execution context of subscription operations,
-     *                                            such as specifying which thread or thread pool to execute on.
-     * @param customObserveExecutor               Custom Observe Executor. Similar to customSubscriptionExecutor,
-     *                                            this parameter is also used to specify an executor, but it
-     *                                            focuses on controlling the execution context for observation
-     *                                            (or consumption) operations. In reactive programming, when data
-     *                                            is produced and ready to be consumed, customObserveExecutor determines
-     *                                            which thread or thread pool these consumption operations
-     *                                            (e.g., processing the data) will execute on.
-     */
+    /* {@link AbstractFlowableCaller} */
     public AsyncFlowableCaller(Supplier<R> runBody, int retryTimes,
                                long retryIntervalMilliseconds,
                                boolean whenResponseNonSuccessRetry,
@@ -104,11 +66,10 @@ public class AsyncFlowableCaller<R extends Response> extends FlowableCaller<R> {
                                Executor customSubscriptionExecutor,
                                Executor customObserveExecutor) {
         super(runBody, retryTimes, retryIntervalMilliseconds,
-                whenResponseNonSuccessRetry, whenResponseNonSuccessFinalThrow,
-                customRetryExceptionPredicate, customSubscriptionRegularConsumer, customSubscriptionExceptionConsumer);
+                whenResponseNonSuccessRetry, whenResponseNonSuccessFinalThrow, customRetryExceptionPredicate,
+                customSubscriptionRegularConsumer, customSubscriptionExceptionConsumer);
         this.customSubscriptionExecutor = customSubscriptionExecutor;
         this.customObserveExecutor = customObserveExecutor;
-        perfectFlowable();
     }
 
     /**
@@ -131,21 +92,36 @@ public class AsyncFlowableCaller<R extends Response> extends FlowableCaller<R> {
      *
      * <p>Finally, the method sets the adjusted Flowable instance back to its original position.
      */
-    protected void perfectFlowable() {
+    @Override
+    protected Flowable<R> createFlowable() {
+        Flowable<R> flowable = super.createFlowable();
 
-        if (customSubscriptionExecutor != null) {
+        Executor customSubscriptionExecutor0 = getCustomSubscriptionExecutor();
+        if (customSubscriptionExecutor0 != null) {
 
-            flowable = flowable.subscribeOn(Schedulers.from(customSubscriptionExecutor));
-
-            disposeSync = false;
-        }
-
-        if (customObserveExecutor != null) {
-
-            flowable = flowable.observeOn(Schedulers.from(customObserveExecutor));
+            flowable = flowable.subscribeOn(Schedulers.from(customSubscriptionExecutor0));
 
             disposeSync = false;
         }
+
+        Executor customObserveExecutor0 = getCustomObserveExecutor();
+        if (customObserveExecutor0 != null) {
+
+            flowable = flowable.observeOn(Schedulers.from(customObserveExecutor0));
+
+            disposeSync = false;
+        }
+        return flowable;
+    }
+
+    @Override
+    public Executor getCustomSubscriptionExecutor() {
+        return customSubscriptionExecutor;
+    }
+
+    @Override
+    public Executor getCustomObserveExecutor() {
+        return customObserveExecutor;
     }
 
     @Override
@@ -446,14 +422,14 @@ public class AsyncFlowableCaller<R extends Response> extends FlowableCaller<R> {
      *                                            inherit from the {@link Response} class.
      */
     public static <R extends Response> R get(Supplier<R> runBody,
-                                                int retryTimes,
-                                                long retryIntervalMilliseconds,
-                                                boolean whenResponseNonSuccessRetry,
-                                                boolean whenResponseNonSuccessFinalThrow,
-                                                Predicate<? super Throwable> customRetryExceptionPredicate,
-                                                Consumer<R> customSubscriptionRegularConsumer,
-                                                Consumer<Throwable> customSubscriptionExceptionConsumer,
-                                                Executor customSubscriptionExecutor) {
+                                             int retryTimes,
+                                             long retryIntervalMilliseconds,
+                                             boolean whenResponseNonSuccessRetry,
+                                             boolean whenResponseNonSuccessFinalThrow,
+                                             Predicate<? super Throwable> customRetryExceptionPredicate,
+                                             Consumer<R> customSubscriptionRegularConsumer,
+                                             Consumer<Throwable> customSubscriptionExceptionConsumer,
+                                             Executor customSubscriptionExecutor) {
         return new AsyncFlowableCaller<>(runBody, retryTimes, retryIntervalMilliseconds,
                 whenResponseNonSuccessRetry, whenResponseNonSuccessFinalThrow, customRetryExceptionPredicate,
                 customSubscriptionRegularConsumer, customSubscriptionExceptionConsumer, customSubscriptionExecutor,
