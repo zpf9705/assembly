@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 the original author or authors.
+ * Copyright 2024-? the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,21 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 import top.osjf.sdk.core.process.Response;
 
 import java.util.concurrent.Executor;
-import java.util.concurrent.ForkJoinPool;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
+ * The {@code BlockedSyncFlowableCaller} class extends from {@link BlockedFlowableCaller} and is
+ * specifically designed to handle asynchronous Flowable calls.
+ * It allows users to specify a custom executor to perform subscription operations, which is particularly
+ * useful when controlling subscription threads or resources.
+ *
+ * <p>This class inherits from BlockedFlowableCaller and adds support for custom subscription executors,
+ * allowing Flowable subscriptions to be executed on specified executors.
+ * Suitable for scenarios where asynchronous operations need to be performed in a specific thread context
+ * , such as when network requests or database operations need to be processed in a specific thread pool
+ *
+ * @param <R> The type of response result must be the Response class or its subclass.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
@@ -43,15 +53,20 @@ public class BlockedAsyncFlowableCaller<R extends Response> extends BlockedFlowa
                                       Executor customSubscriptionExecutor) {
         super(runBody, retryTimes, retryIntervalMilliseconds, whenResponseNonSuccessRetry,
                 whenResponseNonSuccessFinalThrow, customRetryExceptionPredicate);
-        if (customSubscriptionExecutor == null){
-            customSubscriptionExecutor = ForkJoinPool.commonPool();
-        }
         this.customSubscriptionExecutor = customSubscriptionExecutor;
     }
 
     @Override
     protected Flowable<R> createFlowable() {
-        return super.createFlowable().subscribeOn(Schedulers.from(customSubscriptionExecutor));
+
+        Flowable<R> flowable = super.createFlowable();
+
+        if (customSubscriptionExecutor != null) {
+
+            flowable = flowable.subscribeOn(Schedulers.from(customSubscriptionExecutor));
+        }
+
+        return flowable;
     }
 
     /**
