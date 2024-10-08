@@ -26,6 +26,7 @@ import java.util.logging.Logger;
 /**
  * Abstract {@link ResponseFlowableCallerElement}, storing common methods and related properties.
  *
+ * @param <R> The type of response result must be the Response class or its subclass.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */

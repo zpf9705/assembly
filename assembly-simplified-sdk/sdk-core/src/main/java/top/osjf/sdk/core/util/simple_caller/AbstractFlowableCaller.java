@@ -40,6 +40,7 @@ import java.util.function.Supplier;
  * When the exception is an instance of {@code SdkResponseNonSuccessException}, it is considered
  * necessary to retry.
  *
+ * @param <R> The type of response result must be the Response class or its subclass.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
