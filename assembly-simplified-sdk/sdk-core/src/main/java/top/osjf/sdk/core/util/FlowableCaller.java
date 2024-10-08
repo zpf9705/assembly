@@ -180,52 +180,77 @@ public class FlowableCaller<R extends Response> implements Supplier<R>, Disposab
             s.onComplete();
         }, backpressureStrategy);
 
-        return flowable0.retry(retryTimes, throwable -> {
+        return flowable0.retry(retryTimes, buildRetryPredicate());
+    }
+
+    /**
+     * Build a retry exception checker.
+     * @return a retry exception checker form {@link io.reactivex.rxjava3.functions.Predicate}.
+     */
+    protected io.reactivex.rxjava3.functions.Predicate<Throwable> buildRetryPredicate() {
+        return e -> {
             boolean customRetryPredicateResult;
             boolean responseNonSuccessRetryPredicateResult = false;
 
             if (customRetryExceptionPredicate != null) {
-                customRetryPredicateResult = customRetryExceptionPredicate.test(throwable);
+                customRetryPredicateResult = customRetryExceptionPredicate.test(e);
             } else customRetryPredicateResult = true;
 
             if (!customRetryPredicateResult) {
                 if (whenResponseNonSuccessRetry) {
-                    responseNonSuccessRetryPredicateResult = RESPONSE_NON_SUCCESS_RETRY_PREDICATE.test(throwable);
+                    responseNonSuccessRetryPredicateResult = RESPONSE_NON_SUCCESS_RETRY_PREDICATE.test(e);
                 }
             }
 
-            return customRetryPredicateResult || responseNonSuccessRetryPredicateResult;
-        });
+            boolean finalResult = customRetryPredicateResult || responseNonSuccessRetryPredicateResult;
+            if (finalResult) {
+                if (retryIntervalMilliseconds > 0) {
+                    try {
+                        Thread.sleep(retryIntervalMilliseconds);
+                    } catch (InterruptedException ignored) {
+                        //When the thread sleep is interrupted, a retry is triggered directly.
+                    }
+                }
+            }
+            return finalResult;
+        };
     }
 
     //Construct subclass calls after setting values.
     protected Supplier<R> getRunBody() {
         return runBody;
     }
+
     //Construct subclass calls after setting values.
     protected int getRetryTimes() {
         return retryTimes;
     }
+
     //Construct subclass calls after setting values.
     protected long getRetryIntervalMilliseconds() {
         return retryIntervalMilliseconds;
     }
+
     //Construct subclass calls after setting values.
     protected boolean isWhenResponseNonSuccessRetry() {
         return whenResponseNonSuccessRetry;
     }
+
     //Construct subclass calls after setting values.
     protected boolean isWhenResponseNonSuccessFinalThrow() {
         return whenResponseNonSuccessFinalThrow;
     }
+
     //Construct subclass calls after setting values.
     protected Predicate<? super Throwable> getCustomRetryExceptionPredicate() {
         return customRetryExceptionPredicate;
     }
+
     //Construct subclass calls after setting values.
     protected Consumer<R> getCustomSubscriptionRegularConsumer() {
         return customSubscriptionRegularConsumer;
     }
+
     //Construct subclass calls after setting values.
     protected Consumer<Throwable> getCustomSubscriptionExceptionConsumer() {
         return customSubscriptionExceptionConsumer;
@@ -241,6 +266,7 @@ public class FlowableCaller<R extends Response> implements Supplier<R>, Disposab
      * This method will block until the response message sent by the subscriber is received.
      * When there is only one response message, it will be successfully obtained.
      * If there are multiple or zero response messages, it will violate the specifications of RXJava3.
+     *
      * @return The response body sent by the subscriber thread.
      */
     @Override
@@ -557,16 +583,8 @@ public class FlowableCaller<R extends Response> implements Supplier<R>, Disposab
                 if (whenResponseNonSuccessRetry) {
                     if (retryTimes > 0) {
                         retryTimes--;
-                        if (retryIntervalMilliseconds > 0) {
-                            try {
-                                Thread.sleep(retryIntervalMilliseconds);
-                            } catch (InterruptedException ignored) {
-                                //When the thread sleep is interrupted, a retry is triggered directly.
-                            }
-                            triggerNonSuccessRetry();
-                        } else {
-                            triggerNonSuccessRetry();
-                        }
+                        //Is throwing an exception here for exception retry.
+                        throw new SdkResponseNonSuccessException();
                     } else {
                         finalResolve(response);
                     }
@@ -575,12 +593,6 @@ public class FlowableCaller<R extends Response> implements Supplier<R>, Disposab
                 }
             }
             return response;
-        }
-
-        /*** Triggering an unsuccessful interrupt exception.*/
-        void triggerNonSuccessRetry() {
-            //Is throwing an exception here for exception retry.
-            throw new SdkResponseNonSuccessException();
         }
 
         /**
