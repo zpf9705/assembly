@@ -132,6 +132,9 @@ public class FlowableCallerBuilder<R extends Response> {
     /**
      * Set a {@link #customSubscriptionRegularConsumer} for {@link FlowableCallerBuilder}.
      *
+     * <p>The blocking version does not require this field, and the setting will be invalid.
+     * You can check the construction of {@link BlockedFlowableCaller} or {@link BlockedAsyncFlowableCaller}.
+     *
      * @param customSubscriptionRegularConsumer {@code FlowableCaller#customSubscriptionRegularConsumer}
      * @return this.
      */
@@ -142,6 +145,9 @@ public class FlowableCallerBuilder<R extends Response> {
 
     /**
      * Set a {@link #customSubscriptionExceptionConsumer} for {@link FlowableCallerBuilder}.
+     *
+     * <p>The blocking version does not require this field, and the setting will be invalid.
+     * You can check the construction of {@link BlockedFlowableCaller} or {@link BlockedAsyncFlowableCaller}.
      *
      * @param customSubscriptionExceptionConsumer {@code FlowableCaller#customSubscriptionRegularConsumer}
      * @return this.

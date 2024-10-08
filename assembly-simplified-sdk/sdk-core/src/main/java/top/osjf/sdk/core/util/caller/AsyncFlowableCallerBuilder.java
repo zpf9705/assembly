@@ -91,16 +91,18 @@ public class AsyncFlowableCallerBuilder<R extends Response> extends FlowableCall
         return this;
     }
 
+    /*** {@inheritDoc}*/
     @Override
     public AsyncFlowableCallerBuilder<R> customSubscriptionRegularConsumer
-            (Consumer<R> customSubscriptionRegularConsumer) {
+    (Consumer<R> customSubscriptionRegularConsumer) {
         super.customSubscriptionRegularConsumer(customSubscriptionRegularConsumer);
         return this;
     }
 
+    /*** {@inheritDoc}*/
     @Override
     public AsyncFlowableCallerBuilder<R> customSubscriptionExceptionConsumer
-            (Consumer<Throwable> customSubscriptionExceptionConsumer) {
+    (Consumer<Throwable> customSubscriptionExceptionConsumer) {
         super.customSubscriptionExceptionConsumer(customSubscriptionExceptionConsumer);
         return this;
     }
@@ -118,6 +120,8 @@ public class AsyncFlowableCallerBuilder<R extends Response> extends FlowableCall
 
     /**
      * Set a {@link #customObserveExecutor} for {@link AsyncFlowableCallerBuilder}.
+     * <p>The blocking version of {@link BlockedAsyncFlowableCaller} does not require this value,
+     * the setting is invalid {@link #buildBlock()}.
      *
      * @param customObserveExecutor {@code AsyncFlowableCaller#customObserveExecutor}
      * @return this.
