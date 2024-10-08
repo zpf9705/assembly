@@ -32,6 +32,9 @@ import java.util.function.Supplier;
  * <p>It allows users to customize the executor for subscription and observation operations,
  * thereby controlling the execution context of these operations (such as threads or thread pools).
  *
+ * <p>When the subscription execution thread pool or observe Executor is not provided, it is called
+ * in the current main thread as {@link FlowableCaller}.
+ *
  * @param <R> Generic R represents the type returned by an operation, which must
  *            inherit from the {@link Response} class.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
@@ -298,142 +301,6 @@ public class AsyncFlowableCaller<R extends Response>
                 whenResponseNonSuccessRetry, whenResponseNonSuccessFinalThrow, customRetryExceptionPredicate,
                 customSubscriptionRegularConsumer, customSubscriptionExceptionConsumer, customSubscriptionExecutor,
                 customObserveExecutor).run();
-    }
-
-    /* AsyncFlowableCaller void static method */
-
-    /**
-     * A retrieve the response body static method for SDK calls using the API of {@code AsyncFlowableCaller}.
-     *
-     * @param runBody                    {@code FlowableCaller#runBody}.
-     * @param retryTimes                 {@code FlowableCaller# retryTimes}.
-     * @param customSubscriptionExecutor {@link #customSubscriptionExecutor}.
-     * @param <R>                        Generic R represents the type returned by an operation, which must
-     *                                   inherit from the {@link Response} class.
-     */
-    public static <R extends Response> R get(Supplier<R> runBody,
-                                             int retryTimes,
-                                             Executor customSubscriptionExecutor) {
-        return get(runBody, retryTimes, 0, customSubscriptionExecutor);
-    }
-
-    /**
-     * A retrieve the response body static method for SDK calls using the API of {@code AsyncFlowableCaller}.
-     *
-     * @param runBody                    {@code FlowableCaller#runBody}.
-     * @param retryTimes                 {@code FlowableCaller#retryTimes}.
-     * @param retryIntervalMilliseconds  {@code FlowableCaller#retryIntervalMilliseconds}.
-     * @param customSubscriptionExecutor {@link #customSubscriptionExecutor}.
-     * @param <R>                        Generic R represents the type returned by an operation, which must
-     *                                   inherit from the {@link Response} class.
-     */
-    public static <R extends Response> R get(Supplier<R> runBody,
-                                             int retryTimes,
-                                             long retryIntervalMilliseconds,
-                                             Executor customSubscriptionExecutor) {
-        return get(runBody, retryTimes, retryIntervalMilliseconds, false,
-                customSubscriptionExecutor);
-    }
-
-    /**
-     * A retrieve the response body static method for SDK calls using the API of {@code AsyncFlowableCaller}.
-     *
-     * @param runBody                     {@code FlowableCaller#runBody}.
-     * @param retryTimes                  {@code FlowableCaller#retryTimes}.
-     * @param retryIntervalMilliseconds   {@code FlowableCaller#retryIntervalMilliseconds}.
-     * @param whenResponseNonSuccessRetry {@code FlowableCaller#whenResponseNonSuccessRetry}.
-     * @param customSubscriptionExecutor  {@link #customSubscriptionExecutor}.
-     * @param <R>                         Generic R represents the type returned by an operation, which must
-     *                                    inherit from the {@link Response} class.
-     */
-    public static <R extends Response> R get(Supplier<R> runBody,
-                                             int retryTimes,
-                                             long retryIntervalMilliseconds,
-                                             boolean whenResponseNonSuccessRetry,
-                                             Executor customSubscriptionExecutor) {
-        return get(runBody, retryTimes, retryIntervalMilliseconds, whenResponseNonSuccessRetry,
-                false, customSubscriptionExecutor);
-    }
-
-    /**
-     * A retrieve the response body static method for SDK calls using the API of {@code AsyncFlowableCaller}.
-     *
-     * @param runBody                          {@code FlowableCaller#runBody}.
-     * @param retryTimes                       {@code FlowableCaller#retryTimes}.
-     * @param retryIntervalMilliseconds        {@code FlowableCaller#retryIntervalMilliseconds}.
-     * @param whenResponseNonSuccessRetry      {@code FlowableCaller#whenResponseNonSuccessRetry}.
-     * @param whenResponseNonSuccessFinalThrow {@code FlowableCaller#whenResponseNonSuccessFinalThrow}.
-     * @param customSubscriptionExecutor       {@link #customSubscriptionExecutor}.
-     * @param <R>                              Generic R represents the type returned by an operation, which must
-     *                                         inherit from the {@link Response} class.
-     */
-    public static <R extends Response> R get(Supplier<R> runBody,
-                                             int retryTimes,
-                                             long retryIntervalMilliseconds,
-                                             boolean whenResponseNonSuccessRetry,
-                                             boolean whenResponseNonSuccessFinalThrow,
-                                             Executor customSubscriptionExecutor) {
-        return get(runBody, retryTimes, retryIntervalMilliseconds,
-                whenResponseNonSuccessRetry, whenResponseNonSuccessFinalThrow,
-                null,
-                customSubscriptionExecutor);
-    }
-
-    /**
-     * A retrieve the response body static method for SDK calls using the API of {@code AsyncFlowableCaller}.
-     *
-     * @param runBody                          {@code FlowableCaller#runBody}.
-     * @param retryTimes                       {@code FlowableCaller#retryTimes}.
-     * @param retryIntervalMilliseconds        {@code FlowableCaller#retryIntervalMilliseconds}.
-     * @param whenResponseNonSuccessRetry      {@code FlowableCaller#whenResponseNonSuccessRetry}.
-     * @param whenResponseNonSuccessFinalThrow {@code FlowableCaller#whenResponseNonSuccessFinalThrow}.
-     * @param customRetryExceptionPredicate    {@code FlowableCaller#customRetryExceptionPredicate}.
-     * @param customSubscriptionExecutor       {@link #customSubscriptionExecutor}.
-     * @param <R>                              Generic R represents the type returned by an operation, which must
-     *                                         inherit from the {@link Response} class.
-     */
-    public static <R extends Response> R get(Supplier<R> runBody,
-                                             int retryTimes,
-                                             long retryIntervalMilliseconds,
-                                             boolean whenResponseNonSuccessRetry,
-                                             boolean whenResponseNonSuccessFinalThrow,
-                                             Predicate<? super Throwable> customRetryExceptionPredicate,
-                                             Executor customSubscriptionExecutor) {
-        return get(runBody, retryTimes, retryIntervalMilliseconds, whenResponseNonSuccessRetry,
-                whenResponseNonSuccessFinalThrow,
-                customRetryExceptionPredicate,
-                null,
-                null, customSubscriptionExecutor);
-    }
-
-    /**
-     * A retrieve the response body static method for SDK calls using the API of {@code AsyncFlowableCaller}.
-     *
-     * @param runBody                             {@code FlowableCaller#runBody}.
-     * @param retryTimes                          {@code FlowableCaller#retryTimes}.
-     * @param retryIntervalMilliseconds           {@code FlowableCaller#retryIntervalMilliseconds}.
-     * @param whenResponseNonSuccessRetry         {@code FlowableCaller#whenResponseNonSuccessRetry}.
-     * @param whenResponseNonSuccessFinalThrow    {@code FlowableCaller#whenResponseNonSuccessFinalThrow}.
-     * @param customRetryExceptionPredicate       {@code FlowableCaller#customRetryExceptionPredicate}.
-     * @param customSubscriptionRegularConsumer   {@code FlowableCaller#customSubscriptionRegularConsumer}.
-     * @param customSubscriptionExceptionConsumer {@code FlowableCaller#customSubscriptionExceptionConsumer}.
-     * @param customSubscriptionExecutor          {@link #customSubscriptionExecutor}.
-     * @param <R>                                 Generic R represents the type returned by an operation, which must
-     *                                            inherit from the {@link Response} class.
-     */
-    public static <R extends Response> R get(Supplier<R> runBody,
-                                             int retryTimes,
-                                             long retryIntervalMilliseconds,
-                                             boolean whenResponseNonSuccessRetry,
-                                             boolean whenResponseNonSuccessFinalThrow,
-                                             Predicate<? super Throwable> customRetryExceptionPredicate,
-                                             Consumer<R> customSubscriptionRegularConsumer,
-                                             Consumer<Throwable> customSubscriptionExceptionConsumer,
-                                             Executor customSubscriptionExecutor) {
-        return new AsyncFlowableCaller<>(runBody, retryTimes, retryIntervalMilliseconds,
-                whenResponseNonSuccessRetry, whenResponseNonSuccessFinalThrow, customRetryExceptionPredicate,
-                customSubscriptionRegularConsumer, customSubscriptionExceptionConsumer, customSubscriptionExecutor,
-                null).get();
     }
 
     /* AsyncFlowableCaller help class */
