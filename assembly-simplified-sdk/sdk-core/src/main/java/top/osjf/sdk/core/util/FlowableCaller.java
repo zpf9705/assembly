@@ -198,35 +198,35 @@ public class FlowableCaller<R extends Response> implements Supplier<R>, Disposab
         });
     }
 
-    //Obtain subclasses after providing construction settings.
+    //Construct subclass calls after setting values.
     protected Supplier<R> getRunBody() {
         return runBody;
     }
-    //Obtain subclasses after providing construction settings.
+    //Construct subclass calls after setting values.
     protected int getRetryTimes() {
         return retryTimes;
     }
-    //Obtain subclasses after providing construction settings.
+    //Construct subclass calls after setting values.
     protected long getRetryIntervalMilliseconds() {
         return retryIntervalMilliseconds;
     }
-    //Obtain subclasses after providing construction settings.
+    //Construct subclass calls after setting values.
     protected boolean isWhenResponseNonSuccessRetry() {
         return whenResponseNonSuccessRetry;
     }
-    //Obtain subclasses after providing construction settings.
+    //Construct subclass calls after setting values.
     protected boolean isWhenResponseNonSuccessFinalThrow() {
         return whenResponseNonSuccessFinalThrow;
     }
-    //Obtain subclasses after providing construction settings.
+    //Construct subclass calls after setting values.
     protected Predicate<? super Throwable> getCustomRetryExceptionPredicate() {
         return customRetryExceptionPredicate;
     }
-    //Obtain subclasses after providing construction settings.
+    //Construct subclass calls after setting values.
     protected Consumer<R> getCustomSubscriptionRegularConsumer() {
         return customSubscriptionRegularConsumer;
     }
-    //Obtain subclasses after providing construction settings.
+    //Construct subclass calls after setting values.
     protected Consumer<Throwable> getCustomSubscriptionExceptionConsumer() {
         return customSubscriptionExceptionConsumer;
     }
