@@ -54,6 +54,17 @@ public class FlowableCallerBuilder<R extends Response> {
     private Consumer<Throwable> customSubscriptionExceptionConsumer;
 
     /**
+     * A static method for creating a new {@link FlowableCallerBuilder}.
+     *
+     * @param <R> Generic R represents the type returned by an operation, which must
+     *            inherit from the {@link Response} class.
+     * @return a new {@code FlowableCallerBuilder}.
+     */
+    public static <R extends Response> FlowableCallerBuilder<R> newBuilder() {
+        return new FlowableCallerBuilder<>();
+    }
+
+    /**
      * Set a {@link #runBody} for {@link FlowableCallerBuilder}.
      *
      * @param runBody {@code FlowableCaller#runBody}

@@ -134,19 +134,6 @@ public class FlowableCaller<R extends Response>
         return new OnError();
     }
 
-    /* FlowableCaller builder static method */
-
-    /**
-     * A static method for creating a new auxiliary construct for {@link FlowableCaller}.
-     *
-     * @param <R> Generic R represents the type returned by an operation, which must
-     *            inherit from the {@link Response} class.
-     * @return a new auxiliary construct.
-     */
-    public static <R extends Response> FlowableCallerBuilder<R> newBuilder() {
-        return new FlowableCallerBuilder<>();
-    }
-
     /* FlowableCaller void static method */
 
     /**

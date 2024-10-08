@@ -142,19 +142,6 @@ public class AsyncFlowableCaller<R extends Response>
         return disposeSync;
     }
 
-    /* AsyncFlowableCaller builder static method */
-
-    /**
-     * A static method for creating a new auxiliary construct for {@link AsyncFlowableCaller}.
-     *
-     * @param <R> Generic R represents the type returned by an operation, which must
-     *            inherit from the {@link Response} class.
-     * @return a new auxiliary construct.
-     */
-    public static <R extends Response> AsyncFlowableCallerBuilder<R> newBuilder() {
-        return new AsyncFlowableCallerBuilder<>();
-    }
-
     /* AsyncFlowableCaller void static method */
 
     /**

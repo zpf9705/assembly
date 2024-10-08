@@ -43,6 +43,17 @@ public class AsyncFlowableCallerBuilder<R extends Response> extends FlowableCall
     /*** {@code AsyncFlowableCaller#customObserveExecutor}*/
     private Executor customObserveExecutor;
 
+    /**
+     * A static method for creating a new {@link AsyncFlowableCallerBuilder}.
+     *
+     * @param <R> Generic R represents the type returned by an operation, which must
+     *            inherit from the {@link Response} class.
+     * @return a new {@code AsyncFlowableCallerBuilder}.
+     */
+    public static <R extends Response> AsyncFlowableCallerBuilder<R> newBuilder() {
+        return new AsyncFlowableCallerBuilder<>();
+    }
+
     @Override
     public AsyncFlowableCallerBuilder<R> runBody(Supplier<R> runBody) {
         super.runBody(runBody);
