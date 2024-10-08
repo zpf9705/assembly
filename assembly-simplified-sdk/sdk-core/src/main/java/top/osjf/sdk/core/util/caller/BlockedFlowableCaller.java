@@ -60,6 +60,7 @@ public class BlockedFlowableCaller<R extends Response> extends AbstractFlowableC
      * @param retryTimes {@link #getRetryTimes()}.
      * @param <R>        Generic R represents the type returned by an operation, which must
      *                   inherit from the {@link Response} class.
+     * @return a callback {@link Response}.
      */
     public static <R extends Response> R get(Supplier<R> runBody,
                                              int retryTimes) {
@@ -74,6 +75,7 @@ public class BlockedFlowableCaller<R extends Response> extends AbstractFlowableC
      * @param retryIntervalMilliseconds {@link #getRetryIntervalMilliseconds()}.
      * @param <R>                       Generic R represents the type returned by an operation, which must
      *                                  inherit from the {@link Response} class.
+     * @return a callback {@link Response}.
      */
     public static <R extends Response> R get(Supplier<R> runBody,
                                              int retryTimes,
@@ -90,6 +92,7 @@ public class BlockedFlowableCaller<R extends Response> extends AbstractFlowableC
      * @param whenResponseNonSuccessRetry {@link #isWhenResponseNonSuccessRetry()}.
      * @param <R>                         Generic R represents the type returned by an operation, which must
      *                                    inherit from the {@link Response} class.
+     * @return a callback {@link Response}.
      */
     public static <R extends Response> R get(Supplier<R> runBody,
                                              int retryTimes,
@@ -109,6 +112,7 @@ public class BlockedFlowableCaller<R extends Response> extends AbstractFlowableC
      * @param whenResponseNonSuccessFinalThrow {@link #isWhenResponseNonSuccessFinalThrow()}.
      * @param <R>                              Generic R represents the type returned by an operation, which must
      *                                         inherit from the {@link Response} class.
+     * @return a callback {@link Response}.
      */
     public static <R extends Response> R get(Supplier<R> runBody,
                                              int retryTimes,
@@ -130,6 +134,7 @@ public class BlockedFlowableCaller<R extends Response> extends AbstractFlowableC
      * @param customRetryExceptionPredicate    {@link #getCustomRetryExceptionPredicate()}.
      * @param <R>                              Generic R represents the type returned by an operation, which must
      *                                         inherit from the {@link Response} class.
+     * @return a callback {@link Response}.
      */
     public static <R extends Response> R get(Supplier<R> runBody,
                                              int retryTimes,

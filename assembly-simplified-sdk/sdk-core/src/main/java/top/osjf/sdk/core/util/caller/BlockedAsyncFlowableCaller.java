@@ -80,6 +80,7 @@ public class BlockedAsyncFlowableCaller<R extends Response> extends BlockedFlowa
      * @param customSubscriptionExecutor {@link #customSubscriptionExecutor}.
      * @param <R>                        Generic R represents the type returned by an operation, which must
      *                                   inherit from the {@link Response} class.
+     * @return a callback {@link Response}.
      */
     public static <R extends Response> R get(Supplier<R> runBody,
                                              int retryTimes,
@@ -96,6 +97,7 @@ public class BlockedAsyncFlowableCaller<R extends Response> extends BlockedFlowa
      * @param customSubscriptionExecutor {@link #customSubscriptionExecutor}.
      * @param <R>                        Generic R represents the type returned by an operation, which must
      *                                   inherit from the {@link Response} class.
+     * @return a callback {@link Response}.
      */
     public static <R extends Response> R get(Supplier<R> runBody,
                                              int retryTimes,
@@ -115,6 +117,7 @@ public class BlockedAsyncFlowableCaller<R extends Response> extends BlockedFlowa
      * @param customSubscriptionExecutor  {@link #customSubscriptionExecutor}.
      * @param <R>                         Generic R represents the type returned by an operation, which must
      *                                    inherit from the {@link Response} class.
+     * @return a callback {@link Response}.
      */
     public static <R extends Response> R get(Supplier<R> runBody,
                                              int retryTimes,
@@ -136,6 +139,7 @@ public class BlockedAsyncFlowableCaller<R extends Response> extends BlockedFlowa
      * @param customSubscriptionExecutor       {@link #customSubscriptionExecutor}.
      * @param <R>                              Generic R represents the type returned by an operation, which must
      *                                         inherit from the {@link Response} class.
+     * @return a callback {@link Response}.
      */
     public static <R extends Response> R get(Supplier<R> runBody,
                                              int retryTimes,
@@ -161,6 +165,7 @@ public class BlockedAsyncFlowableCaller<R extends Response> extends BlockedFlowa
      * @param customSubscriptionExecutor       {@link #customSubscriptionExecutor}.
      * @param <R>                              Generic R represents the type returned by an operation, which must
      *                                         inherit from the {@link Response} class.
+     * @return a callback {@link Response}.
      */
     public static <R extends Response> R get(Supplier<R> runBody,
                                              int retryTimes,
