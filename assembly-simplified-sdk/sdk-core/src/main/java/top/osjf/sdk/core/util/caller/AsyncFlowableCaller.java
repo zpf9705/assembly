@@ -70,7 +70,33 @@ public class AsyncFlowableCaller<R extends Response>
      */
     private boolean disposeSync = true;
 
-    /* {@link AbstractFlowableCaller} */
+    /**
+     * Creates a new {@code AsyncFlowableCaller} with the given {@code AbstractFlowableCaller}
+     * and {@code FlowableCaller} initial parameters and custom subscription executor and
+     * custom observe executor.
+     *
+     * @param runBody                             {@link AbstractFlowableCaller#getRunBody()}.
+     * @param retryTimes                          {@link AbstractFlowableCaller#getRetryTimes()}.
+     * @param retryIntervalMilliseconds           {@link AbstractFlowableCaller#getRetryIntervalMilliseconds()}.
+     * @param whenResponseNonSuccessRetry         {@link AbstractFlowableCaller#isWhenResponseNonSuccessRetry()}.
+     * @param whenResponseNonSuccessFinalThrow    {@link AbstractFlowableCaller#isWhenResponseNonSuccessFinalThrow()}.
+     * @param customRetryExceptionPredicate       {@link AbstractFlowableCaller#getCustomRetryExceptionPredicate()}.
+     * @param customSubscriptionRegularConsumer   {@link FlowableCaller#getCustomSubscriptionRegularConsumer()}}.
+     * @param customSubscriptionExceptionConsumer {@link FlowableCaller#getCustomSubscriptionExceptionConsumer()}}.
+     * @param customSubscriptionExecutor          Custom Subscription Executor. This parameter is typically used
+     *                                            to specify an executor that is responsible for executing code
+     *                                            or tasks when a subscription occurs (e.g., in reactive programming
+     *                                            , when a subscription to a stream is made). It allows developers
+     *                                            to control the execution context of subscription operations,
+     *                                            such as specifying which thread or thread pool to execute on.
+     * @param customObserveExecutor               Custom Observe Executor. Similar to customSubscriptionExecutor,
+     *                                            this parameter is also used to specify an executor, but it
+     *                                            focuses on controlling the execution context for observation
+     *                                            (or consumption) operations. In reactive programming, when data
+     *                                            is produced and ready to be consumed, customObserveExecutor determines
+     *                                            which thread or thread pool these consumption operations
+     *                                            (e.g., processing the data) will execute on.
+     */
     public AsyncFlowableCaller(Supplier<R> runBody, int retryTimes,
                                long retryIntervalMilliseconds,
                                boolean whenResponseNonSuccessRetry,
