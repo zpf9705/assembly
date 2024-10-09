@@ -43,10 +43,22 @@ import java.util.function.Supplier;
 public class AsyncFlowableCaller<R extends Response>
         extends FlowableCaller<R> implements ResponseAsyncFlowableCallerElement<R> {
 
-    /*** {@link ResponseAsyncFlowableCallerElement#getCustomSubscriptionExecutor()}*/
+    /**
+     * A custom subscription executor that handles asynchronous tasks related to subscriptions.
+     * It allows users to customize the execution thread or thread pool for subscription
+     * operations (e.g., subscribing to messages, events, etc.).
+     *
+     * <p>If it is empty, the subscription will be executed in the main thread.
+     */
     private final Executor customSubscriptionExecutor;
 
-    /*** {@link ResponseAsyncFlowableCallerElement#getCustomObserveExecutor()} ()}*/
+    /**
+     * A custom observe executor that handles asynchronous tasks related to observation or responses.
+     * It allows users to customize the execution thread or thread pool for observation
+     * operations (e.g., responding to events, handling callbacks, etc.).
+     *
+     * <p>If it is empty, to observe will be executed in the main thread.
+     */
     private final Executor customObserveExecutor;
 
     /**
