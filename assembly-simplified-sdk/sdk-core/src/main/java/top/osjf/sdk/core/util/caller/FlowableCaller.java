@@ -43,10 +43,11 @@ import java.util.function.Supplier;
 public class FlowableCaller<R extends Response>
         extends AbstractFlowableCaller<R> implements FlowableProcessElement<R>, DisposableRunnable {
 
-    /*** {@link FlowableProcessElement#getCustomSubscriptionRegularConsumer()}*/
+    /*** Customized subscription for regular consumers, used to handle normal response results. */
     private final Consumer<R> customSubscriptionRegularConsumer;
 
-    /*** {@link FlowableProcessElement#getCustomSubscriptionExceptionConsumer()}*/
+    /*** Custom subscription exception consumers, used to handle exceptions that occur during the
+     * subscription process. */
     private final Consumer<Throwable> customSubscriptionExceptionConsumer;
 
     /*** The Disposable object represents the 'handle' of the subscription.
@@ -54,7 +55,22 @@ public class FlowableCaller<R extends Response>
      * */
     private Disposable disposable;
 
-    /* {@link AbstractFlowableCaller} */
+    /**
+     * Creates a new {@code FlowableCaller} with the given {@code AbstractFlowableCaller}
+     * and initial parameters and custom subscription regular consumer and custom subscription
+     * exception consumer.
+     *
+     * @param runBody                             {@link AbstractFlowableCaller#getRunBody()}.
+     * @param retryTimes                          {@link AbstractFlowableCaller#getRetryTimes()}.
+     * @param retryIntervalMilliseconds           {@link AbstractFlowableCaller#getRetryIntervalMilliseconds()}.
+     * @param whenResponseNonSuccessRetry         {@link AbstractFlowableCaller#isWhenResponseNonSuccessRetry()}.
+     * @param whenResponseNonSuccessFinalThrow    {@link AbstractFlowableCaller#isWhenResponseNonSuccessFinalThrow()}.
+     * @param customRetryExceptionPredicate       {@link AbstractFlowableCaller#getCustomRetryExceptionPredicate()}.
+     * @param customSubscriptionRegularConsumer   A custom consumer invoked upon successful subscription completion,
+     *                                            used to handle successful results.
+     * @param customSubscriptionExceptionConsumer A custom consumer invoked upon exception during subscription,
+     *                                            used to handle errors.
+     */
     public FlowableCaller(Supplier<R> runBody,
                           int retryTimes,
                           long retryIntervalMilliseconds,
