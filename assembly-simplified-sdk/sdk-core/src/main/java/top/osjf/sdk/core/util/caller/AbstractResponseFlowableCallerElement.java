@@ -33,24 +33,28 @@ import java.util.logging.Logger;
 public abstract class AbstractResponseFlowableCallerElement<R extends Response> implements
         ResponseFlowableCallerElement<R> {
 
+    /*** JDK logger.*/
     protected final Logger LOGGER = Logger.getLogger(getClass().getName());
 
-    /*** {@link ResponseFlowableCallerElement#getRunBody()} */
+    /*** The provider of the running entity, the subject used to generate or execute tasks. */
     private final Supplier<R> runBody;
 
-    /*** {@link ResponseFlowableCallerElement#getRetryTimes()} */
+    /*** The maximum number of retries to attempt to re execute a task after it has failed. */
     private final int retryTimes;
 
-    /*** {@link ResponseFlowableCallerElement#getRetryIntervalMilliseconds()} */
+    /*** The millisecond value of the retry trigger delay interval. */
     private final long retryIntervalMilliseconds;
 
-    /*** {@link ResponseFlowableCallerElement#isWhenResponseNonSuccessRetry()} */
+    /*** The flag indicating whether to retry when the response is unsuccessful. If true, attempt
+     *  to retry when the response does not meet the success criteria. */
     private final boolean whenResponseNonSuccessRetry;
 
-    /*** {@link ResponseFlowableCallerElement#isWhenResponseNonSuccessFinalThrow()} */
+    /*** When the response retry is still unsuccessful, whether to throw an exception
+     * {@link top.osjf.sdk.core.exception.SdkResponseNonSuccessException} flag. */
     private final boolean whenResponseNonSuccessFinalThrow;
 
-    /*** {@link ResponseFlowableCallerElement#getCustomRetryExceptionPredicate()} */
+    /*** Custom retry exception predicate used to determine which exception types should trigger
+     * the retry mechanism. */
     private final Predicate<? super Throwable> customRetryExceptionPredicate;
 
     /**
