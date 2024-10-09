@@ -53,6 +53,22 @@ public abstract class AbstractResponseFlowableCallerElement<R extends Response> 
     /*** {@link ResponseFlowableCallerElement#getCustomRetryExceptionPredicate()} */
     private final Predicate<? super Throwable> customRetryExceptionPredicate;
 
+    /**
+     * A construction method for collecting relevant information on response to weight tests and unsuccessful states.
+     *
+     * @param runBody                          The asynchronous operation body, executed when the Flowable is
+     *                                         subscribed to,and returns the operation result.
+     * @param retryTimes                       The number of retries upon failure, 0 indicates no automatic
+     *                                         retries,negative values will be treated as 1 retry.
+     * @param retryIntervalMilliseconds        The millisecond value of the retry interval time.
+     * @param whenResponseNonSuccessRetry      Do we need to retry when the response to the request is unsuccessful
+     *                                         {@code Response#isSuccess() == false}.
+     * @param whenResponseNonSuccessFinalThrow When the response is ultimately unsuccessful, should an exception be
+     *                                         thrown {@code Response#isSuccess() == false}..
+     * @param customRetryExceptionPredicate    A custom predicate used to determine if an exception should trigger
+     *                                         a retry. If null, all exceptions will trigger a retry (if retries are
+     *                                         configured).
+     */
     public AbstractResponseFlowableCallerElement(Supplier<R> runBody,
                                                  int retryTimes,
                                                  long retryIntervalMilliseconds,
