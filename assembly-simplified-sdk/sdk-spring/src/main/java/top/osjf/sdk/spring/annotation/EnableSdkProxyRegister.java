@@ -28,7 +28,7 @@ import java.lang.annotation.*;
  * the interface class with automatic injection annotation {@link Sdk}
  * and automatically create the implementation class, it mainly relies
  * on {@link SdkProxyBeanRegister}.
- * <p>Since 2.1.0,redirect {@link #value()} and {@link #basePackages()}
+ * <p>Redirect {@link #value()} and {@link #basePackages()}
  * to the {@link ComponentScan} annotation.
  * <p><u><strong>For example code:</strong></u>
  * <pre>
