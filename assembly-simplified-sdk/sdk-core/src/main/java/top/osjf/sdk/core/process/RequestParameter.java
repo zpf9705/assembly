@@ -18,8 +18,6 @@ package top.osjf.sdk.core.process;
 
 import top.osjf.sdk.core.support.SdkSupport;
 
-import java.lang.reflect.Method;
-
 /**
  * The functional definition of this interface is applicable to knowing
  * the type of request encapsulation class when calling the SDK function
@@ -40,9 +38,12 @@ import java.lang.reflect.Method;
  *  }
  * </pre>
  *
- * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
+ * Starting from version 1.0.2, when searching for the {@link Request} type, its priority
+ * level will be lower than the annotation {@link RequestParam}.
+ *
  * @see SdkSupport#invokeCreateRequest
  * @see RequestParam
+ * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
 public interface RequestParameter {

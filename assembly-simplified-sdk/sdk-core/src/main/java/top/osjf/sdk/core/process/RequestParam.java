@@ -87,9 +87,13 @@ import java.lang.annotation.*;
  *      }
  * </pre>
  *
- * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
+ * Starting from version 1.0.2, this annotation will be used to mark {@link Request}
+ * types, and when searching for {@link Request} types, its priority level will be
+ * higher than {@link RequestParameter}.
+ *
  * @see SdkSupport#invokeCreateRequest
  * @see RequestParameter
+ * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
 @Target({ElementType.METHOD})
