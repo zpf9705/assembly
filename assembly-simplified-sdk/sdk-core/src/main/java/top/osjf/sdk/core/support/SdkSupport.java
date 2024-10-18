@@ -53,7 +53,6 @@ public abstract class SdkSupport {
      * @see ResponseData
      * @see RequestParam
      */
-    @SuppressWarnings("unchecked")
     public static Request<?> invokeCreateRequest(Method method, Object[] args) {
         int length = ArrayUtils.isEmpty(args) ? 0 : args.length;
 
