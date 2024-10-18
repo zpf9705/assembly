@@ -29,4 +29,8 @@ public abstract class UnknownParameterException extends SdkException {
     public UnknownParameterException(String name) {
         super("Can't find or have multiple " + name + " parameters, how can I find the appropriate parameters?");
     }
+
+    public UnknownParameterException(Throwable cause) {
+        super(cause);
+    }
 }

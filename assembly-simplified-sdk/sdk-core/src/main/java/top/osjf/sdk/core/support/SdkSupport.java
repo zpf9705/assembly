@@ -111,32 +111,41 @@ public abstract class SdkSupport {
      * @return The required return object.
      */
     public static Object getResponse(Method method, Response response) {
-        if (Response.class.isAssignableFrom(method.getReturnType())) {
-            //If the method returns a response class, then return it directly.
+        Class<?> returnType = method.getReturnType();
+
+        //First, check if the return value type of the proxy method
+        // is a subclass of Response. If so, return the current Response directly.
+        if (Response.class.isAssignableFrom(returnType)) {
             return response;
         }
+        Object data = null;
         if (response instanceof ResponseData) {
             ResponseData responseData = (ResponseData) response;
             if (responseData.inspectionResponseResult()) {
                 //If the type value is specified, the data returned
                 // when the request is successful is obtained.
                 if (responseData.isSuccess()) {
-                    return responseData.getData();
+                    data = responseData.getData();
                 } else {
                     //The default data returned when a customization request fails.
                     if (responseData instanceof InspectionResponseData) {
-                        Object data = ((InspectionResponseData) responseData).failedSeatData();
-                        if (data != null) {
-                            //If it is empty, the requested data should prevail.
-                            return data;
-                        }
+                        data = ((InspectionResponseData) responseData).failedSeatData();
                     }
                 }
-            }
-            //On the contrary, directly return the data result.
-            return responseData.getData();
+                //On the contrary, directly return the data result.
+            } else responseData.getData();
         }
-        throw new UnknownResponseParameterException();
+
+        //If the final data is not empty, then verify whether
+        // it is of the type returned by the proxy method.
+        if (data != null) {
+            if (!returnType.isInstance(data)) {
+                throw new UnknownResponseParameterException
+                        (new ClassCastException(data.getClass().getName() + " cannot be cast to " + returnType.getName()));
+            }
+        }
+
+        return data;
     }
 
     static Request<?> invokeCreateRequestConstructorWhenFailedUseSet(Class<? extends Request> requestType,

@@ -29,4 +29,8 @@ public class UnknownResponseParameterException extends UnknownParameterException
     public UnknownResponseParameterException() {
         super("response");
     }
+
+    public UnknownResponseParameterException(Throwable cause) {
+        super(cause);
+    }
 }
