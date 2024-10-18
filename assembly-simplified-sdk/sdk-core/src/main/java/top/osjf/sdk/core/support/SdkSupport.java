@@ -26,11 +26,9 @@ import top.osjf.sdk.core.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -55,35 +53,54 @@ public abstract class SdkSupport {
      * @see ResponseData
      * @see RequestParam
      */
+    @SuppressWarnings("unchecked")
     public static Request<?> invokeCreateRequest(Method method, Object[] args) {
         int length = ArrayUtils.isEmpty(args) ? 0 : args.length;
-        Request<?> request;
+
+        //In a single parameter scenario, only consider whether it is a request class.
         if (length == 1) {
             Object arg = args[0];
             if (arg instanceof Request) {
                 //Consider first whether it is the actual request parameter.
-                request = (Request<?>) arg;
-            } else {
-                //When a single parameter is not a request class, consider implementing
-                // the parameter interface. If the parameter interface is not implemented,
-                // an unknown exception will be thrown.
-                if (arg instanceof RequestParameter) {
-                    Class<? extends Request> requestType = ((RequestParameter) arg).getRequestType();
-                    if (requestType == null) throw new UnknownRequestParameterException();
-                    return invokeCreateRequestConstructorWhenFailedUseSet(requestType, arg);
-                }
+                return (Request<?>) arg;
+            }
+        }
+        //When a single parameter is not a request, use reflection to construct
+        // the request parameter based on the marked request type.
+
+        /* Participate more in the processing logic of 0 parameters. */
+
+        //The following is how to discover the types of request parameters through
+        // specific annotations and interfaces.
+        Class<? extends Request> requestType;
+
+        //Consider annotations first.
+        RequestParam requestParam = method.getAnnotation(RequestParam.class);
+        if (requestParam != null) {
+            requestType = requestParam.value();
+        } else {
+
+            //Secondly, consider whether the parameters inherit specific interfaces.
+            List<Class<? extends Request>> requestTypes = Arrays.stream(args)
+                    .map((Function<Object, Class<? extends Request>>) o ->
+                            o instanceof RequestParameter ? ((RequestParameter) o).getRequestType() : null)
+                    .filter(Objects::nonNull)
+                    .distinct()
+                    .collect(Collectors.toList());
+
+            //If a specific interface with multiple parameters is used to indicate
+            // the request type, I cannot know the specific type without ensuring uniqueness.
+            if (CollectionUtils.isNotEmpty(requestTypes) || requestTypes.size() > 1) {
                 throw new UnknownRequestParameterException();
             }
-        } else {
-            //Consider annotations for multiple parameters, and throw an
-            // exception for unknown parameter types when there are no annotations present.
-            RequestParam requestParam = method.getAnnotation(RequestParam.class);
-            if (requestParam != null) {
-                return invokeCreateRequestConstructorWhenFailedUseSet(requestParam.value(), args);
-            }
-            throw new UnknownRequestParameterException();
+
+            //Select 1 for a specific type.
+            requestType = requestTypes.get(0);
         }
-        return request;
+
+        //After obtaining the type of the requested parameter, assign necessary
+        // property values based on the parameter and specific annotations.
+        return invokeCreateRequestConstructorWhenFailedUseSet(requestType, args);
     }
 
     /**
