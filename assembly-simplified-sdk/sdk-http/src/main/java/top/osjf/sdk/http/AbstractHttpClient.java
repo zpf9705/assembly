@@ -67,7 +67,7 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
     private static final long serialVersionUID = -7793213059840466979L;
 
     /*** default slf4j logger with {@link Client} */
-    private static final Logger log = LoggerFactory.getLogger(Client.class);
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     /*** HTTP requests the real access address.*/
     private final String url;
@@ -119,7 +119,7 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
      * @return the request that was temporarily placed in the
      * thread copy as {@link Request}.
      */
-    public HttpRequest<R> getCurrentHttpRequest() {
+    protected HttpRequest<R> getCurrentHttpRequest() {
         return (HttpRequest<R>) getCurrentRequest();
     }
 
@@ -266,9 +266,9 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
     @Override
     public void handlerUnKnowError(HttpRequest<?> request, Throwable e) {
         String message = e.getMessage();
-        if (StringUtils.isBlank(message)){
+        if (StringUtils.isBlank(message)) {
             Throwable cause = e.getCause();
-            if (cause != null){
+            if (cause != null) {
                 message = cause.getMessage();
             }
         }
