@@ -112,9 +112,9 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
      * @param <R>               Data Generics for {@link Response}.
      * @return {@link Client} 's singleton object, persistently requesting.
      */
-    protected static <R extends Response> Client<R> getAndSetClient(Supplier<Client<R>> newClientSupplier,
-                                                                 Request<R> request,
-                                                                 String unique) {
+    protected static <R extends Response> Client<R> getCachedClient(Supplier<Client<R>> newClientSupplier,
+                                                                    Request<R> request,
+                                                                    String unique) {
         Objects.requireNonNull(unique, "Client unique");
         Objects.requireNonNull(request, "Client Request");
         setCurrentParam(request);
