@@ -69,7 +69,7 @@ public class ClientExecutors {
      * If the request execution fails, throw this exception.
      */
     public static <R extends Response> R executeRequestClient(String host, Request<R> request) {
-        try (Client<R> client = getAndSetClient(request.getUrl(host), request)) {
+        try (Client<R> client = getClient(request.getUrl(host), request)) {
             return client.request();
         } catch (Throwable e) {
             throw new ClientRequestFailedException(e);
@@ -77,21 +77,11 @@ public class ClientExecutors {
     }
 
     /**
-     * Retrieve or set a client instance using the given URL and request object.
+     * Retrieve a {@code Client} instance using the given URL and request object.
      * <p>
      * If it does not exist in the cache, a new client is instantiated through
      * reflection and added to the cache.
-     *
-     * @param url     The actual URL address accessed by the SDK.
-     * @param request object, containing API parameters.
-     * @param <R>     is a generic type that responds to data.
-     * @return returns the client instance distinguished by a unique key.
-     */
-    public static <R extends Response> Client<R> getAndSetClient(String url, Request<R> request) {
-        return AbstractClient.getAndSetClient(() -> getNewClient(url, request), request, url);
-    }
-
-    /**
+     * <p>
      * Instantiate a new client based on the given URL and request object using
      * reflection mechanism.
      * <p>
@@ -101,18 +91,13 @@ public class ClientExecutors {
      * @param url     The actual URL address accessed by the SDK.
      * @param request object, containing API parameters.
      * @param <R>     is a generic type that responds to data.
-     * @return returns the newly created client instance.
-     * If any exception occurs during instantiation, throw this runtime exception.
+     * @return returns the client instance distinguished by a unique key.
      */
     @SuppressWarnings("unchecked")
-    private static <R extends Response> Client<R> getNewClient(String url, Request<R> request) {
-        try {
-            //Building client objects through reflection based
-            // on client type (provided that they are not cached)
-            return request.getClientCls().getConstructor(String.class).newInstance(url);
-        } catch (Exception e) {
-            //all Exceptions throw RuntimeException.
-            throw new RuntimeException(e);
-        }
+    protected static <R extends Response> Client<R> getClient(String url, Request<R> request) throws Throwable {
+        return AbstractClient.getCachedClient(() ->
+                //Building client objects through reflection based
+                // on client type (provided that they are not cached)
+                request.getClientCls().getConstructor(String.class).newInstance(url), request, url);
     }
 }
