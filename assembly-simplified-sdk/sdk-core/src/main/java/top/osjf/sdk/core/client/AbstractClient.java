@@ -76,7 +76,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
      *               client's cache.
      * @param client Real impl in {@link Client}.
      */
-    void cache(String unique, Client client) {
+    protected void cache(String unique, Client client) {
         if (StringUtils.isBlank(unique) || client == null) {
             return;
         }
@@ -93,7 +93,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
      * @param request The parameter model of the current request is
      *                an implementation of {@link Request}.
      */
-    static <R extends Response> void setCurrentParam(Request<R> request) {
+    protected static <R extends Response> void setCurrentParam(Request<R> request) {
         if (request == null) {
             local.remove();
         } else {
@@ -112,7 +112,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
      * @param <R>               Data Generics for {@link Response}.
      * @return {@link Client} 's singleton object, persistently requesting.
      */
-    public static <R extends Response> Client<R> getAndSetClient(Supplier<Client<R>> newClientSupplier,
+    protected static <R extends Response> Client<R> getAndSetClient(Supplier<Client<R>> newClientSupplier,
                                                                  Request<R> request,
                                                                  String unique) {
         Objects.requireNonNull(unique, "Client unique");
@@ -136,7 +136,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
      *
      * @return Actual {@link Request} implementation.
      */
-    public Request<R> getCurrentRequest() {
+    protected Request<R> getCurrentRequest() {
         return local.get();
     }
 
