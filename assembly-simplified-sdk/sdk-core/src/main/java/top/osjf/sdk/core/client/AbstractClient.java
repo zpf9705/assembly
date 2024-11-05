@@ -16,6 +16,7 @@
 
 package top.osjf.sdk.core.client;
 
+import io.reactivex.rxjava3.functions.Supplier;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
 import top.osjf.sdk.core.util.StringUtils;
@@ -23,7 +24,6 @@ import top.osjf.sdk.core.util.StringUtils;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Supplier;
 
 /**
  * The abstract auxiliary implementation class for {@link Client}
@@ -93,7 +93,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
      * @param request The parameter model of the current request is
      *                an implementation of {@link Request}.
      */
-    protected static <R extends Response> void setCurrentParam(Request<R> request) {
+    protected static <R extends Response> void setCurrentRequest(Request<R> request) {
         if (request == null) {
             local.remove();
         } else {
@@ -111,13 +111,20 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
      * @param unique            The unique identifier string for this client's cache.
      * @param <R>               Data Generics for {@link Response}.
      * @return {@link Client} 's singleton object, persistently requesting.
+     * @throws Throwable Possible errors when generating a new {@code Client} when
+     *                   the unique key does not correspond to {@code Client}.
+     * @see #cache(String, Client)
      */
     protected static <R extends Response> Client<R> getCachedClient(Supplier<Client<R>> newClientSupplier,
                                                                     Request<R> request,
-                                                                    String unique) {
+                                                                    String unique) throws Throwable {
         Objects.requireNonNull(unique, "Client unique");
         Objects.requireNonNull(request, "Client Request");
-        setCurrentParam(request);
+
+        /* Bind the current thread to the request parameters. */
+        setCurrentRequest(request);
+
+        /* Retrieve and cache a client based on the URL address. */
         Client<R> client = cache.get(unique);
         if (client == null) {
             synchronized (lock) {
@@ -142,6 +149,6 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
 
     @Override
     public void close() {
-        setCurrentParam(null);
+        setCurrentRequest(null);
     }
 }
