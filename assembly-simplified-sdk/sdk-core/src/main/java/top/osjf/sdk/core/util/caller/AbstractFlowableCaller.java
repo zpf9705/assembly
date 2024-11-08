@@ -98,8 +98,9 @@ public abstract class AbstractFlowableCaller<R extends Response> extends Abstrac
             }
         }
         int retryTimes = getRetryTimes();
+        RetryHelpSupplier retryHelpSupplier = new RetryHelpSupplier(retryTimes);
         Flowable<R> flowable0 = Flowable.create(s -> {
-            s.onNext(new RetryHelpSupplier(retryTimes).get());
+            s.onNext(retryHelpSupplier.get());
             s.onComplete();
         }, backpressureStrategy);
 

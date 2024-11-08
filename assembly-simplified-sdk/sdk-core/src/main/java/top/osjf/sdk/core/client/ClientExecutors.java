@@ -92,6 +92,7 @@ public class ClientExecutors {
      * @param request object, containing API parameters.
      * @param <R>     is a generic type that responds to data.
      * @return returns the client instance distinguished by a unique key.
+     * @throws Throwable Cache {@code Client} instantiation exception.
      */
     @SuppressWarnings("unchecked")
     protected static <R extends Response> Client<R> getClient(String url, Request<R> request) throws Throwable {
