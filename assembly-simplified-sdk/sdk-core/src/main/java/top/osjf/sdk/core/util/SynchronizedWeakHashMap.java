@@ -53,8 +53,8 @@ import java.util.WeakHashMap;
  *     }
  * </pre>
  *
- * @see WeakHashMap
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
+ * @see WeakHashMap
  * @since 1.0.2
  */
 
@@ -108,7 +108,11 @@ public class SynchronizedWeakHashMap<K, V> extends ForwardingMap<K, V> implement
     }
 
     /**
-     * @param weakHashMap
+     * Private constructor used to create a synchronized weak hash map.
+     *
+     * @param weakHashMap {@code WeakHashMap} is a weak hash map that needs to be synchronized.
+     *                    This mapping itself is not thread safe,Through this constructor, we
+     *                    encapsulate it in a synchronized map,To provide thread safe access.
      */
     private SynchronizedWeakHashMap(WeakHashMap<K, V> weakHashMap) {
         this.delegate = Collections.synchronizedMap(weakHashMap);
