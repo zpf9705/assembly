@@ -54,7 +54,11 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
     private static final Object lock = new Object();
 
     /*** Cache request clients for each request object to prevent memory waste caused
-     * by multiple new requests*/
+     * by multiple new requests.
+     * <p>
+     * Since 1.0.2,cache modification to weak references, freeing up memory in appropriate
+     * places to prevent memory leaks.
+     * */
     private static final Map<String, Client> cache = new SynchronizedWeakHashMap<>();
 
     /*** Save each request parameter and use it for subsequent requests*/
