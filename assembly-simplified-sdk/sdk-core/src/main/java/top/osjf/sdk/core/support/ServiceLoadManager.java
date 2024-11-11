@@ -16,11 +16,9 @@
 
 package top.osjf.sdk.core.support;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.ServiceLoader;
-import java.util.concurrent.ConcurrentHashMap;
+import top.osjf.sdk.core.util.SynchronizedWeakHashMap;
+
+import java.util.*;
 
 /**
  * ServiceLoadManager class is a utility class for managing and loading service instances.
@@ -47,14 +45,26 @@ public final class ServiceLoadManager {
         throw new AssertionError("No instance for you !");
     }
 
-    /*** Full load cache.*/
-    private final static Map<Class<?>, List<?>> loadAllCache = new ConcurrentHashMap<>(16);
+    /*** Full load cache.
+     * <p>
+     * Since 1.0.2,cache modification to weak references, freeing up memory in appropriate
+     * places to prevent memory leaks.
+     * */
+    private final static Map<Class<?>, List<?>> loadAllCache = new SynchronizedWeakHashMap<>(16);
 
-    /*** Cache of the highest priority instance.*/
-    private final static Map<Class<?>, Object> loadHighPriorityCache = new ConcurrentHashMap<>(16);
+    /*** Cache of the highest priority instance.
+     * <p>
+     * Since 1.0.2,cache modification to weak references, freeing up memory in appropriate
+     * places to prevent memory leaks.
+     * */
+    private final static Map<Class<?>, Object> loadHighPriorityCache = new SynchronizedWeakHashMap<>(16);
 
-    /*** Cache of the lowest priority instance.*/
-    private final static Map<Class<?>, Object> loadLowerPriorityCache = new ConcurrentHashMap<>(16);
+    /*** Cache of the lowest priority instance.
+     * <p>
+     * Since 1.0.2,cache modification to weak references, freeing up memory in appropriate
+     * places to prevent memory leaks.
+     * */
+    private final static Map<Class<?>, Object> loadLowerPriorityCache = new SynchronizedWeakHashMap<>(16);
 
     /**
      * Loads all instances of the specified type and caches the result.

@@ -21,13 +21,11 @@ import top.osjf.sdk.core.process.Response;
 import top.osjf.sdk.core.support.SdkSupport;
 import top.osjf.sdk.core.util.ArrayUtils;
 import top.osjf.sdk.core.util.MapUtils;
+import top.osjf.sdk.core.util.SynchronizedWeakHashMap;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -50,8 +48,11 @@ public abstract class HttpSdkSupport extends SdkSupport {
     /***The right angle bracket included in the generic.*/
     protected static final String RIGHT_ANGLE_BRACKET = ">";
 
-    /*** cache for dynamically obtain the type of response class.*/
-    protected static final Map<Class<?>, Object> rps_classes = new ConcurrentHashMap<>(16);
+    /*** cache for dynamically obtain the type of response class.
+     * Since 1.0.2,cache modification to weak references, freeing up memory in appropriate
+     * places to prevent memory leaks.
+     * */
+    protected static final Map<Class<?>, Object> rps_classes = new SynchronizedWeakHashMap<>();
 
     /**
      * Check if the existing request headers contain {@link #named}, and

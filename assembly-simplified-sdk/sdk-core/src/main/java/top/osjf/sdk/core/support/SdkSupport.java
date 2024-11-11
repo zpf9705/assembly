@@ -23,11 +23,11 @@ import top.osjf.sdk.core.process.*;
 import top.osjf.sdk.core.util.ArrayUtils;
 import top.osjf.sdk.core.util.CollectionUtils;
 import top.osjf.sdk.core.util.StringUtils;
+import top.osjf.sdk.core.util.SynchronizedWeakHashMap;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -42,6 +42,20 @@ public abstract class SdkSupport {
 
     /***The prefix name of the set method.*/
     protected static final String SET_METHOD_PREFIX = "set";
+
+    /**
+     * Since 1.0.2,cache modification to weak references, freeing up memory in appropriate
+     * places to prevent memory leaks.
+     */
+    protected static final Map<Class<? extends Request>, List<Field>> requestFilteredDeclaredFieldCache
+            = new SynchronizedWeakHashMap<>();
+
+    /**
+     * Since 1.0.2,cache modification to weak references, freeing up memory in appropriate
+     * places to prevent memory leaks.
+     */
+    protected static final Map<Class<? extends Request>, List<Method>> requestMethodCache
+            = new SynchronizedWeakHashMap<>();
 
     /**
      * Create corresponding request parameters based on extension
@@ -238,8 +252,6 @@ public abstract class SdkSupport {
         throw new NoSuchMethodException(methodName);
     }
 
-    static final Map<Class<? extends Request>, List<Method>> requestMethodCache = new ConcurrentHashMap<>();
-
     static List<Method> getRequestDeclaredMethods(Class<? extends Request> requestType) {
         return requestMethodCache.computeIfAbsent(requestType, SdkSupport::getRequestDeclaredMethods0);
     }
@@ -256,8 +268,6 @@ public abstract class SdkSupport {
         }
         return allDeclaredMethods;
     }
-
-    static final Map<Class<? extends Request>, List<Field>> requestFilteredDeclaredFieldCache = new ConcurrentHashMap<>();
 
     static List<Field> getAndFilterRequestAndSuperDeclaredFields(Class<? extends Request> requestType) {
         return requestFilteredDeclaredFieldCache.computeIfAbsent(requestType,
