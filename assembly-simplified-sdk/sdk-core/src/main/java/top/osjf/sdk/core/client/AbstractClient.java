@@ -20,6 +20,7 @@ import io.reactivex.rxjava3.functions.Supplier;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
 import top.osjf.sdk.core.util.StringUtils;
+import top.osjf.sdk.core.util.SynchronizedWeakHashMap;
 
 import java.util.Map;
 import java.util.Objects;
@@ -54,7 +55,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
 
     /*** Cache request clients for each request object to prevent memory waste caused
      * by multiple new requests*/
-    private static final Map<String, Client> cache = new ConcurrentHashMap<>(16);
+    private static final Map<String, Client> cache = new SynchronizedWeakHashMap<>();
 
     /*** Save each request parameter and use it for subsequent requests*/
     private static final ThreadLocal<Request> local = new ThreadLocal<>();
