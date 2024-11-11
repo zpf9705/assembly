@@ -34,11 +34,30 @@ import java.util.WeakHashMap;
  * concurrently, additional synchronization measures may be required to ensure thread safety.
  * For example, if the map is modified during iteration (except through the iterators own remove
  * method), external synchronization must be performed.
+ * <p>
+ * {@code SynchronizedWeakHashMap} still requires manual synchronization during iterations,
+ * Because the mapping returned by Collections. synchronizedMap is not "fully synchronized".
+ * Especially, when iterating the collection, it is necessary to manually synchronize externally
+ * (e.g. through synchronization blocks) to avoid possible concurrent modification exceptions.
+ * <p>
+ * For example, during iteration, synchronization is required as follows:
+ * <pre>
+ *     {@code
+ *          synchronized(synchronizedWeakHashMap) {
+ *                 Iterator<Map.Entry<K, V>> it = synchronizedWeakHashMap.entrySet().iterator();
+ *                 while (it.hasNext()) {
+ *                      Map.Entry<K, V> entry = it.next();
+ *                      // solve entry
+ *                  }
+ *          }
+ *     }
+ * </pre>
  *
  * @see WeakHashMap
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
+
 public class SynchronizedWeakHashMap<K, V> extends ForwardingMap<K, V> implements Map<K, V> {
 
     private final Map<K, V> delegate;
@@ -48,7 +67,7 @@ public class SynchronizedWeakHashMap<K, V> extends ForwardingMap<K, V> implement
      * capacity (16) and load factor (0.75).
      */
     public SynchronizedWeakHashMap() {
-        delegate = Collections.synchronizedMap(new WeakHashMap<>());
+        this(new WeakHashMap<>());
     }
 
     /**
@@ -59,7 +78,7 @@ public class SynchronizedWeakHashMap<K, V> extends ForwardingMap<K, V> implement
      * @throws IllegalArgumentException if the initial capacity is negative
      */
     public SynchronizedWeakHashMap(int initialCapacity) {
-        delegate = Collections.synchronizedMap(new WeakHashMap<>(initialCapacity));
+        this(new WeakHashMap<>(initialCapacity));
     }
 
     /**
@@ -72,7 +91,7 @@ public class SynchronizedWeakHashMap<K, V> extends ForwardingMap<K, V> implement
      * @throws NullPointerException if the specified map is null
      */
     public SynchronizedWeakHashMap(Map<? extends K, ? extends V> m) {
-        delegate = Collections.synchronizedMap(new WeakHashMap<>(m));
+        this(new WeakHashMap<>(m));
     }
 
     /**
@@ -85,7 +104,14 @@ public class SynchronizedWeakHashMap<K, V> extends ForwardingMap<K, V> implement
      *                                  or if the load factor is nonpositive.
      */
     public SynchronizedWeakHashMap(int initialCapacity, float loadFactor) {
-        delegate = Collections.synchronizedMap(new WeakHashMap<>(initialCapacity, loadFactor));
+        this(new WeakHashMap<>(initialCapacity, loadFactor));
+    }
+
+    /**
+     * @param weakHashMap
+     */
+    private SynchronizedWeakHashMap(WeakHashMap<K, V> weakHashMap) {
+        this.delegate = Collections.synchronizedMap(weakHashMap);
     }
 
     /**
