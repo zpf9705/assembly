@@ -20,7 +20,19 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 /**
- * Defined four commonly used method types for HTTP request patterns.
+ * The HTTP request executor interface defines various HTTP request methods and provides a
+ * unified request execution method.
+ * <p>
+ * This interface allows mapping lowercase HTTP method names to specific methods of the
+ * current class through a unified 'unifiedDoRequest' method,And execute the corresponding
+ * HTTP request. In addition, GET, POST, PUT, DELETE, TRACE,OPTIONS, HEAD, PATCH, etc. are
+ * directly defined Specific HTTP request methods.
+ * <p>
+ * In each request method, it is allowed to specify the request address (URL), request headers,
+ * request parameters (params), and Whether to concatenate the parameters in Map or Json format
+ * to the URL and use them as a key value pair (month).
+ * <p>
+ * All request methods return a return value of type String and may throw exceptions.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
