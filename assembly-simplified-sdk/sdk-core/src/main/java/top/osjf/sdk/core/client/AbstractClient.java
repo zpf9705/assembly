@@ -233,6 +233,9 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
         return LOGGER::error;
     }
 
+    /**
+     * Release the temporarily stored request parameter information.
+     */
     @Override
     public void close() {
         setCurrentRequest(null);
