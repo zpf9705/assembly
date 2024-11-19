@@ -16,6 +16,7 @@
 
 package top.osjf.sdk.http;
 
+import com.google.common.base.Stopwatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.osjf.sdk.core.client.AbstractClient;
@@ -30,6 +31,7 @@ import top.osjf.sdk.core.util.StringUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 
 /**
@@ -204,8 +206,8 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
         String responseStr = null;
         Throwable throwable = null;
 
-        //Record the initial time.
-        long startTimeMillis = System.currentTimeMillis();
+        //Create a request timer.
+        Stopwatch stopwatch = Stopwatch.createStarted();
 
         //Key operation steps: try the package.
         try {
@@ -239,9 +241,12 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
 
         } finally {
 
+            //Stop timing.
+            stopwatch.stop();
+
             //Hand over the call information to the final processing project.
             finallyHandler(HttpResultSolver.ExecuteInfoBuild.builder().requestAccess(request)
-                    .spend(System.currentTimeMillis() - startTimeMillis)
+                    .spend(stopwatch.elapsed(TimeUnit.MILLISECONDS))
                     .maybeError(throwable)
                     .response(responseStr)
                     .build());
