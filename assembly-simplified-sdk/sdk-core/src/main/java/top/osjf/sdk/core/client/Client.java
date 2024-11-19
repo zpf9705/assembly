@@ -28,7 +28,7 @@ import java.io.Serializable;
  * This interface is a generic interface, and the generic parameter R must be {@link Response} or
  * its subclass.
  * <p>
- * The interface integrates the following functions:</p>
+ * The interface integrates the following functions:
  * <ul>
  * <li>{@link RequestCore}: defines the core method for sending requests</li>
  * <li>{@link PreProcessingResponseHandler}: Allow preprocessing before response processing</li>
@@ -40,7 +40,6 @@ import java.io.Serializable;
  * <li>{@link Serializable}: Allow interface implementation classes to be serialized for use during
  * network transmission or persistent storage</li>
  * </ul>
- *
  * @param <R> Implement a unified response class data type.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
