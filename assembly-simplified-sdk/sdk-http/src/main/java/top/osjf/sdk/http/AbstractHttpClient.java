@@ -17,22 +17,15 @@
 package top.osjf.sdk.http;
 
 import com.google.common.base.Stopwatch;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import top.osjf.sdk.core.client.AbstractClient;
-import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.core.exception.SdkException;
 import top.osjf.sdk.core.process.DefaultErrorResponse;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.support.ServiceLoadManager;
-import top.osjf.sdk.core.util.CollectionUtils;
-import top.osjf.sdk.core.util.JSONUtil;
 import top.osjf.sdk.core.util.StringUtils;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiConsumer;
 
 /**
  * SDK's HTTP request mode client abstract class inherits
@@ -68,9 +61,6 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
 
     private static final long serialVersionUID = -7793213059840466979L;
 
-    /*** Default slf4j logger with {@link Client} */
-    private final Logger log = LoggerFactory.getLogger(getClass());
-
     /*** The real address accessed by executing HTTP requests.*/
     private final String url;
 
@@ -86,11 +76,11 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
      * {@link top.osjf.sdk.core.support.LoadOrder} annotation to specify the higher
      * priority of the custom executor.
      * <p>
-     *  The extension already provides two implementations of {@code HttpRequestExecutor},
-     *  {@code Apache hc} and {@code Ok hc}, with the former taking precedence over the
-     *  latter (when all are used, you can observe the order of {@link top.osjf.sdk.core.support.LoadOrder}
-     *  annotations). To customize the extension implementation class, you can follow the example below:
-     *  <pre>
+     * The extension already provides two implementations of {@code HttpRequestExecutor},
+     * {@code Apache hc} and {@code Ok hc}, with the former taking precedence over the
+     * latter (when all are used, you can observe the order of {@link top.osjf.sdk.core.support.LoadOrder}
+     * annotations). To customize the extension implementation class, you can follow the example below:
+     * <pre>
      *      {@code
      *      top.osjf.sdk.core.support.LoadOrder(Integer.MIN_VALUE) The highest loading level.
      *      public class DefaultHttpRequestExecutor implements HttpRequestExecutor{
@@ -137,13 +127,13 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
      *     }
      *    }
      *  </pre>
-     *
-     *  The default provided {@code HttpRequestExecutor} implementation can be viewed
-     *  in the following packages:
-     *  <ul>
-     *      <li><a href="https://mvnrepository.com/artifact/top.osjf.sdk/sdk-http-apache">sdk-http-apache</a></li>
-     *      <li><a href="https://mvnrepository.com/artifact/top.osjf.sdk/sdk-http-ok">sdk-http-ok</a></li>
-     *  </ul>
+     * <p>
+     * The default provided {@code HttpRequestExecutor} implementation can be viewed
+     * in the following packages:
+     * <ul>
+     *     <li><a href="https://mvnrepository.com/artifact/top.osjf.sdk/sdk-http-apache">sdk-http-apache</a></li>
+     *     <li><a href="https://mvnrepository.com/artifact/top.osjf.sdk/sdk-http-ok">sdk-http-ok</a></li>
+     * </ul>
      */
     private HttpRequestExecutor requestExecutor;
 
@@ -191,15 +181,16 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
      * @return the request that was temporarily placed in the
      * thread copy as {@link Request}.
      */
-    protected HttpRequest<R> getCurrentHttpRequest() {
-        return (HttpRequest<R>) getCurrentRequest();
+    @Override
+    protected HttpRequest<R> getCurrentRequest() {
+        return (HttpRequest<R>) super.getCurrentRequest();
     }
 
     @Override
     public R request() {
 
         //Get the request parameters for the current thread.
-        HttpRequest<R> request = getCurrentHttpRequest();
+        HttpRequest<R> request = getCurrentRequest();
 
         //Define the required parameters for this request.
         R response;
@@ -268,15 +259,15 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
 
                 //Loading the obtained HttpRequestExecutor requires setting it to the current client.
                 setRequestExecutor(executor);
-                if (log.isDebugEnabled()) {
-                    log.debug("Use the service to retrieve and find the highest priority {}.",
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Use the service to retrieve and find the highest priority {}.",
                             executor.getClass().getName());
                 }
             } else {
 
                 //An error occurred when the HttpRequestExecutor was not found.
-                if (log.isErrorEnabled()) {
-                    log.error("There are no available request executors `{}` for the current client {}.",
+                if (LOGGER.isErrorEnabled()) {
+                    LOGGER.error("There are no available request executors `{}` for the current client {}.",
                             HttpRequestExecutor.class.getName(), getClass().getName());
                 }
 
@@ -306,47 +297,6 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
         return getRequestExecutor()
                 .unifiedDoRequest(requestMethod.name().toLowerCase(), getUrl(), headers, requestParam, montage);
     }
-
-    @Override
-    public String preResponseStrHandler(Request<R> request, String responseStr) {
-        return responseStr;
-    }
-
-    @Override
-    public R convertToResponse(Request<R> request, String responseStr) {
-        R response;
-        Object type = request.getResponseRequiredType();
-        if (JSONUtil.isValidObject(responseStr)) {
-            response = JSONUtil.parseObject(responseStr, type);
-        } else if (JSONUtil.isValidArray(responseStr)) {
-            List<R> responses = JSONUtil.parseArray(responseStr, type);
-            if (CollectionUtils.isNotEmpty(responses)) {
-                response = responses.get(0);
-            } else {
-                response = JSONUtil.toEmptyObj(type);
-            }
-        } else {
-            response = DefaultErrorResponse
-                    .parseErrorResponse(responseStr, DefaultErrorResponse.ErrorType.DATA, request);
-        }
-        return response;
-    }
-
-    @Override
-    public BiConsumer<String, Object[]> normal() {
-        return log::info;
-    }
-
-    @Override
-    public BiConsumer<String, Object[]> sdkError() {
-        return log::error;
-    }
-
-    @Override
-    public BiConsumer<String, Object[]> unKnowError() {
-        return log::error;
-    }
-
 
     @Override
     public void handlerSdkError(HttpRequest<?> request, SdkException e) {

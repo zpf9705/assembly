@@ -33,6 +33,7 @@ import top.osjf.sdk.core.client.Client;
  * <li>{@link HttpResultSolver}: defines methods for resolving HTTP request results, which
  * may include parsing response bodies, handling error status codes, etc</li>
  * </ul>
+ *
  * @param <R> The response type must be {@link HttpResponse} or its subclass.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0

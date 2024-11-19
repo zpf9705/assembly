@@ -17,14 +17,21 @@
 package top.osjf.sdk.core.client;
 
 import io.reactivex.rxjava3.functions.Supplier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import top.osjf.sdk.core.process.DefaultErrorResponse;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.util.CollectionUtils;
+import top.osjf.sdk.core.util.JSONUtil;
 import top.osjf.sdk.core.util.StringUtils;
 import top.osjf.sdk.core.util.SynchronizedWeakHashMap;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
 
 /**
  * The abstract auxiliary implementation class for {@link Client}
@@ -49,6 +56,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class AbstractClient<R extends Response> implements Client<R> {
 
     private static final long serialVersionUID = -6931093876869566743L;
+
+    /*** Default slf4j logger with current {@link Client} impl */
+    protected final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     /*** The use of object locks for client retrieval and caching.*/
     private static final Object lock = new Object();
@@ -150,6 +160,77 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
      */
     protected Request<R> getCurrentRequest() {
         return local.get();
+    }
+
+    /**
+     * {@inheritDoc}
+     * The default return is the request string itself.
+     *
+     * @param request     {@inheritDoc}
+     * @param responseStr {@inheritDoc}
+     * @return {@inheritDoc}
+     */
+    @Override
+    public String preResponseStrHandler(Request<R> request, String responseStr) {
+        return responseStr;
+    }
+
+    /**
+     * {@inheritDoc}
+     * By default, a mechanism is provided to convert response classes in JSON format.
+     *
+     * @param request     {@inheritDoc}
+     * @param responseStr {@inheritDoc}
+     * @return {@inheritDoc}
+     */
+    @Override
+    public R convertToResponse(Request<R> request, String responseStr) {
+        R response;
+        Object type = request.getResponseRequiredType();
+        if (JSONUtil.isValidObject(responseStr)) {
+            response = JSONUtil.parseObject(responseStr, type);
+        } else if (JSONUtil.isValidArray(responseStr)) {
+            List<R> responses = JSONUtil.parseArray(responseStr, type);
+            if (CollectionUtils.isNotEmpty(responses)) {
+                response = responses.get(0);
+            } else {
+                response = JSONUtil.toEmptyObj(type);
+            }
+        } else {
+            response = DefaultErrorResponse
+                    .parseErrorResponse(responseStr, DefaultErrorResponse.ErrorType.DATA, request);
+        }
+        return response;
+    }
+
+    /**
+     * {@inheritDoc}
+     * Default use {@link Logger#info}.
+     * @return {@inheritDoc}
+     */
+    @Override
+    public BiConsumer<String, Object[]> normal() {
+        return LOGGER::info;
+    }
+
+    /**
+     * {@inheritDoc}
+     * Default use {@link Logger#error}.
+     * @return {@inheritDoc}
+     */
+    @Override
+    public BiConsumer<String, Object[]> sdkError() {
+        return LOGGER::error;
+    }
+
+    /**
+     * {@inheritDoc}
+     * Default use {@link Logger#error}.
+     * @return {@inheritDoc}
+     */
+    @Override
+    public BiConsumer<String, Object[]> unKnowError() {
+        return LOGGER::error;
     }
 
     @Override
