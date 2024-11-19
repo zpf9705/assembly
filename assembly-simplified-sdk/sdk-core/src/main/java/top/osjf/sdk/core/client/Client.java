@@ -18,23 +18,28 @@ package top.osjf.sdk.core.client;
 
 import top.osjf.sdk.core.process.Response;
 
-import java.io.Closeable;
 import java.io.Serializable;
 
 /**
- * A client help interface created for the request process of SDK.
- *
- * <p>The execution input sequence is:
- * <dl>
- *     <dt>1、{@link RequestCore}Request Remote</dt>
- *     <dt>2、{@link PreProcessingResponseHandler}Request data preprocessing</dt>
- *     <dt>3、{@link ResponseConvert}Convert Unified Request Object</dt>
- *     <dt>4、{@link Closeable}Clear memory parameters</dt>
- *     <dt>5、{@link LoggerConsumer}Define output log entries</dt>
- * </dl>
- * Each process has a corresponding interface method, which you can override to customize method conversion.
- *
- * <p>There are also well-defined abstract classes {@link AbstractClient} here to learn about.</p>
+ * The client interface defines the core behaviors for processing requests and responses, as well as
+ * functions for preprocessing responses, converting responses, logging, and automatically shutting
+ * down resources.
+ * <p>
+ * This interface is a generic interface, and the generic parameter R must be {@link Response} or
+ * its subclass.
+ * <p>
+ * The interface integrates the following functions:</p>
+ * <ul>
+ * <li>{@link RequestCore}: defines the core method for sending requests</li>
+ * <li>{@link PreProcessingResponseHandler}: Allow preprocessing before response processing</li>
+ * <li>{@link ResponseConvert}: defines a method for converting responses to specific types</li>
+ * <li>{@link LoggerConsumer}: Allow interfaces to implement class consumption of log information
+ * (i.e. logging)</li>
+ * <li>{@link AutoCloseable}: Defined a method for automatically closing resources, typically used
+ * to release network connections and other resources</li>
+ * <li>{@link Serializable}: Allow interface implementation classes to be serialized for use during
+ * network transmission or persistent storage</li>
+ * </ul>
  *
  * @param <R> Implement a unified response class data type.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
