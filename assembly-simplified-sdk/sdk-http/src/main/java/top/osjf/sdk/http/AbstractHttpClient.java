@@ -174,18 +174,6 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
         return url;
     }
 
-    /**
-     * Return the request that was temporarily placed in the
-     * thread copy as {@link Request}.
-     *
-     * @return the request that was temporarily placed in the
-     * thread copy as {@link Request}.
-     */
-    @Override
-    protected HttpRequest<R> getCurrentRequest() {
-        return (HttpRequest<R>) super.getCurrentRequest();
-    }
-
     @Override
     public R request() {
 
@@ -296,6 +284,16 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
         //Use the HTTP request executor to execute the corresponding method.
         return getRequestExecutor()
                 .unifiedDoRequest(requestMethod.name().toLowerCase(), getUrl(), headers, requestParam, montage);
+    }
+
+    @Override
+    public String preResponseStrHandler(HttpRequest<R> request, String responseStr) {
+        return super.preResponseStrHandler(request, responseStr);
+    }
+
+    @Override
+    public R convertToResponse(HttpRequest<R> request, String responseStr) {
+        return super.convertToResponse(request, responseStr);
     }
 
     @Override

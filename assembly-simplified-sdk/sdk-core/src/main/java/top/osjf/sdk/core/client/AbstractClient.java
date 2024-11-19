@@ -158,8 +158,8 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
      *
      * @return Actual {@link Request} implementation.
      */
-    protected Request<R> getCurrentRequest() {
-        return local.get();
+    protected <T extends Request<R>> T getCurrentRequest() {
+        return (T) local.get();
     }
 
     /**
@@ -206,6 +206,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
     /**
      * {@inheritDoc}
      * Default use {@link Logger#info}.
+     *
      * @return {@inheritDoc}
      */
     @Override
@@ -216,6 +217,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
     /**
      * {@inheritDoc}
      * Default use {@link Logger#error}.
+     *
      * @return {@inheritDoc}
      */
     @Override
@@ -226,6 +228,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
     /**
      * {@inheritDoc}
      * Default use {@link Logger#error}.
+     *
      * @return {@inheritDoc}
      */
     @Override
