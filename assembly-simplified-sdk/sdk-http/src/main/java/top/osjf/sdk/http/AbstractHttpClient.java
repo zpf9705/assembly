@@ -135,6 +135,13 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
      *     }
      *    }
      *  </pre>
+     *
+     *  The default provided {@code HttpRequestExecutor} implementation can be viewed
+     *  in the following packages:
+     *  <ul>
+     *      <li><a href="https://mvnrepository.com/artifact/top.osjf.sdk/sdk-http-apache">sdk-http-apache</a></li>
+     *      <li><a href="https://mvnrepository.com/artifact/top.osjf.sdk/sdk-http-ok">sdk-http-ok</a></li>
+     *  </ul>
      */
     private HttpRequestExecutor requestExecutor;
 
@@ -264,10 +271,16 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
 
                 //An error occurred when the HttpRequestExecutor was not found.
                 if (log.isErrorEnabled()) {
-                    log.error("An executable {} must be provided for {}.",
+                    log.error("There are no available request executors `{}` for the current client {}.",
                             HttpRequestExecutor.class.getName(), getClass().getName());
                 }
-                throw new NullPointerException("HttpRequestExecutor must not be null !");
+
+                //Reminder: There are no available actuators, and the specific
+                // instructions for viewing and using them are provided here.
+                throw new IllegalArgumentException
+                        ("There is no available `top.osjf.sdk.http.HttpRequestExecutor`, " +
+                                "please refer to `top.osjf.sdk.http.AbstractHttpClient#HttpRequestExecutor` " +
+                                "for usage plan.");
             }
         }
         //Get the request header parameters and check content type.
