@@ -156,10 +156,15 @@ public abstract class AbstractClient<R extends Response> implements Client<R> {
      * Return the current request parameters, which is the
      * implementation class of {@link Request}.
      *
+     * @param <T> Convert the type of parameter.
      * @return Actual {@link Request} implementation.
      */
     protected <T extends Request<R>> T getCurrentRequest() {
-        return (T) local.get();
+        Request request = local.get();
+        if (request != null) {
+            return (T) local.get();
+        }
+        return null;
     }
 
     /**
