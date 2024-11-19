@@ -24,7 +24,7 @@ import java.util.Map;
  * unified request execution method.
  * <p>
  * This interface allows mapping lowercase HTTP method names to specific methods of the
- * current class through a unified 'unifiedDoRequest' method,And execute the corresponding
+ * current class through a unified {@link #unifiedDoRequest} method,And execute the corresponding
  * HTTP request. In addition, GET, POST, PUT, DELETE, TRACE,OPTIONS, HEAD, PATCH, etc. are
  * directly defined Specific HTTP request methods.
  * <p>
