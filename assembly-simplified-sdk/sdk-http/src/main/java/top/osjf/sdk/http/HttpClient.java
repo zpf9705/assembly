@@ -17,29 +17,41 @@
 package top.osjf.sdk.http;
 
 import top.osjf.sdk.core.client.Client;
-import top.osjf.sdk.core.process.Response;
-
-import java.util.Map;
 
 /**
- * Interface to provide configuration for a http client.
- *
+ * The HTTP client interface extends the client interface and adds the ability to resolve
+ * HTTP request results.
+ * <p>
+ * This interface is a generic interface, and the generic parameter R must be {@link HttpResponse}
+ * or its subclass, representing the type of HTTP response
+ * <p>
+ * The interface integrates the following functions:
+ * <ul>
+ * <li>{@link Client}:  Inherited  from the Client interface, it includes core behaviors
+ * for handling requests and responses, as well as functions for preprocessing responses,
+ * converting responses,  logging , and automatically closing resources</li>
+ * <li>{@link HttpResultSolver}: defines methods for resolving HTTP request results, which
+ * may include parsing response bodies, handling error status codes, etc</li>
+ * </ul>
+ * @param <R> The response type must be {@link HttpResponse} or its subclass.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public interface HttpClient<R extends Response> extends Client<R>, HttpResultSolver {
+public interface HttpClient<R extends HttpResponse> extends Client<R>, HttpResultSolver {
 
     /**
-     * Use the existing parameters given by {@link HttpRequest} to conduct
-     * an HTTP call and return the result.
+     * Execute an HTTP request and return a string representation of the response.
+     * <p>
+     * This method accepts an HTTP request object, sends the request to the server,
+     * and returns the server's response content (usually a string).
+     * <p>
+     * During execution, this method may throw exceptions if encountering network issues,
+     * request timeouts, or server error status codes.
      *
-     * @param method       {@link HttpRequest#matchSdkEnum()}
-     * @param headers      {@link HttpRequest#getHeadMap()}
-     * @param requestParam {@link HttpRequest#getRequestParam()}
-     * @param montage      {@link HttpRequest#montage()}
-     * @return http request result.
-     * @throws Exception maybe exceptions when http request.
+     * @param request The HTTP request object to be executed for request.
+     * @return The string representation of the response from the server.
+     * @throws Exception If any exception occurs during the execution of the request,
+     *                   throw this exception.
      */
-    String doHttpRequest(HttpRequestMethod method, Map<String, String> headers,
-                         Object requestParam, boolean montage) throws Exception;
+    String execute(HttpRequest<R> request) throws Exception;
 }
