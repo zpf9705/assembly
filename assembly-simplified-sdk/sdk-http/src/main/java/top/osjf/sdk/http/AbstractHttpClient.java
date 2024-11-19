@@ -56,7 +56,7 @@ import java.util.function.BiConsumer;
  *
  * <p>If this type is inherited, it can be rewritten.
  *
- * <p>Of course, you can define your request based on the {@link #doHttpRequest} method.
+ * <p>Of course, you can define your request based on the {@link #execute} method.
  *
  * @param <R> Implement a unified response class data type.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
@@ -72,7 +72,9 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
     /*** HTTP requests the real access address.*/
     private final String url;
 
-    /*** Http request executor*/
+    /*** Http request executor.
+     *
+     * */
     private HttpRequestExecutor requestExecutor;
 
     /*** Constructing for {@link HttpClient} objects using access URLs.
@@ -143,17 +145,8 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
             //Custom validation of request parameters.
             request.validate();
 
-            //Obtain the real request parameters.
-            Object requestParam = request.getRequestParam();
-
-            //Get the request header parameters.
-            Map<String, String> headers = request.getHeadMap();
-
             //Execute this request, route according to the request type, and handle the parameters.
-            responseStr = doHttpRequest(request.matchSdkEnum().getRequestMethod(),
-                    headers,
-                    requestParam,
-                    request.montage());
+            responseStr = execute(request);
 
             //Preprocessing operation for request results.
             responseStr = preResponseStrHandler(request, responseStr);
@@ -190,20 +183,25 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
     }
 
     @Override
-    public String doHttpRequest(HttpRequestMethod method,
-                                Map<String, String> headers,
-                                Object requestParam,
-                                boolean montage) throws Exception {
+    public String execute(HttpRequest<R> request) throws Exception {
+
         HttpRequestExecutor executor = getRequestExecutor();
         if (executor == null) {
+
+            //When the HttpRequestExecutor is not directly set,
+            // it is obtained through the loading mechanism.
             executor = ServiceLoadManager.loadHighPriority(HttpRequestExecutor.class);
             if (executor != null) {
+
+                //Loading the obtained HttpRequestExecutor requires setting it to the current client.
                 setRequestExecutor(executor);
                 if (log.isDebugEnabled()) {
                     log.debug("Use the service to retrieve and find the highest priority {}.",
                             executor.getClass().getName());
                 }
             } else {
+
+                //An error occurred when the HttpRequestExecutor was not found.
                 if (log.isErrorEnabled()) {
                     log.error("An executable {} must be provided for {}.",
                             HttpRequestExecutor.class.getName(), getClass().getName());
@@ -211,9 +209,23 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
                 throw new NullPointerException("HttpRequestExecutor must not be null !");
             }
         }
+        //Get the request header parameters and check content type.
+        //if not provider，default to json.
+        Map<String, String> headers = request.getHeadMap();
         HttpSdkSupport.checkContentType(headers);
+
+        //Obtain the real request parameters.
+        Object requestParam = request.getRequestParam();
+
+        //Get the HTTP method type.
+        HttpRequestMethod requestMethod = request.matchSdkEnum().getRequestMethod();
+
+        //Obtain parameter segmentation markers.
+        boolean montage = request.montage();
+
+        //Use the HTTP request executor to execute the corresponding method.
         return getRequestExecutor()
-                .unifiedDoRequest(method.name().toLowerCase(), getUrl(), headers, requestParam, montage);
+                .unifiedDoRequest(requestMethod.name().toLowerCase(), getUrl(), headers, requestParam, montage);
     }
 
     @Override
