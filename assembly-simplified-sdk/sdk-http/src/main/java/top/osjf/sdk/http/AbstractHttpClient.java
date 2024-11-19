@@ -66,15 +66,76 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
 
     private static final long serialVersionUID = -7793213059840466979L;
 
-    /*** default slf4j logger with {@link Client} */
+    /*** Default slf4j logger with {@link Client} */
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    /*** HTTP requests the real access address.*/
+    /*** The real address accessed by executing HTTP requests.*/
     private final String url;
 
-    /*** Http request executor.
-     *
-     * */
+    /**
+     * Http request executor.
+     * <p>
+     * The method {@link #setRequestExecutor} can be used to set the HTTP
+     * executor required by the current {@code HttpClient}.
+     * <p>
+     * If you haven't set {@code HttpRequestExecutor} through a method, you can
+     * use a specific loading mechanism to automatically load it. You can customize
+     * the {@code HttpRequestExecutor} implementation class and mark the
+     * {@link top.osjf.sdk.core.support.LoadOrder} annotation to specify the higher
+     * priority of the custom executor.
+     * <p>
+     *  The extension already provides two implementations of {@code HttpRequestExecutor},
+     *  {@code Apache hc} and {@code Ok hc}, with the former taking precedence over the
+     *  latter (when all are used, you can observe the order of {@link top.osjf.sdk.core.support.LoadOrder}
+     *  annotations). To customize the extension implementation class, you can follow the example below:
+     *  <pre>
+     *      {@code
+     *      top.osjf.sdk.core.support.LoadOrder(Integer.MIN_VALUE) The highest loading level.
+     *      public class DefaultHttpRequestExecutor implements HttpRequestExecutor{
+     *         Override
+     *         public String get(String url, Map<String, String> headers, Object param, boolean montage)
+     *         throws Exception {
+     *             return null;
+     *         }
+     *         Override
+     *         public String post(String url, Map<String, String> headers, Object param, boolean montage)
+     *         throws Exception {
+     *             return null;
+     *         }
+     *         Override
+     *         public String put(String url, Map<String, String> headers, Object param, boolean montage)
+     *         throws Exception {
+     *             return null;
+     *         }
+     *         Override
+     *         public String delete(String url, Map<String, String> headers, Object param, boolean montage)
+     *         throws Exception {
+     *             return null;
+     *         }
+     *         Override
+     *         public String trace(String url, Map<String, String> headers, Object param, boolean montage)
+     *         throws Exception {
+     *             return null;
+     *         }
+     *         Override
+     *         public String options(String url, Map<String, String> headers, Object param, boolean montage)
+     *         throws Exception {
+     *             return null;
+     *         }
+     *         Override
+     *         public String head(String url, Map<String, String> headers, Object param, boolean montage)
+     *         throws Exception {
+     *             return null;
+     *         }
+     *         Override
+     *         public String patch(String url, Map<String, String> headers, Object param, boolean montage)
+     *         throws Exception {
+     *             return null;
+     *         }
+     *     }
+     *    }
+     *  </pre>
+     */
     private HttpRequestExecutor requestExecutor;
 
     /*** Constructing for {@link HttpClient} objects using access URLs.
