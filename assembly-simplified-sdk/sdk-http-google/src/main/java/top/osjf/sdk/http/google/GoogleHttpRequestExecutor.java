@@ -16,10 +16,14 @@
 
 package top.osjf.sdk.http.google;
 
+import feign.Request;
+import feign.Response;
+import feign.googlehttpclient.GoogleHttpClient;
 import top.osjf.sdk.core.support.LoadOrder;
+import top.osjf.sdk.http.DeprecatedHttpRequestExecutor;
 import top.osjf.sdk.http.HttpRequestExecutor;
 
-import java.util.Map;
+import java.io.IOException;
 
 /**
  * One of the implementation classes of {@link HttpRequestExecutor}, please
@@ -29,45 +33,24 @@ import java.util.Map;
  * @since 1.0.2
  */
 @LoadOrder(Integer.MIN_VALUE + 12)
-public class GoogleHttpRequestExecutor implements HttpRequestExecutor {
+public class GoogleHttpRequestExecutor extends DeprecatedHttpRequestExecutor implements HttpRequestExecutor {
+    private final GoogleHttpClient googleHttpClient;
 
-    @Override
-    public String get(String url, Map<String, String> headers, Object requestParam, boolean montage) throws Exception {
-        return GoogleHttpSimpleRequestUtils.get(url, headers, requestParam, montage);
+    public GoogleHttpRequestExecutor() {
+        this(new GoogleHttpClient());
+    }
+
+    public GoogleHttpRequestExecutor(GoogleHttpClient googleHttpClient) {
+        this.googleHttpClient = googleHttpClient;
     }
 
     @Override
-    public String post(String url, Map<String, String> headers, Object requestParam, boolean montage) throws Exception {
-        return GoogleHttpSimpleRequestUtils.post(url, headers, requestParam, montage);
+    public Response execute(Request request, Request.Options options) throws IOException {
+        return googleHttpClient.execute(request, options);
     }
 
     @Override
-    public String put(String url, Map<String, String> headers, Object requestParam, boolean montage) throws Exception {
-        return GoogleHttpSimpleRequestUtils.put(url, headers, requestParam, montage);
-    }
-
-    @Override
-    public String delete(String url, Map<String, String> headers, Object requestParam, boolean montage) throws Exception {
-        return GoogleHttpSimpleRequestUtils.delete(url, headers, requestParam, montage);
-    }
-
-    @Override
-    public String trace(String url, Map<String, String> headers, Object requestParam, boolean montage) throws Exception {
-        return GoogleHttpSimpleRequestUtils.trace(url, headers, requestParam, montage);
-    }
-
-    @Override
-    public String options(String url, Map<String, String> headers, Object requestParam, boolean montage) throws Exception {
-        return GoogleHttpSimpleRequestUtils.options(url, headers, requestParam, montage);
-    }
-
-    @Override
-    public String head(String url, Map<String, String> headers, Object requestParam, boolean montage) throws Exception {
-        return GoogleHttpSimpleRequestUtils.head(url, headers, requestParam, montage);
-    }
-
-    @Override
-    public String patch(String url, Map<String, String> headers, Object requestParam, boolean montage) throws Exception {
-        return GoogleHttpSimpleRequestUtils.patch(url, headers, requestParam, montage);
+    protected Class<?> toolClass() {
+        return GoogleHttpSimpleRequestUtils.class;
     }
 }

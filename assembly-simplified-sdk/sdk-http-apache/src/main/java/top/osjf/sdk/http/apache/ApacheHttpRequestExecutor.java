@@ -16,10 +16,14 @@
 
 package top.osjf.sdk.http.apache;
 
+import feign.Request;
+import feign.Response;
+import feign.httpclient.ApacheHttpClient;
 import top.osjf.sdk.core.support.LoadOrder;
+import top.osjf.sdk.http.DeprecatedHttpRequestExecutor;
 import top.osjf.sdk.http.HttpRequestExecutor;
 
-import java.util.Map;
+import java.io.IOException;
 
 /**
  * One of the implementation classes of {@link HttpRequestExecutor}, please
@@ -29,45 +33,25 @@ import java.util.Map;
  * @since 1.0.0
  */
 @LoadOrder(Integer.MIN_VALUE + 10)
-public class ApacheHttpRequestExecutor implements HttpRequestExecutor {
+public class ApacheHttpRequestExecutor extends DeprecatedHttpRequestExecutor implements HttpRequestExecutor {
 
-    @Override
-    public String get(String url, Map<String, String> headers, Object requestParam, boolean montage) throws Exception {
-        return ApacheHttpSimpleRequestUtils.get(url, headers, requestParam, montage);
+    private final ApacheHttpClient apacheHttpClient;
+
+    public ApacheHttpRequestExecutor() {
+        this(new ApacheHttpClient());
+    }
+
+    public ApacheHttpRequestExecutor(ApacheHttpClient apacheHttpClient) {
+        this.apacheHttpClient = apacheHttpClient;
     }
 
     @Override
-    public String post(String url, Map<String, String> headers, Object requestParam, boolean montage) throws Exception {
-        return ApacheHttpSimpleRequestUtils.post(url, headers, requestParam, montage);
+    public Response execute(Request request, Request.Options options) throws IOException {
+        return apacheHttpClient.execute(request, options);
     }
 
     @Override
-    public String put(String url, Map<String, String> headers, Object requestParam, boolean montage) throws Exception {
-        return ApacheHttpSimpleRequestUtils.put(url, headers, requestParam, montage);
-    }
-
-    @Override
-    public String delete(String url, Map<String, String> headers, Object requestParam, boolean montage) throws Exception {
-        return ApacheHttpSimpleRequestUtils.delete(url, headers, requestParam, montage);
-    }
-
-    @Override
-    public String trace(String url, Map<String, String> headers, Object requestParam, boolean montage) throws Exception {
-        return ApacheHttpSimpleRequestUtils.trace(url, headers, requestParam, montage);
-    }
-
-    @Override
-    public String options(String url, Map<String, String> headers, Object requestParam, boolean montage) throws Exception {
-        return ApacheHttpSimpleRequestUtils.options(url, headers, requestParam, montage);
-    }
-
-    @Override
-    public String head(String url, Map<String, String> headers, Object requestParam, boolean montage) throws Exception {
-        return ApacheHttpSimpleRequestUtils.head(url, headers, requestParam, montage);
-    }
-
-    @Override
-    public String patch(String url, Map<String, String> headers, Object requestParam, boolean montage) throws Exception {
-        return ApacheHttpSimpleRequestUtils.patch(url, headers, requestParam, montage);
+    protected Class<?> toolClass() {
+        return ApacheHttpSimpleRequestUtils.class;
     }
 }
