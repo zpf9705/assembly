@@ -16,6 +16,8 @@
 
 package top.osjf.sdk.core.process;
 
+import java.nio.charset.Charset;
+
 /**
  * Get request parameters of the specified type.
  *
@@ -23,7 +25,6 @@ package top.osjf.sdk.core.process;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-@FunctionalInterface
 public interface RequestParamCapable<T> {
 
     /**
@@ -34,4 +35,12 @@ public interface RequestParamCapable<T> {
      * @return the actual request parameters.
      */
     T getRequestParam();
+
+    /**
+     * Return the encoded character set object of the request parameter.
+     *
+     * @return The encoding character set for the request parameter.
+     * @since 1.0.2
+     */
+    Charset getCharset();
 }
