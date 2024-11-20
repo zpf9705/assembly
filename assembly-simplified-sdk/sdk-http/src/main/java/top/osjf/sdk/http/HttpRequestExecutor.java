@@ -16,6 +16,11 @@
 
 package top.osjf.sdk.http;
 
+import feign.Client;
+import feign.Request;
+import feign.Response;
+
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
@@ -37,7 +42,17 @@ import java.util.Map;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public interface HttpRequestExecutor {
+public interface HttpRequestExecutor extends Client {
+    /**
+     * {@inheritDoc}
+     *
+     * @param request {@inheritDoc}
+     * @param options {@inheritDoc}
+     * @return {@inheritDoc}
+     * @throws IOException {@inheritDoc}
+     */
+    @Override
+    Response execute(Request request, Request.Options options) throws IOException;
 
     /**
      * Use lowercase HTTP method names to map the request method names of
@@ -52,6 +67,7 @@ public interface HttpRequestExecutor {
      * @return The {@code String} type of the return value
      * @throws Exception unknown exception.
      */
+    @Deprecated
     default String unifiedDoRequest(String methodName,
                                     String url,
                                     Map<String, String> headers, Object param, boolean montage)
@@ -81,6 +97,7 @@ public interface HttpRequestExecutor {
      * @return The {@code String} type of the return value
      * @throws Exception unknown exception.
      */
+    @Deprecated
     String get(String url, Map<String, String> headers, Object param, boolean montage) throws Exception;
 
     /**
@@ -94,6 +111,7 @@ public interface HttpRequestExecutor {
      * @return The {@code String} type of the return value
      * @throws Exception unknown exception.
      */
+    @Deprecated
     String post(String url, Map<String, String> headers, Object param, boolean montage) throws Exception;
 
     /**
@@ -107,6 +125,7 @@ public interface HttpRequestExecutor {
      * @return The {@code String} type of the return value
      * @throws Exception unknown exception.
      */
+    @Deprecated
     String put(String url, Map<String, String> headers, Object param, boolean montage) throws Exception;
 
     /**
@@ -120,6 +139,7 @@ public interface HttpRequestExecutor {
      * @return The {@code String} type of the return value
      * @throws Exception unknown exception.
      */
+    @Deprecated
     String delete(String url, Map<String, String> headers, Object param, boolean montage) throws Exception;
 
     /**
@@ -133,6 +153,7 @@ public interface HttpRequestExecutor {
      * @return The {@code String} type of the return value
      * @throws Exception unknown exception.
      */
+    @Deprecated
     String trace(String url, Map<String, String> headers, Object param, boolean montage) throws Exception;
 
     /**
@@ -146,6 +167,7 @@ public interface HttpRequestExecutor {
      * @return The {@code String} type of the return value
      * @throws Exception unknown exception.
      */
+    @Deprecated
     String options(String url, Map<String, String> headers, Object param, boolean montage) throws Exception;
 
     /**
@@ -159,6 +181,7 @@ public interface HttpRequestExecutor {
      * @return The {@code String} type of the return value
      * @throws Exception unknown exception.
      */
+    @Deprecated
     String head(String url, Map<String, String> headers, Object param, boolean montage) throws Exception;
 
     /**
@@ -172,5 +195,6 @@ public interface HttpRequestExecutor {
      * @return The {@code String} type of the return value
      * @throws Exception unknown exception.
      */
+    @Deprecated
     String patch(String url, Map<String, String> headers, Object param, boolean montage) throws Exception;
 }
