@@ -7,7 +7,7 @@
     <parent>
         <groupId>top.osjf.sdk</groupId>
         <artifactId>assembly-simplified-sdk</artifactId>
-        <version>1.0.1</version>
+        <version>1.0.2</version>
     </parent>
 
     <artifactId>sdk-http</artifactId>
@@ -27,6 +27,12 @@
             <groupId>top.osjf.sdk</groupId>
             <artifactId>sdk-core</artifactId>
             <version>${core}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.openfeign</groupId>
+            <artifactId>feign-core</artifactId>
+            <version>${open.feign.compent}</version>
         </dependency>
 
     </dependencies>

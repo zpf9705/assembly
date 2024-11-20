@@ -6,7 +6,7 @@
     <parent>
         <groupId>top.osjf.sdk</groupId>
         <artifactId>assembly-simplified-sdk</artifactId>
-        <version>1.0.1</version>
+        <version>1.0.2</version>
     </parent>
 
     <artifactId>sdk-http-ok</artifactId>
@@ -17,7 +17,6 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <ok.http>3.14.9</ok.http>
         <sdk-http>1.0.2</sdk-http>
     </properties>
 
@@ -30,9 +29,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp</artifactId>
-            <version>${ok.http}</version>
+            <groupId>io.github.openfeign</groupId>
+            <artifactId>feign-okhttp</artifactId>
+            <version>${open.feign.compent}</version>
         </dependency>
 
     </dependencies>
