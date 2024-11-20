@@ -20,6 +20,9 @@ import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.core.process.AbstractRequestParams;
 import top.osjf.sdk.core.util.JSONUtil;
 
+import java.util.Collections;
+import java.util.Map;
+
 /**
  * Http request abstract node class, used to define the public parameters
  * or methods of the real request parameter class.
@@ -78,6 +81,17 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
         return param;
     }
 
+    /**
+     * The default method is {@link HttpSdkSupport#default_content_type}, which automatically
+     * adds contextual information as {@link #defaultToJson()}.
+     * @return {@inheritDoc}
+     * @since 1.0.2
+     */
+    @Override
+    public Map<String, String> getHeadMap() {
+        return Collections.singletonMap(HttpSdkSupport.named, HttpSdkSupport.default_content_type);
+    }
+
     @Override
     public boolean montage() {
         return false;
@@ -99,7 +113,7 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
      * @return Returns an input parameter object, which may have
      * multiple forms of existence or may be {@literal null}.
      */
-    public Object getParam(){
+    public Object getParam() {
         return null;
     }
 
