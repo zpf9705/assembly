@@ -217,7 +217,9 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
                 // the parameters have already been concatenated, will we not add them here?.
                 if (url.contains("?")) {
                     builder.append("?");
-                }
+                    //The parameters have already been concatenated.
+                    // For subsequent concatenation, simply add a concatenation symbol first.
+                }else builder.append("&");
                 //Ensure the correctness and security of the URL.
                 Map<String, String> encodeQueryParams = new HashMap<>();
                 String enc = StandardCharsets.UTF_8.toString();
