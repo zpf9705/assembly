@@ -28,6 +28,9 @@ import java.io.IOException;
 /**
  * One of the implementation classes of {@link HttpRequestExecutor}, please
  * refer to {@link OkHttpSimpleRequestUtils} for implementation.
+ * <p>
+ * Starting from version 1.0.2, the calling method of {@code OkHttp} uses the
+ * {@code feign-ok-http} component integrated with open feign.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
