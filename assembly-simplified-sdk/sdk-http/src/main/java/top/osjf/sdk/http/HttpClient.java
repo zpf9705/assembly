@@ -16,6 +16,7 @@
 
 package top.osjf.sdk.http;
 
+import feign.Request;
 import top.osjf.sdk.core.client.Client;
 
 /**
@@ -39,6 +40,9 @@ import top.osjf.sdk.core.client.Client;
  * @since 1.0.0
  */
 public interface HttpClient<R extends HttpResponse> extends Client<R>, HttpResultSolver {
+
+    /*** A default global {@code Request.Options}*/
+    Request.Options DEFAULT_FEIGN_OPTIONS = new Request.Options();
 
     /**
      * Execute an HTTP request and return a string representation of the response.
@@ -67,6 +71,7 @@ public interface HttpClient<R extends HttpResponse> extends Client<R>, HttpResul
      * @param responseStr top.osjf.sdk.core.client.PreProcessingResponseHandler#preResponseStrHandler#responseStr
      * @return top.osjf.sdk.core.client.PreProcessingResponseHandler#preResponseStrHandler
      * @see top.osjf.sdk.core.client.PreProcessingResponseHandler#preResponseStrHandler
+     * @since 1.0.2
      */
     String preResponseStrHandler(HttpRequest<R> request, String responseStr);
 
@@ -79,6 +84,19 @@ public interface HttpClient<R extends HttpResponse> extends Client<R>, HttpResul
      * @param responseStr top.osjf.sdk.core.client.ResponseConvert#convertToResponse#responseStr
      * @return top.osjf.sdk.core.client.ResponseConvert#convertToResponse
      * @see top.osjf.sdk.core.client.ResponseConvert#convertToResponse
+     * @since 1.0.2
      */
     R convertToResponse(HttpRequest<R> request, String responseStr);
+
+    /**
+     * Return a Controls the per-request settings currently required to be
+     * implemented by all {@link feign.Client clients}
+     *
+     * @return Controls the per-request settings currently required to be
+     * implemented by all {@link feign.Client clients}
+     * @since 1.0.2
+     */
+    default Request.Options getOptions() {
+        return DEFAULT_FEIGN_OPTIONS;
+    }
 }
