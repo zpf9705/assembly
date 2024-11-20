@@ -39,6 +39,15 @@ import java.util.Map;
  * <p>
  * All request methods return a return value of type String and may throw exceptions.
  *
+ *
+ * <p>
+ * The HttpRequestExecutor interface inherits from the feature client interface since version 1.0.2,
+ * Adopting open label technology support for executing HTTP requests.
+ * <p>
+ * This interface defines an 'execute' method for sending HTTP requests and receiving responses.
+ * The method takes a request object and a request option object as parameters and returns a response object.
+ * If an I/O exception occurs during the request process, an IOException will be thrown.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
@@ -50,6 +59,7 @@ public interface HttpRequestExecutor extends Client {
      * @param options {@inheritDoc}
      * @return {@inheritDoc}
      * @throws IOException {@inheritDoc}
+     * @since 1.0.2
      */
     @Override
     Response execute(Request request, Request.Options options) throws IOException;
