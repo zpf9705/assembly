@@ -337,32 +337,48 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
         //Obtain parameter segmentation markers.
         boolean montage = request.montage();
 
-        //Create a request body for feign.
-        feign.Request.Body body;
-        Charset charset = request.getCharset();
-        if (requestParam != null) {
-            body = feign.Request.Body.create(requestParam.toString(), charset);
-        } else/* Need to provide a default value of null */ body = feign.Request.Body.create((byte[]) null, charset);
+        //Get the enumeration name of the HTTP execution method.
+        String name = request.matchSdkEnum().getRequestMethod().name();
 
-        //The value of the request header is converted into a collection, which meets the requirements of feature.
-        Map<String, Collection<String>> feignHeaders = new LinkedHashMap<>();
-        if (MapUtils.isNotEmpty(headers)) {
-            headers.forEach((k, v) -> feignHeaders.put(k, Lists.newArrayList(v)));
+        //Handle according to whether to execute custom segmentation.
+        String result;
+        if (executor.useCustomize()) {
+            result = executor.unifiedDoRequest(name.toLowerCase(),
+                    /* Custom logic that does not perform URL formatting operations for possible query parameters. */
+                    this.url,
+                    headers, requestParam, montage);
+        } else {
+            //Create a request body for feign.
+            feign.Request.Body body;
+            Charset charset = request.getCharset();
+            if (requestParam != null) {
+                body = feign.Request.Body.create(requestParam.toString(), charset);
+            } else/* Need to provide a default value of null */
+                body = feign.Request.Body.create((byte[]) null, charset);
+
+            //The value of the request header is converted into a collection, which meets the requirements of feature.
+            Map<String, Collection<String>> feignHeaders = new LinkedHashMap<>();
+            if (MapUtils.isNotEmpty(headers)) {
+                headers.forEach((k, v) -> feignHeaders.put(k, Lists.newArrayList(v)));
+            }
+
+            //Create a request object for feign.
+            feign.Request feignRequest = feign.Request
+                    .create(feign.Request.HttpMethod.valueOf(name),
+                            //When integrating components, directly formatting the
+                            // URL here involves attaching query parameters.
+                            getUrl(montage, requestParam),
+                            feignHeaders,
+                            body,
+                            null);/* We won't set up using third-party HTTP here.  */
+
+            //Read the stream response result of the feature client and return the request result
+            // in the form of a string for subsequent conversion operations.
+            try (Response response = getRequestExecutor().execute(feignRequest, getOptions())) {
+                result = new String(IOUtils.readAllBytes(response.body().asInputStream()), request.getCharset());
+            }
         }
-
-        //Create a request object for feign.
-        feign.Request feignRequest = feign.Request
-                .create(feign.Request.HttpMethod.valueOf(request.matchSdkEnum().getRequestMethod().name()),
-                        getUrl(montage, requestParam),
-                        feignHeaders,
-                        body,
-                        null);/* We won't set up using third-party HTTP here.  */
-
-        //Read the stream response result of the feature client and return the request result
-        // in the form of a string for subsequent conversion operations.
-        try (Response response = getRequestExecutor().execute(feignRequest, getOptions())) {
-            return new String(IOUtils.readAllBytes(response.body().asInputStream()), request.getCharset());
-        }
+        return result;
     }
 
     @Override
