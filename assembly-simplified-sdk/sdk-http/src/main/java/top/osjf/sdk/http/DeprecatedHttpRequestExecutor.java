@@ -28,13 +28,21 @@ import java.util.Map;
  * @since 1.0.2
  */
 public abstract class DeprecatedHttpRequestExecutor implements HttpRequestExecutor {
+    private Class<?> toolClass;
     private static final Map<String, Method> cache = new SynchronizedWeakHashMap<>();
+    public Class<?> getToolClass() {
+        if (toolClass == null){
+            toolClass = toolClass();
+        }
+        return toolClass;
+    }
     protected abstract Class<?> toolClass();
-    private String invoke(String methodName, String url, Map<String, String> headers, Object param, boolean montage)
+    private String invokeStatic(String methodName, String url, Map<String, String> headers, Object param, boolean montage)
             throws Exception {
-        Method method = cache.computeIfAbsent(toolClass().getName() + methodName, s -> {
+        Class<?> clazz = getToolClass();
+        Method method = cache.computeIfAbsent(clazz.getName() + methodName, s -> {
             try {
-                return toolClass().getMethod(methodName, String.class, Map.class, Object.class, boolean.class);
+                return clazz.getMethod(methodName, String.class, Map.class, Object.class, boolean.class);
             } catch (NoSuchMethodException e) {
                 throw new RuntimeException(e);
             }
@@ -44,41 +52,41 @@ public abstract class DeprecatedHttpRequestExecutor implements HttpRequestExecut
 
     @Override
     public String get(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return invoke("get", url, headers, param, montage);
+        return invokeStatic("get", url, headers, param, montage);
     }
 
     @Override
     public String post(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return invoke("post", url, headers, param, montage);
+        return invokeStatic("post", url, headers, param, montage);
     }
 
     @Override
     public String put(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return invoke("put", url, headers, param, montage);
+        return invokeStatic("put", url, headers, param, montage);
     }
 
     @Override
     public String delete(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return invoke("delete", url, headers, param, montage);
+        return invokeStatic("delete", url, headers, param, montage);
     }
 
     @Override
     public String trace(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return invoke("trace", url, headers, param, montage);
+        return invokeStatic("trace", url, headers, param, montage);
     }
 
     @Override
     public String options(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return invoke("get", url, headers, param, montage);
+        return invokeStatic("get", url, headers, param, montage);
     }
 
     @Override
     public String head(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return invoke("head", url, headers, param, montage);
+        return invokeStatic("head", url, headers, param, montage);
     }
 
     @Override
     public String patch(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return invoke("patch", url, headers, param, montage);
+        return invokeStatic("patch", url, headers, param, montage);
     }
 }
