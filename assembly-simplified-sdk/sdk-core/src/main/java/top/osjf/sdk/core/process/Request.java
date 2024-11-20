@@ -22,6 +22,8 @@ import top.osjf.sdk.core.enums.SdkEnum;
 import top.osjf.sdk.core.exception.SdkException;
 
 import java.io.Serializable;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 /**
@@ -55,6 +57,16 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
     @Override
     default Object getRequestParam() {
         return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     * The default character set format is UTF-8.
+     * @return request parm character type.
+     */
+    @Override
+    default Charset getCharset(){
+        return StandardCharsets.UTF_8;
     }
 
     /**
