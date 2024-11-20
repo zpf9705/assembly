@@ -20,8 +20,8 @@ import feign.Request;
 import feign.Response;
 import feign.httpclient.ApacheHttpClient;
 import top.osjf.sdk.core.support.LoadOrder;
-import top.osjf.sdk.http.DeprecatedHttpRequestExecutor;
 import top.osjf.sdk.http.HttpRequestExecutor;
+import top.osjf.sdk.http.UnsupportedCustomizeHttpRequestExecutor;
 
 import java.io.IOException;
 
@@ -36,7 +36,7 @@ import java.io.IOException;
  * @since 1.0.0
  */
 @LoadOrder(Integer.MIN_VALUE + 10)
-public class ApacheHttpRequestExecutor extends DeprecatedHttpRequestExecutor implements HttpRequestExecutor {
+public class ApacheHttpRequestExecutor extends UnsupportedCustomizeHttpRequestExecutor implements HttpRequestExecutor {
 
     private final ApacheHttpClient apacheHttpClient;
 
@@ -51,10 +51,5 @@ public class ApacheHttpRequestExecutor extends DeprecatedHttpRequestExecutor imp
     @Override
     public Response execute(Request request, Request.Options options) throws IOException {
         return apacheHttpClient.execute(request, options);
-    }
-
-    @Override
-    protected Class<?> toolClass() {
-        return ApacheHttpSimpleRequestUtils.class;
     }
 }

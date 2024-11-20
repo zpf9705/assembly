@@ -22,8 +22,8 @@ import feign.Request;
 import feign.Response;
 import feign.googlehttpclient.GoogleHttpClient;
 import top.osjf.sdk.core.support.LoadOrder;
-import top.osjf.sdk.http.DeprecatedHttpRequestExecutor;
 import top.osjf.sdk.http.HttpRequestExecutor;
+import top.osjf.sdk.http.UnsupportedCustomizeHttpRequestExecutor;
 
 import java.io.IOException;
 
@@ -38,7 +38,7 @@ import java.io.IOException;
  * @since 1.0.2
  */
 @LoadOrder(Integer.MIN_VALUE + 12)
-public class GoogleHttpRequestExecutor extends DeprecatedHttpRequestExecutor implements HttpRequestExecutor {
+public class GoogleHttpRequestExecutor extends UnsupportedCustomizeHttpRequestExecutor implements HttpRequestExecutor {
     private final GoogleHttpClient googleHttpClient;
 
     public GoogleHttpRequestExecutor() {
@@ -60,10 +60,5 @@ public class GoogleHttpRequestExecutor extends DeprecatedHttpRequestExecutor imp
     @Override
     public Response execute(Request request, Request.Options options) throws IOException {
         return googleHttpClient.execute(request, options);
-    }
-
-    @Override
-    protected Class<?> toolClass() {
-        return GoogleHttpSimpleRequestUtils.class;
     }
 }

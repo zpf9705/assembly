@@ -92,6 +92,18 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
      *      {@code
      *      top.osjf.sdk.core.support.LoadOrder(Integer.MIN_VALUE) The highest loading level.
      *      public class DefaultHttpRequestExecutor implements HttpRequestExecutor{
+     *
+     *         Override
+     *         public Response execute(Request request, Request.Options options) throws IOException {
+     *              // You can define your own processing logic based on the existing open feign request
+     *              // parameters.
+     *         }
+     *         //The remaining old methods will be removed in future versions and do not require compatibility.
+     *         //If there are their own tools to handle classes, they can be used as markers.
+     *
+     *         //These are implementation methods for custom request processes.
+     *         //To execute the following method {@code HttpRequestExecutor#useCustomize()},
+     *         simply set the return value to {@code true}.
      *         Override
      *         public String get(String url, Map<String, String> headers, Object param, boolean montage)
      *         throws Exception {
@@ -141,6 +153,7 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
      * <ul>
      *     <li><a href="https://mvnrepository.com/artifact/top.osjf.sdk/sdk-http-apache">sdk-http-apache</a></li>
      *     <li><a href="https://mvnrepository.com/artifact/top.osjf.sdk/sdk-http-ok">sdk-http-ok</a></li>
+     *     <li><a href="https://mvnrepository.com/artifact/top.osjf.sdk/sdk-http-google">sdk-http-google</a></li>
      * </ul>
      */
     private HttpRequestExecutor requestExecutor;

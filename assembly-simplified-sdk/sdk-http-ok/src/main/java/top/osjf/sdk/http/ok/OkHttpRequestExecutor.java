@@ -20,8 +20,8 @@ import feign.Request;
 import feign.Response;
 import feign.okhttp.OkHttpClient;
 import top.osjf.sdk.core.support.LoadOrder;
-import top.osjf.sdk.http.DeprecatedHttpRequestExecutor;
 import top.osjf.sdk.http.HttpRequestExecutor;
+import top.osjf.sdk.http.UnsupportedCustomizeHttpRequestExecutor;
 
 import java.io.IOException;
 
@@ -36,7 +36,7 @@ import java.io.IOException;
  * @since 1.0.0
  */
 @LoadOrder(Integer.MIN_VALUE + 11)
-public class OkHttpRequestExecutor extends DeprecatedHttpRequestExecutor implements HttpRequestExecutor {
+public class OkHttpRequestExecutor extends UnsupportedCustomizeHttpRequestExecutor implements HttpRequestExecutor {
 
     private final OkHttpClient okHttpClient;
 
@@ -51,10 +51,5 @@ public class OkHttpRequestExecutor extends DeprecatedHttpRequestExecutor impleme
     @Override
     public Response execute(Request request, Request.Options options) throws IOException {
         return okHttpClient.execute(request, options);
-    }
-
-    @Override
-    protected Class<?> toolClass() {
-        return OkHttpSimpleRequestUtils.class;
     }
 }
