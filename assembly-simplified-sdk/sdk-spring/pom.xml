@@ -38,6 +38,13 @@
         </dependency>
 
         <dependency>
+            <groupId>top.osjf.sdk</groupId>
+            <artifactId>sdk-http-google</artifactId>
+            <version>${sdk-http}</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
             <version>${spring}</version>

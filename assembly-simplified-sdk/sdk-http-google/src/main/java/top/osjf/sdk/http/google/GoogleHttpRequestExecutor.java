@@ -16,6 +16,8 @@
 
 package top.osjf.sdk.http.google;
 
+import com.google.api.client.http.HttpRequestFactory;
+import com.google.api.client.http.HttpTransport;
 import feign.Request;
 import feign.Response;
 import feign.googlehttpclient.GoogleHttpClient;
@@ -38,6 +40,14 @@ public class GoogleHttpRequestExecutor extends DeprecatedHttpRequestExecutor imp
 
     public GoogleHttpRequestExecutor() {
         this(new GoogleHttpClient());
+    }
+
+    public GoogleHttpRequestExecutor(HttpTransport transport) {
+        this(new GoogleHttpClient(transport));
+    }
+
+    public GoogleHttpRequestExecutor(HttpRequestFactory httpRequestFactory) {
+        this(new GoogleHttpClient(httpRequestFactory));
     }
 
     public GoogleHttpRequestExecutor(GoogleHttpClient googleHttpClient) {
