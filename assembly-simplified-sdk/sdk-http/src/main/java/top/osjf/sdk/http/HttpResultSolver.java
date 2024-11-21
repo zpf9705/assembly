@@ -22,7 +22,7 @@ import top.osjf.sdk.core.process.Request;
 import java.util.function.Supplier;
 
 /**
- * The HttpResultSolver interface is designed to handle different scenarios of HTTP
+ * The {@code HttpResultSolver} interface is designed to handle different scenarios of HTTP
  * request results,including SDK exceptions, unknown exceptions, and the final processing flow.
  * <p>
  * This interface defines four main parts:
