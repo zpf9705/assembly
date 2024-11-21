@@ -39,16 +39,50 @@ import java.io.IOException;
 @LoadOrder(Integer.MIN_VALUE + 10)
 public class ApacheHttpRequestExecutor extends UnsupportedCustomizeHttpRequestExecutor implements HttpRequestExecutor {
 
+    /**
+     * Define a private final variable of type {@code ApacheHttpClient} for executing HTTP requests.
+     */
     private final ApacheHttpClient apacheHttpClient;
 
+    /**
+     * Nonparametric constructor method, using the default {@code ApacheHttpClient}
+     * instance to initialize objects.
+     * <p>
+     * This is a convenient constructor method that internally calls a constructor
+     * method with {@code ApacheHttpClient}  parameters,And passed on a newly created
+     * {@code ApacheHttpClient} instance.
+     */
     public ApacheHttpRequestExecutor() {
         this(new ApacheHttpClient());
     }
 
+    /**
+     * A constructor method with an FHIR parameter that allows users to pass in a
+     * custom {@code HttpClient} instance,
+     * Then use this instance to create an {@code ApacheHttpClient} and use it to
+     * initialize objects.
+     * <p>
+     * This construction method provides flexibility, allowing users to configure
+     * {@code HttpClient} according to their own needs,
+     * For example, setting timeout periods, proxies, etc.
+     *
+     * @param httpClient user custom {@code HttpClient} Instance.
+     */
     public ApacheHttpRequestExecutor(HttpClient httpClient) {
         this(new ApacheHttpClient(httpClient));
     }
 
+    /**
+     * A constructor method with an {@code ApacheHttpClient} parameter that can be
+     * directly used to initialize an object.
+     * <p>
+     * This construction method allows users to directly pass in a preconfigured
+     * {@code ApacheHttpClient} instance,Suitable for scenarios that require finer
+     * grained control over {@code ApacheHttpClient} configuration.
+     *
+     * @param apacheHttpClient user defined and already configured {@code ApacheHttpClient}
+     *                         instance.
+     */
     public ApacheHttpRequestExecutor(ApacheHttpClient apacheHttpClient) {
         this.apacheHttpClient = apacheHttpClient;
     }
