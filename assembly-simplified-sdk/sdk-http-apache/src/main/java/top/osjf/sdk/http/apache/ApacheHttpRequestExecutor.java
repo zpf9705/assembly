@@ -19,6 +19,7 @@ package top.osjf.sdk.http.apache;
 import feign.Request;
 import feign.Response;
 import feign.httpclient.ApacheHttpClient;
+import org.apache.http.client.HttpClient;
 import top.osjf.sdk.core.support.LoadOrder;
 import top.osjf.sdk.http.HttpRequestExecutor;
 import top.osjf.sdk.http.UnsupportedCustomizeHttpRequestExecutor;
@@ -42,6 +43,10 @@ public class ApacheHttpRequestExecutor extends UnsupportedCustomizeHttpRequestEx
 
     public ApacheHttpRequestExecutor() {
         this(new ApacheHttpClient());
+    }
+
+    public ApacheHttpRequestExecutor(HttpClient httpClient) {
+        this(new ApacheHttpClient(httpClient));
     }
 
     public ApacheHttpRequestExecutor(ApacheHttpClient apacheHttpClient) {
