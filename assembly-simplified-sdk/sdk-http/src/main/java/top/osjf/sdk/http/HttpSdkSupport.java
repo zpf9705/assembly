@@ -53,6 +53,7 @@ public abstract class HttpSdkSupport extends SdkSupport {
      * when it does not exist.
      *
      * @param headers existing request headers.
+     * @param request current http request.
      * @return When the incoming request header is {@literal null}
      * , the map will be initialized and the corresponding request
      * header content will be automatically added based on the required

@@ -34,7 +34,7 @@ public interface OpenFeignClientOptions {
      * Return a Controls the per-request settings currently required to be
      * implemented by all {@link feign.Client clients}
      * <p>Currently only takes effect when <pre>{@code HttpRequestExecutor#useCustomize == false}</pre>.
-     * <p>By default, this method returns {@link #DEFAULT_FEIGN_OPTIONS}</ p>
+     * <p>By default, this method returns {@link #DEFAULT_FEIGN_OPTIONS}.
      *
      * @return Controls the per-request settings currently required to be
      * implemented by all {@link feign.Client clients}
