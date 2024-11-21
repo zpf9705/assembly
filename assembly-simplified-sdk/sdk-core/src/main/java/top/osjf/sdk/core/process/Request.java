@@ -27,13 +27,42 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 /**
- * The definition method of the requested public node.
+ * Definition of a generic request interface, where the generic type R represents the
+ * response type, which must be a subclass of Response.
+ * It extends the RequestParamCapable interface (for obtaining request parameters) and
+ * implements the Serializable interface (for serialization).
+ * This interface encapsulates the common methods and properties required to initiate a
+ * request, such as obtaining the access address, request parameters, character set, etc.
+ * By implementing this interface, all request objects can ensure these basic functionalities
+ * and allow custom validation logic.
+ * <p>
+ * Main method descriptions:
+ * <ul>
+ *     <li>{@link #getUrl}:Obtains the formatted actual access address based on the host address.</li>
+ *     <li>{@link #getRequestParam}:Obtains the request parameters, returning null by default and
+ *     can be overridden.</li>
+ *     <li>{@link #getCharset}:Obtains the request character set, using UTF-8 by default.</li>
+ *     <li>{@link #validate}:Performs custom parameter validation before the request, throwing an
+ *     {@code SdkException} if validation fails.</li>
+ *     <li>{@link #getResponseCls}:Returns the Class object of the response class, used internally
+ *     by the SDK to process response data.</li>
+ *     <li>{@link #getResponseTypeToken}:Uses Google's {@code TypeToken} tool to obtain the Type object of
+ *     the response type for generic processing.</li>
+ *     <li>{@link #getHeadMap}:Returns the Map data format encapsulated by the request headers for
+ *     subsequent request processing.</li>
+ *     <li>{@link #getClientCls}:Returns the Client type held by the current request class, with an
+ *     open definition allowing custom behavior.</li>
+ *     <li>{@link #getResponseRequiredType}:Obtains the response type that should be converted based
+ *     on {@link #getResponseCls()} and {@link #getResponseTypeToken()}./li>
+ *     <li>{@link #matchSdkEnum}:Returns the matching {@code SdkEnum} type.</li>
+ *     <li>{@link #isAssignableRequest}:Determines whether the given class is a subclass or implementer
+ *     of the main request interface.</li>
+ * </ul>
  *
  * <p>It includes parameter acquisition {@link RequestParamCapable} required
  * for the request, parameter verification (intercepted in the form of
  * {@link SdkException}), recording the response body type for subsequent encapsulation
- * conversion, and verifying the request header.</p>
- *
+ * conversion, and verifying the request header.
  * <p>The class object that can be rewritten to implement {@link Client} can be
  * customized for logical implementation of methods in {@link Client}.
  *
@@ -62,10 +91,11 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
     /**
      * {@inheritDoc}
      * The default character set format is UTF-8.
+     *
      * @return request parm character type.
      */
     @Override
-    default Charset getCharset(){
+    default Charset getCharset() {
         return StandardCharsets.UTF_8;
     }
 
