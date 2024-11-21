@@ -17,7 +17,21 @@
 package top.osjf.sdk.http;
 
 /**
- * The supported HTTP request enumeration types.
+ * The {@code HttpRequestMethod} enumeration class, which defines the commonly used method
+ * types in HTTP requests.
+ *
+ * <p>This enumeration class contains eight standard request methods defined in the
+ * HTTP/1.1 protocol,each corresponding to different semantics and operations. For
+ * example, the GET method is used to request a resource from the server,and the POST
+ * method is used to submit data to the server.
+ *
+ * <p>By defining this enumeration class, it is convenient to manage and use HTTP
+ * request methods,avoiding hard-coded string values in the code, thereby improving
+ * code readability and maintainability.
+ *
+ * <p>When using it, you can obtain the corresponding enumeration instance by the way
+ * of HttpRequestMethod. XXX, and then pass it to the function or method that requires
+ * the HTTP request method.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
