@@ -22,8 +22,28 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * <p>The abstract implementation of {@link Request} mainly focuses on
- * default implementation of some rules and methods of {@link Request}.</p>
+ * Abstract request parameter class, defining common behaviors and properties for all
+ * request parameters.
+ * <p>This class is an abstract class that implements the {@code Request<R>} interface,
+ * where {@code R} is a generic parameter for the response type, and this response type
+ * must be {@code AbstractResponse} or its subclass.
+ *
+ * <p>It provides two main method implementations:
+ * <ul>
+ * <li> {@link #getHeadMap}: Returns an {@link Collections#emptyMap()}, indicating that
+ * this abstract class does not contain any request header information by default.
+ * Subclasses can override this method to provide specific request headers as needed.</li>
+ * <li> {@link #validate}: An empty implementation used to validate the validity of the
+ * request parameters before sending the request. Subclasses should override this method
+ * to add specific validation logic.</li>
+ * </ul>
+ *
+ * <p>This abstract class can serve as a base class for creating specific request parameter
+ * classes. By inheriting and extending this class, it is convenient to implement the
+ * {@code Request<R>} interface and define specific request parameters and validation logic.
+ *
+ * <p>Note: The `serialVersionUID` field is used for serialization version control to ensure
+ * compatibility during deserialization.
  *
  * @param <R> Implement a unified response class data type.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
