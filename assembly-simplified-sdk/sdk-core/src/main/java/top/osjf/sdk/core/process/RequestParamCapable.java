@@ -19,7 +19,7 @@ package top.osjf.sdk.core.process;
 import java.nio.charset.Charset;
 
 /**
- * Request Parameter Capability Interface.
+ * Request Parameter Capability getting Interface.
  * <p>
  * This interface defines the capability to obtain request parameters and their character encoding.
  * Concrete implementations should determine whether to fetch parameters from the request body or URL
