@@ -44,7 +44,7 @@ import java.util.List;
  * <ul>
  * <li>Firstly, obtain the expected response type based on the request object ({@code Request<R>})</li>
  * <li>Then, check if the response string ({@code responsiveStr}) is a valid JSON object. If so,
- * attempt to parse it into an object of the expected type</ li>
+ * attempt to parse it into an object of the expected type</li>
  * <li>If the response string is a valid JSON array, parse it into a list of objects of the
  * expected type. If the list is not empty, take the first element in the list as the response object;
  * If the list is empty, create an empty object of the corresponding type</li>
