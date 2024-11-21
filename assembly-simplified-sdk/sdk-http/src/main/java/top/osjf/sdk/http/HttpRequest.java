@@ -169,6 +169,6 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
      * @return The request address for the SDK.
      */
     default String formatUrl(String host) {
-        return matchSdkEnum().getUlr(host) + urlJoin();
+        return matchSdkEnum().getUrl(host) + urlJoin();
     }
 }
