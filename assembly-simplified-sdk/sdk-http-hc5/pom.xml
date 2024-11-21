@@ -9,7 +9,7 @@
         <version>1.0.2</version>
     </parent>
 
-    <artifactId>sdk-http-ok</artifactId>
+    <artifactId>sdk-http-hc5</artifactId>
     <packaging>jar</packaging>
 
     <properties>
@@ -29,7 +29,7 @@
 
         <dependency>
             <groupId>io.github.openfeign</groupId>
-            <artifactId>feign-okhttp</artifactId>
+            <artifactId>feign-hc5</artifactId>
             <version>${open.feign.compent}</version>
         </dependency>
 

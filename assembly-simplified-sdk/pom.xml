@@ -20,8 +20,10 @@
         <module>sdk-http</module>
         <module>sdk-http-apache</module>
         <module>sdk-http-ok</module>
-        <module>sdk-spring</module>
         <module>sdk-http-google</module>
+        <module>sdk-http-hc5</module>
+        <module>sdk-http-jaxrs2</module>
+        <module>sdk-spring</module>
     </modules>
 
     <properties>
