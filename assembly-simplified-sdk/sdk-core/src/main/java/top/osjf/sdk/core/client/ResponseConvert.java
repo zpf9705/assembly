@@ -36,6 +36,7 @@ import top.osjf.sdk.core.process.Response;
  * allowing developers to flexibly implement the parsing and conversion of response
  * data based on different API response formats.
  *
+ * @see JSONResponseConvert
  * @param <R> Implement a unified response class data type.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
