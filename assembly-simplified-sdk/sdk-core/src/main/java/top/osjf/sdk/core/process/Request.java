@@ -53,7 +53,7 @@ import java.util.Map;
  *     <li>{@link #getClientCls}:Returns the Client type held by the current request class, with an
  *     open definition allowing custom behavior.</li>
  *     <li>{@link #getResponseRequiredType}:Obtains the response type that should be converted based
- *     on {@link #getResponseCls()} and {@link #getResponseTypeToken()}./li>
+ *     on {@link #getResponseCls()} and {@link #getResponseTypeToken()}.</li>
  *     <li>{@link #matchSdkEnum}:Returns the matching {@code SdkEnum} type.</li>
  *     <li>{@link #isAssignableRequest}:Determines whether the given class is a subclass or implementer
  *     of the main request interface.</li>
