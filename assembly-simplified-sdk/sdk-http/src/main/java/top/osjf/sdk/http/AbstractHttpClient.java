@@ -189,7 +189,11 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
     }
 
     /**
-     * Return the actual URL path at the time of the request.
+     * Return the URL address constructed by attaching parameter tags
+     * based on the parameter URL and the current actual request parameters.
+     * <p>
+     * If you want to directly obtain the initial URL address, just pass in
+     * <pre>{@code montage == true}</pre>
      *
      * @param montage Do you want to attach the body parameter
      *                as key/value to the URL?
