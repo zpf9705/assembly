@@ -154,6 +154,8 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
      *     <li><a href="https://mvnrepository.com/artifact/top.osjf.sdk/sdk-http-apache">sdk-http-apache</a></li>
      *     <li><a href="https://mvnrepository.com/artifact/top.osjf.sdk/sdk-http-ok">sdk-http-ok</a></li>
      *     <li><a href="https://mvnrepository.com/artifact/top.osjf.sdk/sdk-http-google">sdk-http-google</a></li>
+     *     <li><a href="https://mvnrepository.com/artifact/top.osjf.sdk/sdk-http-hc5">sdk-http-hc5</a></li>
+     *     <li><a href="https://mvnrepository.com/artifact/top.osjf.sdk/sdk-http-jaxrs2">sdk-http-jaxrs2</a></li>
      * </ul>
      */
     private HttpRequestExecutor requestExecutor;
