@@ -17,11 +17,24 @@
 package top.osjf.sdk.core.process;
 
 /**
- * <p>The abstract implementation of {@link Response} mainly focuses on
- * default implementation of some rules and methods of {@link Response}.</p>
+ * Abstract response class, defining basic properties and methods for response objects.
+ * <p>This class is an abstract class that implements the `Response` interface, providing
+ * a basic framework for all specific response objects.
  *
- * <p>The default implementation is to convert the format when {@link DefaultErrorResponse}
- * users encounter exceptions.</p>
+ * <p>It defines the following properties and methods:
+ * <ul>
+ * <li>{@link #serialVersionUID}: A unique identifier for serialization version, ensuring
+ * compatibility during serialization and deserialization.</li>
+ * <li>{@link #isSuccess}: Returns a boolean indicating whether the operation was successful,
+ * defaulting to {@code DEFAULT_IS_SUCCESS}.</li>
+ * <li>{@link #getMessage}: Returns the response message content, defaulting to `DEFAULT_MESSAGE`.</li>
+ * <li>{@link #setErrorCode}: A method to set the error code, with an empty implementation.
+ * Specific subclasses should override as needed.</li>
+ * <li>{@link #setErrorMessage}: A method to set the error message, with an empty implementation.
+ * Specific subclasses should override as needed.</li>
+ * </ul>
+ * <p>Subclasses should inherit from this class and override relevant methods, especially
+ * `isSuccess`,`setErrorCode`, and `setErrorMessage`, to provide specific response logic.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
@@ -29,16 +42,24 @@ package top.osjf.sdk.core.process;
 public abstract class AbstractResponse implements Response {
 
     private static final long serialVersionUID = 4294123081630652115L;
-
+    // The default success status, initialized to false
     private static final boolean DEFAULT_IS_SUCCESS = false;
-
+    // The default message content, initialized to "UNKNOWN"
     private static final String DEFAULT_MESSAGE = "UNKNOWN";
 
+    /**
+     * {@inheritDoc}
+     * <p>Returns a boolean indicating whether the operation was successful, defaulting to `false`.
+     */
     @Override
     public boolean isSuccess() {
         return DEFAULT_IS_SUCCESS;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>Returns the response message content, defaulting to `"UNKNOWN"`.
+     */
     @Override
     public String getMessage() {
         return DEFAULT_MESSAGE;
