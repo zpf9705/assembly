@@ -36,16 +36,49 @@ import java.io.IOException;
 @LoadOrder(Integer.MIN_VALUE + 14)
 public class JAXRSHttpRequestExecutor extends UnsupportedCustomizeHttpRequestExecutor implements HttpRequestExecutor {
 
+    /**
+     * Define a private, final JAX-RS client instance variable for executing HTTP
+     * requests based on the JAX-RS specification.
+     */
     private final JAXRSClient jaxrsClient;
 
+    /**
+     * No-argument constructor.
+     * Initializes the {@code JAXRSHttpRequestExecutor} object with a
+     * default {@code JAXRSClient} instance.
+     * <p>
+     * Provides a simple construction method that requires no external parameters.
+     */
     public JAXRSHttpRequestExecutor() {
         this(new JAXRSClient());
     }
 
+    /**
+     * Constructor with a {@code ClientBuilder} parameter.
+     * <p>
+     * Allows the user to pass in a custom {@code ClientBuilder} instance
+     * to construct and initialize a customized {@code JAXRSClient} instance,
+     * which in turn initializes the {@code JAXRSHttpRequestExecutor} object.
+     *
+     * @param clientBuilder The custom {@code ClientBuilder} instance used to
+     *                      construct the JAX-RS client.
+     */
     public JAXRSHttpRequestExecutor(ClientBuilder clientBuilder) {
         this(new JAXRSClient(clientBuilder));
     }
 
+    /**
+     * Constructor with a {@code JAXRSClient} parameter.
+     * <p>
+     * Allows the user to directly pass in a pre-configured {@code JAXRSClient}
+     * instance to initialize the {@code JAXRSHttpRequestExecutor} object.
+     * <p>
+     * This method provides the greatest flexibility, allowing the user to customize
+     * the configuration of the {@code JAXRSClient}.
+     *
+     * @param jaxrsClient The pre-configured {@code JAXRSClient} instance
+     *                    used to execute HTTP requests.
+     */
     public JAXRSHttpRequestExecutor(JAXRSClient jaxrsClient) {
         this.jaxrsClient = jaxrsClient;
     }
