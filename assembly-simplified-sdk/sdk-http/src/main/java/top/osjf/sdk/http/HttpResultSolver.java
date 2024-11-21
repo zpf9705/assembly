@@ -22,8 +22,25 @@ import top.osjf.sdk.core.process.Request;
 import java.util.function.Supplier;
 
 /**
- * <p>The client implementation class in the form of HTTP implements
- * the phased solver definition.</p>
+ * The HttpResultSolver interface is designed to handle different scenarios of HTTP
+ * request results,including SDK exceptions, unknown exceptions, and the final processing flow.
+ * <p>
+ * This interface defines four main parts:
+ * <ul>
+ *     <li>{@link #handlerSdkError}Handles SDK exceptions. When an SDK exception
+ *     occurs during request processing,this method is used for handling.</li>
+ *     <li>{@link #handlerUnKnowError}Handles unknown exceptions. When an unknown
+ *     exception (such as a network exception)occurs during request processing,
+ *     this method is used for handling.</li>
+ *     <li>{@link #finallyHandler}Called in the finally block of try-catch to
+ *     execute the final processing flow,such as logging, statistics, etc.</li>
+ *     <li>ExecuteInfo interface and its builder ExecuteInfoBuild: Encapsulates
+ *     the metadata of the request call,including the request duration, whether
+ *     an error occurred, request parameters, response content, and error message.</li>
+ * </ul>
+ * <p>
+ * By implementing this interface, developers can customize exception handling
+ * and final processing flows to meet different business requirements.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
