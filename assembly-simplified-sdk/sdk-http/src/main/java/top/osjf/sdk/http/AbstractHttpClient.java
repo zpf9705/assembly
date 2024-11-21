@@ -221,7 +221,7 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
                     builder.append("?");
                     //The parameters have already been concatenated.
                     // For subsequent concatenation, simply add a concatenation symbol first.
-                }else builder.append("&");
+                } else builder.append("&");
                 //Ensure the correctness and security of the URL.
                 Map<String, String> encodeQueryParams = new HashMap<>();
                 String enc = StandardCharsets.UTF_8.toString();
@@ -333,7 +333,7 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
         //Get the request header parameters and check content type.
         //if not provider，default to json.
         Map<String, String> headers = request.getHeadMap();
-        HttpSdkSupport.checkContentType(headers);
+        headers = HttpSdkSupport.checkContentType(headers, request);
 
         //Obtain the real request parameters.
         Object requestParam = request.getRequestParam();

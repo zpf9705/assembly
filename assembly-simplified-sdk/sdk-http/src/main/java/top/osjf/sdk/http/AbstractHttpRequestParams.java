@@ -82,14 +82,20 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
     }
 
     /**
-     * The default method is {@link HttpSdkSupport#default_content_type}, which automatically
-     * adds contextual information as {@link #defaultToJson()}.
+     * {@inheritDoc}
+     * <p>
+     * When the request parameter exists and JSON serialization is used,
+     * this method defaults to returning the context type of {@code application/json}.
+     *
      * @return {@inheritDoc}
      * @since 1.0.2
      */
     @Override
     public Map<String, String> getHeadMap() {
-        return Collections.singletonMap(HttpSdkSupport.named, HttpSdkSupport.default_content_type);
+        if (getRequestParam() != null && defaultToJson()) {
+            return Collections.singletonMap("Content-Type", "application/json");
+        }
+        return super.getHeadMap();
     }
 
     @Override

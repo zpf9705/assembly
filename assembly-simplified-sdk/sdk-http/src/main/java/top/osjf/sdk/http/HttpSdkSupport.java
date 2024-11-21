@@ -20,7 +20,7 @@ import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
 import top.osjf.sdk.core.support.SdkSupport;
 import top.osjf.sdk.core.util.ArrayUtils;
-import top.osjf.sdk.core.util.MapUtils;
+import top.osjf.sdk.core.util.JSONUtil;
 import top.osjf.sdk.core.util.SynchronizedWeakHashMap;
 
 import java.lang.reflect.ParameterizedType;
@@ -36,12 +36,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public abstract class HttpSdkSupport extends SdkSupport {
 
-    /*** content type name */
-    protected static final String named = "Content-Type";
-
-    /*** default Json content type */
-    protected static final String default_content_type = "application/json";
-
     /***The left angle bracket included in the generic.*/
     protected static final String LEFT_ANGLE_BRACKET = "<";
 
@@ -55,20 +49,51 @@ public abstract class HttpSdkSupport extends SdkSupport {
     protected static final Map<Class<?>, Object> rps_classes = new SynchronizedWeakHashMap<>();
 
     /**
-     * Check if the existing request headers contain {@link #named}, and
-     * if no default JSON is provided.
+     * Check if there is a context and give a default {@code application/json}
+     * when it does not exist.
      *
      * @param headers existing request headers.
+     * @return When the incoming request header is {@literal null}
+     * , the map will be initialized and the corresponding request
+     * header content will be automatically added based on the required
+     * parameters. Otherwise, after checking, the original request heade
+     * r map will be returned.
      */
-    public static void checkContentType(Map<String, String> headers) {
-        if (MapUtils.isEmpty(headers)) {
-            return;
+    @SuppressWarnings("rawtypes")
+    public static Map<String, String> checkContentType(Map<String, String> headers, HttpRequest request) {
+        //Normal inclusion of context directly returns the current request header.
+        if (headers != null && headers.containsKey("Content-Type")) {
+            return headers;
         }
-        //if no Content-Type
-        if (!headers.containsKey(named)) {
-            //default to JSON Content-Type
-            headers.put(named, default_content_type);
+        try {
+            //When no context type is specified, the default JSON format will
+            // be added to the context based on whether the carried request
+            // body parameters are in JSON format or whether the method confirms
+            // JSON serialization.
+            boolean isJson = false;
+            //The situation of abstract definition methods.
+            if (request instanceof AbstractHttpRequestParams) {
+                isJson = ((AbstractHttpRequestParams<?>) request).defaultToJson();
+            } else {
+                //Using non abstract class defaults.
+                Object requestParam = request.getRequestParam();
+                if (requestParam != null && JSONUtil.isValidObject(requestParam.toString())) {
+                    isJson = true;
+                }
+            }
+            if (isJson &&
+                    //When meeting JSON requirements, it is necessary to
+                    // ensure that the current JSON parameters are not
+                    // concatenated for URL parameters.
+                    !request.montage()) {
+                // Initialize information for empty request bodies to meet the situation.
+                if (headers == null) headers = new HashMap<>(1);
+                headers.putIfAbsent("Content-Type", "application/json");
+            }
+            /* Consider ignoring map errors that cannot be supported for addition. */
+        } catch (Exception ignored) {
         }
+        return headers;
     }
 
     /**
