@@ -36,16 +36,49 @@ import java.io.IOException;
 @LoadOrder(Integer.MIN_VALUE + 13)
 public class Hc5HttpRequestExecutor extends UnsupportedCustomizeHttpRequestExecutor implements HttpRequestExecutor {
 
+    /**
+     * Define a private, final instance variable of type {@code ApacheHttp5Client} for executing HTTP requests.
+     */
     private final ApacheHttp5Client http5Client;
 
+    /**
+     * A no-argument constructor.
+     * Initializes the {@code Hc5HttpRequestExecutor} object with a
+     * default {@code ApacheHttp5Client} instance.
+     * <p>
+     * This is to provide a simple construction method without requiring
+     * any external parameters.
+     */
     public Hc5HttpRequestExecutor() {
         this(new ApacheHttp5Client());
     }
 
+    /**
+     * A constructor with a {@code HttpClient} parameter.
+     * Allows the user to pass a custom {@code HttpClient} instance for
+     * initializing the {@code Hc5HttpRequestExecutor} object.
+     * <p>
+     * Note: This actually wraps the passed-in {@code HttpClient} in an
+     * {@code ApacheHttp5Client} instance.
+     *
+     * @param httpClient A custom {@code HttpClient} instance for executing
+     *                   HTTP requests.
+     */
     public Hc5HttpRequestExecutor(HttpClient httpClient) {
         this(new ApacheHttp5Client(httpClient));
     }
 
+    /**
+     * A constructor with a {@code ApacheHttp5Client} parameter.
+     * Allows the user to directly pass an {@code ApacheHttp5Client} instance
+     * for initializing the {@code Hc5HttpRequestExecutor} object.
+     * <p>
+     * This method provides the greatest flexibility, allowing users to customize
+     * the configuration of the {@code ApacheHttp5Client}.
+     *
+     * @param http5Client An {@code ApacheHttp5Client} instance for executing
+     *                    HTTP requests.
+     */
     public Hc5HttpRequestExecutor(ApacheHttp5Client http5Client) {
         this.http5Client = http5Client;
     }
