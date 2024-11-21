@@ -19,33 +19,35 @@ package top.osjf.sdk.http;
 import top.osjf.sdk.core.enums.SdkEnum;
 
 /**
- * HTTP SDK related attribute method definition interface,mainly including URL concatenation .
+ * <p>HTTP SDK Enumeration Interface, extending from the {@code SdkEnum} interface.
  *
- * <p>Request scheme selection, and related custom enumeration names .
+ * <p>This interface defines enumeration types related to HTTP requests,
+ * selecting the corresponding request scheme based on enumeration identifiers.
+ * Currently, it primarily supports HTTP-type request methods.
  *
+ * <p>Each enumeration value that implements this interface should provide
+ * a method to obtain its corresponding HTTP request method.
+ * This allows the SDK to construct and send corresponding HTTP requests
+ * based on different enumeration values when in use.
+ *
+ * <p>This interface is mainly used to encapsulate enumeration values of
+ * HTTP request methods, making it more flexible and clear to specify request
+ * methods (such as GET, POST, etc.) when initiating HTTP requests.
  * <p>You can check the example code:
  * <pre>
  * {@code
  * public enum Sdk implements HttpSdkEnum {
  *
  * GET_SUPPLIER("***********", ApiProtocol.HTTP, ApiType.*, RequestMethod.POST),
- *
  * UPDATE_REPORT_BACK("***********", ApiProtocol.HTTP, ApiType.*, RequestMethod.POST),
  *
- * UPDATE_SHIPMENT_STATUS("***********", ApiProtocol.HTTP, ApiType.*, RequestMethod.POST),
- *
- * SAVE_OR_REMOVE_ADD_SERVICE("***********", ApiProtocol.HTTP, ApiType.*, RequestMethod.POST),
- *
  * private final String url;
- *
  * private final ApiProtocol apiProtocol;
- *
  * private final ApiType type;
- *
  * private final RequestMethod requestMethod;
  *
  * public String getUlr(String uri){
- * return String.format(this.url,this.apiProtocol.getPath(),uri,this.type.getType());
+ *      return String.format(this.url,this.apiProtocol.getPath(),uri,this.type.getType());
  * }
  *
  * public HttpRequestMethod getHttpRequestMethod){
@@ -61,9 +63,12 @@ public interface HttpSdkEnum extends SdkEnum {
 
     /**
      * <p>Select the corresponding request scheme based on this enumeration identifier,
-     * currently supporting the type of HTTP</p>
+     * currently supporting HTTP-type request methods.
+     * <p>This method returns a HttpRequestMethod enumeration value, representing
+     * the HTTP request method corresponding to the enumeration identifier.
      *
-     * @return {@link HttpRequestMethod}.
+     * @return Returns a {@code HttpRequestMethod} enumeration value, representing
+     * the HTTP request method.
      */
     HttpRequestMethod getRequestMethod();
 }
