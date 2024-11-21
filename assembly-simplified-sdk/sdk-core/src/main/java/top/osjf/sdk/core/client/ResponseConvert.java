@@ -20,7 +20,21 @@ import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
 
 /**
- * A custom processing scheme for response string conversion {@link Response}.
+ * <p>Response Conversion Interface, used to convert the response type (generic R,
+ * extending from the Response class) in the request class record from string data
+ * to the specified response object.
+ *
+ * <p>This interface defines a method that allows users to customize the logic for
+ * converting string data from API responses to specific response objects (generic R)
+ * based on the predefined return values of the API.
+ *
+ * <p>Classes implementing this interface need to provide specific conversion logic
+ * to ensure that string data returned by the API can be correctly converted to the
+ * corresponding response object.
+ *
+ * <p>This interface is mainly used to handle the conversion of API response data,
+ * allowing developers to flexibly implement the parsing and conversion of response
+ * data based on different API response formats.
  *
  * @param <R> Implement a unified response class data type.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
