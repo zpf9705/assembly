@@ -17,8 +17,14 @@
 package top.osjf.sdk.core.enums;
 
 /**
- * The interface for obtaining important attributes related to SDK,
- * and the dynamic group information requested by SDK will be defined here.
+ * SDK Enumeration Interface, defining common methods and properties related
+ * to the SDK.
+ * <p>This interface includes two main methods: one for obtaining the true
+ * request address of the SDK, and another for obtaining the name of the
+ * SDK request.
+ *
+ * <p>By implementing this interface, a unified access method and identifier
+ * can be provided for different SDKs.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
@@ -34,7 +40,7 @@ public interface SdkEnum {
      * @param host The host name of the SDK.
      * @return The request address for the SDK.
      */
-    String getUlr(String host);
+    String getUrl(String host);
 
     /**
      * The name of the SDK request, which is a unique identifier name
