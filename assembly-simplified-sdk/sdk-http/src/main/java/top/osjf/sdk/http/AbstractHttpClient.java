@@ -221,7 +221,7 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
             if (MapUtils.isNotEmpty(queryParams) && body != null) {
                 //Is it judged here that as long as it exists? Prove that
                 // the parameters have already been concatenated, will we not add them here?.
-                if (url.contains("?")) {
+                if (!url.contains("?")) {
                     builder.append("?");
                     //The parameters have already been concatenated.
                     // For subsequent concatenation, simply add a concatenation symbol first.
