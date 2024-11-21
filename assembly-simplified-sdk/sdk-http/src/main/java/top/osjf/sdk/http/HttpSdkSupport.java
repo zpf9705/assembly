@@ -29,7 +29,34 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Support classes for http SDK.
+ * <p>The abstract {@code HttpSdkSupport} class is an abstract class that inherits from
+ * the {@code SdkSupport} class.It provides some common support functionalities for HTTP
+ * requests.
+ *
+ * <p>This class defines some static constants to represent the angle bracket symbols
+ * in generics,and a static Map collection for caching dynamically obtained response
+ * class types.The cache type is modified to use weak references to release memory at
+ * appropriate places and prevent memory leaks.
+ *
+ * <p>Provide a detailed introduction to two important static support methods:</p>
+ * <ul>
+ *     <li>{@link #checkContentType}:
+ *         This method checks if the Content-Type is included in the request headers.
+ *         If not, it defaults to application/json. It first checks if the incoming
+ *         headers are not null and contain Content-Type.If not, it decides whether to
+ *         add Content-Type as application/json based on whether the request body parameters
+ *         are in JSON format or whether the method confirms JSON serialization. If the
+ *         request body parameters are in JSON format and not concatenated for URL parameters,
+ *         it initializes the headers and adds the Content-Type.</li>
+ *
+ *     <li>{@link #getResponseRequiredType}:
+ *         This method retrieves the required response type for a given request.
+ *         It first attempts to retrieve the type from a cache. If not found, it traverses
+ *         the class hierarchy (including interfaces and parent classes)of the request
+ *         object to find a matching response type. If a matching generic type is found,
+ *         it returns that type;otherwise, if no matching type is found, it returns the
+ *         default type.</li>
+ * </ul>
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
