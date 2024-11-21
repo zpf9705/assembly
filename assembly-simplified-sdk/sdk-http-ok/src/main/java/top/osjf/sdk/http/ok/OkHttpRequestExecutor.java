@@ -44,6 +44,10 @@ public class OkHttpRequestExecutor extends UnsupportedCustomizeHttpRequestExecut
         this(new OkHttpClient());
     }
 
+    public OkHttpRequestExecutor(okhttp3.OkHttpClient okHttpClient) {
+        this(new OkHttpClient(okHttpClient));
+    }
+
     public OkHttpRequestExecutor(OkHttpClient okHttpClient) {
         this.okHttpClient = okHttpClient;
     }
