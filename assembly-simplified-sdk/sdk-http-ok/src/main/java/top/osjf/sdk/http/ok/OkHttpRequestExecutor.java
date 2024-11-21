@@ -38,16 +38,49 @@ import java.io.IOException;
 @LoadOrder(Integer.MIN_VALUE + 11)
 public class OkHttpRequestExecutor extends UnsupportedCustomizeHttpRequestExecutor implements HttpRequestExecutor {
 
+    /**
+     * Define a private, immutable {@code feign.okhttp.OkHttpClient} instance variable for executing HTTP requests.
+     */
     private final OkHttpClient okHttpClient;
 
+    /**
+     * Nonparametric construction method.
+     * <p>
+     * Create a new {@code OkHttpRequestExecutor} instance using the
+     * default configuration of {@code feign.okhttp.okHttpClient}.
+     * This is a convenient construction method that does not require
+     * any external configuration input.
+     */
     public OkHttpRequestExecutor() {
         this(new OkHttpClient());
     }
 
+    /**
+     * Create a new {@code OkHttpRequestExecutor} that constructs a
+     * {@code feign.okhttp.okHttpClient}. based on the parameter
+     * {@code okhttp3.OkHttpClient}, paying attention to the package
+     * categories within it.
+     * <p>
+     * This construction method allows users to customize
+     * {@code okhttp3.OkHttpClient} to create new {@code feign.okhttp.okHttpClient}
+     * and further create a {@code OkHttpRequestExecutor}.
+     *
+     * @param okHttpClient HTTP request client under package {@code okhttp3}.
+     */
     public OkHttpRequestExecutor(okhttp3.OkHttpClient okHttpClient) {
         this(new OkHttpClient(okHttpClient));
     }
 
+    /**
+     * Create a new {@code OkHttpRequestExecutor} with parameters
+     * that need to handle HTTP request clients under package
+     * {@code feign.okhttp.okHttpClient}.
+     * <p>
+     * This construction method allows users to customize
+     * {@code feign.okhttp.OkHttpClient} to create new {@code OkHttpRequestExecutor}.
+     *
+     * @param okHttpClient HTTP request client under package {@code feign.okhttp}.
+     */
     public OkHttpRequestExecutor(OkHttpClient okHttpClient) {
         this.okHttpClient = okHttpClient;
     }
