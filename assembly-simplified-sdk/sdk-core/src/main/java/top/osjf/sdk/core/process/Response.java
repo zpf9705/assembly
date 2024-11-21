@@ -23,7 +23,20 @@ import top.osjf.sdk.core.client.ResponseConvert;
 import java.io.Serializable;
 
 /**
- * Define response nodes for SDK.
+ * Definition of the response interface, which extends from the error response
+ * interface and the serializable interface.
+ * It is mainly used to encapsulate common attributes of request responses, including
+ * whether the request was successful and the response message.
+ * By implementing this interface, all response objects can ensure these basic
+ * functionalities.
+ * <p>
+ * This interface requires the implementation of the following functionalities:
+ * <ul>
+ *     <li>{@link #isSuccess()}:determine whether the request was successful,
+ *     returning a boolean value.</li>
+ *     <li>{@link #getMessage()}:obtain the response message, returning a string.
+ *     </li>
+ * </ul>
  *
  * <p>It is mainly used to receive the return value information of the API,
  * defining the method {@link #isSuccess()} to determine whether the request
