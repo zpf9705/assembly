@@ -17,7 +17,21 @@
 package top.osjf.sdk.spring.annotation;
 
 /**
- * Exception with invalid host address.
+ * The {@code IncorrectHostException} class defines a custom runtime exception indicating
+ * that the provided host address is invalid.
+ * <p>
+ * During network communication or data requests, it is often necessary to validate the
+ * host address. If the passed-in host address does not meet the expected format or is
+ * unreachable, this exception is thrown. This class inherits from {@code RuntimeException}
+ * in the Java standard library, indicating that it is an unchecked exception, meaning the
+ * compiler does not enforce the capturing or declaration of throwing this exception.
+ * <p>
+ * The constructor receives a string parameter {@code host}, representing the problematic
+ * host address that was passed in, and appends this address to the exception message,
+ * generating a detailed error message in the form of "[host] not a valid host address".
+ * <p>
+ * With this custom exception, it becomes easier to identify and handle cases of invalid
+ * host addresses in the code, enhancing the robustness and readability of the code.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
