@@ -32,7 +32,25 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Support classes for SDK.
+ * SDK Support class for handling the creation of request objects and conversion
+ * of response data.
+ *
+ * <p>This class provides a series of static methods for generating request objects
+ * based on method parameters and annotations,as well as converting response data
+ * into the desired type. By utilizing reflection and annotation processing, this
+ * class can dynamically handle different types of requests and responses.
+ *
+ * <p>Key features include:
+ * <ul>
+ *     <li>Support for marking request types through annotations and interfaces.</li>
+ *     <li>Automatic creation of request objects based on method parameters.</li>
+ *     <li>Conversion of response data into specified types.</li>
+ *     <li>Use of weak reference caching to prevent memory leaks.</li>
+ * </ul>
+ *
+ * <p>Designed as an abstract class, although no abstract methods are currently
+ * defined, it leaves room for extension,allowing for the addition of more SDK
+ * support-related functionalities in the future.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
