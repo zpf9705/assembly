@@ -186,7 +186,7 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
      *
      * @return the actual URL path at the time of the request
      */
-    public String getUrl() throws Exception {
+    public String getUrl() {
         return url;
     }
 
