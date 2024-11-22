@@ -28,11 +28,5 @@
             <version>${core}</version>
         </dependency>
 
-        <dependency>
-            <groupId>io.github.openfeign</groupId>
-            <artifactId>feign-core</artifactId>
-            <version>${open.feign.compent}</version>
-        </dependency>
-
     </dependencies>
 </project>
