@@ -58,7 +58,7 @@ import java.util.Map;
  * Finally, it closes the response and returns a string representation of the response body.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 2024.11.22
+ * @since 1.0.2
  */
 public abstract class ApacheHc5SimpleRequestUtils {
     private final static HttpClient DEFAULT = HttpClientBuilder.create().build();
