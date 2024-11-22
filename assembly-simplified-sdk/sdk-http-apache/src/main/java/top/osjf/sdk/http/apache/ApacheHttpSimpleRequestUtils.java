@@ -57,18 +57,14 @@ import java.util.Map;
  */
 public abstract class ApacheHttpSimpleRequestUtils {
 
-    private final static HttpClient DEFAULT_HTTP_CLIENT;
+    private final static HttpClient DEFAULT = HttpClients.createDefault();
 
     static {
-        DEFAULT_HTTP_CLIENT = HttpClients.createDefault();
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (DEFAULT_HTTP_CLIENT != null) {
-                    try {
-                        ((CloseableHttpClient) DEFAULT_HTTP_CLIENT).close();
-                    } catch (IOException ignored) {
-                    }
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            if (DEFAULT != null) {
+                try {
+                    ((CloseableHttpClient) DEFAULT).close();
+                } catch (IOException ignored) {
                 }
             }
         }));
@@ -229,7 +225,7 @@ public abstract class ApacheHttpSimpleRequestUtils {
                                    boolean montage,
                                    Object requestParam) throws Exception {
         if (client == null) {
-            client = DEFAULT_HTTP_CLIENT;
+            client = DEFAULT;
         }
         requestBase.setURI(getUri(url, requestParam, montage));
         HttpResponse response = null;
