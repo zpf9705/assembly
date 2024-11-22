@@ -258,7 +258,6 @@ public abstract class OkHttpSimpleRequestUtils {
      * @param method       Distinguish request types,must not be {@literal null}.
      * @return Obtain the condition builder for {@link Request}.
      */
-    @SuppressWarnings("unchecked")
     public static Request.Builder getRequestBuilder(String url, Object requestParam, boolean montage,
                                                     Map<String, String> headers,
                                                     String method) {

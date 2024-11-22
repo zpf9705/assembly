@@ -294,8 +294,8 @@ public abstract class ApacheHc5SimpleRequestUtils {
         URIBuilder uriBuilder = new URIBuilder(url);
         Map<String, Object> params = HttpSdkSupport.urlMontageBody(montage, requestParam);
         if (params != null) {
-            for (String paramKey : params.keySet()) {
-                uriBuilder.addParameter(paramKey, String.valueOf(params.get(paramKey)));
+            for (Map.Entry<String, Object> entry : params.entrySet()) {
+                uriBuilder.addParameter(entry.getKey(), String.valueOf(entry.getValue()));
             }
         }
         //If it is null or a string, it can be directly used as a paparazzi

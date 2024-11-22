@@ -229,6 +229,25 @@ public abstract class HttpSdkSupport extends SdkSupport {
         return rps_classes.get(inletClass);
     }
 
+    @SuppressWarnings("unchecked")
+    public static Map<String, Object> urlMontageBody(boolean montage, Object requestParam) {
+        Map<String, Object> montageParams = null;
+        if (montage && requestParam != null) {
+            if (requestParam instanceof Map) {
+                montageParams = (Map<String, Object>) requestParam;
+            } else if (requestParam instanceof String) {
+                montageParams = JSONUtil.getInnerMapByJsonStr(requestParam.toString());
+            }
+            if (montageParams == null) {
+                throw new IllegalArgumentException("If you need to concatenate parameters onto the URL, " +
+                        "please provide parameters of map type or JSON type of key/value " +
+                        "(which will automatically convert map concatenation). " +
+                        "If you provide a simple string type, then the URL parameter will be directly returned.");
+            }
+        }
+        return montageParams;
+    }
+
     private static Object getActualResponseTypeArguments(Type type, ClassLoader classLoader) {
         Type[] actualTypeArguments = ((ParameterizedType) type).getActualTypeArguments();
         // as Response and retrieve the first one.
