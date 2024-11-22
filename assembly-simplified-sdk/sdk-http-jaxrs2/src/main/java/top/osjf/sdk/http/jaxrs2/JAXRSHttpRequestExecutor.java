@@ -16,75 +16,58 @@
 
 package top.osjf.sdk.http.jaxrs2;
 
-import feign.Request;
-import feign.Response;
-import feign.jaxrs2.JAXRSClient;
 import top.osjf.sdk.core.support.LoadOrder;
+import top.osjf.sdk.http.CustomizeHttpRequestExecutor;
 import top.osjf.sdk.http.HttpRequestExecutor;
-import top.osjf.sdk.http.UnsupportedCustomizeHttpRequestExecutor;
 
-import javax.ws.rs.client.ClientBuilder;
-import java.io.IOException;
+import java.util.Map;
 
 /**
- * Starting from version 1.0.2, the calling method of {@code Hc5Http} uses the
- * {@code feign-hc5-http} component integrated with open feign.
+ * One of the implementation classes of {@link HttpRequestExecutor}, please
+ * refer to{@link JAXRSHttpSimpleRequestUtils} for implementation.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
 @LoadOrder(Integer.MIN_VALUE + 14)
-public class JAXRSHttpRequestExecutor extends UnsupportedCustomizeHttpRequestExecutor implements HttpRequestExecutor {
-
-    /**
-     * Define a private, final JAX-RS client instance variable for executing HTTP
-     * requests based on the JAX-RS specification.
-     */
-    private final JAXRSClient jaxrsClient;
-
-    /**
-     * No-argument constructor.
-     * Initializes the {@code JAXRSHttpRequestExecutor} object with a
-     * default {@code JAXRSClient} instance.
-     * <p>
-     * Provides a simple construction method that requires no external parameters.
-     */
-    public JAXRSHttpRequestExecutor() {
-        this(new JAXRSClient());
-    }
-
-    /**
-     * Constructor with a {@code ClientBuilder} parameter.
-     * <p>
-     * Allows the user to pass in a custom {@code ClientBuilder} instance
-     * to construct and initialize a customized {@code JAXRSClient} instance,
-     * which in turn initializes the {@code JAXRSHttpRequestExecutor} object.
-     *
-     * @param clientBuilder The custom {@code ClientBuilder} instance used to
-     *                      construct the JAX-RS client.
-     */
-    public JAXRSHttpRequestExecutor(ClientBuilder clientBuilder) {
-        this(new JAXRSClient(clientBuilder));
-    }
-
-    /**
-     * Constructor with a {@code JAXRSClient} parameter.
-     * <p>
-     * Allows the user to directly pass in a pre-configured {@code JAXRSClient}
-     * instance to initialize the {@code JAXRSHttpRequestExecutor} object.
-     * <p>
-     * This method provides the greatest flexibility, allowing the user to customize
-     * the configuration of the {@code JAXRSClient}.
-     *
-     * @param jaxrsClient The pre-configured {@code JAXRSClient} instance
-     *                    used to execute HTTP requests.
-     */
-    public JAXRSHttpRequestExecutor(JAXRSClient jaxrsClient) {
-        this.jaxrsClient = jaxrsClient;
+public class JAXRSHttpRequestExecutor implements CustomizeHttpRequestExecutor {
+    @Override
+    public String get(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
+        return null;
     }
 
     @Override
-    public Response execute(Request request, Request.Options options) throws IOException {
-        return jaxrsClient.execute(request, options);
+    public String post(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
+        return null;
+    }
+
+    @Override
+    public String put(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
+        return null;
+    }
+
+    @Override
+    public String delete(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
+        return null;
+    }
+
+    @Override
+    public String trace(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
+        return null;
+    }
+
+    @Override
+    public String options(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
+        return null;
+    }
+
+    @Override
+    public String head(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
+        return null;
+    }
+
+    @Override
+    public String patch(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
+        return null;
     }
 }
