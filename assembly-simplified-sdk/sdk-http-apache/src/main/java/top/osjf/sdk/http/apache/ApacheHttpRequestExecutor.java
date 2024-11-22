@@ -16,79 +16,59 @@
 
 package top.osjf.sdk.http.apache;
 
-import feign.Request;
-import feign.Response;
-import feign.httpclient.ApacheHttpClient;
-import org.apache.http.client.HttpClient;
 import top.osjf.sdk.core.support.LoadOrder;
+import top.osjf.sdk.http.CustomizeHttpRequestExecutor;
 import top.osjf.sdk.http.HttpRequestExecutor;
-import top.osjf.sdk.http.UnsupportedCustomizeHttpRequestExecutor;
 
-import java.io.IOException;
+import java.util.Map;
 
 /**
  * One of the implementation classes of {@link HttpRequestExecutor}, please
  * refer to{@link ApacheHttpSimpleRequestUtils} for implementation.
- * <p>
- * Starting from version 1.0.2, the calling method of {@code ApacheHttp} uses the
- * {@code feign-apache-http} component integrated with open feign.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
 @LoadOrder(Integer.MIN_VALUE + 10)
-public class ApacheHttpRequestExecutor extends UnsupportedCustomizeHttpRequestExecutor implements HttpRequestExecutor {
+public class ApacheHttpRequestExecutor implements CustomizeHttpRequestExecutor {
 
-    /**
-     * Define a private final variable of type {@code ApacheHttpClient} for executing HTTP requests.
-     */
-    private final ApacheHttpClient apacheHttpClient;
-
-    /**
-     * Nonparametric constructor method, using the default {@code ApacheHttpClient}
-     * instance to initialize objects.
-     * <p>
-     * This is a convenient constructor method that internally calls a constructor
-     * method with {@code ApacheHttpClient}  parameters,And passed on a newly created
-     * {@code ApacheHttpClient} instance.
-     */
-    public ApacheHttpRequestExecutor() {
-        this(new ApacheHttpClient());
-    }
-
-    /**
-     * A constructor method with an FHIR parameter that allows users to pass in a
-     * custom {@code HttpClient} instance,
-     * Then use this instance to create an {@code ApacheHttpClient} and use it to
-     * initialize objects.
-     * <p>
-     * This construction method provides flexibility, allowing users to configure
-     * {@code HttpClient} according to their own needs,
-     * For example, setting timeout periods, proxies, etc.
-     *
-     * @param httpClient user custom {@code HttpClient} Instance.
-     */
-    public ApacheHttpRequestExecutor(HttpClient httpClient) {
-        this(new ApacheHttpClient(httpClient));
-    }
-
-    /**
-     * A constructor method with an {@code ApacheHttpClient} parameter that can be
-     * directly used to initialize an object.
-     * <p>
-     * This construction method allows users to directly pass in a preconfigured
-     * {@code ApacheHttpClient} instance,Suitable for scenarios that require finer
-     * grained control over {@code ApacheHttpClient} configuration.
-     *
-     * @param apacheHttpClient user defined and already configured {@code ApacheHttpClient}
-     *                         instance.
-     */
-    public ApacheHttpRequestExecutor(ApacheHttpClient apacheHttpClient) {
-        this.apacheHttpClient = apacheHttpClient;
+    @Override
+    public String get(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
+        return null;
     }
 
     @Override
-    public Response execute(Request request, Request.Options options) throws IOException {
-        return apacheHttpClient.execute(request, options);
+    public String post(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
+        return null;
+    }
+
+    @Override
+    public String put(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
+        return null;
+    }
+
+    @Override
+    public String delete(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
+        return null;
+    }
+
+    @Override
+    public String trace(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
+        return null;
+    }
+
+    @Override
+    public String options(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
+        return null;
+    }
+
+    @Override
+    public String head(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
+        return null;
+    }
+
+    @Override
+    public String patch(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
+        return null;
     }
 }
