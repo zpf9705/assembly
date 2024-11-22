@@ -6,7 +6,6 @@ import feign.Request;
 import feign.Response;
 import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.http.HttpRequestExecutor;
-import top.osjf.sdk.http.IOUtils;
 
 import java.nio.charset.Charset;
 import java.util.Collection;

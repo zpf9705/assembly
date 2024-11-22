@@ -23,7 +23,7 @@
  * questions.
  */
 
-package top.osjf.sdk.http;
+package top.osjf.sdk.http.feign.bridging;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * IOUtils: A collection of IO-related public static methods.
  */
-abstract class IOUtils {
+public abstract class IOUtils {
     private static final int DEFAULT_BUFFER_SIZE = 8192;
 
     /**
