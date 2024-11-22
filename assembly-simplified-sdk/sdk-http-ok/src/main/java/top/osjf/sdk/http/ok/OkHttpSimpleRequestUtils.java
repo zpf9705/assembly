@@ -29,7 +29,7 @@ import java.util.Map;
  * The Square's HTTP client request tool class mainly includes four request methods: post, get, put, and del.
  *
  * <p>And other methods that can be customized with HTTP support, link to method
- * {@link #doRequest(okhttp3.OkHttpClient, Request.Builder, Map)}</p>
+ * {@link #doRequest}
  *
  * <p>This class is a simple request tool for {@link OkHttpClient} and does not provide any other special functions.
  *
@@ -46,10 +46,14 @@ import java.util.Map;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public final class OkHttpSimpleRequestUtils {
+public abstract class OkHttpSimpleRequestUtils {
+    private static final OkHttpClient DEFAULT = new okhttp3.OkHttpClient().newBuilder().build();
 
-    private OkHttpSimpleRequestUtils() {
-        throw new AssertionError("No instance for you !");
+    static {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            Dispatcher dispatcher = DEFAULT.dispatcher();
+            dispatcher.executorService().shutdownNow();
+        }));
     }
 
     /**
@@ -62,7 +66,7 @@ public final class OkHttpSimpleRequestUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value.
-     * @throws Exception Unknown exception.
+     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
     public static String get(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
@@ -80,7 +84,7 @@ public final class OkHttpSimpleRequestUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value
-     * @throws Exception Unknown exception.
+     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
     public static String post(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
@@ -97,7 +101,7 @@ public final class OkHttpSimpleRequestUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value
-     * @throws Exception Unknown exception.
+     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
     public static String put(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
@@ -115,7 +119,7 @@ public final class OkHttpSimpleRequestUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value.
-     * @throws Exception Unknown exception.
+     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
     public static String delete(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
@@ -133,7 +137,7 @@ public final class OkHttpSimpleRequestUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value.
-     * @throws Exception Unknown exception.
+     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
     public static String trace(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
@@ -151,7 +155,7 @@ public final class OkHttpSimpleRequestUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value.
-     * @throws Exception Unknown exception.
+     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
     public static String options(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
@@ -169,7 +173,7 @@ public final class OkHttpSimpleRequestUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value.
-     * @throws Exception Unknown exception.
+     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
     public static String head(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
@@ -187,7 +191,7 @@ public final class OkHttpSimpleRequestUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value.
-     * @throws Exception Unknown exception.
+     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
     public static String patch(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
@@ -202,13 +206,13 @@ public final class OkHttpSimpleRequestUtils {
      * @param builder HTTP Public Request Class {@link Request.Builder}.
      * @param headers Header information map,can be {@literal null}.
      * @return The {@code String} type of the return value
-     * @throws Exception Unknown exception.
+     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
     public static String doRequest(okhttp3.OkHttpClient client,
                                    Request.Builder builder,
                                    Map<String, String> headers) throws Exception {
         if (client == null) {
-            client = new okhttp3.OkHttpClient().newBuilder().build();
+            client = DEFAULT;
         }
         Response response = null;
         String result;
