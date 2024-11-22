@@ -23,10 +23,11 @@ import top.osjf.sdk.core.util.JSONUtil;
 import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.core.util.StringUtils;
 
+import java.io.IOException;
 import java.util.Map;
 
 /**
- * Google HTTP Simple Request Tool Class
+ * Google HTTP Simple Request Tool Class.
  * <p>
  * This class provides a simple way to execute Google HTTP requests, including {@code GET},
  * {@code POST},{@code PUT}, {@code DELETE}, {@code TRACE}, {@code OPTIONS}, {@code HEAD},
@@ -49,10 +50,17 @@ import java.util.Map;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-public final class GoogleHttpSimpleRequestUtils {
+public abstract class GoogleHttpSimpleRequestUtils {
 
-    private GoogleHttpSimpleRequestUtils() {
-        throw new AssertionError("No instance for you !");
+    private static final HttpRequestFactory DEFAULT = new NetHttpTransport().createRequestFactory();
+
+    static {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                DEFAULT.getTransport().shutdown();
+            } catch (IOException ignored) {
+            }
+        }));
     }
 
     /**
@@ -66,7 +74,7 @@ public final class GoogleHttpSimpleRequestUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value
-     * @throws Exception Unknown exception.
+     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
     public static String get(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
@@ -84,7 +92,7 @@ public final class GoogleHttpSimpleRequestUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value
-     * @throws Exception Unknown exception.
+     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
     public static String post(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
@@ -102,7 +110,7 @@ public final class GoogleHttpSimpleRequestUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value
-     * @throws Exception Unknown exception.
+     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
     public static String put(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
@@ -120,7 +128,7 @@ public final class GoogleHttpSimpleRequestUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value.
-     * @throws Exception Unknown exception.
+     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
     public static String delete(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
@@ -138,7 +146,7 @@ public final class GoogleHttpSimpleRequestUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value.
-     * @throws Exception Unknown exception.
+     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
     public static String trace(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
@@ -156,7 +164,7 @@ public final class GoogleHttpSimpleRequestUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value.
-     * @throws Exception Unknown exception.
+     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
     public static String options(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
@@ -174,7 +182,7 @@ public final class GoogleHttpSimpleRequestUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value.
-     * @throws Exception Unknown exception.
+     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
     public static String head(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
@@ -192,7 +200,7 @@ public final class GoogleHttpSimpleRequestUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value.
-     * @throws Exception Unknown exception.
+     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
     public static String patch(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
@@ -209,7 +217,7 @@ public final class GoogleHttpSimpleRequestUtils {
      * @param requestParam   Request parameters,can be {@literal null}.
      * @param montage        Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value
-     * @throws Exception Unknown exception.
+     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
     @SuppressWarnings("unchecked")
     public static String doRequest(HttpRequestFactory requestFactory,
@@ -257,15 +265,7 @@ public final class GoogleHttpSimpleRequestUtils {
         if (MapUtils.isNotEmpty(headers)) {
             HttpHeaders httpHeaders = new HttpHeaders();
             for (final Map.Entry<String, String> header : headers.entrySet()) {
-                // We already set the Content-Type header via ByteArrayContent
-                // Content-Type is defined as a singleton field
-                if (!header.getKey().equals("Content-Type")) {
-                    httpHeaders.set(header.getKey(), header.getValue());
-                }
-            }
-            // Some servers don't do well with no Accept header
-            if (headers.get("Accept") == null) {
-                httpHeaders.setAccept("*/*");
+                httpHeaders.set(header.getKey(), header.getValue());
             }
             request.setHeaders(httpHeaders);
         }
