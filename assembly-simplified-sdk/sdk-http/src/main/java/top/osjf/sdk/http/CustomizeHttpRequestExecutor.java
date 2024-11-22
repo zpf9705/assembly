@@ -37,7 +37,16 @@ import java.util.Map;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-public interface CustomizeHttpRequestExecutor {
+public interface CustomizeHttpRequestExecutor extends HttpRequestExecutor {
+    @Override
+    default String execute(ExecutorHttpRequest httpRequest) throws Exception {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    default boolean useCustomize() {
+        return true;
+    }
 
     /**
      * Use lowercase HTTP method names to map the request method names of
