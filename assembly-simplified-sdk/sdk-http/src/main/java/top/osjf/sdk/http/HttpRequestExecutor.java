@@ -18,7 +18,9 @@ package top.osjf.sdk.http;
 
 import java.io.Serializable;
 import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -204,6 +206,15 @@ public interface HttpRequestExecutor {
          * it will not.
          */
         private final boolean followRedirects;
+        /**
+         * Each thread can have different method option configurations.
+         * <p>
+         * In a multi-threaded environment, different threads may require different request
+         * configurations when processing HTTP requests. For example, one thread may handle
+         * requests that require high priority, while another thread may handle backend requests
+         * that can tolerate longer delays.
+         */
+        private final Map<String, Map<String, RequestOptions>> threadToMethodOptions;
 
         /**
          * Creates the new {@code RequestOptions} using any default values:
@@ -252,6 +263,43 @@ public interface HttpRequestExecutor {
             this.readTimeout = readTimeout;
             this.readTimeoutUnit = readTimeoutUnit;
             this.followRedirects = followRedirects;
+            this.threadToMethodOptions = new ConcurrentHashMap<>();
+        }
+
+        /**
+         * When processing HTTP requests, retrieve the corresponding RequestOptions
+         * based on thread identity and method name.
+         *
+         * @param methodName it's your http method name.
+         * @return http method Options
+         */
+        public RequestOptions getMethodOptions(String methodName) {
+            Map<String, RequestOptions> methodOptions =
+                    threadToMethodOptions.getOrDefault(getThreadIdentifier(), new HashMap<>());
+            return methodOptions.getOrDefault(methodName, this);
+        }
+
+        /**
+         * Set methodOptions by methodKey and options
+         *
+         * @param methodName it's your http method name.
+         * @param options    it's the Options for this method.
+         */
+        public void setMethodOptions(String methodName, RequestOptions options) {
+            String threadIdentifier = getThreadIdentifier();
+            Map<String, RequestOptions> methodOptions =
+                    threadToMethodOptions.getOrDefault(threadIdentifier, new HashMap<>());
+            threadToMethodOptions.put(threadIdentifier, methodOptions);
+            methodOptions.put(methodName, options);
+        }
+
+        private String getThreadIdentifier() {
+            Thread currentThread = Thread.currentThread();
+            return currentThread.getThreadGroup()
+                    + "_"
+                    + currentThread.getName()
+                    + "_"
+                    + currentThread.getId();
         }
 
         public boolean isFollowRedirects() {

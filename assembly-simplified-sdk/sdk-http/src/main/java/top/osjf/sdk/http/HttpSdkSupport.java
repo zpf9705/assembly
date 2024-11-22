@@ -115,7 +115,7 @@ public abstract class HttpSdkSupport extends SdkSupport {
                     // concatenated for URL parameters.
                     !request.montage()) {
                 // Initialize information for empty request bodies to meet the situation.
-                if (headers == null) headers = new HashMap<>(1);
+                if (headers == null) headers = new ConcurrentHashMap<>(1);
                 headers.putIfAbsent("Content-Type", "application/json");
             }
             /* Consider ignoring map errors that cannot be supported for addition. */
