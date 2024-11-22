@@ -241,7 +241,7 @@ public abstract class GoogleHttpSimpleRequestUtils {
             contentType = "application/json";
         }
         GenericUrl genericUrl = new GenericUrl(url);
-        if (montage) {
+        if (montage && requestParam != null) {
             Map<String, Object> queryParams = null;
             if (requestParam instanceof Map) {
                 queryParams = (Map<String, Object>) requestParam;
