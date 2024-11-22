@@ -38,7 +38,7 @@ import top.osjf.sdk.core.client.Client;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public interface HttpClient<R extends HttpResponse> extends Client<R>, HttpResultSolver, OpenFeignClientOptions {
+public interface HttpClient<R extends HttpResponse> extends Client<R>, HttpResultSolver {
 
     /**
      * Execute an HTTP request and return a string representation of the response.
@@ -83,4 +83,20 @@ public interface HttpClient<R extends HttpResponse> extends Client<R>, HttpResul
      * @since 1.0.2
      */
     R convertToResponse(HttpRequest<R> request, String responseStr);
+
+    /**
+     * Return a Controls the per-request settings currently required to be
+     * implemented by all {@link Client}.
+     * <p>Currently only takes effect when
+     * <pre>{@code HttpRequestExecutor#useCustomize == false}</pre>.
+     * <p>By default, this method returns
+     * {@link top.osjf.sdk.http.HttpRequestExecutor.RequestOptions#DEFAULT_OPTIONS}.
+     *
+     * @return Controls the per-request settings currently required to be
+     * implemented by all {@link Client clients}
+     * @since 1.0.2
+     */
+    default HttpRequestExecutor.RequestOptions getOptions(){
+        return HttpRequestExecutor.RequestOptions.DEFAULT_OPTIONS;
+    }
 }
