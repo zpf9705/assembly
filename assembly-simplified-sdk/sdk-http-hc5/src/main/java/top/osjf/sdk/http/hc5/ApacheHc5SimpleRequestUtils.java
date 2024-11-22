@@ -36,6 +36,27 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 /**
+ * The {@code ApacheHc5SimpleRequestUtils} class is a utility class for simplifying
+ * HTTP requests using Apache HttpClient 5.x.
+ * It provides a series of static methods for executing HTTP {@code GET}, {@code POST},
+ * {@code PUT}, {@code DELETE},{@code TRACE}, {@code OPTIONS}, {@code HEAD}, and {@code PATCH}
+ * requests.
+ * <p>
+ * These methods allow users to initiate HTTP requests by passing in a URL, request
+ * headers, request parameters, and a boolean value indicating whether to append
+ * parameters.
+ * <p>
+ * The class internally uses a default HttpClient instance but also allows users to
+ * pass in a custom HttpClient instance.
+ * The result of the request is returned as a string, containing the content of the
+ * HTTP response body.
+ * <p>
+ * When executing a request, this class builds the complete request URI based on the
+ * passed parameters and sets the corresponding request headers and request body
+ * (if the flag for not appending parameters is not set).
+ * Then, it uses the HttpClient instance to execute the request and obtain the response.
+ * Finally, it closes the response and returns a string representation of the response body.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 2024.11.22
  */
