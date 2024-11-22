@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 the original author or authors.
+ * Copyright 2024-? the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,12 +24,30 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
-import java.util.Collections;
 import java.util.Map;
 
 /**
+ * The {@code JAXRSHttpSimpleRequestUtils} class serves as a utility for simplifying
+ * JAX-RS HTTP requests.
+ * It provides a series of static methods for executing HTTP requests such as {@code GET},
+ * {@code POST},{@code PUT}, {@code DELETE}, {@code TRACE}, {@code OPTIONS}, {@code HEAD},
+ * {@code PATCH}.
+ * <p>
+ * The class utilizes a global JAX-RS Client instance, which is created upon class loading
+ * and automatically closed when the JVM shuts down via the {@code Runtime.getRuntime().
+ * addShutdownHook} method.
+ * <p>
+ * The URL, headers, and request parameters for the request can be passed in through method
+ * parameters.
+ * The request parameters can optionally be appended to the URL or sent as a JSON request body.
+ * This class is primarily used to simplify the process of sending HTTP requests and enhance
+ * development efficiency.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
@@ -50,10 +68,8 @@ public abstract class JAXRSHttpSimpleRequestUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value.
-     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
-    public static String get(String url, Map<String, String> headers, Object requestParam, boolean montage)
-            throws Exception {
+    public static String get(String url, Map<String, String> headers, Object requestParam, boolean montage) {
         return doRequest(null, "GET", getURI(url, montage, requestParam),
                 headers, montage, requestParam);
     }
@@ -68,10 +84,8 @@ public abstract class JAXRSHttpSimpleRequestUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value
-     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
-    public static String post(String url, Map<String, String> headers, Object requestParam, boolean montage)
-            throws Exception {
+    public static String post(String url, Map<String, String> headers, Object requestParam, boolean montage) {
         return doRequest(null, "POST", getURI(url, montage, requestParam),
                 headers, montage, requestParam);
     }
@@ -86,10 +100,8 @@ public abstract class JAXRSHttpSimpleRequestUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value
-     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
-    public static String put(String url, Map<String, String> headers, Object requestParam, boolean montage)
-            throws Exception {
+    public static String put(String url, Map<String, String> headers, Object requestParam, boolean montage) {
         return doRequest(null, "PUT", getURI(url, montage, requestParam),
                 headers, montage, requestParam);
     }
@@ -104,10 +116,8 @@ public abstract class JAXRSHttpSimpleRequestUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value.
-     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
-    public static String delete(String url, Map<String, String> headers, Object requestParam, boolean montage)
-            throws Exception {
+    public static String delete(String url, Map<String, String> headers, Object requestParam, boolean montage) {
         return doRequest(null, "DELETE", getURI(url, montage, requestParam),
                 headers, montage, requestParam);
     }
@@ -122,10 +132,8 @@ public abstract class JAXRSHttpSimpleRequestUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value.
-     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
-    public static String trace(String url, Map<String, String> headers, Object requestParam, boolean montage)
-            throws Exception {
+    public static String trace(String url, Map<String, String> headers, Object requestParam, boolean montage) {
         return doRequest(null, "TRACE", getURI(url, montage, requestParam),
                 headers, montage, requestParam);
     }
@@ -140,10 +148,8 @@ public abstract class JAXRSHttpSimpleRequestUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value.
-     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
-    public static String options(String url, Map<String, String> headers, Object requestParam, boolean montage)
-            throws Exception {
+    public static String options(String url, Map<String, String> headers, Object requestParam, boolean montage) {
         return doRequest(null, "OPTIONS", getURI(url, montage, requestParam),
                 headers, montage, requestParam);
     }
@@ -158,10 +164,8 @@ public abstract class JAXRSHttpSimpleRequestUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value.
-     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
-    public static String head(String url, Map<String, String> headers, Object requestParam, boolean montage)
-            throws Exception {
+    public static String head(String url, Map<String, String> headers, Object requestParam, boolean montage) {
         return doRequest(null, "HEAD", getURI(url, montage, requestParam),
                 headers, montage, requestParam);
     }
@@ -176,10 +180,8 @@ public abstract class JAXRSHttpSimpleRequestUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value.
-     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
-    public static String patch(String url, Map<String, String> headers, Object requestParam, boolean montage)
-            throws Exception {
+    public static String patch(String url, Map<String, String> headers, Object requestParam, boolean montage) {
         return doRequest(null, "PATCH", getURI(url, montage, requestParam),
                 headers, montage, requestParam);
     }
@@ -207,6 +209,7 @@ public abstract class JAXRSHttpSimpleRequestUtils {
         Invocation.Builder builder = client.target(uri)
                 .request();
         if (headers != null) builder.headers(new MultivaluedHashMap<>(headers));
+        String result;
         Response response = null;
         try {
             if (montage) {
@@ -214,20 +217,13 @@ public abstract class JAXRSHttpSimpleRequestUtils {
             } else {
                 response = builder.method(methodName, toEntity(requestParam, headers));
             }
+            result = response.readEntity(String.class);
         } finally {
             if (response != null) {
                 response.close();
             }
         }
-        return null;
-    }
-
-    public static void main(String[] args) throws Exception {
-        String s = get("https://zzc.bookuu.com/apis/wms/transport/logistics/update/findLogistics",
-                null, Collections.singletonMap("shipmentNo", "XSA00677099"),
-                true);
-
-        System.out.println(s);
+        return result;
     }
 
     @SuppressWarnings("unchecked")
