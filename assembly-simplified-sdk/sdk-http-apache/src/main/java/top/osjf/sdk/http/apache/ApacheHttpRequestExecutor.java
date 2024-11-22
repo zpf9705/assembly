@@ -34,41 +34,41 @@ public class ApacheHttpRequestExecutor implements CustomizeHttpRequestExecutor {
 
     @Override
     public String get(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return null;
+        return ApacheHttpSimpleRequestUtils.get(url, headers, param, montage);
     }
 
     @Override
     public String post(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return null;
+        return ApacheHttpSimpleRequestUtils.post(url, headers, param, montage);
     }
 
     @Override
     public String put(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return null;
+        return ApacheHttpSimpleRequestUtils.put(url, headers, param, montage);
     }
 
     @Override
     public String delete(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return null;
+        return ApacheHttpSimpleRequestUtils.delete(url, headers, param, montage);
     }
 
     @Override
     public String trace(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return null;
+        return ApacheHttpSimpleRequestUtils.trace(url, headers, param, montage);
     }
 
     @Override
     public String options(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return null;
+        return ApacheHttpSimpleRequestUtils.options(url, headers, param, montage);
     }
 
     @Override
     public String head(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return null;
+        return ApacheHttpSimpleRequestUtils.head(url, headers, param, montage);
     }
 
     @Override
     public String patch(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return null;
+        return ApacheHttpSimpleRequestUtils.patch(url, headers, param, montage);
     }
 }
