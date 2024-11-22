@@ -143,11 +143,23 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
      * The default provided {@code HttpRequestExecutor} implementation can be viewed
      * in the following packages:
      * <ul>
+     *     <li><h3>customize:</h3></li>
      *     <li><a href="https://mvnrepository.com/artifact/top.osjf.sdk/sdk-http-apache">sdk-http-apache</a></li>
      *     <li><a href="https://mvnrepository.com/artifact/top.osjf.sdk/sdk-http-ok">sdk-http-ok</a></li>
      *     <li><a href="https://mvnrepository.com/artifact/top.osjf.sdk/sdk-http-google">sdk-http-google</a></li>
      *     <li><a href="https://mvnrepository.com/artifact/top.osjf.sdk/sdk-http-hc5">sdk-http-hc5</a></li>
      *     <li><a href="https://mvnrepository.com/artifact/top.osjf.sdk/sdk-http-jaxrs2">sdk-http-jaxrs2</a></li>
+     *     <li><h3>Integrate OpenFeign:</h3></li>
+     *     <li><a href="https://mvnrepository.com/artifact/top.osjf.sdk/sdk-http-feign-apache">
+     *         sdk-http-feign-apache</a></li>
+     *     <li><a href="https://mvnrepository.com/artifact/top.osjf.sdk/sdk-http-feign-ok">
+     *         sdk-http-feign-ok</a></li>
+     *     <li><a href="https://mvnrepository.com/artifact/top.osjf.sdk/sdk-http-feign-google">
+     *         sdk-http-feign-google</a></li>
+     *     <li><a href="https://mvnrepository.com/artifact/top.osjf.sdk/sdk-http-feign-hc5">
+     *         sdk-http-feign-hc5</a></li>
+     *     <li><a href="https://mvnrepository.com/artifact/top.osjf.sdk/sdk-http-feign-jaxrs2">
+     *         sdk-http-feign-jaxrs2</a></li>
      * </ul>
      */
     private HttpRequestExecutor requestExecutor;
