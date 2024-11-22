@@ -269,7 +269,7 @@ public interface HttpRequestExecutor {
         /**
          * When processing HTTP requests, retrieve the corresponding RequestOptions
          * based on thread identity and method name.
-         *
+         * Refer to copying {@code feign.Options}.
          * @param methodName it's your http method name.
          * @return http method Options
          */
@@ -280,8 +280,8 @@ public interface HttpRequestExecutor {
         }
 
         /**
-         * Set methodOptions by methodKey and options
-         *
+         * Set methodOptions by methodKey and options.
+         * Refer to copying {@code feign.Options}.
          * @param methodName it's your http method name.
          * @param options    it's the Options for this method.
          */
@@ -293,6 +293,7 @@ public interface HttpRequestExecutor {
             methodOptions.put(methodName, options);
         }
 
+        // Refer to copying {@code feign.Options}.
         private String getThreadIdentifier() {
             Thread currentThread = Thread.currentThread();
             return currentThread.getThreadGroup()
