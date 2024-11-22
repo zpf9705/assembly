@@ -84,7 +84,7 @@ public abstract class ApacheHttpSimpleRequestUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value
-     * @throws Exception Unknown exception.
+     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
     public static String get(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
@@ -101,7 +101,7 @@ public abstract class ApacheHttpSimpleRequestUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value
-     * @throws Exception Unknown exception.
+     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
     public static String post(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
@@ -118,7 +118,7 @@ public abstract class ApacheHttpSimpleRequestUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value
-     * @throws Exception Unknown exception.
+     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
     public static String put(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
@@ -135,7 +135,7 @@ public abstract class ApacheHttpSimpleRequestUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value.
-     * @throws Exception Unknown exception.
+     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
     public static String delete(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
@@ -152,7 +152,7 @@ public abstract class ApacheHttpSimpleRequestUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value.
-     * @throws Exception Unknown exception.
+     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
     public static String trace(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
@@ -169,7 +169,7 @@ public abstract class ApacheHttpSimpleRequestUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value.
-     * @throws Exception Unknown exception.
+     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
     public static String options(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
@@ -186,7 +186,7 @@ public abstract class ApacheHttpSimpleRequestUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value.
-     * @throws Exception Unknown exception.
+     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
     public static String head(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
@@ -203,7 +203,7 @@ public abstract class ApacheHttpSimpleRequestUtils {
      * @param requestParam Request parameters,can be {@literal null}.
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @return The {@code String} type of the return value.
-     * @throws Exception Unknown exception.
+     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
     public static String patch(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
@@ -220,7 +220,7 @@ public abstract class ApacheHttpSimpleRequestUtils {
      * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @param requestParam Request parameters,can be {@literal null}.
      * @return The {@code String} type of the return value
-     * @throws Exception Unknown exception.
+     * @throws Exception A specific exception occurred due to an HTTP request error.
      */
     public static String doRequest(HttpClient client,
                                    HttpRequestBase requestBase,
