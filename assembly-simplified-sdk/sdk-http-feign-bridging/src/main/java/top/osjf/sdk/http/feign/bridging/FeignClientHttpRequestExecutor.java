@@ -55,8 +55,9 @@ public interface FeignClientHttpRequestExecutor extends Client, HttpRequestExecu
         }
 
         //Create a request object for feign.
+        String methodName = httpRequest.getMethodName();
         feign.Request feignRequest = feign.Request
-                .create(feign.Request.HttpMethod.valueOf(httpRequest.getMethodName()),
+                .create(feign.Request.HttpMethod.valueOf(methodName),
                         //When integrating components, directly formatting the
                         // URL here involves attaching query parameters.
                         httpRequest.getUrl(),
@@ -64,14 +65,19 @@ public interface FeignClientHttpRequestExecutor extends Client, HttpRequestExecu
                         feignBody,
                         null);/* We won't set up using third-party HTTP here.  */
 
-        //Set the HTTP execution option for feature.
-        RequestOptions options = httpRequest.getOptions();
+        //Get the required configuration for the current thread.
+        RequestOptions options = httpRequest.getOptions().getMethodOptions(methodName);
+        //Set the HTTP execution option for feign.
         Request.Options feignOptions =
                 new Request.Options(options.connectTimeout(), options.connectTimeoutUnit(),
                         options.readTimeout(), options.readTimeoutUnit(), options.isFollowRedirects());
+        //Put it into the thread configuration of feign.
+        feignOptions.setMethodOptions(methodName, feignOptions);
 
         //Read the stream response result of the feature client and return the request result
         // in the form of a string for subsequent conversion operations.
+
+        //Automatically close the resource information that responds.
         try (Response response = execute(feignRequest, feignOptions)) {
             return new String(IOUtils.readAllBytes(response.body().asInputStream()), charset);
         }
