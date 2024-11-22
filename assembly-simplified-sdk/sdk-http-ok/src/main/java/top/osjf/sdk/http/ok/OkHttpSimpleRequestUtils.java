@@ -17,12 +17,11 @@
 package top.osjf.sdk.http.ok;
 
 import okhttp3.*;
-import top.osjf.sdk.core.util.JSONUtil;
 import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.core.util.StringUtils;
+import top.osjf.sdk.http.HttpSdkSupport;
 import top.osjf.sdk.http.ResponseFailedException;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -268,27 +267,10 @@ public abstract class OkHttpSimpleRequestUtils {
             throw new IllegalArgumentException("Url is not valid");
         }
         HttpUrl.Builder urlBuilder = httpUrl.newBuilder();
-        if (montage && requestParam != null) {
-            if (!(requestParam instanceof Map) && !(requestParam instanceof String))
-                throw new IllegalArgumentException("If you need to concatenate parameters onto the HttpUrl.Builder " +
-                        "to addQueryParameter, please provide parameters of map type or JSON type of key/value " +
-                        "(which will automatically convert map concatenation). " +
-                        "If you provide a simple string type, then the URL parameter will be directly returned.");
-            Map<String, Object> params = new HashMap<>();
-            if (requestParam instanceof Map) {
-                params.putAll((Map<String, Object>) requestParam);
-            } else {
-                //if a valid json will return param map
-                Map<String, Object> param = JSONUtil
-                        .getInnerMapByJsonStr(requestParam.toString());
-                if (MapUtils.isNotEmpty(param)) {
-                    params.putAll(param);
-                }
-            }
-            if (MapUtils.isNotEmpty(params)) {
-                for (String paramKey : params.keySet()) {
-                    urlBuilder.addQueryParameter(paramKey, String.valueOf(params.get(paramKey)));
-                }
+        Map<String, Object> params = HttpSdkSupport.urlMontageBody(montage, requestParam);
+        if (params != null) {
+            for (Map.Entry<String, Object> entry : params.entrySet()) {
+                urlBuilder.addQueryParameter(entry.getKey(), String.valueOf(entry.getValue()));
             }
         }
         Request.Builder requestBuild = new Request.Builder().url(urlBuilder.build());
