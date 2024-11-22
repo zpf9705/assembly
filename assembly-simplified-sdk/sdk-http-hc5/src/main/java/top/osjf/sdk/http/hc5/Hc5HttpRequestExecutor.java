@@ -16,75 +16,59 @@
 
 package top.osjf.sdk.http.hc5;
 
-import feign.Request;
-import feign.Response;
-import feign.hc5.ApacheHttp5Client;
-import org.apache.hc.client5.http.classic.HttpClient;
 import top.osjf.sdk.core.support.LoadOrder;
+import top.osjf.sdk.http.CustomizeHttpRequestExecutor;
 import top.osjf.sdk.http.HttpRequestExecutor;
-import top.osjf.sdk.http.UnsupportedCustomizeHttpRequestExecutor;
 
-import java.io.IOException;
+import java.util.Map;
 
 /**
- * Starting from version 1.0.2, the calling method of {@code Hc5Http} uses the
- * {@code feign-hc5-http} component integrated with open feign.
+ * One of the implementation classes of {@link HttpRequestExecutor}, please
+ * refer to{@link ApacheHc5SimpleRequestUtils} for implementation.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
 @LoadOrder(Integer.MIN_VALUE + 13)
-public class Hc5HttpRequestExecutor extends UnsupportedCustomizeHttpRequestExecutor implements HttpRequestExecutor {
+public class Hc5HttpRequestExecutor implements CustomizeHttpRequestExecutor {
 
-    /**
-     * Define a private, final instance variable of type {@code ApacheHttp5Client} for executing HTTP requests.
-     */
-    private final ApacheHttp5Client http5Client;
-
-    /**
-     * A no-argument constructor.
-     * Initializes the {@code Hc5HttpRequestExecutor} object with a
-     * default {@code ApacheHttp5Client} instance.
-     * <p>
-     * This is to provide a simple construction method without requiring
-     * any external parameters.
-     */
-    public Hc5HttpRequestExecutor() {
-        this(new ApacheHttp5Client());
-    }
-
-    /**
-     * A constructor with a {@code HttpClient} parameter.
-     * Allows the user to pass a custom {@code HttpClient} instance for
-     * initializing the {@code Hc5HttpRequestExecutor} object.
-     * <p>
-     * Note: This actually wraps the passed-in {@code HttpClient} in an
-     * {@code ApacheHttp5Client} instance.
-     *
-     * @param httpClient A custom {@code HttpClient} instance for executing
-     *                   HTTP requests.
-     */
-    public Hc5HttpRequestExecutor(HttpClient httpClient) {
-        this(new ApacheHttp5Client(httpClient));
-    }
-
-    /**
-     * A constructor with a {@code ApacheHttp5Client} parameter.
-     * Allows the user to directly pass an {@code ApacheHttp5Client} instance
-     * for initializing the {@code Hc5HttpRequestExecutor} object.
-     * <p>
-     * This method provides the greatest flexibility, allowing users to customize
-     * the configuration of the {@code ApacheHttp5Client}.
-     *
-     * @param http5Client An {@code ApacheHttp5Client} instance for executing
-     *                    HTTP requests.
-     */
-    public Hc5HttpRequestExecutor(ApacheHttp5Client http5Client) {
-        this.http5Client = http5Client;
+    @Override
+    public String get(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
+        return null;
     }
 
     @Override
-    public Response execute(Request request, Request.Options options) throws IOException {
-        return http5Client.execute(request, options);
+    public String post(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
+        return null;
+    }
+
+    @Override
+    public String put(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
+        return null;
+    }
+
+    @Override
+    public String delete(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
+        return null;
+    }
+
+    @Override
+    public String trace(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
+        return null;
+    }
+
+    @Override
+    public String options(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
+        return null;
+    }
+
+    @Override
+    public String head(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
+        return null;
+    }
+
+    @Override
+    public String patch(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
+        return null;
     }
 }
