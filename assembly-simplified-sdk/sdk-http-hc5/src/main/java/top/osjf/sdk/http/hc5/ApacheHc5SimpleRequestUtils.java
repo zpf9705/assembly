@@ -26,9 +26,9 @@ import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.net.URIBuilder;
-import top.osjf.sdk.core.util.JSONUtil;
 import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.core.util.StringUtils;
+import top.osjf.sdk.http.HttpSdkSupport;
 
 import java.io.IOException;
 import java.net.URI;
@@ -290,30 +290,12 @@ public abstract class ApacheHc5SimpleRequestUtils {
      * @return Uri object,Please pay attention to the format issue of the URL.
      * @throws Exception unknown exception.
      */
-    @SuppressWarnings("unchecked")
     private static URI getUri(String url, Object requestParam, boolean montage) throws Exception {
         URIBuilder uriBuilder = new URIBuilder(url);
-        if (montage && requestParam != null) {
-            if (!(requestParam instanceof Map)
-                    && !(requestParam instanceof String))
-                throw new IllegalArgumentException("If you need to concatenate parameters onto the URL, " +
-                        "please provide parameters of map type or JSON type of key/value " +
-                        "(which will automatically convert map concatenation). " +
-                        "If you provide a simple string type, then the URL parameter will be directly returned.");
-            //If the type is a map concatenated after the address
-            Map<String, Object> params = null;
-            if (requestParam instanceof Map) {
-                params = (Map<String, Object>) requestParam;
-            } else {
-                String jsonStr = requestParam.toString();
-                if (JSONUtil.isValidObject(jsonStr)) {
-                    params = JSONUtil.getInnerMapByJsonStr(jsonStr);
-                }
-            }
-            if (MapUtils.isNotEmpty(params)) {
-                for (String paramKey : params.keySet()) {
-                    uriBuilder.addParameter(paramKey, String.valueOf(params.get(paramKey)));
-                }
+        Map<String, Object> params = HttpSdkSupport.urlMontageBody(montage, requestParam);
+        if (params != null) {
+            for (String paramKey : params.keySet()) {
+                uriBuilder.addParameter(paramKey, String.valueOf(params.get(paramKey)));
             }
         }
         //If it is null or a string, it can be directly used as a paparazzi
