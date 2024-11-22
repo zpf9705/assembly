@@ -61,11 +61,9 @@ public abstract class ApacheHttpSimpleRequestUtils {
 
     static {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            if (DEFAULT != null) {
-                try {
-                    ((CloseableHttpClient) DEFAULT).close();
-                } catch (IOException ignored) {
-                }
+            try {
+                ((CloseableHttpClient) DEFAULT).close();
+            } catch (IOException ignored) {
             }
         }));
     }
