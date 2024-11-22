@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * IOUtils: A collection of IO-related public static methods.
  */
-public abstract class IOUtils {
+abstract class IOUtils {
     private static final int DEFAULT_BUFFER_SIZE = 8192;
 
     /**
