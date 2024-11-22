@@ -34,41 +34,41 @@ public class Hc5HttpRequestExecutor implements CustomizeHttpRequestExecutor {
 
     @Override
     public String get(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return null;
+        return ApacheHc5SimpleRequestUtils.get(url, headers, param, montage);
     }
 
     @Override
     public String post(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return null;
+        return ApacheHc5SimpleRequestUtils.post(url, headers, param, montage);
     }
 
     @Override
     public String put(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return null;
+        return ApacheHc5SimpleRequestUtils.put(url, headers, param, montage);
     }
 
     @Override
     public String delete(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return null;
+        return ApacheHc5SimpleRequestUtils.delete(url, headers, param, montage);
     }
 
     @Override
     public String trace(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return null;
+        return ApacheHc5SimpleRequestUtils.trace(url, headers, param, montage);
     }
 
     @Override
     public String options(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return null;
+        return ApacheHc5SimpleRequestUtils.options(url, headers, param, montage);
     }
 
     @Override
     public String head(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return null;
+        return ApacheHc5SimpleRequestUtils.head(url, headers, param, montage);
     }
 
     @Override
     public String patch(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return null;
+        return ApacheHc5SimpleRequestUtils.patch(url, headers, param, montage);
     }
 }
