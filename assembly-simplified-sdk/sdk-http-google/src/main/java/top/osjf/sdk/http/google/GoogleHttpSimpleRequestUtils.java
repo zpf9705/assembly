@@ -19,9 +19,9 @@ package top.osjf.sdk.http.google;
 import com.google.api.client.http.*;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.util.IOUtils;
-import top.osjf.sdk.core.util.JSONUtil;
 import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.core.util.StringUtils;
+import top.osjf.sdk.http.HttpSdkSupport;
 
 import java.io.IOException;
 import java.util.Map;
@@ -241,19 +241,8 @@ public abstract class GoogleHttpSimpleRequestUtils {
             contentType = "application/json";
         }
         GenericUrl genericUrl = new GenericUrl(url);
-        if (montage && requestParam != null) {
-            Map<String, Object> queryParams = null;
-            if (requestParam instanceof Map) {
-                queryParams = (Map<String, Object>) requestParam;
-            } else if (requestParam instanceof String) {
-                queryParams = JSONUtil.getInnerMapByJsonStr(requestParam.toString());
-            }
-            if (queryParams == null) {
-                throw new IllegalArgumentException("If you need to concatenate parameters onto the URL, " +
-                        "please provide parameters of map type or JSON type of key/value " +
-                        "(which will automatically convert map concatenation). " +
-                        "If you provide a simple string type, then the URL parameter will be directly returned.");
-            }
+        Map<String, Object> queryParams = HttpSdkSupport.urlMontageBody(montage, requestParam);
+        if (queryParams != null) {
             genericUrl.putAll(queryParams);
         } else {
             content = new ByteArrayContent(contentType, IOUtils.serialize(requestParam));
