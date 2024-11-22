@@ -181,6 +181,8 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
      *
      * @param host The host name of the SDK.
      * @return The request address for the SDK.
+     * @throws Exception The error thrown due to formatting failure
+     *                   occurs in parameter segmentation parsing.
      */
     @SuppressWarnings("unchecked")
     default String formatUrl(String host) throws Exception {
