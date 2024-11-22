@@ -16,77 +16,59 @@
 
 package top.osjf.sdk.http.ok;
 
-import feign.Request;
-import feign.Response;
-import feign.okhttp.OkHttpClient;
 import top.osjf.sdk.core.support.LoadOrder;
+import top.osjf.sdk.http.CustomizeHttpRequestExecutor;
 import top.osjf.sdk.http.HttpRequestExecutor;
-import top.osjf.sdk.http.UnsupportedCustomizeHttpRequestExecutor;
 
-import java.io.IOException;
+import java.util.Map;
 
 /**
  * One of the implementation classes of {@link HttpRequestExecutor}, please
  * refer to {@link OkHttpSimpleRequestUtils} for implementation.
- * <p>
- * Starting from version 1.0.2, the calling method of {@code OkHttp} uses the
- * {@code feign-ok-http} component integrated with open feign.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
 @LoadOrder(Integer.MIN_VALUE + 11)
-public class OkHttpRequestExecutor extends UnsupportedCustomizeHttpRequestExecutor implements HttpRequestExecutor {
+public class OkHttpRequestExecutor implements CustomizeHttpRequestExecutor {
 
-    /**
-     * Define a private, immutable {@code feign.okhttp.OkHttpClient} instance variable for executing HTTP requests.
-     */
-    private final OkHttpClient okHttpClient;
-
-    /**
-     * Nonparametric construction method.
-     * <p>
-     * Create a new {@code OkHttpRequestExecutor} instance using the
-     * default configuration of {@code feign.okhttp.okHttpClient}.
-     * This is a convenient construction method that does not require
-     * any external configuration input.
-     */
-    public OkHttpRequestExecutor() {
-        this(new OkHttpClient());
-    }
-
-    /**
-     * Create a new {@code OkHttpRequestExecutor} that constructs a
-     * {@code feign.okhttp.okHttpClient}. based on the parameter
-     * {@code okhttp3.OkHttpClient}, paying attention to the package
-     * categories within it.
-     * <p>
-     * This construction method allows users to customize
-     * {@code okhttp3.OkHttpClient} to create new {@code feign.okhttp.okHttpClient}
-     * and further create a {@code OkHttpRequestExecutor}.
-     *
-     * @param okHttpClient HTTP request client under package {@code okhttp3}.
-     */
-    public OkHttpRequestExecutor(okhttp3.OkHttpClient okHttpClient) {
-        this(new OkHttpClient(okHttpClient));
-    }
-
-    /**
-     * Create a new {@code OkHttpRequestExecutor} with parameters
-     * that need to handle HTTP request clients under package
-     * {@code feign.okhttp.okHttpClient}.
-     * <p>
-     * This construction method allows users to customize
-     * {@code feign.okhttp.OkHttpClient} to create new {@code OkHttpRequestExecutor}.
-     *
-     * @param okHttpClient HTTP request client under package {@code feign.okhttp}.
-     */
-    public OkHttpRequestExecutor(OkHttpClient okHttpClient) {
-        this.okHttpClient = okHttpClient;
+    @Override
+    public String get(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
+        return OkHttpSimpleRequestUtils.get(url, headers, param, montage);
     }
 
     @Override
-    public Response execute(Request request, Request.Options options) throws IOException {
-        return okHttpClient.execute(request, options);
+    public String post(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
+        return OkHttpSimpleRequestUtils.post(url, headers, param, montage);
+    }
+
+    @Override
+    public String put(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
+        return OkHttpSimpleRequestUtils.put(url, headers, param, montage);
+    }
+
+    @Override
+    public String delete(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
+        return OkHttpSimpleRequestUtils.delete(url, headers, param, montage);
+    }
+
+    @Override
+    public String trace(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
+        return OkHttpSimpleRequestUtils.trace(url, headers, param, montage);
+    }
+
+    @Override
+    public String options(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
+        return OkHttpSimpleRequestUtils.options(url, headers, param, montage);
+    }
+
+    @Override
+    public String head(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
+        return OkHttpSimpleRequestUtils.head(url, headers, param, montage);
+    }
+
+    @Override
+    public String patch(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
+        return OkHttpSimpleRequestUtils.patch(url, headers, param, montage);
     }
 }
