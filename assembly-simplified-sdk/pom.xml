@@ -23,6 +23,12 @@
         <module>sdk-http-google</module>
         <module>sdk-http-hc5</module>
         <module>sdk-http-jaxrs2</module>
+        <module>sdk-http-feign-bridging</module>
+        <module>sdk-http-feign-apache</module>
+        <module>sdk-http-feign-ok</module>
+        <module>sdk-http-feign-google</module>
+        <module>sdk-http-feign-jaxrs2</module>
+        <module>sdk-http-feign-hc5</module>
         <module>sdk-spring</module>
     </modules>
 
