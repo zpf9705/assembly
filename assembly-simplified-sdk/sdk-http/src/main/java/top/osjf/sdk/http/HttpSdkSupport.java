@@ -229,20 +229,66 @@ public abstract class HttpSdkSupport extends SdkSupport {
         return rps_classes.get(inletClass);
     }
 
+    /**
+     * Converts an object to a Map format suitable for URL concatenation.
+     *
+     * <p>This method receives a boolean {@code montage} and an object {@code body}
+     * as parameters. When {@code montage == true} and {@code body != null}, this
+     * method converts {@code body} to a {@code Map<String, Object>} object according
+     * to its type for use in URL concatenation.
+     *
+     * <p>The conversion logic is as follows:</p>
+     * <ul>
+     * <li>If {@code body} is of type {@code Map}, it is directly converted to {@code Map<String, Object>},
+     * with all keys being converted to string type.</li>
+     * <li>If {@code body} is of type {@code String}, it attempts to parse it as a JSON
+     * string and extract the internal Map parameters. If parsing fails or it is not a valid
+     * JSON format, {@literal null} is returned.</li>
+     * <li>If {@code body} is of another type, it attempts to convert it to a JSON string
+     * and then parse the JSON string into a Map object. If any exception occurs during this
+     * process (e.g., {@code body} cannot be serialized to a JSON string), an {@code IllegalArgumentException}
+     * is thrown.</li>
+     * </ul>
+     *
+     * <p>This method is primarily used to handle different types of request bodies and is
+     * very useful when the request body needs to be converted to Map format for URL concatenation.
+     *
+     * @param montage A flag indicating whether to perform the conversion. If {@code false}, {@literal null}
+     *                is returned directly.
+     * @param body    The object to be converted. It can be of type {@code Map}, {@code String}, or other types.
+     * @return The converted {@code Map<String, Object>} object. If no conversion is needed or the conversion fails,
+     * {@literal null} is returned.
+     * @throws IllegalArgumentException Thrown if the {@code body} type cannot be correctly converted to Map format.
+     */
     @SuppressWarnings("unchecked")
-    public static Map<String, Object> urlMontageBody(boolean montage, Object requestParam) {
+    public static Map<String, Object> urlMontageBody(boolean montage, Object body) {
         Map<String, Object> montageParams = null;
-        if (montage && requestParam != null) {
-            if (requestParam instanceof Map) {
-                montageParams = (Map<String, Object>) requestParam;
-            } else if (requestParam instanceof String) {
-                montageParams = JSONUtil.getInnerMapByJsonStr(requestParam.toString());
-            }
-            if (montageParams == null) {
-                throw new IllegalArgumentException("If you need to concatenate parameters onto the URL, " +
-                        "please provide parameters of map type or JSON type of key/value " +
-                        "(which will automatically convert map concatenation). " +
-                        "If you provide a simple string type, then the URL parameter will be directly returned.");
+        if (montage && body != null) {
+            if (body instanceof Map) {
+                //When obtaining the body type in map format,
+                // it can be directly converted.
+                Map<Object, Object> mapInstanceof = (Map<Object, Object>) body;
+                montageParams = new HashMap<>();
+                for (Map.Entry<Object, Object> entry : mapInstanceof.entrySet()) {
+                    montageParams.put(entry.getKey().toString(), entry.getValue());
+                }
+            } else if (body instanceof String) {
+                //Consider JSON format for string format and obtain the
+                // specified map parameters from JSON conversion.
+                //When it is not in JSON format, return null.
+                montageParams = JSONUtil.getInnerMapByJsonStr((String) body);
+            } else {
+                //Considering in the form of a single object, using JSON conversion
+                // to convert this object to map format may result in JSON conversion
+                // errors if the object is not familiar with defining it.
+                try {
+                    montageParams = JSONUtil.parseObject(JSONUtil.toJSONString(body));
+                } catch (Exception e) {
+                    //Capture possible conversion errors, such as String type.
+                    throw new IllegalArgumentException
+                            ("The splicing URL requirement for the body parameter has been set, " +
+                                    "but the [" + body.getClass().getName() + "] type of the body does not match");
+                }
             }
         }
         return montageParams;
