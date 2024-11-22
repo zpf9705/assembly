@@ -254,7 +254,7 @@ public abstract class ApacheHttpSimpleRequestUtils {
      * @param requestBase  HTTP Public Request Class {@link HttpRequestBase}
      * @param headers      Header information map,can be {@literal null}.
      */
-    public static void setEntity(Object requestParam, HttpRequestBase requestBase, Map<String, String> headers) {
+    private static void setEntity(Object requestParam, HttpRequestBase requestBase, Map<String, String> headers) {
         if (requestParam == null || !(requestBase instanceof HttpEntityEnclosingRequestBase)) {
             return;
         }
@@ -278,7 +278,7 @@ public abstract class ApacheHttpSimpleRequestUtils {
      * @param headers     Header information map,can be {@literal null}.
      * @param requestBase HTTP Public Request Class {@link HttpRequestBase}.
      */
-    public static void addHeaders(Map<String, String> headers, HttpRequestBase requestBase) {
+    private static void addHeaders(Map<String, String> headers, HttpRequestBase requestBase) {
         if (MapUtils.isNotEmpty(headers)) {
             for (Map.Entry<String, String> header : headers.entrySet()) {
                 requestBase.addHeader(header.getKey(), header.getValue());
@@ -296,7 +296,7 @@ public abstract class ApacheHttpSimpleRequestUtils {
      * @throws Exception unknown exception.
      */
     @SuppressWarnings("unchecked")
-    public static URI getUri(String url, Object requestParam, boolean montage) throws Exception {
+    private static URI getUri(String url, Object requestParam, boolean montage) throws Exception {
         URIBuilder uriBuilder = new URIBuilder(url);
         if (montage && requestParam != null) {
             if (!(requestParam instanceof Map)
