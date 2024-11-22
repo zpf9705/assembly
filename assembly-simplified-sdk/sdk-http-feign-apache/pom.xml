@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>top.osjf.sdk</groupId>
+        <artifactId>assembly-simplified-sdk</artifactId>
+        <version>1.0.2</version>
+    </parent>
+
+    <artifactId>sdk-http-feign-apache</artifactId>
+    <packaging>jar</packaging>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <sdk-http-feign-bridging>1.0.2</sdk-http-feign-bridging>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>top.osjf.sdk</groupId>
+            <artifactId>sdk-http-feign-bridging</artifactId>
+            <version>${sdk-http-feign-bridging}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.openfeign</groupId>
+            <artifactId>feign-httpclient</artifactId>
+            <version>${open.feign.compent}</version>
+        </dependency>
+
+    </dependencies>
+
+</project>
