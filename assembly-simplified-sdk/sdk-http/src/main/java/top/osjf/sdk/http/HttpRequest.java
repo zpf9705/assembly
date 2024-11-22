@@ -16,7 +16,15 @@
 
 package top.osjf.sdk.http;
 
+import com.google.common.base.Joiner;
 import top.osjf.sdk.core.process.Request;
+import top.osjf.sdk.core.util.JSONUtil;
+import top.osjf.sdk.core.util.MapUtils;
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Request node information interface defined by SDK of http type.
@@ -45,7 +53,7 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
 
     /*** {@inheritDoc}*/
     @Override
-    default String getUrl(String host) {
+    default String getUrl(String host) throws Exception {
         return formatUrl(host);
     }
 
@@ -162,13 +170,64 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
 
     /**
      * Format the actual request address of the SDK and concatenate subsequent URLs.
+     *
      * <p>Here, the splicing parameters of the {@link #urlJoin()} method will be
-     * automatically added for you. If you don't need to rewrite {@link #urlJoin()}, you can do so.</p>
+     * automatically added for you. If you don't need to rewrite {@link #urlJoin()},
+     * you can do so.
+     *
+     * <p>Since version 1.0.2, after setting the method parameter {@link #montage()} to
+     * <pre>{@code montage == true}</pre>, the body parameter {@link #getRequestParam()}
+     * is concatenated in the specified format at the URL address as the query parameter.
      *
      * @param host The host name of the SDK.
      * @return The request address for the SDK.
      */
-    default String formatUrl(String host) {
-        return matchSdkEnum().getUrl(host) + urlJoin();
+    @SuppressWarnings("unchecked")
+    default String formatUrl(String host) throws Exception {
+        String url = matchSdkEnum().getUrl(host) + urlJoin();
+        //Define the converted string format.
+        StringBuilder builder = new StringBuilder();
+        Object body = getRequestParam();
+        if (montage() && body != null) {
+            //Map with concatenated URL parameters.
+            Map<String, Object> queryParams;
+            //consider whether to pass in a JSON string or Map type body.
+            if (body instanceof Map) {
+                queryParams = (Map<String, Object>) body;
+            } else if (body instanceof String) {
+                queryParams = JSONUtil.getInnerMapByJsonStr((String) body);
+            } else {
+                //There are no common formats for the first two, try using JSON conversion.
+                try {
+                    queryParams = JSONUtil.parseObject(JSONUtil.toJSONString(body));
+                } catch (Exception e) {
+                    //Here, obtaining the parameter map format may fail due to not
+                    // meeting the requirements of JSON serialization, such as' String type '.
+                    throw new IllegalArgumentException
+                            ("The splicing URL requirement for the body parameter has been set, " +
+                                    "but the " + body.getClass().getName() + " type of the body does not match!");
+                }
+            }
+            if (MapUtils.isNotEmpty(queryParams)) {
+                //Is it judged here that as long as it exists? Prove that
+                // the parameters have already been concatenated, will we not add them here?.
+                if (!url.contains("?")) {
+                    builder.append("?");
+                    //The parameters have already been concatenated.
+                    // For subsequent concatenation, simply add a concatenation symbol first.
+                } else builder.append("&");
+                //Ensure the correctness and security of the URL.
+                Map<String, String> encodeQueryParams = new HashMap<>();
+                String enc = StandardCharsets.UTF_8.toString();
+                for (String key : queryParams.keySet()) {
+                    encodeQueryParams.put(URLEncoder.encode(key, enc),
+                            URLEncoder.encode(queryParams.get(key).toString(), enc));
+                }
+                //Splicing map query parameters.
+                Joiner.on("&").withKeyValueSeparator("=").appendTo(builder, encodeQueryParams);
+            }
+        }
+        //Tag URL and post spelling parameters.
+        return url + builder;
     }
 }
