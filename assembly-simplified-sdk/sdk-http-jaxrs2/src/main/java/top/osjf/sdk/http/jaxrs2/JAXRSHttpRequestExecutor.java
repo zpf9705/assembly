@@ -32,42 +32,42 @@ import java.util.Map;
 @LoadOrder(Integer.MIN_VALUE + 14)
 public class JAXRSHttpRequestExecutor implements CustomizeHttpRequestExecutor {
     @Override
-    public String get(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return null;
+    public String get(String url, Map<String, String> headers, Object param, boolean montage) {
+        return JAXRSHttpSimpleRequestUtils.get(url, headers, param, montage);
     }
 
     @Override
-    public String post(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return null;
+    public String post(String url, Map<String, String> headers, Object param, boolean montage) {
+        return JAXRSHttpSimpleRequestUtils.post(url, headers, param, montage);
     }
 
     @Override
-    public String put(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return null;
+    public String put(String url, Map<String, String> headers, Object param, boolean montage) {
+        return JAXRSHttpSimpleRequestUtils.put(url, headers, param, montage);
     }
 
     @Override
-    public String delete(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return null;
+    public String delete(String url, Map<String, String> headers, Object param, boolean montage) {
+        return JAXRSHttpSimpleRequestUtils.delete(url, headers, param, montage);
     }
 
     @Override
-    public String trace(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return null;
+    public String trace(String url, Map<String, String> headers, Object param, boolean montage) {
+        return JAXRSHttpSimpleRequestUtils.trace(url, headers, param, montage);
     }
 
     @Override
-    public String options(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return null;
+    public String options(String url, Map<String, String> headers, Object param, boolean montage) {
+        return JAXRSHttpSimpleRequestUtils.options(url, headers, param, montage);
     }
 
     @Override
-    public String head(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return null;
+    public String head(String url, Map<String, String> headers, Object param, boolean montage) {
+        return JAXRSHttpSimpleRequestUtils.head(url, headers, param, montage);
     }
 
     @Override
-    public String patch(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return null;
+    public String patch(String url, Map<String, String> headers, Object param, boolean montage) {
+        return JAXRSHttpSimpleRequestUtils.patch(url, headers, param, montage);
     }
 }
