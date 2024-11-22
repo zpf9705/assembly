@@ -79,8 +79,8 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      * @param host The real host address.
      * @return After formatting, it can be used as the
      * real address for access.
-     * @throws Exception Possible errors that may occur during the
-     *                   formatting process based on the incoming hostname.
+     * @throws Exception The error thrown due to formatting failure
+     *                   occurs in parameter segmentation parsing.
      */
     String getUrl(String host) throws Exception;
 
