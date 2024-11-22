@@ -16,23 +16,15 @@
 
 package top.osjf.sdk.http;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Stopwatch;
-import com.google.common.collect.Lists;
-import feign.Response;
 import top.osjf.sdk.core.client.AbstractClient;
 import top.osjf.sdk.core.exception.SdkException;
 import top.osjf.sdk.core.process.DefaultErrorResponse;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.support.ServiceLoadManager;
-import top.osjf.sdk.core.util.JSONUtil;
-import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.core.util.StringUtils;
 
-import java.net.URLEncoder;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -191,54 +183,11 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
     /**
      * Return the URL address constructed by attaching parameter tags
      * based on the parameter URL and the current actual request parameters.
-     * <p>
-     * If you want to directly obtain the initial URL address, just pass in
-     * <pre>{@code montage == true}</pre>
      *
-     * @param montage Do you want to attach the body parameter
-     *                as key/value to the URL?
-     * @param body    the body parameter.
      * @return the actual URL path at the time of the request
-     * @throws Exception The error thrown due to formatting failure
-     *                   occurs in parameter segmentation parsing.
      */
-    @SuppressWarnings("unchecked")
-    public String getUrl(boolean montage, Object body) throws Exception {
-        //Define the converted string format.
-        StringBuilder builder = new StringBuilder();
-        if (montage) {
-            //Map with concatenated URL parameters.
-            Map<String, Object> queryParams;
-            //consider whether to pass in a JSON string or Map type body.
-            if (body instanceof Map) {
-                queryParams = (Map<String, Object>) body;
-            } else if (body instanceof String) {
-                queryParams = JSONUtil.getInnerMapByJsonStr((String) body);
-            } else {
-                //There are no common formats for the first two, try using JSON conversion.
-                queryParams = JSONUtil.parseObject(JSONUtil.toJSONString(body));
-            }
-            if (MapUtils.isNotEmpty(queryParams) && body != null) {
-                //Is it judged here that as long as it exists? Prove that
-                // the parameters have already been concatenated, will we not add them here?.
-                if (!url.contains("?")) {
-                    builder.append("?");
-                    //The parameters have already been concatenated.
-                    // For subsequent concatenation, simply add a concatenation symbol first.
-                } else builder.append("&");
-                //Ensure the correctness and security of the URL.
-                Map<String, String> encodeQueryParams = new HashMap<>();
-                String enc = StandardCharsets.UTF_8.toString();
-                for (String key : queryParams.keySet()) {
-                    encodeQueryParams.put(URLEncoder.encode(key, enc),
-                            URLEncoder.encode(queryParams.get(key).toString(), enc));
-                }
-                //Splicing map query parameters.
-                Joiner.on("&").withKeyValueSeparator("=").appendTo(builder, encodeQueryParams);
-            }
-        }
-        //Tag URL and post spelling parameters.
-        return url + builder;
+    public String getUrl() throws Exception {
+        return url;
     }
 
     @Override
@@ -351,40 +300,14 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
         //Handle according to whether to execute custom segmentation.
         String result;
         if (executor.useCustomize()) {
-            result = executor.unifiedDoRequest(name.toLowerCase(),
-                    /* Custom logic that does not perform URL formatting operations for possible query parameters. */
-                    this.url,
-                    headers, requestParam, montage);
+
+            //Custom HTTP requesters that require corresponding interfaces may throw conversion type errors.
+            result = ((CustomizeHttpRequestExecutor) executor).unifiedDoRequest(name.toLowerCase(),
+                    url, headers, requestParam, montage);
         } else {
-            //Create a request body for feign.
-            feign.Request.Body body;
-            Charset charset = request.getCharset();
-            if (requestParam != null) {
-                body = feign.Request.Body.create(requestParam.toString(), charset);
-            } else/* Need to provide a default value of null */
-                body = feign.Request.Body.create((byte[]) null, charset);
 
-            //The value of the request header is converted into a collection, which meets the requirements of feature.
-            Map<String, Collection<String>> feignHeaders = new LinkedHashMap<>();
-            if (MapUtils.isNotEmpty(headers)) {
-                headers.forEach((k, v) -> feignHeaders.put(k, Lists.newArrayList(v)));
-            }
-
-            //Create a request object for feign.
-            feign.Request feignRequest = feign.Request
-                    .create(feign.Request.HttpMethod.valueOf(name),
-                            //When integrating components, directly formatting the
-                            // URL here involves attaching query parameters.
-                            getUrl(montage, requestParam),
-                            feignHeaders,
-                            body,
-                            null);/* We won't set up using third-party HTTP here.  */
-
-            //Read the stream response result of the feature client and return the request result
-            // in the form of a string for subsequent conversion operations.
-            try (Response response = getRequestExecutor().execute(feignRequest, getOptions())) {
-                result = new String(IOUtils.readAllBytes(response.body().asInputStream()), request.getCharset());
-            }
+            //Non custom use of component requests.
+            result = getRequestExecutor().execute(new HttpRequestExecutor.Default(request, url, getOptions()));
         }
         return result;
     }
