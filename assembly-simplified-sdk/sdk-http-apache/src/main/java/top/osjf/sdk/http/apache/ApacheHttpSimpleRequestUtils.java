@@ -17,6 +17,8 @@
 package top.osjf.sdk.http.apache;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.*;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
@@ -28,6 +30,7 @@ import top.osjf.sdk.core.util.JSONUtil;
 import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.core.util.StringUtils;
 
+import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -35,8 +38,7 @@ import java.util.Map;
 /**
  * The Apache HTTP client request tool class mainly includes four request methods: post, get, put, and del.
  *
- * <p>And other methods that can be customized with HTTP support, link to method {@link
- * #doRequest(CloseableHttpClient, HttpRequestBase, Map, Object)}</p>
+ * <p>And other methods that can be customized with HTTP support, link to method {@link #doRequest}.
  *
  * <p>This class is a simple request tool for {@link CloseableHttpClient} and does not provide any other special
  * functions.
@@ -53,10 +55,23 @@ import java.util.Map;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public final class ApacheHttpSimpleRequestUtils {
+public abstract class ApacheHttpSimpleRequestUtils {
 
-    private ApacheHttpSimpleRequestUtils() {
-        throw new AssertionError("No instance for you !");
+    private final static HttpClient DEFAULT_HTTP_CLIENT;
+
+    static {
+        DEFAULT_HTTP_CLIENT = HttpClients.createDefault();
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (DEFAULT_HTTP_CLIENT != null) {
+                    try {
+                        ((CloseableHttpClient) DEFAULT_HTTP_CLIENT).close();
+                    } catch (IOException ignored) {
+                    }
+                }
+            }
+        }));
     }
 
     /**
@@ -73,7 +88,7 @@ public final class ApacheHttpSimpleRequestUtils {
      */
     public static String get(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
-        return doRequest(null, new HttpGet(getUri(url, requestParam, montage)), headers, requestParam);
+        return doRequest(null, new HttpGet(), url, headers, montage, requestParam);
     }
 
     /**
@@ -90,7 +105,7 @@ public final class ApacheHttpSimpleRequestUtils {
      */
     public static String post(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
-        return doRequest(null, new HttpPost(getUri(url, requestParam, montage)), headers, requestParam);
+        return doRequest(null, new HttpPost(), url, headers, montage, requestParam);
     }
 
     /**
@@ -107,7 +122,7 @@ public final class ApacheHttpSimpleRequestUtils {
      */
     public static String put(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
-        return doRequest(null, new HttpPut(getUri(url, requestParam, montage)), headers, requestParam);
+        return doRequest(null, new HttpPut(), url, headers, montage, requestParam);
     }
 
     /**
@@ -124,7 +139,7 @@ public final class ApacheHttpSimpleRequestUtils {
      */
     public static String delete(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
-        return doRequest(null, new HttpDelete(getUri(url, requestParam, montage)), headers, requestParam);
+        return doRequest(null, new HttpDelete(), url, headers, montage, requestParam);
     }
 
     /**
@@ -141,7 +156,7 @@ public final class ApacheHttpSimpleRequestUtils {
      */
     public static String trace(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
-        return doRequest(null, new HttpTrace(getUri(url, requestParam, montage)), headers, requestParam);
+        return doRequest(null, new HttpTrace(), url, headers, montage, requestParam);
     }
 
     /**
@@ -158,7 +173,7 @@ public final class ApacheHttpSimpleRequestUtils {
      */
     public static String options(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
-        return doRequest(null, new HttpOptions(getUri(url, requestParam, montage)), headers, requestParam);
+        return doRequest(null, new HttpOptions(), url, headers, montage, requestParam);
     }
 
     /**
@@ -175,7 +190,7 @@ public final class ApacheHttpSimpleRequestUtils {
      */
     public static String head(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
-        return doRequest(null, new HttpHead(getUri(url, requestParam, montage)), headers, requestParam);
+        return doRequest(null, new HttpHead(), url, headers, montage, requestParam);
     }
 
     /**
@@ -192,7 +207,7 @@ public final class ApacheHttpSimpleRequestUtils {
      */
     public static String patch(String url, Map<String, String> headers, Object requestParam, boolean montage)
             throws Exception {
-        return doRequest(null, new HttpPatch(getUri(url, requestParam, montage)), headers, requestParam);
+        return doRequest(null, new HttpPatch(), url, headers, montage, requestParam);
     }
 
     /**
@@ -200,29 +215,38 @@ public final class ApacheHttpSimpleRequestUtils {
      *
      * @param client       Apache's HTTP request client.
      * @param requestBase  HTTP Public Request Class {@link HttpRequestBase}.
+     * @param url          The actual request address,must not be {@literal null}.
      * @param headers      Header information map,can be {@literal null}.
+     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
      * @param requestParam Request parameters,can be {@literal null}.
      * @return The {@code String} type of the return value
      * @throws Exception Unknown exception.
      */
-    public static String doRequest(CloseableHttpClient client,
+    public static String doRequest(HttpClient client,
                                    HttpRequestBase requestBase,
+                                   String url,
                                    Map<String, String> headers,
+                                   boolean montage,
                                    Object requestParam) throws Exception {
         if (client == null) {
-            client = HttpClients.custom().build();
+            client = DEFAULT_HTTP_CLIENT;
         }
-        CloseableHttpResponse response = null;
+        requestBase.setURI(getUri(url, requestParam, montage));
+        HttpResponse response = null;
         String result;
         try {
             addHeaders(headers, requestBase);
-            setEntity(requestParam, requestBase, headers);
+            //Set the request body when there are no parameters attached to the query.
+            if (!montage) setEntity(requestParam, requestBase, headers);
             response = client.execute(requestBase);
             HttpEntity entity = response.getEntity();
             result = EntityUtils.toString(entity, StandardCharsets.UTF_8);
         } finally {
-            if (response != null) response.close();
-            client.close();
+            if (response != null) {
+                if (response instanceof CloseableHttpResponse) {
+                    ((CloseableHttpResponse) response).close();
+                }
+            }
         }
         return result;
     }
@@ -238,18 +262,16 @@ public final class ApacheHttpSimpleRequestUtils {
         if (requestParam == null || !(requestBase instanceof HttpEntityEnclosingRequestBase)) {
             return;
         }
-        String paramOfString = requestParam.toString();
+        ContentType contentType = ContentType.APPLICATION_JSON;
+        String str = requestParam.toString();
         StringEntity stringEntity;
         if (MapUtils.isNotEmpty(headers)) {
             String value = headers.get("Content-type");
             if (StringUtils.isNotBlank(value)) {
-                stringEntity = new StringEntity(requestParam.toString(), StandardCharsets.UTF_8);
-            } else {
-                stringEntity = new StringEntity(paramOfString, ContentType.APPLICATION_JSON);
+                contentType = ContentType.parse(value);
             }
-        } else {
-            stringEntity = new StringEntity(paramOfString, ContentType.APPLICATION_JSON);
         }
+        stringEntity = new StringEntity(str, contentType);
         HttpEntityEnclosingRequestBase base = (HttpEntityEnclosingRequestBase) requestBase;
         base.setEntity(stringEntity);
     }
