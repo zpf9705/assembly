@@ -16,15 +16,19 @@
 
 package top.osjf.sdk.http;
 
+import cn.hutool.core.net.url.UrlBuilder;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
 import top.osjf.sdk.core.support.SdkSupport;
 import top.osjf.sdk.core.util.ArrayUtils;
 import top.osjf.sdk.core.util.JSONUtil;
+import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.core.util.SynchronizedWeakHashMap;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -292,6 +296,30 @@ public abstract class HttpSdkSupport extends SdkSupport {
             }
         }
         return montageParams;
+    }
+
+    /**
+     * Use method {@link #urlMontageBody} to analyze and obtain relevant additional URL query parameters,
+     * and rely on {@code hutool}'s {@link UrlBuilder} to concatenate the parameters.
+     *
+     * @param montage A flag indicating whether to perform the conversion. If {@code false}, {@literal null}
+     *                is returned directly.
+     * @param body    The object to be converted. It can be of type {@code Map}, {@code String}, or other types.
+     * @param charset Encoding character set format.
+     * @param url     Access addresses that require specific formatting.
+     * @return Specific formatted access address.
+     * @throws IllegalArgumentException Related issues arising from {@link URLEncoder#encode}.
+     */
+    public static String formatUrl(boolean montage, Object body, Charset charset, String url) {
+        Map<String, Object> params = urlMontageBody(montage, body);
+        if (MapUtils.isNotEmpty(params)) {
+            UrlBuilder urlBuilder = UrlBuilder.of(url, charset);
+            for (Map.Entry<String, Object> entry : params.entrySet()) {
+                urlBuilder.addQuery(entry.getKey(), entry.getValue());
+            }
+            url = urlBuilder.build();
+        }
+        return url;
     }
 
     private static Object getActualResponseTypeArguments(Type type, ClassLoader classLoader) {
