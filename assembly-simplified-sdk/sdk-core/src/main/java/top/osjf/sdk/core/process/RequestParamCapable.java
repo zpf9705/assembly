@@ -42,9 +42,10 @@ public interface RequestParamCapable<T> {
     T getRequestParam();
 
     /**
-     * Return the encoded character set object of the request parameter.
+     * Return the encoded character set object of the request and
+     * parameter.
      *
-     * @return The encoding character set for the request parameter.
+     * @return The encoding character set for the request and parameter.
      * @since 1.0.2
      */
     Charset getCharset();
