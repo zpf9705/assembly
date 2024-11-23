@@ -176,7 +176,6 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
      */
     default String formatUrl(String host) {
         String url = matchSdkEnum().getUrl(host) + urlJoin();
-        //Define the converted string format.
-        return HttpSdkSupport.formatUrl(montage(), getRequestParam(), url);
+        return HttpSdkSupport.formatUrl(montage(), getRequestParam(), getCharset(), url);
     }
 }
