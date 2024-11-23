@@ -21,10 +21,13 @@ import java.nio.charset.Charset;
 /**
  * Request Parameter Capability getting Interface.
  * <p>
- * This interface defines the capability to obtain request parameters and their character encoding.
- * Concrete implementations should determine whether to fetch parameters from the request body or URL
- * parameters based on the type of request (e.g., GET or POST). Additionally, it provides a method to
- * obtain the character set encoding for the request parameters.
+ * This interface defines the capability to obtain request parameters
+ * and their character encoding.
+ * <p>
+ * Concrete implementations should determine whether to fetch parameters
+ * from the request body or URL parameters based on the type of request
+ * (e.g., GET or POST). Additionally, it provides a method to obtain the
+ * character set encoding for the request and parameters.
  *
  * @param <T> Param type.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
