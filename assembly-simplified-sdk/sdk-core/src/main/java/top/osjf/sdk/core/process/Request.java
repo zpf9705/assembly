@@ -79,10 +79,8 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      * @param host The real host address.
      * @return After formatting, it can be used as the
      * real address for access.
-     * @throws Exception The error thrown due to formatting failure
-     *                   occurs in parameter segmentation parsing.
      */
-    String getUrl(String host) throws Exception;
+    String getUrl(String host);
 
     /*** {@inheritDoc}*/
     @Override
