@@ -24,7 +24,6 @@ import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.support.ServiceLoadManager;
 import top.osjf.sdk.core.util.StringUtils;
 
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -295,33 +294,8 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
                                 "for usage plan.");
             }
         }
-        //Get the request header parameters and check content type.
-        //if not provider，default to json.
-        Map<String, String> headers = request.getHeadMap();
-        headers = HttpSdkSupport.checkContentType(headers, request);
 
-        //Obtain the real request parameters.
-        Object requestParam = request.getRequestParam();
-
-        //Obtain parameter segmentation markers.
-        boolean montage = request.montage();
-
-        //Get the enumeration name of the HTTP execution method.
-        String name = request.matchSdkEnum().getRequestMethod().name();
-
-        //Handle according to whether to execute custom segmentation.
-        String result;
-        if (executor.useCustomize()) {
-
-            //Custom HTTP requesters that require corresponding interfaces may throw conversion type errors.
-            result = ((CustomizeHttpRequestExecutor) executor).unifiedDoRequest(name.toLowerCase(),
-                    url, headers, requestParam, montage);
-        } else {
-
-            //Non custom use of component requests.
-            result = getRequestExecutor().execute(new HttpRequestExecutor.Default(request, url, getOptions()));
-        }
-        return result;
+        return getRequestExecutor().execute(new HttpRequestExecutor.Default(request, url, getOptions()));
     }
 
     @Override
