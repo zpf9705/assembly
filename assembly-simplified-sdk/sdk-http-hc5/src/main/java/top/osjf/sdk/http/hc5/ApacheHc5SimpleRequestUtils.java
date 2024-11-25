@@ -292,7 +292,8 @@ public abstract class ApacheHc5SimpleRequestUtils {
      */
     private static URI getUri(String url, Object requestParam, boolean montage) throws Exception {
         URIBuilder uriBuilder = new URIBuilder(url);
-        Map<String, Object> params = HttpSdkSupport.urlMontageBody(montage, requestParam);
+        Map<String, Object> params = null;
+        if (montage) params = HttpSdkSupport.resolveMontageObj(requestParam);
         if (params != null) {
             for (Map.Entry<String, Object> entry : params.entrySet()) {
                 uriBuilder.addParameter(entry.getKey(), String.valueOf(entry.getValue()));

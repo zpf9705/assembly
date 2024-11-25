@@ -35,7 +35,7 @@ public abstract class AbstractFeignClientHttpRequestExecutor implements FeignCli
     public String execute(ExecutorHttpRequest httpRequest) throws Exception {
         //Create a request body for feign.
         feign.Request.Body feignBody;
-        String requestBody = httpRequest.getBody(String.class);
+        String requestBody = httpRequest.getBody(String.class, Object::toString);
         Charset charset = httpRequest.getCharset();
 
         if (requestBody != null) {

@@ -266,7 +266,8 @@ public abstract class OkHttpSimpleRequestUtils {
             throw new IllegalArgumentException("Url is not valid");
         }
         HttpUrl.Builder urlBuilder = httpUrl.newBuilder();
-        Map<String, Object> params = HttpSdkSupport.urlMontageBody(montage, requestParam);
+        Map<String, Object> params = null;
+        if (montage) params = HttpSdkSupport.resolveMontageObj(requestParam);
         if (params != null) {
             for (Map.Entry<String, Object> entry : params.entrySet()) {
                 urlBuilder.addQueryParameter(entry.getKey(), String.valueOf(entry.getValue()));

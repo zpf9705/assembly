@@ -228,7 +228,8 @@ public abstract class JAXRSHttpSimpleRequestUtils {
 
     private static URI getURI(String url, boolean montage, Object requestParam) {
         UriBuilder uriBuilder = UriBuilder.fromUri(url);
-        Map<String, Object> queryParams = HttpSdkSupport.urlMontageBody(montage, requestParam);
+        Map<String, Object> queryParams = null;
+        if (montage) queryParams = HttpSdkSupport.resolveMontageObj(requestParam);
         if (queryParams != null) {
             for (Map.Entry<String, Object> entry : queryParams.entrySet()) {
                 uriBuilder.queryParam(entry.getKey(), entry.getValue());
