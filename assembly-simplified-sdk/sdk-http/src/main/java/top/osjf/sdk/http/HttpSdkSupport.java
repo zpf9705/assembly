@@ -27,7 +27,6 @@ import top.osjf.sdk.core.util.SynchronizedWeakHashMap;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -41,26 +40,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * in generics,and a static Map collection for caching dynamically obtained response
  * class types.The cache type is modified to use weak references to release memory at
  * appropriate places and prevent memory leaks.
- *
- * <p>Provide a detailed introduction to two important static support methods:</p>
- * <ul>
- *     <li>{@link #checkContentType}:
- *         This method checks if the Content-Type is included in the request headers.
- *         If not, it defaults to application/json. It first checks if the incoming
- *         headers are not null and contain Content-Type.If not, it decides whether to
- *         add Content-Type as application/json based on whether the request body parameters
- *         are in JSON format or whether the method confirms JSON serialization. If the
- *         request body parameters are in JSON format and not concatenated for URL parameters,
- *         it initializes the headers and adds the Content-Type.</li>
- *
- *     <li>{@link #getResponseRequiredType}:
- *         This method retrieves the required response type for a given request.
- *         It first attempts to retrieve the type from a cache. If not found, it traverses
- *         the class hierarchy (including interfaces and parent classes)of the request
- *         object to find a matching response type. If a matching generic type is found,
- *         it returns that type;otherwise, if no matching type is found, it returns the
- *         default type.</li>
- * </ul>
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
@@ -92,7 +71,7 @@ public abstract class HttpSdkSupport extends SdkSupport {
      * r map will be returned.
      */
     @SuppressWarnings("rawtypes")
-    public static Map<String, String> checkContentType(Map<String, String> headers, HttpRequest request) {
+    public static Map<String, Object> checkContentType(Map<String, Object> headers, HttpRequest request) {
         //Normal inclusion of context directly returns the current request header.
         if (headers != null && headers.containsKey("Content-Type")) {
             return headers;
@@ -257,41 +236,39 @@ public abstract class HttpSdkSupport extends SdkSupport {
      * <p>This method is primarily used to handle different types of request bodies and is
      * very useful when the request body needs to be converted to Map format for URL concatenation.
      *
-     * @param montage A flag indicating whether to perform the conversion. If {@code false}, {@literal null}
-     *                is returned directly.
-     * @param body    The object to be converted. It can be of type {@code Map}, {@code String}, or other types.
+     * @param montageObj The object to be converted. It can be of type {@code Map}, {@code String}, or other types.
      * @return The converted {@code Map<String, Object>} object. If no conversion is needed or the conversion fails,
      * {@literal null} is returned.
      * @throws IllegalArgumentException Thrown if the {@code body} type cannot be correctly converted to Map format.
      */
     @SuppressWarnings("unchecked")
-    public static Map<String, Object> urlMontageBody(boolean montage, Object body) {
+    public static Map<String, Object> resolveMontageObj(Object montageObj) {
         Map<String, Object> montageParams = null;
-        if (montage && body != null) {
-            if (body instanceof Map) {
+        if (montageObj != null) {
+            if (montageObj instanceof Map) {
                 //When obtaining the body type in map format,
                 // it can be directly converted.
-                Map<Object, Object> mapInstanceof = (Map<Object, Object>) body;
+                Map<Object, Object> mapInstanceof = (Map<Object, Object>) montageObj;
                 montageParams = new HashMap<>();
                 for (Map.Entry<Object, Object> entry : mapInstanceof.entrySet()) {
                     montageParams.put(entry.getKey().toString(), entry.getValue());
                 }
-            } else if (body instanceof String) {
+            } else if (montageObj instanceof String) {
                 //Consider JSON format for string format and obtain the
                 // specified map parameters from JSON conversion.
                 //When it is not in JSON format, return null.
-                montageParams = JSONUtil.getInnerMapByJsonStr((String) body);
+                montageParams = JSONUtil.getInnerMapByJsonStr((String) montageObj);
             } else {
                 //Considering in the form of a single object, using JSON conversion
                 // to convert this object to map format may result in JSON conversion
                 // errors if the object is not familiar with defining it.
                 try {
-                    montageParams = JSONUtil.parseObject(JSONUtil.toJSONString(body));
+                    montageParams = JSONUtil.parseObject(JSONUtil.toJSONString(montageObj));
                 } catch (Exception e) {
                     //Capture possible conversion errors, such as String type.
                     throw new IllegalArgumentException
                             ("The splicing URL requirement for the body parameter has been set, " +
-                                    "but the [" + body.getClass().getName() + "] type of the body does not match");
+                                    "but the [" + montageObj.getClass().getName() + "] type of the body does not match");
                 }
             }
         }
@@ -299,22 +276,19 @@ public abstract class HttpSdkSupport extends SdkSupport {
     }
 
     /**
-     * Use method {@link #urlMontageBody} to analyze and obtain relevant additional URL query parameters,
+     * Use method {@link #resolveMontageObj} to analyze and obtain relevant additional URL query parameters,
      * and rely on {@code hutool}'s {@link UrlBuilder} to concatenate the parameters.
      *
-     * @param montage A flag indicating whether to perform the conversion. If {@code false}, {@literal null}
-     *                is returned directly.
-     * @param body    The object to be converted. It can be of type {@code Map}, {@code String}, or other types.
-     * @param charset Encoding character set format.
-     * @param url     Access addresses that require specific formatting.
+     * @param montageObj The object to be converted. It can be of type {@code Map}, {@code String}, or other types.
+     * @param charset    Encoding character set format.
+     * @param url        Access addresses that require specific formatting.
      * @return Specific formatted access address.
-     * @throws IllegalArgumentException Related issues arising from {@link URLEncoder#encode}.
      */
-    public static String formatUrl(boolean montage, Object body, Charset charset, String url) {
-        Map<String, Object> params = urlMontageBody(montage, body);
-        if (MapUtils.isNotEmpty(params)) {
+    public static String formatMontageTrueUrl(String url, Object montageObj, Charset charset) {
+        Map<String, Object> montageParams = resolveMontageObj(montageObj);
+        if (MapUtils.isNotEmpty(montageParams)) {
             UrlBuilder urlBuilder = UrlBuilder.of(url, charset);
-            for (Map.Entry<String, Object> entry : params.entrySet()) {
+            for (Map.Entry<String, Object> entry : montageParams.entrySet()) {
                 urlBuilder.addQuery(entry.getKey(), entry.getValue());
             }
             url = urlBuilder.build();
