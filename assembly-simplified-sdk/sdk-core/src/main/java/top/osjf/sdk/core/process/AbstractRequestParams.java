@@ -59,7 +59,7 @@ public abstract class AbstractRequestParams<R extends AbstractResponse> implemen
      * {@inheritDoc}
      */
     @Override
-    public Map<String, String> getHeadMap() {
+    public Map<String, Object> getHeadMap() {
         return Collections.emptyMap();
     }
 
