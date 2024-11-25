@@ -120,7 +120,10 @@ public interface HttpRequestExecutor {
         private static final long serialVersionUID = -375300629962316312L;
 
         private final String url;
-        private final HttpRequest request;
+        private final String methodName;
+        private final Object body;
+        private final Charset charset;
+        private final Map<String, String> headers;
         private final RequestOptions options;
 
         /**
@@ -147,8 +150,14 @@ public interface HttpRequestExecutor {
         public Default(HttpRequest request, String url, RequestOptions options) {
             if (request == null) throw new NullPointerException("HttpRequest not be null");
             if (url == null) throw new NullPointerException("url not be null");
-            this.request = request;
             this.url = url;
+            this.methodName = request.matchSdkEnum().getRequestMethod().name();
+            this.body =
+                    //If parameter concatenation has already been performed,
+                    // the body parameter will no longer be passed here.
+                    request.montage() && request.getRequestParam() != null ? null : request.getRequestParam();
+            this.charset = request.getCharset();
+            this.headers = HttpSdkSupport.checkContentType(request.getHeadMap(), request);
             this.options = options == null ? RequestOptions.DEFAULT_OPTIONS : options;
         }
 
@@ -159,14 +168,12 @@ public interface HttpRequestExecutor {
 
         @Override
         public String getMethodName() {
-            return request.matchSdkEnum().getRequestMethod().name();
+            return methodName;
         }
 
         @Override
         public Object getBody() {
-            //If parameter concatenation has already been performed,
-            // the body parameter will no longer be passed here.
-            return request.montage() && request.getRequestParam() != null ? null : request.getRequestParam();
+            return body;
         }
 
         @Override
@@ -178,12 +185,12 @@ public interface HttpRequestExecutor {
 
         @Override
         public Charset getCharset() {
-            return request.getCharset();
+            return charset;
         }
 
         @Override
         public Map<String, String> getHeaders() {
-            return request.getHeadMap();
+            return headers;
         }
 
         @Override
@@ -354,17 +361,17 @@ public interface HttpRequestExecutor {
         }
     }
 
-    /**
-     * Return whether to use the custom {@link CustomizeHttpRequestExecutor}
-     * request method.
-     * <p>By default, the open flag client parameter leader {@link #execute}
-     * scheme is used，that is to say, the return value is {@code false}.
-     * <p>Set the return value to {@code true} to execute custom logic.
-     *
-     * @return whether to use the custom {@link CustomizeHttpRequestExecutor}
-     * request method.
-     */
-    default boolean useCustomize() {
-        return false;
-    }
+//    /**
+//     * Return whether to use the custom {@link CustomizeHttpRequestExecutor}
+//     * request method.
+//     * <p>By default, the open flag client parameter leader {@link #execute}
+//     * scheme is used，that is to say, the return value is {@code false}.
+//     * <p>Set the return value to {@code true} to execute custom logic.
+//     *
+//     * @return whether to use the custom {@link CustomizeHttpRequestExecutor}
+//     * request method.
+//     */
+//    default boolean useCustomize() {
+//        return false;
+//    }
 }
