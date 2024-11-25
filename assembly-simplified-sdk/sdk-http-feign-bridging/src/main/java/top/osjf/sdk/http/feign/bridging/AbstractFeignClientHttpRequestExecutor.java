@@ -16,15 +16,11 @@
 
 package top.osjf.sdk.http.feign.bridging;
 
-import com.google.common.collect.Lists;
 import feign.Request;
 import feign.Response;
-import top.osjf.sdk.core.util.MapUtils;
 
 import java.nio.charset.Charset;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * The abstract implementation of the {@link #execute} method for converting parameter
@@ -48,11 +44,8 @@ public abstract class AbstractFeignClientHttpRequestExecutor implements FeignCli
             feignBody = feign.Request.Body.create((byte[]) null, charset);
 
         //The value of the request header is converted into a collection, which meets the requirements of feature.
-        Map<String, Collection<String>> feignHeaders = new LinkedHashMap<>();
-        Map<String, String> headers = httpRequest.getHeaders();
-        if (MapUtils.isNotEmpty(headers)) {
-            headers.forEach((k, v) -> feignHeaders.put(k, Lists.newArrayList(v)));
-        }
+        Map<String, Collection<String>> feignHeaders = httpRequest.getCollectionValueHeaders(String.class,
+                Object::toString);
 
         //Create a request object for feign.
         String methodName = httpRequest.getMethodName();
