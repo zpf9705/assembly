@@ -20,7 +20,7 @@ import feign.Request;
 import feign.Response;
 import feign.jaxrs2.JAXRSClient;
 import top.osjf.sdk.core.support.LoadOrder;
-import top.osjf.sdk.http.feign.bridging.FeignClientHttpRequestExecutor;
+import top.osjf.sdk.http.feign.bridging.AbstractFeignClientHttpRequestExecutor;
 
 import javax.ws.rs.client.ClientBuilder;
 import java.io.IOException;
@@ -33,7 +33,7 @@ import java.io.IOException;
  * @since 1.0.2
  */
 @LoadOrder(Integer.MIN_VALUE + 14)
-public class JAXRSFeignClientHttpRequestExecutor implements FeignClientHttpRequestExecutor {
+public class JAXRSFeignClientHttpRequestExecutor extends AbstractFeignClientHttpRequestExecutor {
 
     /**
      * Define a private, final JAX-RS client instance variable for executing HTTP

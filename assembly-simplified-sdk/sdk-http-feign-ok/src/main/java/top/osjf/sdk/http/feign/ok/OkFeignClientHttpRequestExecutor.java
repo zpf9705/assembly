@@ -20,7 +20,7 @@ import feign.Request;
 import feign.Response;
 import feign.okhttp.OkHttpClient;
 import top.osjf.sdk.core.support.LoadOrder;
-import top.osjf.sdk.http.feign.bridging.FeignClientHttpRequestExecutor;
+import top.osjf.sdk.http.feign.bridging.AbstractFeignClientHttpRequestExecutor;
 
 import java.io.IOException;
 
@@ -32,7 +32,7 @@ import java.io.IOException;
  * @since 1.0.0
  */
 @LoadOrder(Integer.MIN_VALUE + 11)
-public class OkFeignClientHttpRequestExecutor implements FeignClientHttpRequestExecutor {
+public class OkFeignClientHttpRequestExecutor extends AbstractFeignClientHttpRequestExecutor {
 
     /**
      * Define a private, immutable {@code feign.okhttp.OkHttpClient} instance variable for executing HTTP requests.

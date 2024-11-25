@@ -21,7 +21,7 @@ import feign.Response;
 import feign.hc5.ApacheHttp5Client;
 import org.apache.hc.client5.http.classic.HttpClient;
 import top.osjf.sdk.core.support.LoadOrder;
-import top.osjf.sdk.http.feign.bridging.FeignClientHttpRequestExecutor;
+import top.osjf.sdk.http.feign.bridging.AbstractFeignClientHttpRequestExecutor;
 
 import java.io.IOException;
 
@@ -33,7 +33,7 @@ import java.io.IOException;
  * @since 1.0.2
  */
 @LoadOrder(Integer.MIN_VALUE + 13)
-public class Hc5FeignClientHttpRequestExecutor implements FeignClientHttpRequestExecutor {
+public class Hc5FeignClientHttpRequestExecutor extends AbstractFeignClientHttpRequestExecutor {
 
     /**
      * Define a private, final instance variable of type {@code ApacheHttp5Client} for executing HTTP requests.

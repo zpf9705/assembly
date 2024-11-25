@@ -22,7 +22,7 @@ import feign.Request;
 import feign.Response;
 import feign.googlehttpclient.GoogleHttpClient;
 import top.osjf.sdk.core.support.LoadOrder;
-import top.osjf.sdk.http.feign.bridging.FeignClientHttpRequestExecutor;
+import top.osjf.sdk.http.feign.bridging.AbstractFeignClientHttpRequestExecutor;
 
 import java.io.IOException;
 
@@ -34,7 +34,7 @@ import java.io.IOException;
  * @since 1.0.2
  */
 @LoadOrder(Integer.MIN_VALUE + 12)
-public class GoogleFeignClientHttpRequestExecutor implements FeignClientHttpRequestExecutor {
+public class GoogleFeignClientHttpRequestExecutor extends AbstractFeignClientHttpRequestExecutor {
     /**
      * Define a private final variable of type {@code GoogleHttpClient} for executing HTTP requests
      */
