@@ -41,7 +41,10 @@ public interface CustomizeHttpRequestExecutor extends HttpRequestExecutor {
 
     @Override
     default String execute(ExecutorHttpRequest httpRequest) throws Exception {
-        throw new UnsupportedOperationException();
+        return unifiedDoRequest(httpRequest.getMethodName(), httpRequest.getUrl(),
+                httpRequest.getHeaders(String.class, Object::toString),
+                httpRequest.getBody(),
+                false);
     }
 
     /**
