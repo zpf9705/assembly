@@ -21,10 +21,7 @@ import top.osjf.sdk.core.util.MapUtils;
 
 import java.io.Serializable;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -377,7 +374,7 @@ public interface HttpRequestExecutor {
         public <T> Map<String, T> getHeaders(Class<T> requiredType, Function<Object, T> customConversionAfterFailed)
                 throws ClassCastException {
             Map<String, Object> headers = getHeaders();
-            if (MapUtils.isEmpty(headers)) return null;
+            if (MapUtils.isEmpty(headers)) return Collections.emptyMap();
             return headers.entrySet()
                     .stream()
                     .collect(Collectors.toMap(Map.Entry::getKey, entry -> getHeader(entry.getKey(), requiredType
@@ -389,7 +386,7 @@ public interface HttpRequestExecutor {
                                                                         Function<Object, T> customConversionAfterFailed)
                 throws ClassCastException {
             Map<String, Object> headers = getHeaders();
-            if (MapUtils.isEmpty(headers)) return null;
+            if (MapUtils.isEmpty(headers)) return Collections.emptyMap();
             return headers.entrySet()
                     .stream()
                     .collect(Collectors.toMap(Map.Entry::getKey, entry -> {
