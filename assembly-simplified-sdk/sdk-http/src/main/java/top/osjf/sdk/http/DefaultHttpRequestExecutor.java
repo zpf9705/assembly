@@ -52,7 +52,7 @@ public class DefaultHttpRequestExecutor implements HttpRequestExecutor {
         if (httpRequest.getBody() != null)
             request.body(httpRequest.getBody(String.class), httpRequest.getHeader("Content-Type"));
         request.charset(httpRequest.getCharset());
-        request.headerMap(httpRequest.getHeaders(), true);
+        request.headerMap(httpRequest.getHeaders(String.class, Object::toString), true);
         request.setConnectionTimeout((int) options.connectTimeoutUnit().toMillis(options.connectTimeout()));
         request.setReadTimeout((int) options.readTimeoutUnit().toMillis(options.readTimeout()));
         request.setFollowRedirects(options.isFollowRedirects());
