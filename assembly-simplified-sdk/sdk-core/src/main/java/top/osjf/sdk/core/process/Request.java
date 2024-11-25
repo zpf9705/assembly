@@ -136,13 +136,17 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
     }
 
     /**
-     * Return a map data format encapsulated by a key/value request
-     * header, iteratively placed in the actual request header during
-     * subsequent request processing.
+     * Return a map data format encapsulated by a key/{@code Object}
+     * request header, iteratively placed in the actual request header
+     * during subsequent request processing.
+     * <p>
+     * In version 1.0.2, the value part of the request body was changed
+     * to {@code Object} to enhance the range of values.
      *
-     * @return The request header encapsulation type for {@code Map} data format.
+     * @return The request header encapsulation type for {@code Map}
+     * data format.
      */
-    Map<String, String> getHeadMap();
+    Map<String, Object> getHeadMap();
 
     /**
      * Return the {@link Client} type held by the current request class. The
