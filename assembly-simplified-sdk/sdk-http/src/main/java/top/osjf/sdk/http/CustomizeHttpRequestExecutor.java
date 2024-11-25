@@ -38,14 +38,10 @@ import java.util.Map;
  * @since 1.0.2
  */
 public interface CustomizeHttpRequestExecutor extends HttpRequestExecutor {
+
     @Override
     default String execute(ExecutorHttpRequest httpRequest) throws Exception {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    default boolean useCustomize() {
-        return true;
     }
 
     /**
