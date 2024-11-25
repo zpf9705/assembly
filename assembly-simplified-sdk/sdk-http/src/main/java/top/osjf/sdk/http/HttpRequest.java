@@ -142,7 +142,12 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
 
     /**
      * Do you want to concatenate the given {@link #getRequestParam()} parameters with rules after the URL.
-     * <p>The prerequisite is to provide parameters in the form of a map or JSON strings for key/value.</p>
+     * <p>The prerequisite is to provide parameters in the form of a map or JSON strings for key/value.
+     * <p>
+     * In version 1.0.2, when the return value of this method is true, the return value
+     * from the {@link MontageParam} interface will be prioritized. If the above interface
+     * does not return the corresponding data, the data returned by {@link #getRequestParam()}
+     * will still be used.
      *
      * @return If true, it will concatenate the provided parameters for you, otherwise it will be determined
      * based on the request header.
@@ -167,15 +172,32 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
      * automatically added for you. If you don't need to rewrite {@link #urlJoin()},
      * you can do so.
      *
-     * <p>Since version 1.0.2, after setting the method parameter {@link #montage()} to
-     * <pre>{@code montage == true}</pre>, the body parameter {@link #getRequestParam()}
-     * is concatenated in the specified format at the URL address as the query parameter.
-     *
      * @param host The host name of the SDK.
      * @return The request address for the SDK.
      */
     default String formatUrl(String host) {
-        String url = matchSdkEnum().getUrl(host) + urlJoin();
-        return HttpSdkSupport.formatUrl(montage(), getRequestParam(), getCharset(), url);
+        return matchSdkEnum().getUrl(host) + urlJoin();
+    }
+
+    /**
+     * Provide a parameter retrieval interface for concatenating URLs
+     * when {@code montage == true} is provided separately.
+     * <p>
+     * Implement isolation from the body parameter of {@link #getRequestParam()}.
+     * When {@link #getParam()} is empty, {@link #getRequestParam()} will still
+     * be used for URL parameter concatenation.
+     *
+     * @since 1.0.2
+     */
+    interface MontageParam {
+        /**
+         * Return the object concatenated with URL parameters.
+         *
+         * <p>Hope the return is a map structure, JSON string,
+         * or convertible map object structure.
+         *
+         * @return the object concatenated with URL parameters.
+         */
+        Object getParam();
     }
 }
