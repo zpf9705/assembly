@@ -32,14 +32,30 @@ public class DefaultHttpRequestExecutor implements HttpRequestExecutor {
 
     @Override
     public String execute(ExecutorHttpRequest httpRequest) throws Exception {
-        String methodName = httpRequest.getMethodName();
-        HttpRequest request = HttpUtil.createRequest(Method.valueOf(methodName), httpRequest.getUrl());
-        RequestOptions options = httpRequest.getOptions().getMethodOptions(methodName);
-        request.setConnectionTimeout((int) options.connectTimeoutUnit().toMillis(options.connectTimeout()));
-        request.setReadTimeout((int) options.readTimeoutUnit().toMillis(options.readTimeout()));
-        request.setFollowRedirects(options.isFollowRedirects());
+        HttpRequest request = toHttpRequest(httpRequest);
         try (HttpResponse response = request.execute()) {
             return response.body();
         }
+    }
+
+    /**
+     * Convert a {@link top.osjf.sdk.http.HttpRequestExecutor.ExecutorHttpRequest} to
+     * {@code Hutool} http request {@link HttpRequest}.
+     *
+     * @param httpRequest a {@code top.osjf.sdk.http.HttpRequestExecutor.ExecutorHttpRequest}.
+     * @return {@code Hutool} http request.
+     */
+    private HttpRequest toHttpRequest(ExecutorHttpRequest httpRequest) {
+        String methodName = httpRequest.getMethodName();
+        HttpRequest request = HttpUtil.createRequest(Method.valueOf(methodName), httpRequest.getUrl());
+        RequestOptions options = httpRequest.getOptions().getMethodOptions(methodName);
+        if (httpRequest.getBody() != null)
+            request.body(httpRequest.getBody(String.class), httpRequest.getHeader("Content-Type"));
+        request.charset(httpRequest.getCharset());
+        request.headerMap(httpRequest.getHeaders(), true);
+        request.setConnectionTimeout((int) options.connectTimeoutUnit().toMillis(options.connectTimeout()));
+        request.setReadTimeout((int) options.readTimeoutUnit().toMillis(options.readTimeout()));
+        request.setFollowRedirects(options.isFollowRedirects());
+        return request;
     }
 }

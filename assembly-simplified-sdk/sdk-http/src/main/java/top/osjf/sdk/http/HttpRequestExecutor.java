@@ -77,6 +77,13 @@ public interface HttpRequestExecutor {
         Object getBody();
 
         /**
+         * Gets the request require type body of the HTTP request.
+         *
+         * @return request require type body of the HTTP request.
+         */
+        <T> T getBody(Class<T> requireType);
+
+        /**
          * Gets the charset used in the request.
          *
          * @return The charset used in the request.
@@ -89,6 +96,13 @@ public interface HttpRequestExecutor {
          * @return A map containing key-value pairs of request headers.
          */
         Map<String, String> getHeaders();
+
+        /**
+         * Gets a header information using key.
+         *
+         * @return A header value with a key.
+         */
+        String getHeader(String key);
 
         /**
          * Gets the options of the HTTP request.
@@ -156,6 +170,13 @@ public interface HttpRequestExecutor {
         }
 
         @Override
+        public <T> T getBody(Class<T> requireType) {
+            Object body = getBody();
+            if (body == null) return null;
+            return requireType.cast(body);
+        }
+
+        @Override
         public Charset getCharset() {
             return request.getCharset();
         }
@@ -163,6 +184,12 @@ public interface HttpRequestExecutor {
         @Override
         public Map<String, String> getHeaders() {
             return request.getHeadMap();
+        }
+
+        @Override
+        public String getHeader(String key) {
+            Map<String, String> headers = getHeaders();
+            return headers != null && !headers.isEmpty() ? headers.get(key) : null;
         }
 
         @Override
