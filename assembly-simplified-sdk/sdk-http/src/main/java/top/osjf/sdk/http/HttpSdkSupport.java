@@ -16,7 +16,7 @@
 
 package top.osjf.sdk.http;
 
-import cn.hutool.core.net.url.UrlBuilder;
+import com.palominolabs.http.url.UrlBuilder;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
 import top.osjf.sdk.core.support.SdkSupport;
@@ -27,6 +27,8 @@ import top.osjf.sdk.core.util.SynchronizedWeakHashMap;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.net.MalformedURLException;
+import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -283,15 +285,20 @@ public abstract class HttpSdkSupport extends SdkSupport {
      * @param charset    Encoding character set format.
      * @param url        Access addresses that require specific formatting.
      * @return Specific formatted access address.
+     * @throws CharacterCodingException if decoding percent-encoded bytes fails and charsetDecoder is configured to
+     *                                  report errors.
+     * @throws MalformedURLException    if no protocol is specified, or an
+     *                                  unknown protocol is found, or {@code spec} is {@code null}.
      */
-    public static String formatMontageTrueUrl(String url, Object montageObj, Charset charset) {
+    public static String formatMontageTrueUrl(String url, Object montageObj, Charset charset) throws
+            CharacterCodingException, MalformedURLException {
         Map<String, Object> montageParams = resolveMontageObj(montageObj);
         if (MapUtils.isNotEmpty(montageParams)) {
-            UrlBuilder urlBuilder = UrlBuilder.of(url, charset);
+            UrlBuilder urlBuilder = UrlUtils.toPalominolabsBuilder(url, charset);
             for (Map.Entry<String, Object> entry : montageParams.entrySet()) {
-                urlBuilder.addQuery(entry.getKey(), entry.getValue());
+                urlBuilder.queryParam(entry.getKey(), String.valueOf(entry.getValue()));
             }
-            url = urlBuilder.build();
+            url = urlBuilder.toUrlString();
         }
         return url;
     }

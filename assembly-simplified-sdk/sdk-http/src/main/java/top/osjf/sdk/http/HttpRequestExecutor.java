@@ -282,11 +282,13 @@ public interface HttpRequestExecutor {
          * If the passed-in HttpRequest or url parameter is null, a {@code NullPointerException}
          * will be thrown.
          *
-         * @param request An object encapsulating HTTP request information
-         * @param url     The URL address of the request
-         * @param options The options for the HTTP request, can be null
+         * @param request An object encapsulating HTTP request information.
+         * @param url     The URL address of the request.
+         * @param options The options for the HTTP request, can be null.
+         * @throws Exception Format and encoding set related errors that
+         *                   occur during the URL formatting process.
          */
-        public Default(HttpRequest request, String url, RequestOptions options) {
+        public Default(HttpRequest request, String url, RequestOptions options) throws Exception {
             if (request == null) throw new NullPointerException("HttpRequest not be null");
             if (url == null) throw new NullPointerException("url not be null");
 
