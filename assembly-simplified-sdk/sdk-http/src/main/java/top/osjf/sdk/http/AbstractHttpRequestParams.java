@@ -24,8 +24,10 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * Http request abstract node class, used to define the public parameters
- * or methods of the real request parameter class.
+ * The abstract class {@code AbstractHttpRequestParams} extends {@code AbstractRequestParams}
+ * and implements the HttpRequest interface.
+ * This class defines common behaviors for HTTP request parameters and allows subclasses to
+ * implement specific request parameter handling logic by extending it.
  *
  * <p>You can check the example code:
  * <pre>
