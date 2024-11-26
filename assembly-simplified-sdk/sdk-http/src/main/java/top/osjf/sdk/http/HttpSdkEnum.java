@@ -71,4 +71,20 @@ public interface HttpSdkEnum extends SdkEnum {
      * the HTTP request method.
      */
     HttpRequestMethod getRequestMethod();
+
+    /**
+     * Gets the currently used HTTP protocol enumeration instance.
+     *
+     * <p>This method does not accept any parameters and returns a {@link HttpProtocol}
+     * enumeration instance representing the currently used HTTP protocol.
+     * The return value can be either {@link HttpProtocol#HTTPS} or {@link HttpProtocol#HTTP},
+     * depending on the application's configuration or the current network environment.
+     * <p>
+     * This parameter is optional and depends on your return value in {@link #getUrl}.
+     * You can check the default operation of method {@link HttpRequest#formatUrl}.
+     *
+     * @return The currently used HTTP protocol enumeration instance (HTTPS or HTTP).
+     * @since 1.0.2
+     */
+    HttpProtocol getProtocol();
 }

@@ -172,11 +172,18 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
      * automatically added for you. If you don't need to rewrite {@link #urlJoin()},
      * you can do so.
      *
+     * <p>Since version 1.0.2, if you provide {@link HttpProtocol}, you will no longer
+     * need to pay attention to the HTTP protocol type in URL formatting. The following
+     * method will be used to properly concatenate when {@code HttpProtocol} is not empty.
+     *
      * @param host The host name of the SDK.
      * @return The request address for the SDK.
      */
     default String formatUrl(String host) {
-        return matchSdkEnum().getUrl(host) + urlJoin();
+        HttpProtocol protocol = matchSdkEnum().getProtocol();
+        String url = matchSdkEnum().getUrl(host);
+        if (protocol != null) url = protocol.getDependentPathWithUrl(url);
+        return url + urlJoin();
     }
 
     /**
