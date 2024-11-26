@@ -20,6 +20,8 @@ import com.google.common.reflect.TypeToken;
 import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.core.enums.SdkEnum;
 import top.osjf.sdk.core.exception.SdkException;
+import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.support.Nullable;
 
 import java.io.Serializable;
 import java.nio.charset.Charset;
@@ -80,6 +82,7 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      * @return After formatting, it can be used as the
      * real address for access.
      */
+    @NotNull
     String getUrl(String host);
 
     /*** {@inheritDoc}*/
@@ -146,6 +149,7 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      * @return The request header encapsulation type for {@code Map}
      * data format.
      */
+    @Nullable
     Map<String, Object> getHeadMap();
 
     /**
@@ -156,6 +160,7 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      * @return The type of {@link Client} held,must not be {@literal null}.
      */
     @SuppressWarnings("rawtypes")
+    @NotNull
     Class<? extends Client> getClientCls();
 
     /**
@@ -180,6 +185,7 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      *
      * @return matching {@link SdkEnum} types.
      */
+    @NotNull
     SdkEnum matchSdkEnum();
 
     /**
