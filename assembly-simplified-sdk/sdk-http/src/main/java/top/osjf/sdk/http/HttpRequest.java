@@ -17,6 +17,8 @@
 package top.osjf.sdk.http;
 
 import top.osjf.sdk.core.process.Request;
+import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.support.Nullable;
 
 /**
  * Request node information interface defined by SDK of http type.
@@ -45,6 +47,7 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
 
     /*** {@inheritDoc}*/
     @Override
+    @NotNull
     default String getUrl(String host) {
         return formatUrl(host);
     }
@@ -138,6 +141,7 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
 
     /*** {@inheritDoc}*/
     @Override
+    @NotNull
     HttpSdkEnum matchSdkEnum();
 
     /**
@@ -180,9 +184,9 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
      * @return The request address for the SDK.
      */
     default String formatUrl(String host) {
-        HttpProtocol protocol = matchSdkEnum().getProtocol();
         String url = matchSdkEnum().getUrl(host);
-        if (protocol != null) url = protocol.getDependentPathWithUrl(url);
+        HttpProtocol protocol = matchSdkEnum().getProtocol();
+        if (protocol != null) url = protocol.formatUrl(url);
         return url + urlJoin();
     }
 
@@ -205,6 +209,7 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
          *
          * @return the object concatenated with URL parameters.
          */
+        @Nullable
         Object getParam();
     }
 }

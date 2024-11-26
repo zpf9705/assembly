@@ -18,6 +18,7 @@ package top.osjf.sdk.http;
 
 import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.core.process.AbstractRequestParams;
+import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.util.JSONUtil;
 
 import java.util.Collections;
@@ -106,6 +107,7 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
     }
 
     @Override
+    @NotNull
     public Class<? extends Client> getClientCls() {
         return DefaultHttpClient.class;
     }

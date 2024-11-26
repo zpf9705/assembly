@@ -16,15 +16,17 @@
 
 package top.osjf.sdk.http;
 
+import top.osjf.sdk.core.util.StringUtils;
+
+import java.net.URL;
+import java.util.Objects;
+
 /**
- * Defines an enumeration type representing HTTP protocols.
+ * An enumeration type that defines the HTTP and HTTPS network protocols.
  * <p>
- * This enumeration contains two instances: HTTPS and HTTP, representing
- * the secure Hypertext Transfer Protocol (HTTPS) and the plain Hypertext
- * Transfer Protocol (HTTP) respectively.
- * <p>
- * Each enumeration instance has an associated string that is the prefix
- * of the protocol (e.g., "https:" and "http:").
+ * Each enumeration instance contains the protocol identity (e.g., "http", "https"),
+ * the protocol prefix (e.g., "http:", "https:"), and a complete URL prefix
+ * (e.g., "http://", "https://").
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
@@ -33,85 +35,118 @@ public enum HttpProtocol {
 
     /**
      * The enumeration instance representing the HTTPS protocol.
-     * <p>
-     * The value of its path field is "https:", representing the prefix of the HTTPS protocol.
      */
-    HTTPS("https:"),
+    HTTPS("https", "https:", "https://"),
 
     /**
      * The enumeration instance representing the HTTP protocol.
-     * <p>
-     * The value of its path field is "http:", representing the prefix of the HTTP protocol.
      */
-    HTTP("http:");
+    HTTP("http", "http:", "http://");
 
     /**
-     * A string field storing the protocol prefix.
-     * <p>
-     * This field is private for each enumeration instance and can only be
-     * accessed through the {@link #getPath()} method.
+     * The identity of the protocol, such as "http" or "https".
      */
-    private final String path;
+    private final String identity;
 
     /**
-     * The constructor of the enumeration.
-     * <p>
-     * This constructor is called when each enumeration instance is created,
-     * and the protocol prefix is passed as a parameter to the path field.
-     *
-     * @param path The prefix string of the protocol.
+     * The prefix of the protocol, such as "http:" or "https:".
      */
-    HttpProtocol(String path) {
-        this.path = path;
+    private final String protocolPrefix;
+
+    /**
+     * The complete URL prefix, such as "http://" or "https://".
+     */
+    private final String urlPrefix;
+
+    HttpProtocol(String identity, String protocolPrefix, String urlPrefix) {
+        this.identity = identity;
+        this.protocolPrefix = protocolPrefix;
+        this.urlPrefix = urlPrefix;
     }
 
     /**
-     * A method to get the protocol prefix string.
+     * Gets the identity of the protocol.
+     *
+     * @return The identity of the protocol
+     */
+    public String getIdentity() {
+        return identity;
+    }
+
+    /**
+     * Gets the prefix of the protocol.
+     *
+     * @return The prefix of the protocol
+     */
+    public String getProtocolPrefix() {
+        return protocolPrefix;
+    }
+
+    /**
+     * Gets the complete URL prefix.
+     *
+     * @return The complete URL prefix
+     */
+    public String getUrlPrefix() {
+        return urlPrefix;
+    }
+
+    /**
+     * Formats a URL string.
      * <p>
-     * Returns the protocol prefix string associated with this enumeration
-     * instance.
+     * This method is primarily used to format the passed-in URL string.
+     * <p>
+     * If the current three indicators are not included at the beginning of the URL,
+     * consider whether the URL starts with 'http' and the following situations occur:
+     * <ul>
+     *     <li>Current model: {@code HTTP} | input : `https:xxx`</li>
+     *     <li>Current model: {@code HTTPS} | input : `http:xxx`</li>
+     * </ul>
+     * Type error belonging to parsing disorder.
+     * <p>
+     * If the protocol type of the input URL {@link URL#getProtocol()} matches
+     * the current enumeration protocol type {@link #getIdentity()}, the URL will
+     * be returned directly.
+     * <p>Else sulations:
+     * If the URL starts with a colon {@code :}, it will prepend the current identity.
+     * <p>
+     * If the URL starts with double slashes {@code //}, it will prepend the protocol prefix.
+     * Otherwise, it will prepend the full URL prefix.
+     * <p>
+     * Can handle the following normal situations:
+     * <ul>
+     *     <li>https://org.example.com/api</li>
+     *     <li>://org.example.com/api</li>
+     *     <li>//org.example.com/api</li>
+     *     <li>org.example.com/api</li>
+     * </ul>
      *
-     * @return The protocol prefix string.
+     * @param url The URL string to be formatted.
+     * @return The formatted URL string.
      */
-    public String getPath() {
-        return path;
-    }
-
-    /**
-     * Gets the dependent path by appending double slashes {@code //} to
-     * the current path.
-     *
-     * <p>This method retrieves the current path by calling the internal
-     * {@link #getPath()} method,then appends double slashes {@code //}
-     * to the end of that path, and returns the resulting string.
-     *
-     * @return A string with double slashes {@code //} appended to the
-     * current path.
-     */
-    public String getDependentPath() {
-        return getPath() + "//";
-    }
-
-    /**
-     * Returns a processed dependent path based on the provided URL string.
-     *
-     * <p>This method first checks if the provided URL string starts with the {@code HTTP}
-     * or {@code HTTPS} protocol.
-     * If it does, the URL string is returned directly without any modifications.
-     *
-     * <p>If the provided URL string does not start with the HTTP or HTTPS protocol,
-     * it calls the internal {@link #getDependentPath()} method to obtain a dependent
-     * path (i.e., a path with double slashes "//" appended to the current path),
-     * then concatenates this dependent path with the provided URL string, and returns
-     * the resulting string.
-     *
-     * @param url The provided URL string, which may be a full URL or a relative path.
-     * @return The processed dependent path string.
-     */
-    public String getDependentPathWithUrl(String url) {
-        if (url.startsWith(HTTP.path) || url.startsWith(HTTPS.path)) {
-            return url;
+    public String formatUrl(String url) {
+        // If url is blank, directly return it.
+        if (StringUtils.isBlank(url)) return url;
+        //Handle the following situations:
+        //Current model: {@code HTTP} | input : `https:xxx`
+        //Current model: {@code HTTPS} | input : `http:xxx`
+        if (url.startsWith(HTTP.identity)) {
+            String urlProtocol = UrlUtils.getJdkUrlProtocol(url);
+            if (urlProtocol != null) {
+                if (!Objects.equals(urlProtocol, getIdentity())) {
+                    throw new IllegalArgumentException
+                            ("The protocol identity of the input URL is [" + urlProtocol + "], which is inconsistent" +
+                                    " with the current resolved identity [" + getIdentity() + "]. Format failed." +
+                                    " Please check the protocol parameters.");
+                } else return url;   // already starts with the current identity, directly return it.
+            }
         }
-        return getDependentPath() + url;
+        if (url.startsWith(":")) url = getIdentity() + url;
+            // If the URL starts with double slashes "//", prepend the protocol prefix.
+        else if (url.startsWith("//")) url = getProtocolPrefix() + url;
+            // Otherwise, prepend the full URL prefix.
+        else url = getUrlPrefix() + url;
+        // Return the formatted URL.
+        return url;
     }
 }

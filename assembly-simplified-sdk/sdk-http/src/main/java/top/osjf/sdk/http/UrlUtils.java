@@ -54,4 +54,28 @@ public abstract class UrlUtils {
             throws CharacterCodingException, MalformedURLException {
         return UrlBuilder.fromUrl(new URL(url), charset.newDecoder());
     }
+
+    /**
+     * Retrieves the protocol part of a given URL.
+     * <p>
+     * This method takes a string parameter {@code url}, which should represent a valid URL.
+     * It first attempts to parse this string using the constructor of the {@code URL} class.
+     * If parsing succeeds, it retrieves the protocol part of the URL by calling the
+     * {@code getProtocol()} method and returns this value.
+     * <p>
+     * If a {@code MalformedURLException} is encountered during URL parsing (indicating that
+     * the URL is not well-formed),the exception is caught and null is returned.
+     *
+     * @param url The URL string to be parsed.
+     * @return The protocol part of the URL (e.g., "http", "https", "ftp") if the URL is well-formed;
+     * otherwise, returns null if the URL is malformed.
+     */
+    public static String getJdkUrlProtocol(String url) {
+        try {
+            return new URL(url).getProtocol();
+        } catch (MalformedURLException e) {
+            // If the URL is malformed, catch the exception and return null
+            return null;
+        }
+    }
 }

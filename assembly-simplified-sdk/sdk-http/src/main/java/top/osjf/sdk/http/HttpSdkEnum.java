@@ -17,6 +17,8 @@
 package top.osjf.sdk.http;
 
 import top.osjf.sdk.core.enums.SdkEnum;
+import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.support.Nullable;
 
 /**
  * <p>HTTP SDK Enumeration Interface, extending from the {@code SdkEnum} interface.
@@ -72,6 +74,7 @@ public interface HttpSdkEnum extends SdkEnum {
      * @return Returns a {@code HttpRequestMethod} enumeration value, representing
      * the HTTP request method.
      */
+    @NotNull
     HttpRequestMethod getRequestMethod();
 
     /**
@@ -88,5 +91,6 @@ public interface HttpSdkEnum extends SdkEnum {
      * @return The currently used HTTP protocol enumeration instance (HTTPS or HTTP).
      * @since 1.0.2
      */
+    @Nullable
     HttpProtocol getProtocol();
 }
