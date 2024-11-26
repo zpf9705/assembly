@@ -32,7 +32,7 @@ import top.osjf.sdk.core.support.SdkSupport;
  *
  * <div><h3>Examples of usage methods are as follows</h3></div>
  * <pre>
- *  public class ResponseImpl extends AbstractHttpResponse implements ResponseData {
+ *  public class ExampleResponseData extends AbstractHttpResponse implements ResponseData {
  *
  *      private String token;
  *
