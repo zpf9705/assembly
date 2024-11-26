@@ -28,17 +28,13 @@ import java.util.Objects;
  * <p>You can check the example code:
  * <pre>
  * {@code
- * public class TestR extends AbstractHttpResponse {
+ * public class ExampleHttpResponse extends AbstractHttpResponse {
  *
  *     private Boolean success;
- *
  *     private Integer code;
- *
  *     private String message;
- *
  *     private Object errors;
- *
- *     private List<Supplier> data;
+ *     private List<Object> data;
  * }}
  * </pre>
  *

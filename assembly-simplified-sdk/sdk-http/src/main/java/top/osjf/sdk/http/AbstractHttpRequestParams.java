@@ -32,7 +32,7 @@ import java.util.Map;
  * <p>You can check the example code:
  * <pre>
  * {@code
- * public class ExampleHttpRequestParams extends AbstractHttpRequestParams<Example> {
+ * public class ExampleHttpRequestParams extends AbstractHttpRequestParams<ExampleHttpResponse> {
  *
  *     public HttpSdkEnum matchSdk() {
  *         return new HttpSdkEnum() {
@@ -55,8 +55,8 @@ import java.util.Map;
  *         return "{"address":"example.com"}";
  *     }
  *
- *     public Class<Example> getResponseCls() {
- *         return Example.class;
+ *     public Class<ExampleHttpResponse> getResponseCls() {
+ *         return ExampleHttpResponse.class;
  *     }
  * }}
  * </pre>
