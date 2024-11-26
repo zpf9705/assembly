@@ -18,7 +18,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <sdk-http>1.0.2</sdk-http>
         <jaxrs>2.1.1</jaxrs>
-        <jersey-client>2.44</jersey-client>
+        <jersey>2.45</jersey>
     </properties>
 
     <dependencies>
@@ -38,7 +38,13 @@
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-client</artifactId>
-            <version>${jersey-client}</version>
+            <version>${jersey}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.jersey.inject</groupId>
+            <artifactId>jersey-hk2</artifactId>
+            <version>${jersey}</version>
         </dependency>
 
     </dependencies>
