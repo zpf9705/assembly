@@ -30,13 +30,13 @@ import java.util.Map;
  * <p>You can check the example code:
  * <pre>
  * {@code
- * public class TestP extends AbstractHttpRequestParams<TestR> {
+ * public class ExampleHttpRequestParams extends AbstractHttpRequestParams<Example> {
  *
  *     public HttpSdkEnum matchSdk() {
  *         return new HttpSdkEnum() {
  *
  *             public String getUlr(String host) {
- *                 return "";
+ *                 return "https:// + host +"/example/query.json";
  *             }
  *
  *             public HttpRequestMethod getHttpRequestMethod() {
@@ -44,17 +44,17 @@ import java.util.Map;
  *             }
  *
  *             public String name() {
- *                 return "null";
+ *                 return "EXAMPLE";
  *             }
  *         };
  *     }
  *
  *     public Object getRequestParam() {
- *         return "";
+ *         return "{"address":"example.com"}";
  *     }
  *
- *     public Class<TestR> getResponseCls() {
- *         return TestR.class;
+ *     public Class<Example> getResponseCls() {
+ *         return Example.class;
  *     }
  * }}
  * </pre>
