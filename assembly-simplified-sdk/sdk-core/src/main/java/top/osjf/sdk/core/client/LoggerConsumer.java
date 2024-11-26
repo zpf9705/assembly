@@ -16,6 +16,8 @@
 
 package top.osjf.sdk.core.client;
 
+import top.osjf.sdk.core.support.NotNull;
+
 import java.util.function.BiConsumer;
 
 /**
@@ -43,6 +45,7 @@ public interface LoggerConsumer {
      * @return A `BiConsumer` that accepts a log message template and an array of
      * arguments for recording normal logs.
      */
+    @NotNull
     BiConsumer<String, Object[]> normal();
 
     /**
@@ -58,6 +61,7 @@ public interface LoggerConsumer {
      * @return A `BiConsumer` that accepts an error message template and an array
      * of arguments for recording SDK exception logs.
      */
+    @NotNull
     BiConsumer<String, Object[]> sdkError();
 
     /**
@@ -72,5 +76,6 @@ public interface LoggerConsumer {
      * @return A `BiConsumer` that accepts an error message template and an array of
      * arguments for recording unknown exception logs.
      */
+    @NotNull
     BiConsumer<String, Object[]> unKnowError();
 }
