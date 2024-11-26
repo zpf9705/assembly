@@ -36,14 +36,15 @@ import java.lang.annotation.*;
  * the use of SDK proxies to parse the above annotations, you can
  * refer to method {@link SdkSupport#invokeCreateRequest}
  * and the following code examples.
- *
+ * <p>
+ * Using its <a href="https://mvnrepository.com/artifact/top.osjf.sdk/sdk-http">sdk-http</a>
+ * implementation example code:
  * <pre>
- *
- *  public class RequestImpl extends AbstractHttpRequestParams&lt;HttpResultResponse&lt;List&lt;Supplier&gt;&gt;&gt; {
+ *  public class ExampleHttpRequestParams
+ *  extends AbstractHttpRequestParams&lt;HttpResultResponse&lt;List&lt;Example&gt;&gt;&gt; {
  *
  *      &#064;RequestField("queryDto")
  *      private QueryDto queryDto;
- *
  *      &#064;RequestField("token")
  *      private String token;
  *
@@ -51,11 +52,9 @@ import java.lang.annotation.*;
  *          this.queryDto = queryDto;
  *          this.token = token;
  *      }
- *
  *      public void setQueryDto(QueryDto queryDto){
  *          this.queryDto = queryDto;
  *      }
- *
  *      public void setToken(String token){
  *          this.token = token;
  *      }
@@ -69,31 +68,30 @@ import java.lang.annotation.*;
  *      }
  *      &#064;Override
  *      public String getUlr(String host) {
- *          return "your host";
+ *          return "https:// + host +"example/query.json";
  *      }
  *      &#064;Override
  *      public String name() {
- *         return "your api name";
+ *         return "EXAMPLE";
  *     }
  *      };
  *    }
  *  }
  *
- *      &#064;Sdk(hostProperty = "${your.host}")
- *      public interface Service {
- *
- *          &#064;RequestParam(RequestImpl.class)
- *          HttpResultResponse&lt;List&lt;Data&gt;&gt; queryData(QueryDto dto,String token);
- *      }
+ *    &#064;Sdk(hostProperty = "${your.host}")
+ *    public interface Service {
+ *        &#064;RequestParam(ExampleHttpRequestParams.class)
+ *        HttpResultResponse&lt;List&lt;Example&gt;&gt; queryData(QueryDto dto,String token);
+ *    }
  * </pre>
- *
+ * <p>
  * Starting from version 1.0.2, this annotation will be used to mark {@link Request}
  * types, and when searching for {@link Request} types, its priority level will be
  * higher than {@link RequestParameter}.
  *
+ * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @see SdkSupport#invokeCreateRequest
  * @see RequestParameter
- * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
 @Target({ElementType.METHOD})
