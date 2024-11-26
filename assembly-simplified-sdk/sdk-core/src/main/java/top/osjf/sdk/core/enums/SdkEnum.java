@@ -16,6 +16,8 @@
 
 package top.osjf.sdk.core.enums;
 
+import top.osjf.sdk.core.support.NotNull;
+
 /**
  * SDK Enumeration Interface, defining common methods and properties related
  * to the SDK.
@@ -40,6 +42,7 @@ public interface SdkEnum {
      * @param host The host name of the SDK.
      * @return The request address for the SDK.
      */
+    @NotNull
     String getUrl(String host);
 
     /**
