@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.util.StringUtils;
 import top.osjf.sdk.core.util.SynchronizedWeakHashMap;
 
@@ -183,6 +184,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
      * @return {@inheritDoc}
      */
     @Override
+    @NotNull
     public BiConsumer<String, Object[]> normal() {
         return LOGGER::info;
     }
@@ -194,6 +196,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
      * @return {@inheritDoc}
      */
     @Override
+    @NotNull
     public BiConsumer<String, Object[]> sdkError() {
         return LOGGER::error;
     }
@@ -205,6 +208,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
      * @return {@inheritDoc}
      */
     @Override
+    @NotNull
     public BiConsumer<String, Object[]> unKnowError() {
         return LOGGER::error;
     }
