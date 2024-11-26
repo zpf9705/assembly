@@ -36,21 +36,23 @@ import top.osjf.sdk.core.enums.SdkEnum;
  * <p>You can check the example code:
  * <pre>
  * {@code
- * public enum Sdk implements HttpSdkEnum {
+ * public enum ExampleHttpSdkEnum implements HttpSdkEnum {
  *
- * GET_SUPPLIER("***********", ApiProtocol.HTTP, ApiType.*, RequestMethod.POST),
- * UPDATE_REPORT_BACK("***********", ApiProtocol.HTTP, ApiType.*, RequestMethod.POST),
+ * Example("%s/example/query.json", ApiProtocol.HTTPS, RequestMethod.POST),
  *
- * private final String url;
- * private final ApiProtocol apiProtocol;
- * private final ApiType type;
+ * private final String formatUrl;
+ * private final HttpProtocol protocol;
  * private final RequestMethod requestMethod;
  *
- * public String getUlr(String uri){
- *      return String.format(this.url,this.apiProtocol.getPath(),uri,this.type.getType());
+ * public String getUlr(String host){
+ *      return String.format(this.formatUrl,host);
  * }
  *
- * public HttpRequestMethod getHttpRequestMethod){
+ * public String getProtocol(){
+ *      return this.protocol;
+ * }
+ *
+ * public HttpRequestMethod getHttpRequestMethod(){
  * return this.requestMethod;
  * }
  * }}
