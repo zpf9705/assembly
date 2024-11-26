@@ -18,7 +18,7 @@
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <core>1.0.2</core>
-        <hutool-http>5.8.27</hutool-http>
+        <urlbuilder>1.1.5</urlbuilder>
     </properties>
 
     <dependencies>
@@ -30,9 +30,10 @@
         </dependency>
 
         <dependency>
-            <groupId>cn.hutool</groupId>
-            <artifactId>hutool-http</artifactId>
-            <version>${hutool-http}</version>
+            <groupId>com.palominolabs.http</groupId>
+            <artifactId>url-builder</artifactId>
+            <version>${urlbuilder}</version>
         </dependency>
+
     </dependencies>
 </project>
