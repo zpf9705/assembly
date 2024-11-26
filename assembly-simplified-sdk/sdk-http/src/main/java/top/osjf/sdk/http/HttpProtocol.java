@@ -44,16 +44,20 @@ public enum HttpProtocol {
     HTTP("http", "http:", "http://");
 
     /**
+     * @since 1.0.2
      * The identity of the protocol, such as "http" or "https".
      */
     private final String identity;
 
     /**
+     * @since 1.0.2
      * The prefix of the protocol, such as "http:" or "https:".
+     * Derived from version 1.0.0 of {@code path}.
      */
     private final String protocolPrefix;
 
     /**
+     * @since 1.0.2
      * The complete URL prefix, such as "http://" or "https://".
      */
     private final String urlPrefix;
@@ -68,6 +72,7 @@ public enum HttpProtocol {
      * Gets the identity of the protocol.
      *
      * @return The identity of the protocol
+     * @since 1.0.2
      */
     public String getIdentity() {
         return identity;
@@ -77,6 +82,7 @@ public enum HttpProtocol {
      * Gets the prefix of the protocol.
      *
      * @return The prefix of the protocol
+     * @since 1.0.2
      */
     public String getProtocolPrefix() {
         return protocolPrefix;
@@ -86,6 +92,7 @@ public enum HttpProtocol {
      * Gets the complete URL prefix.
      *
      * @return The complete URL prefix
+     * @since 1.0.2
      */
     public String getUrlPrefix() {
         return urlPrefix;
@@ -123,6 +130,7 @@ public enum HttpProtocol {
      *
      * @param url The URL string to be formatted.
      * @return The formatted URL string.
+     * @since 1.0.2
      */
     public String formatUrl(String url) {
         // If url is blank, directly return it.
