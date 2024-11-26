@@ -16,7 +16,6 @@
 
 package top.osjf.sdk.http;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 /**
@@ -24,7 +23,7 @@ import java.util.Map;
  * provides a unified request execution method.
  * <p>
  * This interface allows mapping lowercase HTTP method names to specific methods of the
- * current class through a unified {@link #unifiedDoRequest} method,And execute the corresponding
+ * current class through a unified {@link #execute} method,And execute the corresponding
  * HTTP request. In addition, GET, POST, PUT, DELETE, TRACE,OPTIONS, HEAD, PATCH, etc. are
  * directly defined Specific HTTP request methods.
  * <p>
@@ -41,41 +40,13 @@ public interface CustomizeHttpRequestExecutor extends HttpRequestExecutor {
 
     @Override
     default String execute(ExecutorHttpRequest httpRequest) throws Exception {
-        return unifiedDoRequest(httpRequest.getMethodName(), httpRequest.getUrl(),
+        return getClass().getMethod(httpRequest.getMethodName().toLowerCase(),
+                String.class,
+                Map.class,
+                Object.class,
+                boolean.class).invoke(this, httpRequest.getUrl(),
                 httpRequest.getHeaders(String.class, Object::toString),
-                httpRequest.getBody(),
-                false);
-    }
-
-    /**
-     * Use lowercase HTTP method names to map the request method names of
-     * the current class and make unified method calls.
-     *
-     * @param methodName Http method name map to this class method name.
-     * @param url        The actual request address,must not be {@literal null}.
-     * @param headers    Header information map,can be {@literal null}.
-     * @param param      Request parameters with type {@link Object},can be {@literal null}.
-     * @param montage    Whether to concatenate parameters in the form of {@link Map} or {@code Json}
-     *                   as key/value after the URL.
-     * @return The {@code String} type of the return value
-     * @throws Exception unknown exception.
-     */
-    default String unifiedDoRequest(String methodName,
-                                    String url,
-                                    Map<String, String> headers, Object param, boolean montage)
-            throws Exception {
-        try {
-            return getClass().getMethod(methodName,
-                    String.class,
-                    Map.class,
-                    Object.class,
-                    boolean.class).invoke(this, url, headers, param, montage).toString();
-        } catch (InvocationTargetException e) {
-            //If it is an execution exception of InvocationTargetException,
-            // convert it to a reflection exception of the parent class and
-            // put the target exception in the cause.
-            throw new ReflectiveOperationException(e.getTargetException());
-        }
+                httpRequest.getBody(), false).toString();
     }
 
     /**
