@@ -23,7 +23,7 @@
  * questions.
  */
 
-package top.osjf.sdk.http.feign.bridging;
+package top.osjf.sdk.http;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * IOUtils: A collection of IO-related public static methods.
  */
-abstract class IOUtils {
+abstract public class IOUtils {
     private static final int DEFAULT_BUFFER_SIZE = 8192;
 
     /**
@@ -67,16 +67,13 @@ abstract class IOUtils {
      * It is strongly recommended that the stream be promptly closed if an I/O
      * error occurs.
      *
-     * @implSpec
-     * This method invokes {@code #readNBytes(int)} with a length of
-     * {@link Integer#MAX_VALUE}.
-     *
      * @param is input stream, must not be null
      * @return a byte array containing the bytes read from this input stream
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      * @throws OutOfMemoryError if an array of the required size cannot be
-     *         allocated.
-     *
+     *                          allocated.
+     * @implSpec This method invokes {@code #readNBytes(int)} with a length of
+     * {@link Integer#MAX_VALUE}.
      * @since 1.9
      */
     public static byte[] readAllBytes(InputStream is) throws IOException {
@@ -115,18 +112,15 @@ abstract class IOUtils {
      * It is strongly recommended that the stream be promptly closed if an I/O
      * error occurs.
      *
-     * @implNote
-     * The number of bytes allocated to read data from this stream and return
-     * the result is bounded by {@code 2*(long)len}, inclusive.
-     *
-     * @param is input stream, must not be null
+     * @param is  input stream, must not be null
      * @param len the maximum number of bytes to read
      * @return a byte array containing the bytes read from this input stream
      * @throws IllegalArgumentException if {@code length} is negative
-     * @throws IOException if an I/O error occurs
-     * @throws OutOfMemoryError if an array of the required size cannot be
-     *         allocated.
-     *
+     * @throws IOException              if an I/O error occurs
+     * @throws OutOfMemoryError         if an array of the required size cannot be
+     *                                  allocated.
+     * @implNote The number of bytes allocated to read data from this stream and return
+     * the result is bounded by {@code 2*(long)len}, inclusive.
      * @since 11
      */
     public static byte[] readNBytes(InputStream is, int len) throws IOException {
