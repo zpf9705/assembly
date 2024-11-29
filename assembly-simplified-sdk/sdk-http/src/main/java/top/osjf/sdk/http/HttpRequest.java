@@ -139,7 +139,21 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
         return HttpRequest.class.isAssignableFrom(clazz);
     }
 
-    /*** {@inheritDoc}*/
+    /**
+     * {@inheritDoc}
+     *
+     * Overrides the {@code matchSdkEnum} method from the parent class or interface to match
+     * and return an {@code matchSdkEnum} instance that fits the current context.
+     *
+     * <p>This method is specific to the {@code matchSdkEnum} type, meaning that the returned
+     * enumeration instance is dedicated to SDK enumerations for HTTP requests.
+     *
+     * <p>Compared to the {@code matchSdkEnum} method in the parent class or interface, this
+     * method provides a more specific return type, {@code matchSdkEnum}, allowing the caller
+     * to directly obtain HTTP-related SDK configuration information.
+     *
+     * @return An {@code HttpSdkEnum} instance that fits the current context.
+     */
     @Override
     @NotNull
     HttpSdkEnum matchSdkEnum();

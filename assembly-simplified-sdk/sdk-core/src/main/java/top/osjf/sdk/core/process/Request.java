@@ -116,9 +116,9 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
 
     /**
      * Returns the class object of the response transformation entity,
-     * implemented in {@link Response}.
+     * implemented in {@code Response}.
      *
-     * <p>If you need a {@link Response} transformation of composite
+     * <p>If you need a {@code Response} transformation of composite
      * generics, please refer to {@link #getResponseTypeToken()}.
      *
      * @return The class object of the response class encapsulated by this SDK.
@@ -153,11 +153,11 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
     Map<String, Object> getHeadMap();
 
     /**
-     * Return the {@link Client} type held by the current request class. The
-     * definition of {@link Client} is open, and developers can customize
-     * the relevant behavior of {@link Client}.
+     * Return the {@code Client} type held by the current request class. The
+     * definition of {@code Client} is open, and developers can customize
+     * the relevant behavior of {@code Client}.
      *
-     * @return The type of {@link Client} held,must not be {@literal null}.
+     * @return The type of {@code Client} held,must not be {@literal null}.
      */
     @SuppressWarnings("rawtypes")
     @NotNull
