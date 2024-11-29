@@ -32,7 +32,7 @@ import java.io.IOException;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-@LoadOrder(Integer.MIN_VALUE + 13)
+@LoadOrder(Integer.MIN_VALUE + 17)
 public class Hc5FeignClientHttpRequestExecutor extends AbstractFeignClientHttpRequestExecutor {
 
     /**

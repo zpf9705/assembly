@@ -32,7 +32,7 @@ import java.io.IOException;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-@LoadOrder(Integer.MIN_VALUE + 14)
+@LoadOrder(Integer.MIN_VALUE + 19)
 public class JAXRSFeignClientHttpRequestExecutor extends AbstractFeignClientHttpRequestExecutor {
 
     /**

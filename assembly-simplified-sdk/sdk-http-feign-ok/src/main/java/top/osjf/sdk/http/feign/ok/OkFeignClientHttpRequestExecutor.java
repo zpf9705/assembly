@@ -31,7 +31,7 @@ import java.io.IOException;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-@LoadOrder(Integer.MIN_VALUE + 11)
+@LoadOrder(Integer.MIN_VALUE + 13)
 public class OkFeignClientHttpRequestExecutor extends AbstractFeignClientHttpRequestExecutor {
 
     /**

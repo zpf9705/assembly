@@ -33,7 +33,7 @@ import java.io.IOException;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-@LoadOrder(Integer.MIN_VALUE + 12)
+@LoadOrder(Integer.MIN_VALUE + 15)
 public class GoogleFeignClientHttpRequestExecutor extends AbstractFeignClientHttpRequestExecutor {
     /**
      * Define a private final variable of type {@code GoogleHttpClient} for executing HTTP requests
