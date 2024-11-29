@@ -181,9 +181,26 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
     }
 
     /**
-     * Return matching {@link SdkEnum} types.
+     * Matches and returns an SDK enumeration instance that fits the current context.
      *
-     * @return matching {@link SdkEnum} types.
+     * <p>This method is used to match and return an appropriate instance from the predefined
+     * SDK enumeration type based on the current environment or configuration information.
+     *
+     * <p>The returned enumeration instance should implement the {@code SdkEnum} interface and provide
+     * specific implementations of the {@link SdkEnum#getUrl} and {@link SdkEnum#name()} methods.
+     *
+     * <p>This method is typically used to dynamically determine which SDK enumeration instance
+     * should be used at runtime for subsequent SDK request operations.
+     *
+     * <p>Notes:</p>
+     * <ul>
+     *     <li>The returned enumeration instance should not be {@literal null}, as this would violate the
+     *     constraint of the {@code @NotNull} annotation.</li>
+     *     <li>When implementing this method, ensure that it correctly matches and returns a valid
+     *     SDK enumeration instance.</li>
+     * </ul>
+     *
+     * @return An SDK enumeration instance that fits the current context.
      */
     @NotNull
     SdkEnum matchSdkEnum();
