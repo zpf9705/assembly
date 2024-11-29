@@ -25,22 +25,14 @@
 
         <dependency>
             <groupId>top.osjf.sdk</groupId>
-            <artifactId>sdk-http-apache</artifactId>
+            <artifactId>sdk-http</artifactId>
             <version>${sdk-http}</version>
         </dependency>
 
         <dependency>
             <groupId>top.osjf.sdk</groupId>
-            <artifactId>sdk-http-ok</artifactId>
+            <artifactId>sdk-http-feign-apache</artifactId>
             <version>${sdk-http}</version>
-            <optional>true</optional>
-        </dependency>
-
-        <dependency>
-            <groupId>top.osjf.sdk</groupId>
-            <artifactId>sdk-http-google</artifactId>
-            <version>${sdk-http}</version>
-            <optional>true</optional>
         </dependency>
 
         <dependency>
