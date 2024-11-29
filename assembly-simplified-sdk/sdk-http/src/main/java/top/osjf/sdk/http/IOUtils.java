@@ -67,13 +67,14 @@ abstract public class IOUtils {
      * It is strongly recommended that the stream be promptly closed if an I/O
      * error occurs.
      *
+     * <p>This method invokes {@code #readNBytes(int)} with a length of
+     * {@link Integer#MAX_VALUE}.
+     *
      * @param is input stream, must not be null
      * @return a byte array containing the bytes read from this input stream
      * @throws IOException      if an I/O error occurs
      * @throws OutOfMemoryError if an array of the required size cannot be
      *                          allocated.
-     * @implSpec This method invokes {@code #readNBytes(int)} with a length of
-     * {@link Integer#MAX_VALUE}.
      * @since 1.9
      */
     public static byte[] readAllBytes(InputStream is) throws IOException {
@@ -112,6 +113,9 @@ abstract public class IOUtils {
      * It is strongly recommended that the stream be promptly closed if an I/O
      * error occurs.
      *
+     * <p>The number of bytes allocated to read data from this stream and return
+     * the result is bounded by {@code 2*(long)len}, inclusive.
+     *
      * @param is  input stream, must not be null
      * @param len the maximum number of bytes to read
      * @return a byte array containing the bytes read from this input stream
@@ -119,8 +123,6 @@ abstract public class IOUtils {
      * @throws IOException              if an I/O error occurs
      * @throws OutOfMemoryError         if an array of the required size cannot be
      *                                  allocated.
-     * @implNote The number of bytes allocated to read data from this stream and return
-     * the result is bounded by {@code 2*(long)len}, inclusive.
      * @since 11
      */
     public static byte[] readNBytes(InputStream is, int len) throws IOException {
