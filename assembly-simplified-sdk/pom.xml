@@ -18,6 +18,7 @@
     <modules>
         <module>sdk-core</module>
         <module>sdk-http</module>
+        <module>sdk-http-annotation-processor</module>
         <module>sdk-http-apache</module>
         <module>sdk-http-ok</module>
         <module>sdk-http-google</module>
