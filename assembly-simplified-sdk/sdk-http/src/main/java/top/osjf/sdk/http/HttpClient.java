@@ -56,34 +56,6 @@ public interface HttpClient<R extends HttpResponse> extends Client<R>, HttpResul
      */
     String execute(HttpRequest<R> request) throws Exception;
 
-    /* Facilitating the rewriting of processing methods for response data of AbstractFHIR in the later stage. */
-
-    /**
-     * Convert the request parameter to {@link HttpRequest},
-     * and refer to {@link top.osjf.sdk.core.client.PreProcessingResponseHandler#preResponseStrHandler}
-     * for logical requirements and other parameters.
-     *
-     * @param request     The type of {@link HttpRequest} parameter required for {{@link #execute}} execution.
-     * @param responseStr top.osjf.sdk.core.client.PreProcessingResponseHandler#preResponseStrHandler#responseStr
-     * @return top.osjf.sdk.core.client.PreProcessingResponseHandler#preResponseStrHandler
-     * @see top.osjf.sdk.core.client.PreProcessingResponseHandler#preResponseStrHandler
-     * @since 1.0.2
-     */
-    String preResponseStrHandler(HttpRequest<R> request, String responseStr);
-
-    /**
-     * Convert the request parameter to {@link HttpRequest},
-     * and refer to {@link top.osjf.sdk.core.client.ResponseConvert#convertToResponse}
-     * for logical requirements and other parameters.
-     *
-     * @param request     The type of {@link HttpRequest} parameter required for {{@link #execute}} execution.
-     * @param responseStr top.osjf.sdk.core.client.ResponseConvert#convertToResponse#responseStr
-     * @return top.osjf.sdk.core.client.ResponseConvert#convertToResponse
-     * @see top.osjf.sdk.core.client.ResponseConvert#convertToResponse
-     * @since 1.0.2
-     */
-    R convertToResponse(HttpRequest<R> request, String responseStr);
-
     /**
      * Return a Controls the per-request settings currently required to be
      * implemented by all {@link Client}.

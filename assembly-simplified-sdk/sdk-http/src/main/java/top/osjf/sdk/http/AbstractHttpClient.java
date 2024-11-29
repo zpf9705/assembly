@@ -299,16 +299,6 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
     }
 
     @Override
-    public String preResponseStrHandler(HttpRequest<R> request, String responseStr) {
-        return super.preResponseStrHandler(request, responseStr);
-    }
-
-    @Override
-    public R convertToResponse(HttpRequest<R> request, String responseStr) {
-        return super.convertToResponse(request, responseStr);
-    }
-
-    @Override
     public void handlerSdkError(HttpRequest<?> request, SdkException e) {
         sdkError().accept("Client request fail, apiName={}, error=[{}]",
                 HttpSdkSupport.toLoggerArray(request.matchSdkEnum().name(), e.getMessage()));
