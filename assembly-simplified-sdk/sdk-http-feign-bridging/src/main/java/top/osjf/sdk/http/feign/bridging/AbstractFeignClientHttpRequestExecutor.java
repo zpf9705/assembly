@@ -18,6 +18,7 @@ package top.osjf.sdk.http.feign.bridging;
 
 import feign.Request;
 import feign.Response;
+import top.osjf.sdk.http.IOUtils;
 
 import java.nio.charset.Charset;
 import java.util.*;
