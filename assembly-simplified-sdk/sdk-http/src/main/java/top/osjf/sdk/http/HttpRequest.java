@@ -62,7 +62,7 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
      * by a response implementation with a generic type.</strong>
      * <hr><blockquote><pre>
      *     {@code
-     *   class RequestParam
+     *   class ExampleRequestParam
      *   extends AbstractHttpRequestParams<HttpResultResponse<Character>> {
      *      private static final long serialVersionUID = 6115216307330001269L;
      *         Override
@@ -76,9 +76,9 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
      * <hr><blockquote><pre>
      *     {@code
      *     interface
-     *     InterHttpRequest extends HttpRequest<HttpResultResponse<String>> {
+     *     ExampleHttpRequest extends HttpRequest<HttpResultResponse<String>> {
      *     }
-     *     class RequestParam implements Inter {
+     *     class ExampleRequestParam implements ExampleHttpRequest {
      *         private static final long serialVersionUID = 7371775319382181179L;
      *     }
      *     }
@@ -86,14 +86,14 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
      * <p><strong>Nested inheritance type.</strong>
      * <hr><blockquote><pre>
      *     {@code
-     *      class RequestParam extends AbstractHttpRequestParams<HttpResultResponse<String>> {
+     *      class ExampleRequestParam extends AbstractHttpRequestParams<HttpResultResponse<String>> {
      *         private static final long serialVersionUID = 6115216307330001269L;
      *         Override
      *         public HttpSdkEnum matchHttpSdk() {
      *             return null;
      *         }
      *     }
-     *     class RequestParam0 extends RequestParam {
+     *     class ExampleRequestParamSon extends ExampleRequestParam {
      *         private static final long serialVersionUID = 2463029032762347802L;
      *     }
      *     }
@@ -101,11 +101,11 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
      * <p><strong>Nested implementation type.</strong>
      * <hr><blockquote><pre>
      *     {@code
-     *     class RequestParam implements HttpRequest<HttpResultResponse<String>> {
+     *     class ExampleRequestParam implements HttpRequest<HttpResultResponse<String>> {
      *         private static final long serialVersionUID = 6115216307330001269L;
      *         ...
      *     }
-     *     class RequestParam1 extends RequestParam {
+     *     class ExampleRequestParamSon extends ExampleRequestParam {
      *         private static final long serialVersionUID = 2463029032762347802L;
      *     }
      *     }
