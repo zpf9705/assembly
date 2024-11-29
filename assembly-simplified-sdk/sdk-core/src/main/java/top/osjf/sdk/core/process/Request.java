@@ -72,7 +72,7 @@ import java.util.Map;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public interface Request<R extends Response> extends RequestParamCapable<Object>, Serializable {
+public interface Request<R extends Response> extends RequestParamCapable<Object>, Wrapper, Serializable {
 
     /**
      * Return the formatted real access address based
@@ -217,5 +217,10 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      */
     default boolean isAssignableRequest(Class<?> clazz) {
         return Request.class.isAssignableFrom(clazz);
+    }
+
+    @Override
+    default boolean isWrapperFor(Class<?> clazz){
+        return isAssignableRequest(clazz);
     }
 }
