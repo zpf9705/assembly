@@ -29,7 +29,7 @@ import java.util.Map;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-@LoadOrder(Integer.MIN_VALUE + 10)
+@LoadOrder(Integer.MIN_VALUE + 11)
 public class ApacheHttpRequestExecutor implements CustomizeHttpRequestExecutor {
 
     @Override
