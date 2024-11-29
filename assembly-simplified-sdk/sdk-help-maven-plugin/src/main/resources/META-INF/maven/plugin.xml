@@ -1,0 +1,11 @@
+<plugin>
+    <groupId>com.example</groupId>
+    <artifactId>sdk-help-maven-plugin</artifactId>
+    <version>1.0.2</version>
+    <goals>
+        <goal>
+            <goal>modify-bytecode</goal>
+            <phase>compile</phase>
+        </goal>
+    </goals>
+</plugin>
