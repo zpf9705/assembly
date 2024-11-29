@@ -26,7 +26,6 @@ import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.Names;
 import top.osjf.sdk.http.HttpProtocol;
 import top.osjf.sdk.http.HttpRequestMethod;
-import top.osjf.sdk.http.HttpSdkEnumCodeGeneration;
 import top.osjf.sdk.http.IOUtils;
 
 import javax.annotation.processing.*;
@@ -47,7 +46,7 @@ import java.util.Set;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-@SupportedAnnotationTypes({"top.osjf.sdk.http.HttpSdkEnumCodeGeneration"})
+@SupportedAnnotationTypes({"top.osjf.sdk.http.annotation.processor.HttpSdkEnumCodeGeneration"})
 public class HttpSdkEnumCodeGenerationAnnotationProcessor extends AbstractProcessor {
 
     private ProcessingEnvironment processingEnv;
