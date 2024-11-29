@@ -95,7 +95,7 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
      */
     @Override
     public Map<String, Object> getHeadMap() {
-        if (getRequestParam() != null && defaultToJson()) {
+        if (getRequestParam() != null && defaultToJson() && !montage()) {
             return Collections.singletonMap("Content-Type", "application/json");
         }
         return super.getHeadMap();
