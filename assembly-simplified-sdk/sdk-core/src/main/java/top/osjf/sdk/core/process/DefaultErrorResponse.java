@@ -17,9 +17,9 @@
 package top.osjf.sdk.core.process;
 
 import top.osjf.sdk.core.exception.DataConvertException;
+import top.osjf.sdk.core.util.ExceptionUtils;
 import top.osjf.sdk.core.util.JSONUtil;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -69,6 +69,10 @@ public final class DefaultErrorResponse extends AbstractResponse {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public String asJson() {
+        return JSONUtil.toJSONString(this);
     }
 
     /**
@@ -132,44 +136,41 @@ public final class DefaultErrorResponse extends AbstractResponse {
      */
     public static <R extends Response> R parseErrorResponse(Throwable error, ErrorType type, Request<R> request) {
         DefaultErrorResponse response = type.convertToDefaultErrorResponse(error);
-        R r = JSONUtil.parseObject(JSONUtil.toJSONString(response), request.getResponseRequiredType());
+        R r = JSONUtil.parseObject(response.asJson(), request.getResponseRequiredType());
         r.setErrorCode(response.getCode());
         r.setErrorMessage(response.getMessage());
         return r;
     }
 
     /*** Build a universal interface for {@link DefaultErrorResponse} based on exceptions.*/
-    private interface ErrorConvert {
-        /* Retrieve stack information. */
-        String getStacktrace(Throwable error);
+    private interface ErrorResponseConvert {
         /* Get the type and build different default error responses. */
         DefaultErrorResponse convertToDefaultErrorResponse(Throwable error);
     }
 
     /*** Error allocating different {@link DefaultErrorResponse} creation method enumeration
      * classes for different types.*/
-    public enum ErrorType implements ErrorConvert {
+    public enum ErrorType implements ErrorResponseConvert {
 
         SDK {
             @Override
             public DefaultErrorResponse convertToDefaultErrorResponse(Throwable error) {
-                return buildSdkExceptionResponse(super.getStacktrace(error));
+                return buildSdkExceptionResponse(getMessage(error));
             }
         }, UN_KNOWN {
             @Override
             public DefaultErrorResponse convertToDefaultErrorResponse(Throwable error) {
-                return buildUnknownResponse(super.getStacktrace(error));
+                return buildUnknownResponse(getMessage(error));
             }
         }, DATA {
             @Override
             public DefaultErrorResponse convertToDefaultErrorResponse(Throwable error) {
-                return buildDataErrorResponse(super.getStacktrace(error));
+                return buildDataErrorResponse(getMessage(error));
             }
         };
 
-        @Override
-        public String getStacktrace(Throwable error) {
-            return Arrays.toString(error.getStackTrace());
+        public String getMessage(Throwable error) {
+            return ExceptionUtils.getMessage(error);
         }
     }
 }
