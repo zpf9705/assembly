@@ -22,7 +22,7 @@ import top.osjf.sdk.core.exception.SdkException;
 import top.osjf.sdk.core.process.DefaultErrorResponse;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.support.ServiceLoadManager;
-import top.osjf.sdk.core.util.StringUtils;
+import top.osjf.sdk.core.util.ExceptionUtils;
 
 import java.util.concurrent.TimeUnit;
 
@@ -306,15 +306,8 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
 
     @Override
     public void handlerUnKnowError(HttpRequest<?> request, Throwable e) {
-        String message = e.getMessage();
-        if (StringUtils.isBlank(message)) {
-            Throwable cause = e.getCause();
-            if (cause != null) {
-                message = cause.getMessage();
-            }
-        }
         unKnowError().accept("Client request fail, apiName={}, error=[{}]",
-                HttpSdkSupport.toLoggerArray(request.matchSdkEnum().name(), message));
+                HttpSdkSupport.toLoggerArray(request.matchSdkEnum().name(), ExceptionUtils.getMessage(e)));
     }
 
     @Override
