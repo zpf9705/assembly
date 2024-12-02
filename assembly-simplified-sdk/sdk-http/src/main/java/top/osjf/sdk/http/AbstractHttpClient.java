@@ -263,38 +263,28 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
 
     @Override
     public String execute(HttpRequest<R> request) throws Exception {
-
         HttpRequestExecutor executor = getRequestExecutor();
         if (executor == null) {
-
             //When the HttpRequestExecutor is not directly set,
             // it is obtained through the loading mechanism.
             executor = ServiceLoadManager.loadHighPriority(HttpRequestExecutor.class);
             if (executor != null) {
-
-                //Loading the obtained HttpRequestExecutor requires setting it to the current client.
                 setRequestExecutor(executor);
                 if (LOGGER.isDebugEnabled()) {
                     LOGGER.debug("Use the service to retrieve and find the highest priority {}.",
                             executor.getClass().getName());
                 }
             } else {
-
-                //An error occurred when the HttpRequestExecutor was not found.
                 if (LOGGER.isErrorEnabled()) {
                     LOGGER.error("There are no available request executors `{}` for the current client {}.",
                             HttpRequestExecutor.class.getName(), getClass().getName());
                 }
-
-                //Reminder: There are no available actuators, and the specific
-                // instructions for viewing and using them are provided here.
-                throw new IllegalArgumentException
+                throw new IllegalStateException
                         ("There is no available `top.osjf.sdk.http.HttpRequestExecutor`, " +
                                 "please refer to `top.osjf.sdk.http.AbstractHttpClient#HttpRequestExecutor` " +
                                 "for usage plan.");
             }
         }
-
         return getRequestExecutor().execute(asRequestToExecutable(request, url));
     }
 

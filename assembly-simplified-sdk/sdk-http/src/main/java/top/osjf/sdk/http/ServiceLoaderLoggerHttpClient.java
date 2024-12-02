@@ -49,10 +49,13 @@ public class ServiceLoaderLoggerHttpClient<R extends HttpResponse> extends Defau
      * load a high priority {@code LoggerConsumer} to use in this {@code Client}.
      *
      * @return a use {@code LoggerConsumer}.
+     * @throws IllegalStateException if not found available {@code LoggerConsumer}.
      */
     public LoggerConsumer getConsumer() {
         if (consumer == null) {
             consumer = ServiceLoadManager.loadHighPriority(LoggerConsumer.class);
+            if (consumer == null)
+                throw new IllegalStateException("Not found available LoggerConsumer using java.util.ServiceLoader !");
         }
         return consumer;
     }
