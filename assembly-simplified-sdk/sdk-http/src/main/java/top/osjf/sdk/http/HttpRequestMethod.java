@@ -33,6 +33,11 @@ package top.osjf.sdk.http;
  * of HttpRequestMethod. XXX, and then pass it to the function or method that requires
  * the HTTP request method.
  *
+ * <p>In the current methods for implementing SDK using HTTP, we have not restricted
+ * the specifications of these methods, such as certain requests that cannot carry the
+ * body parameter according to regulations. We hope that you can exercise self-restraint
+ * in the implementation of these specifications.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
