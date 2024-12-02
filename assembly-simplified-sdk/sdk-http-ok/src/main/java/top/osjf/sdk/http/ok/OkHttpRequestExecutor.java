@@ -17,8 +17,8 @@
 package top.osjf.sdk.http.ok;
 
 import top.osjf.sdk.core.support.LoadOrder;
-import top.osjf.sdk.http.CustomizeHttpRequestExecutor;
 import top.osjf.sdk.http.HttpRequestExecutor;
+import top.osjf.sdk.http.SourceHttpRequestExecutor;
 
 import java.util.Map;
 
@@ -30,7 +30,7 @@ import java.util.Map;
  * @since 1.0.0
  */
 @LoadOrder(Integer.MIN_VALUE + 14)
-public class OkHttpRequestExecutor implements CustomizeHttpRequestExecutor {
+public class OkHttpRequestExecutor implements SourceHttpRequestExecutor {
 
     @Override
     public String get(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {

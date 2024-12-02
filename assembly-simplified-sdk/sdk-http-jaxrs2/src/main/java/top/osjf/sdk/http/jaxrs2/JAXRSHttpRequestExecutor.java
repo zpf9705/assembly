@@ -17,8 +17,8 @@
 package top.osjf.sdk.http.jaxrs2;
 
 import top.osjf.sdk.core.support.LoadOrder;
-import top.osjf.sdk.http.CustomizeHttpRequestExecutor;
 import top.osjf.sdk.http.HttpRequestExecutor;
+import top.osjf.sdk.http.SourceHttpRequestExecutor;
 
 import java.util.Map;
 
@@ -30,7 +30,7 @@ import java.util.Map;
  * @since 1.0.2
  */
 @LoadOrder(Integer.MIN_VALUE + 20)
-public class JAXRSHttpRequestExecutor implements CustomizeHttpRequestExecutor {
+public class JAXRSHttpRequestExecutor implements SourceHttpRequestExecutor {
     @Override
     public String get(String url, Map<String, String> headers, Object param, boolean montage) {
         return JAXRSHttpSimpleRequestUtils.get(url, headers, param, montage);

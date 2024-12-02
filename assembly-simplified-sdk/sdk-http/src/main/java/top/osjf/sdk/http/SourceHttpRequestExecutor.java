@@ -19,7 +19,7 @@ package top.osjf.sdk.http;
 import java.util.Map;
 
 /**
- * The HTTP request customize executor interface defines various HTTP request methods and
+ * The source HTTP request executor interface defines various HTTP request methods and
  * provides a unified request execution method.
  * <p>
  * This interface allows mapping lowercase HTTP method names to specific methods of the
@@ -36,17 +36,20 @@ import java.util.Map;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-public interface CustomizeHttpRequestExecutor extends HttpRequestExecutor {
+@SuppressWarnings("rawtypes")
+public interface SourceHttpRequestExecutor extends HttpRequestExecutor {
 
     @Override
-    default String execute(ExecutorHttpRequest httpRequest) throws Exception {
-        return getClass().getMethod(httpRequest.getMethodName().toLowerCase(),
+    default String execute(ExecutableHttpRequest httpRequest) throws Exception {
+        Source source = httpRequest.getSource();
+        HttpRequest sourceRequest = source.getSourceRequest();
+        return getClass().getMethod(sourceRequest.matchSdkEnum().name().toLowerCase(),
                 String.class,
                 Map.class,
                 Object.class,
-                boolean.class).invoke(this, httpRequest.getUrl(),
-                httpRequest.getHeaders(String.class, Object::toString),
-                httpRequest.getBody(), false).toString();
+                boolean.class).invoke(this, source.getSourceUrl(),
+                sourceRequest.getHeadMap(),
+                sourceRequest.getRequestParam(), sourceRequest.montage()).toString();
     }
 
     /**
@@ -86,7 +89,6 @@ public interface CustomizeHttpRequestExecutor extends HttpRequestExecutor {
      * @return The {@code String} type of the return value
      * @throws Exception unknown exception.
      */
-    @Deprecated
     String put(String url, Map<String, String> headers, Object param, boolean montage) throws Exception;
 
     /**
