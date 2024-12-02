@@ -97,6 +97,7 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
 
     /**
      * {@inheritDoc}
+     * <p>
      * Default to use {@code DefaultHttpClient}.
      *
      * @return {@inheritDoc}.
