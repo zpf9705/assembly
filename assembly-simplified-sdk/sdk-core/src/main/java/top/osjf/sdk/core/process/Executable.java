@@ -39,7 +39,7 @@ public interface Executable<R extends Response> {
 
     /**
      * Carry the request host address parameter (can be empty, depending
-     * on method {@link top.osjf.sdk.core.enums.SdkEnum#getUrl}) to obtain
+     * on method {@link SdkEnum#getUrl}) to obtain
      * a specific response type object.
      *
      * @param host the real server hostname.

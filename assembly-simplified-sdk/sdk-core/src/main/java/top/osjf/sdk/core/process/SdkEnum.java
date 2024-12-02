@@ -14,20 +14,27 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.core.enums;
+package top.osjf.sdk.core.process;
 
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
 
 /**
- * SDK Enumeration Interface, defining common methods and properties related
- * to the SDK.
- * <p>This interface includes two main methods: one for obtaining the true
- * request address of the SDK, and another for obtaining the name of the
- * SDK request.
+ * SDK related request metadata configuration interface.
  *
- * <p>By implementing this interface, a unified access method and identifier
- * can be provided for different SDKs.
+ * <p>It now includes the URL access address obtained by passing in the
+ * host name and the name of the current SDK. The definition of the
+ * URL obtained depends on your rewriting logic.
+ *
+ * <p>We recommend that you implement this interface in the enumeration class,
+ * which initializes the original configuration of the SDK once globally for
+ * use. However, this is not the only option, and you can choose to implement
+ * it according to your actual situation.
+ *
+ * <p>In the decision of version 1.0.2, this interface is not limited to optional
+ * enumeration. Of course, you can use dynamic analysis and creation to move the
+ * interface to the current package and expand its definition to the greatest extent
+ * possible.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
