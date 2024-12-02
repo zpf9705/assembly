@@ -25,7 +25,7 @@ import java.util.*;
 
 /**
  * The abstract implementation of the {@link #execute} method for converting parameter
- * {@link top.osjf.sdk.http.HttpRequestExecutor.ExecutorHttpRequest} to {@link Request}.
+ * {@link top.osjf.sdk.http.HttpRequestExecutor.ExecutableHttpRequest} to {@link Request}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
@@ -33,7 +33,7 @@ import java.util.*;
 public abstract class AbstractFeignClientHttpRequestExecutor implements FeignClientHttpRequestExecutor {
 
     @Override
-    public String execute(ExecutorHttpRequest httpRequest) throws Exception {
+    public String execute(ExecutableHttpRequest httpRequest) throws Exception {
         //Create a request body for feign.
         feign.Request.Body feignBody;
         String requestBody = httpRequest.getBody(String.class, Object::toString);
