@@ -180,8 +180,8 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
     }
 
     @Override
-    default R execute() {
-        return ClientExecutors.executeRequestClient("", this);
+    default R execute(String host) {
+        return ClientExecutors.executeRequestClient(host, this);
     }
 
     //Define the method and leave it for future rewriting.
