@@ -16,7 +16,7 @@
 
 package top.osjf.sdk.http;
 
-import top.osjf.sdk.core.enums.SdkEnum;
+import top.osjf.sdk.core.process.SdkEnum;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
 
