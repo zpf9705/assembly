@@ -17,6 +17,7 @@
 package top.osjf.sdk.core.enums;
 
 import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.support.Nullable;
 
 /**
  * SDK Enumeration Interface, defining common methods and properties related
@@ -34,16 +35,17 @@ import top.osjf.sdk.core.support.NotNull;
 public interface SdkEnum {
 
     /**
-     * Returns the true request address of the SDK, using HTTP as
-     * an example, which is an HTTP protocol address that can be curled.
-     * <p>For RPC, it is estimated to only be the server address
-     * and port number.</p>
+     * Return the real server hostname when the current SDK executes
+     * the request, which can be a domain name or access address.
+     * <p>
+     * The method parameter {@code host} can be empty, depending on
+     * whether you dynamically change the actual host address value.
      *
-     * @param host The host name of the SDK.
-     * @return The request address for the SDK.
+     * @param host the real server hostname.
+     * @return The request address for current SDK.
      */
     @NotNull
-    String getUrl(String host);
+    String getUrl(@Nullable String host);
 
     /**
      * The name of the SDK request, which is a unique identifier name
