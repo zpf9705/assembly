@@ -27,7 +27,6 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.lang.NonNull;
 import org.springframework.web.context.WebApplicationContext;
-import top.osjf.sdk.core.client.ClientExecutors;
 import top.osjf.sdk.core.process.*;
 import top.osjf.sdk.core.util.StringUtils;
 import top.osjf.sdk.http.HttpSdkSupport;
@@ -166,7 +165,7 @@ public abstract class AbstractSdkProxyBean<T> extends HierarchicalProxySupport<T
 
     @Override
     public Object handle(Object proxy, Method method, Object[] args) {
-        return handle0(proxy, method, args);
+        return handleInternal(proxy, method, args);
     }
 
     @Override
@@ -189,14 +188,10 @@ public abstract class AbstractSdkProxyBean<T> extends HierarchicalProxySupport<T
      * @param args   The real parameters executed by the proxy method.
      * @return The result returned by the proxy execution method.
      */
-    private Object handle0(@SuppressWarnings("unused") Object proxy,
+    private Object handleInternal(@SuppressWarnings("unused") Object proxy,
                            Method method, Object[] args) {
         //Supports toString and returns proxy metadata.
         if ("toString".equals(method.getName())) return toString();
-        /*
-         * if (!checkMethodCoverRanger(proxy, getType(), method, args))
-         *  throw new UnsupportedSDKCallBackMethodException(method.getName());
-         */
         //Get target type.
         Class<T> targetType = getType();
         //Create a request class based on the extension.
@@ -207,7 +202,7 @@ public abstract class AbstractSdkProxyBean<T> extends HierarchicalProxySupport<T
                     method, args);
         }
         //Execute the request.
-        Object result = HttpSdkSupport.getResponse(method, doRequest(request));
+        Object result = HttpSdkSupport.getResponse(method, request.execute(getHost()));
         //Dynamic customization of request response results.
         for (HandlerPostProcessor postProcessor : postProcessors) {
             result = postProcessor.postProcessResultAfterHandle(result, targetType,
@@ -226,19 +221,5 @@ public abstract class AbstractSdkProxyBean<T> extends HierarchicalProxySupport<T
     public String toString() {
         return String.format(TO_STR_FORMAT, getType().getName(),
                 getClass().getName(), getHost(), getProxyModel().name());
-    }
-
-    /**
-     * Use {@link top.osjf.sdk.core.client.Client} for the
-     * next name routing operation.
-     *
-     * @param request Think of {@link Request#getClientCls()}.
-     * @return The result set of this request is encapsulated in {@link Response}.
-     */
-    private Response doRequest(@NonNull Request<?> request) {
-        //private perm
-        //change protected
-        //son class can use
-        return ClientExecutors.executeRequestClient(this::getHost, request);
     }
 }
