@@ -140,6 +140,38 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
     }
 
     /**
+     * The manual URL concatenation method allows users to concatenate parameters on URLs
+     * other than the {@link HttpSdkEnum#getRequestMethod()} request mode, which needs to be rewritten directly.
+     * <p>The format should refer to the get request.</p>
+     *
+     * @return Splicing item
+     */
+    default String urlJoin() {
+        return "";
+    }
+
+    /**
+     * Format the actual request address of the SDK and concatenate subsequent URLs.
+     *
+     * <p>Here, the splicing parameters of the {@link #urlJoin()} method will be
+     * automatically added for you. If you don't need to rewrite {@link #urlJoin()},
+     * you can do so.
+     *
+     * <p>Since version 1.0.2, if you provide {@link HttpProtocol}, you will no longer
+     * need to pay attention to the HTTP protocol type in URL formatting. The following
+     * method will be used to properly concatenate when {@code HttpProtocol} is not empty.
+     *
+     * @param host The host name of the SDK.
+     * @return The request address for the SDK.
+     */
+    default String formatUrl(String host) {
+        String url = matchSdkEnum().getUrl(host);
+        HttpProtocol protocol = matchSdkEnum().getProtocol();
+        if (protocol != null) url = protocol.formatUrl(url);
+        return url + urlJoin();
+    }
+
+    /**
      * {@inheritDoc}
      *
      * Overrides the {@code matchSdkEnum} method from the parent class or interface to match
@@ -171,38 +203,6 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
      * based on the request header.
      */
     boolean montage();
-
-    /**
-     * The manual URL concatenation method allows users to concatenate parameters on URLs
-     * other than the {@link HttpSdkEnum#getRequestMethod()} request mode, which needs to be rewritten directly.
-     * <p>The format should refer to the get request.</p>
-     *
-     * @return Splicing item
-     */
-    default String urlJoin() {
-        return "";
-    }
-
-    /**
-     * Format the actual request address of the SDK and concatenate subsequent URLs.
-     *
-     * <p>Here, the splicing parameters of the {@link #urlJoin()} method will be
-     * automatically added for you. If you don't need to rewrite {@link #urlJoin()},
-     * you can do so.
-     *
-     * <p>Since version 1.0.2, if you provide {@link HttpProtocol}, you will no longer
-     * need to pay attention to the HTTP protocol type in URL formatting. The following
-     * method will be used to properly concatenate when {@code HttpProtocol} is not empty.
-     *
-     * @param host The host name of the SDK.
-     * @return The request address for the SDK.
-     */
-    default String formatUrl(String host) {
-        String url = matchSdkEnum().getUrl(host);
-        HttpProtocol protocol = matchSdkEnum().getProtocol();
-        if (protocol != null) url = protocol.formatUrl(url);
-        return url + urlJoin();
-    }
 
     /**
      * Provide a parameter retrieval interface for concatenating URLs
