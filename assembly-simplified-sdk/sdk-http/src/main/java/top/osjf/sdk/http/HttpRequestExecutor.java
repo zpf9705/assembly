@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public interface HttpRequestExecutor {
 
     /**
@@ -247,6 +248,35 @@ public interface HttpRequestExecutor {
          * @return The configuration options for the request.
          */
         RequestOptions getOptions();
+
+        /**
+         * Retrieve the original request information for building this
+         * executable request class.
+         * @return original request information.
+         */
+        Source getSource();
+    }
+
+    /**
+     * Construct the original information for {@link ExecutableHttpRequest}.
+     *
+     * @since 1.0.2
+     */
+    interface Source {
+
+        /**
+         * Returns source {@code HttpRequest}.
+         *
+         * @return source {@code HttpRequest}.
+         */
+        HttpRequest getSourceRequest();
+
+        /**
+         * Returns source url (The initial version.).
+         *
+         * @return source url.
+         */
+        String getSourceUrl();
     }
 
     /**
@@ -254,16 +284,16 @@ public interface HttpRequestExecutor {
      *
      * @since 1.0.2
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
     class Default implements ExecutableHttpRequest {
         private static final long serialVersionUID = -375300629962316312L;
 
-        private final String url;
+        private String url;
+        private Object body;
         private final String methodName;
-        private final Object body;
         private final Charset charset;
         private final Map<String, Object> headers;
         private final RequestOptions options;
+        private final Source source;
 
         /**
          * Constructs a default {@code HTTP request executor}.
@@ -282,53 +312,34 @@ public interface HttpRequestExecutor {
          * If the passed-in HttpRequest or url parameter is null, a {@code NullPointerException}
          * will be thrown.
          *
-         * @param request An object encapsulating HTTP request information.
-         * @param url     The URL address of the request.
-         * @param options The options for the HTTP request, can be null.
+         * @param sourceRequest An object encapsulating HTTP request information.
+         * @param sourceUrl     The URL address of the request.
+         * @param options       The options for the HTTP request, can be null.
          * @throws Exception Format and encoding set related errors that
          *                   occur during the URL formatting process.
          */
-        public Default(HttpRequest request, String url, RequestOptions options) throws Exception {
-            if (request == null) throw new NullPointerException("HttpRequest not be null");
-            if (url == null) throw new NullPointerException("url not be null");
-
-            /*  montage parameter resolve */
-
-            if (request.montage()) {
-                //When URL parameter concatenation is required,
-                // it is handled on a case by case basis here.
-                Object montageObj;
-                //Obtain segmentation parameters for special interfaces.
-                if (request instanceof HttpRequest.MontageParam) {
-                    montageObj = ((HttpRequest.MontageParam) request).getParam();
-                    if (montageObj == null) {
-                        //The segmentation parameter obtained by the special
-                        // interface is null, and the body parameter is still used.
-                        montageObj = request.getRequestParam();
-                        body = null; //When the request parameter is a concatenation parameter,
-                        // the body parameter is null.
-                        //On the contrary, the body is normally set as a request parameter.
-                    } else body = request.getRequestParam();
-                } else {
-                    //If no special interface is implemented,
-                    // simply set the request parameters as URL segmentation parameters.
-                    montageObj = request.getRequestParam();
-                    body = null;
-                }
-                //Format the URL for the special needs of splitting parameters.
-                this.url = HttpSdkSupport.formatMontageTrueUrl(url, montageObj, request.getCharset());
-            } else {
-                //Under normal circumstances, just set the parameters one by one.
-                body = request.getRequestParam();
-                this.url = url;
-            }
-
-            /*  Other parameters */
-
-            this.methodName = request.matchSdkEnum().getRequestMethod().name();
-            this.charset = request.getCharset();
-            this.headers = HttpSdkSupport.checkContentType(request.getHeadMap(), request);
+        public Default(HttpRequest sourceRequest, String sourceUrl, RequestOptions options) throws Exception {
+            if (sourceRequest == null) throw new NullPointerException("HttpRequest not be null");
+            if (sourceUrl == null) throw new NullPointerException("url not be null");
+            this.methodName = sourceRequest.matchSdkEnum().getRequestMethod().name();
+            this.charset = sourceRequest.getCharset();
+            this.headers = sourceRequest.getHeadMap();
             this.options = options == null ? RequestOptions.DEFAULT_OPTIONS : options;
+            HttpSdkSupport.resolveIfMontageUrlAndBody(sourceRequest, sourceUrl, (resultBody, resultUrl) -> {
+                body = resultBody;
+                url = resultUrl;
+            });
+            this.source = new Source() {
+                @Override
+                public HttpRequest getSourceRequest() {
+                    return sourceRequest;
+                }
+
+                @Override
+                public String getSourceUrl() {
+                    return sourceUrl;
+                }
+            };
         }
 
         @Override
@@ -426,6 +437,11 @@ public interface HttpRequestExecutor {
         @Override
         public RequestOptions getOptions() {
             return options;
+        }
+
+        @Override
+        public Source getSource() {
+            return source;
         }
 
         private <T> T convertValueToRequired(Object value,
