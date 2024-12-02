@@ -75,17 +75,26 @@ import java.util.Map;
 public interface Request<R extends Response> extends RequestParamCapable<Object>, Wrapper, Serializable {
 
     /**
-     * Return the formatted real access address based
-     * on the host address.
+     * Return the real server hostname when the current SDK executes
+     * the request, which can be a domain name or access address.
+     * <p>
+     * The method parameter {@code host} can be empty, depending on
+     * whether you dynamically change the actual host address value.
      *
-     * @param host The real host address.
-     * @return After formatting, it can be used as the
-     * real address for access.
+     * @param host the real server hostname.
+     * @return The request address for current SDK.
      */
     @NotNull
-    String getUrl(String host);
+    default String getUrl(@Nullable String host) {
+        return matchSdkEnum().getUrl(host);
+    }
 
-    /*** {@inheritDoc}*/
+    /**
+     * {@inheritDoc}
+     * Default to null request body.
+     *
+     * @return {@literal null}.
+     */
     @Override
     default Object getRequestParam() {
         return null;
@@ -220,7 +229,7 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
     }
 
     @Override
-    default boolean isWrapperFor(Class<?> clazz){
+    default boolean isWrapperFor(Class<?> clazz) {
         return isAssignableRequest(clazz);
     }
 }
