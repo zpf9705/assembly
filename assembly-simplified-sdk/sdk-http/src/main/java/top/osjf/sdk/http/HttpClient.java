@@ -57,6 +57,23 @@ public interface HttpClient<R extends HttpResponse> extends Client<R>, HttpResul
     String execute(HttpRequest<R> request) throws Exception;
 
     /**
+     * Return an executable {@link HttpRequest} as {@code HttpRequestExecutor.ExecutableHttpRequest}.
+     * <p>
+     * The default is {@code HttpRequestExecutor.Default}, and this parameter can be
+     * customized as needed.
+     *
+     * @param request An object encapsulating HTTP request information.
+     * @param url     The URL address of the request.
+     * @return The executable {@code HttpRequest} after initialization is completed.
+     * @throws Exception Format and encoding set related errors that
+     *                   occur during the URL formatting process.
+     */
+    default HttpRequestExecutor.ExecutableHttpRequest asRequestToExecutable(HttpRequest<R> request,
+                                                                            String url) throws Exception {
+        return new HttpRequestExecutor.Default(request, url, getOptions());
+    }
+
+    /**
      * Return a Controls the per-request settings currently required to be
      * implemented by all {@link Client}.
      * <p>Currently only takes effect when
@@ -68,7 +85,7 @@ public interface HttpClient<R extends HttpResponse> extends Client<R>, HttpResul
      * implemented by all {@link Client clients}
      * @since 1.0.2
      */
-    default HttpRequestExecutor.RequestOptions getOptions(){
+    default HttpRequestExecutor.RequestOptions getOptions() {
         return HttpRequestExecutor.RequestOptions.DEFAULT_OPTIONS;
     }
 }
