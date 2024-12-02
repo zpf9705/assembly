@@ -23,6 +23,19 @@ import top.osjf.sdk.core.util.JSONUtil;
  * {@code JsonSequenceHttpRequestParams} is an abstract class that extends
  * from {@code AbstractHttpRequestParams} and is used to handle HTTP request
  * parameters that need to be serialized into JSON format.
+ * <p>
+ * <h3>The code usage example is as follows:</h3>
+ * <pre>
+ * {@code
+ * public class ExampleJsonHttpRequestParams extends JsonSerialHttpRequestParams<...//Omitted here> {
+ *     public HttpSdkEnum matchSdk() {
+ *         ... //Omitted here.
+ *     }
+ *     public Object getParam() {
+ *         return "{}" or new ExampleObj() or new HashMap<>();
+ *     }
+ * }}
+ * </pre>
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
