@@ -29,6 +29,7 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
 
 /**
  * <p>The abstract {@code HttpSdkSupport} class is an abstract class that inherits from
@@ -43,6 +44,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class HttpSdkSupport extends SdkSupport {
 
     /***The left angle bracket included in the generic.*/
@@ -58,31 +60,31 @@ public abstract class HttpSdkSupport extends SdkSupport {
     protected static final Map<Class<?>, Object> rps_classes = new SynchronizedWeakHashMap<>();
 
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    public static Map<String, Object> checkHeaderWithBody(HttpRequest request, Object body) {
-        //Normal inclusion of context directly returns the current request header.
-        Map<String, Object> headers = request.getHeadMap();
-        if (body == null) return headers;
-        if (headers != null && headers.containsKey("Content-Type")) return headers;
-
-        String contentType;
-        if (request instanceof AbstractHttpRequestParams
-                && ((AbstractHttpRequestParams<?>) request).defaultToJson()) {
-            contentType = "application/json";
-        } else contentType = getContentTypeWithBody(body.toString());
-
-        if (StringUtils.isNotBlank(contentType)) {
-            if (headers == null) headers = new ConcurrentHashMap<>(1);
-            try {
-                headers.putIfAbsent("Content-Type", contentType);
-            } catch (UnsupportedOperationException e) {
-                headers = new ConcurrentHashMap<>(1);
-                headers.putIfAbsent("Content-Type", contentType);
-            }
-
-        }
-        return headers;
-    }
+//    @SuppressWarnings({"rawtypes", "unchecked"})
+//    public static Map<String, Object> checkHeaderWithBody(HttpRequest request, Object body) {
+//        //Normal inclusion of context directly returns the current request header.
+//        Map<String, Object> headers = request.getHeadMap();
+//        if (body == null) return headers;
+//        if (headers != null && headers.containsKey("Content-Type")) return headers;
+//
+//        String contentType;
+//        if (request instanceof AbstractHttpRequestParams
+//                && ((AbstractHttpRequestParams<?>) request).defaultToJson()) {
+//            contentType = "application/json";
+//        } else contentType = getContentTypeWithBody(body.toString());
+//
+//        if (StringUtils.isNotBlank(contentType)) {
+//            if (headers == null) headers = new ConcurrentHashMap<>(1);
+//            try {
+//                headers.putIfAbsent("Content-Type", contentType);
+//            } catch (UnsupportedOperationException e) {
+//                headers = new ConcurrentHashMap<>(1);
+//                headers.putIfAbsent("Content-Type", contentType);
+//            }
+//
+//        }
+//        return headers;
+//    }
 
     /**
      * Retrieve {@code "Content-type"} based on the content of the request body,
@@ -112,6 +114,51 @@ public abstract class HttpSdkSupport extends SdkSupport {
             }
         }
         return contentType;
+    }
+
+    /**
+     * Return the {@code request body } and {@code URL access} address when parameters
+     * are needed as URL concatenation and processed normally.
+     *
+     * @param request        An object encapsulating HTTP request information.
+     * @param url            The URL address of the request.
+     * @param resultConsumer The consumption function for the final body and URL.
+     * @throws Exception Format and encoding set related errors that
+     *                   occur during the URL formatting process.
+     */
+    public static void resolveIfMontageUrlAndBody(HttpRequest request, String url,
+                                                  BiConsumer<Object, String> resultConsumer) throws Exception {
+        Object body;
+        String realUrl;
+        if (request.montage()) {
+            //When URL parameter concatenation is required,
+            // it is handled on a case by case basis here.
+            Object montageObj;
+            //Obtain segmentation parameters for special interfaces.
+            if (request instanceof HttpRequest.MontageParam) {
+                montageObj = ((HttpRequest.MontageParam) request).getParam();
+                if (montageObj == null) {
+                    //The segmentation parameter obtained by the special
+                    // interface is null, and the body parameter is still used.
+                    montageObj = request.getRequestParam();
+                    body = null; //When the request parameter is a concatenation parameter,
+                    // the body parameter is null.
+                    //On the contrary, the body is normally set as a request parameter.
+                } else body = request.getRequestParam();
+            } else {
+                //If no special interface is implemented,
+                // simply set the request parameters as URL segmentation parameters.
+                montageObj = request.getRequestParam();
+                body = null;
+            }
+            //Format the URL for the special needs of splitting parameters.
+            realUrl = HttpSdkSupport.formatMontageTrueUrl(url, montageObj, request.getCharset());
+        } else {
+            //Under normal circumstances, just set the parameters one by one.
+            body = request.getRequestParam();
+            realUrl = url;
+        }
+        resultConsumer.accept(body, realUrl);
     }
 
     /**
