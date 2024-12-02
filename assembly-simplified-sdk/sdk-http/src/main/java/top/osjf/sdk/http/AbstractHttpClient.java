@@ -295,7 +295,7 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
             }
         }
 
-        return getRequestExecutor().execute(new HttpRequestExecutor.Default(request, url, getOptions()));
+        return getRequestExecutor().execute(asRequestToExecutable(request, url));
     }
 
     @Override
