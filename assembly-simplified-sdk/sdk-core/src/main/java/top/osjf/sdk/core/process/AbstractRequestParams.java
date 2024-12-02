@@ -57,6 +57,7 @@ public abstract class AbstractRequestParams<R extends AbstractResponse> implemen
 
     /**
      * {@inheritDoc}
+     * @return an empty {@code Map}.
      */
     @Override
     public Map<String, Object> getHeadMap() {
@@ -65,6 +66,7 @@ public abstract class AbstractRequestParams<R extends AbstractResponse> implemen
 
     /**
      * {@inheritDoc}
+     * @return empty.
      */
     @Override
     public void validate() throws SdkException {
