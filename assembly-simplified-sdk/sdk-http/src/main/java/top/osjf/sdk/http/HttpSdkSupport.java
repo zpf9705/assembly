@@ -119,6 +119,9 @@ public abstract class HttpSdkSupport extends SdkSupport {
     /**
      * Return the {@code request body } and {@code URL access} address when parameters
      * are needed as URL concatenation and processed normally.
+     * <p>
+     * This method does not return a value and consumes the result through a custom
+     * function {@link BiConsumer}.
      *
      * @param request        An object encapsulating HTTP request information.
      * @param url            The URL address of the request.
