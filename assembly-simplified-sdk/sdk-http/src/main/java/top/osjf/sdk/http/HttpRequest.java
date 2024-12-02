@@ -45,10 +45,16 @@ import top.osjf.sdk.core.support.Nullable;
  */
 public interface HttpRequest<R extends HttpResponse> extends Request<R> {
 
-    /*** {@inheritDoc}*/
+    /**
+     * {@inheritDoc}
+     * Default to use {@link #formatUrl} get url.
+     *
+     * @param host {@inheritDoc}.
+     * @return {@inheritDoc}
+     */
     @Override
     @NotNull
-    default String getUrl(String host) {
+    default String getUrl(@Nullable String host) {
         return formatUrl(host);
     }
 
@@ -173,7 +179,7 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * Overrides the {@code matchSdkEnum} method from the parent class or interface to match
      * and return an {@code matchSdkEnum} instance that fits the current context.
      *
