@@ -78,7 +78,7 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
     //Default method start, easy call or default method value.
 
     /**
-     * Default simple to use {@link #matchSdkEnum()#getUrl}.
+     * Default simple to use {@code #matchSdkEnum()#getUrl}.
      *
      * @param host the real server hostname.
      * @return The request address for current SDK.

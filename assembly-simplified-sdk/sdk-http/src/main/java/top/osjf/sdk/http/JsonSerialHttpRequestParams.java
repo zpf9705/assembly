@@ -24,7 +24,8 @@ import top.osjf.sdk.core.util.JSONUtil;
  * from {@code AbstractHttpRequestParams} and is used to handle HTTP request
  * parameters that need to be serialized into JSON format.
  * <p>
- * <h3>The code usage example is as follows:</h3>
+ *     <strong>The code usage example is as follows:</strong>
+ * </p>
  * <pre>
  * {@code
  * public class ExampleJsonHttpRequestParams extends JsonSerialHttpRequestParams<...//Omitted here> {
