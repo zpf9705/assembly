@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 public interface HttpRequestExecutor {
 
     /**
-     * Executes an HTTP request against its {@link ExecutorHttpRequest#getUrl() url}
+     * Executes an HTTP request against its {@link ExecutableHttpRequest#getUrl() url}
      * and returns a {@link String} response.
      *
      * @param httpRequest An object encapsulating HTTP request
@@ -55,14 +55,14 @@ public interface HttpRequestExecutor {
      * @throws Exception The request execution process is abnormal.
      * @since 1.0.2
      */
-    String execute(ExecutorHttpRequest httpRequest) throws Exception;
+    String execute(ExecutableHttpRequest httpRequest) throws Exception;
 
     /**
      * An interface encapsulating HTTP request information.
      *
      * @since 1.0.2
      */
-    interface ExecutorHttpRequest {
+    interface ExecutableHttpRequest extends Serializable {
 
         /**
          * Get the URL address of the HTTP request.
@@ -250,12 +250,12 @@ public interface HttpRequestExecutor {
     }
 
     /**
-     * The default hosting implementation class for {@link ExecutorHttpRequest}.
+     * The default hosting implementation class for {@link ExecutableHttpRequest}.
      *
      * @since 1.0.2
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    class Default implements ExecutorHttpRequest, Serializable {
+    class Default implements ExecutableHttpRequest {
         private static final long serialVersionUID = -375300629962316312L;
 
         private final String url;
