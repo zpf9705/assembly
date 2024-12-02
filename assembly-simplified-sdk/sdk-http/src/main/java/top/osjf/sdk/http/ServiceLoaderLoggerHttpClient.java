@@ -42,39 +42,38 @@ public class ServiceLoaderLoggerHttpClient<R extends HttpResponse> extends Defau
      */
     public ServiceLoaderLoggerHttpClient(String unique) {
         super(unique);
+        loadHighPriorityLoggerConsumer();
     }
 
     /**
-     * Return a {@code LoggerConsumer},if null use {@link ServiceLoadManager}
+     * Load a {@code LoggerConsumer},if null use {@link ServiceLoadManager}
      * load a high priority {@code LoggerConsumer} to use in this {@code Client}.
      *
-     * @return a use {@code LoggerConsumer}.
      * @throws IllegalStateException if not found available {@code LoggerConsumer}.
      */
-    public LoggerConsumer getConsumer() {
+    private void loadHighPriorityLoggerConsumer() {
         if (consumer == null) {
             consumer = ServiceLoadManager.loadHighPriority(LoggerConsumer.class);
             if (consumer == null)
                 throw new IllegalStateException("Not found available LoggerConsumer using java.util.ServiceLoader !");
         }
-        return consumer;
     }
 
     @Override
     @NotNull
     public BiConsumer<String, Object[]> normal() {
-        return getConsumer().normal();
+        return consumer.normal();
     }
 
     @Override
     @NotNull
     public BiConsumer<String, Object[]> sdkError() {
-        return getConsumer().sdkError();
+        return consumer.sdkError();
     }
 
     @Override
     @NotNull
     public BiConsumer<String, Object[]> unKnowError() {
-        return getConsumer().unKnowError();
+        return consumer.unKnowError();
     }
 }
