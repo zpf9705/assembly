@@ -80,8 +80,8 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
     /**
      * Default simple to use {@link #matchSdkEnum()#getUrl}.
      *
-     * @param host {@link #matchSdkEnum()#getUrl}.
-     * @return {@link #matchSdkEnum()#getUrl}.
+     * @param host the real server hostname.
+     * @return The request address for current SDK.
      */
     @NotNull
     default String getUrl(@Nullable String host) {

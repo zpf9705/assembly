@@ -66,7 +66,6 @@ public abstract class AbstractRequestParams<R extends AbstractResponse> implemen
 
     /**
      * {@inheritDoc}
-     * @return empty.
      */
     @Override
     public void validate() throws SdkException {
