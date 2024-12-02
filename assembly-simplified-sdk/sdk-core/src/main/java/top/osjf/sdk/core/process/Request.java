@@ -76,6 +76,8 @@ import java.util.Map;
 @SuppressWarnings("rawtypes")
 public interface Request<R extends Response> extends RequestParamCapable<Object>, Wrapper, Executable<R>, Serializable {
 
+    //Default method start, easy call or default method value.
+
     /**
      * Default simple to use {@link #matchSdkEnum()#getUrl}.
      *
@@ -181,6 +183,8 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
     default R execute() {
         return ClientExecutors.executeRequestClient("", this);
     }
+
+    //Define the method and leave it for future rewriting.
 
     /**
      * Return a map data format encapsulated by a key/{@code Object}
