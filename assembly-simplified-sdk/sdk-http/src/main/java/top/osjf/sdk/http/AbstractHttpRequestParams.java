@@ -19,48 +19,24 @@ package top.osjf.sdk.http;
 import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.core.process.AbstractRequestParams;
 import top.osjf.sdk.core.support.NotNull;
-import top.osjf.sdk.core.util.JSONUtil;
+import top.osjf.sdk.core.util.StringUtils;
 
-import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * The abstract class {@code AbstractHttpRequestParams} extends {@code AbstractRequestParams}
- * and implements the HttpRequest interface.
- * This class defines common behaviors for HTTP request parameters and allows subclasses to
- * implement specific request parameter handling logic by extending it.
- *
- * <p>You can check the example code:
- * <pre>
- * {@code
- * public class ExampleHttpRequestParams extends AbstractHttpRequestParams<ExampleHttpResponse> {
- *
- *     public HttpSdkEnum matchSdk() {
- *         return new HttpSdkEnum() {
- *
- *             public String getUlr(String host) {
- *                 return "https:// + host +"/example/query.json";
- *             }
- *
- *             public HttpRequestMethod getHttpRequestMethod() {
- *                 return HttpRequestMethod.POST;
- *             }
- *
- *             public String name() {
- *                 return "EXAMPLE";
- *             }
- *         };
- *     }
- *
- *     public Object getRequestParam() {
- *         return "{"address":"example.com"}";
- *     }
- *
- *     public Class<ExampleHttpResponse> getResponseCls() {
- *         return ExampleHttpResponse.class;
- *     }
- * }}
- * </pre>
+ * {@code AbstractHttpRequestParams} is an abstract class about HTTP request
+ * parameter encapsulation, which is an abstract extension of {@code AbstractRequestParams}.
+ * <p>
+ * It mainly has the following default points:
+ * <ul>
+ *     <li>{@link #getHeadMap()}By default, without any parameter related concatenation
+ *     requirements, {@code Content-Type} is parsed based on the parameter string type
+ *     and placed in the header information.</li>
+ *     <li>{@link #montage()}Default URL parameter concatenation without
+ *     executing parameters.</li>
+ *     <li>{@link #getClientCls()}The default execution client.</li>
+ * </ul>
  *
  * @param <R> Implement a unified response class data type.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
@@ -72,67 +48,62 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
 
     private static final long serialVersionUID = 7487068349280012103L;
 
-    @Override
-    public Object getRequestParam() {
-        Object param = getParam();
-        if (param == null) {
-            return null;
-        }
-        if (defaultToJson()) {
-            param = JSONUtil.toJSONString(param);
-        }
-        return param;
-    }
-
     /**
      * {@inheritDoc}
-     * <p>
-     * When the request parameter exists and JSON serialization is used,
-     * this method defaults to returning the context type of {@code application/json}.
+     *
+     * <p>This method defaults to determining the type of the current parameter
+     * based on {@link #getRequestParam()}, and retrieves {@code "Content-Type"}
+     * from the request header according to the type.
+     *
+     * <p>By default, adding request headers based on the type of body requires
+     * the following two conditions to be met:
+     * <ul>
+     *     <li>{@link #getRequestParam()} not be null</li>
+     *     <li>{@link #montage()} is false or {@link #montage()} is true and
+     *     this instanceof {@code MontageParam} and {@code MontageParam#getParam}
+     *     not be null</li>
+     * </ul>
      *
      * @return {@inheritDoc}
-     * @since 1.0.2
      */
     @Override
     public Map<String, Object> getHeadMap() {
-        if (getRequestParam() != null && defaultToJson() && !montage()) {
-            return Collections.singletonMap("Content-Type", "application/json");
+        Object requestParam = getRequestParam();
+        if (requestParam != null
+                && (!montage() || (this instanceof MontageParam && ((MontageParam) this).getParam() != null))) {
+            String contentType = HttpSdkSupport.getContentTypeWithBody(requestParam.toString());
+            if (StringUtils.isNotBlank(contentType)) {
+                Map<String, Object> headers = new ConcurrentHashMap<>();
+                headers.put("Content-Type", contentType);
+                return headers;
+            }
         }
         return super.getHeadMap();
     }
 
+    /**
+     * {@inheritDoc}
+     * Default to {@literal false}.
+     * <p>
+     * Specific implementations can be customized in subclasses according
+     * to relevant needs.
+     *
+     * @return {@inheritDoc}.
+     */
     @Override
     public boolean montage() {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     * Default to use {@code DefaultHttpClient}.
+     *
+     * @return {@inheritDoc}.
+     */
     @Override
     @NotNull
     public Class<? extends Client> getClientCls() {
         return DefaultHttpClient.class;
-    }
-
-    /**
-     * The abstract method for obtaining the actual request body.
-     * <p>If {@link #defaultToJson()} requires JSON serialization,
-     * it will be done in {@link #getRequestParam()}.
-     * <p>If it is not a JSON request parameter, this method needs
-     * to be rewritten to directly convert the input parameter format
-     * and set {@link #defaultToJson()} to {@literal true}.
-     *
-     * @return Returns an input parameter object, which may have
-     * multiple forms of existence or may be {@literal null}.
-     */
-    public Object getParam() {
-        return null;
-    }
-
-    /**
-     * Mark whether to use input parameters as JSON serial numbers.
-     *
-     * @return True is required, while false is not required.
-     */
-    public boolean defaultToJson() {
-        return true;
     }
 }
