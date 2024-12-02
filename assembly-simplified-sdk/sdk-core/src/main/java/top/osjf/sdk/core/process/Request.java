@@ -72,6 +72,7 @@ import java.util.Map;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
+@SuppressWarnings("rawtypes")
 public interface Request<R extends Response> extends RequestParamCapable<Object>, Wrapper, Serializable {
 
     /**
@@ -180,6 +181,32 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
     }
 
     /**
+     * Return a map data format encapsulated by a key/{@code Object}
+     * request header, iteratively placed in the actual request header
+     * during subsequent request processing.
+     * <p>
+     * In version 1.0.2, the value part of the request body was changed
+     * to {@code Object} to enhance the range of values.
+     *
+     * @return The request header encapsulation type for {@code Map}
+     * data format.
+     */
+    @Nullable
+    Map<String, Object> getHeadMap();
+
+    /**
+     * The SDK will perform custom validation on {@link #getRequestParam()}
+     * before requesting, so the rewriting of this method is for this implementation.
+     *
+     * <p>Users can write validation logic in this method and hope to throw
+     * {@link SdkException} when the conditions are not met.
+     *
+     * @throws SdkException Parameter validation before request, hoping
+     *                      to throw this exception type and be captured by transmission.
+     */
+    void validate() throws SdkException;
+
+    /**
      * Matches and returns an SDK enumeration instance that fits the current context.
      *
      * <p>This method is used to match and return an appropriate instance from the predefined
@@ -205,39 +232,12 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
     SdkEnum matchSdkEnum();
 
     /**
-     * Return a map data format encapsulated by a key/{@code Object}
-     * request header, iteratively placed in the actual request header
-     * during subsequent request processing.
-     * <p>
-     * In version 1.0.2, the value part of the request body was changed
-     * to {@code Object} to enhance the range of values.
-     *
-     * @return The request header encapsulation type for {@code Map}
-     * data format.
-     */
-    @Nullable
-    Map<String, Object> getHeadMap();
-
-    /**
      * Return the {@code Client} type held by the current request class. The
      * definition of {@code Client} is open, and developers can customize
      * the relevant behavior of {@code Client}.
      *
      * @return The type of {@code Client} held,must not be {@literal null}.
      */
-    @SuppressWarnings("rawtypes")
     @NotNull
     Class<? extends Client> getClientCls();
-
-    /**
-     * The SDK will perform custom validation on {@link #getRequestParam()}
-     * before requesting, so the rewriting of this method is for this implementation.
-     *
-     * <p>Users can write validation logic in this method and hope to throw
-     * {@link SdkException} when the conditions are not met.
-     *
-     * @throws SdkException Parameter validation before request, hoping
-     *                      to throw this exception type and be captured by transmission.
-     */
-    void validate() throws SdkException;
 }
