@@ -112,18 +112,6 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
     }
 
     /**
-     * The SDK will perform custom validation on {@link #getRequestParam()}
-     * before requesting, so the rewriting of this method is for this implementation.
-     *
-     * <p>Users can write validation logic in this method and hope to throw
-     * {@link SdkException} when the conditions are not met.
-     *
-     * @throws SdkException Parameter validation before request, hoping
-     *                      to throw this exception type and be captured by transmission.
-     */
-    void validate() throws SdkException;
-
-    /**
      * Returns the class object of the response transformation entity,
      * implemented in {@code Response}.
      *
@@ -148,31 +136,6 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
     }
 
     /**
-     * Return a map data format encapsulated by a key/{@code Object}
-     * request header, iteratively placed in the actual request header
-     * during subsequent request processing.
-     * <p>
-     * In version 1.0.2, the value part of the request body was changed
-     * to {@code Object} to enhance the range of values.
-     *
-     * @return The request header encapsulation type for {@code Map}
-     * data format.
-     */
-    @Nullable
-    Map<String, Object> getHeadMap();
-
-    /**
-     * Return the {@code Client} type held by the current request class. The
-     * definition of {@code Client} is open, and developers can customize
-     * the relevant behavior of {@code Client}.
-     *
-     * @return The type of {@code Client} held,must not be {@literal null}.
-     */
-    @SuppressWarnings("rawtypes")
-    @NotNull
-    Class<? extends Client> getClientCls();
-
-    /**
      * Based on {@link #getResponseCls()} and {@link #getResponseTypeToken()},
      * obtain the corresponding type that should be converted.
      *
@@ -187,6 +150,33 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
         if (getResponseCls() != null) return getResponseCls();
         if (getResponseTypeToken() != null) return getResponseTypeToken().getType();
         throw new IllegalStateException("Unknown response type!");
+    }
+
+    /**
+     * When {@link #getResponseCls()} and {@link #getResponseTypeToken()}
+     * are not provided, attempting to obtain the generic indicators of
+     * an inherited class or interface must satisfy the requirement that
+     * it is a subclass of the requesting main interface, and the criteria
+     * for determining whether it is true need to be determined through this method.
+     *
+     * @param clazz Determine type.
+     * @return If {@code true} is judged successful, {@code false} otherwise .
+     */
+    default boolean isAssignableRequest(Class<?> clazz) {
+        return Request.class.isAssignableFrom(clazz);
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Default to use {@link #isAssignableRequest(Class)}.
+     *
+     * @param clazz {@inheritDoc}
+     * @return {@inheritDoc}
+     */
+    @Override
+    default boolean isWrapperFor(Class<?> clazz) {
+        return isAssignableRequest(clazz);
     }
 
     /**
@@ -215,21 +205,39 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
     SdkEnum matchSdkEnum();
 
     /**
-     * When {@link #getResponseCls()} and {@link #getResponseTypeToken()}
-     * are not provided, attempting to obtain the generic indicators of
-     * an inherited class or interface must satisfy the requirement that
-     * it is a subclass of the requesting main interface, and the criteria
-     * for determining whether it is true need to be determined through this method.
+     * Return a map data format encapsulated by a key/{@code Object}
+     * request header, iteratively placed in the actual request header
+     * during subsequent request processing.
+     * <p>
+     * In version 1.0.2, the value part of the request body was changed
+     * to {@code Object} to enhance the range of values.
      *
-     * @param clazz Determine type.
-     * @return If {@code true} is judged successful, {@code false} otherwise .
+     * @return The request header encapsulation type for {@code Map}
+     * data format.
      */
-    default boolean isAssignableRequest(Class<?> clazz) {
-        return Request.class.isAssignableFrom(clazz);
-    }
+    @Nullable
+    Map<String, Object> getHeadMap();
 
-    @Override
-    default boolean isWrapperFor(Class<?> clazz) {
-        return isAssignableRequest(clazz);
-    }
+    /**
+     * Return the {@code Client} type held by the current request class. The
+     * definition of {@code Client} is open, and developers can customize
+     * the relevant behavior of {@code Client}.
+     *
+     * @return The type of {@code Client} held,must not be {@literal null}.
+     */
+    @SuppressWarnings("rawtypes")
+    @NotNull
+    Class<? extends Client> getClientCls();
+
+    /**
+     * The SDK will perform custom validation on {@link #getRequestParam()}
+     * before requesting, so the rewriting of this method is for this implementation.
+     *
+     * <p>Users can write validation logic in this method and hope to throw
+     * {@link SdkException} when the conditions are not met.
+     *
+     * @throws SdkException Parameter validation before request, hoping
+     *                      to throw this exception type and be captured by transmission.
+     */
+    void validate() throws SdkException;
 }
