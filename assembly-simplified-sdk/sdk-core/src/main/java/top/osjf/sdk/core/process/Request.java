@@ -90,6 +90,7 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
 
     /**
      * {@inheritDoc}
+     * <p>
      * Default to null request body.
      *
      * @return {@literal null}.
@@ -178,8 +179,16 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
         return isAssignableRequest(clazz);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Default to use {@link ClientExecutors} execute current {@code Request}.
+     *
+     * @param host {@inheritDoc}
+     * @return {@inheritDoc}
+     */
     @Override
-    default R execute(String host) {
+    default R execute(@Nullable String host) {
         return ClientExecutors.executeRequestClient(host, this);
     }
 
