@@ -41,7 +41,7 @@ public abstract class JsonSerialServiceLoaderLoggerHttpRequestParams<R extends A
      */
     @Override
     @NotNull
-    public Class<? extends Client> getClientCls() {
+    public final Class<? extends Client> getClientCls() {
         return ServiceLoaderLoggerHttpClient.class;
     }
 }

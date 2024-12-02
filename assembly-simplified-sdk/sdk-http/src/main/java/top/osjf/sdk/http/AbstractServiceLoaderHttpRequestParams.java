@@ -42,7 +42,7 @@ public abstract class AbstractServiceLoaderHttpRequestParams<R extends AbstractH
      */
     @Override
     @NotNull
-    public Class<? extends Client> getClientCls() {
+    public final Class<? extends Client> getClientCls() {
         return ServiceLoaderLoggerHttpClient.class;
     }
 }
