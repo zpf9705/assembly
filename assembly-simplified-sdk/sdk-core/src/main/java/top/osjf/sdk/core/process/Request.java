@@ -18,6 +18,7 @@ package top.osjf.sdk.core.process;
 
 import com.google.common.reflect.TypeToken;
 import top.osjf.sdk.core.client.Client;
+import top.osjf.sdk.core.client.ClientExecutors;
 import top.osjf.sdk.core.enums.SdkEnum;
 import top.osjf.sdk.core.exception.SdkException;
 import top.osjf.sdk.core.support.NotNull;
@@ -73,17 +74,13 @@ import java.util.Map;
  * @since 1.0.0
  */
 @SuppressWarnings("rawtypes")
-public interface Request<R extends Response> extends RequestParamCapable<Object>, Wrapper, Serializable {
+public interface Request<R extends Response> extends RequestParamCapable<Object>, Wrapper, Executable<R>, Serializable {
 
     /**
-     * Return the real server hostname when the current SDK executes
-     * the request, which can be a domain name or access address.
-     * <p>
-     * The method parameter {@code host} can be empty, depending on
-     * whether you dynamically change the actual host address value.
+     * Default simple to use {@link #matchSdkEnum()#getUrl}.
      *
-     * @param host the real server hostname.
-     * @return The request address for current SDK.
+     * @param host {@link #matchSdkEnum()#getUrl}.
+     * @return {@link #matchSdkEnum()#getUrl}.
      */
     @NotNull
     default String getUrl(@Nullable String host) {
@@ -178,6 +175,11 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
     @Override
     default boolean isWrapperFor(Class<?> clazz) {
         return isAssignableRequest(clazz);
+    }
+
+    @Override
+    default R execute() {
+        return ClientExecutors.executeRequestClient("", this);
     }
 
     /**
