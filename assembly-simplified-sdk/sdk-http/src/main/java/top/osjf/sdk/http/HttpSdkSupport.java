@@ -20,10 +20,7 @@ import com.palominolabs.http.url.UrlBuilder;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
 import top.osjf.sdk.core.support.SdkSupport;
-import top.osjf.sdk.core.util.ArrayUtils;
-import top.osjf.sdk.core.util.JSONUtil;
-import top.osjf.sdk.core.util.MapUtils;
-import top.osjf.sdk.core.util.SynchronizedWeakHashMap;
+import top.osjf.sdk.core.util.*;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -60,53 +57,61 @@ public abstract class HttpSdkSupport extends SdkSupport {
      * */
     protected static final Map<Class<?>, Object> rps_classes = new SynchronizedWeakHashMap<>();
 
-    /**
-     * Check if there is a context and give a default {@code application/json}
-     * when it does not exist.
-     *
-     * @param headers existing request headers.
-     * @param request current http request.
-     * @return When the incoming request header is {@literal null}
-     * , the map will be initialized and the corresponding request
-     * header content will be automatically added based on the required
-     * parameters. Otherwise, after checking, the original request heade
-     * r map will be returned.
-     */
-    @SuppressWarnings("rawtypes")
-    public static Map<String, Object> checkContentType(Map<String, Object> headers, HttpRequest request) {
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public static Map<String, Object> checkHeaderWithBody(HttpRequest request, Object body) {
         //Normal inclusion of context directly returns the current request header.
-        if (headers != null && headers.containsKey("Content-Type")) {
-            return headers;
-        }
-        try {
-            //When no context type is specified, the default JSON format will
-            // be added to the context based on whether the carried request
-            // body parameters are in JSON format or whether the method confirms
-            // JSON serialization.
-            boolean isJson = false;
-            //The situation of abstract definition methods.
-            if (request instanceof AbstractHttpRequestParams) {
-                isJson = ((AbstractHttpRequestParams<?>) request).defaultToJson();
-            } else {
-                //Using non abstract class defaults.
-                Object requestParam = request.getRequestParam();
-                if (requestParam != null && JSONUtil.isValidObject(requestParam.toString())) {
-                    isJson = true;
-                }
+        Map<String, Object> headers = request.getHeadMap();
+        if (body == null) return headers;
+        if (headers != null && headers.containsKey("Content-Type")) return headers;
+
+        String contentType;
+        if (request instanceof AbstractHttpRequestParams
+                && ((AbstractHttpRequestParams<?>) request).defaultToJson()) {
+            contentType = "application/json";
+        } else contentType = getContentTypeWithBody(body.toString());
+
+        if (StringUtils.isNotBlank(contentType)) {
+            if (headers == null) headers = new ConcurrentHashMap<>(1);
+            try {
+                headers.putIfAbsent("Content-Type", contentType);
+            } catch (UnsupportedOperationException e) {
+                headers = new ConcurrentHashMap<>(1);
+                headers.putIfAbsent("Content-Type", contentType);
             }
-            if (isJson &&
-                    //When meeting JSON requirements, it is necessary to
-                    // ensure that the current JSON parameters are not
-                    // concatenated for URL parameters.
-                    !request.montage()) {
-                // Initialize information for empty request bodies to meet the situation.
-                if (headers == null) headers = new ConcurrentHashMap<>(1);
-                headers.putIfAbsent("Content-Type", "application/json");
-            }
-            /* Consider ignoring map errors that cannot be supported for addition. */
-        } catch (Exception ignored) {
+
         }
         return headers;
+    }
+
+    /**
+     * Retrieve {@code "Content-type"} based on the content of the request body,
+     * supporting the judgment of {@code "application/json"} and {@code application/xml},
+     * with the rest being null.
+     *
+     * @param body input body.
+     * @return {@code "Content-type"} or nullable if is no support type.
+     */
+    public static String getContentTypeWithBody(Object body) {
+        if (body == null) return null;
+        String bodyStr = body.toString();
+        String contentType = null;
+        if (StringUtils.isNotBlank(bodyStr)) {
+            char firstChar = bodyStr.charAt(0);
+            switch (firstChar) {
+                case '{':
+                case '[':
+                    contentType = "application/json";
+                    break;
+                case '<':
+                    contentType = "application/xml";
+                    break;
+
+                default:
+                    break;
+            }
+        }
+        return contentType;
     }
 
     /**
@@ -173,7 +178,7 @@ public abstract class HttpSdkSupport extends SdkSupport {
                 }
                 //Cache the class objects of the current classes for future use
                 type_classes.putIfAbsent(linkType, typeClass);
-                return request.isAssignableRequest(typeClass);
+                return request.isWrapperFor(typeClass);
             }).findFirst().orElse(null);
 
             //If there is nothing available, simply exit the loop.
