@@ -16,6 +16,7 @@
 
 package top.osjf.sdk.http.jaxrs2;
 
+import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.core.util.StringUtils;
 import top.osjf.sdk.http.support.HttpSdkSupport;
@@ -28,7 +29,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
-import java.net.URI;
+import java.nio.charset.Charset;
 import java.util.Map;
 
 /**
@@ -63,15 +64,15 @@ public abstract class JAXRSHttpSimpleRequestUtils {
      * <p>
      * The default format is {@link Client} in <pre>{@code ClientBuilder.newBuilder().build()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @param charset Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
      */
-    public static String get(String url, Map<String, String> headers, Object requestParam, boolean montage) {
-        return doRequest(null, "GET", getURI(url, montage, requestParam),
-                headers, montage, requestParam);
+    public static String get(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) {
+        return doRequest(null, "GET", url, headers, body, charset);
     }
 
     /**
@@ -79,15 +80,15 @@ public abstract class JAXRSHttpSimpleRequestUtils {
      * <p>
      * The default format is {@link Client} in <pre>{@code ClientBuilder.newBuilder().build()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @param charset Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
      */
-    public static String post(String url, Map<String, String> headers, Object requestParam, boolean montage) {
-        return doRequest(null, "POST", getURI(url, montage, requestParam),
-                headers, montage, requestParam);
+    public static String post(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) {
+        return doRequest(null, "POST", url, headers, body, charset);
     }
 
     /**
@@ -95,15 +96,15 @@ public abstract class JAXRSHttpSimpleRequestUtils {
      * <p>
      * The default format is {@link Client} in <pre>{@code ClientBuilder.newBuilder().build()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @param charset Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
      */
-    public static String put(String url, Map<String, String> headers, Object requestParam, boolean montage) {
-        return doRequest(null, "PUT", getURI(url, montage, requestParam),
-                headers, montage, requestParam);
+    public static String put(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) {
+        return doRequest(null, "PUT", url, headers, body, charset);
     }
 
     /**
@@ -111,15 +112,15 @@ public abstract class JAXRSHttpSimpleRequestUtils {
      * <p>
      * The default format is {@link Client} in <pre>{@code ClientBuilder.newBuilder().build()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @param charset Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
      */
-    public static String delete(String url, Map<String, String> headers, Object requestParam, boolean montage) {
-        return doRequest(null, "DELETE", getURI(url, montage, requestParam),
-                headers, montage, requestParam);
+    public static String delete(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) {
+        return doRequest(null, "DELETE", url, headers, body, charset);
     }
 
     /**
@@ -127,15 +128,15 @@ public abstract class JAXRSHttpSimpleRequestUtils {
      * <p>
      * The default format is {@link Client} in <pre>{@code ClientBuilder.newBuilder().build()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @param charset Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
      */
-    public static String trace(String url, Map<String, String> headers, Object requestParam, boolean montage) {
-        return doRequest(null, "TRACE", getURI(url, montage, requestParam),
-                headers, montage, requestParam);
+    public static String trace(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) {
+        return doRequest(null, "TRACE", url, headers, body, charset);
     }
 
     /**
@@ -143,15 +144,15 @@ public abstract class JAXRSHttpSimpleRequestUtils {
      * <p>
      * The default format is {@link Client} in <pre>{@code ClientBuilder.newBuilder().build()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @param charset Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
      */
-    public static String options(String url, Map<String, String> headers, Object requestParam, boolean montage) {
-        return doRequest(null, "OPTIONS", getURI(url, montage, requestParam),
-                headers, montage, requestParam);
+    public static String options(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) {
+        return doRequest(null, "OPTIONS", url, headers, body, charset);
     }
 
     /**
@@ -159,15 +160,15 @@ public abstract class JAXRSHttpSimpleRequestUtils {
      * <p>
      * The default format is {@link Client} in <pre>{@code ClientBuilder.newBuilder().build()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @param charset Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
      */
-    public static String head(String url, Map<String, String> headers, Object requestParam, boolean montage) {
-        return doRequest(null, "HEAD", getURI(url, montage, requestParam),
-                headers, montage, requestParam);
+    public static String head(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) {
+        return doRequest(null, "HEAD", url, headers, body, charset);
     }
 
     /**
@@ -175,81 +176,70 @@ public abstract class JAXRSHttpSimpleRequestUtils {
      * <p>
      * The default format is {@link Client} in <pre>{@code ClientBuilder.newBuilder().build()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @param charset Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
      */
-    public static String patch(String url, Map<String, String> headers, Object requestParam, boolean montage) {
-        return doRequest(null, "PATCH", getURI(url, montage, requestParam),
-                headers, montage, requestParam);
+    public static String patch(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) {
+        return doRequest(null, "PATCH", url, headers, body, charset);
     }
 
     /**
      * The HTTP request sending method includes the entire lifecycle of HTTP requests.
      *
-     * @param client       JAXRS's HTTP request client,can be {@literal null}.
-     * @param methodName   HTTP request method name .
-     * @param uri          The actual request address to {@code URI},must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @return The {@code String} type of the return value
+     * @param client     JAXRS's HTTP request client,can be {@literal null}.
+     * @param methodName HTTP request method name .
+     * @param url        The target URL of the request.
+     * @param headers    Optional HTTP header information used to control the behavior of requests.
+     * @param body       Optional request body.
+     * @param charset    Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
      */
     public static String doRequest(Client client,
+                                   String url,
                                    String methodName,
-                                   URI uri,
-                                   Map<String, String> headers,
-                                   boolean montage,
-                                   Object requestParam) {
+                                   @Nullable Map<String, String> headers,
+                                   @Nullable Object body, @Nullable Charset charset) {
         if (client == null) {
             client = DEFAULT;
         }
-        Invocation.Builder builder = client.target(uri)
+        Invocation.Builder builder = client.target(UriBuilder.fromUri(url))
                 .request();
         if (headers != null) builder.headers(new MultivaluedHashMap<>(headers));
         String result;
-        Response response = null;
-        try {
-            if (montage) {
-                response = builder.method(methodName);
-            } else {
-                response = builder.method(methodName, toEntity(requestParam, headers));
-            }
+        try (Response response = builder.method(methodName, toEntity(body, charset, headers))) {
             result = response.readEntity(String.class);
-        } finally {
-            if (response != null) {
-                response.close();
-            }
         }
         return result;
     }
 
-    private static URI getURI(String url, boolean montage, Object requestParam) {
-        UriBuilder uriBuilder = UriBuilder.fromUri(url);
-        Map<String, Object> queryParams = null;
-        if (montage) queryParams = HttpSdkSupport.resolveMontageObj(requestParam);
-        if (queryParams != null) {
-            for (Map.Entry<String, Object> entry : queryParams.entrySet()) {
-                uriBuilder.queryParam(entry.getKey(), entry.getValue());
-            }
-        }
-        return uriBuilder.build();
-    }
-
-    private static Entity<Object> toEntity(Object requestParam, Map<String, String> headers) {
-        MediaType mediaType = MediaType.APPLICATION_JSON_TYPE;
+    @Nullable
+    private static Entity<Object> toEntity(@Nullable Object body, @Nullable Charset charset,
+                                           @Nullable Map<String, String> headers) {
+        if (body == null) return null;
+        String type = null;
+        String subtype = null;
+        String charsetName = charset != null ? charset.name() : null;
+        String contentType = null;
         if (MapUtils.isNotEmpty(headers)) {
-            String value = headers.get("Content-type");
-            if (StringUtils.isNotBlank(value)) {
-                String[] types = value.split("/");
-                if (types.length != 2) {
-                    throw new IllegalArgumentException("Incorrect context type [" + value + "]");
-                }
-                mediaType = new MediaType(types[0], types[1]);
-            }
+            contentType = headers.get("Content-type");
         }
-        return Entity.entity(requestParam, mediaType);
+        if (StringUtils.isBlank(contentType)) {
+            contentType = HttpSdkSupport.getContentTypeWithBody(body, charset);
+        }
+        if (StringUtils.isNotBlank(contentType)) {
+            String[] types = contentType.split("/");
+            if (types.length != 2) {
+                throw new IllegalArgumentException("Incorrect context type [" + contentType + "]");
+            }
+            type = types[0];
+            subtype = types[1];
+        }
+        MediaType mediaType = new MediaType(type, subtype, charsetName);
+        return Entity.entity(body, mediaType);
     }
 }

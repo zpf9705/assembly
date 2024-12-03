@@ -17,9 +17,11 @@
 package top.osjf.sdk.http.jaxrs2;
 
 import top.osjf.sdk.core.support.LoadOrder;
-import top.osjf.sdk.http.executor.AbstractSourceHttpRequestExecutor;
+import top.osjf.sdk.core.support.Nullable;
+import top.osjf.sdk.http.executor.AbstractMultiHttpMethodExecutor;
 import top.osjf.sdk.http.executor.HttpRequestExecutor;
 
+import java.nio.charset.Charset;
 import java.util.Map;
 
 /**
@@ -30,44 +32,45 @@ import java.util.Map;
  * @since 1.0.2
  */
 @LoadOrder(Integer.MIN_VALUE + 20)
-public class JAXRSHttpRequestExecutor extends AbstractSourceHttpRequestExecutor {
+public class JAXRSHttpRequestExecutor extends AbstractMultiHttpMethodExecutor {
+
     @Override
-    public String get(String url, Map<String, String> headers, Object param, boolean montage) {
-        return JAXRSHttpSimpleRequestUtils.get(url, headers, param, montage);
+    public String get(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) {
+        return JAXRSHttpSimpleRequestUtils.get(url, headers, body, charset);
     }
 
     @Override
-    public String post(String url, Map<String, String> headers, Object param, boolean montage) {
-        return JAXRSHttpSimpleRequestUtils.post(url, headers, param, montage);
+    public String post(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) {
+        return JAXRSHttpSimpleRequestUtils.post(url, headers, body, charset);
     }
 
     @Override
-    public String put(String url, Map<String, String> headers, Object param, boolean montage) {
-        return JAXRSHttpSimpleRequestUtils.put(url, headers, param, montage);
+    public String put(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) {
+        return JAXRSHttpSimpleRequestUtils.put(url, headers, body, charset);
     }
 
     @Override
-    public String delete(String url, Map<String, String> headers, Object param, boolean montage) {
-        return JAXRSHttpSimpleRequestUtils.delete(url, headers, param, montage);
+    public String delete(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) {
+        return JAXRSHttpSimpleRequestUtils.delete(url, headers, body, charset);
     }
 
     @Override
-    public String trace(String url, Map<String, String> headers, Object param, boolean montage) {
-        return JAXRSHttpSimpleRequestUtils.trace(url, headers, param, montage);
+    public String trace(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) {
+        return JAXRSHttpSimpleRequestUtils.trace(url, headers, body, charset);
     }
 
     @Override
-    public String options(String url, Map<String, String> headers, Object param, boolean montage) {
-        return JAXRSHttpSimpleRequestUtils.options(url, headers, param, montage);
+    public String options(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) {
+        return JAXRSHttpSimpleRequestUtils.options(url, headers, body, charset);
     }
 
     @Override
-    public String head(String url, Map<String, String> headers, Object param, boolean montage) {
-        return JAXRSHttpSimpleRequestUtils.head(url, headers, param, montage);
+    public String head(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) {
+        return JAXRSHttpSimpleRequestUtils.head(url, headers, body, charset);
     }
 
     @Override
-    public String patch(String url, Map<String, String> headers, Object param, boolean montage) {
-        return JAXRSHttpSimpleRequestUtils.patch(url, headers, param, montage);
+    public String patch(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) {
+        return JAXRSHttpSimpleRequestUtils.patch(url, headers, body, charset);
     }
 }
