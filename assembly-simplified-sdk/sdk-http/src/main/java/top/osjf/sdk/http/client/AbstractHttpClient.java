@@ -21,6 +21,7 @@ import top.osjf.sdk.core.client.AbstractClient;
 import top.osjf.sdk.core.exception.SdkException;
 import top.osjf.sdk.core.process.DefaultErrorResponse;
 import top.osjf.sdk.core.process.Request;
+import top.osjf.sdk.core.process.URL;
 import top.osjf.sdk.core.support.ServiceLoadManager;
 import top.osjf.sdk.core.util.ExceptionUtils;
 import top.osjf.sdk.http.executor.HttpRequestExecutor;
@@ -132,11 +133,12 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
     private HttpRequestExecutor requestExecutor;
 
     /*** Constructing for {@link HttpClient} objects using access URLs.
-     * @param url The real URL address of the SDK request.
+     * @param url   {@code URL} Object of packaging tags and URL addresses
+     *                         and updated on version 1.0.2.
      * */
-    public AbstractHttpClient(String url) {
-        super(HttpSdkSupport.getClientUnique(url));
-        this.url = url;
+    public AbstractHttpClient(URL url) {
+        super(url);
+        this.url = url.getUrl();
     }
 
     /**

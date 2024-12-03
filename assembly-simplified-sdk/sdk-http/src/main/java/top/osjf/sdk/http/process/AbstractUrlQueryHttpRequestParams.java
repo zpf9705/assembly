@@ -16,6 +16,7 @@
 
 package top.osjf.sdk.http.process;
 
+import top.osjf.sdk.core.process.URL;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.http.support.HttpSdkSupport;
@@ -64,7 +65,7 @@ public abstract class AbstractUrlQueryHttpRequestParams<R extends AbstractHttpRe
      */
     @Override
     @NotNull
-    public final String getUrl(String host) {
+    public final URL getUrl(String host) {
         Object queryParam;
         if (this instanceof UrlQueryParam) {
             queryParam = ((UrlQueryParam) this).getParam();
@@ -73,7 +74,9 @@ public abstract class AbstractUrlQueryHttpRequestParams<R extends AbstractHttpRe
             queryParam = getRequestParamInternal();
             requestParam = null;
         }
-        return HttpSdkSupport.buildAndFormatUrlWithQueryParams(super.getUrl(host), queryParam, getCharset());
+        String url = formatUrl(matchSdkEnum().getUrl(host));
+        return URL.of(url,
+                HttpSdkSupport.buildAndFormatUrlWithQueryParams(url, queryParam, getCharset()));
     }
 
     /**

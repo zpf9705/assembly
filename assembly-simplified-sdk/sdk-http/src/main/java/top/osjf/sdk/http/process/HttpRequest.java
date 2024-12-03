@@ -17,6 +17,7 @@
 package top.osjf.sdk.http.process;
 
 import top.osjf.sdk.core.process.Request;
+import top.osjf.sdk.core.process.URL;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.http.*;
@@ -57,8 +58,8 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
      */
     @Override
     @NotNull
-    default String getUrl(@Nullable String host) {
-        return formatUrl(matchSdkEnum().getUrl(host));
+    default URL getUrl(@Nullable String host) {
+        return URL.same(formatUrl(matchSdkEnum().getUrl(host)));
     }
 
     /**

@@ -17,6 +17,7 @@
 package top.osjf.sdk.http.client;
 
 import top.osjf.sdk.core.client.LoggerConsumer;
+import top.osjf.sdk.core.process.URL;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.ServiceLoadManager;
 import top.osjf.sdk.http.process.HttpResponse;
@@ -38,9 +39,10 @@ public class ServiceLoaderLoggerHttpClient<R extends HttpResponse> extends Defau
     private LoggerConsumer consumer;
 
     /*** Constructing for {@link HttpClient} objects using access URLs.
-     * @param url The real URL address of the SDK request.
+     * @param url   {@code URL} Object of packaging tags and URL addresses
+     *                         and updated on version 1.0.2.
      */
-    public ServiceLoaderLoggerHttpClient(String url) {
+    public ServiceLoaderLoggerHttpClient(URL url) {
         super(url);
         loadHighPriorityLoggerConsumer();
     }

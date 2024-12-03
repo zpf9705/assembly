@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.process.URL;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.util.StringUtils;
 import top.osjf.sdk.core.util.SynchronizedWeakHashMap;
@@ -72,11 +73,12 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
     private static final ThreadLocal<Request> local = new ThreadLocal<>();
 
     /*** Constructing for {@link Client} objects using unique identifier.
-     * @param unique The unique identifier string for this client's cache.
+     * @param url   {@code URL} Object of packaging tags and URL addresses
+     *                         and updated on version 1.0.2.
      * */
-    public AbstractClient(String unique) {
-        Objects.requireNonNull(unique, "Client unique");
-        cache(unique, this);
+    public AbstractClient(URL url) {
+        Objects.requireNonNull(url, "top.osjf.sdk.core.process.URL");
+        cache(url.getUnique(), this);
     }
 
     /**

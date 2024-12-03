@@ -16,6 +16,7 @@
 
 package top.osjf.sdk.http.client;
 
+import top.osjf.sdk.core.process.URL;
 import top.osjf.sdk.http.process.HttpResponse;
 
 /**
@@ -29,9 +30,10 @@ public class DefaultHttpClient<R extends HttpResponse> extends AbstractHttpClien
     private static final long serialVersionUID = -2139694263828485242L;
 
     /*** Constructing for {@link HttpClient} objects using access URLs.
-     * @param url The real URL address of the SDK request.
+     * @param url   {@code URL} Object of packaging tags and URL addresses
+     *                         and updated on version 1.0.2.
      */
-    public DefaultHttpClient(String url) {
+    public DefaultHttpClient(URL url) {
         super(url);
     }
 }
