@@ -19,9 +19,10 @@ package top.osjf.sdk.http.ok;
 import okhttp3.*;
 import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.core.util.StringUtils;
-import top.osjf.sdk.http.support.HttpSdkSupport;
 import top.osjf.sdk.http.exception.ResponseFailedException;
+import top.osjf.sdk.http.support.HttpSdkSupport;
 
+import java.nio.charset.Charset;
 import java.util.Map;
 
 /**
@@ -60,16 +61,19 @@ public abstract class OkHttpSimpleRequestUtils {
      * <p>
      * The default format is {@link OkHttpClient} in <pre>{@code new OkHttpClient().newBuilder().build()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value.
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String get(String url, Map<String, String> headers, Object requestParam, boolean montage)
+    public static String get(String url, Map<String, String> headers, Object body, Charset charset)
             throws Exception {
-        return doRequest(null, getRequestBuilder(url, requestParam, montage, headers, "GET"),
+        return doRequest(null, getRequestBuilder(url, body, headers, "GET", charset),
                 headers);
     }
 
@@ -78,16 +82,19 @@ public abstract class OkHttpSimpleRequestUtils {
      * <p>
      * The default format is {@link OkHttpClient} in <pre>{@code new OkHttpClient().newBuilder().build()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String post(String url, Map<String, String> headers, Object requestParam, boolean montage)
+    public static String post(String url, Map<String, String> headers, Object body)
             throws Exception {
-        return doRequest(null, getRequestBuilder(url, requestParam, montage, headers, "POST"), headers);
+        return doRequest(null, getRequestBuilder(url, body, headers, "POST"), headers);
     }
 
     /**
@@ -95,16 +102,19 @@ public abstract class OkHttpSimpleRequestUtils {
      * <p>
      * The default format is {@link OkHttpClient} in <pre>{@code new OkHttpClient().newBuilder().build()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String put(String url, Map<String, String> headers, Object requestParam, boolean montage)
+    public static String put(String url, Map<String, String> headers, Object body)
             throws Exception {
-        return doRequest(null, getRequestBuilder(url, requestParam, montage, headers, "PUT"),
+        return doRequest(null, getRequestBuilder(url, body, headers, "PUT"),
                 headers);
     }
 
@@ -113,16 +123,19 @@ public abstract class OkHttpSimpleRequestUtils {
      * <p>
      * The default format is {@link OkHttpClient} in <pre>{@code new OkHttpClient().newBuilder().build()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value.
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String delete(String url, Map<String, String> headers, Object requestParam, boolean montage)
+    public static String delete(String url, Map<String, String> headers, Object body)
             throws Exception {
-        return doRequest(null, getRequestBuilder(url, requestParam, montage, headers, "DELETE"),
+        return doRequest(null, getRequestBuilder(url, body, headers, "DELETE"),
                 headers);
     }
 
@@ -131,16 +144,19 @@ public abstract class OkHttpSimpleRequestUtils {
      * <p>
      * The default format is {@link OkHttpClient} in <pre>{@code new OkHttpClient().newBuilder().build()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value.
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String trace(String url, Map<String, String> headers, Object requestParam, boolean montage)
+    public static String trace(String url, Map<String, String> headers, Object body)
             throws Exception {
-        return doRequest(null, getRequestBuilder(url, requestParam, montage, headers, "TRACE"),
+        return doRequest(null, getRequestBuilder(url, body, headers, "TRACE"),
                 headers);
     }
 
@@ -149,16 +165,19 @@ public abstract class OkHttpSimpleRequestUtils {
      * <p>
      * The default format is {@link OkHttpClient} in <pre>{@code new OkHttpClient().newBuilder().build()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value.
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String options(String url, Map<String, String> headers, Object requestParam, boolean montage)
+    public static String options(String url, Map<String, String> headers, Object body)
             throws Exception {
-        return doRequest(null, getRequestBuilder(url, requestParam, montage, headers, "OPTIONS"),
+        return doRequest(null, getRequestBuilder(url, body, headers, "OPTIONS"),
                 headers);
     }
 
@@ -167,16 +186,19 @@ public abstract class OkHttpSimpleRequestUtils {
      * <p>
      * The default format is {@link OkHttpClient} in <pre>{@code new OkHttpClient().newBuilder().build()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value.
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String head(String url, Map<String, String> headers, Object requestParam, boolean montage)
+    public static String head(String url, Map<String, String> headers, Object body)
             throws Exception {
-        return doRequest(null, getRequestBuilder(url, requestParam, montage, headers, "HEAD"),
+        return doRequest(null, getRequestBuilder(url, body, headers, "HEAD"),
                 headers);
     }
 
@@ -185,16 +207,19 @@ public abstract class OkHttpSimpleRequestUtils {
      * <p>
      * The default format is {@link OkHttpClient} in <pre>{@code new OkHttpClient().newBuilder().build()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value.
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String patch(String url, Map<String, String> headers, Object requestParam, boolean montage)
+    public static String patch(String url, Map<String, String> headers, Object body)
             throws Exception {
-        return doRequest(null, getRequestBuilder(url, requestParam, montage, headers, "PATCH"),
+        return doRequest(null, getRequestBuilder(url, body, headers, "PATCH"),
                 headers);
     }
 
@@ -203,9 +228,13 @@ public abstract class OkHttpSimpleRequestUtils {
      *
      * @param client  Square's HTTP request client,can be {@literal null}.
      * @param builder HTTP Public Request Class {@link Request.Builder}.
-     * @param headers Header information map,can be {@literal null}.
-     * @return The {@code String} type of the return value
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
     public static String doRequest(okhttp3.OkHttpClient client,
                                    Request.Builder builder,
@@ -219,12 +248,8 @@ public abstract class OkHttpSimpleRequestUtils {
             addHeaders(headers, builder);
             response = client.newCall(builder.build()).execute();
             if (response.isSuccessful()) {
-                ResponseBody body = response.body();
-                if (body != null) {
-                    result = body.string();
-                } else {
-                    result = "";
-                }
+                //no call Callback#onResponse no NullPointerException
+                result = response.body().string();
             } else {
                 throw new ResponseFailedException(response.message());
             }
@@ -249,16 +274,19 @@ public abstract class OkHttpSimpleRequestUtils {
     }
 
     /**
-     * Use relevant parameters to obtain the {@link Request} parameters required for {@link OkHttpClient} execution.
+     * Use relevant parameters to obtain the {@link Request} parameters required for
+     * {@link OkHttpClient} execution.
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param method       Distinguish request types,must not be {@literal null}.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @param charset Encoding character set.
+     * @param method  Distinguish request types,must not be {@literal null}.
      * @return Obtain the condition builder for {@link Request}.
      */
-    public static Request.Builder getRequestBuilder(String url, Object requestParam, boolean montage,
+    public static Request.Builder getRequestBuilder(String url,
+                                                    Object body,
+                                                    Charset charset,
                                                     Map<String, String> headers,
                                                     String method) {
         HttpUrl httpUrl = HttpUrl.parse(url);
@@ -266,47 +294,43 @@ public abstract class OkHttpSimpleRequestUtils {
             throw new IllegalArgumentException("Url is not valid");
         }
         HttpUrl.Builder urlBuilder = httpUrl.newBuilder();
-        Map<String, Object> params = null;
-        if (montage) params = HttpSdkSupport.resolveMontageObj(requestParam);
-        if (params != null) {
-            for (Map.Entry<String, Object> entry : params.entrySet()) {
-                urlBuilder.addQueryParameter(entry.getKey(), String.valueOf(entry.getValue()));
-            }
-        }
         Request.Builder requestBuild = new Request.Builder().url(urlBuilder.build());
-        String value;
+        MediaType mediaType = null;
+        String contentType = null;
         if (MapUtils.isNotEmpty(headers)) {
-            value = headers.get("Content-type");
-            if (StringUtils.isBlank(value)) {
-                value = "application/json";
+            contentType = headers.get("Content-type");
+            if (StringUtils.isBlank(contentType)) {
+                contentType = HttpSdkSupport.getContentTypeWithBody(body, charset);
             }
-        } else {
-            value = "application/json";
         }
-        value = value.concat(";charset=utf-8");
-        RequestBody body = RequestBody.create(MediaType.parse(value),
-                requestParam == null ? "" : requestParam.toString());
+        if (contentType != null) {
+            mediaType = MediaType.parse(contentType);
+        }
+        if (charset != null && mediaType != null) {
+            mediaType.charset(charset);
+        }
+        RequestBody requestBody = RequestBody.create(mediaType, body == null ? "" : body.toString());
         switch (method) {
             case "GET":
                 requestBuild = requestBuild.get();
                 break;
             case "POST":
-                requestBuild = requestBuild.post(body);
+                requestBuild = requestBuild.post(requestBody);
                 break;
             case "PUT":
-                requestBuild = requestBuild.put(body);
+                requestBuild = requestBuild.put(requestBody);
                 break;
             case "DELETE":
-                requestBuild = requestBuild.delete(body);
+                requestBuild = requestBuild.delete(requestBody);
                 break;
             case "TRACE":
-                requestBuild = requestBuild.method("TRACE", body);
+                requestBuild = requestBuild.method("TRACE", requestBody);
             case "OPTIONS":
-                requestBuild = requestBuild.method("OPTIONS", body);
+                requestBuild = requestBuild.method("OPTIONS", requestBody);
             case "HEAD":
                 requestBuild = requestBuild.head();
             case "PATCH":
-                requestBuild = requestBuild.patch(body);
+                requestBuild = requestBuild.patch(requestBody);
         }
         return requestBuild;
     }
