@@ -33,7 +33,7 @@ import top.osjf.sdk.core.util.JSONUtil;
  *         ... //Omitted here.
  *     }
  *     public Object getParam() {
- *         return "{}" or new ExampleObj() or new HashMap<>();
+ *         return "Json" or new ExampleObj() or new HashMap<>();
  *     }
  * }}
  * </pre>
