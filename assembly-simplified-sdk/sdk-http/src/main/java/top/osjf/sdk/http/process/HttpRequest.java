@@ -58,7 +58,7 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
     @Override
     @NotNull
     default String getUrl(@Nullable String host) {
-        return formatUrl(host);
+        return formatUrl(matchSdkEnum().getUrl(host));
     }
 
     /**
@@ -170,11 +170,10 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
      * need to pay attention to the HTTP protocol type in URL formatting. The following
      * method will be used to properly concatenate when {@code HttpProtocol} is not empty.
      *
-     * @param host The host name of the SDK.
+     * @param url The URL address obtained after matching {@code HttpSdkEnum}.
      * @return The request address for the SDK.
      */
-    default String formatUrl(String host) {
-        String url = matchSdkEnum().getUrl(host);
+    default String formatUrl(String url) {
         HttpProtocol protocol = matchSdkEnum().getProtocol();
         if (protocol != null) url = protocol.formatUrl(url);
         return url + urlJoin();
