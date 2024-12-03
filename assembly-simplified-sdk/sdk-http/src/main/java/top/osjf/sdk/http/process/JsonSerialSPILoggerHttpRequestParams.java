@@ -19,8 +19,6 @@ package top.osjf.sdk.http.process;
 import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.http.client.ServiceLoaderLoggerHttpClient;
-import top.osjf.sdk.http.process.AbstractHttpResponse;
-import top.osjf.sdk.http.process.JsonSerialHttpRequestParams;
 
 /**
  * Extends for {@code JsonSerialHttpRequestParams} to provider a {@code Client}
@@ -30,7 +28,7 @@ import top.osjf.sdk.http.process.JsonSerialHttpRequestParams;
  * @since 1.0.2
  */
 @SuppressWarnings("rawtypes")
-public abstract class JsonSerialServiceLoaderLoggerHttpRequestParams<R extends AbstractHttpResponse> extends
+public abstract class JsonSerialSPILoggerHttpRequestParams<R extends AbstractHttpResponse> extends
         JsonSerialHttpRequestParams<R> {
 
     private static final long serialVersionUID = 4587196966635484290L;
