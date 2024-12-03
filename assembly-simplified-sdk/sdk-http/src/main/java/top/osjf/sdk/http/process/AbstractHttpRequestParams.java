@@ -73,7 +73,7 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
         Object requestParam = getRequestParam();
         if (requestParam != null
                 && (!montage() || (this instanceof MontageParam && ((MontageParam) this).getParam() != null))) {
-            String contentType = HttpSdkSupport.getContentTypeWithBody(requestParam);
+            String contentType = HttpSdkSupport.getContentTypeWithBody(requestParam, getCharset());
             if (StringUtils.isNotBlank(contentType)) {
                 Map<String, Object> headers = new ConcurrentHashMap<>();
                 headers.put("Content-Type", contentType);
