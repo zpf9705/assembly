@@ -17,6 +17,8 @@
 package top.osjf.sdk.http.ok;
 
 import okhttp3.*;
+import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.core.util.StringUtils;
 import top.osjf.sdk.http.exception.ResponseFailedException;
@@ -26,22 +28,8 @@ import java.nio.charset.Charset;
 import java.util.Map;
 
 /**
- * The Square's HTTP client request tool class mainly includes four request methods: post, get, put, and del.
- *
- * <p>And other methods that can be customized with HTTP support, link to method
- * {@link #doRequest}
- *
- * <p>This class is a simple request tool for {@link OkHttpClient} and does not provide any other special functions.
- *
- * <p>If necessary, please implement it yourself.</p>
- *
- * <p>Only suitable for use in this project.</p>
- *
- * <p>You need to note that the {@code montage} parameter determines whether parameters that are
- * not {@literal null} need to be concatenated after the URL in the form of key/value,
- * and you need to pay attention to the concatenation rules of the
- * {@link #getRequestBuilder(String, Object, boolean, Map, String)}} method and the
- * format rules of the parameters when the parameter is <pre>{@code montage == true}</pre>.
+ * The Square's HTTP client request tool class mainly includes four request
+ * methods: post, get, put, and del...
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
@@ -64,6 +52,7 @@ public abstract class OkHttpSimpleRequestUtils {
      * @param url     The target URL of the request.
      * @param headers Optional HTTP header information used to control the behavior of requests.
      * @param body    Optional request body.
+     * @param charset Encoding character set.
      * @return Returns a string representation of the server response body.
      * The specific content depends on the server's response.
      * @throws Exception This method may throw various exceptions, including but not limited
@@ -71,10 +60,9 @@ public abstract class OkHttpSimpleRequestUtils {
      *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
      *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String get(String url, Map<String, String> headers, Object body, Charset charset)
+    public static String get(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset)
             throws Exception {
-        return doRequest(null, getRequestBuilder(url, body, headers, "GET", charset),
-                headers);
+        return doRequest(null, getRequestBuilder(url, body, charset, headers, "GET"), headers);
     }
 
     /**
@@ -85,6 +73,7 @@ public abstract class OkHttpSimpleRequestUtils {
      * @param url     The target URL of the request.
      * @param headers Optional HTTP header information used to control the behavior of requests.
      * @param body    Optional request body.
+     * @param charset Encoding character set.
      * @return Returns a string representation of the server response body.
      * The specific content depends on the server's response.
      * @throws Exception This method may throw various exceptions, including but not limited
@@ -92,9 +81,9 @@ public abstract class OkHttpSimpleRequestUtils {
      *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
      *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String post(String url, Map<String, String> headers, Object body)
+    public static String post(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset)
             throws Exception {
-        return doRequest(null, getRequestBuilder(url, body, headers, "POST"), headers);
+        return doRequest(null, getRequestBuilder(url, body, charset, headers, "POST"), headers);
     }
 
     /**
@@ -105,6 +94,7 @@ public abstract class OkHttpSimpleRequestUtils {
      * @param url     The target URL of the request.
      * @param headers Optional HTTP header information used to control the behavior of requests.
      * @param body    Optional request body.
+     * @param charset Encoding character set.
      * @return Returns a string representation of the server response body.
      * The specific content depends on the server's response.
      * @throws Exception This method may throw various exceptions, including but not limited
@@ -112,9 +102,9 @@ public abstract class OkHttpSimpleRequestUtils {
      *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
      *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String put(String url, Map<String, String> headers, Object body)
+    public static String put(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset)
             throws Exception {
-        return doRequest(null, getRequestBuilder(url, body, headers, "PUT"),
+        return doRequest(null, getRequestBuilder(url, body, charset, headers, "PUT"),
                 headers);
     }
 
@@ -126,6 +116,7 @@ public abstract class OkHttpSimpleRequestUtils {
      * @param url     The target URL of the request.
      * @param headers Optional HTTP header information used to control the behavior of requests.
      * @param body    Optional request body.
+     * @param charset Encoding character set.
      * @return Returns a string representation of the server response body.
      * The specific content depends on the server's response.
      * @throws Exception This method may throw various exceptions, including but not limited
@@ -133,9 +124,9 @@ public abstract class OkHttpSimpleRequestUtils {
      *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
      *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String delete(String url, Map<String, String> headers, Object body)
+    public static String delete(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset)
             throws Exception {
-        return doRequest(null, getRequestBuilder(url, body, headers, "DELETE"),
+        return doRequest(null, getRequestBuilder(url, body, charset, headers, "DELETE"),
                 headers);
     }
 
@@ -147,6 +138,7 @@ public abstract class OkHttpSimpleRequestUtils {
      * @param url     The target URL of the request.
      * @param headers Optional HTTP header information used to control the behavior of requests.
      * @param body    Optional request body.
+     * @param charset Encoding character set.
      * @return Returns a string representation of the server response body.
      * The specific content depends on the server's response.
      * @throws Exception This method may throw various exceptions, including but not limited
@@ -154,9 +146,9 @@ public abstract class OkHttpSimpleRequestUtils {
      *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
      *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String trace(String url, Map<String, String> headers, Object body)
+    public static String trace(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset)
             throws Exception {
-        return doRequest(null, getRequestBuilder(url, body, headers, "TRACE"),
+        return doRequest(null, getRequestBuilder(url, body, charset, headers, "TRACE"),
                 headers);
     }
 
@@ -168,6 +160,7 @@ public abstract class OkHttpSimpleRequestUtils {
      * @param url     The target URL of the request.
      * @param headers Optional HTTP header information used to control the behavior of requests.
      * @param body    Optional request body.
+     * @param charset Encoding character set.
      * @return Returns a string representation of the server response body.
      * The specific content depends on the server's response.
      * @throws Exception This method may throw various exceptions, including but not limited
@@ -175,9 +168,9 @@ public abstract class OkHttpSimpleRequestUtils {
      *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
      *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String options(String url, Map<String, String> headers, Object body)
+    public static String options(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset)
             throws Exception {
-        return doRequest(null, getRequestBuilder(url, body, headers, "OPTIONS"),
+        return doRequest(null, getRequestBuilder(url, body, charset, headers, "OPTIONS"),
                 headers);
     }
 
@@ -189,6 +182,7 @@ public abstract class OkHttpSimpleRequestUtils {
      * @param url     The target URL of the request.
      * @param headers Optional HTTP header information used to control the behavior of requests.
      * @param body    Optional request body.
+     * @param charset Encoding character set.
      * @return Returns a string representation of the server response body.
      * The specific content depends on the server's response.
      * @throws Exception This method may throw various exceptions, including but not limited
@@ -196,9 +190,9 @@ public abstract class OkHttpSimpleRequestUtils {
      *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
      *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String head(String url, Map<String, String> headers, Object body)
+    public static String head(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset)
             throws Exception {
-        return doRequest(null, getRequestBuilder(url, body, headers, "HEAD"),
+        return doRequest(null, getRequestBuilder(url, body, charset, headers, "HEAD"),
                 headers);
     }
 
@@ -210,6 +204,7 @@ public abstract class OkHttpSimpleRequestUtils {
      * @param url     The target URL of the request.
      * @param headers Optional HTTP header information used to control the behavior of requests.
      * @param body    Optional request body.
+     * @param charset Encoding character set.
      * @return Returns a string representation of the server response body.
      * The specific content depends on the server's response.
      * @throws Exception This method may throw various exceptions, including but not limited
@@ -217,9 +212,9 @@ public abstract class OkHttpSimpleRequestUtils {
      *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
      *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String patch(String url, Map<String, String> headers, Object body)
+    public static String patch(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset)
             throws Exception {
-        return doRequest(null, getRequestBuilder(url, body, headers, "PATCH"),
+        return doRequest(null, getRequestBuilder(url, body, charset, headers, "PATCH"),
                 headers);
     }
 
@@ -238,7 +233,7 @@ public abstract class OkHttpSimpleRequestUtils {
      */
     public static String doRequest(okhttp3.OkHttpClient client,
                                    Request.Builder builder,
-                                   Map<String, String> headers) throws Exception {
+                                   @Nullable Map<String, String> headers) throws Exception {
         if (client == null) {
             client = DEFAULT;
         }
@@ -265,7 +260,7 @@ public abstract class OkHttpSimpleRequestUtils {
      * @param headers Header information map,can be {@literal null}.
      * @param builder HTTP Public Request Class {@link Request.Builder}.
      */
-    public static void addHeaders(Map<String, String> headers, Request.Builder builder) {
+    public static void addHeaders(@Nullable Map<String, String> headers, @NotNull Request.Builder builder) {
         if (MapUtils.isNotEmpty(headers)) {
             for (Map.Entry<String, String> header : headers.entrySet()) {
                 builder.addHeader(header.getKey(), header.getValue());
@@ -285,9 +280,9 @@ public abstract class OkHttpSimpleRequestUtils {
      * @return Obtain the condition builder for {@link Request}.
      */
     public static Request.Builder getRequestBuilder(String url,
-                                                    Object body,
-                                                    Charset charset,
-                                                    Map<String, String> headers,
+                                                    @Nullable Object body,
+                                                    @Nullable Charset charset,
+                                                    @Nullable Map<String, String> headers,
                                                     String method) {
         HttpUrl httpUrl = HttpUrl.parse(url);
         if (httpUrl == null) {

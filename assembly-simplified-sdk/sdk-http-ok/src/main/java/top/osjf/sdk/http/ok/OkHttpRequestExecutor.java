@@ -17,9 +17,11 @@
 package top.osjf.sdk.http.ok;
 
 import top.osjf.sdk.core.support.LoadOrder;
-import top.osjf.sdk.http.executor.AbstractSourceHttpRequestExecutor;
+import top.osjf.sdk.core.support.Nullable;
+import top.osjf.sdk.http.executor.AbstractMultiHttpMethodExecutor;
 import top.osjf.sdk.http.executor.HttpRequestExecutor;
 
+import java.nio.charset.Charset;
 import java.util.Map;
 
 /**
@@ -30,45 +32,46 @@ import java.util.Map;
  * @since 1.0.0
  */
 @LoadOrder(Integer.MIN_VALUE + 14)
-public class OkHttpRequestExecutor extends AbstractSourceHttpRequestExecutor {
+public class OkHttpRequestExecutor extends AbstractMultiHttpMethodExecutor {
+
 
     @Override
-    public String get(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return OkHttpSimpleRequestUtils.get(url, headers, param, montage);
+    public String get(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return OkHttpSimpleRequestUtils.get(url, headers, body, charset);
     }
 
     @Override
-    public String post(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return OkHttpSimpleRequestUtils.post(url, headers, param, montage);
+    public String post(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return OkHttpSimpleRequestUtils.post(url, headers, body, charset);
     }
 
     @Override
-    public String put(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return OkHttpSimpleRequestUtils.put(url, headers, param, montage);
+    public String put(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return OkHttpSimpleRequestUtils.put(url, headers, body, charset);
     }
 
     @Override
-    public String delete(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return OkHttpSimpleRequestUtils.delete(url, headers, param, montage);
+    public String delete(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return OkHttpSimpleRequestUtils.delete(url, headers, body, charset);
     }
 
     @Override
-    public String trace(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return OkHttpSimpleRequestUtils.trace(url, headers, param, montage);
+    public String trace(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return OkHttpSimpleRequestUtils.trace(url, headers, body, charset);
     }
 
     @Override
-    public String options(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return OkHttpSimpleRequestUtils.options(url, headers, param, montage);
+    public String options(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return OkHttpSimpleRequestUtils.options(url, headers, body, charset);
     }
 
     @Override
-    public String head(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return OkHttpSimpleRequestUtils.head(url, headers, param, montage);
+    public String head(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return OkHttpSimpleRequestUtils.head(url, headers, body, charset);
     }
 
     @Override
-    public String patch(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return OkHttpSimpleRequestUtils.patch(url, headers, param, montage);
+    public String patch(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return OkHttpSimpleRequestUtils.patch(url, headers, body, charset);
     }
 }
