@@ -268,6 +268,10 @@ public abstract class OkHttpSimpleRequestUtils {
         }
     }
 
+    public static void main(String[] args) {
+        System.out.println(getRequestBuilder("https://www.baidu.com", null, null, null, "POST"));
+    }
+
     /**
      * Use relevant parameters to obtain the {@link Request} parameters required for
      * {@link OkHttpClient} execution.
@@ -285,9 +289,7 @@ public abstract class OkHttpSimpleRequestUtils {
                                                     @Nullable Map<String, String> headers,
                                                     String method) {
         HttpUrl httpUrl = HttpUrl.parse(url);
-        if (httpUrl == null) {
-            throw new IllegalArgumentException("Url is not valid");
-        }
+        if (httpUrl == null) throw new IllegalArgumentException("Url [ " + url + " ] is not valid");
         HttpUrl.Builder urlBuilder = httpUrl.newBuilder();
         Request.Builder requestBuild = new Request.Builder().url(urlBuilder.build());
         MediaType mediaType = null;
@@ -304,7 +306,8 @@ public abstract class OkHttpSimpleRequestUtils {
         if (charset != null && mediaType != null) {
             mediaType.charset(charset);
         }
-        RequestBody requestBody = RequestBody.create(mediaType, body == null ? "" : body.toString());
+        //Do we need to hand over the body to the framework for verification.
+        RequestBody requestBody = body != null ? RequestBody.create(mediaType, body.toString()) : null;
         switch (method) {
             case "GET":
                 requestBuild = requestBuild.get();
