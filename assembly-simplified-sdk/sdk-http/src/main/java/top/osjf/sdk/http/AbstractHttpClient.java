@@ -85,7 +85,7 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
      *      public class DefaultHttpRequestExecutor implements HttpRequestExecutor{
      *
      *         Override
-     *         public Response execute(Request request, Request.Options options) throws IOException {
+     *         public Response execute(Request request, Request.Options options) throws Exception {
      *              // You can define your own processing logic based on the existing open feign request
      *              // parameters.
      *         }
@@ -93,48 +93,12 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
      *         //If there are their own tools to handle classes, they can be used as markers.
      *
      *         //These are implementation methods for custom request processes.
-     *         //To execute the following method {@code HttpRequestExecutor#useCustomize()},
-     *         simply set the return value to {@code true}.
-     *         Override
-     *         public String get(String url, Map<String, String> headers, Object param, boolean montage)
-     *         throws Exception {
-     *             return null;
-     *         }
      *         Override
      *         public String post(String url, Map<String, String> headers, Object param, boolean montage)
      *         throws Exception {
      *             return null;
      *         }
-     *         Override
-     *         public String put(String url, Map<String, String> headers, Object param, boolean montage)
-     *         throws Exception {
-     *             return null;
-     *         }
-     *         Override
-     *         public String delete(String url, Map<String, String> headers, Object param, boolean montage)
-     *         throws Exception {
-     *             return null;
-     *         }
-     *         Override
-     *         public String trace(String url, Map<String, String> headers, Object param, boolean montage)
-     *         throws Exception {
-     *             return null;
-     *         }
-     *         Override
-     *         public String options(String url, Map<String, String> headers, Object param, boolean montage)
-     *         throws Exception {
-     *             return null;
-     *         }
-     *         Override
-     *         public String head(String url, Map<String, String> headers, Object param, boolean montage)
-     *         throws Exception {
-     *             return null;
-     *         }
-     *         Override
-     *         public String patch(String url, Map<String, String> headers, Object param, boolean montage)
-     *         throws Exception {
-     *             return null;
-     *         }
+     *         ... omit
      *     }
      *    }
      *  </pre>
