@@ -26,7 +26,7 @@ import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.Names;
 import top.osjf.sdk.http.HttpProtocol;
 import top.osjf.sdk.http.HttpRequestMethod;
-import top.osjf.sdk.http.IOUtils;
+import top.osjf.sdk.http.util.IOUtils;
 
 import javax.annotation.processing.*;
 import javax.lang.model.element.Element;

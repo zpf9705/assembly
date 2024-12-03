@@ -23,7 +23,7 @@
  * questions.
  */
 
-package top.osjf.sdk.http;
+package top.osjf.sdk.http.util;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -19,8 +19,8 @@ package top.osjf.sdk.http.ok;
 import okhttp3.*;
 import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.core.util.StringUtils;
-import top.osjf.sdk.http.HttpSdkSupport;
-import top.osjf.sdk.http.ResponseFailedException;
+import top.osjf.sdk.http.support.HttpSdkSupport;
+import top.osjf.sdk.http.exception.ResponseFailedException;
 
 import java.util.Map;
 

@@ -17,7 +17,7 @@
 package top.osjf.sdk.http.feign.bridging;
 
 import feign.Client;
-import top.osjf.sdk.http.HttpRequestExecutor;
+import top.osjf.sdk.http.executor.HttpRequestExecutor;
 
 /**
  * Feign client HTTP request executor interface.

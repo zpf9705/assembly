@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http;
+package top.osjf.sdk.http.client;
+
+import top.osjf.sdk.http.process.HttpResponse;
 
 /**
  * Default impl for {@link top.osjf.sdk.core.client.Client}.

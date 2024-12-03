@@ -28,7 +28,7 @@ import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.net.URIBuilder;
 import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.core.util.StringUtils;
-import top.osjf.sdk.http.HttpSdkSupport;
+import top.osjf.sdk.http.support.HttpSdkSupport;
 
 import java.io.IOException;
 import java.net.URI;

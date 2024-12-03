@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http;
+package top.osjf.sdk.http.executor;
+
+import top.osjf.sdk.http.process.HttpRequest;
 
 import java.util.Map;
 

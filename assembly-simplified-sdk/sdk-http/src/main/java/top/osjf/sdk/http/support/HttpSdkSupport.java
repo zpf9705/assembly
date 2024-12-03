@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http;
+package top.osjf.sdk.http.support;
 
 import com.palominolabs.http.url.UrlBuilder;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
 import top.osjf.sdk.core.support.SdkSupport;
 import top.osjf.sdk.core.util.*;
+import top.osjf.sdk.http.util.UrlUtils;
+import top.osjf.sdk.http.process.HttpRequest;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -58,33 +60,6 @@ public abstract class HttpSdkSupport extends SdkSupport {
      * places to prevent memory leaks.
      * */
     protected static final Map<Class<?>, Object> rps_classes = new SynchronizedWeakHashMap<>();
-
-
-//    @SuppressWarnings({"rawtypes", "unchecked"})
-//    public static Map<String, Object> checkHeaderWithBody(HttpRequest request, Object body) {
-//        //Normal inclusion of context directly returns the current request header.
-//        Map<String, Object> headers = request.getHeadMap();
-//        if (body == null) return headers;
-//        if (headers != null && headers.containsKey("Content-Type")) return headers;
-//
-//        String contentType;
-//        if (request instanceof AbstractHttpRequestParams
-//                && ((AbstractHttpRequestParams<?>) request).defaultToJson()) {
-//            contentType = "application/json";
-//        } else contentType = getContentTypeWithBody(body.toString());
-//
-//        if (StringUtils.isNotBlank(contentType)) {
-//            if (headers == null) headers = new ConcurrentHashMap<>(1);
-//            try {
-//                headers.putIfAbsent("Content-Type", contentType);
-//            } catch (UnsupportedOperationException e) {
-//                headers = new ConcurrentHashMap<>(1);
-//                headers.putIfAbsent("Content-Type", contentType);
-//            }
-//
-//        }
-//        return headers;
-//    }
 
     /**
      * Retrieve {@code "Content-type"} based on the content of the request body,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http;
+package top.osjf.sdk.http.executor;
 
 import java.util.Map;
 

@@ -18,7 +18,7 @@ package top.osjf.sdk.http.jaxrs2;
 
 import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.core.util.StringUtils;
-import top.osjf.sdk.http.HttpSdkSupport;
+import top.osjf.sdk.http.support.HttpSdkSupport;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;

@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http;
+package top.osjf.sdk.http.executor;
 
 import com.google.common.collect.Lists;
 import top.osjf.sdk.core.util.MapUtils;
+import top.osjf.sdk.http.process.HttpRequest;
+import top.osjf.sdk.http.support.HttpSdkSupport;
 
 import java.io.Serializable;
 import java.nio.charset.Charset;

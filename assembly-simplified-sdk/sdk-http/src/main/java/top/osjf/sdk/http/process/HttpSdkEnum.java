@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http;
+package top.osjf.sdk.http.process;
 
 import top.osjf.sdk.core.process.SdkEnum;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
+import top.osjf.sdk.http.HttpProtocol;
+import top.osjf.sdk.http.HttpRequestMethod;
 
 /**
  * <p>HTTP SDK Enumeration Interface, extending from the {@code SdkEnum} interface.

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http;
+package top.osjf.sdk.http.process;
 
 import top.osjf.sdk.core.process.InspectionResponseData;
 import top.osjf.sdk.core.util.JSONUtil;

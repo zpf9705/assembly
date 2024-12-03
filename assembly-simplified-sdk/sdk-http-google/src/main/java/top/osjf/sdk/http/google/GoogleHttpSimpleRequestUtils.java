@@ -21,7 +21,7 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.util.IOUtils;
 import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.core.util.StringUtils;
-import top.osjf.sdk.http.HttpSdkSupport;
+import top.osjf.sdk.http.support.HttpSdkSupport;
 
 import java.io.IOException;
 import java.util.Map;

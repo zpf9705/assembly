@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http;
+package top.osjf.sdk.http.process;
 
 import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.util.JSONUtil;
+import top.osjf.sdk.http.process.AbstractHttpRequestParams;
+import top.osjf.sdk.http.process.AbstractHttpResponse;
 
 /**
  * {@code JsonSequenceHttpRequestParams} is an abstract class that extends

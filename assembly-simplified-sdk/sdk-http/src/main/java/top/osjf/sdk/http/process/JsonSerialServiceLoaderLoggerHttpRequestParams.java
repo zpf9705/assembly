@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-? the original author or authors.
+ * Copyright 2023-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,26 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http;
+package top.osjf.sdk.http.process;
 
 import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.http.client.ServiceLoaderLoggerHttpClient;
+import top.osjf.sdk.http.process.AbstractHttpResponse;
+import top.osjf.sdk.http.process.JsonSerialHttpRequestParams;
 
 /**
- * Extends for {@code AbstractHttpRequestParams} to provider a {@code Client}
+ * Extends for {@code JsonSerialHttpRequestParams} to provider a {@code Client}
  * is {@code ServiceLoaderLoggerHttpClient}.
  *
- * @param <R> Implement a unified response class data type.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
 @SuppressWarnings("rawtypes")
-public abstract class AbstractServiceLoaderHttpRequestParams<R extends AbstractHttpResponse> extends
-        AbstractHttpRequestParams<R> {
+public abstract class JsonSerialServiceLoaderLoggerHttpRequestParams<R extends AbstractHttpResponse> extends
+        JsonSerialHttpRequestParams<R> {
 
-    private static final long serialVersionUID = 7487068349280012103L;
+    private static final long serialVersionUID = 4587196966635484290L;
 
     /**
      * {@inheritDoc}

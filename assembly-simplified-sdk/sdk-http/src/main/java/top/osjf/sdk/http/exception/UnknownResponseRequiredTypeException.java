@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http;
+package top.osjf.sdk.http.exception;
 
 import top.osjf.sdk.core.exception.SdkException;
 

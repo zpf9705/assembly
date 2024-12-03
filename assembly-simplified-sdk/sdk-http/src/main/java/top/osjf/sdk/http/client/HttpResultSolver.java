@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http;
+package top.osjf.sdk.http.client;
 
 import top.osjf.sdk.core.exception.SdkException;
 import top.osjf.sdk.core.process.Request;
+import top.osjf.sdk.http.process.HttpRequest;
 
 import java.util.function.Supplier;
 

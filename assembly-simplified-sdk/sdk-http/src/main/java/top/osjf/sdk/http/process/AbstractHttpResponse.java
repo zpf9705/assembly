@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http;
+package top.osjf.sdk.http.process;
 
 import top.osjf.sdk.core.process.AbstractResponse;
 import top.osjf.sdk.core.process.DefaultErrorResponse;

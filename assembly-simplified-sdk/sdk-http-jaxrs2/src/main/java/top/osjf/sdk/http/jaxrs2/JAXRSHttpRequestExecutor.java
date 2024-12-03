@@ -17,8 +17,8 @@
 package top.osjf.sdk.http.jaxrs2;
 
 import top.osjf.sdk.core.support.LoadOrder;
-import top.osjf.sdk.http.AbstractSourceHttpRequestExecutor;
-import top.osjf.sdk.http.HttpRequestExecutor;
+import top.osjf.sdk.http.executor.AbstractSourceHttpRequestExecutor;
+import top.osjf.sdk.http.executor.HttpRequestExecutor;
 
 import java.util.Map;
 

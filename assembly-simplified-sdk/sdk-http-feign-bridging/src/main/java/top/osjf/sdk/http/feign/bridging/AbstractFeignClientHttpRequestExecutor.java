@@ -18,14 +18,15 @@ package top.osjf.sdk.http.feign.bridging;
 
 import feign.Request;
 import feign.Response;
-import top.osjf.sdk.http.IOUtils;
+import top.osjf.sdk.http.executor.HttpRequestExecutor;
+import top.osjf.sdk.http.util.IOUtils;
 
 import java.nio.charset.Charset;
 import java.util.*;
 
 /**
  * The abstract implementation of the {@link #execute} method for converting parameter
- * {@link top.osjf.sdk.http.HttpRequestExecutor.ExecutableHttpRequest} to {@link Request}.
+ * {@link HttpRequestExecutor.ExecutableHttpRequest} to {@link Request}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2

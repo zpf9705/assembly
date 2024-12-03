@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http;
+package top.osjf.sdk.http.client;
 
 import top.osjf.sdk.core.client.Client;
+import top.osjf.sdk.http.executor.HttpRequestExecutor;
+import top.osjf.sdk.http.process.HttpRequest;
+import top.osjf.sdk.http.process.HttpResponse;
 
 /**
  * The HTTP client interface extends the client interface and adds the ability to resolve
@@ -79,7 +82,7 @@ public interface HttpClient<R extends HttpResponse> extends Client<R>, HttpResul
      * <p>Currently only takes effect when
      * <pre>{@code HttpRequestExecutor#useCustomize == false}</pre>.
      * <p>By default, this method returns
-     * {@link top.osjf.sdk.http.HttpRequestExecutor.RequestOptions#DEFAULT_OPTIONS}.
+     * {@link HttpRequestExecutor.RequestOptions#DEFAULT_OPTIONS}.
      *
      * @return Controls the per-request settings currently required to be
      * implemented by all {@link Client clients}

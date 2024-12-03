@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http;
+package top.osjf.sdk.http.client;
 
 import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.core.client.LoggerConsumer;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.ServiceLoadManager;
+import top.osjf.sdk.http.process.HttpResponse;
 
 import java.util.function.BiConsumer;
 
