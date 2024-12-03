@@ -16,7 +16,6 @@
 
 package top.osjf.sdk.http.client;
 
-import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.core.client.LoggerConsumer;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.ServiceLoadManager;
@@ -38,11 +37,11 @@ public class ServiceLoaderLoggerHttpClient<R extends HttpResponse> extends Defau
 
     private LoggerConsumer consumer;
 
-    /*** Constructing for {@link Client} objects using unique identifier.
-     * @param unique The unique identifier string for this client's cache.
+    /*** Constructing for {@link HttpClient} objects using access URLs.
+     * @param url The real URL address of the SDK request.
      */
-    public ServiceLoaderLoggerHttpClient(String unique) {
-        super(unique);
+    public ServiceLoaderLoggerHttpClient(String url) {
+        super(url);
         loadHighPriorityLoggerConsumer();
     }
 
