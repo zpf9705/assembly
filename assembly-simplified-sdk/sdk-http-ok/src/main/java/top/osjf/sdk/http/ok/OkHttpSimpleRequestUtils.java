@@ -294,9 +294,9 @@ public abstract class OkHttpSimpleRequestUtils {
         String contentType = null;
         if (MapUtils.isNotEmpty(headers)) {
             contentType = headers.get("Content-type");
-            if (StringUtils.isBlank(contentType)) {
-                contentType = HttpSdkSupport.getContentTypeWithBody(body, charset);
-            }
+        }
+        if (StringUtils.isBlank(contentType)) {
+            contentType = HttpSdkSupport.getContentTypeWithBody(body, charset);
         }
         if (contentType != null) {
             mediaType = MediaType.parse(contentType);
