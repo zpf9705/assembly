@@ -36,21 +36,7 @@ import java.util.Map;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-@SuppressWarnings("rawtypes")
 public interface SourceHttpRequestExecutor extends HttpRequestExecutor {
-
-    @Override
-    default String execute(ExecutableHttpRequest httpRequest) throws Exception {
-        Source source = httpRequest.getSource();
-        HttpRequest sourceRequest = source.getSourceRequest();
-        return getClass().getMethod(sourceRequest.matchSdkEnum().name().toLowerCase(),
-                String.class,
-                Map.class,
-                Object.class,
-                boolean.class).invoke(this, source.getSourceUrl(),
-                sourceRequest.getHeadMap(),
-                sourceRequest.getRequestParam(), sourceRequest.montage()).toString();
-    }
 
     /**
      * HTTP request method for {@code Get}.
