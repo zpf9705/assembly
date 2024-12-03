@@ -11,7 +11,7 @@ import top.osjf.sdk.core.support.Nullable;
  * The object implementing this interface should be able to provide
  * data corresponding to specific query parameters.
  *
- * @see AbstractUrlQueryHttpRequest
+ * @see AbstractUrlQueryHttpRequestParams
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
