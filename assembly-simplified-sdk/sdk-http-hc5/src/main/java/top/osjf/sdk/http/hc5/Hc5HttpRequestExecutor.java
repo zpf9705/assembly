@@ -17,8 +17,8 @@
 package top.osjf.sdk.http.hc5;
 
 import top.osjf.sdk.core.support.LoadOrder;
+import top.osjf.sdk.http.AbstractSourceHttpRequestExecutor;
 import top.osjf.sdk.http.HttpRequestExecutor;
-import top.osjf.sdk.http.SourceHttpRequestExecutor;
 
 import java.util.Map;
 
@@ -30,7 +30,7 @@ import java.util.Map;
  * @since 1.0.2
  */
 @LoadOrder(Integer.MIN_VALUE + 18)
-public class Hc5HttpRequestExecutor implements SourceHttpRequestExecutor {
+public class Hc5HttpRequestExecutor extends AbstractSourceHttpRequestExecutor {
 
     @Override
     public String get(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
