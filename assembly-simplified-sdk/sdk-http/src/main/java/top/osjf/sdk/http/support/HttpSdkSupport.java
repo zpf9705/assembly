@@ -20,10 +20,17 @@ import com.palominolabs.http.url.UrlBuilder;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
 import top.osjf.sdk.core.support.SdkSupport;
-import top.osjf.sdk.core.util.*;
-import top.osjf.sdk.http.util.UrlUtils;
+import top.osjf.sdk.core.util.ArrayUtils;
+import top.osjf.sdk.core.util.JSONUtil;
+import top.osjf.sdk.core.util.MapUtils;
+import top.osjf.sdk.core.util.SynchronizedWeakHashMap;
 import top.osjf.sdk.http.process.HttpRequest;
+import top.osjf.sdk.http.util.UrlUtils;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.ByteArrayInputStream;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
@@ -32,6 +39,7 @@ import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
+import java.util.function.BiPredicate;
 
 /**
  * <p>The abstract {@code HttpSdkSupport} class is an abstract class that inherits from
@@ -61,34 +69,77 @@ public abstract class HttpSdkSupport extends SdkSupport {
      * */
     protected static final Map<Class<?>, Object> rps_classes = new SynchronizedWeakHashMap<>();
 
+    /*** Cache for context type determination.*/
+    protected static final Map<BiPredicate<String, Charset>, String> content_type_predicates;
+
+    /*** parse xml.*/
+    protected static DocumentBuilder builder;
+
+    static {
+        /* init documentBuilder cache */
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        try {
+            builder = factory.newDocumentBuilder();
+        } catch (ParserConfigurationException ignored) {
+        }
+        /* init content type predicates cache */
+        content_type_predicates = new LinkedHashMap<>();
+        content_type_predicates.put((s, c) -> JSONUtil.isValidObjectOrArray(s), "application/json");
+        content_type_predicates.put((s, c) ->
+                        s.matches("^(?:[a-zA-Z0-9_\\-.]+=(?:[^&]*?)(?:&(?:[a-zA-Z0-9_\\-.]+=(?:[^&]*?)))*)?$"),
+                "application/x-www-form-urlencoded");
+        content_type_predicates.put(HttpSdkSupport::isXMLBody, "application/xml");
+    }
+
     /**
      * Retrieve {@code "Content-type"} based on the content of the request body,
-     * supporting the judgment of {@code "application/json"} and {@code application/xml},
-     * with the rest being null.
+     * supporting the judgment of following types:
+     * <ul>
+     *     <li>{@code "application/json"}</li>
+     *     <li>{@code "application/xml"}</li>
+     *     <li>{@code "application/x-www-form-urlencoded"}</li>
+     * </ul>
+     * with the rest being {@literal null}.
      *
-     * @param body input body.
+     * @param body    input body.
+     * @param charset input charset.
      * @return {@code "Content-type"} or nullable if is no support type.
      */
-    public static String getContentTypeWithBody(Object body) {
+    public static String getContentTypeWithBody(Object body, Charset charset) {
         if (body == null) return null;
         String bodyStr = body.toString();
-        String contentType = null;
-        if (StringUtils.isNotBlank(bodyStr)) {
-            char firstChar = bodyStr.charAt(0);
-            switch (firstChar) {
-                case '{':
-                case '[':
-                    contentType = "application/json";
-                    break;
-                case '<':
-                    contentType = "application/xml";
-                    break;
-
-                default:
-                    break;
+        for (Map.Entry<BiPredicate<String, Charset>, String> entry : content_type_predicates.entrySet()) {
+            if (entry.getKey().test(bodyStr, charset)) {
+                return entry.getValue();
             }
         }
-        return contentType;
+        return null;
+    }
+
+    /**
+     * Return whether the input request message is a parsed XML.
+     *
+     * <p>Option 1 uses {@code DocumentBuilder} for XML formatting
+     * and parsing, and if there are no exceptions, it can be determined
+     * as an XML message.
+     *
+     * <p>Option 2 uses regular {@code ^<.*$} to determine if it starts
+     * with {@code <}.
+     *
+     * @param body    input body.
+     * @param charset input charset.
+     * @return  if {@code true} input body is xml,otherwise not.
+     */
+    public static boolean isXMLBody(String body, Charset charset) {
+        if (builder != null) {
+            try {
+                builder.parse(new ByteArrayInputStream(body.getBytes(charset)));
+            } catch (Exception e) {
+                return false;
+            }
+            return true;
+        }
+        return body.matches("^<.*$");
     }
 
     /**
