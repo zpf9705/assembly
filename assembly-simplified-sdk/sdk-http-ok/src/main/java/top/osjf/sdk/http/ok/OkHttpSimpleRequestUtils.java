@@ -28,7 +28,7 @@ import java.nio.charset.Charset;
 import java.util.Map;
 
 /**
- * The Square's HTTP client request tool class mainly includes four request
+ * The Square's OK HTTP client request tool class mainly includes four request
  * methods: post, get, put, and del...
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
