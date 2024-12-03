@@ -231,7 +231,7 @@ public abstract class JAXRSHttpSimpleRequestUtils {
         if (StringUtils.isBlank(contentType)) {
             contentType = HttpSdkSupport.getContentTypeWithBody(body, charset);
         }
-        if (StringUtils.isNotBlank(contentType)) {
+        if (contentType != null) {
             String[] types = contentType.split("/");
             if (types.length != 2) {
                 throw new IllegalArgumentException("Incorrect context type [" + contentType + "]");
