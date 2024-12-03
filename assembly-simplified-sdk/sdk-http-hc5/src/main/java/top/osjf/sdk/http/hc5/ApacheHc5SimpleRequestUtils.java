@@ -291,20 +291,24 @@ public abstract class ApacheHc5SimpleRequestUtils {
                                   HttpUriRequestBase requestBase,
                                   @Nullable Map<String, String> headers,
                                   @Nullable Charset charset) {
-        if (body == null) return;
-        String contentType = null;
-        if (MapUtils.isNotEmpty(headers)) {
-            contentType = headers.get("Content-type");
-        }
-        if (StringUtils.isBlank(contentType)) {
-            contentType = HttpSdkSupport.getContentTypeWithBody(body, charset);
-        }
         HttpEntity httpEntity;
-        if (contentType != null) {
-            httpEntity = new StringEntity(body.toString(), ContentType.parse(contentType));
+        if (body == null) {
+            httpEntity = new ByteArrayEntity(new byte[0], null);
         } else {
-            if (charset == null) charset = StandardCharsets.UTF_8;
-            httpEntity = new ByteArrayEntity(body.toString().getBytes(charset), null);
+            String contentType = null;
+            if (MapUtils.isNotEmpty(headers)) {
+                contentType = headers.get("Content-type");
+            }
+            if (StringUtils.isBlank(contentType)) {
+                contentType = HttpSdkSupport.getContentTypeWithBody(body, charset);
+            }
+            String bodyStr = body.toString();
+            if (contentType != null) {
+                httpEntity = new StringEntity(bodyStr, ContentType.parse(contentType));
+            } else {
+                byte[] buf = charset != null ? bodyStr.getBytes(charset) : bodyStr.getBytes();
+                httpEntity = new ByteArrayEntity(buf, null);
+            }
         }
         requestBase.setEntity(httpEntity);
     }
