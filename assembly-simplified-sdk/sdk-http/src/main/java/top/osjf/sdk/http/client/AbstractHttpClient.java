@@ -135,7 +135,7 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
      * @param url The real URL address of the SDK request.
      * */
     public AbstractHttpClient(String url) {
-        super(url);
+        super(HttpSdkSupport.getClientUnique(url));
         this.url = url;
     }
 

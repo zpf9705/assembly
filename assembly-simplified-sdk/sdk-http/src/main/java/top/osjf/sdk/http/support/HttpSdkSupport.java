@@ -20,10 +20,7 @@ import com.palominolabs.http.url.UrlBuilder;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
 import top.osjf.sdk.core.support.SdkSupport;
-import top.osjf.sdk.core.util.ArrayUtils;
-import top.osjf.sdk.core.util.JSONUtil;
-import top.osjf.sdk.core.util.MapUtils;
-import top.osjf.sdk.core.util.SynchronizedWeakHashMap;
+import top.osjf.sdk.core.util.*;
 import top.osjf.sdk.http.process.HttpRequest;
 import top.osjf.sdk.http.util.UrlUtils;
 
@@ -69,10 +66,14 @@ public abstract class HttpSdkSupport extends SdkSupport {
      * */
     protected static final Map<Class<?>, Object> rps_classes = new SynchronizedWeakHashMap<>();
 
-    /*** Cache for context type determination.*/
+    /*** Cache for context type determination.
+     * @since 1.0.2
+     * */
     protected static final Map<BiPredicate<String, Charset>, String> content_type_predicates;
 
-    /*** parse xml.*/
+    /*** parse xml.
+     * @since 1.0.2
+     * */
     protected static DocumentBuilder builder;
 
     static {
@@ -104,6 +105,7 @@ public abstract class HttpSdkSupport extends SdkSupport {
      * @param body    input body.
      * @param charset input charset.
      * @return {@code "Content-type"} or nullable if is no support type.
+     * @since 1.0.2
      */
     public static String getContentTypeWithBody(Object body, Charset charset) {
         if (body == null) return null;
@@ -129,6 +131,7 @@ public abstract class HttpSdkSupport extends SdkSupport {
      * @param body    input body.
      * @param charset input charset.
      * @return if {@code true} input body is xml,otherwise not.
+     * @since 1.0.2
      */
     public static boolean isXMLBody(String body, Charset charset) {
         if (builder != null) {
@@ -140,6 +143,21 @@ public abstract class HttpSdkSupport extends SdkSupport {
             return true;
         }
         return body.matches("^<.*$");
+    }
+
+    /**
+     * Get the unique client URL (excluding query parameters).
+     * <p>
+     * This method takes a URL string as input. If the input URL is blank or does
+     * not contain query parameters (i.e., the "?" character),it directly returns
+     * the original URL. If the URL contains query parameters,it returns the part
+     * of the URL before the "?",excluding the query parameters.
+     *
+     * @param url The input URL string
+     * @return The URL string excluding query parameters
+     */
+    public static String getClientUnique(String url) {
+        return StringUtils.isBlank(url) || !url.contains("?") ? url : url.substring(0, url.indexOf("?"));
     }
 
     /**
@@ -407,6 +425,7 @@ public abstract class HttpSdkSupport extends SdkSupport {
      * @return The converted {@code Map<String, Object>} object. If no conversion is needed or the conversion fails,
      * {@literal null} is returned.
      * @throws IllegalArgumentException Thrown if the {@code body} type cannot be correctly converted to Map format.
+     * @since 1.0.2
      */
     @SuppressWarnings("unchecked")
     public static Map<String, Object> convertUrlQueryParamToMap(Object urlQueryParm) {
@@ -456,6 +475,7 @@ public abstract class HttpSdkSupport extends SdkSupport {
      * @return The built and formatted complete URL string, including query parameters.
      * @throws IllegalArgumentException If an error occurs during URL building,
      *                                  this exception is thrown with detailed error information.
+     * @since 1.0.2
      */
     public static String buildAndFormatUrlWithQueryParams(String url, Object queryParam, Charset charset) {
         Map<String, Object> queryParamMap = resolveMontageObj(queryParam);
