@@ -128,7 +128,7 @@ public abstract class HttpSdkSupport extends SdkSupport {
      *
      * @param body    input body.
      * @param charset input charset.
-     * @return  if {@code true} input body is xml,otherwise not.
+     * @return if {@code true} input body is xml,otherwise not.
      */
     public static boolean isXMLBody(String body, Charset charset) {
         if (builder != null) {
@@ -380,6 +380,95 @@ public abstract class HttpSdkSupport extends SdkSupport {
                 urlBuilder.queryParam(entry.getKey(), String.valueOf(entry.getValue()));
             }
             url = urlBuilder.toUrlString();
+        }
+        return url;
+    }
+
+    /**
+     * Converts an object to a Map format suitable for URL concatenation.
+     *
+     * <p>The conversion logic is as follows:</p>
+     * <ul>
+     * <li>If {@code body} is of type {@code Map}, it is directly converted to {@code Map<String, Object>},
+     * with all keys being converted to string type.</li>
+     * <li>If {@code body} is of type {@code String}, it attempts to parse it as a JSON
+     * string and extract the internal Map parameters. If parsing fails or it is not a valid
+     * JSON format, {@literal null} is returned.</li>
+     * <li>If {@code body} is of another type, it attempts to convert it to a JSON string
+     * and then parse the JSON string into a Map object. If any exception occurs during this
+     * process (e.g., {@code body} cannot be serialized to a JSON string), an {@code IllegalArgumentException}
+     * is thrown.</li>
+     * </ul>
+     *
+     * <p>This method is primarily used to handle different types of request bodies and is
+     * very useful when the request body needs to be converted to Map format for URL concatenation.
+     *
+     * @param urlQueryParm The object to be converted. It can be of type {@code Map}, {@code String}, or other types.
+     * @return The converted {@code Map<String, Object>} object. If no conversion is needed or the conversion fails,
+     * {@literal null} is returned.
+     * @throws IllegalArgumentException Thrown if the {@code body} type cannot be correctly converted to Map format.
+     */
+    @SuppressWarnings("unchecked")
+    public static Map<String, Object> convertUrlQueryParamToMap(Object urlQueryParm) {
+        Map<String, Object> queryParamMap = null;
+        if (urlQueryParm != null) {
+            if (urlQueryParm instanceof Map) {
+                //When obtaining the body type in map format,
+                // it can be directly converted.
+                Map<Object, Object> mapInstanceof = (Map<Object, Object>) urlQueryParm;
+                queryParamMap = new HashMap<>();
+                for (Map.Entry<Object, Object> entry : mapInstanceof.entrySet()) {
+                    queryParamMap.put(entry.getKey().toString(), entry.getValue());
+                }
+            } else if (urlQueryParm instanceof String) {
+                //Consider JSON format for string format and obtain the
+                // specified map parameters from JSON conversion.
+                //When it is not in JSON format, return null.
+                queryParamMap = JSONUtil.getInnerMapByJsonStr((String) urlQueryParm);
+            } else {
+                //Considering in the form of a single object, using JSON conversion
+                // to convert this object to map format may result in JSON conversion
+                // errors if the object is not familiar with defining it.
+                try {
+                    queryParamMap = JSONUtil.parseObject(JSONUtil.toJSONString(urlQueryParm));
+                } catch (Exception e) {
+                    //Capture possible conversion errors, such as String type.
+                    throw new IllegalArgumentException
+                            ("The splicing URL requirement for the body parameter has been set, " +
+                                    "but the [" + urlQueryParm.getClass().getName() + "] type of the body does not match");
+                }
+            }
+        }
+        return queryParamMap;
+    }
+
+    /**
+     * Builds and formats a complete URL with query parameters based on the provided URL and query parameters.
+     *
+     * <p>This method first resolves the query parameter object into a Map, then iterates over this Map,
+     * adding each key-value pair as a query parameter to the URL. If the query parameter Map is empty,
+     * it returns the original URL directly.
+     *
+     * @param url        The original URL string, excluding the query parameter part.
+     * @param queryParam The object containing query parameters, which can be a Map, JavaBean, etc.,
+     *                   depending on the implementation of the `resolveMontageObj` method.
+     * @param charset    The character set used for URL encoding.
+     * @return The built and formatted complete URL string, including query parameters.
+     * @throws IllegalArgumentException If an error occurs during URL building,
+     *                                  this exception is thrown with detailed error information.
+     */
+    public static String buildAndFormatUrlWithQueryParams(String url, Object queryParam, Charset charset) {
+        Map<String, Object> queryParamMap = resolveMontageObj(queryParam);
+        if (MapUtils.isNotEmpty(queryParamMap)) {
+            try {
+                UrlBuilder urlBuilder = UrlUtils.toPalominolabsBuilder(url, charset);
+                for (Map.Entry<String, Object> entry : queryParamMap.entrySet()) {
+                    urlBuilder.queryParam(entry.getKey(), String.valueOf(entry.getValue()));
+                }
+                url = urlBuilder.toUrlString();
+            } catch (Exception e) {
+                throw new IllegalArgumentException(" Format URL error ", e);
+            }
         }
         return url;
     }
