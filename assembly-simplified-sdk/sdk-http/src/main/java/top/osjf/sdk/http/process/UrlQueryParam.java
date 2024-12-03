@@ -25,7 +25,7 @@ public interface UrlQueryParam {
      * entity object.
      *
      * @return Query parameter objects with desired features.
-     * @see top.osjf.sdk.http.support.HttpSdkSupport#resolveMontageObj(Object)
+     * @see top.osjf.sdk.http.support.HttpSdkSupport#convertUrlQueryParamToMap(Object)
      */
     @Nullable
     Object getParam();
