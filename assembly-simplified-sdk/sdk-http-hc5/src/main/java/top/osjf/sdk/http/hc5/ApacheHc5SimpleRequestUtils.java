@@ -256,7 +256,7 @@ public abstract class ApacheHc5SimpleRequestUtils {
      *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
      *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String doRequest(HttpClient client,
+    public static String doRequest(@Nullable HttpClient client,
                                    HttpUriRequestBase requestBase,
                                    @Nullable Map<String, String> headers,
                                    @Nullable Object body,

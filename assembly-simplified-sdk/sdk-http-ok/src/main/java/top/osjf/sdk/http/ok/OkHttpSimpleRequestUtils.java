@@ -231,7 +231,7 @@ public abstract class OkHttpSimpleRequestUtils {
      *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
      *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String doRequest(okhttp3.OkHttpClient client,
+    public static String doRequest(@Nullable okhttp3.OkHttpClient client,
                                    Request.Builder builder,
                                    @Nullable Map<String, String> headers) throws Exception {
         if (client == null) {

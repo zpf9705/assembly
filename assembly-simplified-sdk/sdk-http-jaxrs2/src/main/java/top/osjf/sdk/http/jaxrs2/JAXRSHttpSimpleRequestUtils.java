@@ -199,7 +199,7 @@ public abstract class JAXRSHttpSimpleRequestUtils {
      * @return Returns a string representation of the server response body.
      * The specific content depends on the server's response.
      */
-    public static String doRequest(Client client,
+    public static String doRequest(@Nullable Client client,
                                    String url,
                                    String methodName,
                                    @Nullable Map<String, String> headers,
