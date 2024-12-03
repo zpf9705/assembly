@@ -18,8 +18,6 @@ package top.osjf.sdk.http.process;
 
 import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.util.JSONUtil;
-import top.osjf.sdk.http.process.AbstractHttpRequestParams;
-import top.osjf.sdk.http.process.AbstractHttpResponse;
 
 /**
  * {@code JsonSequenceHttpRequestParams} is an abstract class that extends
@@ -40,6 +38,7 @@ import top.osjf.sdk.http.process.AbstractHttpResponse;
  * }}
  * </pre>
  *
+ * @param <R> Implement a unified response class data type.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
