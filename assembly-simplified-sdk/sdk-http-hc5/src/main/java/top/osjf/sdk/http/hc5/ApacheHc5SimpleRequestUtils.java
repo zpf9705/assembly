@@ -23,15 +23,16 @@ import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.io.entity.ByteArrayEntity;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
-import org.apache.hc.core5.net.URIBuilder;
+import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.core.util.StringUtils;
 import top.osjf.sdk.http.support.HttpSdkSupport;
 
 import java.io.IOException;
-import java.net.URI;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
@@ -77,16 +78,20 @@ public abstract class ApacheHc5SimpleRequestUtils {
      * <p>
      * The default format is {@link CloseableHttpClient} in <pre>{@code HttpClients.custom().build()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @param charset Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String get(String url, Map<String, String> headers, Object requestParam, boolean montage)
+    public static String get(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset)
             throws Exception {
-        return doRequest(null, new HttpGet(getUri(url, requestParam, montage)), headers, montage, requestParam);
+        return doRequest(null, new HttpGet(url), headers, body, charset);
     }
 
     /**
@@ -94,16 +99,20 @@ public abstract class ApacheHc5SimpleRequestUtils {
      * <p>
      * The default format is {@link CloseableHttpClient} in <pre>{@code HttpClients.custom().build()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @param charset Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String post(String url, Map<String, String> headers, Object requestParam, boolean montage)
+    public static String post(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset)
             throws Exception {
-        return doRequest(null, new HttpPost(getUri(url, requestParam, montage)), headers, montage, requestParam);
+        return doRequest(null, new HttpPost(url), headers, body, charset);
     }
 
     /**
@@ -111,16 +120,20 @@ public abstract class ApacheHc5SimpleRequestUtils {
      * <p>
      * The default format is {@link CloseableHttpClient} in <pre>{@code HttpClients.custom().build()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @param charset Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String put(String url, Map<String, String> headers, Object requestParam, boolean montage)
+    public static String put(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset)
             throws Exception {
-        return doRequest(null, new HttpPut(getUri(url, requestParam, montage)), headers, montage, requestParam);
+        return doRequest(null, new HttpPut(url), headers, body, charset);
     }
 
     /**
@@ -128,16 +141,20 @@ public abstract class ApacheHc5SimpleRequestUtils {
      * <p>
      * The default format is {@link CloseableHttpClient} in <pre>{@code HttpClients.custom().build()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value.
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @param charset Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String delete(String url, Map<String, String> headers, Object requestParam, boolean montage)
+    public static String delete(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset)
             throws Exception {
-        return doRequest(null, new HttpDelete(getUri(url, requestParam, montage)), headers, montage, requestParam);
+        return doRequest(null, new HttpDelete(url), headers, body, charset);
     }
 
     /**
@@ -145,16 +162,20 @@ public abstract class ApacheHc5SimpleRequestUtils {
      * <p>
      * The default format is {@link CloseableHttpClient} in <pre>{@code HttpClients.custom().build()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value.
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @param charset Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String trace(String url, Map<String, String> headers, Object requestParam, boolean montage)
+    public static String trace(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset)
             throws Exception {
-        return doRequest(null, new HttpTrace(getUri(url, requestParam, montage)), headers, montage, requestParam);
+        return doRequest(null, new HttpTrace(url), headers, body, charset);
     }
 
     /**
@@ -162,16 +183,20 @@ public abstract class ApacheHc5SimpleRequestUtils {
      * <p>
      * The default format is {@link CloseableHttpClient} in <pre>{@code HttpClients.custom().build()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value.
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @param charset Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String options(String url, Map<String, String> headers, Object requestParam, boolean montage)
+    public static String options(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset)
             throws Exception {
-        return doRequest(null, new HttpOptions(getUri(url, requestParam, montage)), headers, montage, requestParam);
+        return doRequest(null, new HttpOptions(url), headers, body, charset);
     }
 
     /**
@@ -179,16 +204,20 @@ public abstract class ApacheHc5SimpleRequestUtils {
      * <p>
      * The default format is {@link CloseableHttpClient} in <pre>{@code HttpClients.custom().build()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value.
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @param charset Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String head(String url, Map<String, String> headers, Object requestParam, boolean montage)
+    public static String head(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset)
             throws Exception {
-        return doRequest(null, new HttpHead(getUri(url, requestParam, montage)), headers, montage, requestParam);
+        return doRequest(null, new HttpHead(url), headers, body, charset);
     }
 
     /**
@@ -196,34 +225,42 @@ public abstract class ApacheHc5SimpleRequestUtils {
      * <p>
      * The default format is {@link CloseableHttpClient} in <pre>{@code HttpClients.custom().build()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value.
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @param charset Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String patch(String url, Map<String, String> headers, Object requestParam, boolean montage)
+    public static String patch(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset)
             throws Exception {
-        return doRequest(null, new HttpPatch(getUri(url, requestParam, montage)), headers, montage, requestParam);
+        return doRequest(null, new HttpPatch(url), headers, body, charset);
     }
 
     /**
      * The HTTP5 request sending method includes the entire lifecycle of HTTP requests.
      *
-     * @param client       Apache's HTTP request client.
-     * @param requestBase  HTTP Public Request Class {@link HttpUriRequestBase}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @return The {@code String} type of the return value
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param client      Apache's HTTP request client.
+     * @param requestBase HTTP Public Request Class {@link HttpUriRequestBase}.
+     * @param headers     Optional HTTP header information used to control the behavior of requests.
+     * @param body        Optional request body.
+     * @param charset     Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
     public static String doRequest(HttpClient client,
                                    HttpUriRequestBase requestBase,
-                                   Map<String, String> headers,
-                                   boolean montage,
-                                   Object requestParam) throws Exception {
+                                   @Nullable Map<String, String> headers,
+                                   @Nullable Object body,
+                                   @Nullable Charset charset) throws Exception {
         if (client == null) {
             client = DEFAULT;
         }
@@ -231,8 +268,7 @@ public abstract class ApacheHc5SimpleRequestUtils {
         String result;
         try {
             addHeaders(headers, requestBase);
-            //Set the request body when there are no parameters attached to the query.
-            if (!montage) setEntity(requestParam, requestBase, headers);
+            setEntity(body, requestBase, headers, charset);
             response = client.execute(requestBase, r -> r);
             result = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
         } finally {
@@ -246,25 +282,31 @@ public abstract class ApacheHc5SimpleRequestUtils {
     /**
      * Set {@link HttpEntity} with a {@link StringEntity}.
      *
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param requestBase  HTTP Public Request Class {@link HttpUriRequestBase}
-     * @param headers      Header information map,can be {@literal null}.
+     * @param requestBase HTTP Public Request Class {@link HttpUriRequestBase}
+     * @param headers     Optional HTTP header information used to control the behavior of requests.
+     * @param body        Optional request body.
+     * @param charset     Encoding character set.
      */
-    private static void setEntity(Object requestParam, HttpUriRequestBase requestBase, Map<String, String> headers) {
-        if (requestParam == null) {
-            return;
-        }
-        ContentType contentType = ContentType.APPLICATION_JSON;
-        String str = requestParam.toString();
-        StringEntity stringEntity;
+    private static void setEntity(@Nullable Object body,
+                                  HttpUriRequestBase requestBase,
+                                  @Nullable Map<String, String> headers,
+                                  @Nullable Charset charset) {
+        if (body == null) return;
+        String contentType = null;
         if (MapUtils.isNotEmpty(headers)) {
-            String value = headers.get("Content-type");
-            if (StringUtils.isNotBlank(value)) {
-                contentType = ContentType.parse(value);
-            }
+            contentType = headers.get("Content-type");
         }
-        stringEntity = new StringEntity(str, contentType);
-        requestBase.setEntity(stringEntity);
+        if (StringUtils.isBlank(contentType)) {
+            contentType = HttpSdkSupport.getContentTypeWithBody(body, charset);
+        }
+        HttpEntity httpEntity;
+        if (contentType != null) {
+            httpEntity = new StringEntity(body.toString(), ContentType.parse(contentType));
+        } else {
+            if (charset == null) charset = StandardCharsets.UTF_8;
+            httpEntity = new ByteArrayEntity(body.toString().getBytes(charset), null);
+        }
+        requestBase.setEntity(httpEntity);
     }
 
     /**
@@ -279,27 +321,5 @@ public abstract class ApacheHc5SimpleRequestUtils {
                 requestBase.addHeader(header.getKey(), header.getValue());
             }
         }
-    }
-
-    /**
-     * The get request for building HTTP contains the construction object of {@link URI}.
-     *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return Uri object,Please pay attention to the format issue of the URL.
-     * @throws Exception unknown exception.
-     */
-    private static URI getUri(String url, Object requestParam, boolean montage) throws Exception {
-        URIBuilder uriBuilder = new URIBuilder(url);
-        Map<String, Object> params = null;
-        if (montage) params = HttpSdkSupport.resolveMontageObj(requestParam);
-        if (params != null) {
-            for (Map.Entry<String, Object> entry : params.entrySet()) {
-                uriBuilder.addParameter(entry.getKey(), String.valueOf(entry.getValue()));
-            }
-        }
-        //If it is null or a string, it can be directly used as a paparazzi
-        return uriBuilder.build();
     }
 }
