@@ -29,7 +29,7 @@ import top.osjf.sdk.http.client.ServiceLoaderLoggerHttpClient;
  * @since 1.0.2
  */
 @SuppressWarnings("rawtypes")
-public abstract class AbstractServiceLoaderHttpRequestParams<R extends AbstractHttpResponse> extends
+public abstract class AbstractSPILoggerHttpRequestParams<R extends AbstractHttpResponse> extends
         AbstractHttpRequestParams<R> {
 
     private static final long serialVersionUID = 7487068349280012103L;
