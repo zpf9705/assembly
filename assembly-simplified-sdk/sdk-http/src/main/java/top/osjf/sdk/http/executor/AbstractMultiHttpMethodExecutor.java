@@ -16,32 +16,28 @@
 
 package top.osjf.sdk.http.executor;
 
-import top.osjf.sdk.http.process.HttpRequest;
-
+import java.nio.charset.Charset;
 import java.util.Map;
 
 /**
- * {@code AbstractSourceHttpRequestExecutor} is an abstract class that implements
- * {@code SourceHttpRequestExecutor}, which rewrites {@link #execute} methods to
+ * {@code AbstractMultiHttpMethodExecutor} is an abstract class that implements
+ * {@code MultiHttpMethodExecutor}, which rewrites {@link #execute} methods to
  * obtain the source {@code HttpRequest} and reflects the execution of relevant
  * request methods.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-@SuppressWarnings("rawtypes")
-public abstract class AbstractSourceHttpRequestExecutor implements SourceHttpRequestExecutor {
+public abstract class AbstractMultiHttpMethodExecutor implements MultiHttpMethodExecutor {
 
     @Override
     public final String execute(ExecutableHttpRequest httpRequest) throws Exception {
-        Source source = httpRequest.getSource();
-        HttpRequest sourceRequest = source.getSourceRequest();
-        return getClass().getMethod(sourceRequest.matchSdkEnum().name().toLowerCase(),
+        return getClass().getMethod(httpRequest.getMethodName().toLowerCase(),
                 String.class,
                 Map.class,
                 Object.class,
-                boolean.class).invoke(this, source.getSourceUrl(),
-                sourceRequest.getHeadMap(),
-                sourceRequest.getRequestParam(), sourceRequest.montage()).toString();
+                Charset.class).invoke(this, httpRequest.getUrl(),
+                httpRequest.getHeaders(),
+                httpRequest.getBody(), httpRequest.getCharset()).toString();
     }
 }

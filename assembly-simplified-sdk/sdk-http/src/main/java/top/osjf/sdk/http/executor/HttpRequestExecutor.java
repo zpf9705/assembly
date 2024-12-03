@@ -19,7 +19,6 @@ package top.osjf.sdk.http.executor;
 import com.google.common.collect.Lists;
 import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.http.process.HttpRequest;
-import top.osjf.sdk.http.support.HttpSdkSupport;
 
 import java.io.Serializable;
 import java.nio.charset.Charset;
@@ -55,7 +54,10 @@ public interface HttpRequestExecutor {
      *                    information, including URL, method name,
      *                    request body, charset, headers, and options.
      * @return The response {@code String} result after executing the HTTP request.
-     * @throws Exception The request execution process is abnormal.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      * @since 1.0.2
      */
     String execute(ExecutableHttpRequest httpRequest) throws Exception;
@@ -254,6 +256,7 @@ public interface HttpRequestExecutor {
         /**
          * Retrieve the original request information for building this
          * executable request class.
+         *
          * @return original request information.
          */
         Source getSource();
@@ -289,8 +292,8 @@ public interface HttpRequestExecutor {
     class Default implements ExecutableHttpRequest {
         private static final long serialVersionUID = -375300629962316312L;
 
-        private String url;
-        private Object body;
+        private final String url;
+        private final Object body;
         private final String methodName;
         private final Charset charset;
         private final Map<String, Object> headers;
@@ -317,20 +320,16 @@ public interface HttpRequestExecutor {
          * @param sourceRequest An object encapsulating HTTP request information.
          * @param sourceUrl     The URL address of the request.
          * @param options       The options for the HTTP request, can be null.
-         * @throws Exception Format and encoding set related errors that
-         *                   occur during the URL formatting process.
          */
-        public Default(HttpRequest sourceRequest, String sourceUrl, RequestOptions options) throws Exception {
+        public Default(HttpRequest sourceRequest, String sourceUrl, RequestOptions options) {
             if (sourceRequest == null) throw new NullPointerException("HttpRequest not be null");
             if (sourceUrl == null) throw new NullPointerException("url not be null");
+            this.url = sourceUrl;
+            this.body = sourceRequest.getRequestParam();
             this.methodName = sourceRequest.matchSdkEnum().getRequestMethod().name();
             this.charset = sourceRequest.getCharset();
             this.headers = sourceRequest.getHeadMap();
             this.options = options == null ? RequestOptions.DEFAULT_OPTIONS : options;
-            HttpSdkSupport.resolveIfMontageUrlAndBody(sourceRequest, sourceUrl, (resultBody, resultUrl) -> {
-                body = resultBody;
-                url = resultUrl;
-            });
             this.source = new Source() {
                 @Override
                 public HttpRequest getSourceRequest() {

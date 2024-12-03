@@ -68,11 +68,9 @@ public interface HttpClient<R extends HttpResponse> extends Client<R>, HttpResul
      * @param request An object encapsulating HTTP request information.
      * @param url     The URL address of the request.
      * @return The executable {@code HttpRequest} after initialization is completed.
-     * @throws Exception Format and encoding set related errors that
-     *                   occur during the URL formatting process.
      */
     default HttpRequestExecutor.ExecutableHttpRequest asRequestToExecutable(HttpRequest<R> request,
-                                                                            String url) throws Exception {
+                                                                            String url) {
         return new HttpRequestExecutor.Default(request, url, getOptions());
     }
 
