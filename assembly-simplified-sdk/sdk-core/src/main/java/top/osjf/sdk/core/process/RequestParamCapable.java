@@ -16,6 +16,8 @@
 
 package top.osjf.sdk.core.process;
 
+import top.osjf.sdk.core.support.Nullable;
+
 import java.nio.charset.Charset;
 
 /**
@@ -42,6 +44,7 @@ public interface RequestParamCapable<T> {
      *
      * @return the actual request parameters.
      */
+    @Nullable
     T getRequestParam();
 
     /**
@@ -51,5 +54,6 @@ public interface RequestParamCapable<T> {
      * @return The encoding character set for the request and parameter.
      * @since 1.0.2
      */
+    @Nullable
     Charset getCharset();
 }
