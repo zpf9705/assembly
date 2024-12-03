@@ -92,7 +92,7 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
      *         //The remaining old methods will be removed in future versions and do not require compatibility.
      *         //If there are their own tools to handle classes, they can be used as markers.
      *
-     *         //These are implementation methods for custom request processes.
+     *         //These are implementation methods for source request processes.
      *         Override
      *         public String post(String url, Map<String, String> headers, Object param, boolean montage)
      *         throws Exception {
