@@ -268,10 +268,6 @@ public abstract class OkHttpSimpleRequestUtils {
         }
     }
 
-    public static void main(String[] args) {
-        System.out.println(getRequestBuilder("https://www.baidu.com", null, null, null, "POST"));
-    }
-
     /**
      * Use relevant parameters to obtain the {@link Request} parameters required for
      * {@link OkHttpClient} execution.
