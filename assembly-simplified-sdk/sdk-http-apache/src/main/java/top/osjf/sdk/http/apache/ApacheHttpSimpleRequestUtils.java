@@ -20,37 +20,31 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.*;
-import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.core.util.StringUtils;
 import top.osjf.sdk.http.support.HttpSdkSupport;
 
 import java.io.IOException;
-import java.net.URI;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 /**
- * The Apache HTTP client request tool class mainly includes four request methods: post, get, put, and del.
+ * A simple HTTP calling utility class encapsulated with Apache HTTP packages.
+ * <p>
+ * It provides a series of static methods for executing HTTP {@code GET}, {@code POST},
+ * {@code PUT}, {@code DELETE},{@code TRACE}, {@code OPTIONS}, {@code HEAD}, and {@code PATCH}
+ * requests.
  *
- * <p>And other methods that can be customized with HTTP support, link to method {@link #doRequest}.
- *
- * <p>This class is a simple request tool for {@link CloseableHttpClient} and does not provide any other special
- * functions.
- *
- * <p>If necessary, please implement it yourself.</p>
- *
- * <p>Only suitable for use in this project.</p>
- *
- * <p>You need to note that the {@code montage} parameter determines whether parameters that are
- * not {@literal null} need to be concatenated after the URL in the form of key/value,
- * and you need to pay attention to the concatenation rules of the {@link #getUri(String, Object, boolean)}
- * method and the format rules of the parameters when the parameter is <pre>{@code montage == true}</pre>.
+ * <p>Provide a default static global client {@code HttpClient} to be used by default
+ * when not provided.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
@@ -73,16 +67,20 @@ public abstract class ApacheHttpSimpleRequestUtils {
      * <p>
      * The default format is {@link CloseableHttpClient} in <pre>{@code HttpClients.custom().build()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @param charset Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String get(String url, Map<String, String> headers, Object requestParam, boolean montage)
+    public static String get(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset)
             throws Exception {
-        return doRequest(null, new HttpGet(), url, headers, montage, requestParam);
+        return doRequest(null, new HttpGet(url), headers, body, charset);
     }
 
     /**
@@ -90,16 +88,20 @@ public abstract class ApacheHttpSimpleRequestUtils {
      * <p>
      * The default format is {@link CloseableHttpClient} in <pre>{@code HttpClients.custom().build()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @param charset Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String post(String url, Map<String, String> headers, Object requestParam, boolean montage)
+    public static String post(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset)
             throws Exception {
-        return doRequest(null, new HttpPost(), url, headers, montage, requestParam);
+        return doRequest(null, new HttpPost(url), headers, body, charset);
     }
 
     /**
@@ -107,16 +109,20 @@ public abstract class ApacheHttpSimpleRequestUtils {
      * <p>
      * The default format is {@link CloseableHttpClient} in <pre>{@code HttpClients.custom().build()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @param charset Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String put(String url, Map<String, String> headers, Object requestParam, boolean montage)
+    public static String put(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset)
             throws Exception {
-        return doRequest(null, new HttpPut(), url, headers, montage, requestParam);
+        return doRequest(null, new HttpPut(url), headers, body, charset);
     }
 
     /**
@@ -124,16 +130,20 @@ public abstract class ApacheHttpSimpleRequestUtils {
      * <p>
      * The default format is {@link CloseableHttpClient} in <pre>{@code HttpClients.custom().build()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value.
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @param charset Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String delete(String url, Map<String, String> headers, Object requestParam, boolean montage)
+    public static String delete(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset)
             throws Exception {
-        return doRequest(null, new HttpDelete(), url, headers, montage, requestParam);
+        return doRequest(null, new HttpDelete(url), headers, body, charset);
     }
 
     /**
@@ -141,16 +151,20 @@ public abstract class ApacheHttpSimpleRequestUtils {
      * <p>
      * The default format is {@link CloseableHttpClient} in <pre>{@code HttpClients.custom().build()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value.
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @param charset Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String trace(String url, Map<String, String> headers, Object requestParam, boolean montage)
+    public static String trace(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset)
             throws Exception {
-        return doRequest(null, new HttpTrace(), url, headers, montage, requestParam);
+        return doRequest(null, new HttpTrace(url), headers, body, charset);
     }
 
     /**
@@ -158,16 +172,20 @@ public abstract class ApacheHttpSimpleRequestUtils {
      * <p>
      * The default format is {@link CloseableHttpClient} in <pre>{@code HttpClients.custom().build()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value.
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @param charset Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String options(String url, Map<String, String> headers, Object requestParam, boolean montage)
+    public static String options(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset)
             throws Exception {
-        return doRequest(null, new HttpOptions(), url, headers, montage, requestParam);
+        return doRequest(null, new HttpOptions(url), headers, body, charset);
     }
 
     /**
@@ -175,16 +193,20 @@ public abstract class ApacheHttpSimpleRequestUtils {
      * <p>
      * The default format is {@link CloseableHttpClient} in <pre>{@code HttpClients.custom().build()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value.
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @param charset Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String head(String url, Map<String, String> headers, Object requestParam, boolean montage)
+    public static String head(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset)
             throws Exception {
-        return doRequest(null, new HttpHead(), url, headers, montage, requestParam);
+        return doRequest(null, new HttpHead(url), headers, body, charset);
     }
 
     /**
@@ -192,46 +214,50 @@ public abstract class ApacheHttpSimpleRequestUtils {
      * <p>
      * The default format is {@link CloseableHttpClient} in <pre>{@code HttpClients.custom().build()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value.
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @param charset Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String patch(String url, Map<String, String> headers, Object requestParam, boolean montage)
+    public static String patch(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset)
             throws Exception {
-        return doRequest(null, new HttpPatch(), url, headers, montage, requestParam);
+        return doRequest(null, new HttpPatch(url), headers, body, charset);
     }
 
     /**
      * The HTTP request sending method includes the entire lifecycle of HTTP requests.
      *
-     * @param client       Apache's HTTP request client.
-     * @param requestBase  HTTP Public Request Class {@link HttpRequestBase}.
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @return The {@code String} type of the return value
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param client      Apache's HTTP request client.
+     * @param requestBase HTTP Public Request Class {@link HttpRequestBase}
+     * @param headers     Optional HTTP header information used to control the behavior of requests.
+     * @param body        Optional request body.
+     * @param charset     Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String doRequest(HttpClient client,
+    public static String doRequest(@Nullable HttpClient client,
                                    HttpRequestBase requestBase,
-                                   String url,
-                                   Map<String, String> headers,
-                                   boolean montage,
-                                   Object requestParam) throws Exception {
+                                   @Nullable Map<String, String> headers,
+                                   @Nullable Object body,
+                                   @Nullable Charset charset) throws Exception {
         if (client == null) {
             client = DEFAULT;
         }
-        requestBase.setURI(getUri(url, requestParam, montage));
         HttpResponse response = null;
         String result;
         try {
             addHeaders(headers, requestBase);
-            //Set the request body when there are no parameters attached to the query.
-            if (!montage) setEntity(requestParam, requestBase, headers);
+            setEntity(body, requestBase, headers, charset);
             response = client.execute(requestBase);
             HttpEntity entity = response.getEntity();
             result = EntityUtils.toString(entity, StandardCharsets.UTF_8);
@@ -248,26 +274,36 @@ public abstract class ApacheHttpSimpleRequestUtils {
     /**
      * Set {@link HttpEntity} with a {@link StringEntity}.
      *
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param requestBase  HTTP Public Request Class {@link HttpRequestBase}
-     * @param headers      Header information map,can be {@literal null}.
+     * @param requestBase HTTP Public Request Class {@link HttpRequestBase}
+     * @param headers     Optional HTTP header information used to control the behavior of requests.
+     * @param body        Optional request body.
+     * @param charset     Encoding character set.
      */
-    private static void setEntity(Object requestParam, HttpRequestBase requestBase, Map<String, String> headers) {
-        if (requestParam == null || !(requestBase instanceof HttpEntityEnclosingRequestBase)) {
+    private static void setEntity(@Nullable Object body, HttpRequestBase requestBase,
+                                  @Nullable Map<String, String> headers, @Nullable Charset charset) {
+        if (!(requestBase instanceof HttpEntityEnclosingRequestBase)) {
             return;
         }
-        ContentType contentType = ContentType.APPLICATION_JSON;
-        String str = requestParam.toString();
-        StringEntity stringEntity;
-        if (MapUtils.isNotEmpty(headers)) {
-            String value = headers.get("Content-type");
-            if (StringUtils.isNotBlank(value)) {
-                contentType = ContentType.parse(value);
+        HttpEntity httpEntity;
+        if (body == null) {
+            httpEntity = new ByteArrayEntity(new byte[0], null);
+        } else {
+            String contentType = null;
+            if (MapUtils.isNotEmpty(headers)) {
+                contentType = headers.get("Content-type");
+            }
+            if (StringUtils.isBlank(contentType)) {
+                contentType = HttpSdkSupport.getContentTypeWithBody(body, charset);
+            }
+            String bodyStr = body.toString();
+            if (contentType != null) {
+                httpEntity = new StringEntity(bodyStr, ContentType.parse(contentType));
+            } else {
+                byte[] buf = charset != null ? bodyStr.getBytes(charset) : bodyStr.getBytes();
+                httpEntity = new ByteArrayEntity(buf, null);
             }
         }
-        stringEntity = new StringEntity(str, contentType);
-        HttpEntityEnclosingRequestBase base = (HttpEntityEnclosingRequestBase) requestBase;
-        base.setEntity(stringEntity);
+        ((HttpEntityEnclosingRequestBase) requestBase).setEntity(httpEntity);
     }
 
     /**
@@ -282,27 +318,5 @@ public abstract class ApacheHttpSimpleRequestUtils {
                 requestBase.addHeader(header.getKey(), header.getValue());
             }
         }
-    }
-
-    /**
-     * The get request for building HTTP contains the construction object of {@link URI}.
-     *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return Uri object,Please pay attention to the format issue of the URL.
-     * @throws Exception unknown exception.
-     */
-    private static URI getUri(String url, Object requestParam, boolean montage) throws Exception {
-        URIBuilder uriBuilder = new URIBuilder(url);
-        Map<String, Object> params = null;
-        if (montage) params = HttpSdkSupport.resolveMontageObj(requestParam);
-        if (params != null) {
-            for (Map.Entry<String, Object> entry : params.entrySet()) {
-                uriBuilder.addParameter(entry.getKey(), String.valueOf(entry.getValue()));
-            }
-        }
-        //If it is null or a string, it can be directly used as a paparazzi
-        return uriBuilder.build();
     }
 }

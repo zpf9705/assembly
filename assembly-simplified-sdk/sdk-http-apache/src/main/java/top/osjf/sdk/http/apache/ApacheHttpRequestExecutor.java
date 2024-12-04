@@ -17,9 +17,11 @@
 package top.osjf.sdk.http.apache;
 
 import top.osjf.sdk.core.support.LoadOrder;
-import top.osjf.sdk.http.executor.AbstractSourceHttpRequestExecutor;
+import top.osjf.sdk.core.support.Nullable;
+import top.osjf.sdk.http.executor.AbstractMultiHttpMethodExecutor;
 import top.osjf.sdk.http.executor.HttpRequestExecutor;
 
+import java.nio.charset.Charset;
 import java.util.Map;
 
 /**
@@ -30,45 +32,44 @@ import java.util.Map;
  * @since 1.0.0
  */
 @LoadOrder(Integer.MIN_VALUE + 11)
-public class ApacheHttpRequestExecutor extends AbstractSourceHttpRequestExecutor {
-
+public class ApacheHttpRequestExecutor extends AbstractMultiHttpMethodExecutor {
     @Override
-    public String get(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return ApacheHttpSimpleRequestUtils.get(url, headers, param, montage);
+    public String get(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return ApacheHttpSimpleRequestUtils.get(url, headers, body, charset);
     }
 
     @Override
-    public String post(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return ApacheHttpSimpleRequestUtils.post(url, headers, param, montage);
+    public String post(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return ApacheHttpSimpleRequestUtils.post(url, headers, body, charset);
     }
 
     @Override
-    public String put(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return ApacheHttpSimpleRequestUtils.put(url, headers, param, montage);
+    public String put(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return ApacheHttpSimpleRequestUtils.put(url, headers, body, charset);
     }
 
     @Override
-    public String delete(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return ApacheHttpSimpleRequestUtils.delete(url, headers, param, montage);
+    public String delete(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return ApacheHttpSimpleRequestUtils.delete(url, headers, body, charset);
     }
 
     @Override
-    public String trace(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return ApacheHttpSimpleRequestUtils.trace(url, headers, param, montage);
+    public String trace(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return ApacheHttpSimpleRequestUtils.trace(url, headers, body, charset);
     }
 
     @Override
-    public String options(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return ApacheHttpSimpleRequestUtils.options(url, headers, param, montage);
+    public String options(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return ApacheHttpSimpleRequestUtils.options(url, headers, body, charset);
     }
 
     @Override
-    public String head(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return ApacheHttpSimpleRequestUtils.head(url, headers, param, montage);
+    public String head(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return ApacheHttpSimpleRequestUtils.head(url, headers, body, charset);
     }
 
     @Override
-    public String patch(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return ApacheHttpSimpleRequestUtils.patch(url, headers, param, montage);
+    public String patch(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return ApacheHttpSimpleRequestUtils.patch(url, headers, body, charset);
     }
 }
