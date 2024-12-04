@@ -62,6 +62,7 @@ import java.util.concurrent.TimeUnit;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
+@SuppressWarnings("unchecked")
 public abstract class AbstractHttpClient<R extends HttpResponse> extends AbstractClient<R> implements HttpClient<R> {
 
     private static final long serialVersionUID = -7793213059840466979L;
@@ -176,7 +177,6 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
     public R request() {
 
         //Get the request parameters for the current thread.
-        @SuppressWarnings("unchecked")
         HttpRequest<R> request = getBindRequest().unwrap(HttpRequest.class);
 
         //Define the required parameters for this request.
