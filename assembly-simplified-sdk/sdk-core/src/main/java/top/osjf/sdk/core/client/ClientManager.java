@@ -40,15 +40,12 @@ import java.util.function.Supplier;
 public interface ClientManager<R extends Response> {
 
     /**
-     * Creates a new {@code client} object under maintenance based on a
-     * unique identifier.
+     * Maintain a new {@code Client} based on a unique identifier.
      *
      * @param unique The unique identifier for the client.
      * @param client The {@code client} object that needs to be maintained.
-     * @return A new {@code client} object under maintenance, which may be
-     * a wrapper or modified version of the input client.
      */
-    Client<R> maintenanceNewClient(@NotNull String unique, @NotNull Client<R> client);
+    void maintenanceNewClient(@NotNull String unique, @NotNull Client<R> client);
 
     /**
      * Retrieves a {@code client} object under maintenance based on a unique
