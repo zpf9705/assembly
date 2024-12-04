@@ -90,7 +90,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
      * @param unique The unique identifier string for this
      *               client's cache.
      * @param client Real impl in {@link Client}.
-     * @throws IllegalArgumentException unique or client {@link null}
+     * @throws IllegalArgumentException unique or client {@literal null}
      *                                  error.
      */
     protected void cache(String unique, Client client) {
