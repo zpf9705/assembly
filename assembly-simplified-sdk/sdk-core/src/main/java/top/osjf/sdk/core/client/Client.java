@@ -16,6 +16,7 @@
 
 package top.osjf.sdk.core.client;
 
+import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
 
 import java.io.Serializable;
@@ -40,10 +41,32 @@ import java.io.Serializable;
  * <li>{@link Serializable}: Allow interface implementation classes to be serialized for use during
  * network transmission or persistent storage</li>
  * </ul>
+ *
  * @param <R> Implement a unified response class data type.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
 public interface Client<R extends Response> extends RequestCore<R>, PreProcessingResponseHandler<R>,
-        ResponseConvert<R>, LoggerConsumer, AutoCloseable, Serializable {
+        ResponseConvert<R>, LoggerConsumer, Serializable {
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Bind a {@code Request} to the current {@link Client} and return itself.
+     *
+     * @param request {@inheritDoc}
+     * @return {@inheritDoc}
+     */
+    @Override
+    Client<R> bindRequest(Request<R> request);
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Timely release the relevant content involved in {@code Client} requests.
+     *
+     * @return {@inheritDoc}
+     * @throws {@inheritDoc}
+     */
+    @Override
+    void close() throws Exception;
 }
