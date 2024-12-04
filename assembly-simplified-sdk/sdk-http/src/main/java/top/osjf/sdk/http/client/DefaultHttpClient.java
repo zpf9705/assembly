@@ -17,6 +17,7 @@
 package top.osjf.sdk.http.client;
 
 import top.osjf.sdk.core.process.URL;
+import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.http.process.HttpResponse;
 
 /**
@@ -33,7 +34,7 @@ public class DefaultHttpClient<R extends HttpResponse> extends AbstractHttpClien
      * @param url   {@code URL} Object of packaging tags and URL addresses
      *                         and updated on version 1.0.2.
      */
-    public DefaultHttpClient(URL url) {
+    public DefaultHttpClient(@NotNull URL url) {
         super(url);
     }
 }

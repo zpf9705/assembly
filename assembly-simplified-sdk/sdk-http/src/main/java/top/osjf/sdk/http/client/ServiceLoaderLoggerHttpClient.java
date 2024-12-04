@@ -42,7 +42,7 @@ public class ServiceLoaderLoggerHttpClient<R extends HttpResponse> extends Defau
      * @param url   {@code URL} Object of packaging tags and URL addresses
      *                         and updated on version 1.0.2.
      */
-    public ServiceLoaderLoggerHttpClient(URL url) {
+    public ServiceLoaderLoggerHttpClient(@NotNull URL url) {
         super(url);
         loadHighPriorityLoggerConsumer();
     }

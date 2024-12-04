@@ -79,8 +79,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
      * @param url   {@code URL} Object of packaging tags and URL addresses
      *                         and updated on version 1.0.2.
      * */
-    public AbstractClient(URL url) {
-        Objects.requireNonNull(url, "top.osjf.sdk.core.process.URL");
+    public AbstractClient(@NotNull URL url) {
         cache(url.getUnique(), this);
         this.unique = url.getUnique();
     }
