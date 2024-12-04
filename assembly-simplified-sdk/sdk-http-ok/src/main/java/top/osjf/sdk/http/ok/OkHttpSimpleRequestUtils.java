@@ -307,8 +307,8 @@ public abstract class OkHttpSimpleRequestUtils {
         if (charset != null && mediaType != null) {
             mediaType.charset(charset);
         }
-        //Do we need to hand over the body to the framework for verification.
-        RequestBody requestBody = body != null ? RequestBody.create(mediaType, body.toString()) : null;
+        String bodyStr = body != null ? body.toString() : "";
+        RequestBody requestBody = RequestBody.create(mediaType, bodyStr);
         switch (method) {
             case "GET":
                 requestBuild = requestBuild.get();
