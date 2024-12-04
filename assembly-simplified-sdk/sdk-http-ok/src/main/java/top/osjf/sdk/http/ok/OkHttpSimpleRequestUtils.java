@@ -28,8 +28,13 @@ import java.nio.charset.Charset;
 import java.util.Map;
 
 /**
- * The Square's OK HTTP client request tool class mainly includes four request
- * methods: post, get, put, and del...
+ * A simple HTTP calling utility class encapsulated with Square's OK HTTP packages.
+ * <p>
+ * It provides a series of static methods for executing HTTP {@code GET}, {@code POST},
+ * {@code PUT}, {@code DELETE},{@code TRACE}, {@code OPTIONS}, {@code HEAD}, and {@code PATCH}
+ * requests.
+ * <p>Provide a default static global client {@code OkHttpClient} to be used by default
+ * when not provided.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
