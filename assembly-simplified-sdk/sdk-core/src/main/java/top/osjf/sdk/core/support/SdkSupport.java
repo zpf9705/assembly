@@ -16,6 +16,7 @@
 
 package top.osjf.sdk.core.support;
 
+import io.reactivex.rxjava3.functions.Supplier;
 import top.osjf.sdk.core.exception.RequestCreateException;
 import top.osjf.sdk.core.exception.UnknownRequestParameterException;
 import top.osjf.sdk.core.exception.UnknownResponseParameterException;
@@ -26,6 +27,7 @@ import top.osjf.sdk.core.util.StringUtils;
 import top.osjf.sdk.core.util.SynchronizedWeakHashMap;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Function;
@@ -55,7 +57,7 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class SdkSupport {
 
     /***The prefix name of the set method.*/
@@ -74,6 +76,13 @@ public abstract class SdkSupport {
      */
     protected static final Map<Class<? extends Request>, List<Method>> requestMethodCache
             = new SynchronizedWeakHashMap<>();
+
+    /**
+     * Empty static Object array.
+     *
+     * @since 1.0.2
+     */
+    protected static Object[] EMPTY = new Object[]{};
 
     /**
      * Create corresponding request parameters based on extension
@@ -178,6 +187,103 @@ public abstract class SdkSupport {
         }
 
         return data;
+    }
+
+    /**
+     * Loads an instance of a specified type.
+     *
+     * <p>This method first attempts to load an instance of the specified type
+     * using a high-priority service loader mechanism.
+     *
+     * <p>If that fails to provide an instance, it then attempts to load an instance
+     * of a class specified by a fully qualified class name string ({@code def}).
+     * If the class can be found and instantiated successfully, it returns the
+     * new instance.If not, it throws an appropriate exception.
+     *
+     * <p>This approach allows for flexible instantiation, supporting both service-based
+     * discovery and explicit class name specification.
+     *
+     * @param <T>  The type of the instance to load.
+     * @param type The {@code Class<T>} object representing the type of the instance to load.
+     * @param def  A fully qualified class name string of the class to instantiate if the
+     *             service loader does not provide an instance.
+     * @return An instance of the specified type.
+     * @throws IllegalArgumentException If the specified class name cannot be found or if
+     *                                  an instance cannot be created from it.
+     * @since 1.0.2
+     */
+    public static <T> T loadInstance(Class<T> type, String def) {
+        T instance = ServiceLoadManager.loadHighPriority(type);
+        if (instance == null) {
+            instance = loadInstanceByDef(type, def);
+        }
+        return instance;
+    }
+
+    /**
+     * Instantaneous objects using {@code Class}, {@link InstantiationException},
+     * and {@link IllegalAccessException} are summarized as runtime exceptions
+     * {@link IllegalArgumentException} thrown.
+     *
+     * @param <T>  The type of the instance to instantiates.
+     * @param type The {@code Class<T>} object representing the type of
+     *             the instance to instantiates.
+     * @return An instance of the specified type.
+     * @since 1.0.2
+     */
+    public static <T> T instantiates(Class<T> type) {
+        return instantiates(type, EMPTY);
+    }
+
+    /**
+     * Instantaneous objects using {@code Constructor}, {@link InstantiationException},
+     * and {@link IllegalAccessException} and {@link NoSuchMethodException} and
+     * {@link InvocationTargetException} are summarized as runtime exceptions
+     * {@link IllegalArgumentException} thrown.
+     *
+     * @param <T>  The type of the instance to instantiates.
+     * @param type The {@code Class<T>} object representing the type of
+     *             the instance to instantiates.
+     * @param args arg array.
+     * @return An instance of the specified type.
+     * @throws IllegalArgumentException Object instantiation error, please
+     *                                  refer to {@link IllegalArgumentException#getCause()}
+     *                                  for details.
+     * @since 1.0.2
+     */
+    public static <T> T instantiates(Class<T> type, Object... args) {
+        List<Class<?>> parameterTypes = new LinkedList<>();
+        if (ArrayUtils.isNotEmpty(args)) {
+            for (Object arg : args) {
+                parameterTypes.add(arg.getClass());
+            }
+        }
+        Supplier<T> instanceSupplier;
+        if (parameterTypes.isEmpty()) {
+            instanceSupplier = type::newInstance;
+        } else {
+            instanceSupplier = () -> type.getConstructor(parameterTypes.toArray(new Class[]{})).newInstance(args);
+        }
+        try {
+            return instanceSupplier.get();
+        } catch (NoSuchMethodException e) {
+            throw new IllegalArgumentException("Method not found : " + e.getMessage(), e);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e1) {
+            throw new IllegalArgumentException("Construction method instantiation execution failed : "
+                    + e1.getMessage(), e1);
+        } catch (Throwable e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    static <T> T loadInstanceByDef(Class<T> type, String def) {
+        Class<?> defType;
+        try {
+            defType = type.getClassLoader().loadClass(def);
+        } catch (ClassNotFoundException e) {
+            throw new IllegalArgumentException("No found [" + def + "]", e);
+        }
+        return (T) instantiates(defType);
     }
 
     static Request<?> invokeCreateRequestConstructorWhenFailedUseSet(Class<? extends Request> requestType,
