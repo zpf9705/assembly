@@ -63,9 +63,6 @@ public interface Client<R extends Response> extends RequestCore<R>, PreProcessin
      * {@inheritDoc}
      * <p>
      * Timely release the {@link Request} resources bound this time.
-     *
-     * @return {@inheritDoc}
-     * @throws {@inheritDoc}
      */
     @Override
     void close() throws Exception;
