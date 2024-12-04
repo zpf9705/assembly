@@ -62,7 +62,7 @@ public interface Client<R extends Response> extends RequestCore<R>, PreProcessin
     /**
      * {@inheritDoc}
      * <p>
-     * Timely release the relevant content involved in {@code Client} requests.
+     * Timely release the {@link Request} resources bound this time.
      *
      * @return {@inheritDoc}
      * @throws {@inheritDoc}
