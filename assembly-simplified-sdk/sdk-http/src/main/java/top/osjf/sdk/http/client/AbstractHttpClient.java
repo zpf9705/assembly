@@ -176,7 +176,8 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
     public R request() {
 
         //Get the request parameters for the current thread.
-        HttpRequest<R> request = getCurrentRequest();
+        @SuppressWarnings("unchecked")
+        HttpRequest<R> request = getBindRequest().unwrap(HttpRequest.class);
 
         //Define the required parameters for this request.
         R response;
