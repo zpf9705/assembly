@@ -18,34 +18,23 @@ package top.osjf.sdk.http.google;
 
 import com.google.api.client.http.*;
 import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.util.IOUtils;
+import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.core.util.StringUtils;
 import top.osjf.sdk.http.support.HttpSdkSupport;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Map;
 
 /**
- * Google HTTP Simple Request Tool Class.
+ * A simple HTTP calling utility class encapsulated with Google HTTP packages.
  * <p>
- * This class provides a simple way to execute Google HTTP requests, including {@code GET},
- * {@code POST},{@code PUT}, {@code DELETE}, {@code TRACE}, {@code OPTIONS}, {@code HEAD},
- * {@code PATCH}, and other methods.
- * <p>
- * These methods encapsulate the underlying HTTP request details, allowing users to only
- * provide basic information such as URL, request header, request parameters, and whether
- * to concatenate parameters into URL strings or JSON format,You can easily send HTTP requests
- * and receive responses.
- * <p>
- * This utility class uses Google's HTTP client libraries such as {@code HttpRequestFactory} and
- * {@code NetHttpTransport} to create and execute HTTP requests.
- * Users don't need to worry about these underlying details, just focus on the business logic.
- * <p>
- * Please note that this class is a utility class, and all its methods are static methods, so
- * there is no need to instantiate this class.
- * The constructor is privatized and throws an {@code AttributeError} exception to prevent external
- * instantiation.
+ * It provides a series of static methods for executing HTTP {@code GET}, {@code POST},
+ * {@code PUT}, {@code DELETE},{@code TRACE}, {@code OPTIONS}, {@code HEAD}, and {@code PATCH}
+ * requests.
+ * <p>Provide a default static global client {@code HttpRequestFactory} to be used by default
+ * when not provided.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
@@ -69,16 +58,20 @@ public abstract class GoogleHttpSimpleRequestUtils {
      * The default format is {@link HttpRequestFactory} in
      * <pre>{@code new NetHttpTransport().createRequestFactory()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @param charset Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String get(String url, Map<String, String> headers, Object requestParam, boolean montage)
+    public static String get(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset)
             throws Exception {
-        return doRequest(null, "GET", url, headers, requestParam, montage);
+        return doRequest(null, "GET", url, headers, body, charset);
     }
 
     /**
@@ -87,16 +80,20 @@ public abstract class GoogleHttpSimpleRequestUtils {
      * The default format is {@link HttpRequestFactory} in
      * <pre>{@code new NetHttpTransport().createRequestFactory()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @param charset Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String post(String url, Map<String, String> headers, Object requestParam, boolean montage)
+    public static String post(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset)
             throws Exception {
-        return doRequest(null, "POST", url, headers, requestParam, montage);
+        return doRequest(null, "POST", url, headers, body, charset);
     }
 
     /**
@@ -105,16 +102,20 @@ public abstract class GoogleHttpSimpleRequestUtils {
      * The default format is {@link HttpRequestFactory} in
      * <pre>{@code new NetHttpTransport().createRequestFactory()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @param charset Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String put(String url, Map<String, String> headers, Object requestParam, boolean montage)
+    public static String put(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset)
             throws Exception {
-        return doRequest(null, "PUT", url, headers, requestParam, montage);
+        return doRequest(null, "PUT", url, headers, body, charset);
     }
 
     /**
@@ -123,16 +124,20 @@ public abstract class GoogleHttpSimpleRequestUtils {
      * The default format is {@link HttpRequestFactory} in
      * <pre>{@code new NetHttpTransport().createRequestFactory()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value.
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @param charset Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String delete(String url, Map<String, String> headers, Object requestParam, boolean montage)
+    public static String delete(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset)
             throws Exception {
-        return doRequest(null, "DELETE", url, headers, requestParam, montage);
+        return doRequest(null, "DELETE", url, headers, body, charset);
     }
 
     /**
@@ -141,16 +146,20 @@ public abstract class GoogleHttpSimpleRequestUtils {
      * The default format is {@link HttpRequestFactory} in
      * <pre>{@code new NetHttpTransport().createRequestFactory()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value.
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @param charset Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String trace(String url, Map<String, String> headers, Object requestParam, boolean montage)
+    public static String trace(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset)
             throws Exception {
-        return doRequest(null, "TRACE", url, headers, requestParam, montage);
+        return doRequest(null, "TRACE", url, headers, body, charset);
     }
 
     /**
@@ -159,16 +168,20 @@ public abstract class GoogleHttpSimpleRequestUtils {
      * The default format is {@link HttpRequestFactory} in
      * <pre>{@code new NetHttpTransport().createRequestFactory()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value.
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @param charset Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String options(String url, Map<String, String> headers, Object requestParam, boolean montage)
+    public static String options(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset)
             throws Exception {
-        return doRequest(null, "OPTIONS", url, headers, requestParam, montage);
+        return doRequest(null, "OPTIONS", url, headers, body, charset);
     }
 
     /**
@@ -177,16 +190,20 @@ public abstract class GoogleHttpSimpleRequestUtils {
      * The default format is {@link HttpRequestFactory} in
      * <pre>{@code new NetHttpTransport().createRequestFactory()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value.
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @param charset Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String head(String url, Map<String, String> headers, Object requestParam, boolean montage)
+    public static String head(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset)
             throws Exception {
-        return doRequest(null, "HEAD", url, headers, requestParam, montage);
+        return doRequest(null, "HEAD", url, headers, body, charset);
     }
 
     /**
@@ -195,16 +212,20 @@ public abstract class GoogleHttpSimpleRequestUtils {
      * The default format is {@link HttpRequestFactory} in
      * <pre>{@code new NetHttpTransport().createRequestFactory()}</pre>
      *
-     * @param url          The actual request address,must not be {@literal null}.
-     * @param headers      Header information map,can be {@literal null}.
-     * @param requestParam Request parameters,can be {@literal null}.
-     * @param montage      Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value.
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param url     The target URL of the request.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @param body    Optional request body.
+     * @param charset Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static String patch(String url, Map<String, String> headers, Object requestParam, boolean montage)
+    public static String patch(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset)
             throws Exception {
-        return doRequest(null, "PATCH", url, headers, requestParam, montage);
+        return doRequest(null, "PATCH", url, headers, body, charset);
     }
 
     /**
@@ -212,49 +233,44 @@ public abstract class GoogleHttpSimpleRequestUtils {
      *
      * @param requestFactory Google's HTTP request client.
      * @param methodName     HTTP request method name .
-     * @param url            The actual request address,must not be {@literal null}.
-     * @param headers        Header information map,can be {@literal null}.
-     * @param requestParam   Request parameters,can be {@literal null}.
-     * @param montage        Whether to concatenate urls with {@code requestParam} be maps or json.
-     * @return The {@code String} type of the return value
-     * @throws Exception A specific exception occurred due to an HTTP request error.
+     * @param url            The target URL of the request.
+     * @param headers        Optional HTTP header information used to control the behavior of requests.
+     * @param body           Optional request body.
+     * @param charset        Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    @SuppressWarnings("unchecked")
-    public static String doRequest(HttpRequestFactory requestFactory,
+    public static String doRequest(@Nullable HttpRequestFactory requestFactory,
                                    String methodName,
                                    String url,
-                                   Map<String, String> headers,
-                                   Object requestParam,
-                                   boolean montage) throws Exception {
+                                   @Nullable Map<String, String> headers,
+                                   @Nullable Object body,
+                                   @Nullable Charset charset) throws Exception {
         if (requestFactory == null) {
-            requestFactory = new NetHttpTransport().createRequestFactory();
+            requestFactory = DEFAULT;
         }
-        // Setup the request body
         HttpContent content = null;
-        String contentType;
-        if (MapUtils.isNotEmpty(headers)) {
-            contentType = headers.get("Content-Type");
-            if (StringUtils.isBlank(contentType)) {
-                contentType = "application/json";
+        if (body != null) {
+            String contentType = null;
+            if (MapUtils.isNotEmpty(headers)) {
+                contentType = headers.get("Content-Type");
             }
-        } else {
-            contentType = "application/json";
+            if (StringUtils.isBlank(contentType)) {
+                contentType = HttpSdkSupport.getContentTypeWithBody(body, charset);
+            }
+            String bodyStr = body.toString();
+            byte[] array = charset != null ? bodyStr.getBytes(charset) : bodyStr.getBytes();
+            content = new ByteArrayContent(contentType, array);
         }
-        GenericUrl genericUrl = new GenericUrl(url);
-        Map<String, Object> queryParams = null;
-        if (montage) queryParams = HttpSdkSupport.resolveMontageObj(requestParam);
-        if (queryParams != null) {
-            genericUrl.putAll(queryParams);
-        } else {
-            content = new ByteArrayContent(contentType, IOUtils.serialize(requestParam));
-        }
-        // Build the request
         HttpRequest request =
-                requestFactory.buildRequest(methodName, genericUrl, content);
-        // Setup headers
+                requestFactory.buildRequest(methodName, new GenericUrl(url), content);
         if (MapUtils.isNotEmpty(headers)) {
             HttpHeaders httpHeaders = new HttpHeaders();
-            for (final Map.Entry<String, String> header : headers.entrySet()) {
+            for (Map.Entry<String, String> header : headers.entrySet()) {
                 httpHeaders.set(header.getKey(), header.getValue());
             }
             request.setHeaders(httpHeaders);

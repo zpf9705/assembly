@@ -17,9 +17,11 @@
 package top.osjf.sdk.http.google;
 
 import top.osjf.sdk.core.support.LoadOrder;
-import top.osjf.sdk.http.executor.AbstractSourceHttpRequestExecutor;
+import top.osjf.sdk.core.support.Nullable;
+import top.osjf.sdk.http.executor.AbstractMultiHttpMethodExecutor;
 import top.osjf.sdk.http.executor.HttpRequestExecutor;
 
+import java.nio.charset.Charset;
 import java.util.Map;
 
 /**
@@ -30,45 +32,46 @@ import java.util.Map;
  * @since 1.0.2
  */
 @LoadOrder(Integer.MIN_VALUE + 16)
-public class GoogleHttpRequestExecutor extends AbstractSourceHttpRequestExecutor {
+public class GoogleHttpRequestExecutor extends AbstractMultiHttpMethodExecutor {
+
 
     @Override
-    public String get(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return GoogleHttpSimpleRequestUtils.get(url, headers, param, montage);
+    public String get(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return GoogleHttpSimpleRequestUtils.get(url, headers, body, charset);
     }
 
     @Override
-    public String post(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return GoogleHttpSimpleRequestUtils.post(url, headers, param, montage);
+    public String post(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return GoogleHttpSimpleRequestUtils.post(url, headers, body, charset);
     }
 
     @Override
-    public String put(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return GoogleHttpSimpleRequestUtils.put(url, headers, param, montage);
+    public String put(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return GoogleHttpSimpleRequestUtils.put(url, headers, body, charset);
     }
 
     @Override
-    public String delete(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return GoogleHttpSimpleRequestUtils.delete(url, headers, param, montage);
+    public String delete(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return GoogleHttpSimpleRequestUtils.delete(url, headers, body, charset);
     }
 
     @Override
-    public String trace(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return GoogleHttpSimpleRequestUtils.trace(url, headers, param, montage);
+    public String trace(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return GoogleHttpSimpleRequestUtils.trace(url, headers, body, charset);
     }
 
     @Override
-    public String options(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return GoogleHttpSimpleRequestUtils.options(url, headers, param, montage);
+    public String options(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return GoogleHttpSimpleRequestUtils.options(url, headers, body, charset);
     }
 
     @Override
-    public String head(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return GoogleHttpSimpleRequestUtils.head(url, headers, param, montage);
+    public String head(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return GoogleHttpSimpleRequestUtils.head(url, headers, body, charset);
     }
 
     @Override
-    public String patch(String url, Map<String, String> headers, Object param, boolean montage) throws Exception {
-        return GoogleHttpSimpleRequestUtils.patch(url, headers, param, montage);
+    public String patch(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return GoogleHttpSimpleRequestUtils.patch(url, headers, body, charset);
     }
 }
