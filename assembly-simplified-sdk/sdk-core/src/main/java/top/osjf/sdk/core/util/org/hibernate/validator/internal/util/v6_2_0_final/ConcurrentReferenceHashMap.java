@@ -118,6 +118,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @param <V> the type of mapped values
  * @author Doug Lea
  * @author Jason T. Greene
+ * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  */
 final public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V>
         implements java.util.concurrent.ConcurrentMap<K, V>, Serializable {
@@ -132,7 +133,7 @@ final public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V>
      * An option specifying which Java reference type should be used to refer
      * to a key and/or value.
      */
-    public static enum ReferenceType {
+    public enum ReferenceType {
         /**
          * Indicates a normal Java strong reference should be used
          */
@@ -147,18 +148,13 @@ final public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V>
         SOFT
     }
 
-    ;
-
-
-    public static enum Option {
+    public enum Option {
         /**
          * Indicates that referential-equality (== instead of .equals()) should
          * be used when locating keys. This offers similar behavior to {@link IdentityHashMap}
          */
         IDENTITY_COMPARISONS
     }
-
-    ;
 
     /* ---------------- Constants -------------- */
 
@@ -257,7 +253,7 @@ final public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V>
      * @param hash the hash code for the key
      * @return the segment
      */
-    final Segment<K, V> segmentFor(int hash) {
+    Segment<K, V> segmentFor(int hash) {
         return segments[(hash >>> segmentShift) & segmentMask];
     }
 
@@ -268,7 +264,7 @@ final public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V>
 
     /* ---------------- Inner Classes -------------- */
 
-    static interface KeyReference {
+    interface KeyReference {
         int keyHash();
 
         Object keyRef();
@@ -286,12 +282,12 @@ final public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V>
         }
 
         @Override
-        public final int keyHash() {
+        public int keyHash() {
             return hash;
         }
 
         @Override
-        public final Object keyRef() {
+        public Object keyRef() {
             return this;
         }
     }
@@ -308,12 +304,12 @@ final public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V>
         }
 
         @Override
-        public final int keyHash() {
+        public int keyHash() {
             return hash;
         }
 
         @Override
-        public final Object keyRef() {
+        public Object keyRef() {
             return this;
         }
     }
@@ -329,12 +325,12 @@ final public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V>
         }
 
         @Override
-        public final int keyHash() {
+        public int keyHash() {
             return hash;
         }
 
         @Override
-        public final Object keyRef() {
+        public Object keyRef() {
             return keyRef;
         }
     }
@@ -350,12 +346,12 @@ final public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V>
         }
 
         @Override
-        public final int keyHash() {
+        public int keyHash() {
             return hash;
         }
 
         @Override
-        public final Object keyRef() {
+        public Object keyRef() {
             return keyRef;
         }
     }
@@ -387,8 +383,8 @@ final public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V>
             this.valueRef = newValueReference(value, valueType, refQueue);
         }
 
-        final Object newKeyReference(K key, ReferenceType keyType,
-                                     ReferenceQueue<Object> refQueue) {
+        Object newKeyReference(K key, ReferenceType keyType,
+                               ReferenceQueue<Object> refQueue) {
             if (keyType == ReferenceType.WEAK)
                 return new WeakKeyReference<K>(key, hash, refQueue);
             if (keyType == ReferenceType.SOFT)
@@ -397,8 +393,8 @@ final public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V>
             return key;
         }
 
-        final Object newValueReference(V value, ReferenceType valueType,
-                                       ReferenceQueue<Object> refQueue) {
+        Object newValueReference(V value, ReferenceType valueType,
+                                 ReferenceQueue<Object> refQueue) {
             if (valueType == ReferenceType.WEAK)
                 return new WeakValueReference<V>(value, keyRef, hash, refQueue);
             if (valueType == ReferenceType.SOFT)
@@ -408,31 +404,31 @@ final public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V>
         }
 
         @SuppressWarnings("unchecked")
-        final K key() {
+        K key() {
             if (keyRef instanceof KeyReference)
                 return ((Reference<K>) keyRef).get();
 
             return (K) keyRef;
         }
 
-        final V value() {
+        V value() {
             return dereferenceValue(valueRef);
         }
 
         @SuppressWarnings("unchecked")
-        final V dereferenceValue(Object value) {
+        V dereferenceValue(Object value) {
             if (value instanceof KeyReference)
                 return ((Reference<V>) value).get();
 
             return (V) value;
         }
 
-        final void setValue(V value, ReferenceType valueType, ReferenceQueue<Object> refQueue) {
+        void setValue(V value, ReferenceType valueType, ReferenceQueue<Object> refQueue) {
             this.valueRef = newValueReference(value, valueType, refQueue);
         }
 
         @SuppressWarnings("unchecked")
-        static final <K, V> HashEntry<K, V>[] newArray(int i) {
+        static <K, V> HashEntry<K, V>[] newArray(int i) {
             return new HashEntry[i];
         }
     }
@@ -536,11 +532,11 @@ final public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V>
             this.keyType = keyType;
             this.valueType = valueType;
             this.identityComparisons = identityComparisons;
-            setTable(HashEntry.<K, V>newArray(initialCapacity));
+            setTable(HashEntry.newArray(initialCapacity));
         }
 
         @SuppressWarnings("unchecked")
-        static final <K, V> Segment<K, V>[] newArray(int i) {
+        static <K, V> Segment<K, V>[] newArray(int i) {
             return new Segment[i];
         }
 
@@ -555,7 +551,7 @@ final public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V>
         void setTable(HashEntry<K, V>[] newTable) {
             threshold = (int) (newTable.length * loadFactor);
             table = newTable;
-            refQueue = new ReferenceQueue<Object>();
+            refQueue = new ReferenceQueue<>();
         }
 
         /**
@@ -567,7 +563,7 @@ final public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V>
         }
 
         HashEntry<K, V> newHashEntry(K key, int hash, HashEntry<K, V> next, V value) {
-            return new HashEntry<K, V>(key, hash, next, value, keyType, valueType, refQueue);
+            return new HashEntry<>(key, hash, next, value, keyType, valueType, refQueue);
         }
 
         /**
@@ -831,7 +827,7 @@ final public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V>
             }
         }
 
-        final void removeStale() {
+        void removeStale() {
             KeyReference ref;
             while ((ref = (KeyReference) refQueue.poll()) != null) {
                 remove(ref.keyRef(), ref.keyHash(), null, true);
@@ -847,7 +843,7 @@ final public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V>
                         tab[i] = null;
                     ++modCount;
                     // replace the reference queue to avoid unnecessary stale cleanups
-                    refQueue = new ReferenceQueue<Object>();
+                    refQueue = new ReferenceQueue<>();
                     count = 0; // write-volatile
                 } finally {
                     unlock();
@@ -915,7 +911,7 @@ final public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V>
         identityComparisons = options != null && options.contains(Option.IDENTITY_COMPARISONS);
 
         for (int i = 0; i < this.segments.length; ++i)
-            this.segments[i] = new Segment<K, V>(cap, loadFactor,
+            this.segments[i] = new Segment<>(cap, loadFactor,
                     keyType, valueType, identityComparisons);
     }
 
