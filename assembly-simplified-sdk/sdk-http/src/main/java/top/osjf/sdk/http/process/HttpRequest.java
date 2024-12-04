@@ -208,5 +208,7 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
      * based on the request header.
      */
     @Deprecated
-    boolean montage();
+    default boolean montage(){
+        throw new UnsupportedOperationException("Deprecated");
+    }
 }
