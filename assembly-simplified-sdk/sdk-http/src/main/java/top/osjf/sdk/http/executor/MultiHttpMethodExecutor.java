@@ -47,7 +47,8 @@ public interface MultiHttpMethodExecutor extends HttpRequestExecutor {
      *
      * @param url     The target URL of the request.
      * @param headers Optional HTTP header information used to control the behavior of requests.
-     * @param body    Optional request body.
+     * @param body    Optional request body,It can be of type {@code String} or object type,
+     *                and finally call {@code ToString} to obtain it.
      * @param charset Encoding character set.
      * @return Returns a string representation of the server response body.
      * The specific content depends on the server's response.
@@ -65,7 +66,8 @@ public interface MultiHttpMethodExecutor extends HttpRequestExecutor {
      *
      * @param url     The target URL of the request.
      * @param headers Optional HTTP header information used to control the behavior of requests.
-     * @param body    Optional request body.
+     * @param body    Optional request body,It can be of type {@code String} or object type,
+     *                and finally call {@code ToString} to obtain it.
      * @param charset Encoding character set.
      * @return Returns a string representation of the server response body.
      * The specific content depends on the server's response.
@@ -83,7 +85,8 @@ public interface MultiHttpMethodExecutor extends HttpRequestExecutor {
      *
      * @param url     The target URL of the request.
      * @param headers Optional HTTP header information used to control the behavior of requests.
-     * @param body    Optional request body.
+     * @param body    Optional request body,It can be of type {@code String} or object type,
+     *                and finally call {@code ToString} to obtain it.
      * @param charset Encoding character set.
      * @return Returns a string representation of the server response body.
      * The specific content depends on the server's response.
@@ -101,7 +104,8 @@ public interface MultiHttpMethodExecutor extends HttpRequestExecutor {
      *
      * @param url     The target URL of the request.
      * @param headers Optional HTTP header information used to control the behavior of requests.
-     * @param body    Optional request body.
+     * @param body    Optional request body,It can be of type {@code String} or object type,
+     *                and finally call {@code ToString} to obtain it.
      * @param charset Encoding character set.
      * @return Returns a string representation of the server response body.
      * The specific content depends on the server's response.
@@ -119,7 +123,8 @@ public interface MultiHttpMethodExecutor extends HttpRequestExecutor {
      *
      * @param url     The target URL of the request.
      * @param headers Optional HTTP header information used to control the behavior of requests.
-     * @param body    Optional request body.
+     * @param body    Optional request body,It can be of type {@code String} or object type,
+     *                and finally call {@code ToString} to obtain it.
      * @param charset Encoding character set.
      * @return Returns a string representation of the server response body.
      * The specific content depends on the server's response.
@@ -137,7 +142,8 @@ public interface MultiHttpMethodExecutor extends HttpRequestExecutor {
      *
      * @param url     The target URL of the request.
      * @param headers Optional HTTP header information used to control the behavior of requests.
-     * @param body    Optional request body.
+     * @param body    Optional request body,It can be of type {@code String} or object type,
+     *                and finally call {@code ToString} to obtain it.
      * @param charset Encoding character set.
      * @return Returns a string representation of the server response body.
      * The specific content depends on the server's response.
@@ -155,7 +161,8 @@ public interface MultiHttpMethodExecutor extends HttpRequestExecutor {
      *
      * @param url     The target URL of the request.
      * @param headers Optional HTTP header information used to control the behavior of requests.
-     * @param body    Optional request body.
+     * @param body    Optional request body,It can be of type {@code String} or object type,
+     *                and finally call {@code ToString} to obtain it.
      * @param charset Encoding character set.
      * @return Returns a string representation of the server response body.
      * The specific content depends on the server's response.
@@ -173,7 +180,8 @@ public interface MultiHttpMethodExecutor extends HttpRequestExecutor {
      *
      * @param url     The target URL of the request.
      * @param headers Optional HTTP header information used to control the behavior of requests.
-     * @param body    Optional request body.
+     * @param body    Optional request body,It can be of type {@code String} or object type,
+     *                and finally call {@code ToString} to obtain it.
      * @param charset Encoding character set.
      * @return Returns a string representation of the server response body.
      * The specific content depends on the server's response.
