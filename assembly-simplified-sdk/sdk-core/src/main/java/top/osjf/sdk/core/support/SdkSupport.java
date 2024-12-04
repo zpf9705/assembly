@@ -279,12 +279,16 @@ public abstract class SdkSupport {
     }
 
     static <T> Constructor<T> getConstructor(Class<T> type, Class<?>[] inputParameterTypes) throws Throwable {
+        if (Arrays.stream(inputParameterTypes)
+                .filter(Objects::nonNull)
+                .count() < inputParameterTypes.length)
+            throw new IllegalArgumentException("InputParameterTypes contains null values");
         Constructor<T> conformingConstructor = null;
-        Exception directFindException = null;
+        Exception directFindConstructorException = null;
         try {
             conformingConstructor = type.getConstructor(inputParameterTypes);
         } catch (Exception e) {
-            directFindException = e;
+            directFindConstructorException = e;
         }
         if (conformingConstructor != null) return conformingConstructor;
         for (Constructor<?> constructor : type.getDeclaredConstructors()) {
@@ -305,7 +309,7 @@ public abstract class SdkSupport {
                 break;
             }
         }
-        if (conformingConstructor == null) throw directFindException;
+        if (conformingConstructor == null) throw directFindConstructorException;
         return conformingConstructor;
     }
 
