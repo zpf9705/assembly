@@ -53,10 +53,7 @@ public class ThreadLocalRequestBinder<R extends Response> implements RequestBind
     @Override
     public ThreadLocalRequestBinder<R> bindRequest(@Nullable Request<R> request) {
         if (request == null) {
-            Request<R> rRequest = REQUEST_LOCAL.get();
-            if (rRequest != null) {
-                REQUEST_LOCAL.remove();
-            }
+            REQUEST_LOCAL.remove();
         } else {
             REQUEST_LOCAL.set(request);
         }
