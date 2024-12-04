@@ -72,6 +72,9 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
     /*** Save each request parameter and use it for subsequent requests*/
     private static final ThreadLocal<Request> local = new ThreadLocal<>();
 
+    /*** The unique cache tag for the current {@code Client}.*/
+    private final String unique;
+
     /*** Constructing for {@link Client} objects using unique identifier.
      * @param url   {@code URL} Object of packaging tags and URL addresses
      *                         and updated on version 1.0.2.
@@ -79,6 +82,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
     public AbstractClient(URL url) {
         Objects.requireNonNull(url, "top.osjf.sdk.core.process.URL");
         cache(url.getUnique(), this);
+        this.unique = url.getUnique();
     }
 
     /**
@@ -164,6 +168,11 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
             return (T) local.get();
         }
         return null;
+    }
+
+    @Override
+    public R request() {
+        return (R) cache.get(unique).request();
     }
 
     /**
