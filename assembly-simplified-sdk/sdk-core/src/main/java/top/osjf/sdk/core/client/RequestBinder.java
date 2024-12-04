@@ -18,6 +18,7 @@ package top.osjf.sdk.core.client;
 
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.support.ServiceLoadManager;
 
 /**
  * The use of binding interface for {@link Request} provides a method
@@ -36,7 +37,8 @@ public interface RequestBinder<R extends Response> extends AutoCloseable {
     /**
      * Bind a {@code Request} resource and return itself.
      *
-     * @param bindRequest Waiting for bound {} resources.
+     * @param bindRequest Waiting for bound {@code Request}
+     *                    resources.
      * @return itself {@code RequestBinder}.
      */
     RequestBinder<R> bindRequest(Request<R> bindRequest);
@@ -59,4 +61,32 @@ public interface RequestBinder<R extends Response> extends AutoCloseable {
      */
     @Override
     void close() throws Exception;
+
+    /**
+     * The Holder class is a utility class for providing instances
+     * of {@code RequestBinder}.
+     */
+    @SuppressWarnings("rawtypes")
+    class Holder {
+
+        /**
+         * Gets an instance of {@code RequestBinder}.
+         * <p>
+         * This method first attempts to load a high-priority implementation
+         * of {@code RequestBinder} through {@code ServiceLoadManager}.
+         * <p>
+         * If the load fails (i.e., returns null), it creates a new
+         * {@code ThreadLocalRequestBinder} instance and returns it.
+         *
+         * @return Returns an instance of {@code RequestBinder}.
+         */
+        static RequestBinder getInstance() {
+            RequestBinder requestBinder
+                    = ServiceLoadManager.loadHighPriority(RequestBinder.class);
+            if (requestBinder == null) {
+                requestBinder = new ThreadLocalRequestBinder();
+            }
+            return requestBinder;
+        }
+    }
 }
