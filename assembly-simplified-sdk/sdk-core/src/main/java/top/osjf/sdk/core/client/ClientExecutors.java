@@ -20,6 +20,7 @@ import top.osjf.sdk.core.exception.ClientRequestFailedException;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
 import top.osjf.sdk.core.process.URL;
+import top.osjf.sdk.core.support.SdkSupport;
 
 import java.util.function.Supplier;
 
@@ -89,18 +90,18 @@ public class ClientExecutors {
      * This method calls the {@code Request#getClientCls()} method of the request
      * object to retrieve the client class and create its instance through reflection.
      *
-     * @param url   {@code URL} Object of packaging tags and URL addresses
-     *                         and updated on version 1.0.2.
+     * @param url     {@code URL} Object of packaging tags and URL addresses
+     *                and updated on version 1.0.2.
      * @param request object, containing API parameters.
      * @param <R>     is a generic type that responds to data.
      * @return returns the client instance distinguished by a unique key.
-     * @throws Throwable Cache {@code Client} instantiation exception.
      */
     @SuppressWarnings("unchecked")
-    protected static <R extends Response> Client<R> getClient(URL url, Request<R> request) throws Throwable {
-        return AbstractClient.getCachedClient(() ->
-                //Building client objects through reflection based
-                // on client type (provided that they are not cached)
-                request.getClientCls().getConstructor(URL.class).newInstance(url), request, url.getUnique());
+    protected static <R extends Response> Client<R> getClient(URL url, Request<R> request) {
+        return AbstractClient
+                .getClientManager()
+                .getMaintainedClient(url.getUnique(),
+                        (Supplier<Client<R>>) () -> SdkSupport.instantiates(request.getClientCls(), url))
+                .bindRequest(request);
     }
 }
