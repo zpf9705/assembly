@@ -74,7 +74,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
      * The binding instance of {@code Request} for {@code Client}.
      * @since 1.0.2
      * */
-    private static final RequestBinder REQUEST_BINDER = null;
+    private static final RequestBinder REQUEST_BINDER = RequestBinder.Holder.getInstance();
 
     /*** The unique cache tag for the current {@code Client}.*/
     private final String unique;
