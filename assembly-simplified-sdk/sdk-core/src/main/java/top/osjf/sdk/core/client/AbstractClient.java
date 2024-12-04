@@ -80,8 +80,8 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
      *                         and updated on version 1.0.2.
      * */
     public AbstractClient(@NotNull URL url) {
-        cache(url.getUnique(), this);
         this.unique = url.getUnique();
+        cache(url.getUnique(), this);
     }
 
     /**
