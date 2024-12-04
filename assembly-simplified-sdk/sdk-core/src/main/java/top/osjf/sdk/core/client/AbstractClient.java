@@ -16,7 +16,6 @@
 
 package top.osjf.sdk.core.client;
 
-import io.reactivex.rxjava3.functions.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.osjf.sdk.core.process.Request;
@@ -24,11 +23,9 @@ import top.osjf.sdk.core.process.Response;
 import top.osjf.sdk.core.process.URL;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
+import top.osjf.sdk.core.support.SdkSupport;
 import top.osjf.sdk.core.util.StringUtils;
-import top.osjf.sdk.core.util.SynchronizedWeakHashMap;
 
-import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 
@@ -59,23 +56,19 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
     /*** Default slf4j logger with current {@link Client} impl */
     protected final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
-    /*** The use of object locks for client retrieval and caching.*/
-    private static final Object lock = new Object();
-
-    /*** Cache request clients for each request object to prevent memory waste caused
-     * by multiple new requests.
-     * <p>
-     * Since 1.0.2,cache modification to weak references, freeing up memory in appropriate
-     * places to prevent memory leaks.
-     * */
-    private static final Map<String, Client> cache = new SynchronizedWeakHashMap<>();
-
-    /**
-     * The binding instance of {@code Request} for {@code Client}.
-     *
+    /***
+     * The manager instance of {@code Client}.
      * @since 1.0.2
      */
-    private static final RequestBinder REQUEST_BINDER = RequestBinder.Holder.getInstance();
+    private static final ClientManager CLIENT_MANAGER = SdkSupport.loadInstance(ClientManager.class,
+            "top.osjf.sdk.core.client.DefaultClientManager");
+
+    /***
+     * The binding instance of {@code Request} for {@code Client}.
+     * @since 1.0.2
+     */
+    private static final RequestBinder REQUEST_BINDER = SdkSupport.loadInstance(RequestBinder.class,
+            "top.osjf.sdk.core.client.ThreadLocalRequestBinder");
 
     /*** The unique cache tag for the current {@code Client}.*/
     private final String unique;
@@ -91,52 +84,29 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
 
     /**
      * Use the unique sign as the key, {@link Client} object
-     * as the value, and cache it in the current {@link #cache}
+     * as the value, and cache it in the current {@link #CLIENT_MANAGER}
      * to prepare for continuous access in the future.
      *
      * @param unique The unique identifier string for this
      *               client's cache.
      * @param client Real impl in {@link Client}.
+     * @throws IllegalArgumentException unique or client {@link null}
+     *                                  error.
      */
     protected void cache(String unique, Client client) {
-        if (StringUtils.isBlank(unique) || client == null) {
-            return;
-        }
-        cache.putIfAbsent(unique, client);
+        if (StringUtils.isBlank(unique) || client == null)
+            throw new IllegalArgumentException("unique or client");
+        getClientManager().maintenanceNewClient(unique, client);
     }
 
     /**
-     * Return and cache a {@link Client}. When it does not exist based on the
-     * unique sign, cache {@link Client}. Otherwise, retrieve it directly from
-     * the cache to ensure uniqueness.
+     * Return a {@code Client} manager instance for
+     * {@code ClientManager}.
      *
-     * @param newClientSupplier New client provider,if not found, add it directly.
-     * @param request           {@link Request} class model parameters of API.
-     * @param unique            The unique identifier string for this client's cache.
-     * @param <R>               Data Generics for {@link Response}.
-     * @return {@link Client} 's singleton object, persistently requesting.
-     * @throws Throwable Possible errors when generating a new {@code Client} when
-     *                   the unique key does not correspond to {@code Client}.
-     * @see #cache(String, Client)
+     * @return {@code Client} global static manager instance.
      */
-    protected static <R extends Response> Client<R> getCachedClient(Supplier<Client<R>> newClientSupplier,
-                                                                    Request<R> request,
-                                                                    String unique) throws Throwable {
-        Objects.requireNonNull(unique, "Client unique");
-        Objects.requireNonNull(request, "Client Request");
-
-        /* Retrieve and cache a client based on the URL address. */
-        Client<R> client = cache.get(unique);
-        if (client == null) {
-            synchronized (lock) {
-                client = cache.get(unique);
-                if (client == null) {
-                    client = newClientSupplier.get();
-                }
-            }
-        }
-        //when success to get client and bind current request
-        return client.bindRequest(request);
+    protected static ClientManager getClientManager() {
+        return CLIENT_MANAGER;
     }
 
     /**
@@ -167,10 +137,8 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
     @Override
     public Request<R> getBindRequest() throws IllegalStateException {
         Request<R> bindRequest = REQUEST_BINDER.getBindRequest();
-        if (bindRequest == null) {
-            throw new IllegalStateException
-                    ();
-        }
+        if (bindRequest == null)
+            throw new IllegalStateException("No available Request, consider whether to bind Request.");
         return bindRequest;
     }
 
@@ -184,7 +152,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
      */
     @Override
     public R request() {
-        return (R) cache.get(unique).request();
+        return (R) getClientManager().getMaintainedClient(unique, null).request();
     }
 
     /**
