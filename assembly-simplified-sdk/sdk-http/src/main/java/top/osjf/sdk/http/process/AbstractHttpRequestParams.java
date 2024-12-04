@@ -20,8 +20,8 @@ import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.core.process.AbstractRequestParams;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.util.StringUtils;
-import top.osjf.sdk.http.support.HttpSdkSupport;
 import top.osjf.sdk.http.client.DefaultHttpClient;
+import top.osjf.sdk.http.support.HttpSdkSupport;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -55,15 +55,6 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
      * based on {@link #getRequestParam()}, and retrieves {@code "Content-Type"}
      * from the request header according to the type.
      *
-     * <p>By default, adding request headers based on the type of body requires
-     * the following two conditions to be met:
-     * <ul>
-     *     <li>{@link #getRequestParam()} not be null</li>
-     *     <li>{@link #montage()} is false or {@link #montage()} is true and
-     *     this instanceof {@code MontageParam} and {@code MontageParam#getParam}
-     *     not be null</li>
-     * </ul>
-     *
      * @return {@inheritDoc}
      */
     @Override
@@ -78,20 +69,6 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
             }
         }
         return super.getHeadMap();
-    }
-
-    /**
-     * {@inheritDoc}
-     * Default to {@literal false}.
-     * <p>
-     * Specific implementations can be customized in subclasses according
-     * to relevant needs.
-     *
-     * @return {@inheritDoc}.
-     */
-    @Override
-    public boolean montage() {
-        return false;
     }
 
     /**
