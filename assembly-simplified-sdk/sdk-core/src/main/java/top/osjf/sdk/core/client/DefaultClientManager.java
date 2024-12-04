@@ -46,11 +46,25 @@ public class DefaultClientManager<R extends Response> implements ClientManager<R
             (16, ConcurrentReferenceHashMap.ReferenceType.SOFT,
                     ConcurrentReferenceHashMap.ReferenceType.SOFT);
 
+    /**
+     * {@inheritDoc}
+     * Use {@link ConcurrentReferenceHashMap#putIfAbsent}
+     *
+     * @param unique {@inheritDoc}
+     * @param client {@inheritDoc}
+     */
     @Override
     public void maintenanceNewClient(@NotNull String unique, @NotNull Client<R> client) {
         CLIENT_CACHE.putIfAbsent(unique, client);
     }
 
+    /**
+     * {@inheritDoc}
+     * Use {@link ConcurrentReferenceHashMap#computeIfAbsent}
+     *
+     * @param unique                    {@inheritDoc}
+     * @param ifAbsentNewClientSupplier {@inheritDoc}
+     */
     @Override
     public Client<R> getMaintainedClient(@NotNull String unique, Supplier<Client<R>> ifAbsentNewClientSupplier) {
         return CLIENT_CACHE.computeIfAbsent(unique, s -> ifAbsentNewClientSupplier.get());
