@@ -39,7 +39,10 @@ import top.osjf.sdk.core.process.Response;
 public interface RequestCore<R extends Response> extends RequestBinder<R> {
 
     /**
-     * Return the response body {@code Response} of this request.
+     * Return the response body {@code Response} of this {@code Client} request,
+     * and use the parameter {@link top.osjf.sdk.core.process.Request} in the
+     * binding settings and should call {@link #bindRequest} to bind parameters
+     * before calling this method, or parameter exceptions will occur.
      *
      * @return response body {@code Response} of this request.
      */
