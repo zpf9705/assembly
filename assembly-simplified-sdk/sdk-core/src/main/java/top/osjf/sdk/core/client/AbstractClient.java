@@ -72,8 +72,9 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
 
     /**
      * The binding instance of {@code Request} for {@code Client}.
+     *
      * @since 1.0.2
-     * */
+     */
     private static final RequestBinder REQUEST_BINDER = RequestBinder.Holder.getInstance();
 
     /*** The unique cache tag for the current {@code Client}.*/
@@ -138,17 +139,49 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
         return client.bindRequest(request);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Use {@code REQUEST_BINDER} to bind this {@code Request}.
+     *
+     * @param request {@inheritDoc}
+     * @return {@inheritDoc}
+     */
     @Override
     public Client<R> bindRequest(@Nullable Request<R> request) {
         REQUEST_BINDER.bindRequest(request);
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Get the current bound {@code Request} parameter from the
+     * initialized {@link #REQUEST_BINDER}, and give an exception
+     * prompt when it is {@literal null}.
+     *
+     * @return {@inheritDoc}
+     * @throws IllegalStateException The state exception thrown by binding parameter
+     *                               {@link Request} was not obtained.
+     */
     @Override
-    public Request<R> getBindRequest() {
-        return REQUEST_BINDER.getBindRequest();
+    public Request<R> getBindRequest() throws IllegalStateException {
+        Request<R> bindRequest = REQUEST_BINDER.getBindRequest();
+        if (bindRequest == null) {
+            throw new IllegalStateException
+                    ();
+        }
+        return bindRequest;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Retrieve {@link Client} from the cache and execute it, provided
+     * that {@code Request} parameter binding is also performed.
+     *
+     * @return {@inheritDoc}
+     */
     @Override
     public R request() {
         return (R) cache.get(unique).request();
