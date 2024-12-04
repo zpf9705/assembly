@@ -26,6 +26,7 @@ import top.osjf.sdk.core.util.CollectionUtils;
 import top.osjf.sdk.core.util.StringUtils;
 import top.osjf.sdk.core.util.SynchronizedWeakHashMap;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -262,7 +263,8 @@ public abstract class SdkSupport {
         if (parameterTypes.isEmpty()) {
             instanceSupplier = type::newInstance;
         } else {
-            instanceSupplier = () -> type.getConstructor(parameterTypes.toArray(new Class[]{})).newInstance(args);
+            instanceSupplier =
+                    () -> getConstructor(type, parameterTypes.toArray(new Class[]{})).newInstance(args);
         }
         try {
             return instanceSupplier.get();
@@ -274,6 +276,37 @@ public abstract class SdkSupport {
         } catch (Throwable e) {
             throw new IllegalArgumentException(e);
         }
+    }
+
+    static <T> Constructor<T> getConstructor(Class<T> type, Class<?>[] inputParameterTypes) throws Throwable {
+        Constructor<T> conformingConstructor = null;
+        Exception directFindException = null;
+        try {
+            conformingConstructor = type.getConstructor(inputParameterTypes);
+        } catch (Exception e) {
+            directFindException = e;
+        }
+        if (conformingConstructor != null) return conformingConstructor;
+        for (Constructor<?> constructor : type.getDeclaredConstructors()) {
+            Class<?>[] hasParameterTypes = constructor.getParameterTypes();
+            if (hasParameterTypes.length == inputParameterTypes.length) {
+                boolean compareResult = true;
+                for (int i = 0; i < hasParameterTypes.length; i++) {
+                    Class<?> hasParameterType = hasParameterTypes[i];
+                    Class<?> inputParameterType = inputParameterTypes[i];
+                    if (hasParameterType != inputParameterType &&
+                            !hasParameterType.isAssignableFrom(inputParameterType)) {
+                        compareResult = false;
+                        break;
+                    }
+                }
+                if (!compareResult) continue;
+                conformingConstructor = (Constructor<T>) constructor;
+                break;
+            }
+        }
+        if (conformingConstructor == null) throw directFindException;
+        return conformingConstructor;
     }
 
     static <T> T loadInstanceByDef(Class<T> type, String def) {
