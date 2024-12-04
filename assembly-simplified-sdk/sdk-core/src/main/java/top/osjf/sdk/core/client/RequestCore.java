@@ -29,17 +29,19 @@ import top.osjf.sdk.core.process.Response;
  * <p>The current parameters can be obtained at any time in various parts
  * of the cycle, which facilitates subsequent parameter extension operations.
  *
+ * <p>In version 1.0.2, the {@code RequestBinder} binding interface is inherited
+ * to make the {@code Client} binding of {@code Request} optional.
+ *
  * @param <R> Implement a unified response class data type.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-@FunctionalInterface
-public interface RequestCore<R extends Response> {
+public interface RequestCore<R extends Response> extends RequestBinder<R> {
 
     /**
-     * Can freely rewrite the method provided in the form of a request.
+     * Return the response body {@code Response} of this request.
      *
-     * @return Class object implemented on {@link Response}.
+     * @return response body {@code Response} of this request.
      */
     R request();
 }
