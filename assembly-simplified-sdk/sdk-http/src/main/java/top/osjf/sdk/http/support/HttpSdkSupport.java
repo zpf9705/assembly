@@ -108,7 +108,7 @@ public abstract class HttpSdkSupport extends SdkSupport {
      * @since 1.0.2
      */
     public static String getContentTypeWithBody(Object body, Charset charset) {
-        if (body == null) return null;
+        if (body == null || StringUtils.isBlank(body.toString())) return null;
         String bodyStr = body.toString();
         for (Map.Entry<BiPredicate<String, Charset>, String> entry : content_type_predicates.entrySet()) {
             if (entry.getKey().test(bodyStr, charset)) {
