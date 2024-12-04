@@ -42,12 +42,6 @@ import java.util.Map;
  * The class utilizes a global JAX-RS Client instance, which is created upon class loading
  * and automatically closed when the JVM shuts down via the {@code Runtime.getRuntime().
  * addShutdownHook} method.
- * <p>
- * The URL, headers, and request parameters for the request can be passed in through method
- * parameters.
- * The request parameters can optionally be appended to the URL or sent as a JSON request body.
- * This class is primarily used to simplify the process of sending HTTP requests and enhance
- * development efficiency.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
