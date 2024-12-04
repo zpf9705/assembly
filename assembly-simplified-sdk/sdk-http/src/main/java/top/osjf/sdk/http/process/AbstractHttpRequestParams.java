@@ -35,8 +35,6 @@ import java.util.concurrent.ConcurrentHashMap;
  *     <li>{@link #getHeadMap()}By default, without any parameter related concatenation
  *     requirements, {@code Content-Type} is parsed based on the parameter string type
  *     and placed in the header information.</li>
- *     <li>{@link #montage()}Default URL parameter concatenation without
- *     executing parameters.</li>
  *     <li>{@link #getClientCls()}The default execution client.</li>
  * </ul>
  *
@@ -71,8 +69,7 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
     @Override
     public Map<String, Object> getHeadMap() {
         Object requestParam = getRequestParam();
-        if (requestParam != null
-                && (!montage() || (this instanceof MontageParam && ((MontageParam) this).getParam() != null))) {
+        if (requestParam != null) {
             String contentType = HttpSdkSupport.getContentTypeWithBody(requestParam, getCharset());
             if (StringUtils.isNotBlank(contentType)) {
                 Map<String, Object> headers = new ConcurrentHashMap<>();

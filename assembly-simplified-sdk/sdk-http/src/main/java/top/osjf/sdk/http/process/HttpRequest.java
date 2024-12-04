@@ -202,37 +202,10 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
     /**
      * Do you want to concatenate the given {@link #getRequestParam()} parameters with rules after the URL.
      * <p>The prerequisite is to provide parameters in the form of a map or JSON strings for key/value.
-     * <p>
-     * In version 1.0.2, when the return value of this method is true, the return value
-     * from the {@link MontageParam} interface will be prioritized. If the above interface
-     * does not return the corresponding data, the data returned by {@link #getRequestParam()}
-     * will still be used.
      *
      * @return If true, it will concatenate the provided parameters for you, otherwise it will be determined
      * based on the request header.
      */
+    @Deprecated
     boolean montage();
-
-    /**
-     * Provide a parameter retrieval interface for concatenating URLs
-     * when {@code montage == true} is provided separately.
-     * <p>
-     * Implement isolation from the body parameter of {@link #getRequestParam()}.
-     * When {@link #getParam()} is empty, {@link #getRequestParam()} will still
-     * be used for URL parameter concatenation.
-     *
-     * @since 1.0.2
-     */
-    interface MontageParam {
-        /**
-         * Return the object concatenated with URL parameters.
-         *
-         * <p>Hope the return is a map structure, JSON string,
-         * or convertible map object structure.
-         *
-         * @return the object concatenated with URL parameters.
-         */
-        @Nullable
-        Object getParam();
-    }
 }
