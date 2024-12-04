@@ -23,6 +23,7 @@ import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
 import top.osjf.sdk.core.process.URL;
 import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.util.StringUtils;
 import top.osjf.sdk.core.util.SynchronizedWeakHashMap;
 
@@ -69,8 +70,11 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
      * */
     private static final Map<String, Client> cache = new SynchronizedWeakHashMap<>();
 
-    /*** Save each request parameter and use it for subsequent requests*/
-    private static final ThreadLocal<Request> local = new ThreadLocal<>();
+    /**
+     * The binding instance of {@code Request} for {@code Client}.
+     * @since 1.0.2
+     * */
+    private static final RequestBinder REQUEST_BINDER = null;
 
     /*** The unique cache tag for the current {@code Client}.*/
     private final String unique;
@@ -101,24 +105,6 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
     }
 
     /**
-     * Regarding the placement of the {@link Request} parameter, it
-     * was first placed in {@link #local} to facilitate the retrieval
-     * of the current request parameter {@link Request} in the case of
-     * global constraints in this request.
-     *
-     * @param <R>     Data Generics for {@link Response}.
-     * @param request The parameter model of the current request is
-     *                an implementation of {@link Request}.
-     */
-    protected static <R extends Response> void setCurrentRequest(Request<R> request) {
-        if (request == null) {
-            local.remove();
-        } else {
-            local.set(request);
-        }
-    }
-
-    /**
      * Return and cache a {@link Client}. When it does not exist based on the
      * unique sign, cache {@link Client}. Otherwise, retrieve it directly from
      * the cache to ensure uniqueness.
@@ -138,9 +124,6 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
         Objects.requireNonNull(unique, "Client unique");
         Objects.requireNonNull(request, "Client Request");
 
-        /* Bind the current thread to the request parameters. */
-        setCurrentRequest(request);
-
         /* Retrieve and cache a client based on the URL address. */
         Client<R> client = cache.get(unique);
         if (client == null) {
@@ -151,22 +134,19 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
                 }
             }
         }
-        return client;
+        //when success to get client and bind current request
+        return client.bindRequest(request);
     }
 
-    /**
-     * Return the current request parameters, which is the
-     * implementation class of {@link Request}.
-     *
-     * @param <T> Convert the type of parameter.
-     * @return Actual {@link Request} implementation.
-     */
-    protected <T extends Request<R>> T getCurrentRequest() {
-        Request request = local.get();
-        if (request != null) {
-            return (T) local.get();
-        }
-        return null;
+    @Override
+    public Client<R> bindRequest(@Nullable Request<R> request) {
+        REQUEST_BINDER.bindRequest(request);
+        return this;
+    }
+
+    @Override
+    public Request<R> getBindRequest() {
+        return REQUEST_BINDER.getBindRequest();
     }
 
     @Override
@@ -227,7 +207,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
      * Release the temporarily stored request parameter information.
      */
     @Override
-    public void close() {
-        setCurrentRequest(null);
+    public void close() throws Exception {
+        REQUEST_BINDER.close();
     }
 }
