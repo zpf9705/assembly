@@ -252,36 +252,6 @@ public interface HttpRequestExecutor {
          * @return The configuration options for the request.
          */
         RequestOptions getOptions();
-
-        /**
-         * Retrieve the original request information for building this
-         * executable request class.
-         *
-         * @return original request information.
-         */
-        Source getSource();
-    }
-
-    /**
-     * Construct the original information for {@link ExecutableHttpRequest}.
-     *
-     * @since 1.0.2
-     */
-    interface Source {
-
-        /**
-         * Returns source {@code HttpRequest}.
-         *
-         * @return source {@code HttpRequest}.
-         */
-        HttpRequest getSourceRequest();
-
-        /**
-         * Returns source url (The initial version.).
-         *
-         * @return source url.
-         */
-        String getSourceUrl();
     }
 
     /**
@@ -298,7 +268,6 @@ public interface HttpRequestExecutor {
         private final Charset charset;
         private final Map<String, Object> headers;
         private final RequestOptions options;
-        private final Source source;
 
         /**
          * Constructs a default {@code HTTP request executor}.
@@ -317,30 +286,19 @@ public interface HttpRequestExecutor {
          * If the passed-in HttpRequest or url parameter is null, a {@code NullPointerException}
          * will be thrown.
          *
-         * @param sourceRequest An object encapsulating HTTP request information.
-         * @param sourceUrl     The URL address of the request.
-         * @param options       The options for the HTTP request, can be null.
+         * @param request An object encapsulating HTTP request information.
+         * @param url     The URL address of the request.
+         * @param options The options for the HTTP request, can be null.
          */
-        public Default(HttpRequest sourceRequest, String sourceUrl, RequestOptions options) {
-            if (sourceRequest == null) throw new NullPointerException("HttpRequest not be null");
-            if (sourceUrl == null) throw new NullPointerException("url not be null");
-            this.url = sourceUrl;
-            this.body = sourceRequest.getRequestParam();
-            this.methodName = sourceRequest.matchSdkEnum().getRequestMethod().name();
-            this.charset = sourceRequest.getCharset();
-            this.headers = sourceRequest.getHeadMap();
+        public Default(HttpRequest request, String url, RequestOptions options) {
+            if (request == null) throw new NullPointerException("HttpRequest not be null");
+            if (url == null) throw new NullPointerException("url not be null");
+            this.url = url;
+            this.body = request.getRequestParam();
+            this.methodName = request.matchSdkEnum().getRequestMethod().name();
+            this.charset = request.getCharset();
+            this.headers = request.getHeadMap();
             this.options = options == null ? RequestOptions.DEFAULT_OPTIONS : options;
-            this.source = new Source() {
-                @Override
-                public HttpRequest getSourceRequest() {
-                    return sourceRequest;
-                }
-
-                @Override
-                public String getSourceUrl() {
-                    return sourceUrl;
-                }
-            };
         }
 
         @Override
@@ -438,11 +396,6 @@ public interface HttpRequestExecutor {
         @Override
         public RequestOptions getOptions() {
             return options;
-        }
-
-        @Override
-        public Source getSource() {
-            return source;
         }
 
         private <T> T convertValueToRequired(Object value,
