@@ -213,16 +213,7 @@ public abstract class SdkSupport {
     /*  ################################### Internal assistance methods. ###################################  */
 
 
-    static <T> T loadInstanceByDef(Class<T> type, String def) {
-        Class<?> defType;
-        try {
-            defType = type.getClassLoader().loadClass(def);
-        } catch (ClassNotFoundException e) {
-            throw new IllegalArgumentException("No found [" + def + "]", e);
-        }
-        return (T) ReflectUtil.instantiates(defType);
-    }
-
+    
     static Request<?> invokeCreateRequestConstructorWhenFailedUseSet(Class<? extends Request> requestType,
                                                                      Object... args) {
         Request<?> request;
