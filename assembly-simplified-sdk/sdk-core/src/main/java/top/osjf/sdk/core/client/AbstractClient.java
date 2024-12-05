@@ -56,20 +56,6 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
     /*** Default slf4j logger with current {@link Client} impl */
     protected final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
-    /***
-     * The manager instance of {@code Client}.
-     * @since 1.0.2
-     */
-    private static final ClientManager CLIENT_MANAGER = SdkSupport.loadInstance(ClientManager.class,
-            "top.osjf.sdk.core.client.DefaultClientManager");
-
-    /***
-     * The binding instance of {@code Request} for {@code Client}.
-     * @since 1.0.2
-     */
-    private static final RequestBinder REQUEST_BINDER = SdkSupport.loadInstance(RequestBinder.class,
-            "top.osjf.sdk.core.client.ThreadLocalRequestBinder");
-
     /*** The unique cache tag for the current {@code Client}.*/
     private final String unique;
 
@@ -83,30 +69,23 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
     }
 
     /**
-     * Use the unique sign as the key, {@link Client} object
-     * as the value, and cache it in the current {@link #CLIENT_MANAGER}
-     * to prepare for continuous access in the future.
+     * Cache the client into the management class {@code InstanceHolder.ClientManager}.
+     * <p>
+     * This method receives a unique identifier and a {@code Client} object, and
+     * passes them to an {@code InstanceHolder} who manages the client for caching.
+     * If the provided unique identifier is empty or the {@code Client} object is
+     * null, an {@code IllegalArgumentException} exception is thrown.
      *
-     * @param unique The unique identifier string for this
-     *               client's cache.
-     * @param client Real impl in {@link Client}.
-     * @throws IllegalArgumentException unique or client {@literal null}
-     *                                  error.
+     * @param unique is a unique string used to identify the {@code Client}.
+     * @param client The {@code Client} object that client needs to be cached.
+     * @throws IllegalArgumentException thrown if unique is empty or contains
+     *                                  only whitespace characters, or if
+     *                                  {@code Client} is {@literal null}.
      */
     protected void cache(String unique, Client client) {
         if (StringUtils.isBlank(unique) || client == null)
-            throw new IllegalArgumentException("unique or client");
-        getClientManager().maintenanceNewClient(unique, client);
-    }
-
-    /**
-     * Return a {@code Client} manager instance for
-     * {@code ClientManager}.
-     *
-     * @return {@code Client} global static manager instance.
-     */
-    protected static ClientManager getClientManager() {
-        return CLIENT_MANAGER;
+            throw new IllegalArgumentException("unique or client not be null");
+        InstanceHolder.getClientManager().maintenanceNewClient(unique, client);
     }
 
     /**
@@ -119,7 +98,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
      */
     @Override
     public Client<R> bindRequest(@Nullable Request<R> request) {
-        REQUEST_BINDER.bindRequest(request);
+        InstanceHolder.getRequestBinder().bindRequest(request);
         return this;
     }
 
@@ -127,8 +106,8 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
      * {@inheritDoc}
      * <p>
      * Get the current bound {@code Request} parameter from the
-     * initialized {@link #REQUEST_BINDER}, and give an exception
-     * prompt when it is {@literal null}.
+     * initialized {@link InstanceHolder#getRequestBinder()}, and
+     * give an exception prompt when it is {@literal null}.
      *
      * @return {@inheritDoc}
      * @throws IllegalStateException The state exception thrown by binding parameter
@@ -136,7 +115,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
      */
     @Override
     public Request<R> getBindRequest() throws IllegalStateException {
-        Request<R> bindRequest = REQUEST_BINDER.getBindRequest();
+        Request<R> bindRequest = InstanceHolder.getRequestBinder().getBindRequest();
         if (bindRequest == null)
             throw new IllegalStateException("No available Request, consider whether to bind Request.");
         return bindRequest;
@@ -152,7 +131,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
      */
     @Override
     public R request() {
-        return (R) getClientManager().getMaintainedClient(unique, null).request();
+        return (R) InstanceHolder.getClientManager().getMaintainedClient(unique, null).request();
     }
 
     /**
@@ -209,6 +188,46 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
      */
     @Override
     public void close() throws Exception {
-        REQUEST_BINDER.close();
+        InstanceHolder.getRequestBinder().close();
+    }
+
+    /**
+     * Any instance holder.
+     *
+     * @since 1.0.2
+     */
+    protected static class InstanceHolder {
+
+        /***
+         * The manager instance of {@code Client}.
+         */
+        private static final ClientManager CLIENT_MANAGER = SdkSupport.loadInstance(ClientManager.class,
+                "top.osjf.sdk.core.client.DefaultClientManager");
+
+        /***
+         * The binding instance of {@code Request} for {@code Client}.
+         */
+        private static final RequestBinder REQUEST_BINDER = SdkSupport.loadInstance(RequestBinder.class,
+                "top.osjf.sdk.core.client.ThreadLocalRequestBinder");
+
+        /**
+         * Return a {@code Client} manager instance for
+         * {@code ClientManager}.
+         *
+         * @return {@code Client} global static manager instance.
+         */
+        public static ClientManager getClientManager() {
+            return CLIENT_MANAGER;
+        }
+
+        /**
+         * Return a {@code Request} binder instance for
+         * {@code RequestBinder}.
+         *
+         * @return {@code Request} global static binder instance.
+         */
+        public static RequestBinder getRequestBinder() {
+            return REQUEST_BINDER;
+        }
     }
 }
