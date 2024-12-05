@@ -33,6 +33,7 @@ import java.util.function.Supplier;
  * Classes implementing {@code ClientManager} should ensure thread safety,
  * especially when operating on client objects in a multithreaded environment.
  *
+ * @see DefaultClientManager
  * @param <R> Implement a unified response class data type.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
