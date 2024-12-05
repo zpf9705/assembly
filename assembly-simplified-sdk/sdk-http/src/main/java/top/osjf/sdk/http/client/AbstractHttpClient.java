@@ -257,7 +257,7 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
                                 "for usage plan.");
             }
         }
-        return getRequestExecutor().execute(asRequestToExecutable(request, url));
+        return getRequestExecutor().execute(asRequestToExecutable(request, getUrl()));
     }
 
     @Override
