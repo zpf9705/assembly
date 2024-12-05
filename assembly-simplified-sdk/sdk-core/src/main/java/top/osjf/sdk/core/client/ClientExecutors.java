@@ -99,6 +99,7 @@ public class ClientExecutors {
     @SuppressWarnings("unchecked")
     protected static <R extends Response> Client<R> getClient(URL url, Request<R> request) {
         return AbstractClient
+                .InstanceHolder
                 .getClientManager()
                 .getMaintainedClient(url.getUnique(),
                         (Supplier<Client<R>>) () -> ReflectUtil.instantiates(request.getClientCls(), url))
