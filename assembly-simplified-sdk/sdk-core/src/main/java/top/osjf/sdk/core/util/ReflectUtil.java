@@ -17,13 +17,13 @@
 package top.osjf.sdk.core.util;
 
 import io.reactivex.rxjava3.functions.Supplier;
+import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.support.Nullable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Reflection utility class, used to instantiate objects through
@@ -47,8 +47,51 @@ public abstract class ReflectUtil {
      *             the instance to instantiate.
      * @return An instance of the specified type.
      */
-    public static <T> T instantiates(Class<T> type) {
+    public static <T> T instantiates(@NotNull Class<T> type) {
         return instantiates(type, EMPTY);
+    }
+
+    /**
+     * This method instantiates an object based on the provided
+     * class name and class loader.
+     *
+     * @param className   The string representation of the class name.
+     * @param classLoader A class loader used to load classes.
+     * @param <T>         Represents the type of instantiated object.
+     * @return The instantiated object cast to {@code T}.
+     */
+    public static <T> T instantiates(@NotNull String className, @Nullable ClassLoader classLoader) {
+        classLoader = getAvailableClassLoader(classLoader);
+        Class<?> clazz;
+        try {
+            clazz = classLoader.loadClass(className);
+        } catch (ClassNotFoundException e) {
+            throw new IllegalArgumentException(" Not found class " + className, e);
+        }
+        return (T) instantiates(clazz);
+    }
+
+    /**
+     * This method retrieves a valid class loader.
+     *
+     * @param classLoader The class loader provided by the user.
+     * @return An effective class loader.
+     * @throws IllegalArgumentException If both the provided class loader
+     *                                  and thread context class loader are empty,
+     *                                  and the system class loader cannot be used,
+     *                                  this exception will be thrown.
+     */
+    public static ClassLoader getAvailableClassLoader(@Nullable ClassLoader classLoader) {
+        if (classLoader == null) {
+            classLoader = Thread.currentThread().getContextClassLoader();
+            if (classLoader == null) {
+                classLoader = ClassLoader.getSystemClassLoader();
+                if (classLoader == null) {
+                    throw new IllegalArgumentException("No available classLoader");
+                }
+            }
+        }
+        return classLoader;
     }
 
     /**
@@ -64,7 +107,7 @@ public abstract class ReflectUtil {
      *                                  please refer to {@link IllegalArgumentException#getCause()}
      *                                  for details.
      */
-    public static <T> T instantiates(Class<T> type, Object... args) {
+    public static <T> T instantiates(@NotNull Class<T> type, Object... args) {
         List<Class<?>> parameterTypes = new LinkedList<>();
         if (ArrayUtils.isNotEmpty(args)) {
             for (Object arg : args) {
@@ -99,17 +142,14 @@ public abstract class ReflectUtil {
      * @return The constructor that matches the specified parameter types.
      * @throws Exception If an error occurs while searching for the constructor.
      */
-    public static <T> Constructor<T> getConstructor(Class<T> type, Class<?>[] inputParameterTypes)
+    public static <T> Constructor<T> getConstructor(@NotNull Class<T> type, Class<?>... inputParameterTypes)
             throws Exception {
-        if (Arrays.stream(inputParameterTypes)
-                .filter(Objects::nonNull)
-                .count() < inputParameterTypes.length)
-            throw new IllegalArgumentException("InputParameterTypes contains null values");
         Constructor<T> conformingConstructor = null;
         Exception directFindConstructorException = null;
         try {
             conformingConstructor = type.getConstructor(inputParameterTypes);
         } catch (Exception e) {
+            if (ArrayUtils.isEmpty(inputParameterTypes)) throw e;
             directFindConstructorException = e;
         }
         if (conformingConstructor != null) return conformingConstructor;
