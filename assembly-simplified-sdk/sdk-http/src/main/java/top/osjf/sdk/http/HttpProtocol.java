@@ -17,6 +17,7 @@
 package top.osjf.sdk.http;
 
 import top.osjf.sdk.core.util.StringUtils;
+import top.osjf.sdk.http.process.HttpSdkEnum;
 import top.osjf.sdk.http.util.UrlUtils;
 
 import java.net.URL;
@@ -33,6 +34,15 @@ import java.util.Objects;
  * @since 1.0.0
  */
 public enum HttpProtocol {
+
+    /**
+     * NULL means not provided.
+     * <p>If you provide {@code HttpProtocol} in {@link HttpSdkEnum#getProtocol()},
+     * please do not select this option.
+     *
+     * @since 1.0.2
+     */
+    NULLS(null, null, null),
 
     /**
      * The enumeration instance representing the HTTPS protocol.
@@ -100,6 +110,15 @@ public enum HttpProtocol {
     }
 
     /**
+     * Does it support the use.
+     */
+    void supportUsing() {
+        if (NULLS == this) {
+            throw new UnsupportedOperationException("`NULLS` Only for internal use.");
+        }
+    }
+
+    /**
      * Formats a URL string.
      * <p>
      * This method is primarily used to format the passed-in URL string.
@@ -134,6 +153,7 @@ public enum HttpProtocol {
      * @since 1.0.2
      */
     public String formatUrl(String url) {
+        supportUsing();
         // If url is blank, directly return it.
         if (StringUtils.isBlank(url)) return url;
         //Handle the following situations:
