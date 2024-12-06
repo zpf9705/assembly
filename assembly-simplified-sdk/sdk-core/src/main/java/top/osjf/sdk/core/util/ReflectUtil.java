@@ -61,14 +61,51 @@ public abstract class ReflectUtil {
      * @return The instantiated object cast to {@code T}.
      */
     public static <T> T instantiates(@NotNull String className, @Nullable ClassLoader classLoader) {
+        return (T) instantiates(getClass(className, classLoader));
+    }
+
+    /**
+     * Retrieve the {@code Class} object of the class based on the given
+     * class name and class loader, and initialize the {@code Class}.
+     *
+     * @param className   The fully qualified name of the class to be loaded
+     *                    (including package name and class name).
+     * @param classLoader The class loader used to load classes, if it is
+     *                    {@literal null}, will automatically select an
+     *                    available {@code ClassLoader}.
+     * @return The {@code Class} object of the loaded and initialized class.
+     * @throws IllegalArgumentException If the specified class cannot be found,
+     *                                  throw this exception in its {@code #cause}.
+     */
+    public static Class<?> getClass(@NotNull String className, @Nullable ClassLoader classLoader) {
         classLoader = getAvailableClassLoader(classLoader);
-        Class<?> clazz;
         try {
-            clazz = classLoader.loadClass(className);
+            return Class.forName(className, true, classLoader);
         } catch (ClassNotFoundException e) {
             throw new IllegalArgumentException(" Not found class " + className, e);
         }
-        return (T) instantiates(clazz);
+    }
+
+    /**
+     * Retrieve the {@code Class} object of a class based on the given class
+     * name and class loader, but it may not necessarily initialize the {@code Class}.
+     *
+     * @param className   The fully qualified name of the class to be loaded
+     *                    (including package name and class name).
+     * @param classLoader The class loader used to load classes, if it is
+     *                    {@literal null}, will automatically select an
+     *                    available {@code ClassLoader}.
+     * @return The {@code Class} object of the loaded and initialized class.
+     * @throws IllegalArgumentException If the specified class cannot be found,
+     *                                  throw this exception in its {@code #cause}.
+     */
+    public static Class<?> loadClass(@NotNull String className, @Nullable ClassLoader classLoader) {
+        classLoader = getAvailableClassLoader(classLoader);
+        try {
+            return classLoader.loadClass(className);
+        } catch (ClassNotFoundException e) {
+            throw new IllegalArgumentException(" Not found class " + className, e);
+        }
     }
 
     /**
