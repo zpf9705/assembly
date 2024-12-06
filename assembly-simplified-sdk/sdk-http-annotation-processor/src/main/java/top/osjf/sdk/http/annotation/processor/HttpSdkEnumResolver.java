@@ -16,10 +16,7 @@
 
 package top.osjf.sdk.http.annotation.processor;
 
-import com.sun.source.tree.CompilationUnitTree;
 import com.sun.tools.javac.code.Flags;
-import com.sun.tools.javac.code.Symbol;
-import com.sun.tools.javac.code.TypeTag;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.TreeMaker;
 import com.sun.tools.javac.util.List;
