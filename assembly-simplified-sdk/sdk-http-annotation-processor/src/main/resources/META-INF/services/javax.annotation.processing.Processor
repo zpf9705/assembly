@@ -1,1 +1,1 @@
-top.osjf.sdk.http.annotation.processor.HttpSdkEnumCodeGenerationAnnotationProcessor
+top.osjf.sdk.http.annotation.processor.GenericAnnotationProcessor

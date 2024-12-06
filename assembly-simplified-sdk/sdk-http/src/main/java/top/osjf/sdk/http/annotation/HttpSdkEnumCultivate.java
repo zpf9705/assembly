@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http.annotation.processor;
+package top.osjf.sdk.http.annotation;
 
 import top.osjf.sdk.http.HttpProtocol;
 import top.osjf.sdk.http.HttpRequestMethod;
@@ -28,15 +28,13 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.SOURCE)
 @Documented
-public @interface HttpSdkEnumCodeGeneration {
+public @interface HttpSdkEnumCultivate {
 
     String url();
 
     String version() default "";
 
-    HttpProtocol protocol();
-
-    boolean formatArgs() default true;
+    HttpProtocol protocol() default HttpProtocol.NULLS;
 
     HttpRequestMethod method() default HttpRequestMethod.POST;
 
