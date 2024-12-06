@@ -16,14 +16,16 @@
 
 package top.osjf.sdk.http.annotation.processor;
 
+import com.sun.source.tree.CompilationUnitTree;
 import com.sun.tools.javac.code.Flags;
+import com.sun.tools.javac.code.Symbol;
+import com.sun.tools.javac.code.TypeTag;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.TreeMaker;
 import com.sun.tools.javac.util.List;
 import com.sun.tools.javac.util.Name;
 import com.sun.tools.javac.util.Names;
 import top.osjf.sdk.core.util.StringUtils;
-import top.osjf.sdk.http.annotation.DefaultCultivateHttpSdkEnum;
 import top.osjf.sdk.http.annotation.HttpSdkEnumCultivate;
 
 import javax.annotation.processing.RoundEnvironment;
@@ -37,14 +39,6 @@ import java.util.Set;
  * @since 1.0.2
  */
 public class HttpSdkEnumResolver implements Resolver {
-
-    private static final String METHOD_NAME = "matchSdkEnum";
-
-    private static final String STATIC_VAR_TYPE = DefaultCultivateHttpSdkEnum.class.getSimpleName();
-
-    private static final String IMPORT_STATIC_VAR_TYPE = DefaultCultivateHttpSdkEnum.class.getName();
-
-    private static final String STATIC_VAR_NAME = "DEFAULT_HTTP_SDK_ENUM";
 
     @Override
     public void resolve(ResolverMetadata resolverMetadata) {
@@ -63,118 +57,81 @@ public class HttpSdkEnumResolver implements Resolver {
 
     private void resolveInternal(TypeElement element, ResolverMetadata resolverMetadata) {
 
-//        if (!isRequestAssignableFrom(element)) return;
-
         TreeMaker treeMaker = resolverMetadata.getTreeMaker();
 
         Names names = resolverMetadata.getNames();
 
         JCTree.JCClassDecl classDecl = resolverMetadata.getJavacTrees().getTree(element);
 
-        // 创建静态私有变量
-//        JCTree.JCModifiers modifiers = treeMaker.Modifiers(Flags.PRIVATE | Flags.STATIC);
-//        Name fieldName = names.fromString("staticPrivateField");
-//        JCTree.JCExpression fieldType = treeMaker.TypeIdent(TypeTag.INT);
-//        JCTree.JCVariableDecl fieldDecl = treeMaker.VarDef(
-//                modifiers,
-//                fieldName,
-//                fieldType,
-//                null
-//        );
-        // 创建静态私有对象
-//        JCTree.JCModifiers modifiers = treeMaker.Modifiers(Flags.PRIVATE | Flags.STATIC);
-//        Name fieldName = names.fromString("staticPrivateObject");
-//        JCTree.JCExpression fieldType = treeMaker.Ident(names.fromString("InvoiceApply"));
-//        JCTree.JCNewClass newClass = treeMaker.NewClass(null, List.nil(),
-//                treeMaker.Ident(names.fromString("InvoiceApply")), List.nil(), null);
-//        JCTree.JCVariableDecl fieldDecl = treeMaker.VarDef(
-//                modifiers,
-//                fieldName,
-//                fieldType,
-//                newClass
-//        );
+        JCTree.JCVariableDecl staticVar = getStaticVar(treeMaker, names, element);
 
+        classDecl.defs = classDecl.defs.prepend(staticVar);
 
-        JCTree.JCModifiers modifiers = treeMaker.Modifiers(Flags.PRIVATE | Flags.STATIC | Flags.FINAL);
+        JCTree.JCCompilationUnit unitTree =
+                (JCTree.JCCompilationUnit) resolverMetadata.getJavacTrees().getPath(element).getCompilationUnit();
 
-        Name fieldName = names.fromString(STATIC_VAR_NAME);
+        JCTree.JCImport jcImport = getImport(treeMaker, names);
 
-        JCTree.JCExpression fieldType = treeMaker.Ident(names.fromString("DefaultCultivateHttpSdkEnum"));
+        unitTree.defs = unitTree.defs.prepend(jcImport);
 
-        HttpSdkEnumCultivate enumCultivate = element.getAnnotation(HttpSdkEnumCultivate.class);
+        //Change the variable of method `matchSdkEnum` to DEFAULT_HTTP_SDK_ENUM.
+        classDecl.defs.stream()
+                .filter(jct -> jct instanceof JCTree.JCMethodDecl
+                        && "matchSdkEnum".equals(((JCTree.JCMethodDecl) jct).name.toString()))
+                .findFirst()
+                .ifPresent(jcTree -> {
+                    JCTree.JCBlock body = ((JCTree.JCMethodDecl) jcTree).getBody();
+                    body.getStatements()
+                            .stream()
+                            .filter(jcs -> jcs instanceof JCTree.JCReturn)
+                            .findFirst()
+                            .ifPresent(jcStatement -> {
+                                JCTree.JCReturn jcReturn = (JCTree.JCReturn) jcStatement;
+                                jcReturn.expr = treeMaker.Ident(names.fromString("DEFAULT_HTTP_SDK_ENUM"));
+                            });
+                });
+    }
 
-        String name = enumCultivate.name();
+    private JCTree.JCVariableDecl getStaticVar(TreeMaker maker, Names names, TypeElement element) {
 
-        name = StringUtils.isNotBlank(enumCultivate.name()) ? name : element.getQualifiedName().toString();
+        JCTree.JCModifiers modifiers = maker.Modifiers(Flags.PRIVATE | Flags.STATIC | Flags.FINAL);
 
+        Name fieldName = names.fromString("DEFAULT_HTTP_SDK_ENUM");
 
-        JCTree.JCNewClass newClass = treeMaker.NewClass(
+        JCTree.JCExpression fieldType = maker.Ident(names.fromString("DefaultCultivateHttpSdkEnum"));
+
+        HttpSdkEnumCultivate cultivate = element.getAnnotation(HttpSdkEnumCultivate.class);
+
+        String name = StringUtils.isNotBlank(cultivate.name()) ? cultivate.name() : element.getQualifiedName().toString();
+
+        JCTree.JCNewClass newClass = maker.NewClass(
                 null,
                 List.nil(),
-                treeMaker.Ident(names.fromString("DefaultCultivateHttpSdkEnum")),
-                List.of(treeMaker.Literal(enumCultivate.url()),
-                        treeMaker.Literal(enumCultivate.version()),
-                        treeMaker.Literal(enumCultivate.protocol().name()),
-                        treeMaker.Literal(enumCultivate.method().name()),
-                        treeMaker.Literal(name)),
+                maker.Ident(names.fromString("DefaultCultivateHttpSdkEnum")),
+                List.of(maker.Literal(cultivate.url()),
+                        maker.Literal(cultivate.version()),
+                        maker.Literal(cultivate.protocol().name()),
+                        maker.Literal(cultivate.method().name()),
+                        maker.Literal(name)),
                 null
         );
 
-        JCTree.JCVariableDecl fieldDecl = treeMaker.VarDef(
+        return maker.VarDef(
                 modifiers,
                 fieldName,
                 fieldType,
                 newClass
         );
 
-
-//
-//        JCTree.JCImport anImport
-//                = treeMaker.Import(memberAccess(IMPORT_STATIC_VAR_TYPE, treeMaker, names), false);
-//
-//        List<JCTree> jcTrees = List.of(anImport, fieldDecl);
-
-        classDecl.defs = classDecl.defs.prepend(fieldDecl);
-
-
-//        JCTree.JCVariableDecl variableDecl = treeMaker.VarDef(
-//                treeMaker.Modifiers(Flags.PRIVATE),
-//                names.fromString("invoiceApply0"),
-//                treeMaker.Ident(names.fromString("InvoiceApply")),
-//                treeMaker.NewClass(null,
-//                        List.nil(),
-//                        treeMaker.Ident(names.fromString("InvoiceApply")),
-//                        List.nil(),
-//                        null));
-//
-//        classDecl.defs = classDecl.defs.prepend(variableDecl);
-
-        //Change the variable of method `matchSdkEnum` to DEFAULT_HTTP_SDK_ENUM.
-//        classDecl.defs.stream()
-//                .filter(jct -> jct instanceof JCTree.JCMethodDecl
-//                        && METHOD_NAME.equals(((JCTree.JCMethodDecl) jct).name.toString()))
-//                .findFirst()
-//                .ifPresent(jcTree -> {
-//                    JCTree.JCBlock body = ((JCTree.JCMethodDecl) jcTree).getBody();
-//                    body.getStatements()
-//                            .stream()
-//                            .filter(jcs -> jcs instanceof JCTree.JCReturn)
-//                            .findFirst()
-//                            .ifPresent(jcStatement -> {
-//                                JCTree.JCReturn jcReturn = (JCTree.JCReturn) jcStatement;
-//                                jcReturn.expr = treeMaker.Literal(STATIC_VAR_NAME);
-//                            });
-//                });
     }
 
-    private JCTree.JCExpression memberAccess(String components, TreeMaker treeMaker, Names names) {
-        String[] componentArray = components.split("\\.");
-        JCTree.JCExpression expr = treeMaker.Ident(names.fromString(componentArray[0]));
+    private JCTree.JCImport getImport(TreeMaker maker, Names names) {
 
-        for (int i = 1; i < componentArray.length; ++i) {
-            expr = treeMaker.Select(expr, names.fromString(componentArray[i]));
-        }
-        return expr;
+        JCTree.JCIdent packageJCIdent = maker.Ident(names.fromString("top.osjf.sdk.http.annotation"));
+
+        Name className = names.fromString("DefaultCultivateHttpSdkEnum");
+
+        return maker.Import(maker.Select(packageJCIdent, className), false);
     }
 
     private boolean isRequestAssignableFrom(TypeElement element) {
