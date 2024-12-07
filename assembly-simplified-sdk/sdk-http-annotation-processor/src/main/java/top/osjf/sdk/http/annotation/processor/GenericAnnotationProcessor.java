@@ -30,6 +30,28 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * A general-purpose processor for annotations.
+ *
+ * <p>In the initialization method {@link #init}, initialize the given
+ * parameter {@code Resolver.ResolverMetadata} {@link #initResolverMetadata}
+ * by obtaining relevant utility classes and AST syntax classes (which may
+ * exist) from {@code ProcessingEnvironment}.
+ *
+ * <p>The addition of general processing annotations only requires
+ * adding the fully qualified name of a certain annotation to
+ * {@code SupportedAnnotationTypes}, and adding a {@link Resolver}
+ * to {@link #resolverMap} as initialization processing information,
+ * such as {@code top.osjf.sdk.http.annotation.HttpSdkEnumCultivate}
+ * mentioned below.
+ *
+ * <p>In the process processing of {@link #process}, the annotation
+ * values added to {@code SupportedAnnotationTypes} will be processed
+ * sequentially in this annotation processor according to the supported
+ * annotation array.
+ * The relevant {@code Resolver} will be obtained based on the provided
+ * {@link TypeElement#getQualifiedName()}, and its processing scheme
+ * will be called based on its requirements for {@link #initResolverMetadata}.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
