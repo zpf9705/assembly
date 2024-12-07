@@ -37,6 +37,11 @@ import java.util.Set;
  * by obtaining relevant utility classes and AST syntax classes (which may
  * exist) from {@code ProcessingEnvironment}.
  *
+ * <p>The initialization {@link #initResolverMetadata} mentioned only fixes
+ * the relevant information. For each annotation processing, we hope to call
+ * {@link Resolver.ResolverMetadata#createProcess} to set the current round's
+ * {@link RoundEnvironment} for subsequent logical distribution.
+ *
  * <p>The addition of general processing annotations only requires
  * adding the fully qualified name of a certain annotation to
  * {@code SupportedAnnotationTypes}, and adding a {@link Resolver}
@@ -51,6 +56,11 @@ import java.util.Set;
  * The relevant {@code Resolver} will be obtained based on the provided
  * {@link TypeElement#getQualifiedName()}, and its processing scheme
  * will be called based on its requirements for {@link #initResolverMetadata}.
+ *
+ * <p>The relevant annotations processed by the current processor round
+ * will be immediately stopped after processing, that is, they will not
+ * be processed again in the future, regardless of whether they are really
+ * processed this time.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
