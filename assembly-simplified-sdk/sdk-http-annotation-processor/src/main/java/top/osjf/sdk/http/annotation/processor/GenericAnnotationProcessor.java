@@ -62,9 +62,6 @@ public class GenericAnnotationProcessor extends AbstractProcessor {
         if (roundEnv.processingOver()) {
             return true;
         }
-        if (this.initResolverMetadata == null) {
-            return false;
-        }
         for (TypeElement annotation : annotations) {
             Resolver resolver = resolverMap.get(annotation.getQualifiedName().toString());
             if (resolver != null && resolver.test(initResolverMetadata)) {
