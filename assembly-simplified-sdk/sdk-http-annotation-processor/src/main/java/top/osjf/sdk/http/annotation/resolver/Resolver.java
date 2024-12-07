@@ -29,6 +29,7 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import java.util.function.Predicate;
 
 /**
  * A {@code Resolver} interface defining specifications for handling relevant
@@ -47,7 +48,20 @@ import javax.lang.model.util.Types;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-public interface Resolver {
+public interface Resolver extends Predicate<Resolver.ResolverMetadata> {
+
+    /**
+     * Calculate whether the given initialization {@code ResolverMetadata}
+     * meets the requirements.
+     *
+     * @param initResolverMetadata {@inheritDoc}.
+     * @return If {@literal true, it can proceed to the processing stage,
+     * otherwise it does not meet the usage conditions.
+     */
+    @Override
+    default boolean test(ResolverMetadata initResolverMetadata) {
+        return true;
+    }
 
     /**
      * Process a given {@link ResolverMetadata DefaultResolverMetadata} object.
@@ -63,10 +77,7 @@ public interface Resolver {
      * @param processingEnv annotation processor initialized {@link ProcessingEnvironment}.
      * @return metadata processing object {@code ResolverMetadata}.
      */
-    @Nullable
     static ResolverMetadata toMetadata(ProcessingEnvironment processingEnv) {
-        if (!(processingEnv instanceof JavacProcessingEnvironment))
-            return null;
         return new DefaultResolverMetadata(processingEnv);
     }
 
@@ -170,9 +181,9 @@ public interface Resolver {
         private final Messager messager;
         private final Types types;
         private final Elements elements;
-        private final JavacTrees javacTrees;
-        private final TreeMaker treeMaker;
-        private final Names names;
+        private JavacTrees javacTrees;
+        private TreeMaker treeMaker;
+        private Names names;
 
         private final ProcessingEnvironment processingEnv;
 
@@ -183,11 +194,13 @@ public interface Resolver {
             this.messager = processingEnv.getMessager();
             this.elements = processingEnv.getElementUtils();
             this.types = processingEnv.getTypeUtils();
-            Context context = ((JavacProcessingEnvironment) processingEnv).getContext();
-            this.javacTrees = JavacTrees.instance(context);
-            this.treeMaker = TreeMaker.instance(context);
-            this.names = Names.instance(context);
             this.processingEnv = processingEnv;
+            if (processingEnv instanceof JavacProcessingEnvironment) {
+                Context context = ((JavacProcessingEnvironment) processingEnv).getContext();
+                this.javacTrees = JavacTrees.instance(context);
+                this.treeMaker = TreeMaker.instance(context);
+                this.names = Names.instance(context);
+            }
         }
 
         DefaultResolverMetadata(Filer filer,
