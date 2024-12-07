@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 the original author or authors.
+ * Copyright 2024-? the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http.annotation;
+package top.osjf.sdk.http.annotation.intelligence;
 
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
@@ -23,7 +23,9 @@ import top.osjf.sdk.http.HttpProtocol;
 import top.osjf.sdk.http.HttpRequestMethod;
 import top.osjf.sdk.http.process.HttpSdkEnum;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Objects;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
@@ -32,37 +34,50 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class DefaultCultivateHttpSdkEnum implements HttpSdkEnum {
 
     private String url;
-    private final String version;
+    private String currentHost;
     private final HttpProtocol httpProtocol;
     private final HttpRequestMethod httpRequestMethod;
     private final String name;
-    private final AtomicBoolean urlInit = new AtomicBoolean(false);
+    private final Lock lock = new ReentrantLock(true);
 
     public DefaultCultivateHttpSdkEnum(@NotNull String url,
                                        @Nullable String version,
                                        @Nullable String httpProtocol,
                                        @NotNull String httpRequestMethod,
                                        @NotNull String name) {
-        this.url = url;
-        this.version = version;
+        this.url = formatUrl(url, version);
         this.httpProtocol = StringUtils.isBlank(httpProtocol) ||
                 HttpProtocol.NULLS.name().equals(httpProtocol) ? null : HttpProtocol.valueOf(httpProtocol);
         this.httpRequestMethod = HttpRequestMethod.valueOf(httpRequestMethod);
         this.name = name;
     }
 
+    String formatUrl(String url, String version) {
+        if (url.contains("%s")) {
+            if (url.indexOf("%s") != url.lastIndexOf("%s") && StringUtils.isNotBlank(version)) {
+                return String.format(url, "%s", version);
+            }
+        }
+        return url;
+    }
+
+
     @Override
     @NotNull
     public String getUrl(@Nullable String host) {
-        if (!urlInit.get()) {
-            if (url.contains("%s")) {
-                if (StringUtils.isNotBlank(version)) {
-                    url = String.format(url, host, version);
-                } else {
-                    url = String.format(url, host);
-                }
-            }
-            urlInit.set(true);
+        lock.lock();
+        try {
+            return getUrlInternal(host);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    String getUrlInternal(@Nullable String host) {
+        if (StringUtils.isBlank(host)) return url;
+        if (StringUtils.isBlank(currentHost) || !Objects.equals(host, currentHost)) {
+            currentHost = host;
+            url = String.format(url, currentHost);
         }
         return url;
     }

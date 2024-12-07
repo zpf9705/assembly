@@ -16,12 +16,9 @@
 
 package top.osjf.sdk.http.annotation.processor;
 
-import com.sun.tools.javac.api.JavacTrees;
-import com.sun.tools.javac.processing.JavacProcessingEnvironment;
-import com.sun.tools.javac.tree.TreeMaker;
-import com.sun.tools.javac.util.Context;
-import com.sun.tools.javac.util.Names;
 import top.osjf.sdk.http.annotation.HttpSdkEnumCultivate;
+import top.osjf.sdk.http.annotation.resolver.HttpSdkEnumResolver;
+import top.osjf.sdk.http.annotation.resolver.Resolver;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -42,7 +39,7 @@ public class GenericAnnotationProcessor extends AbstractProcessor {
     /**
      * Support for {@link HttpSdkEnumCultivate}.
      */
-    protected static final String HTTP_SDK_ENUM = "top.osjf.sdk.http.annotation.HttpSdkEnumCultivate";
+    static final String HTTP_SDK_ENUM = "top.osjf.sdk.http.annotation.HttpSdkEnumCultivate";
 
     private ProcessingEnvironment processingEnv;
     private Map<String, Resolver> resolverMap;
@@ -51,12 +48,7 @@ public class GenericAnnotationProcessor extends AbstractProcessor {
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
-        this.processingEnv = processingEnv;
-        Context context = ((JavacProcessingEnvironment) processingEnv).getContext();
-        this.initResolverMetadata = new Resolver.DefaultResolverMetadata(processingEnv,
-                JavacTrees.instance(processingEnv),
-                TreeMaker.instance(context),
-                Names.instance(context));
+        this.initResolverMetadata = Resolver.toMetadata(processingEnv);
         initResolver();
     }
 
@@ -69,6 +61,9 @@ public class GenericAnnotationProcessor extends AbstractProcessor {
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         if (roundEnv.processingOver()) {
             return true;
+        }
+        if (this.initResolverMetadata == null) {
+            return false;
         }
         for (TypeElement annotation : annotations) {
             Resolver resolver = resolverMap.get(annotation.getQualifiedName().toString());

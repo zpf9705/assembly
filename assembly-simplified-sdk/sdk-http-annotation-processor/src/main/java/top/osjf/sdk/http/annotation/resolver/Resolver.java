@@ -63,7 +63,10 @@ public interface Resolver {
      * @param processingEnv annotation processor initialized {@link ProcessingEnvironment}.
      * @return metadata processing object {@code ResolverMetadata}.
      */
+    @Nullable
     static ResolverMetadata toMetadata(ProcessingEnvironment processingEnv) {
+        if (!(processingEnv instanceof JavacProcessingEnvironment))
+            return null;
         return new DefaultResolverMetadata(processingEnv);
     }
 
@@ -180,10 +183,7 @@ public interface Resolver {
             this.messager = processingEnv.getMessager();
             this.elements = processingEnv.getElementUtils();
             this.types = processingEnv.getTypeUtils();
-            Context context;
-            if (processingEnv instanceof JavacProcessingEnvironment) {
-                context = ((JavacProcessingEnvironment) processingEnv).getContext();
-            } else context = new Context();
+            Context context = ((JavacProcessingEnvironment) processingEnv).getContext();
             this.javacTrees = JavacTrees.instance(context);
             this.treeMaker = TreeMaker.instance(context);
             this.names = Names.instance(context);

@@ -29,7 +29,6 @@ import top.osjf.sdk.http.annotation.intelligence.DefaultCultivateHttpSdkEnum;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeMirror;
 import java.util.Set;
 
 /**
@@ -40,7 +39,6 @@ import java.util.Set;
  * @since 1.0.2
  */
 public class HttpSdkEnumResolver implements Resolver {
-
     static final String METHOD_NAME = "matchSdkEnum";
     static final String DEFAULT_VAR_NAME = "DEFAULT_HTTP_SDK_ENUM";
     static final String INTELLIGENCE_SIMPLE_NAME = DefaultCultivateHttpSdkEnum.class.getSimpleName();
@@ -48,73 +46,47 @@ public class HttpSdkEnumResolver implements Resolver {
 
     @Override
     public void resolve(ResolverMetadata resolverMetadata) {
-
         RoundEnvironment roundEnv = resolverMetadata.getProcessRoundEnv();
-
         if (roundEnv == null) return;
-
         Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(HttpSdkEnumCultivate.class);
-
         for (Element element : elements) {
-
             resolveInternal((TypeElement) element, resolverMetadata);
         }
     }
 
     private void resolveInternal(TypeElement element, ResolverMetadata resolverMetadata) {
-
         TreeMaker treeMaker = resolverMetadata.getTreeMaker();
-
         Names names = resolverMetadata.getNames();
-
         JCTree.JCClassDecl classDecl = resolverMetadata.getJavacTrees().getTree(element);
-
-        JCTree.JCVariableDecl staticVar = getStaticVar(treeMaker, names, element);
-
-        classDecl.defs = classDecl.defs.prepend(staticVar);
-
-        JCTree.JCCompilationUnit unitTree =
+        setStaticVar(treeMaker, names, element, classDecl);
+        JCTree.JCCompilationUnit compilationUnit =
                 (JCTree.JCCompilationUnit) resolverMetadata.getJavacTrees().getPath(element).getCompilationUnit();
-
-        JCTree.JCImport jcImport = getImport(treeMaker, names);
-
-        unitTree.defs = unitTree.defs.prepend(jcImport);
-
+        setImport(treeMaker, names, compilationUnit);
         updateMethodVar(classDecl, treeMaker, names);
     }
 
-    private JCTree.JCVariableDecl getStaticVar(TreeMaker maker, Names names, TypeElement element) {
-
+    private void setStaticVar(TreeMaker maker, Names names, TypeElement element, JCTree.JCClassDecl classDecl) {
         JCTree.JCModifiers modifiers = maker.Modifiers(Flags.PRIVATE | Flags.STATIC | Flags.FINAL);
-
         Name fieldName = names.fromString(DEFAULT_VAR_NAME);
-
         JCTree.JCExpression fieldType = maker.Ident(names.fromString(INTELLIGENCE_SIMPLE_NAME));
-
         HttpSdkEnumCultivate cultivate = element.getAnnotation(HttpSdkEnumCultivate.class);
-
         String name = StringUtils.isNotBlank(cultivate.name()) ? cultivate.name() : element.getQualifiedName().toString();
-
-        JCTree.JCNewClass newClass = maker.NewClass(
-                null,
-                List.nil(),
+        JCTree.JCNewClass newClass = maker.NewClass(null, List.nil(),
                 maker.Ident(names.fromString(INTELLIGENCE_SIMPLE_NAME)),
                 List.of(maker.Literal(cultivate.url()),
                         maker.Literal(cultivate.version()),
                         maker.Literal(cultivate.protocol().name()),
                         maker.Literal(cultivate.method().name()),
-                        maker.Literal(name)),
-                null
-        );
-
-        return maker.VarDef(modifiers, fieldName, fieldType, newClass);
-
+                        maker.Literal(name)), null);
+        JCTree.JCVariableDecl varDef = maker.VarDef(modifiers, fieldName, fieldType, newClass);
+        classDecl.defs = classDecl.defs.prepend(varDef);
     }
 
-    private JCTree.JCImport getImport(TreeMaker maker, Names names) {
+    private void setImport(TreeMaker maker, Names names, JCTree.JCCompilationUnit compilationUnit) {
         JCTree.JCIdent packageJCIdent = maker.Ident(names.fromString(INTELLIGENCE_PACKAGE_NAME));
         Name className = names.fromString(INTELLIGENCE_SIMPLE_NAME);
-        return maker.Import(maker.Select(packageJCIdent, className), false);
+        JCTree.JCImport anImport = maker.Import(maker.Select(packageJCIdent, className), false);
+        compilationUnit.defs = compilationUnit.defs.prepend(anImport);
     }
 
     private void updateMethodVar(JCTree.JCClassDecl classDecl, TreeMaker treeMaker, Names names) {
@@ -133,16 +105,5 @@ public class HttpSdkEnumResolver implements Resolver {
                                 jcReturn.expr = treeMaker.Ident(names.fromString(DEFAULT_VAR_NAME));
                             });
                 });
-    }
-
-    private boolean isRequestAssignableFrom(TypeElement element) {
-        boolean isRequestAssignableFrom = false;
-
-        for (TypeMirror typeMirror : element.getInterfaces()) {
-            System.out.println(typeMirror.toString());
-        }
-        TypeMirror superclass = element.getSuperclass();
-        System.out.println(superclass);
-        return true;
     }
 }
