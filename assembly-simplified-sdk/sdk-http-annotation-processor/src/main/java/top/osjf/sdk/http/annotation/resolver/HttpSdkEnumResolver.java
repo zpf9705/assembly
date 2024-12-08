@@ -17,7 +17,6 @@
 package top.osjf.sdk.http.annotation.resolver;
 
 import com.sun.tools.javac.code.Flags;
-import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.TreeMaker;
 import com.sun.tools.javac.util.List;
@@ -39,16 +38,11 @@ import java.util.Set;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-public class HttpSdkEnumResolver implements Resolver {
+public class HttpSdkEnumResolver extends JavacProcessingEnvironmentResolver {
     static final String METHOD_NAME = "matchSdkEnum";
     static final String DEFAULT_VAR_NAME = "DEFAULT_HTTP_SDK_ENUM";
     static final String INTELLIGENCE_SIMPLE_NAME = DefaultCultivateHttpSdkEnum.class.getSimpleName();
     static final String INTELLIGENCE_PACKAGE_NAME = DefaultCultivateHttpSdkEnum.class.getPackage().getName();
-
-    @Override
-    public boolean test(ResolverMetadata initResolverMetadata) {
-        return initResolverMetadata.getProcessingEnvironment() instanceof JavacProcessingEnvironment;
-    }
 
     @Override
     public void resolve(ResolverMetadata resolverMetadata) {
