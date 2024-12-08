@@ -55,7 +55,7 @@ public interface Resolver extends Predicate<Resolver.ResolverMetadata> {
      * meets the requirements.
      *
      * @param initResolverMetadata {@inheritDoc}.
-     * @return If {@literal true, it can proceed to the processing stage,
+     * @return If {@literal true}, it can proceed to the processing stage,
      * otherwise it does not meet the usage conditions.
      */
     @Override
