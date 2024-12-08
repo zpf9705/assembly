@@ -40,8 +40,8 @@ import java.lang.annotation.*;
  * requires a non null return.</pre>, and the rules follow the requirements
  * of {@link HttpSdkEnum}.
  * The following is the use case code:
+ * <h3>The code written</h3>
  * <pre>
- *     <h3>The code written</h3>
  *     {@code
  * HttpSdkEnumCultivate(url = "%s/%s/example.json", version = "v1.0",
  *         protocol = HttpProtocol.HTTPS, method = HttpRequestMethod.POST,name = "EXAMPLE_SDK")
@@ -54,7 +54,9 @@ import java.lang.annotation.*;
  *     }
  *   }
  * }
- *      <h3>After processing this annotation</h3>
+ * </pre>
+ * <h3>After processing this annotation</h3>
+ * <pre>
  *      {@code
  * public class ExampleRequestParams
  *         extends JsonSerialSPILoggerHttpRequestParams<ExampleResponse> {
