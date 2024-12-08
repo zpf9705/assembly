@@ -21,6 +21,7 @@ import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.util.StringUtils;
 import top.osjf.sdk.http.HttpProtocol;
 import top.osjf.sdk.http.HttpRequestMethod;
+import top.osjf.sdk.http.annotation.HttpSdkEnumCultivate;
 import top.osjf.sdk.http.process.HttpSdkEnum;
 
 import java.util.Objects;
@@ -28,16 +29,26 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
+ * The default HTTP SDK enumeration class implements the {@code HttpSdkEnum}
+ * interface and serves as an annotation {@link HttpSdkEnumCultivate} to handle
+ * the processing class.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
 public class DefaultCultivateHttpSdkEnum implements HttpSdkEnum {
 
     private String url;
+    /**
+     * The host name formatted for the current URL.
+     */
     private String currentHost;
     private final HttpProtocol httpProtocol;
     private final HttpRequestMethod httpRequestMethod;
     private final String name;
+    /**
+     * Initialize to ensure obtaining a fair lock for the URL.
+     */
     private final Lock lock = new ReentrantLock(true);
 
     public DefaultCultivateHttpSdkEnum(@NotNull String url,
@@ -52,6 +63,15 @@ public class DefaultCultivateHttpSdkEnum implements HttpSdkEnum {
         this.name = name;
     }
 
+    /**
+     * Format the URL, and when it contains string formatting symbols,
+     * perform logical initialization based on the quantity and whether
+     * the version number is empty.
+     *
+     * @param url     input url.
+     * @param version input sdk version.
+     * @return format url.
+     */
     String formatUrl(String url, String version) {
         if (url.contains("%s")) {
             if (url.indexOf("%s") != url.lastIndexOf("%s") && StringUtils.isNotBlank(version)) {
@@ -61,7 +81,19 @@ public class DefaultCultivateHttpSdkEnum implements HttpSdkEnum {
         return url;
     }
 
-
+    /**
+     * {@inheritDoc}.
+     * Thread safe URL retrieval involves formatting the host and URL.
+     * <p>
+     * After initializing the URL for the first time, it is necessary
+     * to check if any subsequent hosts have changed.
+     * <p>
+     * If there are any changes, the URL should be reinitialized, otherwise
+     * it will continue to be used.
+     *
+     * @param host {@inheritDoc}.
+     * @return {@inheritDoc}.
+     */
     @Override
     @NotNull
     public String getUrl(@Nullable String host) {
