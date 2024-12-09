@@ -21,6 +21,7 @@ import javax.tools.Diagnostic;
 /**
  * Regarding the logger wrapper interface for {@link javax.annotation.processing.Messager},
  * including its input types for enumerating {@link Diagnostic.Kind}.
+ * {@link org.slf4j.Logger}
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
@@ -30,40 +31,45 @@ public interface Logger {
     /**
      * Log a message at the ERROR level.
      *
-     * @param msg the message string to be logged
+     * @param msg       the message string to be logged.
+     * @param arguments a list of 3 or more arguments.
      * @see Diagnostic.Kind#ERROR
      */
-    void error(String msg);
+    void error(String msg, Object... arguments);
 
     /**
      * Log a message at the WARNING level.
      *
-     * @param msg the message string to be logged
+     * @param msg       the message string to be logged.
+     * @param arguments a list of 3 or more arguments.
      * @see Diagnostic.Kind#WARNING
      */
-    void warning(String msg);
+    void warning(String msg, Object... arguments);
 
     /**
      * Log a message at the MANDATORY_WARNING level.
      *
-     * @param msg the message string to be logged
+     * @param msg       the message string to be logged.
+     * @param arguments a list of 3 or more arguments.
      * @see Diagnostic.Kind#MANDATORY_WARNING
      */
-    void mandatoryWaring(String msg);
+    void mandatoryWaring(String msg, Object... arguments);
 
     /**
      * Log a message at the NOTE level.
      *
-     * @param msg the message string to be logged
+     * @param msg       the message string to be logged.
+     * @param arguments a list of 3 or more arguments.
      * @see Diagnostic.Kind#NOTE
      */
-    void note(String msg);
+    void note(String msg, Object... arguments);
 
     /**
      * Log a message at the OTHER level.
      *
-     * @param msg the message string to be logged
+     * @param msg       the message string to be logged.
+     * @param arguments a list of 3 or more arguments.
      * @see Diagnostic.Kind#OTHER
      */
-    void other(String msg);
+    void other(String msg, Object... arguments);
 }
