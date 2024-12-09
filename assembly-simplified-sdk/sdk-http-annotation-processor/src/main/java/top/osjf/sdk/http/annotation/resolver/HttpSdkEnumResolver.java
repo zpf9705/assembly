@@ -34,6 +34,9 @@ import java.util.Set;
 /**
  * The implementation class for processing {@code Resolver} related
  * services annotated with {@link HttpSdkEnumCultivate}.
+ * <p>
+ * The relevant solutions implemented in this class can be found in
+ * the explanations and case studies provided in footnote {@link HttpSdkEnumCultivate}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
@@ -57,8 +60,8 @@ public class HttpSdkEnumResolver extends JavacProcessingEnvironmentResolver {
     private void resolveInternal(TypeElement element, ResolverMetadata resolverMetadata) {
         TreeMaker treeMaker = resolverMetadata.getTreeMaker();
         JCTree.JCClassDecl classDecl = resolverMetadata.getJavacTrees().getTree(element);
-        JCTree.JCReturn standardModelDecl = getStandardModelDecl(classDecl);
-        if (standardModelDecl == null) {
+        JCTree.JCReturn returnDecl = getStandardMethodReturnDecl(classDecl);
+        if (returnDecl == null) {
             resolverMetadata.note("%s did not use a method that meets the requirements.", classDecl.name);
             return;
         }
@@ -67,10 +70,10 @@ public class HttpSdkEnumResolver extends JavacProcessingEnvironmentResolver {
         JCTree.JCCompilationUnit compilationUnit =
                 (JCTree.JCCompilationUnit) resolverMetadata.getJavacTrees().getPath(element).getCompilationUnit();
         setImport(treeMaker, names, compilationUnit);
-        updateMethodVar(classDecl, treeMaker, names);
+        updateMethodReturn(returnDecl, treeMaker, names);
     }
 
-    private JCTree.JCReturn getStandardModelDecl(JCTree.JCClassDecl classDecl) {
+    private JCTree.JCReturn getStandardMethodReturnDecl(JCTree.JCClassDecl classDecl) {
         return classDecl.defs.stream()
                 .filter(jct -> jct instanceof JCTree.JCMethodDecl
                         && METHOD_NAME.equals(((JCTree.JCMethodDecl) jct).name.toString()))
@@ -108,23 +111,7 @@ public class HttpSdkEnumResolver extends JavacProcessingEnvironmentResolver {
         compilationUnit.defs = compilationUnit.defs.prepend(anImport);
     }
 
-    private void updateMethodVar(JCTree.JCClassDecl classDecl, TreeMaker treeMaker, Names names) {
-        classDecl.defs.stream()
-                .filter(jct -> jct instanceof JCTree.JCMethodDecl
-                        && METHOD_NAME.equals(((JCTree.JCMethodDecl) jct).name.toString()))
-                .findFirst()
-                .ifPresent(jcTree -> {
-                    JCTree.JCBlock body = ((JCTree.JCMethodDecl) jcTree).getBody();
-                    body.getStatements()
-                            .stream()
-                            .filter(jcs -> jcs instanceof JCTree.JCReturn)
-                            .findFirst()
-                            .ifPresent(jcStatement -> {
-                                JCTree.JCReturn jcReturn = (JCTree.JCReturn) jcStatement;
-                                if (jcReturn.expr.toString().contains("null")) {
-                                    jcReturn.expr = treeMaker.Ident(names.fromString(DEFAULT_VAR_NAME));
-                                }
-                            });
-                });
+    private void updateMethodReturn(JCTree.JCReturn returnDecl, TreeMaker treeMaker, Names names) {
+        returnDecl.expr = treeMaker.Ident(names.fromString(DEFAULT_VAR_NAME));
     }
 }
