@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 the original author or authors.
+ * Copyright 2024-? the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,11 @@ import javax.annotation.processing.Messager;
 import javax.tools.Diagnostic;
 
 /**
+ * An abstract implementation of {@code Logger}, the proxy logger executes
+ * the obtained {@link Messager}, and the method for defining parameter
+ * formatting requires subclass implementation, including various types
+ * supported by {@link Diagnostic.Kind}.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
