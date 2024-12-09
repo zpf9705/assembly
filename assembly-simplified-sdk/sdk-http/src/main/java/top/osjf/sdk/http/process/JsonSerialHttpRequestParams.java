@@ -53,7 +53,8 @@ public abstract class JsonSerialHttpRequestParams<R extends AbstractHttpResponse
      * @return a nullable json string.
      */
     @Override
-    public String getRequestParam() {
+    @Nullable
+    public final String getRequestParam() {
         String json = null;
         Object param = getParam();
         if (param != null) {
