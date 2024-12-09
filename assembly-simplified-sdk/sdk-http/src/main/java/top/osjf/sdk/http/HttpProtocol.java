@@ -36,15 +36,6 @@ import java.util.Objects;
 public enum HttpProtocol {
 
     /**
-     * NULL means not provided.
-     * <p>If you provide {@code HttpProtocol} in {@link HttpSdkEnum#getProtocol()},
-     * please do not select this option.
-     *
-     * @since 1.0.2
-     */
-    NULLS(null, null, null),
-
-    /**
      * The enumeration instance representing the HTTPS protocol.
      */
     HTTPS("https", "https:", "https://"),
@@ -52,7 +43,32 @@ public enum HttpProtocol {
     /**
      * The enumeration instance representing the HTTP protocol.
      */
-    HTTP("http", "http:", "http://");
+    HTTP("http", "http:", "http://"),
+
+    /**
+     * NULL means not provided.
+     * <p>If you provide {@code HttpProtocol} in {@link HttpSdkEnum#getProtocol()},
+     * please do not select this option.
+     *
+     * @since 1.0.2
+     */
+    NULLS(null, null, null) {
+        final UnsupportedOperationException ex =  new UnsupportedOperationException();
+        @Override
+        public String getIdentity() {
+            throw ex;
+        }
+
+        @Override
+        public String getProtocolPrefix() {
+            throw ex;
+        }
+
+        @Override
+        public String getUrlPrefix() {
+            throw ex;
+        }
+    };
 
     /**
      * @since 1.0.2
@@ -110,15 +126,6 @@ public enum HttpProtocol {
     }
 
     /**
-     * Does it support the use.
-     */
-    void supportUsing() {
-        if (NULLS == this) {
-            throw new UnsupportedOperationException("`NULLS` Only for internal use.");
-        }
-    }
-
-    /**
      * Formats a URL string.
      * <p>
      * This method is primarily used to format the passed-in URL string.
@@ -153,7 +160,6 @@ public enum HttpProtocol {
      * @since 1.0.2
      */
     public String formatUrl(String url) {
-        supportUsing();
         // If url is blank, directly return it.
         if (StringUtils.isBlank(url)) return url;
         //Handle the following situations:
@@ -178,4 +184,4 @@ public enum HttpProtocol {
         // Return the formatted URL.
         return url;
     }
-}
+    }
