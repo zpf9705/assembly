@@ -56,13 +56,32 @@ public class HttpSdkEnumResolver extends JavacProcessingEnvironmentResolver {
 
     private void resolveInternal(TypeElement element, ResolverMetadata resolverMetadata) {
         TreeMaker treeMaker = resolverMetadata.getTreeMaker();
-        Names names = resolverMetadata.getNames();
         JCTree.JCClassDecl classDecl = resolverMetadata.getJavacTrees().getTree(element);
+        JCTree.JCReturn standardModelDecl = getStandardModelDecl(classDecl);
+        if (standardModelDecl == null) {
+            resolverMetadata.note("%s did not use a method that meets the requirements.", classDecl.name);
+            return;
+        }
+        Names names = resolverMetadata.getNames();
         setStaticVar(treeMaker, names, element, classDecl);
         JCTree.JCCompilationUnit compilationUnit =
                 (JCTree.JCCompilationUnit) resolverMetadata.getJavacTrees().getPath(element).getCompilationUnit();
         setImport(treeMaker, names, compilationUnit);
         updateMethodVar(classDecl, treeMaker, names);
+    }
+
+    private JCTree.JCReturn getStandardModelDecl(JCTree.JCClassDecl classDecl) {
+        return classDecl.defs.stream()
+                .filter(jct -> jct instanceof JCTree.JCMethodDecl
+                        && METHOD_NAME.equals(((JCTree.JCMethodDecl) jct).name.toString()))
+                .findFirst()
+                .map(jcTree -> {
+                    JCTree.JCBlock body = ((JCTree.JCMethodDecl) jcTree).getBody();
+                    return (JCTree.JCReturn) body.getStatements()
+                            .stream()
+                            .filter(jcs -> jcs instanceof JCTree.JCReturn && jcs.toString().contains("null"))
+                            .findFirst().orElse(null);
+                }).orElse(null);
     }
 
     private void setStaticVar(TreeMaker maker, Names names, TypeElement element, JCTree.JCClassDecl classDecl) {
@@ -102,7 +121,9 @@ public class HttpSdkEnumResolver extends JavacProcessingEnvironmentResolver {
                             .findFirst()
                             .ifPresent(jcStatement -> {
                                 JCTree.JCReturn jcReturn = (JCTree.JCReturn) jcStatement;
-                                jcReturn.expr = treeMaker.Ident(names.fromString(DEFAULT_VAR_NAME));
+                                if (jcReturn.expr.toString().contains("null")) {
+                                    jcReturn.expr = treeMaker.Ident(names.fromString(DEFAULT_VAR_NAME));
+                                }
                             });
                 });
     }
