@@ -21,6 +21,7 @@ import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.tree.TreeMaker;
 import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.Names;
+import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
 
 import javax.annotation.processing.Filer;
@@ -85,7 +86,7 @@ public interface Resolver extends Predicate<Resolver.ResolverMetadata> {
      * Analyze the relevant processing metadata information interface
      * obtained from {@code ProcessingEnvironment}.
      */
-    interface ResolverMetadata {
+    interface ResolverMetadata extends Logger {
 
         /**
          * Returns the filer used to create new source, class, or auxiliary
@@ -175,7 +176,7 @@ public interface Resolver extends Predicate<Resolver.ResolverMetadata> {
     /**
      * Default impl for {@link ResolverMetadata}.
      */
-    class DefaultResolverMetadata implements ResolverMetadata {
+    class DefaultResolverMetadata extends StringFormatLogger implements ResolverMetadata {
 
         private final Filer filer;
         private final Messager messager;
@@ -277,6 +278,12 @@ public interface Resolver extends Predicate<Resolver.ResolverMetadata> {
         @Override
         public RoundEnvironment getProcessRoundEnv() {
             return roundEnv;
+        }
+
+        @Override
+        @NotNull
+        public Messager delegate() {
+            return messager;
         }
     }
 }
