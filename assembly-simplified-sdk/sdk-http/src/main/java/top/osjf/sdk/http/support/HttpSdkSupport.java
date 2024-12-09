@@ -272,8 +272,9 @@ public abstract class HttpSdkSupport extends SdkSupport {
      * @since 1.0.2
      */
     public static Map<String, Object> convertUrlQueryParamToMap(Object urlQueryParm) {
-        Map<String, Object> queryParamMap = null;
-        if (urlQueryParm != null) {
+        if (urlQueryParm == null) return null;
+        Map<String, Object> queryParamMap;
+        try {
             if (urlQueryParm instanceof Map) {
                 //When obtaining the body type in map format,
                 // it can be directly converted.
@@ -291,16 +292,14 @@ public abstract class HttpSdkSupport extends SdkSupport {
                 //Considering in the form of a single object, using JSON conversion
                 // to convert this object to map format may result in JSON conversion
                 // errors if the object is not familiar with defining it.
-                try {
-                    queryParamMap = JSONUtil.parseObject(JSONUtil.toJSONString(urlQueryParm));
-                } catch (Exception e) {
-                    //Capture possible conversion errors, such as String type.
-                    throw new IllegalArgumentException
-                            ("The splicing URL requirement for the body parameter has been set, " +
-                                    "but the [" + urlQueryParm.getClass().getName() + "] type of the body does not match");
-                }
+                queryParamMap = JSONUtil.parseObject(JSONUtil.toJSONString(urlQueryParm));
             }
+        } catch (Exception e) {
+            throw new IllegalArgumentException("convert url query Param filed ", e);
         }
+        if (queryParamMap == null)
+            throw new IllegalArgumentException("Failed to convert URL query parameters. " +
+                    "Please set the parameters to 'Map', 'JSON string', or entity object.");
         return queryParamMap;
     }
 
@@ -316,22 +315,20 @@ public abstract class HttpSdkSupport extends SdkSupport {
      *                   depending on the implementation of the `resolveMontageObj` method.
      * @param charset    The character set used for URL encoding.
      * @return The built and formatted complete URL string, including query parameters.
-     * @throws IllegalArgumentException If an error occurs during URL building,
+     * @throws IllegalArgumentException If an error occurs during URL building or convert url query param
      *                                  this exception is thrown with detailed error information.
      * @since 1.0.2
      */
     public static String buildAndFormatUrlWithQueryParams(String url, Object queryParam, Charset charset) {
         Map<String, Object> queryParamMap = convertUrlQueryParamToMap(queryParam);
-        if (MapUtils.isNotEmpty(queryParamMap)) {
-            try {
-                UrlBuilder urlBuilder = UrlUtils.toPalominolabsBuilder(url, charset);
-                for (Map.Entry<String, Object> entry : queryParamMap.entrySet()) {
-                    urlBuilder.queryParam(entry.getKey(), String.valueOf(entry.getValue()));
-                }
-                url = urlBuilder.toUrlString();
-            } catch (Exception e) {
-                throw new IllegalArgumentException(" Format URL error ", e);
+        try {
+            UrlBuilder urlBuilder = UrlUtils.toPalominolabsBuilder(url, charset);
+            for (Map.Entry<String, Object> entry : queryParamMap.entrySet()) {
+                urlBuilder.queryParam(entry.getKey(), String.valueOf(entry.getValue()));
             }
+            url = urlBuilder.toUrlString();
+        } catch (Exception e) {
+            throw new IllegalArgumentException(" Format URL error ", e);
         }
         return url;
     }
