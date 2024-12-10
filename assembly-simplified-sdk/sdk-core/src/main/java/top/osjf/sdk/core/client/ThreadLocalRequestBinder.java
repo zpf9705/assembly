@@ -18,14 +18,18 @@ package top.osjf.sdk.core.client;
 
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
+
+import java.util.function.Supplier;
 
 /**
  * The {@code ThreadLocalRequestBinder} class implements the {@code RequestBinder}
- * interface and uses {@link ThreadLocal} to bind and store request objects.
+ * interface and uses {@link ThreadLocal} to bind and store request objects and url.
  * <p>
- * It allows setting and getting request objects in the current thread and
- * provides a close method to clear the bound request object.
+ * It allows setting and getting request objects and url wrapper in {@code LocalData}
+ * in the current thread and provides a close method {@link #close()} to clear the
+ * bound {@code LocalData}.
  *
  * @param <R> Implement a unified response class data type.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
@@ -34,29 +38,48 @@ import top.osjf.sdk.core.support.Nullable;
 public class ThreadLocalRequestBinder<R extends Response> implements RequestBinder<R> {
 
     /**
-     * Initialize a {@code ThreadLocal} to store the thread ->{@code Request<R>} variable.
+     * Initialize a {@code ThreadLocal} to store the thread ->{@code LocalData} variable.
      */
-    private final ThreadLocal<Request<R>> REQUEST_LOCAL = new ThreadLocal<>();
+    private final ThreadLocal<LocalData> REQUEST_LOCAL = ThreadLocal.withInitial(() -> new LocalData());
+
 
     /**
      * {@inheritDoc}
      * <p>
      * Binds the specified request object to the {@code ThreadLocal} variable
      * of the current thread.
-     * <p>
-     * If the request object is null, it removes the bound request object
-     * from the current thread.
      *
      * @param request {@inheritDoc}
      * @return {@inheritDoc}
+     * @throws IllegalStateException {@inheritDoc}
      */
     @Override
-    public ThreadLocalRequestBinder<R> bindRequest(@Nullable Request<R> request) {
-        if (request == null) {
-            REQUEST_LOCAL.remove();
-        } else {
-            REQUEST_LOCAL.set(request);
-        }
+    public ThreadLocalRequestBinder<R> bindRequest(@NotNull Request<R> request)
+            throws IllegalStateException {
+        stateRun(() -> {
+            REQUEST_LOCAL.get().setRequest(request);
+            return null;
+        }, "bindRequest");
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Binds the specified url to the {@code ThreadLocal} variable
+     * of the current thread.
+     *
+     * @param url {@inheritDoc}
+     * @return {@inheritDoc}
+     * @throws IllegalStateException {@inheritDoc}
+     */
+    @Override
+    public RequestBinder<R> bindUrl(@NotNull String url)
+            throws IllegalStateException {
+        stateRun(() -> {
+            REQUEST_LOCAL.get().setUrl(url);
+            return null;
+        }, "bindUrl");
         return this;
     }
 
@@ -66,15 +89,47 @@ public class ThreadLocalRequestBinder<R extends Response> implements RequestBind
      * Gets the request object bound to the current thread.
      * <p>
      * If no request object is bound to the current thread,
-     * it returns {@literal null}.
+     * it throw {@code IllegalStateException}.
      *
-     * @return Returns the request object bound to the current thread,
-     * or null if no request is bound.
+     * @return Returns the request object bound to the current thread.
+     * @throws IllegalStateException {@inheritDoc}
      */
     @Override
     @Nullable
-    public Request<R> getBindRequest() {
-        return REQUEST_LOCAL.get();
+    public Request<R> getBindRequest() throws IllegalStateException {
+        return stateRun(() -> REQUEST_LOCAL.get().getRequest(), "getBindRequest");
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Gets the url bound to the current thread.
+     * <p>
+     * If no url is bound to the current thread,
+     * it throw {@code IllegalStateException}.
+     *
+     * @return Returns the request object bound to the current thread.
+     * @throws IllegalStateException {@inheritDoc}
+     */
+    @Override
+    public String getBindUrl() throws IllegalStateException {
+        return stateRun(() -> REQUEST_LOCAL.get().getUrl(), "getBindRequest");
+    }
+
+    /**
+     * Running status, error thrown {@code IllegalStateException}.
+     *
+     * @param supplier state run Supplier.
+     * @param state    state name.
+     * @param <T>      state run return type.
+     * @return state run return object.
+     */
+    private <T> T stateRun(Supplier<T> supplier, String state) {
+        try {
+            return supplier.get();
+        } catch (Exception e) {
+            throw new IllegalStateException(state, e);
+        }
     }
 
     /**
@@ -87,6 +142,30 @@ public class ThreadLocalRequestBinder<R extends Response> implements RequestBind
      */
     @Override
     public void close() throws Exception {
-        bindRequest(null);
+        REQUEST_LOCAL.remove();
+    }
+
+    /**
+     * The data variables temporarily stored in {@code ThreadLocal}.
+     */
+    class LocalData {
+        private Request<R> request;
+        private String url;
+
+        public Request<R> getRequest() {
+            return request;
+        }
+
+        public void setRequest(Request<R> request) {
+            this.request = request;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
+        }
     }
 }
