@@ -210,7 +210,13 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
      * {@inheritDoc}
      * <p>
      * Execute the HTTP request process.
-     *
+     * <p>
+     * All request related exception issues will be parsed class by class
+     * and converted to the current response type, requiring the two
+     * methods {@link top.osjf.sdk.core.process.ErrorResponse#setErrorCode}
+     * and {@link top.osjf.sdk.core.process.ErrorResponse#setErrorMessage}
+     * of {@link top.osjf.sdk.core.process.ErrorResponse} to obtain the relevant
+     * content defined in this framework.
      *
      * @return {@inheritDoc}
      */
