@@ -22,7 +22,7 @@ import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.http.support.HttpSdkSupport;
 
 /**
- * The abstract class {@code AbstractUrlQueryHttpRequestParams} defines an HTTP request
+ * The abstract class {@code UrlQueryHttpRequestParams} defines an HTTP request
  * with URL query parameters.
  * It extends from {@code AbstractHttpRequestParams} for building and handling HTTP
  * requests that include query parameters.
@@ -31,7 +31,7 @@ import top.osjf.sdk.http.support.HttpSdkSupport;
  * </p>
  * <pre>
  * {@code
- * public class ExampleUrlQueryHttpRequestParams extends AbstractUrlQueryHttpRequestParams<...//Omitted here> {
+ * public class ExampleUrlQueryHttpRequestParams extends UrlQueryHttpRequestParams<...//Omitted here> {
  *     public HttpSdkEnum matchSdk() {
  *         ... //Omitted here.
  *     }
@@ -44,7 +44,7 @@ import top.osjf.sdk.http.support.HttpSdkSupport;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-public abstract class AbstractUrlQueryHttpRequestParams<R extends AbstractHttpResponse>
+public abstract class UrlQueryHttpRequestParams<R extends AbstractHttpResponse>
         extends AbstractHttpRequestParams<R> {
 
     private static final long serialVersionUID = -6897963235159228613L;
