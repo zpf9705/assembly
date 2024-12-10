@@ -18,12 +18,13 @@ package top.osjf.sdk.core.process;
 
 import top.osjf.sdk.core.support.SdkArgs;
 
+import java.util.Objects;
+
 /**
  * Defines an interface representing a URL, including methods to get a unique
  * identifier and the URL address.
  * <p>
  * It also provides static factory methods to create URL instances.
- *
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
@@ -47,6 +48,16 @@ public interface URL {
      * @return The address of the URL.
      */
     String getUrl();
+
+    /**
+     * <p>
+     * Return a Boolean tag indicating whether the
+     * {@code unique identifier} is the same as the real URL.
+     * </p>
+     *
+     * @return if {@code true} two are equals,otherwise {@code false}.
+     */
+    boolean isSame();
 
     /**
      * <p>
@@ -110,6 +121,11 @@ public interface URL {
         @Override
         public String getUrl() {
             return url;
+        }
+
+        @Override
+        public boolean isSame() {
+            return Objects.equals(unique, url);
         }
     }
 }

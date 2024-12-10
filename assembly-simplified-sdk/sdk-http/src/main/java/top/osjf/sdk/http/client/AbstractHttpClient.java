@@ -18,11 +18,13 @@ package top.osjf.sdk.http.client;
 
 import com.google.common.base.Stopwatch;
 import top.osjf.sdk.core.client.AbstractClient;
+import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.core.exception.SdkException;
 import top.osjf.sdk.core.process.DefaultErrorResponse;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.URL;
 import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.support.ServiceLoadManager;
 import top.osjf.sdk.core.util.ExceptionUtils;
 import top.osjf.sdk.http.executor.HttpRequestExecutor;
@@ -66,9 +68,6 @@ import java.util.concurrent.TimeUnit;
 public abstract class AbstractHttpClient<R extends HttpResponse> extends AbstractClient<R> implements HttpClient<R> {
 
     private static final long serialVersionUID = -7793213059840466979L;
-
-    /*** The real address accessed by executing HTTP requests.*/
-    private final String url;
 
     /**
      * Http request executor.
@@ -134,13 +133,25 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
      */
     private HttpRequestExecutor requestExecutor;
 
+    /**
+     * The persistent URL of the current HTTP client.
+     *
+     * <p>Suitable for scenarios where the URL remains unchanged and
+     * there is no need to perform parameter concatenation or other
+     * related changes every time.
+     */
+    @Nullable
+    private String persistentUrl;
+
     /*** Constructing for {@link HttpClient} objects using access URLs.
      * @param url   {@code URL} Object of packaging tags and URL addresses
      *                         and updated on version 1.0.2.
      * */
     public AbstractHttpClient(@NotNull URL url) {
         super(url);
-        this.url = url.getUrl();
+        if (url.isSame()) {
+            this.persistentUrl = url.getUrl();
+        }
     }
 
     /**
@@ -164,15 +175,45 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
     }
 
     /**
-     * Return the URL address constructed by attaching parameter tags
-     * based on the parameter URL and the current actual request parameters.
+     * Return the request address of the HTTP client.
+     * If the current address {@link #persistentUrl} is empty,
+     * obtain the bound URL address.
      *
-     * @return the actual URL path at the time of the request
+     * @return The request address of the HTTP client.
      */
-    public String getUrl() {
-        return url;
+    @Nullable
+    public String getUrl() throws IllegalStateException {
+        return persistentUrl == null ? getBindUrl() : persistentUrl;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * When the persistent URL of the current HTTP client exists,
+     * there is no need to bind the URL because it is fixed and
+     * unchanging. If the URL needs to be formatted, it needs
+     * to be bound each time.
+     *
+     * @param url {@inheritDoc}
+     * @return {@inheritDoc}
+     * @throws IllegalStateException {@inheritDoc}
+     */
+    @Override
+    public Client<R> bindUrl(@NotNull String url) throws IllegalStateException {
+        if (persistentUrl == null) {
+            return super.bindUrl(url);
+        }
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Execute the HTTP request process.
+     *
+     *
+     * @return {@inheritDoc}
+     */
     @Override
     public R request() {
 
