@@ -21,7 +21,6 @@ import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
@@ -211,17 +210,5 @@ public abstract class ReflectUtil {
         }
         if (conformingConstructor == null) throw directFindConstructorException;
         return conformingConstructor;
-    }
-
-    public static <T> T getFieldValue(Object obj, String fieldName) {
-        try {
-            Field field = obj.getClass().getField(fieldName);
-            field.setAccessible(true);
-            return (T) field.get(obj);
-        } catch (NoSuchFieldException e) {
-            throw new IllegalArgumentException("No field " + fieldName, e);
-        } catch (IllegalAccessException e) {
-            throw new IllegalArgumentException("No access perm in " + fieldName, e);
-        }
     }
 }
