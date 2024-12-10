@@ -18,6 +18,7 @@ package top.osjf.sdk.core.client;
 
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.support.NotNull;
 
 import java.io.Serializable;
 
@@ -55,9 +56,22 @@ public interface Client<R extends Response> extends RequestCore<R>, PreProcessin
      *
      * @param request {@inheritDoc}
      * @return {@inheritDoc}
+     * @throws IllegalStateException {@inheritDoc}
      */
     @Override
-    Client<R> bindRequest(Request<R> request);
+    Client<R> bindRequest(@NotNull Request<R> request) throws IllegalStateException;
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Bind a {@code Url} to the current {@link Client} and return itself.
+     *
+     * @param url {@inheritDoc}
+     * @return {@inheritDoc}
+     * @throws IllegalStateException {@inheritDoc}
+     */
+    @Override
+    Client<R> bindUrl(@NotNull String url) throws IllegalStateException;
 
     /**
      * {@inheritDoc}
