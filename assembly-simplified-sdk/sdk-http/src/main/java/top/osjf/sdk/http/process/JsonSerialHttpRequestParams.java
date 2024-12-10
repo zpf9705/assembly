@@ -79,8 +79,11 @@ public abstract class JsonSerialHttpRequestParams<R extends AbstractHttpResponse
      */
     @Override
     public final Map<String, Object> getHeadMap() {
-        Map<String, Object> jsonHeaders = new LinkedHashMap<>();
-        jsonHeaders.put("Content-Type", "application/json");
+        Map<String, Object> jsonHeaders = null;
+        if (getParam() != null) {
+            jsonHeaders = new LinkedHashMap<>();
+            jsonHeaders.put("Content-Type", "application/json");
+        }
         return resolveAdditionalHeaders(jsonHeaders);
     }
 
