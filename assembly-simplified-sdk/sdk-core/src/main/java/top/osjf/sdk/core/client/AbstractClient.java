@@ -22,7 +22,6 @@ import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
 import top.osjf.sdk.core.process.URL;
 import top.osjf.sdk.core.support.NotNull;
-import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.support.SdkSupport;
 import top.osjf.sdk.core.util.StringUtils;
 
@@ -97,7 +96,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
      * @return {@inheritDoc}
      */
     @Override
-    public Client<R> bindRequest(@Nullable Request<R> request) {
+    public Client<R> bindRequest(@NotNull Request<R> request) {
         InstanceHolder.getRequestBinder().bindRequest(request);
         return this;
     }
@@ -105,20 +104,43 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
     /**
      * {@inheritDoc}
      * <p>
+     * Use {@code REQUEST_BINDER} to bind this {@code url}.
+     *
+     * @param url {@inheritDoc}
+     * @return {@inheritDoc}
+     */
+    @Override
+    public Client<R> bindUrl(@NotNull String url) {
+        InstanceHolder.getRequestBinder().bindUrl(url);
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
      * Get the current bound {@code Request} parameter from the
-     * initialized {@link InstanceHolder#getRequestBinder()}, and
-     * give an exception prompt when it is {@literal null}.
+     * initialized {@link InstanceHolder#getRequestBinder()}.
      *
      * @return {@inheritDoc}
-     * @throws IllegalStateException The state exception thrown by binding parameter
-     *                               {@link Request} was not obtained.
+     * @throws IllegalStateException {@inheritDoc}
      */
     @Override
     public Request<R> getBindRequest() throws IllegalStateException {
-        Request<R> bindRequest = InstanceHolder.getRequestBinder().getBindRequest();
-        if (bindRequest == null)
-            throw new IllegalStateException("No available Request, consider whether to bind Request.");
-        return bindRequest;
+        return InstanceHolder.getRequestBinder().getBindRequest();
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Get the current bound {@code Url} parameter from the
+     * initialized {@link InstanceHolder#getRequestBinder()}.
+     *
+     * @return {@inheritDoc}
+     * @throws IllegalStateException {@inheritDoc}
+     */
+    @Override
+    public String getBindUrl() throws IllegalStateException {
+        return InstanceHolder.getRequestBinder().getBindUrl();
     }
 
     /**
