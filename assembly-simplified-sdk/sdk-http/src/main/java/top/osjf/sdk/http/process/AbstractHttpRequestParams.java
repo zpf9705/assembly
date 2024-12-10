@@ -24,8 +24,8 @@ import top.osjf.sdk.core.util.StringUtils;
 import top.osjf.sdk.http.client.DefaultHttpClient;
 import top.osjf.sdk.http.support.HttpSdkSupport;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * {@code AbstractHttpRequestParams} is an abstract class about HTTP request
@@ -56,7 +56,7 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
      * based on {@link #getRequestParam()}, and retrieves {@code "Content-Type"}
      * from the request header according to the type.
      *
-     * <p>By default, this method is used. Can override method {@link #additionalHeads()}
+     * <p>By default, this method is used. Can override method {@link #additionalHeaders()}
      * to add custom request headers.
      *
      * @return {@inheritDoc}
@@ -68,17 +68,29 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
         if (requestParam != null) {
             String contentType = HttpSdkSupport.getContentTypeWithBody(requestParam, getCharset());
             if (StringUtils.isNotBlank(contentType)) {
-                headers = new ConcurrentHashMap<>();
+                headers = new LinkedHashMap<>();
                 headers.put("Content-Type", contentType);
             }
         }
-        Map<String, Object> additionalHeads = additionalHeads();
-        if (MapUtils.isNotEmpty(additionalHeads)) {
-            if (MapUtils.isEmpty(headers)) headers = new ConcurrentHashMap<>();
-            headers.putAll(additionalHeads);
-        }
+        headers = resolveAdditionalHeaders(headers);
         if (MapUtils.isNotEmpty(headers)) return headers;
         return super.getHeadMap();
+    }
+
+    /**
+     * Given a request header map, process adding additional user-defined
+     * request headers. When the provided request header is empty, provide
+     * a new {@code LinkedHashMap} and add the custom request header.
+     * @param headers given header map.
+     * @return resolve result header map.
+     */
+     Map<String, Object> resolveAdditionalHeaders(Map<String, Object> headers) {
+        Map<String, Object> additionalHeads = additionalHeaders();
+        if (MapUtils.isNotEmpty(additionalHeads)) {
+            if (MapUtils.isEmpty(headers)) headers = new LinkedHashMap<>();
+            headers.putAll(additionalHeads);
+        }
+        return headers;
     }
 
     /**
@@ -91,7 +103,7 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
      * @return additional headers.
      * @since 1.0.2
      */
-    public Map<String, Object> additionalHeads() {
+    public Map<String, Object> additionalHeaders() {
         return null;
     }
 

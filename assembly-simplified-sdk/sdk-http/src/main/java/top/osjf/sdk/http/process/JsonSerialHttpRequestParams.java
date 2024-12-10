@@ -18,13 +18,17 @@ package top.osjf.sdk.http.process;
 
 import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.util.JSONUtil;
+import top.osjf.sdk.core.util.StringUtils;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * {@code JsonSequenceHttpRequestParams} is an abstract class that extends
  * from {@code AbstractHttpRequestParams} and is used to handle HTTP request
  * parameters that need to be serialized into JSON format.
  * <p>
- *     <strong>The code usage example is as follows:</strong>
+ * <strong>The code usage example is as follows:</strong>
  * </p>
  * <pre>
  * {@code
@@ -66,6 +70,16 @@ public abstract class JsonSerialHttpRequestParams<R extends AbstractHttpResponse
             } else json = JSONUtil.toJSONString(param);
         }
         return json;
+    }
+
+    @Override
+    public final Map<String, Object> getHeadMap() {
+        Map<String, Object> headers = null;
+        if (StringUtils.isNotBlank(getRequestParam())) {
+            headers = new LinkedHashMap<>();
+            headers.put("Content-Type", "application/json");
+        }
+        return resolveAdditionalHeaders(headers);
     }
 
     /**

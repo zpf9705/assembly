@@ -203,7 +203,7 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
      * Do you want to concatenate the given {@link #getRequestParam()} parameters with rules after the URL.
      * <p>The prerequisite is to provide parameters in the form of a map or JSON strings for key/value.
      *
-     * @deprecated 1.0.2 , refer to {@link AbstractUrlQueryHttpRequestParams}.
+     * @deprecated 1.0.2 , refer to {@link UrlQueryHttpRequestParams}.
      * @return If true, it will concatenate the provided parameters for you, otherwise it will be determined
      * based on the request header.
      */
