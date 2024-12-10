@@ -89,6 +89,10 @@ public class ClientExecutors {
      * <p>
      * This method calls the {@code Request#getClientCls()} method of the request
      * object to retrieve the client class and create its instance through reflection.
+     * <p>
+     * After obtaining the corresponding {@code Client}, it is necessary to bind
+     * the two parameters {@code Request} and {@code Url} executed by the current
+     * client, and the specific binding strategy is determined by the subclass.
      *
      * @param url     {@code URL} Object of packaging tags and URL addresses
      *                and updated on version 1.0.2.
