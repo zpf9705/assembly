@@ -19,6 +19,7 @@ package top.osjf.sdk.http.process;
 import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.core.process.AbstractRequestParams;
 import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.core.util.StringUtils;
 import top.osjf.sdk.http.client.DefaultHttpClient;
 import top.osjf.sdk.http.support.HttpSdkSupport;
@@ -55,20 +56,43 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
      * based on {@link #getRequestParam()}, and retrieves {@code "Content-Type"}
      * from the request header according to the type.
      *
+     * <p>By default, this method is used. Can override method {@link #additionalHeads()}
+     * to add custom request headers.
+     *
      * @return {@inheritDoc}
      */
     @Override
     public Map<String, Object> getHeadMap() {
         Object requestParam = getRequestParam();
+        Map<String, Object> headers = null;
         if (requestParam != null) {
             String contentType = HttpSdkSupport.getContentTypeWithBody(requestParam, getCharset());
             if (StringUtils.isNotBlank(contentType)) {
-                Map<String, Object> headers = new ConcurrentHashMap<>();
+                headers = new ConcurrentHashMap<>();
                 headers.put("Content-Type", contentType);
-                return headers;
             }
         }
+        Map<String, Object> additionalHeads = additionalHeads();
+        if (MapUtils.isNotEmpty(additionalHeads)) {
+            if (MapUtils.isEmpty(headers)) headers = new ConcurrentHashMap<>();
+            headers.putAll(additionalHeads);
+        }
+        if (MapUtils.isNotEmpty(headers)) return headers;
         return super.getHeadMap();
+    }
+
+    /**
+     * Return an additional header information in map format.
+     *
+     * <p>Combine with the default {@link #getHeadMap()} rewrite
+     * logic in this class and add relevant user-defined request
+     * headers other than {@code Content-Type}.
+     *
+     * @return additional headers.
+     * @since 1.0.2
+     */
+    public Map<String, Object> additionalHeads() {
+        return null;
     }
 
     /**
