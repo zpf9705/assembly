@@ -68,6 +68,14 @@ public interface Response extends ErrorResponse, Wrapper, Serializable {
      */
     String getMessage();
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Default to use {@link Class#isAssignableFrom}.
+     *
+     * @param clazz {@inheritDoc}
+     * @return {@inheritDoc}
+     */
     @Override
     default boolean isWrapperFor(Class<?> clazz){
         return Response.class.isAssignableFrom(clazz);
