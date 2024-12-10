@@ -18,7 +18,6 @@ package top.osjf.sdk.http.process;
 
 import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.util.JSONUtil;
-import top.osjf.sdk.core.util.StringUtils;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -72,14 +71,17 @@ public abstract class JsonSerialHttpRequestParams<R extends AbstractHttpResponse
         return json;
     }
 
+    /**
+     * When the provided parameter {@link #getParam()} is not empty,
+     * add {@code application/json} to the context of the request header.
+     *
+     * @return {@inheritDoc}
+     */
     @Override
     public final Map<String, Object> getHeadMap() {
-        Map<String, Object> headers = null;
-        if (StringUtils.isNotBlank(getRequestParam())) {
-            headers = new LinkedHashMap<>();
-            headers.put("Content-Type", "application/json");
-        }
-        return resolveAdditionalHeaders(headers);
+        Map<String, Object> jsonHeaders = new LinkedHashMap<>();
+        jsonHeaders.put("Content-Type", "application/json");
+        return resolveAdditionalHeaders(jsonHeaders);
     }
 
     /**
