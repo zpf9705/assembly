@@ -81,10 +81,12 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
      * Given a request header map, process adding additional user-defined
      * request headers. When the provided request header is empty, provide
      * a new {@code LinkedHashMap} and add the custom request header.
+     *
      * @param headers given header map.
      * @return resolve result header map.
+     * @since 1.0.2
      */
-     Map<String, Object> resolveAdditionalHeaders(Map<String, Object> headers) {
+    Map<String, Object> resolveAdditionalHeaders(Map<String, Object> headers) {
         Map<String, Object> additionalHeads = additionalHeaders();
         if (MapUtils.isNotEmpty(additionalHeads)) {
             if (MapUtils.isEmpty(headers)) headers = new LinkedHashMap<>();
