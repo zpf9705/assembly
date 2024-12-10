@@ -18,6 +18,7 @@ package top.osjf.sdk.core.client;
 
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.support.NotNull;
 
 /**
  * The use of binding interface for {@link Request} provides a method
@@ -26,6 +27,9 @@ import top.osjf.sdk.core.process.Response;
  * It should be noted that you need to ensure that the binding scheme
  * of the implementation class is consistent with the scheme of {@code Client}
  * executing the request to obtain the correct corresponding {@code Request}.
+ *
+ * <p>The URL address bound to this interface must have undergone various
+ * formats and be a truly accessible address.
  *
  * @param <R> Implement a unified response class data type.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
@@ -39,8 +43,24 @@ public interface RequestBinder<R extends Response> extends AutoCloseable {
      * @param bindRequest Waiting for bound {@code Request}
      *                    resources.
      * @return itself {@code RequestBinder}.
+     * @throws IllegalStateException If the bound resource is cleared
+     *                               in advance, i.e. calling {@link #close()},
+     *                               a bound resource status exception will be thrown.
      */
-    RequestBinder<R> bindRequest(Request<R> bindRequest);
+    RequestBinder<R> bindRequest(@NotNull Request<R> bindRequest) throws IllegalStateException;
+
+    /**
+     * Bind a {@code Url} resource and return itself.
+     *
+     * @param url The real address accessed, including
+     *            formatting operations on the URL such
+     *            as concatenating query parameters.
+     * @return itself {@code RequestBinder}.
+     * @throws IllegalStateException If the bound resource is cleared
+     *                               in advance, i.e. calling {@link #close()},
+     *                               a bound resource status exception will be thrown.
+     */
+    RequestBinder<R> bindUrl(@NotNull String url) throws IllegalStateException;
 
     /**
      * Retrieve the current {@code RequestBinder} bound
@@ -48,8 +68,23 @@ public interface RequestBinder<R extends Response> extends AutoCloseable {
      *
      * @return the current {@code RequestBinder} bound
      * {@code Request} resource.
+     * @throws IllegalStateException If the bound {@code Request<R>}
+     *                               is empty, throw the current binding
+     *                               status exception.
      */
-    Request<R> getBindRequest();
+    Request<R> getBindRequest() throws IllegalStateException;
+
+    /**
+     * Retrieve the current {@code RequestBinder} bound
+     * {@code Url} resource.
+     *
+     * @return the current {@code RequestBinder} bound
+     * {@code Url} resource.
+     * @throws IllegalStateException If the bound {@code Url} is empty,
+     *                               throw the current binding status
+     *                               exception.
+     */
+    String getBindUrl() throws IllegalStateException;
 
     /**
      * {@inheritDoc}
