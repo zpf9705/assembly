@@ -26,7 +26,7 @@ import java.util.Objects;
  */
 public abstract class StringFormatLogger extends AbstractLogger {
     @Override
-    public String formatMessage(String msg, Object... arguments) {
+    public final String formatMessage(String msg, Object... arguments) {
         Objects.requireNonNull(msg, "logger msg");
         return String.format(msg, arguments);
     }
