@@ -20,7 +20,6 @@ import top.osjf.sdk.core.util.org.hibernate.validator.internal.util.v6_2_0_final
 import top.osjf.sdk.http.process.HttpRequest;
 import top.osjf.sdk.http.process.HttpResponse;
 import top.osjf.sdk.http.process.HttpSdkEnum;
-import top.osjf.sdk.http.process.HttpSdkEnumCultivate;
 
 /**
  * Default implementation of the {@code HttpSdkEnum} manager for managing {@code HttpSdkEnum}

@@ -20,7 +20,6 @@ import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.util.StringUtils;
 import top.osjf.sdk.http.process.HttpSdkEnum;
-import top.osjf.sdk.http.process.HttpSdkEnumCultivate;
 
 import java.util.Objects;
 import java.util.concurrent.locks.Lock;
