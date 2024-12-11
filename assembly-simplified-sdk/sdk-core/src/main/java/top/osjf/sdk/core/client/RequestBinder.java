@@ -20,6 +20,8 @@ import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
 import top.osjf.sdk.core.support.NotNull;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 /**
  * The use of binding interface for {@link Request} provides a method
  * to bind a {@code Request} to the current target object, i.e. {@link Client}.
@@ -31,10 +33,15 @@ import top.osjf.sdk.core.support.NotNull;
  * <p>The URL address bound to this interface must have undergone various
  * formats and be a truly accessible address.
  *
+ * <p>This interface can be extended according to Java's SPI mechanism
+ * {@link java.util.ServiceLoader}, with annotations {@link top.osjf.sdk.core.support.LoadOrder},
+ * to achieve self defined extensions.
+ *
  * @param <R> Implement a unified response class data type.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
+@ThreadSafe
 public interface RequestBinder<R extends Response> extends AutoCloseable {
 
     /**

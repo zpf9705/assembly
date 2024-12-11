@@ -20,6 +20,7 @@ import top.osjf.sdk.core.process.Response;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.function.Supplier;
 
 /**
@@ -33,11 +34,16 @@ import java.util.function.Supplier;
  * Classes implementing {@code ClientManager} should ensure thread safety,
  * especially when operating on client objects in a multithreaded environment.
  *
- * @see DefaultClientManager
+ * <p>This interface can be extended according to Java's SPI mechanism
+ * {@link java.util.ServiceLoader}, with annotations {@link top.osjf.sdk.core.support.LoadOrder},
+ * to achieve self defined extensions.
+ *
  * @param <R> Implement a unified response class data type.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
+ * @see DefaultClientManager
  * @since 1.0.2
  */
+@ThreadSafe
 public interface ClientManager<R extends Response> {
 
     /**
