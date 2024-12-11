@@ -18,6 +18,7 @@ package top.osjf.sdk.core.util.caller;
 
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.process.SdkEnum;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.util.ReflectUtil;
@@ -35,7 +36,7 @@ import java.util.function.Supplier;
  * instantiation function (to instantiate objects via reflection) and a constructor with a
  * {@code Function<Class<?>, Object>} parameter that allows users to customize instantiation logic.
  *
- * <p>The core method in this class is {@link #resolveRequestExecuteWithOptions(Supplier, CallOptions)},
+ * <p>The core method in this class is {@link #resolveRequestExecuteWithOptions(Supplier, String, CallOptions)},
  * which accepts a request object (provided through a {@code Supplier}) and a {@code CallOptions}
  * annotation as parameters and final call method {@code resolveRequestExecuteWithOptions(Supplier,
  * int, long, ThrowablePredicate, boolean, boolean, Callback)} (this method is not elaborated here
@@ -94,7 +95,8 @@ public class RequestCaller {
     @Nullable
     public Response resolveRequestExecuteWithOptions(Request<?> request, String host, CallOptions callOptions) {
 
-        return resolveRequestExecuteWithOptions(() -> request.execute(host), callOptions);
+        return resolveRequestExecuteWithOptions(() -> request.execute(host), request.matchSdkEnum().name(),
+                callOptions);
     }
 
     /**
@@ -106,12 +108,14 @@ public class RequestCaller {
      * execution logic.
      *
      * @param supplier    The provider function of the {@code Response} object.
+     * @param name        the sdk name,as see {@link SdkEnum#name()}.
      * @param callOptions {@code CallOptions} annotation.
      * @return The {@code Response} object obtained from the response
      * returns empty when {@link CallOptions#callbackClass()} exists.
      */
     @Nullable
-    public Response resolveRequestExecuteWithOptions(Supplier<Response> supplier, CallOptions callOptions) {
+    public Response resolveRequestExecuteWithOptions(Supplier<Response> supplier, String name,
+                                                     CallOptions callOptions) {
         int retryTimes = getRetryTimesByOptions(callOptions);
         long retryIntervalMilliseconds = getRetryIntervalMillisecondsByOptions(callOptions);
         ThrowablePredicate throwablePredicate = getThrowablePredicateByOptions(callOptions);
@@ -119,7 +123,7 @@ public class RequestCaller {
         boolean whenResponseNonSuccessFinalThrow = getWhenResponseNonSuccessFinalThrowByOptions(callOptions);
         Callback callback = getCallbackByOptions(callOptions);
         return resolveRequestExecuteWithOptions(supplier, retryTimes, retryIntervalMilliseconds,
-                throwablePredicate, whenResponseNonSuccessRetry, whenResponseNonSuccessFinalThrow, callback);
+                throwablePredicate, whenResponseNonSuccessRetry, whenResponseNonSuccessFinalThrow, name, callback);
     }
 
     /**
@@ -146,6 +150,7 @@ public class RequestCaller {
      * @param throwablePredicate               The Instance {@code ThrowablePredicate}.
      * @param whenResponseNonSuccessRetry      When response nonSuccess retry boolean mark.
      * @param whenResponseNonSuccessFinalThrow When response nonSuccess final throw exception mark.
+     * @param name                             the sdk name,as see {@link SdkEnum#name()}.
      * @param callback                         The Instance {@code Callback}.
      * @return The {@code Response} object obtained from the response
      * returns empty when {@link CallOptions#callbackClass()} exists.
@@ -156,6 +161,7 @@ public class RequestCaller {
                                                      @Nullable ThrowablePredicate throwablePredicate,
                                                      boolean whenResponseNonSuccessRetry,
                                                      boolean whenResponseNonSuccessFinalThrow,
+                                                     String name,
                                                      @Nullable Callback callback) {
         FlowableCallerBuilder<Response> builder = FlowableCallerBuilder.newBuilder()
                 .runBody(supplier)
@@ -166,7 +172,7 @@ public class RequestCaller {
         if (whenResponseNonSuccessFinalThrow) builder.whenResponseNonSuccessFinalThrow();
         if (callback != null) {
             builder.customSubscriptionRegularConsumer(callback::success);
-            builder.customSubscriptionExceptionConsumer(callback::exception);
+            builder.customSubscriptionExceptionConsumer(e -> callback.exception(name, e));
             builder.build().run();
             return null;
         }
