@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.core.process;
+package top.osjf.sdk.core;
+
+import top.osjf.sdk.core.process.Request;
+import top.osjf.sdk.core.process.Response;
 
 /**
  * Wrapper Interface: Defines the basic behavior of a wrapper, allowing objects to

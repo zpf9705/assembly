@@ -15,7 +15,7 @@
  */
 
 
-package top.osjf.sdk.core.process;
+package top.osjf.sdk.core;
 
 /**
  * The {@code IsInstanceWrapper} interface - Wraps type checking functionality.

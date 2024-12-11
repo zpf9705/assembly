@@ -16,6 +16,7 @@
 
 package top.osjf.sdk.core.process;
 
+import top.osjf.sdk.core.IsInstanceWrapper;
 import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.core.client.PreProcessingResponseHandler;
 import top.osjf.sdk.core.client.ResponseConvert;
