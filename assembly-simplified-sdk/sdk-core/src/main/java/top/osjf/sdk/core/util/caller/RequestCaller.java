@@ -135,6 +135,10 @@ public class RequestCaller {
      *     of {@code Response} will be returned directly through this method, and an
      *     exception will be thrown directly.</li>
      * </ul>
+     * <p>
+     * Regarding callback {@code Callback}, this method does not refer to asynchronous
+     * callbacks, but rather a synchronous mechanism that is suitable for synchronously
+     * calling callback processing that does not focus on the return value.
      *
      * @param supplier                         The provider function of the {@code Response} object.
      * @param retryTimes                       The retry times.
