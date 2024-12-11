@@ -24,7 +24,7 @@ import com.sun.tools.javac.util.Name;
 import com.sun.tools.javac.util.Names;
 import top.osjf.sdk.core.util.StringUtils;
 import top.osjf.sdk.http.annotation.HttpSdkEnumCultivate;
-import top.osjf.sdk.http.process.DefaultCultivateHttpSdkEnum;
+import top.osjf.sdk.http.DefaultCultivateHttpSdkEnum;
 
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
