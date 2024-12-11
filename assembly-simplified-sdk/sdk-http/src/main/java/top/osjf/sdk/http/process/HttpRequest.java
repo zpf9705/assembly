@@ -193,6 +193,33 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
      * method provides a more specific return type, {@code matchSdkEnum}, allowing the caller
      * to directly obtain HTTP-related SDK configuration information.
      *
+     * <p>In version 1.0.2, an easier rewrite solution was provided for the implementation
+     * of this method:
+     * <ul>
+     *     <li>Implement class label annotation {@link HttpSdkEnumCultivate} in {@code HttpRequest}
+     *     to inform the framework of relevant information about interface {@code HttpSdkEnum}. Then,
+     *     simply rewrite and fill in {@literal null} for this interface. The framework will dynamically
+     *     obtain annotation {@code HttpSdkEnumCultivate} at runtime to obtain the relevant metadata of
+     *     this SDK, and make HTTP related requests accordingly.</li>
+     *     <li>Annotate {@code top.osjf.sdk.http.annotation.HttpSdkEnumCultivate} onto the implementation
+     *     class of {@code HttpRequest}, and then override this method to return {@literal null}. This
+     *     annotation will be added during compilation to the default implementation of {@code HttpSdkEnum}
+     *     on this method. Please refer to the package
+     *      <hr><blockquote><pre>
+     *      {@code
+     *        <dependency>
+     *           <groupId>top.osjf.sdk</groupId>
+     *          <artifactId>sdk-http-annotation-processor</artifactId>
+     *           <version>Latest version</version>
+     *        </dependency>
+     *      }
+     *      </pre></blockquote><hr>
+     *     <p>for details and view the annotation {@code top.osjf.sdk.http.annotation.HttpSdkEnumCultivate}.</li>
+     * </ul>
+     * <p>Since the ultimate agreement of this method is that it must not be null {@code HttpSdkEnum}, a
+     * {@link NotNull} tag is given, and when using a solution other than directly rewriting to obtain the
+     * custom {@code HttpSdkEnum} to inform this value, the method can return null.
+     *
      * @return An {@code HttpSdkEnum} instance that fits the current context.
      */
     @Override
@@ -203,12 +230,12 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
      * Do you want to concatenate the given {@link #getRequestParam()} parameters with rules after the URL.
      * <p>The prerequisite is to provide parameters in the form of a map or JSON strings for key/value.
      *
-     * @deprecated 1.0.2 , refer to {@link UrlQueryHttpRequestParams}.
      * @return If true, it will concatenate the provided parameters for you, otherwise it will be determined
      * based on the request header.
+     * @deprecated 1.0.2 , refer to {@link UrlQueryHttpRequestParams}.
      */
     @Deprecated
-    default boolean montage(){
+    default boolean montage() {
         throw new UnsupportedOperationException("Deprecated");
     }
 }
