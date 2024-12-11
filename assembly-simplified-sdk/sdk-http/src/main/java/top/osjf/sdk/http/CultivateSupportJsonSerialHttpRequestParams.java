@@ -24,8 +24,9 @@ import top.osjf.sdk.http.process.JsonSerialHttpRequestParams;
 import static top.osjf.sdk.http.CultivateSupportHttpRequestParams.InstanceHolder.getSdkEnumManager;
 
 /**
- * Extends for {@code JsonSerialHttpRequestParams} to provider json serialized and also
- * support as {@code CultivateSupportHttpRequestParams} to find {@link HttpSdkEnumCultivate}
+ * Extends for {@code JsonSerialHttpRequestParams} to provider param json serialized.
+ * <p>
+ * Also support as {@code CultivateSupportHttpRequestParams} to find {@link HttpSdkEnumCultivate}
  * Annotations transform {@link HttpSdkEnum} and benefit from {@link HttpSdkEnumManager} management.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
