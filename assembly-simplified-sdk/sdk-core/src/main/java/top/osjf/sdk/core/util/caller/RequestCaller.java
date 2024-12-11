@@ -79,7 +79,8 @@ public class RequestCaller {
     }
 
     /**
-     * Refer to {@link #resolveRequestExecuteWithOptions(Supplier, CallOptions)}
+     * Please refer to {@code resolveRequestExecuteWithOptions(Supplier, CallOptions)}
+     * for the execution logic.
      *
      * @param request     input {@code Request} obj.
      * @param host        the real server hostname.
@@ -89,6 +90,7 @@ public class RequestCaller {
      */
     @Nullable
     public Response resolveRequestExecuteWithOptions(Request<?> request, String host, CallOptions callOptions) {
+
         return resolveRequestExecuteWithOptions(() -> request.execute(host), callOptions);
     }
 
