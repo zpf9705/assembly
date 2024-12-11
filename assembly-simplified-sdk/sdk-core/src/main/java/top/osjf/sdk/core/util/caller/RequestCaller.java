@@ -35,14 +35,16 @@ import java.util.function.Supplier;
  * instantiation function (to instantiate objects via reflection) and a constructor with a
  * {@code Function<Class<?>, Object>} parameter that allows users to customize instantiation logic.
  *
- * <p>The core method in this class is {@link #resolveRequestExecuteWithOptions}, which
- * accepts a request object (provided through a {@code Supplier}) and a {@code CallOptions}
- * annotation as parameters. It executes the request according to the execution options configured
- * in the annotation and returns the response object. If a {@code Callback} class (callbackClass)
- * is specified in the {@code CallOptions} annotation, the acquisition of the response and exception
- * handling will be completed within the callback class, and the method will return null at this time;
- * otherwise, the method will directly return the response object and throw exceptions directly when
- * they occur.
+ * <p>The core method in this class is {@link #resolveRequestExecuteWithOptions(Supplier, CallOptions)},
+ * which accepts a request object (provided through a {@code Supplier}) and a {@code CallOptions}
+ * annotation as parameters and final call method {@code resolveRequestExecuteWithOptions(Supplier,
+ * int, long, ThrowablePredicate, boolean, boolean, Callback)} (this method is not elaborated here
+ * as a commonly used combination method in this package tool).It executes the request according
+ * to the execution options configured in the annotation and returns the response object. If a {@code Callback}
+ * class (callbackClass) is specified in the {@code CallOptions} annotation, the acquisition of the response
+ * and exception handling will be completed within the callback class, and the method will return null at
+ * this time; otherwise, the method will directly return the response object and throw exceptions directly
+ * when they occur.
  *
  * <p>The class also provides some auxiliary methods for obtaining configured execution option values
  * from the {@code CallOptions} annotation, such as retry times, retry intervals, and so on.
@@ -52,6 +54,9 @@ import java.util.function.Supplier;
  */
 public class RequestCaller {
 
+    /**
+     * {@code Function} function that uses a class object to create an instance object.
+     */
     private final Function<Class<?>, Object> receiveInstanceFunc;
 
     /**
@@ -90,20 +95,6 @@ public class RequestCaller {
     /**
      * Processing the execution of request {@code Request} results in the option
      * of {@code Response} object ,annotated with {@code CallOptions}.
-     * <p>
-     * The processing logic adopts some functional classes related to {@code io.reactivex.rxjava3}
-     * encapsulated in this package.
-     * <p>
-     * There are the following return situations for the returned
-     * {@code Response} object:
-     * <ul>
-     *     <li>When providing {@link CallOptions#callbackClass()}, the retrieval
-     *     and exception handling of {@code Response} are performed in the callback
-     *     class.</li>
-     *     <li>When {@link CallOptions#callbackClass()}, is not provided, the retrieval
-     *     of {@code Response} will be returned directly through this method, and an
-     *     exception will be thrown directly.</li>
-     * </ul>
      *
      * @param supplier    The provider function of the {@code Response} object.
      * @param callOptions {@code CallOptions} annotation.
@@ -118,6 +109,41 @@ public class RequestCaller {
         boolean whenResponseNonSuccessRetry = getWhenResponseNonSuccessRetryOptions(callOptions);
         boolean whenResponseNonSuccessFinalThrow = getWhenResponseNonSuccessFinalThrowByOptions(callOptions);
         Callback callback = getCallbackByOptions(callOptions);
+        return resolveRequestExecuteWithOptions(supplier, retryTimes, retryIntervalMilliseconds,
+                throwablePredicate, whenResponseNonSuccessRetry, whenResponseNonSuccessFinalThrow, callback);
+    }
+
+    /**
+     * The processing logic adopts some functional classes related to {@code io.reactivex.rxjava3}
+     * encapsulated in this package.
+     * <p>
+     * There are the following return situations for the returned
+     * {@code Response} object:
+     * <ul>
+     *     <li>When providing {@link Callback}, the retrieval and exception handling
+     *     of {@code Response} are performed in the callback class.</li>
+     *     <li>When {@link Callback}, is not provided, the retrieval
+     *     of {@code Response} will be returned directly through this method, and an
+     *     exception will be thrown directly.</li>
+     * </ul>
+     *
+     * @param supplier                         The provider function of the {@code Response} object.
+     * @param retryTimes                       The retry times.
+     * @param retryIntervalMilliseconds        The retry interval milliseconds.
+     * @param throwablePredicate               The Instance {@code ThrowablePredicate}.
+     * @param whenResponseNonSuccessRetry      When response nonSuccess retry boolean mark.
+     * @param whenResponseNonSuccessFinalThrow When response nonSuccess final throw exception mark.
+     * @param callback                         The Instance {@code Callback}.
+     * @return The {@code Response} object obtained from the response
+     * returns empty when {@link CallOptions#callbackClass()} exists.
+     */
+    @Nullable
+    public Response resolveRequestExecuteWithOptions(Supplier<Response> supplier, int retryTimes,
+                                                     long retryIntervalMilliseconds,
+                                                     @Nullable ThrowablePredicate throwablePredicate,
+                                                     boolean whenResponseNonSuccessRetry,
+                                                     boolean whenResponseNonSuccessFinalThrow,
+                                                     @Nullable Callback callback) {
         FlowableCallerBuilder<Response> builder = FlowableCallerBuilder.newBuilder()
                 .runBody(supplier)
                 .retryTimes(retryTimes)
