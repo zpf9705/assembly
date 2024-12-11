@@ -17,7 +17,13 @@
 package top.osjf.sdk.spring;
 
 import org.springframework.context.ApplicationContext;
+import top.osjf.sdk.core.process.Request;
+import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.support.Nullable;
+import top.osjf.sdk.core.util.caller.CallOptions;
 import top.osjf.sdk.core.util.caller.RequestCaller;
+
+import java.lang.reflect.Method;
 
 /**
  * The {@code SpringRequestCaller} class is a subclass of {@code RequestCaller}
@@ -44,5 +50,37 @@ public class SpringRequestCaller extends RequestCaller {
      */
     public SpringRequestCaller(ApplicationContext applicationContext) {
         super(applicationContext::getBean);
+    }
+
+    /**
+     * Resolves the {@code Request} and executes it, configuring the call options based
+     * on the {@code CallOptions} annotation on the method or class.
+     * <p>
+     * Regarding the search for the existence of {@code CallOptions} annotations,
+     * follow the following rules:
+     * <ul>
+     *     <li>Prioritize searching from the method, existing and ready to use.</li>
+     *     <li>The method did not search from the definition class, it exists and is
+     *     ready to use.</li>
+     *     <li>There are no methods or defined classes, execute {@code Request#execute}
+     *     directly and return.</li>
+     * </ul>
+     *
+     * @param request input {@code Request} obj.
+     * @param host    the real server hostname.
+     * @param method  The method object to be executed.
+     * @return The {@code Response} object obtained from the response
+     * returns empty when {@link CallOptions#callbackClass()} exists.
+     */
+    @Nullable
+    public Response resolveRequestExecuteWithTypeOrMethodOptions(Request<?> request, String host, Method method) {
+        CallOptions callOptions = method.getAnnotation(CallOptions.class);
+        if (callOptions == null) {
+            callOptions = method.getDeclaringClass().getAnnotation(CallOptions.class);
+            if (callOptions == null) {
+                return request.execute(host);
+            }
+        }
+        return super.resolveRequestExecuteWithOptions(request, host, callOptions);
     }
 }
