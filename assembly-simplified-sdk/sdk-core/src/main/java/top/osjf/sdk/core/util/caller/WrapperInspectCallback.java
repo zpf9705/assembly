@@ -45,7 +45,7 @@ public abstract class WrapperInspectCallback<R extends Response> implements Call
      *                            provided by the callback.
      */
     @Override
-    public void success(Response response) throws ClassCastException {
+    public void success(@NotNull Response response) throws ClassCastException {
         Class<R> type = getType();
         if (response.isWrapperFor(type)) {
             successInternal(response.unwrap(getType()));
@@ -74,5 +74,5 @@ public abstract class WrapperInspectCallback<R extends Response> implements Call
      *
      * @param response the response object that matches the type.
      */
-    public abstract void successInternal(R response);
+    public abstract void successInternal(@NotNull R response);
 }
