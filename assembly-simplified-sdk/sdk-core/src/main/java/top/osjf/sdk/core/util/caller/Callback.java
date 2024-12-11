@@ -17,6 +17,7 @@
 package top.osjf.sdk.core.util.caller;
 
 import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.process.SdkEnum;
 import top.osjf.sdk.core.support.NotNull;
 
 /**
@@ -53,7 +54,8 @@ public interface Callback {
      * call this method. It takes a {@code Throwable} object as a parameter, which
      * represents the exception that occurred.
      *
-     * @param e represents the 'Throwable' object where asynchronous operations fail.
+     * @param name the sdk name,as see {@link SdkEnum#name()}.
+     * @param e    represents the 'Throwable' object where asynchronous operations fail.
      */
-    void exception(@NotNull Throwable e);
+    void exception(@NotNull String name, @NotNull Throwable e);
 }
