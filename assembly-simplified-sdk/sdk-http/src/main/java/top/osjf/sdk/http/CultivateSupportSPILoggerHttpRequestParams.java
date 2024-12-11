@@ -22,12 +22,16 @@ import top.osjf.sdk.http.client.ServiceLoaderLoggerHttpClient;
 import top.osjf.sdk.http.process.AbstractHttpResponse;
 
 /**
+ * Extends for {@code CultivateSupportHttpRequestParams} to provider a {@code Client}
+ * is {@code ServiceLoaderLoggerHttpClient}.
+ *
+ * @param <R> Implement a unified response class data type.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
 @SuppressWarnings("rawtypes")
-public abstract class SdkEnumCultivateSupportSPILoggerHttpRequestParams<R extends AbstractHttpResponse>
-        extends SdkEnumCultivateSupportHttpRequestParams<R> {
+public abstract class CultivateSupportSPILoggerHttpRequestParams<R extends AbstractHttpResponse>
+        extends CultivateSupportHttpRequestParams<R> {
 
     private static final long serialVersionUID = -6471181067117106377L;
 
