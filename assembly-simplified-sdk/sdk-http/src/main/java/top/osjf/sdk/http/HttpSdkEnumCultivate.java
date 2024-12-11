@@ -43,7 +43,7 @@ import java.lang.annotation.*;
  * HttpSdkEnumCultivate(url = "%s/%s/example.json", version = "v1.0",
  *         protocol = HttpProtocol.HTTPS, method = HttpRequestMethod.POST,name = "EXAMPLE_SDK")
  * public class ExampleRequestParams
- *         extends SdkEnumCultivateSupportHttpRequestParams<ExampleResponse> {
+ *         extends CultivateSupportHttpRequestParams<ExampleResponse> {
  *          ...
  *   }
  * }
