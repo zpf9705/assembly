@@ -51,7 +51,7 @@ import java.io.Serializable;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public interface Response extends ErrorResponse, Wrapper, Serializable {
+public interface Response extends ErrorResponse, IsInstanceWrapper, Serializable {
 
     /**
      * Returns the success identifier of the request, displayed as a Boolean value.
@@ -67,17 +67,4 @@ public interface Response extends ErrorResponse, Wrapper, Serializable {
      * @return information carried by the end of the return request.
      */
     String getMessage();
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * Default to use {@link Class#isAssignableFrom}.
-     *
-     * @param clazz {@inheritDoc}
-     * @return {@inheritDoc}
-     */
-    @Override
-    default boolean isWrapperFor(Class<?> clazz){
-        return Response.class.isAssignableFrom(clazz);
-    }
 }
