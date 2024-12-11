@@ -20,14 +20,27 @@ import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.SdkSupport;
 import top.osjf.sdk.http.process.AbstractHttpRequestParams;
 import top.osjf.sdk.http.process.AbstractHttpResponse;
+import top.osjf.sdk.http.process.HttpRequest;
 import top.osjf.sdk.http.process.HttpSdkEnum;
 
 /**
+ * It is an abstract extension of {@code AbstractHttpRequestParams}, dedicated
+ * to simplifying the direct rewriting of {@link HttpRequest#matchSdkEnum()}
+ * methods instead of using annotations {@link HttpSdkEnumCultivate}.
+ *
+ * <p>This abstract class initializes static {@link HttpSdkEnumManager}, i.e.
+ * {@link HttpSdkEnum} management, to retrieve and cache {@code HttpSdkEnum}.
+ *
+ * <p>The implementation extension of this abstract class is limited by Java's
+ * single inheritance, so the pass method of the {@link InstanceHolder#getSdkEnumManager()}
+ * method's static call is overridden by the subclass {@link HttpRequest#matchSdkEnum()}
+ * and called to implement the functionality extension of this abstract class.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public abstract class SdkEnumCultivateSupportHttpRequestParams<R extends AbstractHttpResponse>
+public abstract class CultivateSupportHttpRequestParams<R extends AbstractHttpResponse>
         extends AbstractHttpRequestParams<R> {
 
     private static final long serialVersionUID = 3512402192630016740L;
@@ -36,10 +49,11 @@ public abstract class SdkEnumCultivateSupportHttpRequestParams<R extends Abstrac
      * Get {@code HttpSdkEnum} managed by {@code HttpSdkEnumManager}.
      *
      * @return {@inheritDoc}
+     * @throws IllegalStateException as see {@link HttpSdkEnumManager#getAndSetHttpSdkEnum}
      */
     @Override
     @NotNull
-    public final HttpSdkEnum matchSdkEnum() {
+    public final HttpSdkEnum matchSdkEnum() throws IllegalStateException {
         return InstanceHolder.getSdkEnumManager().getAndSetHttpSdkEnum(this);
     }
 
