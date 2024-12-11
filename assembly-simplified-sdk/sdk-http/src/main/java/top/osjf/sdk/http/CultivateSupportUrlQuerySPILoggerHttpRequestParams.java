@@ -24,11 +24,10 @@ import top.osjf.sdk.http.process.UrlQuerySPILoggerHttpRequestParams;
 import static top.osjf.sdk.http.CultivateSupportHttpRequestParams.InstanceHolder.getSdkEnumManager;
 
 /**
- * Extends for {@code UrlQuerySPILoggerHttpRequestParams} to provider a {@code Client}
- * is {@code ServiceLoaderLoggerHttpClient}.
- * <p>
- * Also support as {@code CultivateSupportHttpRequestParams} to find {@link HttpSdkEnumCultivate}
- * Annotations transform {@link HttpSdkEnum} and benefit from {@link HttpSdkEnumManager} management.
+ * Extended from {@code UrlQuerySPILoggerHttpRequestParams}, with its functionality
+ * implementation and support as {@code CultivateSupportHttpRequestParams} to find
+ * {@link HttpSdkEnumCultivate} annotations transform {@link HttpSdkEnum} and benefit
+ * from {@link HttpSdkEnumManager} management.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
