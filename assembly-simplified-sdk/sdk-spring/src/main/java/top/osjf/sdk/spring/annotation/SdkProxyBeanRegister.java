@@ -94,10 +94,10 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
     @Override
     public BeanDefinitionHolder createBeanDefinitionHolder(AnnotationAttributes markedAnnotationAttributes,
                                                            AnnotationMetadata markedAnnotationMetadata) {
-        return createBeanDefinitionHolder0(markedAnnotationAttributes, markedAnnotationMetadata);
+        return createBeanDefinitionHolderInternal(markedAnnotationAttributes, markedAnnotationMetadata);
     }
 
-    private BeanDefinitionHolder createBeanDefinitionHolder0(AnnotationAttributes markedAnnotationAttributes,
+    private BeanDefinitionHolder createBeanDefinitionHolderInternal(AnnotationAttributes markedAnnotationAttributes,
                                                              AnnotationMetadata markedAnnotationMetadata) {
         String className = markedAnnotationMetadata.getClassName();
         ProxyModel model = markedAnnotationAttributes.getEnum(SDK_ATTR_PROXY_MODEL);
