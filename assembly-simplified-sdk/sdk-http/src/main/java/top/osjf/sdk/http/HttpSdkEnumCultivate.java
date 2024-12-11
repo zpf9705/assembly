@@ -43,12 +43,8 @@ import java.lang.annotation.*;
  * HttpSdkEnumCultivate(url = "%s/%s/example.json", version = "v1.0",
  *         protocol = HttpProtocol.HTTPS, method = HttpRequestMethod.POST,name = "EXAMPLE_SDK")
  * public class ExampleRequestParams
- *         extends JsonSerialSPILoggerHttpRequestParams<ExampleResponse> {
- *
- *     public HttpSdkEnum matchSdkEnum() {
- *         return null; //The original interface requirement is not null.
- *         //After using this annotation, it can directly return null and generate its own definition.
- *     }
+ *         extends SdkEnumCultivateSupportHttpRequestParams<ExampleResponse> {
+ *          ...
  *   }
  * }
  * </pre>
