@@ -63,8 +63,8 @@ public class DefaultHttpSdkEnumManager<R extends HttpResponse> implements HttpSd
                         throw new IllegalStateException("No available annotation [top.osjf.sdk.http.process." +
                                 "HttpSdkEnumCultivate] was found from the running class " + request.getClass().getName() + ".");
                     return new DefaultCultivateHttpSdkEnum(cultivate.url(), cultivate.version(),
-                            cultivate.protocol().name(),
-                            cultivate.method().name(),
+                            cultivate.protocol(),
+                            cultivate.method(),
                             cultivate.name());
                 });
     }

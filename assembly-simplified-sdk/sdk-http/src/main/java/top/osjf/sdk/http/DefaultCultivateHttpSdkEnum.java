@@ -27,8 +27,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * The default HTTP SDK enumeration class implements the {@code HttpSdkEnum}
- * interface and serves as an annotation {@link HttpSdkEnumCultivate} to handle
- * the processing class.
+ * interface and serves as an annotation {@link HttpSdkEnumCultivate} to as
+ * a {@code HttpSdkEnum}
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
@@ -50,13 +50,13 @@ public class DefaultCultivateHttpSdkEnum implements HttpSdkEnum {
 
     public DefaultCultivateHttpSdkEnum(@NotNull String url,
                                        @Nullable String version,
-                                       @Nullable String httpProtocol,
-                                       @NotNull String httpRequestMethod,
+                                       @Nullable HttpProtocol httpProtocol,
+                                       @NotNull HttpRequestMethod httpRequestMethod,
                                        @NotNull String name) {
         this.url = formatUrl(url, version);
-        this.httpProtocol = StringUtils.isBlank(httpProtocol) ||
-                HttpProtocol.NULLS.name().equals(httpProtocol) ? null : HttpProtocol.valueOf(httpProtocol);
-        this.httpRequestMethod = HttpRequestMethod.valueOf(httpRequestMethod);
+        this.httpProtocol = httpProtocol == null ||
+                HttpProtocol.NULLS.equals(httpProtocol) ? null : httpProtocol;
+        this.httpRequestMethod = httpRequestMethod;
         this.name = name;
     }
 
