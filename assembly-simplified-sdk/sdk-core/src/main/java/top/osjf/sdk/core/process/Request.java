@@ -73,7 +73,8 @@ import java.util.Map;
  * @since 1.0.0
  */
 @SuppressWarnings("rawtypes")
-public interface Request<R extends Response> extends RequestParamCapable<Object>, Wrapper, Executable<R>, Serializable {
+public interface Request<R extends Response> extends RequestParamCapable<Object>, IsInstanceWrapper,
+        Executable<R>, Serializable {
 
     //Default method start, easy call or default method value.
 
@@ -165,19 +166,6 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      */
     default boolean isAssignableRequest(Class<?> clazz) {
         return Request.class.isAssignableFrom(clazz);
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * Default to use {@link #isAssignableRequest(Class)}.
-     *
-     * @param clazz {@inheritDoc}
-     * @return {@inheritDoc}
-     */
-    @Override
-    default boolean isWrapperFor(Class<?> clazz) {
-        return isAssignableRequest(clazz);
     }
 
     /**
