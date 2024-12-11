@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http.annotation.resolver;
+package top.osjf.sdk.http.annotation;
 
 import com.google.common.collect.ForwardingObject;
 import top.osjf.sdk.core.support.NotNull;

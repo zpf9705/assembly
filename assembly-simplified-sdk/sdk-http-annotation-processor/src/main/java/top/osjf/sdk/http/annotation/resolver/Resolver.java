@@ -23,6 +23,8 @@ import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.Names;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
+import top.osjf.sdk.http.annotation.Logger;
+import top.osjf.sdk.http.annotation.StringFormatLogger;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
