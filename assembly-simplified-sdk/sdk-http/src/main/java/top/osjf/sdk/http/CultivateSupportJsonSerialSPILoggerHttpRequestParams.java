@@ -25,9 +25,9 @@ import static top.osjf.sdk.http.CultivateSupportHttpRequestParams.InstanceHolder
 
 /**
  * Extends for {@code JsonSerialSPILoggerHttpRequestParams} to provider a {@code Client}
- * is {@code ServiceLoaderLoggerHttpClient} and json serialized and also support
- * {@link HttpSdkEnumCultivate} Annotations transform {@link HttpSdkEnum} and benefit
- * from {@link HttpSdkEnumManager} management.
+ * is {@code ServiceLoaderLoggerHttpClient} and json serialized and also support as
+ * {@code CultivateSupportHttpRequestParams} to find {@link HttpSdkEnumCultivate} Annotations
+ * transform {@link HttpSdkEnum} and benefit from {@link HttpSdkEnumManager} management.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
