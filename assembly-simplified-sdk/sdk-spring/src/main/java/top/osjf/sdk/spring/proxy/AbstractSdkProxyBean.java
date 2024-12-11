@@ -28,8 +28,11 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.lang.NonNull;
 import org.springframework.web.context.WebApplicationContext;
 import top.osjf.sdk.core.process.*;
+import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.util.StringUtils;
+import top.osjf.sdk.core.util.caller.CallOptions;
 import top.osjf.sdk.http.support.HttpSdkSupport;
+import top.osjf.sdk.spring.SpringRequestCaller;
 import top.osjf.sdk.spring.beans.DeterminantDisposableBean;
 import top.osjf.sdk.spring.beans.DeterminantInitializingBean;
 import top.osjf.sdk.spring.beans.HandlerPostProcessor;
@@ -79,6 +82,13 @@ public abstract class AbstractSdkProxyBean<T> extends HierarchicalProxySupport<T
     /*** Custom specified current type in proxy class destruction logic..*/
     private final List<DeterminantDisposableBean> disposableBeans = new ArrayList<>();
 
+    /**
+     * Request executor using the Spring framework.
+     *
+     * @since 1.0.2
+     */
+    private SpringRequestCaller requestCaller;
+
     /*** The return value {@link #toString()} needs to be formatted.*/
     private static final String TO_STR_FORMAT =
             "Proxy info ( target type [%s] | proxy type [%s] | host [%s] | proxy model [%s] )";
@@ -98,6 +108,7 @@ public abstract class AbstractSdkProxyBean<T> extends HierarchicalProxySupport<T
     @Override
     public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+        this.requestCaller = new SpringRequestCaller(applicationContext);
     }
 
     @Override
@@ -189,7 +200,7 @@ public abstract class AbstractSdkProxyBean<T> extends HierarchicalProxySupport<T
      * @return The result returned by the proxy execution method.
      */
     private Object handleInternal(@SuppressWarnings("unused") Object proxy,
-                           Method method, Object[] args) {
+                                  Method method, Object[] args) {
         //Supports toString and returns proxy metadata.
         if ("toString".equals(method.getName())) return toString();
         //Get target type.
@@ -202,13 +213,27 @@ public abstract class AbstractSdkProxyBean<T> extends HierarchicalProxySupport<T
                     method, args);
         }
         //Execute the request.
-        Object result = HttpSdkSupport.getResponse(method, request.execute(getHost()));
+        Object result = HttpSdkSupport.getResponse(method, execute(request, method));
         //Dynamic customization of request response results.
         for (HandlerPostProcessor postProcessor : postProcessors) {
             result = postProcessor.postProcessResultAfterHandle(result, targetType,
                     method, args);
         }
         return result;
+    }
+
+    /**
+     * Execute {@code Request} based on the presence of {@code CallOptions}
+     * annotations.
+     *
+     * @param request input {@code Request} obj.
+     * @param method  The method object to be executed.
+     * @return The {@code Response} object obtained from the response
+     * returns empty when {@link CallOptions#callbackClass()} exists.
+     */
+    @Nullable
+    private Response execute(Request<?> request, Method method) {
+        return requestCaller.resolveRequestExecuteWithTypeOrMethodOptions(request, getHost(), method);
     }
 
     /**
