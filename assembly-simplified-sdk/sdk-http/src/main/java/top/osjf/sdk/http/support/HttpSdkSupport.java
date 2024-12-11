@@ -205,7 +205,7 @@ public abstract class HttpSdkSupport extends SdkSupport {
                 }
                 //Cache the class objects of the current classes for future use
                 type_classes.putIfAbsent(linkType, typeClass);
-                return request.isWrapperFor(typeClass);
+                return request.isAssignableRequest(typeClass);
             }).findFirst().orElse(null);
 
             //If there is nothing available, simply exit the loop.
