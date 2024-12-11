@@ -49,6 +49,9 @@ import java.util.function.Supplier;
  * <p>The class also provides some auxiliary methods for obtaining configured execution option values
  * from the {@code CallOptions} annotation, such as retry times, retry intervals, and so on.
  *
+ * <p>The following methods only provide a synchronous running mechanism. If asynchronous correlation
+ * is required, please implement it yourself.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
