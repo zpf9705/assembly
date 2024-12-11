@@ -95,6 +95,10 @@ public class RequestCaller {
     /**
      * Processing the execution of request {@code Request} results in the option
      * of {@code Response} object ,annotated with {@code CallOptions}.
+     * <p>
+     * Please refer to {@code resolveRequestExecuteWithOptions
+     * (Supplier, int, long, ThrowablePredicate, boolean, boolean, Callback)} for the
+     * execution logic.
      *
      * @param supplier    The provider function of the {@code Response} object.
      * @param callOptions {@code CallOptions} annotation.
