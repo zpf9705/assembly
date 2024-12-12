@@ -57,6 +57,7 @@ public interface Client<R extends Response> extends RequestCore<R>, PreProcessin
      * @param request {@inheritDoc}
      * @return {@inheritDoc}
      * @throws IllegalStateException {@inheritDoc}
+     * @throws NullPointerException  {@inheritDoc}
      */
     @Override
     Client<R> bindRequest(@NotNull Request<R> request) throws IllegalStateException;
@@ -69,6 +70,7 @@ public interface Client<R extends Response> extends RequestCore<R>, PreProcessin
      * @param url {@inheritDoc}
      * @return {@inheritDoc}
      * @throws IllegalStateException {@inheritDoc}
+     * @throws NullPointerException  {@inheritDoc}
      */
     @Override
     Client<R> bindUrl(@NotNull String url) throws IllegalStateException;

@@ -51,6 +51,7 @@ public interface ClientManager<R extends Response> {
      *
      * @param unique The unique identifier for the client.
      * @param client The {@code client} object that needs to be maintained.
+     * @throws NullPointerException If the input unique or client is {@literal null}.
      */
     void maintenanceNewClient(@NotNull String unique, @NotNull Client<R> client);
 
@@ -67,6 +68,7 @@ public interface ClientManager<R extends Response> {
      *                                  client does not exist.
      * @return The {@code client} object under maintenance, which may be existing or
      * newly created.
+     * @throws NullPointerException If the input unique is {@literal null}.
      */
     Client<R> getMaintainedClient(@NotNull String unique, @Nullable Supplier<Client<R>> ifAbsentNewClientSupplier);
 }

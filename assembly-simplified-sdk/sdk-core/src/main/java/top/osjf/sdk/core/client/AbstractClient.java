@@ -58,10 +58,13 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
     /*** The unique cache tag for the current {@code Client}.*/
     private final String unique;
 
-    /*** Constructing for {@link Client} objects using unique identifier.
-     * @param url   {@code URL} Object of packaging tags and URL addresses
-     *                         and updated on version 1.0.2.
-     * */
+    /**
+     * Constructing for {@link Client} objects using unique identifier.
+     *
+     * @param url {@code URL} Object of packaging tags and URL addresses
+     *            and updated on version 1.0.2.
+     * @throws NullPointerException If the input url is {@literal null}.
+     */
     public AbstractClient(@NotNull URL url) {
         this.unique = url.getUnique();
         cache(url.getUnique(), this);
@@ -94,9 +97,11 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
      *
      * @param request {@inheritDoc}
      * @return {@inheritDoc}
+     * @throws IllegalStateException {@inheritDoc}
+     * @throws NullPointerException  {@inheritDoc}
      */
     @Override
-    public Client<R> bindRequest(@NotNull Request<R> request) {
+    public Client<R> bindRequest(@NotNull Request<R> request) throws IllegalStateException {
         InstanceHolder.getRequestBinder().bindRequest(request);
         return this;
     }
@@ -108,9 +113,11 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
      *
      * @param url {@inheritDoc}
      * @return {@inheritDoc}
+     * @throws IllegalStateException {@inheritDoc}
+     * @throws NullPointerException  {@inheritDoc}
      */
     @Override
-    public Client<R> bindUrl(@NotNull String url) {
+    public Client<R> bindUrl(@NotNull String url) throws IllegalStateException {
         InstanceHolder.getRequestBinder().bindUrl(url);
         return this;
     }
