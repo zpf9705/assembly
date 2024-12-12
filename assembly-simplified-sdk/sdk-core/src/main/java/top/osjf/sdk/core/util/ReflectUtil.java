@@ -22,6 +22,8 @@ import top.osjf.sdk.core.support.Nullable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -46,6 +48,7 @@ public abstract class ReflectUtil {
      * @param type The {@code Class<T>} object representing the type of
      *             the instance to instantiate.
      * @return An instance of the specified type.
+     * @throws NullPointerException If the input type is {@literal null}.
      */
     public static <T> T instantiates(@NotNull Class<T> type) {
         return instantiates(type, EMPTY);
@@ -59,6 +62,7 @@ public abstract class ReflectUtil {
      * @param classLoader A class loader used to load classes.
      * @param <T>         Represents the type of instantiated object.
      * @return The instantiated object cast to {@code T}.
+     * @throws NullPointerException If the input className is {@literal null}.
      */
     public static <T> T instantiates(@NotNull String className, @Nullable ClassLoader classLoader) {
         return (T) instantiates(getClass(className, classLoader));
@@ -74,6 +78,7 @@ public abstract class ReflectUtil {
      *                    {@literal null}, will automatically select an
      *                    available {@code ClassLoader}.
      * @return The {@code Class} object of the loaded and initialized class.
+     * @throws NullPointerException     If the input className is {@literal null}.
      * @throws IllegalArgumentException If the specified class cannot be found,
      *                                  throw this exception in its {@code #cause}.
      */
@@ -96,6 +101,7 @@ public abstract class ReflectUtil {
      *                    {@literal null}, will automatically select an
      *                    available {@code ClassLoader}.
      * @return The {@code Class} object of the loaded and initialized class.
+     * @throws NullPointerException     If the input className is {@literal null}.
      * @throws IllegalArgumentException If the specified class cannot be found,
      *                                  throw this exception in its {@code #cause}.
      */
@@ -140,6 +146,7 @@ public abstract class ReflectUtil {
      *             to instantiate.
      * @param args The argument array to pass to the constructor.
      * @return An instance of the specified type.
+     * @throws NullPointerException     If the input type is {@literal null}.
      * @throws IllegalArgumentException If there is an error in object instantiation,
      *                                  please refer to {@link IllegalArgumentException#getCause()}
      *                                  for details.
@@ -177,7 +184,8 @@ public abstract class ReflectUtil {
      * @param type                The class object for which to get the constructor.
      * @param inputParameterTypes The parameter types of the constructor to get.
      * @return The constructor that matches the specified parameter types.
-     * @throws Exception If an error occurs while searching for the constructor.
+     * @throws NullPointerException If the input type is {@literal null}.
+     * @throws Exception            If an error occurs while searching for the constructor.
      */
     public static <T> Constructor<T> getConstructor(@NotNull Class<T> type, Class<?>... inputParameterTypes)
             throws Exception {
@@ -210,5 +218,53 @@ public abstract class ReflectUtil {
         }
         if (conformingConstructor == null) throw directFindConstructorException;
         return conformingConstructor;
+    }
+
+    /**
+     * Retrieve the type at the specified index in the parent generic
+     * type of the object.
+     *
+     * @param <R>   Generic return type, representing the type at the
+     *              specified index in the parent generic type.
+     * @param obj   target object, used to obtain generic type information
+     *              of its parent class.
+     * @param index The value represents the position of the generic type
+     *              to be obtained in the parent class generic type list (starting from 0).
+     * @return Returns generic type information at the specified index,
+     * encapsulated as a Class object.
+     * @throws IllegalArgumentException  If the generic type information of the
+     *                                   parent class is empty or the index is out of range
+     * @throws IllegalStateException     If the parent class of the target object
+     *                                   is not a parameterized type (i.e. there is no generic information).
+     * @throws IndexOutOfBoundsException The selected index exceeds the length
+     *                                   of the parent class generic array.
+     * @throws NullPointerException      If the input object is {@literal null}.
+     */
+    public static <R> Class<R> getSuperGenericType(@NotNull Object obj, int index) {
+        return (Class<R>) getSuperGenericType(obj)[index];
+    }
+
+    /**
+     * Retrieve all generic type information of the parent class of the object.
+     *
+     * @param obj target object, used to obtain generic type information
+     *            of its parent class.
+     * @return Return an array of generic type information for the parent class.
+     * @throws IllegalArgumentException If the generic type information of the
+     *                                  parent class is empty or the index is out of range
+     * @throws IllegalStateException    If the parent class of the target object
+     *                                  is not a parameterized type (i.e. there is no generic information).
+     * @throws NullPointerException     If the input object is {@literal null}.
+     */
+    public static Type[] getSuperGenericType(@NotNull Object obj) {
+        Type superType = obj.getClass().getGenericSuperclass();
+        if (superType instanceof ParameterizedType) {
+            Type[] actualTypeArguments = ((ParameterizedType) superType).getActualTypeArguments();
+            if (ArrayUtils.isEmpty(actualTypeArguments)) {
+                throw new IllegalArgumentException(superType + " generic type is empty");
+            }
+            return actualTypeArguments;
+        }
+        throw new IllegalStateException(superType + " is not java.lang.reflect.ParameterizedType");
     }
 }
