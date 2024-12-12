@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({"rawtypes"})
 public abstract class SdkSupport {
 
     /***The prefix name of the set method.*/
@@ -139,8 +139,9 @@ public abstract class SdkSupport {
      * @param method   Proxy target method.
      * @param response The response type obtained.
      * @return The required return object.
+     * @throws NullPointerException If the input method or response is {@literal null}.
      */
-    public static Object getResponse(Method method, Response response) {
+    public static Object getResponse(@NotNull Method method, @NotNull Response response) {
         Class<?> returnType = method.getReturnType();
 
         //First, check if the return value type of the proxy method
