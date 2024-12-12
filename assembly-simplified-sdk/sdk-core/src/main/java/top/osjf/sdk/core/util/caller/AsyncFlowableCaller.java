@@ -198,11 +198,12 @@ public class AsyncFlowableCaller<R extends Response>
      * @param customObserveExecutor      {@link #customObserveExecutor}.
      * @param <R>                        Generic R represents the type returned by an operation, which must
      *                                   inherit from the {@link Response} class.
+     * @throws NullPointerException if input runBody is {@literal null}.
      */
-    public static <R extends Response> void call(Supplier<R> runBody,
+    public static <R extends Response> void call(@NotNull Supplier<R> runBody,
                                                  int retryTimes,
-                                                 Executor customSubscriptionExecutor,
-                                                 Executor customObserveExecutor) {
+                                                 @Nullable Executor customSubscriptionExecutor,
+                                                 @Nullable Executor customObserveExecutor) {
         call(runBody, retryTimes, 0, customSubscriptionExecutor, customObserveExecutor);
     }
 
@@ -216,12 +217,13 @@ public class AsyncFlowableCaller<R extends Response>
      * @param customObserveExecutor      {@link #customObserveExecutor}.
      * @param <R>                        Generic R represents the type returned by an operation, which must
      *                                   inherit from the {@link Response} class.
+     * @throws NullPointerException if input runBody is {@literal null}.
      */
-    public static <R extends Response> void call(Supplier<R> runBody,
+    public static <R extends Response> void call(@NotNull Supplier<R> runBody,
                                                  int retryTimes,
                                                  long retryIntervalMilliseconds,
-                                                 Executor customSubscriptionExecutor,
-                                                 Executor customObserveExecutor) {
+                                                 @Nullable Executor customSubscriptionExecutor,
+                                                 @Nullable Executor customObserveExecutor) {
         call(runBody, retryTimes, retryIntervalMilliseconds, false,
                 customSubscriptionExecutor, customObserveExecutor);
     }
@@ -237,13 +239,14 @@ public class AsyncFlowableCaller<R extends Response>
      * @param customObserveExecutor       {@link #customObserveExecutor}.
      * @param <R>                         Generic R represents the type returned by an operation, which must
      *                                    inherit from the {@link Response} class.
+     * @throws NullPointerException if input runBody is {@literal null}.
      */
-    public static <R extends Response> void call(Supplier<R> runBody,
+    public static <R extends Response> void call(@NotNull Supplier<R> runBody,
                                                  int retryTimes,
                                                  long retryIntervalMilliseconds,
                                                  boolean whenResponseNonSuccessRetry,
-                                                 Executor customSubscriptionExecutor,
-                                                 Executor customObserveExecutor) {
+                                                 @Nullable Executor customSubscriptionExecutor,
+                                                 @Nullable Executor customObserveExecutor) {
         call(runBody, retryTimes, retryIntervalMilliseconds, whenResponseNonSuccessRetry,
                 false, customSubscriptionExecutor, customObserveExecutor);
     }
@@ -260,14 +263,15 @@ public class AsyncFlowableCaller<R extends Response>
      * @param customObserveExecutor            {@link #customObserveExecutor}.
      * @param <R>                              Generic R represents the type returned by an operation, which must
      *                                         inherit from the {@link Response} class.
+     * @throws NullPointerException if input runBody is {@literal null}.
      */
-    public static <R extends Response> void call(Supplier<R> runBody,
+    public static <R extends Response> void call(@NotNull Supplier<R> runBody,
                                                  int retryTimes,
                                                  long retryIntervalMilliseconds,
                                                  boolean whenResponseNonSuccessRetry,
                                                  boolean whenResponseNonSuccessFinalThrow,
-                                                 Executor customSubscriptionExecutor,
-                                                 Executor customObserveExecutor) {
+                                                 @Nullable Executor customSubscriptionExecutor,
+                                                 @Nullable Executor customObserveExecutor) {
         call(runBody, retryTimes, retryIntervalMilliseconds,
                 whenResponseNonSuccessRetry, whenResponseNonSuccessFinalThrow,
                 null,
@@ -287,15 +291,16 @@ public class AsyncFlowableCaller<R extends Response>
      * @param customObserveExecutor            {@link #customObserveExecutor}.
      * @param <R>                              Generic R represents the type returned by an operation, which must
      *                                         inherit from the {@link Response} class.
+     * @throws NullPointerException if input runBody is {@literal null}.
      */
     public static <R extends Response> void call(Supplier<R> runBody,
                                                  int retryTimes,
                                                  long retryIntervalMilliseconds,
                                                  boolean whenResponseNonSuccessRetry,
                                                  boolean whenResponseNonSuccessFinalThrow,
-                                                 Predicate<? super Throwable> customRetryExceptionPredicate,
-                                                 Executor customSubscriptionExecutor,
-                                                 Executor customObserveExecutor) {
+                                                 @Nullable Predicate<? super Throwable> customRetryExceptionPredicate,
+                                                 @Nullable Executor customSubscriptionExecutor,
+                                                 @Nullable Executor customObserveExecutor) {
         call(runBody, retryTimes, retryIntervalMilliseconds, whenResponseNonSuccessRetry,
                 whenResponseNonSuccessFinalThrow,
                 customRetryExceptionPredicate,
@@ -318,17 +323,18 @@ public class AsyncFlowableCaller<R extends Response>
      * @param customObserveExecutor               {@link #customObserveExecutor}.
      * @param <R>                                 Generic R represents the type returned by an operation, which must
      *                                            inherit from the {@link Response} class.
+     * @throws NullPointerException if input runBody is {@literal null}.
      */
-    public static <R extends Response> void call(Supplier<R> runBody,
+    public static <R extends Response> void call(@NotNull Supplier<R> runBody,
                                                  int retryTimes,
                                                  long retryIntervalMilliseconds,
                                                  boolean whenResponseNonSuccessRetry,
                                                  boolean whenResponseNonSuccessFinalThrow,
-                                                 Predicate<? super Throwable> customRetryExceptionPredicate,
-                                                 Consumer<R> customSubscriptionRegularConsumer,
-                                                 Consumer<Throwable> customSubscriptionExceptionConsumer,
-                                                 Executor customSubscriptionExecutor,
-                                                 Executor customObserveExecutor) {
+                                                 @Nullable Predicate<? super Throwable> customRetryExceptionPredicate,
+                                                 @Nullable Consumer<R> customSubscriptionRegularConsumer,
+                                                 @Nullable Consumer<Throwable> customSubscriptionExceptionConsumer,
+                                                 @Nullable Executor customSubscriptionExecutor,
+                                                 @Nullable Executor customObserveExecutor) {
         new AsyncFlowableCaller<>(runBody, retryTimes, retryIntervalMilliseconds,
                 whenResponseNonSuccessRetry, whenResponseNonSuccessFinalThrow, customRetryExceptionPredicate,
                 customSubscriptionRegularConsumer, customSubscriptionExceptionConsumer, customSubscriptionExecutor,
