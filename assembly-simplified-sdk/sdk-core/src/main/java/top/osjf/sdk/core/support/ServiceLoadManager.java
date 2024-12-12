@@ -75,6 +75,7 @@ public final class ServiceLoadManager {
      * @param <T>  The generic type, specifying the type of instances to be loaded.
      * @param type The Class object of the type whose instances are to be loaded.
      * @return A list containing all instances of the specified type.
+     * @throws NullPointerException If the input type is {@literal null}.
      */
     public static <T> List<T> loadAll(@NotNull Class<T> type) {
         return (List<T>) loadAllCache.computeIfAbsent(type, type1 -> loadInstances(type1, false));
@@ -90,6 +91,7 @@ public final class ServiceLoadManager {
      * @param <T>  The generic type, specifying the type of instance to be loaded.
      * @param type The Class object of the type whose instance is to be loaded.
      * @return The high-priority instance of the specified type, or null if no instance is found.
+     * @throws NullPointerException If the input type is {@literal null}.
      */
     public static <T> T loadHighPriority(@NotNull Class<T> type) {
         return (T) loadHighPriorityCache.computeIfAbsent(type, type1 -> {
@@ -108,6 +110,7 @@ public final class ServiceLoadManager {
      * @param <T>  The generic type, indicating the type of the instance to be loaded.
      * @param type The Class object of the type of instance to be loaded.
      * @return The low-priority instance of the specified type, or null if no instance is found.
+     * @throws NullPointerException If the input type is {@literal null}.
      */
     public static <T> T loadLowerPriority(@NotNull Class<T> type) {
         return (T) loadLowerPriorityCache.computeIfAbsent(type, type1 -> {

@@ -79,6 +79,7 @@ public abstract class SdkSupport {
      * @param method Proxy target method.
      * @param args   Request parameters.
      * @return The request class parameters created.
+     * @throws NullPointerException If the input method is {@literal null}.
      * @see ResponseData
      * @see RequestParam
      */
@@ -196,11 +197,12 @@ public abstract class SdkSupport {
      * @param def  A fully qualified class name string of the class to instantiate if the
      *             service loader does not provide an instance.
      * @return An instance of the specified type.
+     * @throws NullPointerException     If the input type is {@literal null}.
      * @throws IllegalArgumentException If the specified class name cannot be found or if
      *                                  an instance cannot be created from it.
      * @since 1.0.2
      */
-    public static <T> T loadInstance(Class<T> type, String def) {
+    public static <T> T loadInstance(@NotNull Class<T> type, String def) {
         T instance = ServiceLoadManager.loadHighPriority(type);
         if (instance == null) {
             instance = ReflectUtil.instantiates(def, type.getClassLoader());
@@ -213,7 +215,6 @@ public abstract class SdkSupport {
     /*  ################################### Internal assistance methods. ###################################  */
 
 
-    
     static Request<?> invokeCreateRequestConstructorWhenFailedUseSet(Class<? extends Request> requestType,
                                                                      Object... args) {
         Request<?> request;
