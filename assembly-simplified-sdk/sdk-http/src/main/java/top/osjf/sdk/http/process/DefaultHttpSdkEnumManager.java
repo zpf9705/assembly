@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http;
+package top.osjf.sdk.http.process;
 
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.util.org.hibernate.validator.internal.util.v6_2_0_final.ConcurrentReferenceHashMap;
-import top.osjf.sdk.http.process.HttpRequest;
-import top.osjf.sdk.http.process.HttpResponse;
-import top.osjf.sdk.http.process.HttpSdkEnum;
 
 /**
  * Default implementation of the {@code HttpSdkEnum} manager for managing {@code HttpSdkEnum}

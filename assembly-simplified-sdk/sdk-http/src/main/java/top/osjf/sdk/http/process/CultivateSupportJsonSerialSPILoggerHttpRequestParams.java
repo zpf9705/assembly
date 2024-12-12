@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http;
+package top.osjf.sdk.http.process;
 
 import top.osjf.sdk.core.support.NotNull;
-import top.osjf.sdk.http.process.AbstractHttpResponse;
-import top.osjf.sdk.http.process.HttpSdkEnum;
-import top.osjf.sdk.http.process.JsonSerialHttpRequestParams;
 
-import static top.osjf.sdk.http.CultivateSupportHttpRequestParams.InstanceHolder.getSdkEnumManager;
+import static top.osjf.sdk.http.process.CultivateSupportHttpRequestParams.InstanceHolder.getSdkEnumManager;
 
 /**
- * Extended from {@code JsonSerialHttpRequestParams}, with its functionality
+ * Extended from {@code JsonSerialSPILoggerHttpRequestParams}, with its functionality
  * implementation and support as {@code CultivateSupportHttpRequestParams} to find
  * {@link HttpSdkEnumCultivate} annotations transform {@link HttpSdkEnum} and benefit
  * from {@link HttpSdkEnumManager} management.
@@ -33,10 +30,10 @@ import static top.osjf.sdk.http.CultivateSupportHttpRequestParams.InstanceHolder
  * @since 1.0.2
  */
 @SuppressWarnings({"unchecked"})
-public abstract class CultivateSupportJsonSerialHttpRequestParams<R extends AbstractHttpResponse>
-        extends JsonSerialHttpRequestParams<R> {
+public abstract class CultivateSupportJsonSerialSPILoggerHttpRequestParams<R extends AbstractHttpResponse>
+        extends JsonSerialSPILoggerHttpRequestParams<R> {
 
-    private static final long serialVersionUID = 5105821311531689427L;
+    private static final long serialVersionUID = -7551894800516076762L;
 
     /**
      * Get {@code HttpSdkEnum} managed by

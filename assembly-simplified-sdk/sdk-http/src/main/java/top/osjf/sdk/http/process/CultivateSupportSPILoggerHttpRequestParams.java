@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http;
+package top.osjf.sdk.http.process;
 
 import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.http.client.ServiceLoaderLoggerHttpClient;
-import top.osjf.sdk.http.process.AbstractHttpResponse;
 
 /**
  * Extends for {@code CultivateSupportHttpRequestParams} to provider a {@code Client}

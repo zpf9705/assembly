@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http;
+package top.osjf.sdk.http.process;
 
+import top.osjf.sdk.http.HttpProtocol;
+import top.osjf.sdk.http.HttpRequestMethod;
 import top.osjf.sdk.http.process.HttpSdkEnum;
 
 import java.lang.annotation.*;

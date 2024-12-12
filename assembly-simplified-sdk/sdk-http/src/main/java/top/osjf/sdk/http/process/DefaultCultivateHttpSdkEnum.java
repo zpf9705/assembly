@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http;
+package top.osjf.sdk.http.process;
 
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.util.StringUtils;
-import top.osjf.sdk.http.process.HttpSdkEnum;
+import top.osjf.sdk.http.HttpProtocol;
+import top.osjf.sdk.http.HttpRequestMethod;
 
 import java.util.Objects;
 import java.util.concurrent.locks.Lock;

@@ -32,7 +32,7 @@ import java.lang.annotation.*;
  *
  * <p>Since the Retention policy of this annotation is {@code SOURCE}, it only
  * exists in the source code and will be discarded in the compiled bytecode and
- * this is the only difference from the annotation {@link top.osjf.sdk.http.HttpSdkEnumCultivate}.
+ * this is the only difference from the annotation {@link top.osjf.sdk.http.process.HttpSdkEnumCultivate}.
  *
  * <p>This annotation is marked on the class of the specified implementation
  * {@link top.osjf.sdk.http.process.HttpRequest}, which can provide a default

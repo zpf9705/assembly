@@ -24,14 +24,14 @@ import top.osjf.sdk.http.HttpRequestMethod;
 import top.osjf.sdk.http.process.HttpSdkEnum;
 
 /**
- * Extends for {@code top.osjf.sdk.http.DefaultCultivateHttpSdkEnum} class implements
+ * Extends for {@code top.osjf.sdk.http.process.DefaultCultivateHttpSdkEnum} class implements
  * the {@code HttpSdkEnum} interface and serves as an annotation {@link HttpSdkEnumCultivate}
  * to as a {@code HttpSdkEnum}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-public class DefaultCultivateHttpSdkEnum extends top.osjf.sdk.http.DefaultCultivateHttpSdkEnum {
+public class DefaultCultivateHttpSdkEnum extends top.osjf.sdk.http.process.DefaultCultivateHttpSdkEnum {
 
     /**
      * Create a {@code DefaultCultivateHttpSdkEnum} using the {@code url}

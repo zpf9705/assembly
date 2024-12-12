@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http;
+package top.osjf.sdk.http.process;
 
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.SdkSupport;
-import top.osjf.sdk.http.process.AbstractHttpRequestParams;
-import top.osjf.sdk.http.process.AbstractHttpResponse;
-import top.osjf.sdk.http.process.HttpRequest;
-import top.osjf.sdk.http.process.HttpSdkEnum;
 
 /**
  * It is an abstract extension of {@code AbstractHttpRequestParams}, dedicated
@@ -66,7 +62,7 @@ public abstract class CultivateSupportHttpRequestParams<R extends AbstractHttpRe
          * The manager instance of {@code HttpSdkEnum}.
          */
         private static final HttpSdkEnumManager SDK_EUM_MANAGER = SdkSupport.loadInstance(HttpSdkEnumManager.class,
-                "top.osjf.sdk.http.DefaultHttpSdkEnumManager");
+                "top.osjf.sdk.http.process.DefaultHttpSdkEnumManager");
 
         /**
          * Return a {@code HttpSdkEnum} manager instance for
