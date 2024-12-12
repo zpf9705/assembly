@@ -17,6 +17,8 @@
 package top.osjf.sdk.core.util.caller;
 
 import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.support.Nullable;
 
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -37,6 +39,7 @@ public abstract class AbstractResponseFlowableCallerElement<R extends Response> 
     protected final Logger LOGGER = Logger.getLogger(getClass().getName());
 
     /*** The provider of the running entity, the subject used to generate or execute tasks. */
+    @NotNull
     private final Supplier<R> runBody;
 
     /*** The maximum number of retries to attempt to re execute a task after it has failed. */
@@ -55,6 +58,7 @@ public abstract class AbstractResponseFlowableCallerElement<R extends Response> 
 
     /*** Custom retry exception predicate used to determine which exception types should trigger
      * the retry mechanism. */
+    @Nullable
     private final Predicate<? super Throwable> customRetryExceptionPredicate;
 
     /**
@@ -73,14 +77,13 @@ public abstract class AbstractResponseFlowableCallerElement<R extends Response> 
      *                                         a retry. If null, all exceptions will trigger a retry (if retries are
      *                                         configured).
      */
-    public AbstractResponseFlowableCallerElement(Supplier<R> runBody,
+    public AbstractResponseFlowableCallerElement(@NotNull Supplier<R> runBody,
                                                  int retryTimes,
                                                  long retryIntervalMilliseconds,
                                                  boolean whenResponseNonSuccessRetry,
                                                  boolean whenResponseNonSuccessFinalThrow,
-                                                 Predicate<? super Throwable> customRetryExceptionPredicate) {
-        Objects.requireNonNull(runBody, "runBody");
-        Objects.requireNonNull(runBody, "sdk runBody");
+                                                 @Nullable Predicate<? super Throwable> customRetryExceptionPredicate) {
+        Objects.requireNonNull(runBody, "runBody not be null");
         this.runBody = runBody;
         this.retryTimes = Math.max(retryTimes, 0);
         this.retryIntervalMilliseconds = Math.max(retryIntervalMilliseconds, 0);
