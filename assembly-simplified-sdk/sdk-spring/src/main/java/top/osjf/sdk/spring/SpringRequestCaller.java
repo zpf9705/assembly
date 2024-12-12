@@ -19,6 +19,7 @@ package top.osjf.sdk.spring;
 import org.springframework.context.ApplicationContext;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.util.caller.CallOptions;
 import top.osjf.sdk.core.util.caller.RequestCaller;
@@ -71,9 +72,12 @@ public class SpringRequestCaller extends RequestCaller {
      * @param method  The method object to be executed.
      * @return The {@code Response} object obtained from the response
      * returns empty when {@link CallOptions#callbackClass()} exists.
+     * @throws NullPointerException if input args is {@literal null}.
      */
     @Nullable
-    public Response resolveRequestExecuteWithTypeOrMethodOptions(Request<?> request, String host, Method method) {
+    public Response resolveRequestExecuteWithTypeOrMethodOptions(@NotNull Request<?> request,
+                                                                 String host,
+                                                                 @NotNull Method method) {
         CallOptions callOptions = method.getAnnotation(CallOptions.class);
         if (callOptions == null) {
             callOptions = method.getDeclaringClass().getAnnotation(CallOptions.class);
