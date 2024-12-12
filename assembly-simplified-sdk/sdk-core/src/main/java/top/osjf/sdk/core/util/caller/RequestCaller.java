@@ -91,9 +91,10 @@ public class RequestCaller {
      * @param callOptions {@code CallOptions} annotation.
      * @return The {@code Response} object obtained from the response
      * returns empty when {@link CallOptions#callbackClass()} exists.
+     * @throws NullPointerException if input request is {@literal null}.
      */
     @Nullable
-    public Response resolveRequestExecuteWithOptions(Request<?> request, String host, CallOptions callOptions) {
+    public Response resolveRequestExecuteWithOptions(@NotNull Request<?> request, String host, CallOptions callOptions) {
 
         return resolveRequestExecuteWithOptions(() -> request.execute(host), request.matchSdkEnum().name(),
                 callOptions);
@@ -112,10 +113,12 @@ public class RequestCaller {
      * @param callOptions {@code CallOptions} annotation.
      * @return The {@code Response} object obtained from the response
      * returns empty when {@link CallOptions#callbackClass()} exists.
+     * @throws NullPointerException if input args is {@literal null}.
      */
     @Nullable
-    public Response resolveRequestExecuteWithOptions(Supplier<Response> supplier, String name,
-                                                     CallOptions callOptions) {
+    public Response resolveRequestExecuteWithOptions(@NotNull Supplier<Response> supplier,
+                                                     @NotNull String name,
+                                                     @NotNull CallOptions callOptions) {
         int retryTimes = getRetryTimesByOptions(callOptions);
         long retryIntervalMilliseconds = getRetryIntervalMillisecondsByOptions(callOptions);
         ThrowablePredicate throwablePredicate = getThrowablePredicateByOptions(callOptions);
@@ -154,14 +157,16 @@ public class RequestCaller {
      * @param callback                         The Instance {@code Callback}.
      * @return The {@code Response} object obtained from the response
      * returns empty when {@link CallOptions#callbackClass()} exists.
+     * @throws NullPointerException if input args is {@literal null}.
      */
     @Nullable
-    public Response resolveRequestExecuteWithOptions(Supplier<Response> supplier, int retryTimes,
+    public Response resolveRequestExecuteWithOptions(@NotNull Supplier<Response> supplier,
+                                                     int retryTimes,
                                                      long retryIntervalMilliseconds,
                                                      @Nullable ThrowablePredicate throwablePredicate,
                                                      boolean whenResponseNonSuccessRetry,
                                                      boolean whenResponseNonSuccessFinalThrow,
-                                                     String name,
+                                                     @NotNull String name,
                                                      @Nullable Callback callback) {
         FlowableCallerBuilder<Response> builder = FlowableCallerBuilder.newBuilder()
                 .runBody(supplier)
