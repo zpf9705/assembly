@@ -42,7 +42,7 @@ public abstract class AbstractResponseFlowableCallerElement<R extends Response> 
     @NotNull
     private final Supplier<R> runBody;
 
-    /*** The maximum number of retries to attempt to re execute a task after it has failed. */
+    /*** The maximum number of retries to attempt to re-execute a task after it has failed. */
     private final int retryTimes;
 
     /*** The millisecond value of the retry trigger delay interval. */
@@ -76,6 +76,7 @@ public abstract class AbstractResponseFlowableCallerElement<R extends Response> 
      * @param customRetryExceptionPredicate    A custom predicate used to determine if an exception should trigger
      *                                         a retry. If null, all exceptions will trigger a retry (if retries are
      *                                         configured).
+     * @throws NullPointerException if input runBody is {@literal null}.
      */
     public AbstractResponseFlowableCallerElement(@NotNull Supplier<R> runBody,
                                                  int retryTimes,
@@ -83,7 +84,7 @@ public abstract class AbstractResponseFlowableCallerElement<R extends Response> 
                                                  boolean whenResponseNonSuccessRetry,
                                                  boolean whenResponseNonSuccessFinalThrow,
                                                  @Nullable Predicate<? super Throwable> customRetryExceptionPredicate) {
-        Objects.requireNonNull(runBody, "runBody not be null");
+        Objects.requireNonNull(runBody, "runBody == null");
         this.runBody = runBody;
         this.retryTimes = Math.max(retryTimes, 0);
         this.retryIntervalMilliseconds = Math.max(retryIntervalMilliseconds, 0);
@@ -97,6 +98,7 @@ public abstract class AbstractResponseFlowableCallerElement<R extends Response> 
     }
 
     @Override
+    @NotNull
     public Supplier<R> getRunBody() {
         return runBody;
     }
@@ -122,6 +124,7 @@ public abstract class AbstractResponseFlowableCallerElement<R extends Response> 
     }
 
     @Override
+    @Nullable
     public Predicate<? super Throwable> getCustomRetryExceptionPredicate() {
         return customRetryExceptionPredicate;
     }
