@@ -52,10 +52,11 @@ public interface MultiHttpMethodExecutor extends HttpRequestExecutor {
      * @param charset Encoding character set.
      * @return Returns a string representation of the server response body.
      * The specific content depends on the server's response.
-     * @throws Exception This method may throw various exceptions, including but not limited
-     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
-     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
-     *                   The caller needs to capture and handle these exceptions appropriately.
+     * @throws NullPointerException If the input url is {@literal null}.
+     * @throws Exception            This method may throw various exceptions, including but not limited
+     *                              to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                              (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                              The caller needs to capture and handle these exceptions appropriately.
      */
     String get(@NotNull String url, @Nullable Map<String, String> headers, @Nullable Object body,
                @Nullable Charset charset)
@@ -71,10 +72,11 @@ public interface MultiHttpMethodExecutor extends HttpRequestExecutor {
      * @param charset Encoding character set.
      * @return Returns a string representation of the server response body.
      * The specific content depends on the server's response.
-     * @throws Exception This method may throw various exceptions, including but not limited
-     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
-     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
-     *                   The caller needs to capture and handle these exceptions appropriately.
+     * @throws NullPointerException If the input url is {@literal null}.
+     * @throws Exception            This method may throw various exceptions, including but not limited
+     *                              to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                              (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                              The caller needs to capture and handle these exceptions appropriately.
      */
     String post(@NotNull String url, @Nullable Map<String, String> headers, @Nullable Object body,
                 @Nullable Charset charset)
@@ -90,10 +92,11 @@ public interface MultiHttpMethodExecutor extends HttpRequestExecutor {
      * @param charset Encoding character set.
      * @return Returns a string representation of the server response body.
      * The specific content depends on the server's response.
-     * @throws Exception This method may throw various exceptions, including but not limited
-     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
-     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
-     *                   The caller needs to capture and handle these exceptions appropriately.
+     * @throws NullPointerException If the input url is {@literal null}.
+     * @throws Exception            This method may throw various exceptions, including but not limited
+     *                              to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                              (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                              The caller needs to capture and handle these exceptions appropriately.
      */
     String put(@NotNull String url, @Nullable Map<String, String> headers, @Nullable Object body,
                @Nullable Charset charset)
@@ -109,10 +112,11 @@ public interface MultiHttpMethodExecutor extends HttpRequestExecutor {
      * @param charset Encoding character set.
      * @return Returns a string representation of the server response body.
      * The specific content depends on the server's response.
-     * @throws Exception This method may throw various exceptions, including but not limited
-     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
-     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
-     *                   The caller needs to capture and handle these exceptions appropriately.
+     * @throws NullPointerException If the input url is {@literal null}.
+     * @throws Exception            This method may throw various exceptions, including but not limited
+     *                              to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                              (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                              The caller needs to capture and handle these exceptions appropriately.
      */
     String delete(@NotNull String url, @Nullable Map<String, String> headers, @Nullable Object body,
                   @Nullable Charset charset)
@@ -128,10 +132,11 @@ public interface MultiHttpMethodExecutor extends HttpRequestExecutor {
      * @param charset Encoding character set.
      * @return Returns a string representation of the server response body.
      * The specific content depends on the server's response.
-     * @throws Exception This method may throw various exceptions, including but not limited
-     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
-     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
-     *                   The caller needs to capture and handle these exceptions appropriately.
+     * @throws NullPointerException If the input url is {@literal null}.
+     * @throws Exception            This method may throw various exceptions, including but not limited
+     *                              to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                              (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                              The caller needs to capture and handle these exceptions appropriately.
      */
     String trace(@NotNull String url, @Nullable Map<String, String> headers, @Nullable Object body,
                  @Nullable Charset charset)
@@ -147,10 +152,11 @@ public interface MultiHttpMethodExecutor extends HttpRequestExecutor {
      * @param charset Encoding character set.
      * @return Returns a string representation of the server response body.
      * The specific content depends on the server's response.
-     * @throws Exception This method may throw various exceptions, including but not limited
-     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
-     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
-     *                   The caller needs to capture and handle these exceptions appropriately.
+     * @throws NullPointerException If the input url is {@literal null}.
+     * @throws Exception            This method may throw various exceptions, including but not limited
+     *                              to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                              (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                              The caller needs to capture and handle these exceptions appropriately.
      */
     String options(@NotNull String url, @Nullable Map<String, String> headers, @Nullable Object body,
                    @Nullable Charset charset)
@@ -166,10 +172,11 @@ public interface MultiHttpMethodExecutor extends HttpRequestExecutor {
      * @param charset Encoding character set.
      * @return Returns a string representation of the server response body.
      * The specific content depends on the server's response.
-     * @throws Exception This method may throw various exceptions, including but not limited
-     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
-     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
-     *                   The caller needs to capture and handle these exceptions appropriately.
+     * @throws NullPointerException If the input url is {@literal null}.
+     * @throws Exception            This method may throw various exceptions, including but not limited
+     *                              to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                              (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                              The caller needs to capture and handle these exceptions appropriately.
      */
     String head(@NotNull String url, @Nullable Map<String, String> headers, @Nullable Object body,
                 @Nullable Charset charset)
@@ -185,10 +192,11 @@ public interface MultiHttpMethodExecutor extends HttpRequestExecutor {
      * @param charset Encoding character set.
      * @return Returns a string representation of the server response body.
      * The specific content depends on the server's response.
-     * @throws Exception This method may throw various exceptions, including but not limited
-     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
-     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
-     *                   The caller needs to capture and handle these exceptions appropriately.
+     * @throws NullPointerException If the input url is {@literal null}.
+     * @throws Exception            This method may throw various exceptions, including but not limited
+     *                              to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                              (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                              The caller needs to capture and handle these exceptions appropriately.
      */
     String patch(@NotNull String url, @Nullable Map<String, String> headers, @Nullable Object body,
                  @Nullable Charset charset)
