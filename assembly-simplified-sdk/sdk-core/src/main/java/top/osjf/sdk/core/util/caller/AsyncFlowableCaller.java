@@ -19,6 +19,8 @@ package top.osjf.sdk.core.util.caller;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.support.Nullable;
 
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
@@ -50,6 +52,7 @@ public class AsyncFlowableCaller<R extends Response>
      *
      * <p>If it is empty, the subscription will be executed in the main thread.
      */
+    @Nullable
     private final Executor customSubscriptionExecutor;
 
     /**
@@ -59,6 +62,7 @@ public class AsyncFlowableCaller<R extends Response>
      *
      * <p>If it is empty, to observe will be executed in the main thread.
      */
+    @Nullable
     private final Executor customObserveExecutor;
 
     /**
@@ -96,16 +100,17 @@ public class AsyncFlowableCaller<R extends Response>
      *                                            is produced and ready to be consumed, customObserveExecutor determines
      *                                            which thread or thread pool these consumption operations
      *                                            (e.g., processing the data) will execute on.
+     * @throws NullPointerException if input runBody is {@literal null}.
      */
-    public AsyncFlowableCaller(Supplier<R> runBody, int retryTimes,
+    public AsyncFlowableCaller(@NotNull Supplier<R> runBody, int retryTimes,
                                long retryIntervalMilliseconds,
                                boolean whenResponseNonSuccessRetry,
                                boolean whenResponseNonSuccessFinalThrow,
-                               Predicate<? super Throwable> customRetryExceptionPredicate,
-                               Consumer<R> customSubscriptionRegularConsumer,
-                               Consumer<Throwable> customSubscriptionExceptionConsumer,
-                               Executor customSubscriptionExecutor,
-                               Executor customObserveExecutor) {
+                               @Nullable Predicate<? super Throwable> customRetryExceptionPredicate,
+                               @Nullable Consumer<R> customSubscriptionRegularConsumer,
+                               @Nullable Consumer<Throwable> customSubscriptionExceptionConsumer,
+                               @Nullable Executor customSubscriptionExecutor,
+                               @Nullable Executor customObserveExecutor) {
         super(runBody, retryTimes, retryIntervalMilliseconds,
                 whenResponseNonSuccessRetry, whenResponseNonSuccessFinalThrow, customRetryExceptionPredicate,
                 customSubscriptionRegularConsumer, customSubscriptionExceptionConsumer);
@@ -156,11 +161,13 @@ public class AsyncFlowableCaller<R extends Response>
     }
 
     @Override
+    @Nullable
     public Executor getCustomSubscriptionExecutor() {
         return customSubscriptionExecutor;
     }
 
     @Override
+    @Nullable
     public Executor getCustomObserveExecutor() {
         return customObserveExecutor;
     }
