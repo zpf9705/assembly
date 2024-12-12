@@ -21,6 +21,8 @@ import io.reactivex.rxjava3.core.Flowable;
 import org.reactivestreams.Publisher;
 import top.osjf.sdk.core.exception.SdkResponseNonSuccessException;
 import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.util.StringUtils;
 
 import java.util.function.Predicate;
@@ -60,11 +62,11 @@ public abstract class AbstractFlowableCaller<R extends Response> extends Abstrac
     private Flowable<R> flowable;
 
     /* AbstractResponseFlowableCallerElement */
-    public AbstractFlowableCaller(Supplier<R> runBody, int retryTimes,
+    public AbstractFlowableCaller(@NotNull Supplier<R> runBody, int retryTimes,
                                   long retryIntervalMilliseconds,
                                   boolean whenResponseNonSuccessRetry,
                                   boolean whenResponseNonSuccessFinalThrow,
-                                  Predicate<? super Throwable> customRetryExceptionPredicate) {
+                                  @Nullable Predicate<? super Throwable> customRetryExceptionPredicate) {
         super(runBody, retryTimes, retryIntervalMilliseconds, whenResponseNonSuccessRetry,
                 whenResponseNonSuccessFinalThrow, customRetryExceptionPredicate);
     }
@@ -82,7 +84,7 @@ public abstract class AbstractFlowableCaller<R extends Response> extends Abstrac
      *
      * @return The {@code Flowable} class that implements the
      * <a href="https://github.com/reactive-streams/reactive-streams-jvm">Reactive Streams</a> {@link Publisher}
-     * * Pattern and offers factory methods, intermediate operators and the ability to consume reactive dataflows.
+     * * Pattern and offers factory methods, intermediate operators and the ability to consume reactive data flows.
      */
     protected Flowable<R> createFlowable() {
 
@@ -118,7 +120,7 @@ public abstract class AbstractFlowableCaller<R extends Response> extends Abstrac
             boolean responseNonSuccessRetryPredicateResult = false;
 
             Predicate<? super Throwable> customRetryExceptionPredicate = getCustomRetryExceptionPredicate();
-            if (getCustomRetryExceptionPredicate() != null) {
+            if (customRetryExceptionPredicate != null) {
                 customRetryPredicateResult = customRetryExceptionPredicate.test(e);
             } else customRetryPredicateResult = true;
 
@@ -148,7 +150,7 @@ public abstract class AbstractFlowableCaller<R extends Response> extends Abstrac
      *
      * @return operation object of the stream.
      */
-    public Flowable<R> getFlowable() {
+    protected Flowable<R> getFlowable() {
         if (flowable == null) {
             this.flowable = createFlowable();
         }
