@@ -42,7 +42,11 @@ public abstract class AbstractFeignClientHttpRequestExecutor implements FeignCli
         Charset charset = httpRequest.getCharset();
 
         if (requestBody != null) {
-            feignBody = feign.Request.Body.create(requestBody, charset);
+            if (charset == null) {
+                feignBody = feign.Request.Body.create(requestBody);
+            } else {
+                feignBody = feign.Request.Body.create(requestBody, charset);
+            }
         } else/* Need to provide a default value of null */
             feignBody = feign.Request.Body.create((byte[]) null, charset);
 
