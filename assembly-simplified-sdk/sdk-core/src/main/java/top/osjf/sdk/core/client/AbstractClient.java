@@ -159,6 +159,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
      * @return {@inheritDoc}
      */
     @Override
+    @NotNull
     public R request() {
         return (R) InstanceHolder.getClientManager().getMaintainedClient(unique, null).request();
     }
@@ -172,7 +173,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
      * @return {@inheritDoc}
      */
     @Override
-    public String preResponseStrHandler(Request<R> request, String responseStr) {
+    public String preResponseStrHandler(@NotNull Request<R> request, @NotNull String responseStr) {
         return responseStr;
     }
 

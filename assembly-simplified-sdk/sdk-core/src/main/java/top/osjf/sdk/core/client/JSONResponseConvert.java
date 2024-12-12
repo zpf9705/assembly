@@ -19,6 +19,7 @@ package top.osjf.sdk.core.client;
 import top.osjf.sdk.core.process.DefaultErrorResponse;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.util.CollectionUtils;
 import top.osjf.sdk.core.util.JSONUtil;
 
@@ -70,7 +71,7 @@ public interface JSONResponseConvert<R extends Response> extends ResponseConvert
      * @return {@inheritDoc}
      */
     @Override
-    default R convertToResponse(Request<R> request, String responseStr) {
+    default R convertToResponse(@NotNull Request<R> request, @NotNull String responseStr) {
         R response;
         Object type = request.getResponseRequiredType();
         if (JSONUtil.isValidObject(responseStr)) {

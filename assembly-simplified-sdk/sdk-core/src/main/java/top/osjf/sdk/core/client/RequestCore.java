@@ -17,6 +17,7 @@
 package top.osjf.sdk.core.client;
 
 import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.support.NotNull;
 
 /**
  * The request method function interface, {@link #request()}, is the
@@ -46,5 +47,6 @@ public interface RequestCore<R extends Response> extends RequestBinder<R> {
      *
      * @return response body {@code Response} of this request.
      */
+    @NotNull
     R request();
 }

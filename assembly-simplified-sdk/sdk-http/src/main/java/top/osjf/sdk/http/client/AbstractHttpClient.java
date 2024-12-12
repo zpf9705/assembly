@@ -224,6 +224,7 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
      * @return {@inheritDoc}
      */
     @Override
+    @NotNull
     public R request() {
 
         //Get the request parameters for the current thread.

@@ -18,6 +18,7 @@ package top.osjf.sdk.core.client;
 
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.support.NotNull;
 
 /**
  * <p>Response Conversion Interface, used to convert the response type (generic R,
@@ -57,5 +58,5 @@ public interface ResponseConvert<R extends Response> {
      * @return The converted response model data is implemented in
      * {@link Response} and cannot be {@literal null}.
      */
-    R convertToResponse(Request<R> request, String responseStr);
+    R convertToResponse(@NotNull Request<R> request, @NotNull String responseStr);
 }
