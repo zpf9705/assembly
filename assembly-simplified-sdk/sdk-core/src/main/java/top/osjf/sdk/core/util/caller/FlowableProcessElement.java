@@ -17,6 +17,7 @@
 package top.osjf.sdk.core.util.caller;
 
 import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.support.Nullable;
 
 import java.util.function.Consumer;
 
@@ -40,11 +41,13 @@ public interface FlowableProcessElement<R extends Response> {
      *
      * @return Customized subscription for regular consumers.
      */
+    @Nullable
     Consumer<R> getCustomSubscriptionRegularConsumer();
 
     /*** Custom subscription exception consumers, used to handle exceptions that occur during the
      * subscription process.
      * @return Custom subscription exception consumers.
      * */
+    @Nullable
     Consumer<Throwable> getCustomSubscriptionExceptionConsumer();
 }

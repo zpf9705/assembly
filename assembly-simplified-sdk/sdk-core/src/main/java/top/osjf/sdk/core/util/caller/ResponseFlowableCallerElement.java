@@ -17,6 +17,8 @@
 package top.osjf.sdk.core.util.caller;
 
 import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.support.Nullable;
 
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -42,6 +44,7 @@ public interface ResponseFlowableCallerElement<R extends Response> {
      *
      * @return running entity.
      */
+    @NotNull
     Supplier<R> getRunBody();
 
     /**
@@ -81,5 +84,6 @@ public interface ResponseFlowableCallerElement<R extends Response> {
      *
      * @return custom retry exception predicate.
      */
+    @Nullable
     Predicate<? super Throwable> getCustomRetryExceptionPredicate();
 }

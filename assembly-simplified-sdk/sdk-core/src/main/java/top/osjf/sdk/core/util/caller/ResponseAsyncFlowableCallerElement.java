@@ -17,6 +17,7 @@
 package top.osjf.sdk.core.util.caller;
 
 import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.support.Nullable;
 
 import java.util.concurrent.Executor;
 
@@ -45,6 +46,7 @@ public interface ResponseAsyncFlowableCallerElement<R extends Response> extends 
      *
      * @return custom subscription executor.
      */
+    @Nullable
     Executor getCustomSubscriptionExecutor();
 
     /**
@@ -56,5 +58,6 @@ public interface ResponseAsyncFlowableCallerElement<R extends Response> extends 
      *
      * @return custom observe executor.
      */
+    @Nullable
     Executor getCustomObserveExecutor();
 }
