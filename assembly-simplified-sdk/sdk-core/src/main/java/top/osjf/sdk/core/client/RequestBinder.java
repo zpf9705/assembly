@@ -50,6 +50,7 @@ public interface RequestBinder<R extends Response> extends AutoCloseable {
      * @param bindRequest Waiting for bound {@code Request}
      *                    resources.
      * @return itself {@code RequestBinder}.
+     * @throws NullPointerException  If the input bindRequest is {@literal null}.
      * @throws IllegalStateException If the bound resource is cleared
      *                               in advance, i.e. calling {@link #close()},
      *                               a bound resource status exception will be thrown.
@@ -63,6 +64,7 @@ public interface RequestBinder<R extends Response> extends AutoCloseable {
      *            formatting operations on the URL such
      *            as concatenating query parameters.
      * @return itself {@code RequestBinder}.
+     * @throws NullPointerException  If the input url is {@literal null}.
      * @throws IllegalStateException If the bound resource is cleared
      *                               in advance, i.e. calling {@link #close()},
      *                               a bound resource status exception will be thrown.
