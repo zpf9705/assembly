@@ -65,7 +65,7 @@ public abstract class WrapperInspectCallback<R extends Response> implements Call
      */
     @NotNull
     public Class<R> getType() {
-        return ReflectUtil.getSuperGenericType(this, 1);
+        return ReflectUtil.getSuperGenericType(this, 0);
     }
 
     /**
