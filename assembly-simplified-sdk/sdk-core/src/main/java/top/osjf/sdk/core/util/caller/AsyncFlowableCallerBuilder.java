@@ -17,6 +17,8 @@
 package top.osjf.sdk.core.util.caller;
 
 import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.support.Nullable;
 
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
@@ -38,9 +40,11 @@ import java.util.function.Supplier;
 public class AsyncFlowableCallerBuilder<R extends Response> extends FlowableCallerBuilder<R> {
 
     /*** {@code AsyncFlowableCaller#customSubscriptionExecutor}*/
+    @Nullable
     private Executor customSubscriptionExecutor;
 
     /*** {@code AsyncFlowableCaller#customObserveExecutor}*/
+    @Nullable
     private Executor customObserveExecutor;
 
     /**
@@ -55,7 +59,7 @@ public class AsyncFlowableCallerBuilder<R extends Response> extends FlowableCall
     }
 
     @Override
-    public AsyncFlowableCallerBuilder<R> runBody(Supplier<R> runBody) {
+    public AsyncFlowableCallerBuilder<R> runBody(@NotNull Supplier<R> runBody) {
         super.runBody(runBody);
         return this;
     }
@@ -94,7 +98,7 @@ public class AsyncFlowableCallerBuilder<R extends Response> extends FlowableCall
     /*** {@inheritDoc}*/
     @Override
     public AsyncFlowableCallerBuilder<R> customSubscriptionRegularConsumer
-    (Consumer<R> customSubscriptionRegularConsumer) {
+    (@Nullable Consumer<R> customSubscriptionRegularConsumer) {
         super.customSubscriptionRegularConsumer(customSubscriptionRegularConsumer);
         return this;
     }
@@ -102,7 +106,7 @@ public class AsyncFlowableCallerBuilder<R extends Response> extends FlowableCall
     /*** {@inheritDoc}*/
     @Override
     public AsyncFlowableCallerBuilder<R> customSubscriptionExceptionConsumer
-    (Consumer<Throwable> customSubscriptionExceptionConsumer) {
+    (@Nullable Consumer<Throwable> customSubscriptionExceptionConsumer) {
         super.customSubscriptionExceptionConsumer(customSubscriptionExceptionConsumer);
         return this;
     }
@@ -113,7 +117,7 @@ public class AsyncFlowableCallerBuilder<R extends Response> extends FlowableCall
      * @param customSubscriptionExecutor {@code AsyncFlowableCaller#customSubscriptionExecutor}
      * @return this.
      */
-    public AsyncFlowableCallerBuilder<R> customSubscriptionExecutor(Executor customSubscriptionExecutor) {
+    public AsyncFlowableCallerBuilder<R> customSubscriptionExecutor(@Nullable Executor customSubscriptionExecutor) {
         this.customSubscriptionExecutor = customSubscriptionExecutor;
         return this;
     }
@@ -126,11 +130,17 @@ public class AsyncFlowableCallerBuilder<R extends Response> extends FlowableCall
      * @param customObserveExecutor {@code AsyncFlowableCaller#customObserveExecutor}
      * @return this.
      */
-    public AsyncFlowableCallerBuilder<R> customObserveExecutor(Executor customObserveExecutor) {
+    public AsyncFlowableCallerBuilder<R> customObserveExecutor(@Nullable Executor customObserveExecutor) {
         this.customObserveExecutor = customObserveExecutor;
         return this;
     }
 
+    /**
+     * Build and return a {@link AsyncFlowableCaller} instance based on the current configuration.
+     *
+     * @return {@link AsyncFlowableCaller}.
+     * @throws NullPointerException {@inheritDoc}
+     */
     @Override
     public AsyncFlowableCaller<R> build() {
         FlowableCaller<R> flowableCaller = super.build();
@@ -149,7 +159,9 @@ public class AsyncFlowableCallerBuilder<R extends Response> extends FlowableCall
      * Build and return a {@link BlockedAsyncFlowableCaller} instance based on the current configuration.
      *
      * @return {@link BlockedAsyncFlowableCaller}.
+     * @throws NullPointerException {@inheritDoc}
      */
+    @Override
     public BlockedAsyncFlowableCaller<R> buildBlock() {
         FlowableCaller<R> flowableCaller = super.build();
         return new BlockedAsyncFlowableCaller<>
