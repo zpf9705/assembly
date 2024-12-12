@@ -52,6 +52,7 @@ public class ThreadLocalRequestBinder<R extends Response> implements RequestBind
      * @param request {@inheritDoc}
      * @return {@inheritDoc}
      * @throws IllegalStateException {@inheritDoc}
+     * @throws NullPointerException  {@inheritDoc}
      */
     @Override
     public ThreadLocalRequestBinder<R> bindRequest(@NotNull Request<R> request)
@@ -72,6 +73,7 @@ public class ThreadLocalRequestBinder<R extends Response> implements RequestBind
      * @param url {@inheritDoc}
      * @return {@inheritDoc}
      * @throws IllegalStateException {@inheritDoc}
+     * @throws NullPointerException  {@inheritDoc}
      */
     @Override
     public RequestBinder<R> bindUrl(@NotNull String url)
