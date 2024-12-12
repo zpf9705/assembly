@@ -143,10 +143,13 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
     @Nullable
     private String persistentUrl;
 
-    /*** Constructing for {@link HttpClient} objects using access URLs.
-     * @param url   {@code URL} Object of packaging tags and URL addresses
-     *                         and updated on version 1.0.2.
-     * */
+    /**
+     * Constructing for {@code AbstractHttpClient} objects using access URLs.
+     *
+     * @param url {@code URL} Object of packaging tags and URL addresses
+     *            and updated on version 1.0.2.
+     * @throws NullPointerException If the input url is {@literal null}.
+     */
     public AbstractHttpClient(@NotNull URL url) {
         super(url);
         if (url.isSame()) {

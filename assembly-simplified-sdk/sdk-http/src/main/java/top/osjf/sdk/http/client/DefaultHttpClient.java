@@ -30,9 +30,12 @@ public class DefaultHttpClient<R extends HttpResponse> extends AbstractHttpClien
 
     private static final long serialVersionUID = -2139694263828485242L;
 
-    /*** Constructing for {@link HttpClient} objects using access URLs.
-     * @param url   {@code URL} Object of packaging tags and URL addresses
-     *                         and updated on version 1.0.2.
+    /**
+     * Constructing for {@code DefaultHttpClient} objects using access URLs.
+     *
+     * @param url {@code URL} Object of packaging tags and URL addresses
+     *            and updated on version 1.0.2.
+     * @throws NullPointerException If the input url is {@literal null}.
      */
     public DefaultHttpClient(@NotNull URL url) {
         super(url);

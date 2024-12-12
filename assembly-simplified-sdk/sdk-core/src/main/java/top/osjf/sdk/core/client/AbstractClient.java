@@ -59,7 +59,7 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
     private final String unique;
 
     /**
-     * Constructing for {@link Client} objects using unique identifier.
+     * Constructing for {@code AbstractClient} objects using unique identifier.
      *
      * @param url {@code URL} Object of packaging tags and URL addresses
      *            and updated on version 1.0.2.
