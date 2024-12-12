@@ -17,6 +17,8 @@
 package top.osjf.sdk.core.util.caller;
 
 import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.support.Nullable;
 
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -33,10 +35,10 @@ import java.util.function.Supplier;
 public class BlockedFlowableCaller<R extends Response> extends AbstractFlowableCaller<R> implements FlowableBlock<R> {
 
     /* {@link AbstractFlowableCaller} */
-    public BlockedFlowableCaller(Supplier<R> runBody, int retryTimes,
+    public BlockedFlowableCaller(@NotNull Supplier<R> runBody, int retryTimes,
                                  long retryIntervalMilliseconds, boolean whenResponseNonSuccessRetry,
                                  boolean whenResponseNonSuccessFinalThrow,
-                                 Predicate<? super Throwable> customRetryExceptionPredicate) {
+                                 @Nullable Predicate<? super Throwable> customRetryExceptionPredicate) {
         super(runBody, retryTimes, retryIntervalMilliseconds, whenResponseNonSuccessRetry,
                 whenResponseNonSuccessFinalThrow, customRetryExceptionPredicate);
     }
@@ -66,8 +68,9 @@ public class BlockedFlowableCaller<R extends Response> extends AbstractFlowableC
      * @param <R>        Generic R represents the type returned by an operation, which must
      *                   inherit from the {@link Response} class.
      * @return a callback {@link Response}.
+     * @throws NullPointerException if input runBody is {@literal null}.
      */
-    public static <R extends Response> R get(Supplier<R> runBody,
+    public static <R extends Response> R get(@NotNull Supplier<R> runBody,
                                              int retryTimes) {
         return get(runBody, retryTimes, 0);
     }
@@ -81,8 +84,9 @@ public class BlockedFlowableCaller<R extends Response> extends AbstractFlowableC
      * @param <R>                       Generic R represents the type returned by an operation, which must
      *                                  inherit from the {@link Response} class.
      * @return a callback {@link Response}.
+     * @throws NullPointerException if input runBody is {@literal null}.
      */
-    public static <R extends Response> R get(Supplier<R> runBody,
+    public static <R extends Response> R get(@NotNull Supplier<R> runBody,
                                              int retryTimes,
                                              long retryIntervalMilliseconds) {
         return get(runBody, retryTimes, retryIntervalMilliseconds, false);
@@ -98,8 +102,9 @@ public class BlockedFlowableCaller<R extends Response> extends AbstractFlowableC
      * @param <R>                         Generic R represents the type returned by an operation, which must
      *                                    inherit from the {@link Response} class.
      * @return a callback {@link Response}.
+     * @throws NullPointerException if input runBody is {@literal null}.
      */
-    public static <R extends Response> R get(Supplier<R> runBody,
+    public static <R extends Response> R get(@NotNull Supplier<R> runBody,
                                              int retryTimes,
                                              long retryIntervalMilliseconds,
                                              boolean whenResponseNonSuccessRetry) {
@@ -118,8 +123,9 @@ public class BlockedFlowableCaller<R extends Response> extends AbstractFlowableC
      * @param <R>                              Generic R represents the type returned by an operation, which must
      *                                         inherit from the {@link Response} class.
      * @return a callback {@link Response}.
+     * @throws NullPointerException if input runBody is {@literal null}.
      */
-    public static <R extends Response> R get(Supplier<R> runBody,
+    public static <R extends Response> R get(@NotNull Supplier<R> runBody,
                                              int retryTimes,
                                              long retryIntervalMilliseconds,
                                              boolean whenResponseNonSuccessRetry,
@@ -140,13 +146,14 @@ public class BlockedFlowableCaller<R extends Response> extends AbstractFlowableC
      * @param <R>                              Generic R represents the type returned by an operation, which must
      *                                         inherit from the {@link Response} class.
      * @return a callback {@link Response}.
+     * @throws NullPointerException if input runBody is {@literal null}.
      */
-    public static <R extends Response> R get(Supplier<R> runBody,
+    public static <R extends Response> R get(@NotNull Supplier<R> runBody,
                                              int retryTimes,
                                              long retryIntervalMilliseconds,
                                              boolean whenResponseNonSuccessRetry,
                                              boolean whenResponseNonSuccessFinalThrow,
-                                             Predicate<? super Throwable> customRetryExceptionPredicate) {
+                                             @Nullable Predicate<? super Throwable> customRetryExceptionPredicate) {
         return new BlockedFlowableCaller<>(runBody, retryTimes, retryIntervalMilliseconds,
                 whenResponseNonSuccessRetry, whenResponseNonSuccessFinalThrow, customRetryExceptionPredicate).get();
     }
