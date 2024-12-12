@@ -52,6 +52,7 @@ public class DefaultClientManager<R extends Response> implements ClientManager<R
      *
      * @param unique {@inheritDoc}
      * @param client {@inheritDoc}
+     * @throws NullPointerException {@inheritDoc}
      */
     @Override
     public void maintenanceNewClient(@NotNull String unique, @NotNull Client<R> client) {
@@ -64,6 +65,7 @@ public class DefaultClientManager<R extends Response> implements ClientManager<R
      *
      * @param unique                    {@inheritDoc}
      * @param ifAbsentNewClientSupplier {@inheritDoc}
+     * @throws NullPointerException {@inheritDoc}
      */
     @Override
     public Client<R> getMaintainedClient(@NotNull String unique, Supplier<Client<R>> ifAbsentNewClientSupplier) {
