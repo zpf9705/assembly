@@ -48,6 +48,19 @@ public class DefaultCultivateHttpSdkEnum implements HttpSdkEnum {
      */
     private final Lock lock = new ReentrantLock(true);
 
+    /**
+     * Create a {@code DefaultCultivateHttpSdkEnum} using the {@code url}
+     * {@code version} {@code httpProtocol} {@code httpRequestMethod} {@code name}
+     * construction method.
+     *
+     * @param url               {@link HttpSdkEnum#getUrl}
+     * @param version           Defined SDK version.
+     * @param httpProtocol      {@link HttpSdkEnum#getProtocol}
+     * @param httpRequestMethod {@link HttpSdkEnum#getRequestMethod}
+     * @param name              {@link HttpSdkEnum#name()}
+     * @throws NullPointerException If the input url or httpRequestMethod
+     *                              or name is {@literal null}.
+     */
     public DefaultCultivateHttpSdkEnum(@NotNull String url,
                                        @Nullable String version,
                                        @Nullable HttpProtocol httpProtocol,

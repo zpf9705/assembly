@@ -21,6 +21,7 @@ import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.util.StringUtils;
 import top.osjf.sdk.http.HttpProtocol;
 import top.osjf.sdk.http.HttpRequestMethod;
+import top.osjf.sdk.http.process.HttpSdkEnum;
 
 /**
  * Extends for {@code top.osjf.sdk.http.DefaultCultivateHttpSdkEnum} class implements
@@ -32,6 +33,19 @@ import top.osjf.sdk.http.HttpRequestMethod;
  */
 public class DefaultCultivateHttpSdkEnum extends top.osjf.sdk.http.DefaultCultivateHttpSdkEnum {
 
+    /**
+     * Create a {@code DefaultCultivateHttpSdkEnum} using the {@code url}
+     * {@code version} {@code httpProtocol} {@code httpRequestMethod} {@code name}
+     * construction method.
+     *
+     * @param url               {@link HttpSdkEnum#getUrl}
+     * @param version           Defined SDK version.
+     * @param httpProtocol      {@link HttpSdkEnum#getProtocol}
+     * @param httpRequestMethod {@link HttpSdkEnum#getRequestMethod}
+     * @param name              {@link HttpSdkEnum#name()}
+     * @throws NullPointerException If the input url or httpRequestMethod
+     *                              or name is {@literal null}.
+     */
     public DefaultCultivateHttpSdkEnum(@NotNull String url,
                                        @Nullable String version,
                                        @Nullable String httpProtocol,
