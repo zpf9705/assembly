@@ -16,6 +16,7 @@
 
 package top.osjf.sdk.http;
 
+import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.http.process.HttpRequest;
 import top.osjf.sdk.http.process.HttpResponse;
 import top.osjf.sdk.http.process.HttpSdkEnum;
@@ -46,9 +47,10 @@ public interface HttpSdkEnumManager<R extends HttpResponse> {
      * @param currentRequest The current executing request
      *                       {@code Request} object.
      * @return Request relevant metadata information interface {@code HttpSdkEnum}.
+     * @throws NullPointerException  If the input request is {@literal null}.
      * @throws IllegalStateException If there are no available annotations for the
      *                               currently executed {@code HttpSdkEnumCultivate},
      *                               this exception object will be thrown.
      */
-    HttpSdkEnum getAndSetHttpSdkEnum(HttpRequest<R> currentRequest) throws IllegalStateException;
+    HttpSdkEnum getAndSetHttpSdkEnum(@NotNull HttpRequest<R> currentRequest) throws IllegalStateException;
 }

@@ -16,6 +16,7 @@
 
 package top.osjf.sdk.http;
 
+import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.util.org.hibernate.validator.internal.util.v6_2_0_final.ConcurrentReferenceHashMap;
 import top.osjf.sdk.http.process.HttpRequest;
 import top.osjf.sdk.http.process.HttpResponse;
@@ -52,9 +53,10 @@ public class DefaultHttpSdkEnumManager<R extends HttpResponse> implements HttpSd
      * @param request {@inheritDoc}
      * @return {@inheritDoc}
      * @throws IllegalStateException {@inheritDoc}
+     * @throws NullPointerException  {@inheritDoc}
      */
     @Override
-    public HttpSdkEnum getAndSetHttpSdkEnum(HttpRequest<R> request) throws IllegalStateException {
+    public HttpSdkEnum getAndSetHttpSdkEnum(@NotNull HttpRequest<R> request) throws IllegalStateException {
         return SDK_ENUM_CACHE.computeIfAbsent(request.getClass().getName(),
                 s -> {
                     HttpSdkEnumCultivate cultivate =
