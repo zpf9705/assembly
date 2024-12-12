@@ -18,6 +18,7 @@ package top.osjf.sdk.http.feign.bridging;
 
 import feign.Request;
 import feign.Response;
+import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.http.executor.HttpRequestExecutor;
 import top.osjf.sdk.http.util.IOUtils;
 
@@ -34,7 +35,7 @@ import java.util.*;
 public abstract class AbstractFeignClientHttpRequestExecutor implements FeignClientHttpRequestExecutor {
 
     @Override
-    public String execute(ExecutableHttpRequest httpRequest) throws Exception {
+    public String execute(@NotNull ExecutableHttpRequest httpRequest) throws Exception {
         //Create a request body for feign.
         feign.Request.Body feignBody;
         String requestBody = httpRequest.getBody(String.class, Object::toString);

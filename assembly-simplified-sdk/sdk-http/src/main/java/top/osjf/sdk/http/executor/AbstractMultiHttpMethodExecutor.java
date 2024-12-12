@@ -16,6 +16,8 @@
 
 package top.osjf.sdk.http.executor;
 
+import top.osjf.sdk.core.support.NotNull;
+
 import java.nio.charset.Charset;
 import java.util.Map;
 
@@ -31,7 +33,7 @@ import java.util.Map;
 public abstract class AbstractMultiHttpMethodExecutor implements MultiHttpMethodExecutor {
 
     @Override
-    public final String execute(ExecutableHttpRequest httpRequest) throws Exception {
+    public final String execute(@NotNull ExecutableHttpRequest httpRequest) throws Exception {
         return getClass().getMethod(httpRequest.getMethodName().toLowerCase(),
                 String.class,
                 Map.class,

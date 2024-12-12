@@ -17,6 +17,7 @@
 package top.osjf.sdk.http.executor;
 
 import com.google.common.collect.Lists;
+import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.http.process.HttpRequest;
 
@@ -60,7 +61,7 @@ public interface HttpRequestExecutor {
      *                   The caller needs to capture and handle these exceptions appropriately.
      * @since 1.0.2
      */
-    String execute(ExecutableHttpRequest httpRequest) throws Exception;
+    String execute(@NotNull ExecutableHttpRequest httpRequest) throws Exception;
 
     /**
      * An interface encapsulating HTTP request information.
