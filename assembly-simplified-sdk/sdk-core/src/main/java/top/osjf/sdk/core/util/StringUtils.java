@@ -22,7 +22,7 @@ package top.osjf.sdk.core.util;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class StringUtils {
+public abstract class StringUtils {
 
     /**
      * <p>Checks if a CharSequence is not empty (""), not null and not whitespace only.</p>

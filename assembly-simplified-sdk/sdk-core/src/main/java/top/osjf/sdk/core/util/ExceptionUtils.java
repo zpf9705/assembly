@@ -22,7 +22,7 @@ package top.osjf.sdk.core.util;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-public class ExceptionUtils {
+public abstract class ExceptionUtils {
 
     /**
      * Extract error information from an abnormal object.
