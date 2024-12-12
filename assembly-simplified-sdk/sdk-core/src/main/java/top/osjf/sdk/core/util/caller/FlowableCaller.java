@@ -19,6 +19,8 @@ package top.osjf.sdk.core.util.caller;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.support.Nullable;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -44,10 +46,12 @@ public class FlowableCaller<R extends Response>
         extends AbstractFlowableCaller<R> implements FlowableProcessElement<R>, DisposableRunnable {
 
     /*** Customized subscription for regular consumers, used to handle normal response results. */
+    @Nullable
     private final Consumer<R> customSubscriptionRegularConsumer;
 
     /*** Custom subscription exception consumers, used to handle exceptions that occur during the
      * subscription process. */
+    @Nullable
     private final Consumer<Throwable> customSubscriptionExceptionConsumer;
 
     /*** The Disposable object represents the 'handle' of the subscription.
@@ -71,14 +75,14 @@ public class FlowableCaller<R extends Response>
      * @param customSubscriptionExceptionConsumer A custom consumer invoked upon exception during subscription,
      *                                            used to handle errors.
      */
-    public FlowableCaller(Supplier<R> runBody,
+    public FlowableCaller(@NotNull Supplier<R> runBody,
                           int retryTimes,
                           long retryIntervalMilliseconds,
                           boolean whenResponseNonSuccessRetry,
                           boolean whenResponseNonSuccessFinalThrow,
-                          Predicate<? super Throwable> customRetryExceptionPredicate,
-                          Consumer<R> customSubscriptionRegularConsumer,
-                          Consumer<Throwable> customSubscriptionExceptionConsumer) {
+                          @Nullable Predicate<? super Throwable> customRetryExceptionPredicate,
+                          @Nullable Consumer<R> customSubscriptionRegularConsumer,
+                          @Nullable Consumer<Throwable> customSubscriptionExceptionConsumer) {
         super(runBody, retryTimes, retryIntervalMilliseconds, whenResponseNonSuccessRetry,
                 whenResponseNonSuccessFinalThrow, customRetryExceptionPredicate);
         this.customSubscriptionRegularConsumer = customSubscriptionRegularConsumer;
@@ -87,11 +91,13 @@ public class FlowableCaller<R extends Response>
 
 
     @Override
+    @Nullable
     public Consumer<R> getCustomSubscriptionRegularConsumer() {
         return customSubscriptionRegularConsumer;
     }
 
     @Override
+    @Nullable
     public Consumer<Throwable> getCustomSubscriptionExceptionConsumer() {
         return customSubscriptionExceptionConsumer;
     }
@@ -159,8 +165,9 @@ public class FlowableCaller<R extends Response>
      * @param retryTimes {@link #getRetryTimes()}.
      * @param <R>        Generic R represents the type returned by an operation, which must
      *                   inherit from the {@link Response} class.
+     * @throws NullPointerException if input runBody is {@literal null}.
      */
-    public static <R extends Response> void call(Supplier<R> runBody,
+    public static <R extends Response> void call(@NotNull Supplier<R> runBody,
                                                  int retryTimes) {
         call(runBody, retryTimes, 0);
     }
@@ -173,8 +180,9 @@ public class FlowableCaller<R extends Response>
      * @param retryIntervalMilliseconds {@link #getRetryIntervalMilliseconds()}.
      * @param <R>                       Generic R represents the type returned by an operation, which must
      *                                  inherit from the {@link Response} class.
+     * @throws NullPointerException if input runBody is {@literal null}.
      */
-    public static <R extends Response> void call(Supplier<R> runBody,
+    public static <R extends Response> void call(@NotNull Supplier<R> runBody,
                                                  int retryTimes,
                                                  long retryIntervalMilliseconds) {
         call(runBody, retryTimes, retryIntervalMilliseconds, false);
@@ -189,8 +197,9 @@ public class FlowableCaller<R extends Response>
      * @param whenResponseNonSuccessRetry {@link #isWhenResponseNonSuccessRetry()}.
      * @param <R>                         Generic R represents the type returned by an operation, which must
      *                                    inherit from the {@link Response} class.
+     * @throws NullPointerException if input runBody is {@literal null}.
      */
-    public static <R extends Response> void call(Supplier<R> runBody,
+    public static <R extends Response> void call(@NotNull Supplier<R> runBody,
                                                  int retryTimes,
                                                  long retryIntervalMilliseconds,
                                                  boolean whenResponseNonSuccessRetry) {
@@ -208,8 +217,9 @@ public class FlowableCaller<R extends Response>
      * @param whenResponseNonSuccessFinalThrow {@link #isWhenResponseNonSuccessFinalThrow()}.
      * @param <R>                              Generic R represents the type returned by an operation, which must
      *                                         inherit from the {@link Response} class.
+     * @throws NullPointerException if input runBody is {@literal null}.
      */
-    public static <R extends Response> void call(Supplier<R> runBody,
+    public static <R extends Response> void call(@NotNull Supplier<R> runBody,
                                                  int retryTimes,
                                                  long retryIntervalMilliseconds,
                                                  boolean whenResponseNonSuccessRetry,
@@ -229,13 +239,14 @@ public class FlowableCaller<R extends Response>
      * @param customRetryExceptionPredicate    {@link #getCustomRetryExceptionPredicate()}.
      * @param <R>                              Generic R represents the type returned by an operation, which must
      *                                         inherit from the {@link Response} class.
+     * @throws NullPointerException if input runBody is {@literal null}.
      */
-    public static <R extends Response> void call(Supplier<R> runBody,
+    public static <R extends Response> void call(@NotNull Supplier<R> runBody,
                                                  int retryTimes,
                                                  long retryIntervalMilliseconds,
                                                  boolean whenResponseNonSuccessRetry,
                                                  boolean whenResponseNonSuccessFinalThrow,
-                                                 Predicate<? super Throwable> customRetryExceptionPredicate) {
+                                                 @Nullable Predicate<? super Throwable> customRetryExceptionPredicate) {
         call(runBody, retryTimes, retryIntervalMilliseconds,
                 whenResponseNonSuccessRetry, whenResponseNonSuccessFinalThrow,
                 customRetryExceptionPredicate, null, null);
@@ -254,15 +265,16 @@ public class FlowableCaller<R extends Response>
      * @param customSubscriptionExceptionConsumer {@link #customSubscriptionExceptionConsumer}.
      * @param <R>                                 Generic R represents the type returned by an operation, which must
      *                                            inherit from the {@link Response} class.
+     * @throws NullPointerException if input runBody is {@literal null}.
      */
-    public static <R extends Response> void call(Supplier<R> runBody,
+    public static <R extends Response> void call(@NotNull Supplier<R> runBody,
                                                  int retryTimes,
                                                  long retryIntervalMilliseconds,
                                                  boolean whenResponseNonSuccessRetry,
                                                  boolean whenResponseNonSuccessFinalThrow,
-                                                 Predicate<? super Throwable> customRetryExceptionPredicate,
-                                                 Consumer<R> customSubscriptionRegularConsumer,
-                                                 Consumer<Throwable> customSubscriptionExceptionConsumer) {
+                                                 @Nullable Predicate<? super Throwable> customRetryExceptionPredicate,
+                                                 @Nullable Consumer<R> customSubscriptionRegularConsumer,
+                                                 @Nullable Consumer<Throwable> customSubscriptionExceptionConsumer) {
         new FlowableCaller<>(runBody, retryTimes, retryIntervalMilliseconds,
                 whenResponseNonSuccessRetry, whenResponseNonSuccessFinalThrow, customRetryExceptionPredicate,
                 customSubscriptionRegularConsumer, customSubscriptionExceptionConsumer).run();
