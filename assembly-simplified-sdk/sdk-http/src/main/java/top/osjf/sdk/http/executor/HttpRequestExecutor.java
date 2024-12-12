@@ -18,6 +18,7 @@ package top.osjf.sdk.http.executor;
 
 import com.google.common.collect.Lists;
 import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.http.process.HttpRequest;
 
@@ -77,6 +78,7 @@ public interface HttpRequestExecutor {
          *
          * @return The URL address of the request.
          */
+        @NotNull
         String getUrl();
 
         /**
@@ -86,6 +88,7 @@ public interface HttpRequestExecutor {
          *
          * @return The name of the request method.
          */
+        @NotNull
         String getMethodName();
 
         /**
@@ -96,6 +99,7 @@ public interface HttpRequestExecutor {
          *
          * @return The body content of the request.
          */
+        @Nullable
         Object getBody();
 
         /**
@@ -108,6 +112,7 @@ public interface HttpRequestExecutor {
          * @return The converted body content of the request.
          * @throws ClassCastException Throws this exception if the conversion fails.
          */
+        @Nullable
         <T> T getBody(Class<T> requiredType) throws ClassCastException;
 
         /**
@@ -125,6 +130,7 @@ public interface HttpRequestExecutor {
          *                            When {@code customConversionAfterFailed} is not provided,
          *                            this error is still thrown.
          */
+        @Nullable
         <T> T getBody(Class<T> requiredType, Function<Object, T> customConversionAfterFailed)
                 throws ClassCastException;
 
@@ -135,6 +141,7 @@ public interface HttpRequestExecutor {
          *
          * @return The character set encoding used for the request.
          */
+        @Nullable
         Charset getCharset();
 
         /**
@@ -143,7 +150,8 @@ public interface HttpRequestExecutor {
          * Header information contains various metadata sent by the client to the
          * server, such as content type, authentication information, etc.
          *
-         * @return The header information mapping for the request.
+         * @return The header information mapping for the request,If there is no
+         * value return, return {@link Collections#emptyMap()}.
          */
         Map<String, Object> getHeaders();
 
@@ -154,7 +162,8 @@ public interface HttpRequestExecutor {
          *
          * @param requiredType The converted required {@code Class} type.
          * @param <T>          The converted required {@code Java Generic}type.
-         * @return The converted header information mapping for the request.
+         * @return The converted header information mapping for the request,If there is no
+         * value return, return {@link Collections#emptyMap()}.
          * @throws ClassCastException Throws this exception if the conversion fails.
          */
         <T> Map<String, T> getHeaders(Class<T> requiredType) throws ClassCastException;
@@ -169,7 +178,8 @@ public interface HttpRequestExecutor {
          * @param customConversionAfterFailed The custom conversion function used when the
          *                                    default conversion fails.
          * @param <T>                         The converted required {@code Java Generic}type.
-         * @return The converted body content of the request.
+         * @return The converted body content of the request,If there is no
+         * value return, return {@link Collections#emptyMap()}.
          * @throws ClassCastException Throws this exception if the conversion fails,
          *                            When {@code customConversionAfterFailed} is not provided,
          *                            this error is still thrown.
@@ -194,7 +204,8 @@ public interface HttpRequestExecutor {
          * @param customConversionAfterFailed The custom conversion function used when the
          *                                    default conversion fails.
          * @param <T>                         The converted required {@code Java Generic}type.
-         * @return The converted body content of the request.
+         * @return The converted body content of the request,If there is no
+         * value return, return {@link Collections#emptyMap()}.
          * @throws ClassCastException Throws this exception if the conversion fails,
          *                            When {@code customConversionAfterFailed} is not provided,
          *                            this error is still thrown.
@@ -211,6 +222,7 @@ public interface HttpRequestExecutor {
          * @param key The key name to retrieve.
          * @return The corresponding header information value, or null if it does not exist.
          */
+        @Nullable
         String getHeader(String key);
 
         /**
@@ -224,6 +236,7 @@ public interface HttpRequestExecutor {
          * @return The converted header information value, or null if it does not exist.
          * @throws ClassCastException Throws this exception if the conversion fails.
          */
+        @Nullable
         <T> T getHeader(String key, Class<T> requiredType) throws ClassCastException;
 
         /**
@@ -242,6 +255,7 @@ public interface HttpRequestExecutor {
          *                            When {@code customConversionAfterFailed} is not provided,
          *                            this error is still thrown.
          */
+        @Nullable
         <T> T getHeader(String key, Class<T> requiredType, Function<Object, T> customConversionAfterFailed)
                 throws ClassCastException;
 
@@ -252,6 +266,7 @@ public interface HttpRequestExecutor {
          *
          * @return The configuration options for the request.
          */
+        @NotNull
         RequestOptions getOptions();
     }
 
@@ -263,11 +278,16 @@ public interface HttpRequestExecutor {
     class Default implements ExecutableHttpRequest {
         private static final long serialVersionUID = -375300629962316312L;
 
+        @NotNull
         private final String url;
+        @Nullable
         private final Object body;
+        @NotNull
         private final String methodName;
+        @Nullable
         private final Charset charset;
         private final Map<String, Object> headers;
+        @NotNull
         private final RequestOptions options;
 
         /**
@@ -290,10 +310,9 @@ public interface HttpRequestExecutor {
          * @param request An object encapsulating HTTP request information.
          * @param url     The URL address of the request.
          * @param options The options for the HTTP request, can be null.
+         * @throws NullPointerException if input httpRequest is {@literal null}.
          */
-        public Default(HttpRequest request, String url, RequestOptions options) {
-            if (request == null) throw new NullPointerException("HttpRequest not be null");
-            if (url == null) throw new NullPointerException("url not be null");
+        public Default(@NotNull HttpRequest request, @NotNull String url, RequestOptions options) {
             this.url = url;
             this.body = request.getRequestParam();
             this.methodName = request.matchSdkEnum().getRequestMethod().name();
@@ -303,39 +322,45 @@ public interface HttpRequestExecutor {
         }
 
         @Override
+        @NotNull
         public String getUrl() {
             return url;
         }
 
         @Override
+        @NotNull
         public String getMethodName() {
             return methodName;
         }
 
         @Override
+        @Nullable
         public Object getBody() {
             return body;
         }
 
         @Override
+        @Nullable
         public <T> T getBody(Class<T> requiredType) {
             return getBody(requiredType, null);
         }
 
         @Override
+        @Nullable
         public <T> T getBody(Class<T> requiredType, Function<Object, T> customConversionAfterFailed)
                 throws ClassCastException {
             return convertValueToRequired(getBody(), requiredType, customConversionAfterFailed);
         }
 
         @Override
+        @Nullable
         public Charset getCharset() {
             return charset;
         }
 
         @Override
         public Map<String, Object> getHeaders() {
-            return headers;
+            return MapUtils.isEmpty(headers) ? Collections.emptyMap() : headers;
         }
 
         @Override
@@ -346,20 +371,23 @@ public interface HttpRequestExecutor {
         @Override
         public <T> Map<String, T> getHeaders(Class<T> requiredType, Function<Object, T> customConversionAfterFailed)
                 throws ClassCastException {
-            Map<String, Object> headers = getHeaders();
-            if (MapUtils.isEmpty(headers)) return Collections.emptyMap();
+            if (getHeaders().isEmpty()) {
+                return Collections.emptyMap();
+            }
             return headers.entrySet()
                     .stream()
-                    .collect(Collectors.toMap(Map.Entry::getKey, entry -> getHeader(entry.getKey(), requiredType
-                            , customConversionAfterFailed)));
+                    .collect(Collectors.toMap(Map.Entry::getKey,
+                            entry -> convertValueToRequired(headers.get(entry.getKey()),
+                                    requiredType, customConversionAfterFailed)));
         }
 
         @Override
         public <T> Map<String, Collection<T>> getCollectionValueHeaders(Class<T> requiredType,
                                                                         Function<Object, T> customConversionAfterFailed)
                 throws ClassCastException {
-            Map<String, Object> headers = getHeaders();
-            if (MapUtils.isEmpty(headers)) return Collections.emptyMap();
+            if (getHeaders().isEmpty()) {
+                return Collections.emptyMap();
+            }
             return headers.entrySet()
                     .stream()
                     .collect(Collectors.toMap(Map.Entry::getKey, entry -> {
@@ -377,24 +405,29 @@ public interface HttpRequestExecutor {
         }
 
         @Override
+        @Nullable
         public String getHeader(String key) {
             return getHeader(key, String.class);
         }
 
         @Override
+        @Nullable
         public <T> T getHeader(String key, Class<T> requiredType) {
             return getHeader(key, requiredType, null);
         }
 
         @Override
+        @Nullable
         public <T> T getHeader(String key, Class<T> requiredType, Function<Object, T> customConversionAfterFailed)
                 throws ClassCastException {
-            Map<String, Object> headers = getHeaders();
-            if (MapUtils.isEmpty(headers)) return null;
+            if (getHeaders().isEmpty()) {
+                return null;
+            }
             return convertValueToRequired(headers.get(key), requiredType, customConversionAfterFailed);
         }
 
         @Override
+        @NotNull
         public RequestOptions getOptions() {
             return options;
         }
