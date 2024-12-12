@@ -17,6 +17,8 @@
 package top.osjf.sdk.core.util.caller;
 
 import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.support.Nullable;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -37,6 +39,7 @@ import java.util.function.Supplier;
 public class FlowableCallerBuilder<R extends Response> {
 
     /*** {@code FlowableCaller#runBody}*/
+    @NotNull
     private Supplier<R> runBody;
     /*** {@code FlowableCaller#retryTimes}*/
     private int retryTimes;
@@ -47,10 +50,13 @@ public class FlowableCallerBuilder<R extends Response> {
     /*** {@code FlowableCaller#whenResponseNonSuccessFinalThrow}*/
     private boolean whenResponseNonSuccessFinalThrow;
     /*** {@code FlowableCaller#customRetryExceptionPredicate}*/
+    @Nullable
     private Predicate<? super Throwable> customRetryExceptionPredicate;
     /*** {@code FlowableCaller#customSubscriptionRegularConsumer}*/
+    @Nullable
     private Consumer<R> customSubscriptionRegularConsumer;
     /*** {@code FlowableCaller#customSubscriptionExceptionConsumer}*/
+    @Nullable
     private Consumer<Throwable> customSubscriptionExceptionConsumer;
 
     /**
@@ -70,7 +76,7 @@ public class FlowableCallerBuilder<R extends Response> {
      * @param runBody {@code FlowableCaller#runBody}
      * @return this.
      */
-    public FlowableCallerBuilder<R> runBody(Supplier<R> runBody) {
+    public FlowableCallerBuilder<R> runBody(@NotNull Supplier<R> runBody) {
         this.runBody = runBody;
         return this;
     }
@@ -124,7 +130,7 @@ public class FlowableCallerBuilder<R extends Response> {
      * @return this.
      */
     public FlowableCallerBuilder<R> customRetryExceptionPredicate(
-            Predicate<? super Throwable> customRetryExceptionPredicate) {
+            @Nullable Predicate<? super Throwable> customRetryExceptionPredicate) {
         this.customRetryExceptionPredicate = customRetryExceptionPredicate;
         return this;
     }
@@ -138,7 +144,8 @@ public class FlowableCallerBuilder<R extends Response> {
      * @param customSubscriptionRegularConsumer {@code FlowableCaller#customSubscriptionRegularConsumer}
      * @return this.
      */
-    public FlowableCallerBuilder<R> customSubscriptionRegularConsumer(Consumer<R> customSubscriptionRegularConsumer) {
+    public FlowableCallerBuilder<R> customSubscriptionRegularConsumer(
+            @Nullable Consumer<R> customSubscriptionRegularConsumer) {
         this.customSubscriptionRegularConsumer = customSubscriptionRegularConsumer;
         return this;
     }
@@ -152,7 +159,8 @@ public class FlowableCallerBuilder<R extends Response> {
      * @param customSubscriptionExceptionConsumer {@code FlowableCaller#customSubscriptionRegularConsumer}
      * @return this.
      */
-    public FlowableCallerBuilder<R> customSubscriptionExceptionConsumer(Consumer<Throwable> customSubscriptionExceptionConsumer) {
+    public FlowableCallerBuilder<R> customSubscriptionExceptionConsumer(
+            @Nullable Consumer<Throwable> customSubscriptionExceptionConsumer) {
         this.customSubscriptionExceptionConsumer = customSubscriptionExceptionConsumer;
         return this;
     }
@@ -161,6 +169,7 @@ public class FlowableCallerBuilder<R extends Response> {
      * Build and return a {@link FlowableCaller} instance based on the current configuration.
      *
      * @return {@link FlowableCaller}.
+     * @throws NullPointerException if input constructor arg `runBody` is {@literal null}.
      */
     public FlowableCaller<R> build() {
         return new FlowableCaller<>
@@ -174,6 +183,7 @@ public class FlowableCallerBuilder<R extends Response> {
      * Build and return a {@link BlockedFlowableCaller} instance based on the current configuration.
      *
      * @return {@link BlockedFlowableCaller}.
+     * @throws NullPointerException if input constructor arg `runBody` is {@literal null}.
      */
     public BlockedFlowableCaller<R> buildBlock() {
         return new BlockedFlowableCaller<>
