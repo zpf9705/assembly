@@ -19,6 +19,7 @@ package top.osjf.sdk.core.util.caller;
 
 import top.osjf.sdk.core.process.Response;
 import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.util.ReflectUtil;
 
 /**
  * The {@code WrapperInspectCallback} abstract class be Used for response callbacks
@@ -63,7 +64,9 @@ public abstract class WrapperInspectCallback<R extends Response> implements Call
      * @return a {@code Class} object representing the expected response type.
      */
     @NotNull
-    public abstract Class<R> getType();
+    public Class<R> getType() {
+        return ReflectUtil.getSuperGenericType(this, 1);
+    }
 
     /**
      * This method is called to handle a response that matches the
