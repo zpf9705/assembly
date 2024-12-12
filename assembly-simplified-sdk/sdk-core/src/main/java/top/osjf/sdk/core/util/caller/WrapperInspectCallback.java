@@ -49,7 +49,7 @@ public abstract class WrapperInspectCallback<R extends Response> implements Call
     public void success(@NotNull Response response) throws ClassCastException {
         Class<R> type = getType();
         if (response.isWrapperFor(type)) {
-            successInternal(response.unwrap(getType()));
+            successInternal(response.unwrap(type));
         } else {
             throw new ClassCastException(response.getClass().getName() + " cannot be cast to " + type.getName());
         }
