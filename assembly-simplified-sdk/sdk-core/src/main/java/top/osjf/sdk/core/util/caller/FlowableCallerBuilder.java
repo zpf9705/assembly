@@ -39,7 +39,6 @@ import java.util.function.Supplier;
 public class FlowableCallerBuilder<R extends Response> {
 
     /*** {@code FlowableCaller#runBody}*/
-    @NotNull
     private Supplier<R> runBody;
     /*** {@code FlowableCaller#retryTimes}*/
     private int retryTimes;
