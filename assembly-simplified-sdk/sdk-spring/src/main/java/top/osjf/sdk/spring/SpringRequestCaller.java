@@ -16,7 +16,9 @@
 
 package top.osjf.sdk.spring;
 
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
@@ -24,7 +26,9 @@ import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.core.util.caller.CallOptions;
+import top.osjf.sdk.core.util.caller.Callback;
 import top.osjf.sdk.core.util.caller.RequestCaller;
+import top.osjf.sdk.core.util.caller.ThrowablePredicate;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -43,27 +47,13 @@ import java.util.Map;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-public class SpringRequestCaller extends RequestCaller {
+public class SpringRequestCaller extends RequestCaller implements ApplicationContextAware {
 
-    /**
-     * Create a {@code SpringRequestCaller} using a {@link ApplicationContext}
-     * instance construction method.
-     *
-     * <p>This construction method provides API {@link ApplicationContext#getBean(Class)}
-     * for {@code RequestCaller} to obtain object functions based on class.
-     *
-     * @param applicationContext The core contextual object of the Spring framework.
-     */
-    public SpringRequestCaller(ApplicationContext applicationContext) {
-        super((name, clazz) -> {
-            Map<String, ?> beanMap = applicationContext.getBeansOfType(clazz);
-            if (MapUtils.isNotEmpty(beanMap)) {
-                List<?> beans = Arrays.asList(beanMap.values().toArray());
-                AnnotationAwareOrderComparator.sort(beans);
-                return beans.get(0);
-            }
-            return null;
-        });
+    private ApplicationContext applicationContext;
+
+    @Override
+    public void setApplicationContext(@NotNull ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 
     /**
@@ -99,5 +89,30 @@ public class SpringRequestCaller extends RequestCaller {
             }
         }
         return super.resolveRequestExecuteWithOptions(request, host, callOptions);
+    }
+
+    @Nullable
+    @Override
+    protected ThrowablePredicate getThrowablePredicateByOptions(String name, CallOptions callOptions) {
+        return getClassedInstance(name, callOptions.retryThrowablePredicateClass());
+    }
+
+    @Nullable
+    @Override
+    protected Callback getCallbackByOptions(String name, CallOptions callOptions) {
+        return getClassedInstance(name, callOptions.callbackClass());
+    }
+
+    @Override
+    @Nullable
+    @SuppressWarnings("unchecked")
+    protected <T> T getClassedInstance(String name, Class<T> clazz) {
+        Map<String, ?> beanMap = applicationContext.getBeansOfType(clazz);
+        if (MapUtils.isNotEmpty(beanMap)) {
+            List<?> beans = Arrays.asList(beanMap.values().toArray());
+            AnnotationAwareOrderComparator.sort(beans);
+            return (T) beans.get(0);
+        }
+        return null;
     }
 }

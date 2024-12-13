@@ -242,7 +242,8 @@ public class RequestCaller {
      * Return some method options in annotation {@code CallOptions}
      * that return {@code Class}(for example {@link CallOptions#callbackClass()}),
      * use them for instantiation with {@link ReflectUtil#instantiates}, and cache
-     * them for use in {@link #OBJECT_CACHE}.
+     * them for use in {@link #OBJECT_CACHE}(key is current sdk name plus object
+     * class name).
      *
      * @param name  current sdk name.
      * @param clazz Annotation related {@code CallOptions} options
