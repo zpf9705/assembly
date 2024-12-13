@@ -93,6 +93,7 @@ public final class ServiceLoadManager {
      * @return The high-priority instance of the specified type, or null if no instance is found.
      * @throws NullPointerException If the input type is {@literal null}.
      */
+    @Nullable
     public static <T> T loadHighPriority(@NotNull Class<T> type) {
         return (T) loadHighPriorityCache.computeIfAbsent(type, type1 -> {
             List<?> instances = loadInstances(type1, true);
@@ -112,6 +113,7 @@ public final class ServiceLoadManager {
      * @return The low-priority instance of the specified type, or null if no instance is found.
      * @throws NullPointerException If the input type is {@literal null}.
      */
+    @Nullable
     public static <T> T loadLowerPriority(@NotNull Class<T> type) {
         return (T) loadLowerPriorityCache.computeIfAbsent(type, type1 -> {
             List<?> instances = loadInstances(type1, true);
