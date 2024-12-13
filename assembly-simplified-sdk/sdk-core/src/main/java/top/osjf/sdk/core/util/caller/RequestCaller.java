@@ -71,8 +71,10 @@ public class RequestCaller {
     private final BiFunction<String, Class<?>, Object> receiveInstanceFunc;
 
     /**
-     * Initialize an empty constructor of {@code RequestCaller} using reflection
-     * to call the class object {@link BiFunction}.
+     * The {@code RequestCaller} empty constructor method defaults to initializing
+     * a {@code BiFunction} function that initializes a fully qualified name cache
+     * instantiation object by reflecting the initialized class object and adding
+     * the SDK name to the class object.
      */
     public RequestCaller() {
         receiveInstanceFunc = (name, clazz) ->
