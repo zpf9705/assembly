@@ -91,18 +91,46 @@ public class SpringRequestCaller extends RequestCaller implements ApplicationCon
         return super.resolveRequestExecuteWithOptions(request, host, callOptions);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Execute the rewrite method {@link #getClassedInstance} of this class.
+     *
+     * @param name        {@inheritDoc}
+     * @param callOptions {@inheritDoc}
+     * @return {@inheritDoc}
+     */
     @Nullable
     @Override
     protected ThrowablePredicate getThrowablePredicateByOptions(String name, CallOptions callOptions) {
         return getClassedInstance(name, callOptions.retryThrowablePredicateClass());
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Execute the rewrite method {@link #getClassedInstance} of this class.
+     *
+     * @param name        {@inheritDoc}
+     * @param callOptions {@inheritDoc}
+     * @return {@inheritDoc}
+     */
     @Nullable
     @Override
     protected Callback getCallbackByOptions(String name, CallOptions callOptions) {
         return getClassedInstance(name, callOptions.callbackClass());
     }
 
+    /**
+     * Hand over object management to the Spring framework and search for
+     * all {@code Class} type option objects related to annotations from
+     * the Spring container.
+     *
+     * @param name  {@inheritDoc}
+     * @param clazz {@inheritDoc}
+     * @param <T>   {@inheritDoc}
+     * @return {@inheritDoc}
+     */
     @Override
     @Nullable
     @SuppressWarnings("unchecked")
