@@ -89,6 +89,7 @@ public abstract class AbstractSdkProxyBean<T> extends HierarchicalProxySupport<T
      */
     private SpringRequestCaller requestCaller;
 
+
     /*** The return value {@link #toString()} needs to be formatted.*/
     private static final String TO_STR_FORMAT =
             "Proxy info ( target type [%s] | proxy type [%s] | host [%s] | proxy model [%s] )";
@@ -105,10 +106,19 @@ public abstract class AbstractSdkProxyBean<T> extends HierarchicalProxySupport<T
         super(type);
     }
 
+    /**
+     * Set a {@code SpringRequestCaller} for this.
+     *
+     * @param requestCaller request executor using the Spring framework.
+     * @since 1.0.2
+     */
+    public void setRequestCaller(SpringRequestCaller requestCaller) {
+        this.requestCaller = requestCaller;
+    }
+
     @Override
     public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
-        this.requestCaller = new SpringRequestCaller(applicationContext);
     }
 
     @Override
