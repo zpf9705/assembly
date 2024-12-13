@@ -258,6 +258,8 @@ public abstract class ReflectUtil {
      * specified index from all generic arrays that implement the {@code interfaceIndex}
      * position interface specified by the target object.
      *
+     * @param <R>            Generic return type, representing the type at the
+     *                       specified index in the interface generic type.
      * @param obj            is the target object used to obtain the interface information
      *                       of its implementation.
      * @param interfaceIndex specifies the index of the interface to obtain generic type
@@ -272,8 +274,8 @@ public abstract class ReflectUtil {
      *                                   is less than or equal to the length of the input third
      *                                   method parameter {@code index}.
      */
-    public static Type getIndexedInterfaceGenericType(@NotNull Object obj, int interfaceIndex, int index) {
-        return getIndexedInterfaceAllGenericType(obj, interfaceIndex)[index];
+    public static <R> Class<R> getIndexedInterfaceGenericType(@NotNull Object obj, int interfaceIndex, int index) {
+        return (Class<R>) getIndexedInterfaceAllGenericType(obj, interfaceIndex)[index];
     }
 
     /**
