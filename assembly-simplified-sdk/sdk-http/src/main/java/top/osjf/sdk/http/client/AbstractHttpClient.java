@@ -188,7 +188,7 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
                                 "please refer to `top.osjf.sdk.http.client.AbstractHttpClient#HttpRequestExecutor` " +
                                 "for usage plan.");
             } else {
-                LOGGER.info("Http Client {} using HttpRequestExecutor {} by spi",
+                LOGGER.info("Http Client {} using HttpRequestExecutor {} by spi.",
                         getClass().getName(), requestExecutor.getClass().getName());
             }
         }
