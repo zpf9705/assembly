@@ -57,18 +57,19 @@ import java.lang.annotation.*;
  * configuration class.
  * <p><strong>If is forcibly merged, UI support will be invalidated.</strong>
  *
+ * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @see org.springframework.context.annotation.ImportBeanDefinitionRegistrar
  * @see top.osjf.sdk.spring.beans.AbstractImportBeanDefinitionRegistrar
  * @see top.osjf.sdk.spring.beans.AnnotationTypeScanningCandidateImportBeanDefinitionRegistrar
  * @see SdkProxyBeanRegister
  * @see ComponentScan
- * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import({SdkProxyBeanRegister.class})
+@Import({SdkProxyBeanRegister.class,
+        SdkProxyBeanRegister.InternalConfiguration.class})
 @ComponentScan
 public @interface EnableSdkProxyRegister {
 
