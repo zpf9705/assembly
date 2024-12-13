@@ -293,7 +293,7 @@ public abstract class ReflectUtil {
     public static Type[] getIndexedInterfaceAllGenericType(@NotNull Object obj, int interfaceIndex) {
         Type[] genericInterfaces = obj.getClass().getGenericInterfaces();
         if (ArrayUtils.isEmpty(genericInterfaces))
-            throw new IllegalArgumentException(obj.getClass() + "no implements interfaces");
+            throw new IllegalArgumentException(obj.getClass() + " no implements interfaces");
         return getActualGenericTypes(genericInterfaces[interfaceIndex]);
     }
 
