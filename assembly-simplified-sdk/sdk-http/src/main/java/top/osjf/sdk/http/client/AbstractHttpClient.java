@@ -174,9 +174,24 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
      * Return a not null {@code HttpRequestExecutor}.
      *
      * @return a not null {@code HttpRequestExecutor}.
+     * @throws IllegalStateException if no available {@code HttpRequestExecutor}.
      */
     @NotNull
-    public HttpRequestExecutor getRequestExecutor() {
+    public HttpRequestExecutor getRequestExecutor() throws IllegalStateException {
+        if (requestExecutor == null) {
+            //When the HttpRequestExecutor is not directly set,
+            // it is obtained through the loading mechanism.
+            requestExecutor = ServiceLoadManager.loadHighPriority(HttpRequestExecutor.class);
+            if (requestExecutor == null) {
+                throw new IllegalStateException
+                        ("There is no available `top.osjf.sdk.http.executor.HttpRequestExecutor`, " +
+                                "please refer to `top.osjf.sdk.http.client.AbstractHttpClient#HttpRequestExecutor` " +
+                                "for usage plan.");
+            } else {
+                LOGGER.info("Http Client {} using HttpRequestExecutor {} by spi",
+                        getClass().getName(), requestExecutor.getClass().getName());
+            }
+        }
         return requestExecutor;
     }
 
@@ -292,28 +307,6 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
 
     @Override
     public String execute(HttpRequest<R> request) throws Exception {
-        HttpRequestExecutor executor = getRequestExecutor();
-        if (executor == null) {
-            //When the HttpRequestExecutor is not directly set,
-            // it is obtained through the loading mechanism.
-            executor = ServiceLoadManager.loadHighPriority(HttpRequestExecutor.class);
-            if (executor != null) {
-                setRequestExecutor(executor);
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Use the service to retrieve and find the highest priority {}.",
-                            executor.getClass().getName());
-                }
-            } else {
-                if (LOGGER.isErrorEnabled()) {
-                    LOGGER.error("There are no available request executors `{}` for the current client {}.",
-                            HttpRequestExecutor.class.getName(), getClass().getName());
-                }
-                throw new IllegalStateException
-                        ("There is no available `top.osjf.sdk.http.executor.HttpRequestExecutor`, " +
-                                "please refer to `top.osjf.sdk.http.client.AbstractHttpClient#HttpRequestExecutor` " +
-                                "for usage plan.");
-            }
-        }
         return getRequestExecutor().execute(asRequestToExecutable(request, getUrl()));
     }
 
