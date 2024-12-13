@@ -32,6 +32,7 @@ import top.osjf.sdk.http.process.HttpRequest;
 import top.osjf.sdk.http.process.HttpResponse;
 import top.osjf.sdk.http.support.HttpSdkSupport;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -161,11 +162,12 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
      * Set a {@code HttpRequestExecutor}.
      *
      * @param requestExecutor a {@code HttpRequestExecutor}.
+     * @throws NullPointerException if input requestExecutor is
+     *                              {@literal null}.
      */
-    public void setRequestExecutor(HttpRequestExecutor requestExecutor) {
-        if (requestExecutor != null) {
-            this.requestExecutor = requestExecutor;
-        }
+    public void setRequestExecutor(@NotNull HttpRequestExecutor requestExecutor) {
+        Objects.requireNonNull(requestExecutor, "requestExecutor == null");
+        this.requestExecutor = requestExecutor;
     }
 
     /**
@@ -173,6 +175,7 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
      *
      * @return a not null {@code HttpRequestExecutor}.
      */
+    @NotNull
     public HttpRequestExecutor getRequestExecutor() {
         return requestExecutor;
     }
@@ -183,8 +186,11 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
      * obtain the bound URL address.
      *
      * @return The request address of the HTTP client.
+     * @throws IllegalStateException If the bound {@code Url} is empty,
+     *                               throw the current binding status
+     *                               exception.
      */
-    @Nullable
+    @NotNull
     public String getUrl() throws IllegalStateException {
         return persistentUrl == null ? getBindUrl() : persistentUrl;
     }
