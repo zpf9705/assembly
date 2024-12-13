@@ -139,9 +139,11 @@ public abstract class SdkSupport {
      * @param method   Proxy target method.
      * @param response The response type obtained.
      * @return The required return object.
-     * @throws NullPointerException If the input method or response is {@literal null}.
+     * @throws NullPointerException If the input method is {@literal null}.
      */
-    public static Object getResponse(@NotNull Method method, @NotNull Response response) {
+    @Nullable
+    public static Object getResponse(@NotNull Method method, @Nullable Response response) {
+        if (response == null) return null;
         Class<?> returnType = method.getReturnType();
 
         //First, check if the return value type of the proxy method

@@ -63,7 +63,7 @@ public class RequestCaller {
     /**
      * This class involves caching maps for class instantiation.
      */
-    private static final Map<String, Object> OBJECT_CACHE = new SynchronizedWeakHashMap<>();
+    private static Map<String, Object> OBJECT_CACHE = new SynchronizedWeakHashMap<>();
 
     /**
      * {@code Function} function that uses a class object to create an instance object.
@@ -90,6 +90,7 @@ public class RequestCaller {
      *                            a class object to create an instance object.
      */
     public RequestCaller(@NotNull BiFunction<String, Class<?>, Object> receiveInstanceFunc) {
+        OBJECT_CACHE = null;
         this.receiveInstanceFunc = receiveInstanceFunc;
     }
 
