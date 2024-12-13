@@ -232,16 +232,12 @@ public abstract class ReflectUtil {
      *              to be obtained in the parent class generic type list (starting from 0).
      * @return Returns generic type information at the specified index,
      * encapsulated as a Class object.
-     * @throws IllegalArgumentException  If the generic type information of the
-     *                                   parent class is empty or the index is out of range
-     * @throws IllegalStateException     If the parent class of the target object
-     *                                   is not a parameterized type (i.e. there is no generic information).
+     * @throws NullPointerException      If the input object is {@literal null}.
      * @throws IndexOutOfBoundsException The selected index exceeds the length
      *                                   of the parent class generic array.
-     * @throws NullPointerException      If the input object is {@literal null}.
      */
     public static <R> Class<R> getSuperGenericType(@NotNull Object obj, int index) {
-        return (Class<R>) getSuperGenericType(obj)[index];
+        return (Class<R>) getSuperAllGenericType(obj)[index];
     }
 
     /**
@@ -250,21 +246,76 @@ public abstract class ReflectUtil {
      * @param obj target object, used to obtain generic type information
      *            of its parent class.
      * @return Return an array of generic type information for the parent class.
-     * @throws IllegalArgumentException If the generic type information of the
-     *                                  parent class is empty or the index is out of range
-     * @throws IllegalStateException    If the parent class of the target object
-     *                                  is not a parameterized type (i.e. there is no generic information).
-     * @throws NullPointerException     If the input object is {@literal null}.
+     * @throws NullPointerException If the input object is {@literal null}.
      */
-    public static Type[] getSuperGenericType(@NotNull Object obj) {
-        Type superType = obj.getClass().getGenericSuperclass();
-        if (superType instanceof ParameterizedType) {
-            Type[] actualTypeArguments = ((ParameterizedType) superType).getActualTypeArguments();
+    public static Type[] getSuperAllGenericType(@NotNull Object obj) {
+        Type genericSuperclass = obj.getClass().getGenericSuperclass();
+        return getActualGenericTypes(genericSuperclass);
+    }
+
+    /**
+     * The returned type is a single generic type obtained by taking the {@code index}
+     * specified index from all generic arrays that implement the {@code interfaceIndex}
+     * position interface specified by the target object.
+     *
+     * @param obj            is the target object used to obtain the interface information
+     *                       of its implementation.
+     * @param interfaceIndex specifies the index of the interface to obtain generic type
+     *                       parameters in the interface array implemented by the target object.
+     * @param index          This parameter is the index position of the parameter to be taken
+     *                       from the array of all generic parameters of the specified implementation
+     *                       location interface obtained by parameter {@code interfaceIndex}.
+     * @return an array containing generic type parameters for a specified interface.
+     * @throws NullPointerException      If the input object is {@literal null}.
+     * @throws IndexOutOfBoundsException If the length of the reflection parameter for obtaining
+     *                                   the specified implementation index position interface
+     *                                   is less than or equal to the length of the input third
+     *                                   method parameter {@code index}.
+     */
+    public static Type getIndexedInterfaceGenericType(@NotNull Object obj, int interfaceIndex, int index) {
+        return getIndexedInterfaceAllGenericType(obj, interfaceIndex)[index];
+    }
+
+    /**
+     * Retrieve all generic type parameters of the specified implementation location
+     * index interface implemented by the target object.
+     *
+     * @param obj            is the target object used to obtain the interface information
+     *                       of its implementation.
+     * @param interfaceIndex specifies the index of the interface to obtain generic type
+     *                       parameters in the interface array implemented by the target object.
+     * @return an array containing generic type parameters for a specified interface.
+     * @throws NullPointerException      If the input object is {@literal null}.
+     * @throws IllegalArgumentException  If the input object does not implement any interface.
+     * @throws IndexOutOfBoundsException If the input index is greater than or equal to the length
+     *                                   of the generic interface array obtained.
+     */
+    public static Type[] getIndexedInterfaceAllGenericType(@NotNull Object obj, int interfaceIndex) {
+        Type[] genericInterfaces = obj.getClass().getGenericInterfaces();
+        if (ArrayUtils.isEmpty(genericInterfaces))
+            throw new IllegalArgumentException(obj.getClass() + "no implements interfaces");
+        return getActualGenericTypes(genericInterfaces[interfaceIndex]);
+    }
+
+    /**
+     * Return the generic actual {@code Type} parameters of the given {@code Type}.
+     *
+     * @param type input getting {@code Type}.
+     * @return Return an array of generic type information for the input type.
+     * @throws NullPointerException     If the input type is {@literal null}.
+     * @throws IllegalArgumentException If the generic type information of the
+     *                                  {@code type} is empty or the index is out of range.
+     * @throws IllegalStateException    If the {@code type} is not a {@code java.lang.reflect
+     *                                  .ParameterizedType} type (i.e. there is no generic information).
+     */
+    public static Type[] getActualGenericTypes(@NotNull Type type) {
+        if (type instanceof ParameterizedType) {
+            Type[] actualTypeArguments = ((ParameterizedType) type).getActualTypeArguments();
             if (ArrayUtils.isEmpty(actualTypeArguments)) {
-                throw new IllegalArgumentException(superType + " generic type is empty");
+                throw new IllegalArgumentException(type + " generic type is empty");
             }
             return actualTypeArguments;
         }
-        throw new IllegalStateException(superType + " is not java.lang.reflect.ParameterizedType");
+        throw new IllegalStateException(type + " is not java.lang.reflect.ParameterizedType");
     }
 }
