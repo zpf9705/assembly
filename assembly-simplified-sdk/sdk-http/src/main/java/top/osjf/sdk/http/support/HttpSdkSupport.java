@@ -16,9 +16,12 @@
 
 package top.osjf.sdk.http.support;
 
+import com.google.common.annotations.Beta;
 import com.palominolabs.http.url.UrlBuilder;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.support.SdkSupport;
 import top.osjf.sdk.core.util.*;
 import top.osjf.sdk.http.util.UrlUtils;
@@ -82,10 +85,8 @@ public abstract class HttpSdkSupport extends SdkSupport {
         /* init content type predicates cache */
         content_type_predicates = new LinkedHashMap<>();
         content_type_predicates.put((s, c) -> JSONUtil.isValidObjectOrArray(s), "application/json");
-        content_type_predicates.put((s, c) ->
-                        s.matches("^(?:[a-zA-Z0-9_\\-.]+=(?:[^&]*?)(?:&(?:[a-zA-Z0-9_\\-.]+=(?:[^&]*?)))*)?$"),
-                "application/x-www-form-urlencoded");
         content_type_predicates.put(HttpSdkSupport::isXMLBody, "application/xml");
+        content_type_predicates.put((s, c) -> isFromBody(s), "application/x-www-form-urlencoded");
     }
 
     /**
@@ -115,7 +116,7 @@ public abstract class HttpSdkSupport extends SdkSupport {
     }
 
     /**
-     * Return whether the input request message is a parsed XML.
+     * Return whether the input request body is a parsed XML.
      *
      * <p>Option 1 uses {@code DocumentBuilder} for XML formatting
      * and parsing, and if there are no exceptions, it can be determined
@@ -129,16 +130,46 @@ public abstract class HttpSdkSupport extends SdkSupport {
      * @return if {@code true} input body is xml,otherwise not.
      * @since 1.0.2
      */
-    public static boolean isXMLBody(String body, Charset charset) {
+    public static boolean isXMLBody(@NotNull String body, @Nullable Charset charset) {
         if (builder != null) {
             try {
-                builder.parse(new ByteArrayInputStream(body.getBytes(charset)));
+                builder.parse
+                        (new ByteArrayInputStream(charset != null ? body.getBytes(charset) : body.getBytes()));
             } catch (Exception e) {
                 return false;
             }
             return true;
         }
         return body.matches("^<.*$");
+    }
+
+    /**
+     * Return whether the input request body is a from.
+     *
+     * <p>This method checks that the current input request
+     * body satisfies at least one key/value combination after
+     * being split by the symbol {@code &}.
+     *
+     * <p>Can meet the following criteria for judgment:
+     * <pre>
+     *     {@code
+     *     String example = "ack=1"; //true
+     *     String example1 = "ack=1&acr=2"; //true
+     *     String example2 = "=3&"; //false
+     *     String example3 = "ack=1&*314"; //true
+     *     String example4 = "&==ack1"; //false
+     *     }
+     * </pre>
+     *
+     * @param body input body.
+     * @return if {@code true} input body is from,otherwise not.
+     * @throws NullPointerException if input body is {@literal null}.
+     * @since 1.0.2
+     */
+    @Beta
+    public static boolean isFromBody(@NotNull String body) {
+        String pair0 = body.split("&")[0];
+        return pair0.contains("=") && !pair0.substring(0, pair0.indexOf("=")).isEmpty();
     }
 
     /**
@@ -317,9 +348,10 @@ public abstract class HttpSdkSupport extends SdkSupport {
      * @return The built and formatted complete URL string, including query parameters.
      * @throws IllegalArgumentException If an error occurs during URL building or convert url query param
      *                                  this exception is thrown with detailed error information.
+     * @throws NullPointerException     if input url is {@literal null}.
      * @since 1.0.2
      */
-    public static String buildAndFormatUrlWithQueryParams(String url, Object queryParam, Charset charset) {
+    public static String buildAndFormatUrlWithQueryParams(@NotNull String url, Object queryParam, Charset charset) {
         Map<String, Object> queryParamMap = convertUrlQueryParamToMap(queryParam);
         try {
             UrlBuilder urlBuilder = UrlUtils.toPalominolabsBuilder(url, charset);
