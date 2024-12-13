@@ -17,14 +17,19 @@
 package top.osjf.sdk.spring;
 
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import top.osjf.sdk.core.process.Request;
 import top.osjf.sdk.core.process.Response;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
+import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.core.util.caller.CallOptions;
 import top.osjf.sdk.core.util.caller.RequestCaller;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The {@code SpringRequestCaller} class is a subclass of {@code RequestCaller}
@@ -50,7 +55,15 @@ public class SpringRequestCaller extends RequestCaller {
      * @param applicationContext The core contextual object of the Spring framework.
      */
     public SpringRequestCaller(ApplicationContext applicationContext) {
-        super(applicationContext::getBean);
+        super((name, clazz) -> {
+            Map<String, ?> beanMap = applicationContext.getBeansOfType(clazz);
+            if (MapUtils.isNotEmpty(beanMap)) {
+                List<?> beans = Arrays.asList(beanMap.values().toArray());
+                AnnotationAwareOrderComparator.sort(beans);
+                return beans.get(0);
+            }
+            return null;
+        });
     }
 
     /**

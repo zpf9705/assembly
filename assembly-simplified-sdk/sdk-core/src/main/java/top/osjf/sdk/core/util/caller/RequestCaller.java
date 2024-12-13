@@ -22,8 +22,10 @@ import top.osjf.sdk.core.process.SdkEnum;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.util.ReflectUtil;
+import top.osjf.sdk.core.util.SynchronizedWeakHashMap;
 
-import java.util.function.Function;
+import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 /**
@@ -59,26 +61,33 @@ import java.util.function.Supplier;
 public class RequestCaller {
 
     /**
+     * This class involves caching maps for class instantiation.
+     */
+    private static final Map<String, Object> OBJECT_CACHE = new SynchronizedWeakHashMap<>();
+
+    /**
      * {@code Function} function that uses a class object to create an instance object.
      */
-    private final Function<Class<?>, Object> receiveInstanceFunc;
+    private final BiFunction<String, Class<?>, Object> receiveInstanceFunc;
 
     /**
      * Initialize an empty constructor of {@code RequestCaller} using reflection
-     * to call the class object {@link Function}.
+     * to call the class object {@link BiFunction}.
      */
     public RequestCaller() {
-        receiveInstanceFunc = ReflectUtil::instantiates;
+        receiveInstanceFunc = (name, clazz) ->
+                OBJECT_CACHE.computeIfAbsent(name + ":" + clazz.getName(),
+                        s -> ReflectUtil.instantiates(clazz));
     }
 
     /**
-     * The construction method of a {@code Function} function that uses a class
-     * object to create an instance object.
+     * The construction method of a {@code BiFunction} function that uses a
+     * sdk name and a class object to create an instance object.
      *
-     * @param receiveInstanceFunc {@code Function} function that uses a class
-     *                            object to create an instance object.
+     * @param receiveInstanceFunc {@code Function} function that uses sdk name and
+     *                            a class object to create an instance object.
      */
-    public RequestCaller(@NotNull Function<Class<?>, Object> receiveInstanceFunc) {
+    public RequestCaller(@NotNull BiFunction<String, Class<?>, Object> receiveInstanceFunc) {
         this.receiveInstanceFunc = receiveInstanceFunc;
     }
 
@@ -121,10 +130,10 @@ public class RequestCaller {
                                                      @NotNull CallOptions callOptions) {
         int retryTimes = getRetryTimesByOptions(callOptions);
         long retryIntervalMilliseconds = getRetryIntervalMillisecondsByOptions(callOptions);
-        ThrowablePredicate throwablePredicate = getThrowablePredicateByOptions(callOptions);
+        ThrowablePredicate throwablePredicate = getThrowablePredicateByOptions(name, callOptions);
         boolean whenResponseNonSuccessRetry = getWhenResponseNonSuccessRetryOptions(callOptions);
         boolean whenResponseNonSuccessFinalThrow = getWhenResponseNonSuccessFinalThrowByOptions(callOptions);
-        Callback callback = getCallbackByOptions(callOptions);
+        Callback callback = getCallbackByOptions(name, callOptions);
         return resolveRequestExecuteWithOptions(supplier, retryTimes, retryIntervalMilliseconds,
                 throwablePredicate, whenResponseNonSuccessRetry, whenResponseNonSuccessFinalThrow, name, callback);
     }
@@ -207,16 +216,17 @@ public class RequestCaller {
     /**
      * Get an Instance {@code ThrowablePredicate} by annotation {@code CallOptions}
      *
+     * @param name        current sdk name.
      * @param callOptions {@code CallOptions} annotation.
      * @return The Instance {@code ThrowablePredicate}.
      */
     @Nullable
-    protected ThrowablePredicate getThrowablePredicateByOptions(CallOptions callOptions) {
+    protected ThrowablePredicate getThrowablePredicateByOptions(String name, CallOptions callOptions) {
         Class<? extends ThrowablePredicate> throwablePredicateClass = callOptions.retryThrowablePredicateClass();
         if (throwablePredicateClass == ThrowablePredicate.class) {
             return null;
         }
-        return (ThrowablePredicate) receiveInstanceFunc.apply(callOptions.retryThrowablePredicateClass());
+        return (ThrowablePredicate) receiveInstanceFunc.apply(name, callOptions.retryThrowablePredicateClass());
     }
 
     /**
@@ -242,15 +252,16 @@ public class RequestCaller {
     /**
      * Get an Instance {@code Callback} by annotation {@code CallOptions}
      *
+     * @param name        current sdk name.
      * @param callOptions {@code CallOptions} annotation.
      * @return The Instance {@code Callback}.
      */
     @Nullable
-    protected Callback getCallbackByOptions(CallOptions callOptions) {
+    protected Callback getCallbackByOptions(String name, CallOptions callOptions) {
         Class<? extends Callback> callbackClass = callOptions.callbackClass();
         if (callbackClass == Callback.class) {
             return null;
         }
-        return (Callback) receiveInstanceFunc.apply(callbackClass);
+        return (Callback) receiveInstanceFunc.apply(name, callbackClass);
     }
 }
