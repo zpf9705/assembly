@@ -25,7 +25,6 @@ import top.osjf.sdk.core.util.ReflectUtil;
 import top.osjf.sdk.core.util.SynchronizedWeakHashMap;
 
 import java.util.Map;
-import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 /**
@@ -63,36 +62,7 @@ public class RequestCaller {
     /**
      * This class involves caching maps for class instantiation.
      */
-    private static Map<String, Object> OBJECT_CACHE = new SynchronizedWeakHashMap<>();
-
-    /**
-     * {@code Function} function that uses a class object to create an instance object.
-     */
-    private final BiFunction<String, Class<?>, Object> receiveInstanceFunc;
-
-    /**
-     * The {@code RequestCaller} empty constructor method defaults to initializing
-     * a {@code BiFunction} function that initializes a fully qualified name cache
-     * instantiation object by reflecting the initialized class object and adding
-     * the SDK name to the class object.
-     */
-    public RequestCaller() {
-        receiveInstanceFunc = (name, clazz) ->
-                OBJECT_CACHE.computeIfAbsent(name + ":" + clazz.getName(),
-                        s -> ReflectUtil.instantiates(clazz));
-    }
-
-    /**
-     * The construction method of a {@code BiFunction} function that uses a
-     * sdk name and a class object to create an instance object.
-     *
-     * @param receiveInstanceFunc {@code Function} function that uses sdk name and
-     *                            a class object to create an instance object.
-     */
-    public RequestCaller(@NotNull BiFunction<String, Class<?>, Object> receiveInstanceFunc) {
-        OBJECT_CACHE = null;
-        this.receiveInstanceFunc = receiveInstanceFunc;
-    }
+    private static final Map<String, Object> OBJECT_CACHE = new SynchronizedWeakHashMap<>();
 
     /**
      * Please refer to {@code resolveRequestExecuteWithOptions(Supplier, CallOptions)}
@@ -229,7 +199,7 @@ public class RequestCaller {
         if (throwablePredicateClass == ThrowablePredicate.class) {
             return null;
         }
-        return (ThrowablePredicate) receiveInstanceFunc.apply(name, callOptions.retryThrowablePredicateClass());
+        return getClassedInstance(name, throwablePredicateClass);
     }
 
     /**
@@ -265,6 +235,24 @@ public class RequestCaller {
         if (callbackClass == Callback.class) {
             return null;
         }
-        return (Callback) receiveInstanceFunc.apply(name, callbackClass);
+        return getClassedInstance(name, callbackClass);
+    }
+
+    /**
+     * Return some method options in annotation {@code CallOptions}
+     * that return {@code Class}(for example {@link CallOptions#callbackClass()}),
+     * use them for instantiation with {@link ReflectUtil#instantiates}, and cache
+     * them for use in {@link #OBJECT_CACHE}.
+     *
+     * @param name  current sdk name.
+     * @param clazz Annotation related {@code CallOptions} options
+     *              that need to be instantiated.
+     * @param <T>   Get the type of the object.
+     * @return Return the instantiated {@code CallOptions} class option.
+     */
+    @SuppressWarnings("unchecked")
+    protected <T> T getClassedInstance(String name, Class<T> clazz) {
+        return (T) OBJECT_CACHE
+                .computeIfAbsent(name + ":" + clazz.getName(), s -> ReflectUtil.instantiates(clazz));
     }
 }
