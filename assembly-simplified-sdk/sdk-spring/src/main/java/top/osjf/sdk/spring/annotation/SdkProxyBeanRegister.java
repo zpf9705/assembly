@@ -20,17 +20,21 @@ import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 import top.osjf.sdk.core.util.StringUtils;
+import top.osjf.sdk.spring.SpringRequestCaller;
 import top.osjf.sdk.spring.beans.AnnotationTypeScanningCandidateImportBeanDefinitionRegistrar;
 import top.osjf.sdk.spring.beans.BeanProperty;
 import top.osjf.sdk.spring.beans.BeanPropertyUtils;
 import top.osjf.sdk.spring.proxy.*;
 
+import java.lang.reflect.Field;
 import java.util.regex.Pattern;
 
 /**
@@ -98,7 +102,7 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
     }
 
     private BeanDefinitionHolder createBeanDefinitionHolderInternal(AnnotationAttributes markedAnnotationAttributes,
-                                                             AnnotationMetadata markedAnnotationMetadata) {
+                                                                    AnnotationMetadata markedAnnotationMetadata) {
         String className = markedAnnotationMetadata.getClassName();
         ProxyModel model = markedAnnotationAttributes.getEnum(SDK_ATTR_PROXY_MODEL);
         BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(
@@ -107,6 +111,8 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
                 getRequestHost(markedAnnotationAttributes.getString(SDK_ATTR_HOST_PROPERTY)));
         builder.addPropertyValue(SDK_PROXY_MODEL_NAME, model);
         builder.addConstructorArgValue(className);
+        builder.addPropertyReference(InternalConfiguration.SPRING_REQUEST_CALLER_FIELD_NAME,
+                InternalConfiguration.INTERNAL_SPRING_REQUEST_CALLER);
         AnnotationAttributes beanPropertyAttributes = markedAnnotationAttributes
                 .getAnnotation(SDK_ATTR_BEAN_PROPERTY);
         String[] names = beanPropertyAttributes.getStringArray(SDK_ATTR_BEAN_NAME);
@@ -145,6 +151,55 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
     @Override
     protected boolean isAvailableMarkedBeanDefinitionMetadata(AnnotationMetadata metadata) {
         return metadata.isInterface() || metadata.isAbstract();
+    }
+
+    /**
+     * Internal configuration for SDK registration.
+     *
+     * <p>Added configuration for creating singleton {@code SpringRequestCaller} in
+     * version 1.0.2.
+     *
+     * @since 1.0.2
+     */
+    @Configuration(proxyBeanMethods = false)
+    public static class InternalConfiguration {
+
+        /**
+         * The name of the internal bean {@code SpringRequestCaller}.
+         */
+        static final String INTERNAL_SPRING_REQUEST_CALLER
+                = "top.osjf.sdk.spring.SpringRequestCaller.internal";
+
+        /**
+         * the attribute name of {@code SpringRequestCaller} from the
+         * {@code AbstractSdkProxyBean} class.
+         */
+        static String SPRING_REQUEST_CALLER_FIELD_NAME;
+
+        /*
+         * Find the attribute name of SpringRequestCaller from the AbstractSdkProxyBean class.
+         * */
+        static {
+            for (Field declaredField : AbstractSdkProxyBean.class
+                    .getDeclaredFields()) {
+                if (SpringRequestCaller.class.isAssignableFrom(declaredField.getType())) {
+                    SPRING_REQUEST_CALLER_FIELD_NAME = declaredField.getName();
+                    break;
+                }
+            }
+        }
+
+        /**
+         * Create a {@code SpringRequestCaller} bean for sdk proxy bean
+         * to support resolve {@link top.osjf.sdk.core.util.caller.CallOptions}
+         * annotation.
+         *
+         * @return a singleton for {@code SpringRequestCaller}.
+         */
+        @Bean(INTERNAL_SPRING_REQUEST_CALLER)
+        public SpringRequestCaller requestCaller() {
+            return new SpringRequestCaller();
+        }
     }
 
     /**
