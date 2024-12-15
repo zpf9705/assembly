@@ -71,6 +71,11 @@ public abstract class AbstractHttpResponse extends AbstractResponse implements H
         return Objects.equals(getCode(), SC_OK) || Objects.equals(getCode(), SC_OK0);
     }
 
+    /**
+     * <p>
+     * when {@link #isSuccess()} is {@literal true},return {@link #SUCCESS_MESSAGE},
+     * otherwise return {@link #FAILED_MESSAGE}.
+     */
     @Override
     public String getMessage() {
         return isSuccess() ? SUCCESS_MESSAGE : FAILED_MESSAGE;
@@ -78,9 +83,12 @@ public abstract class AbstractHttpResponse extends AbstractResponse implements H
 
     /**
      * {@inheritDoc}
+     * <p>
+     * when {@link #isSuccess()} is {@literal true},return {@code int} {@link #SC_OK},
+     * otherwise return {@code int} {@link #SC_INTERNAL_SERVER_ERROR}.
      */
     @Override
     public Object getCode() {
-        return SC_OK;
+        return isSuccess() ? SC_OK : SC_INTERNAL_SERVER_ERROR;
     }
 }
