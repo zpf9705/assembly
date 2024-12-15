@@ -84,11 +84,11 @@ public abstract class AbstractHttpResponse extends AbstractResponse implements H
     /**
      * {@inheritDoc}
      * <p>
-     * when {@link #isSuccess()} is {@literal true},return {@code int} {@link #SC_OK},
-     * otherwise return {@code int} {@link #SC_INTERNAL_SERVER_ERROR}.
+     * Default return internal server error code and please rewrite its method
+     * accord to method {@link #isSuccess()}.
      */
     @Override
     public Object getCode() {
-        return isSuccess() ? SC_OK : SC_INTERNAL_SERVER_ERROR;
+        return SC_INTERNAL_SERVER_ERROR;
     }
 }
