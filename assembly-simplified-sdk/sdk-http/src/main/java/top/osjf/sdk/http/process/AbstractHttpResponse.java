@@ -62,19 +62,23 @@ public abstract class AbstractHttpResponse extends AbstractResponse implements H
     public static final String FAILED_MESSAGE = "Internal system error";
 
 
-    /** {@code isSuccess} and {@code  getMessage} define http success situation.*/
+    /**
+     * {@code isSuccess} and {@code  getMessage} define http success situation.
+     */
 
     @Override
     public boolean isSuccess() {
-        return Objects.equals(getCode(), SC_OK) || Objects.equals(getCode(),SC_OK0);
+        return Objects.equals(getCode(), SC_OK) || Objects.equals(getCode(), SC_OK0);
     }
 
     @Override
     public String getMessage() {
-        return SUCCESS_MESSAGE;
+        return isSuccess() ? SUCCESS_MESSAGE : FAILED_MESSAGE;
     }
 
-    /** {@inheritDoc}*/
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Object getCode() {
         return SC_OK;
