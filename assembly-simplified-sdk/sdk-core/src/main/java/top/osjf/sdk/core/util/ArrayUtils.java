@@ -29,8 +29,8 @@ public abstract class ArrayUtils {
     /**
      * <p>Checks if an array of Objects is not empty and not {@code null}.
      *
-     * @param <T> the component type of the array
-     * @param array  the array to test
+     * @param <T>   the component type of the array
+     * @param array the array to test
      * @return {@code true} if the array is not empty and not {@code null}
      * @since {@code org.apache.commons.lang3.ArrayUtils} 2.5
      */
@@ -96,13 +96,13 @@ public abstract class ArrayUtils {
      * ArrayUtils.remove(["a", "b", "c"], 1) = ["a", "c"]
      * </pre>
      *
-     * @param <T> the component type of the array
-     * @param array  the array to remove the element from, may not be {@code null}
-     * @param index  the position of the element to be removed
+     * @param <T>   the component type of the array
+     * @param array the array to remove the element from, may not be {@code null}
+     * @param index the position of the element to be removed
      * @return A new array containing the existing elements except the element
-     *         at the specified position.
+     * at the specified position.
      * @throws IndexOutOfBoundsException if the index is out of range
-     * (index &lt; 0 || index &gt;= array.length), or if the array is {@code null}.
+     *                                   (index &lt; 0 || index &gt;= array.length), or if the array is {@code null}.
      * @since {@code org.apache.commons.lang3.ArrayUtils} 2.1
      */
     @SuppressWarnings("unchecked") // remove() always creates an array of the same type as its input
@@ -123,12 +123,12 @@ public abstract class ArrayUtils {
      * <p>If the input array is {@code null}, an IndexOutOfBoundsException
      * will be thrown, because in that case no valid index can be specified.
      *
-     * @param array  the array to remove the element from, may not be {@code null}
-     * @param index  the position of the element to be removed
+     * @param array the array to remove the element from, may not be {@code null}
+     * @param index the position of the element to be removed
      * @return A new array containing the existing elements except the element
-     *         at the specified position.
+     * at the specified position.
      * @throws IndexOutOfBoundsException if the index is out of range
-     * (index &lt; 0 || index &gt;= array.length), or if the array is {@code null}.
+     *                                   (index &lt; 0 || index &gt;= array.length), or if the array is {@code null}.
      * @since {@code org.apache.commons.lang3.ArrayUtils} 2.1
      */
     private static Object remove(final Object array, final int index) {
@@ -144,5 +144,15 @@ public abstract class ArrayUtils {
         }
 
         return result;
+    }
+
+    /**
+     * Convert a variable number of parameters and return an object array.
+     *
+     * @param args variable number of parameters.
+     * @return object array.
+     */
+    public static Object[] toArray(Object... args) {
+        return args;
     }
 }
