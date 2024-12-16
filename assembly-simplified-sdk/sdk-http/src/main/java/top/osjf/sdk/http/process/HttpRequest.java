@@ -29,11 +29,15 @@ import java.util.Map;
  * is specifically designed to define the methods and behaviors related to HTTP requests.
  *
  * <p>This interface restricts the response type to instances of {@code HttpResponse} or
- * its subclasses through the generic parameter {@code  R}.
+ * its subclasses through the generic parameter {@code R}.
  *
  * <p>In addition, the interface also provides detailed guidance on how to rewrite the
  * {@link #matchSdkEnum()} method, including using the {@link HttpSdkEnumCultivate}
  * annotation to simplify the implementation process.
+ *
+ * <p>Extension method {@link #urlJoin()} allows users to manually concatenate URL
+ * parameters. Parameters can be query parameters for URLs or supplementary links to URLs,
+ * depending on the specific scenario.
  *
  * <p>This interface is designed to be implemented by specific HTTP request classes and
  * provides specific implementation logic.
