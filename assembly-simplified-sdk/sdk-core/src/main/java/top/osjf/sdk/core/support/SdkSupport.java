@@ -281,9 +281,6 @@ public abstract class SdkSupport {
 
             //Filter the main class of the request main class, taking the first one.
             Pair pair = getTypePair(types, classLoader);
-            if (!pair.canResolve()) {
-                break;
-            }
             Type type = pair.type;
             if (type instanceof ParameterizedType) {
                 resultType = getResponseGenericType(type, classLoader);
@@ -292,16 +289,19 @@ public abstract class SdkSupport {
                 } else {
                     clazz = pair.clazz;
                 }
+            } else {
+                clazz = pair.clazz;
             }
 
         }
 
-        //If the type is empty, cache a default type.
         if (resultType == null) {
             if (def == null) {
                 throw new IllegalStateException("No available generic type were found.");
             }
             GENERIC_CACHE.put(inletClass, def);
+        } else {
+            GENERIC_CACHE.putIfAbsent(inletClass, resultType);
         }
         return GENERIC_CACHE.get(inletClass);
     }
