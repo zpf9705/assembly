@@ -27,28 +27,34 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * Abstract request parameter class, defining common behaviors and properties for all
- * request parameters.
- * <p>This class is an abstract class that implements the {@code Request<R>} interface,
- * where {@code R} is a generic parameter for the response type, and this response type
- * must be {@code AbstractResponse} or its subclass.
+ * The {@code AbstractRequestParams} class is an abstract class that implements
+ * the {@code Request} interface and provides a set of default behaviors.
  *
- * <p>It provides two main method implementations:
+ * <p>This class restricts the response type to be an instance of {@code AbstractResponse}
+ * or its subclasses through the generic parameter {@code R}.
+ *
+ * <p>This class implements the following main functionalities:
  * <ul>
- * <li> {@link #getHeadMap}: Returns an {@link Collections#emptyMap()}, indicating that
- * this abstract class does not contain any request header information by default.
- * Subclasses can override this method to provide specific request headers as needed.</li>
- * <li> {@link #validate}: An empty implementation used to validate the validity of the
- * request parameters before sending the request. Subclasses should override this method
- * to add specific validation logic.</li>
+ * <li>Provides a method {@link #getUrl} to obtain the request URL, which
+ * generates the URL based on the SDK enum value and ensures that the URL
+ * is unique.</li>
+ * <li>Overrides the {@link #getRequestParam} method, returning null by
+ * default, indicating no request parameters.</li>
+ * <li>Overrides the {@link #getCharset} method, returning the default
+ * system charset by default.</li>
+ * <li>Overrides the {@link #getHeadMap} method, returning an {@link Collections#emptyMap()}
+ * by default, indicating no header information.</li>
+ * <li>Overrides the validate {@link #validate()} method, not performing
+ * any validation logic by default.</li>
+ * <li>Overrides the getResponseCls {@link #getResponseCls()} method,
+ * obtaining the Class object of the response type using reflection.</li>
+ * <li>Overrides the execute {@link #execute}method, executing the current
+ * request using {@code ClientExecutors} by default and returning the response
+ * object.</li>
  * </ul>
  *
- * <p>This abstract class can serve as a base class for creating specific request parameter
- * classes. By inheriting and extending this class, it is convenient to implement the
- * {@code Request<R>} interface and define specific request parameters and validation logic.
- *
- * <p>Note: The `serialVersionUID` field is used for serialization version control to ensure
- * compatibility during deserialization.
+ * <p>This class is designed to be inherited by specific request parameter
+ * classes and provide concrete implementation logic.
  *
  * @param <R> Subclass generic type of {@code AbstractResponse}.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
@@ -63,6 +69,7 @@ public abstract class AbstractRequestParams<R extends AbstractResponse> implemen
      *
      * @return {@code URL} instances of same {@code url}
      * and {@code unique}.
+     * @since 1.0.2
      */
     @NotNull
     public URL getUrl(@Nullable String host) {
@@ -73,6 +80,7 @@ public abstract class AbstractRequestParams<R extends AbstractResponse> implemen
      * {@inheritDoc}
      *
      * @return the {@literal null}.
+     * @since 1.0.2
      */
     @Nullable
     @Override
@@ -84,6 +92,7 @@ public abstract class AbstractRequestParams<R extends AbstractResponse> implemen
      * {@inheritDoc}
      *
      * @return default {@code Charset} by {@link Charset#defaultCharset()}.
+     * @since 1.0.2
      */
     @Nullable
     @Override
@@ -112,6 +121,7 @@ public abstract class AbstractRequestParams<R extends AbstractResponse> implemen
      * {@inheritDoc}
      *
      * @return {@inheritDoc}
+     * @since 1.0.2
      */
     @Override
     @NotNull
@@ -126,6 +136,7 @@ public abstract class AbstractRequestParams<R extends AbstractResponse> implemen
      *
      * @param host {@inheritDoc}
      * @return {@inheritDoc}
+     * @since 1.0.2
      */
     @Override
     public R execute(@Nullable String host) {
