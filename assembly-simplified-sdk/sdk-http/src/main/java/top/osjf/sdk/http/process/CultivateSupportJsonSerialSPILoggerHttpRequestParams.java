@@ -26,6 +26,7 @@ import static top.osjf.sdk.http.process.CultivateSupportHttpRequestParams.Instan
  * {@link HttpSdkEnumCultivate} annotations transform {@link HttpSdkEnum} and benefit
  * from {@link HttpSdkEnumManager} management.
  *
+ * @param <R> Subclass generic type of {@code AbstractHttpResponse}.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */

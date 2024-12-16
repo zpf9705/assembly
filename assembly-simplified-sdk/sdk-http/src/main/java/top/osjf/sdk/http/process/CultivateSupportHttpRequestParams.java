@@ -32,6 +32,7 @@ import top.osjf.sdk.core.support.SdkSupport;
  * method's static call is overridden by the subclass {@link HttpRequest#matchSdkEnum()}
  * and called to implement the functionality extension of this abstract class.
  *
+ * @param <R> Subclass generic type of {@code AbstractHttpResponse}.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */

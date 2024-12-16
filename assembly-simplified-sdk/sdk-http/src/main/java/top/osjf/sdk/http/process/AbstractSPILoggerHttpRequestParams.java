@@ -24,7 +24,7 @@ import top.osjf.sdk.http.client.ServiceLoaderLoggerHttpClient;
  * Extends for {@code AbstractHttpRequestParams} to provider a {@code Client}
  * is {@code ServiceLoaderLoggerHttpClient}.
  *
- * @param <R> Implement a unified response class data type.
+ * @param <R> Subclass generic type of {@code AbstractHttpResponse}.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
