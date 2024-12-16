@@ -105,6 +105,7 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
 
     /**
      * {@inheritDoc}
+     * <p>
      * The default character set format is UTF-8.
      *
      * @return request parm character type.
