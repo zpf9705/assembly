@@ -23,6 +23,7 @@ import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.util.CollectionUtils;
 import top.osjf.sdk.core.util.JSONUtil;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 /**
@@ -73,15 +74,15 @@ public interface JSONResponseConvert<R extends Response> extends ResponseConvert
     @Override
     default R convertToResponse(@NotNull Request<R> request, @NotNull String responseStr) {
         R response;
-        Object type = request.getResponseRequiredType();
+        Type responseType = request.getResponseType();
         if (JSONUtil.isValidObject(responseStr)) {
-            response = JSONUtil.parseObject(responseStr, type);
+            response = JSONUtil.parseObject(responseStr, responseType);
         } else if (JSONUtil.isValidArray(responseStr)) {
-            List<R> responses = JSONUtil.parseArray(responseStr, type);
+            List<R> responses = JSONUtil.parseArray(responseStr, responseType);
             if (CollectionUtils.isNotEmpty(responses)) {
                 response = responses.get(0);
             } else {
-                response = JSONUtil.toEmptyObj(type);
+                response = JSONUtil.toEmptyObj(responseType);
             }
         } else {
             response = DefaultErrorResponse
