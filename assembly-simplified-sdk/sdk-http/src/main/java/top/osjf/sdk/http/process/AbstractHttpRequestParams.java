@@ -49,8 +49,6 @@ import java.util.Map;
  *     'Content-Type' header is automatically set based on the type of request parameter,
  *     And allow adding additional custom request headers by rewriting the {@link #additionalHeaders()}
  *     method.</li>
- *     <li>Rewrite the {@link #getResponseCls()} method to obtain the default response type
- *     through the {@link HttpSdkSupport#getResponseRequiredType} method</li>
  *     <li>Provide the default use of {@link DefaultHttpClient} as the HTTP client.</li>
  *     <li>By rewriting the {@link #isAssignableRequest} method, check if the given
  *     class implements the {@code HttpRequest} interface.</li>

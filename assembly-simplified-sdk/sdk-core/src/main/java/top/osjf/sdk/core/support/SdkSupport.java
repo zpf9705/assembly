@@ -27,7 +27,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -260,15 +259,10 @@ public abstract class SdkSupport {
             return resultType;
         }
 
-        //Loop stop marker.
-        boolean goWhile = true;
-
-        //Cache temporary type class objects.
-        Map<Type, Class<?>> genericInternalCache = new ConcurrentHashMap<>(16);
-
         //There is no cache to execute the fetch logic.
         Class<?> clazz = inletClass;
-        while (goWhile) {
+        while (true) {
+
             //Collect the type of the class for visual objects.
             //Including interfaces and classes.
             ClassLoader classLoader = clazz.getClassLoader();
@@ -281,44 +275,23 @@ public abstract class SdkSupport {
             if (ArrayUtils.isNotEmpty(genericInterfaces)) {
                 types.addAll(Arrays.asList(genericInterfaces));
             }
-
-            //Filter the main class of the request main class, taking the first one.
-            Type typeFilter = types.stream().filter(linkType -> {
-                Class<?> typeClass = getTypeClass(linkType, classLoader);
-                if (typeClass == null) {
-                    return false;
-                }
-                //Cache the class objects of the current classes for future use
-                genericInternalCache.putIfAbsent(linkType, typeClass);
-                return request.isAssignableRequest(typeClass);
-            }).findFirst().orElse(null);
-
-            //If there is nothing available, simply exit the loop.
-            if (typeFilter == null) {
-                goWhile = false;
-                continue;
+            if (CollectionUtils.isEmpty(types)) {
+                break;
             }
 
-            //If it is a type that carries a generic, then obtain whether
-            // it contains a generic that responds to the main class and obtain it.
-            if (typeFilter instanceof ParameterizedType) {
-                resultType = getResponseGenericType(typeFilter, clazz.getClassLoader());
+            //Filter the main class of the request main class, taking the first one.
+            Pair pair = getTypePair(types, classLoader);
+            if (!pair.canResolve()) {
+                break;
+            }
+            Type type = pair.type;
+            if (type instanceof ParameterizedType) {
+                resultType = getResponseGenericType(type, classLoader);
                 if (resultType != null) {
-                    //After obtaining it, bind the response generic of the
-                    // main class and use it for subsequent caching.
-                    GENERIC_CACHE.putIfAbsent(inletClass, resultType);
-                    goWhile = false;
+                    break;
                 } else {
-
-                    //The paradigm does not carry response generics, and the class
-                    // object logic for filtering types is executed.
-                    // According to the specification of the idea, it will not go this far.
-                    clazz = genericInternalCache.get(typeFilter);
+                    clazz = pair.clazz;
                 }
-            } else {
-
-                //Non generic classes, directly use class objects of filter types for subsequent logic.
-                clazz = genericInternalCache.get(typeFilter);
             }
 
         }
@@ -335,15 +308,42 @@ public abstract class SdkSupport {
 
 
 
+
     /*  ################################### Internal assistance methods. ###################################  */
 
+    static class Pair {
+        final Type type;
+        final Class<?> clazz;
 
-    private static Type getResponseGenericType(Type type, ClassLoader classLoader) {
+        Pair(Type type, Class<?> clazz) {
+            this.type = type;
+            this.clazz = clazz;
+        }
+
+        boolean canResolve() {
+            return type != null && clazz != null;
+        }
+    }
+
+    private static Pair getTypePair(List<Type> types, ClassLoader classLoader) {
+        Type requestType = null;
+        Class<?> requestClass = null;
+        for (Type type : types) {
+            requestClass = getTypeClass(Request.class, type, classLoader);
+            if (requestClass != null) {
+                requestType = type;
+                break;
+            }
+        }
+        return new Pair(requestType, requestClass);
+    }
+
+    static Type getResponseGenericType(Type type, ClassLoader classLoader) {
         Type[] actualTypes = ((ParameterizedType) type).getActualTypeArguments();
         // as Response and retrieve the first one.
         Type responseType = null;
         for (Type actualType : actualTypes) {
-            if (isResponseType(actualType, classLoader)) {
+            if (getTypeClass(Response.class, actualType, classLoader) != null) {
                 responseType = actualType;
                 break;
             }
@@ -351,14 +351,12 @@ public abstract class SdkSupport {
         return responseType;
     }
 
-    static boolean isResponseType(Type type, ClassLoader classLoader) {
-        Class<?> typeClass;
-        if (type instanceof Class) {
-            typeClass = (Class<?>) type;
-        } else {
-            typeClass = getTypeClass(type, classLoader);
+    static Class<?> getTypeClass(Class<?> clazz, Type type, ClassLoader classLoader) {
+        Class<?> typeClass = getTypeClass(type, classLoader);
+        if (clazz.isAssignableFrom(typeClass)) {
+            return typeClass;
         }
-        return Response.class.isAssignableFrom(typeClass);
+        return null;
     }
 
     static Class<?> getTypeClass(Type type, ClassLoader classLoader) {
