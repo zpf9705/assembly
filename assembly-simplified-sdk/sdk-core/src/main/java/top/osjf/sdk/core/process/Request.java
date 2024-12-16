@@ -16,174 +16,76 @@
 
 package top.osjf.sdk.core.process;
 
-import com.google.common.reflect.TypeToken;
 import top.osjf.sdk.core.IsInstanceWrapper;
 import top.osjf.sdk.core.client.Client;
-import top.osjf.sdk.core.client.ClientExecutors;
 import top.osjf.sdk.core.exception.SdkException;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
 
 import java.io.Serializable;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 /**
- * Definition of a generic request interface, where the generic type R represents the
- * response type, which must be a subclass of Response.
- * It extends the RequestParamCapable interface (for obtaining request parameters) and
- * implements the Serializable interface (for serialization).
- * This interface encapsulates the common methods and properties required to initiate a
- * request, such as obtaining the access address, request parameters, character set, etc.
- * By implementing this interface, all request objects can ensure these basic functionalities
- * and allow custom validation logic.
- * <p>
- * Main method descriptions:
- * <ul>
- *     <li>{@link #getUrl}:Obtains the formatted actual access address based on the host address.</li>
- *     <li>{@link #getRequestParam}:Obtains the request parameters, returning null by default and
- *     can be overridden.</li>
- *     <li>{@link #getCharset}:Obtains the request character set, using UTF-8 by default.</li>
- *     <li>{@link #validate}:Performs custom parameter validation before the request, throwing an
- *     {@code SdkException} if validation fails.</li>
- *     <li>{@link #getResponseCls}:Returns the Class object of the response class, used internally
- *     by the SDK to process response data.</li>
- *     <li>{@link #getResponseTypeToken}:Uses Google's {@code TypeToken} tool to obtain the Type object of
- *     the response type for generic processing.</li>
- *     <li>{@link #getHeadMap}:Returns the Map data format encapsulated by the request headers for
- *     subsequent request processing.</li>
- *     <li>{@link #getClientCls}:Returns the Client type held by the current request class, with an
- *     open definition allowing custom behavior.</li>
- *     <li>{@link #getResponseRequiredType}:Obtains the response type that should be converted based
- *     on {@link #getResponseCls()} and {@link #getResponseTypeToken()}.</li>
- *     <li>{@link #matchSdkEnum}:Returns the matching {@code SdkEnum} type.</li>
- *     <li>{@link #isAssignableRequest}:Determines whether the given class is a subclass or implementer
- *     of the main request interface.</li>
- * </ul>
+ * The {@code Request} interface defines a universal SDK request template for building
+ * and executing related requests.
  *
- * <p>It includes parameter acquisition {@link RequestParamCapable} required
- * for the request, parameter verification (intercepted in the form of
- * {@link SdkException}), recording the response body type for subsequent encapsulation
- * conversion, and verifying the request header.
- * <p>The class object that can be rewritten to implement {@link Client} can be
- * customized for logical implementation of methods in {@link Client}.
+ * <p>It extends the {@code RequestParamCapable} interface to support the setting of request
+ * parameters and implements the {@code IsInstanceWrapper} interface to allow type wrapping,
+ * and inherited the {@code Executable} interface to provide the ability to execute requests
+ * and is serializable.
  *
- * @param <R> Implement a unified response class data type.
+ * <p>This interface provides the ability to retrieve request URLs, request parameters, character
+ * sets, request header mappings, validate request parameters, match SDK enumeration instances and
+ * method for obtaining client class object and response class object.
+ *
+ * <p>In addition, a method is provided to determine whether a class can be used as a subclass
+ * or implementation class of that request type.
+ *
+ * <p>This interface is mainly used to build and execute service requests for specific services,
+ * and to process metadata for requests and responses.
+ *
+ * @param <R> Subclass generic type of {@code Response}.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
 @SuppressWarnings("rawtypes")
-public interface Request<R extends Response> extends RequestParamCapable<Object>, IsInstanceWrapper,
-        Executable<R>, Serializable {
-
-    //Default method start, easy call or default method value.
+public interface Request<R extends Response> extends RequestParamCapable<Object>,
+        IsInstanceWrapper, //same type convert able
+        Executable<R>,  // execute direct able
+        Serializable // serial able
+{
 
     /**
-     * Default simple to use {@code #matchSdkEnum()#getUrl}.
+     * Return the {@code URL} instance built by the service host.
+     * <p>
+     * The service host name is not required and depends on the method
+     * {@link #matchSdkEnum()#getUrl}.
      *
      * @param host the real server hostname.
      * @return {@code URL} Object of packaging tags and URL addresses
      * and updated on version 1.0.2.
      */
     @NotNull
-    default URL getUrl(@Nullable String host) {
-        return URL.same(matchSdkEnum().getUrl(host));
-    }
+    URL getUrl(@Nullable String host);
 
     /**
      * {@inheritDoc}
-     * <p>
-     * Default to null request body.
      *
-     * @return {@literal null}.
+     * @return Return based on usage, not mandatory.
      */
+    @Nullable
     @Override
-    default Object getRequestParam() {
-        return null;
-    }
+    Object getRequestParam();
 
     /**
      * {@inheritDoc}
-     * <p>
-     * The default character set format is UTF-8.
      *
-     * @return request parm character type.
+     * @return Return based on usage, not mandatory.
      */
+    @Nullable
     @Override
-    default Charset getCharset() {
-        return StandardCharsets.UTF_8;
-    }
-
-    /**
-     * Returns the class object of the response transformation entity,
-     * implemented in {@code Response}.
-     *
-     * <p>If you need a {@code Response} transformation of composite
-     * generics, please refer to {@link #getResponseTypeToken()}.
-     *
-     * @return The class object of the response class encapsulated by this SDK.
-     */
-    default Class<R> getResponseCls() {
-        return null;
-    }
-
-    /**
-     * Use Google's tool {@link TypeToken} to obtain the data paradigm of the
-     * response type after the request parameter, in order to inform its true
-     * type when the response type is not clearly defined (i.e. {@code getResponseCls() == null}).
-     *
-     * @return Refer to {@link TypeToken}.
-     */
-    default TypeToken<R> getResponseTypeToken() {
-        return null;
-    }
-
-    /**
-     * Based on {@link #getResponseCls()} and {@link #getResponseTypeToken()},
-     * obtain the corresponding type that should be converted.
-     *
-     * <p>{@link #getResponseCls()} has a higher priority than {@link #getResponseTypeToken()}.
-     *
-     * <p>If none of the above are provided, then only an exception with no response
-     * type found can be thrown.
-     *
-     * @return type object.
-     */
-    default Object getResponseRequiredType() {
-        if (getResponseCls() != null) return getResponseCls();
-        if (getResponseTypeToken() != null) return getResponseTypeToken().getType();
-        throw new IllegalStateException("Unknown response type!");
-    }
-
-    /**
-     * When {@link #getResponseCls()} and {@link #getResponseTypeToken()}
-     * are not provided, attempting to obtain the generic indicators of
-     * an inherited class or interface must satisfy the requirement that
-     * it is a subclass of the requesting main interface, and the criteria
-     * for determining whether it is true need to be determined through this method.
-     *
-     * @param clazz Determine type.
-     * @return If {@code true} is judged successful, {@code false} otherwise .
-     */
-    default boolean isAssignableRequest(Class<?> clazz) {
-        return Request.class.isAssignableFrom(clazz);
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * Default to use {@link ClientExecutors} execute current {@code Request}.
-     *
-     * @param host {@inheritDoc}
-     * @return {@inheritDoc}
-     */
-    @Override
-    default R execute(@Nullable String host) {
-        return ClientExecutors.executeRequestClient(host, this);
-    }
-
-    //Define the method and leave it for future rewriting.
+    Charset getCharset();
 
     /**
      * Return a map data format encapsulated by a key/{@code Object}
@@ -237,12 +139,37 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
     SdkEnum matchSdkEnum();
 
     /**
-     * Return the {@code Client} type held by the current request class. The
-     * definition of {@code Client} is open, and developers can customize
-     * the relevant behavior of {@code Client}.
+     * Return the {@code Class} object of the {@code Client}.
      *
-     * @return The type of {@code Client} held,must not be {@literal null}.
+     * <p>This method is used to return a {@code Class} object representing a
+     * specific client type. This client type must be an instance of the
+     * {@link Client} class or its subclass.
+     *
+     * @return the {@code Class} object of the {@code Client}
      */
     @NotNull
     Class<? extends Client> getClientCls();
+
+    /**
+     * Return the {@code Class} type of the {@code Response} object for this
+     * request class.
+     *
+     * <p>This attribute is used to convert the response data into the provided
+     * {@code Response} type after the request is completed.
+     *
+     * @return the {@code Class} type of the {@code Response} object.
+     */
+    @NotNull
+    Class<R> getResponseCls();
+
+    /**
+     * Attempting to obtain the generic indicators of an inherited class or
+     * interface must satisfy the requirement that it is a subclass of the
+     * requesting main interface, and the criteria for determining whether
+     * it is true need to be determined through this method.
+     *
+     * @param clazz determine type.
+     * @return If {@code true} is judged successful, {@code false} otherwise.
+     */
+    boolean isAssignableRequest(Class<?> clazz);
 }
