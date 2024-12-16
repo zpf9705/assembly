@@ -18,9 +18,12 @@ package top.osjf.sdk.http.process;
 
 import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.core.process.AbstractRequestParams;
+import top.osjf.sdk.core.process.URL;
 import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.core.util.StringUtils;
+import top.osjf.sdk.http.HttpProtocol;
 import top.osjf.sdk.http.client.DefaultHttpClient;
 import top.osjf.sdk.http.support.HttpSdkSupport;
 
@@ -28,18 +31,31 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * {@code AbstractHttpRequestParams} is an abstract class about HTTP request
- * parameter encapsulation, which is an abstract extension of {@code AbstractRequestParams}.
+ * The {@code AbstractHttpRequestParams} class is an abstract class that extends
+ * the {@code AbstractRequestParams} class and implements the {@code HttpRequest}
+ * interface.
+ *
+ * <p>This class provides a general abstract implementation for HTTP request parameters
+ * , allowing subclasses to customize specific HTTP request behavior through inheritance
+ * and rewriting methods.
  * <p>
- * It mainly has the following default points:
+ * This abstract class mainly provides the following default feature rewriting:
  * <ul>
- *     <li>{@link #getHeadMap()}By default, without any parameter related concatenation
- *     requirements, {@code Content-Type} is parsed based on the parameter string type
- *     and placed in the header information.</li>
- *     <li>{@link #getClientCls()}The default execution client.</li>
+ *     <li>Rewrite method {@link #getUrl}, after obtaining {@link #matchSdkEnum()#getUrl},
+ *     use method {@link #formatUrl} to format the two key points of
+ *     {@link HttpSdkEnum#getRequestMethod()} and {@link #urlJoin()}.</li>
+ *     <li>Request header management: By rewriting the {@link #getHeadMap()} method, the
+ *     'Content-Type' header is automatically set based on the type of request parameter,
+ *     And allow adding additional custom request headers by rewriting the {@link #additionalHeaders()}
+ *     method.</li>
+ *     <li>Rewrite the {@link #getResponseCls()} method to obtain the default response type
+ *     through the {@link HttpSdkSupport#getResponseRequiredType} method</li>
+ *     <li>Provide the default use of {@link DefaultHttpClient} as the HTTP client.</li>
+ *     <li>By rewriting the {@link #isAssignableRequest} method, check if the given
+ *     class implements the {@code HttpRequest} interface.</li>
  * </ul>
  *
- * @param <R> Implement a unified response class data type.
+ * @param <R> Subclass generic type of {@code AbstractHttpResponse}.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
@@ -48,6 +64,31 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
         implements HttpRequest<R> {
 
     private static final long serialVersionUID = 7487068349280012103L;
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param host {@inheritDoc}
+     * @return {@inheritDoc}
+     * @since 1.0.2
+     */
+    @Override
+    @NotNull
+    public URL getUrl(@Nullable String host) {
+        return URL.same(formatUrl(matchSdkEnum().getUrl(host)));
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return nothing.
+     * @since 1.0.2
+     */
+    @Override
+    @Nullable
+    public String urlJoin() {
+        return null;
+    }
 
     /**
      * {@inheritDoc}
@@ -78,6 +119,128 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
     }
 
     /**
+     * {@inheritDoc}
+     *
+     * <p>If neither is provided, {@link HttpSdkSupport#getResponseRequiredType}
+     * will be used for generic retrieval of the response.
+     * <p><strong>The specific supported formats are shown below.</strong></p>
+     * <p><strong>The abstract {@link AbstractHttpRequestParams} provided directly is followed
+     * by a response implementation with a generic type.</strong>
+     * <hr><blockquote><pre>
+     *     {@code
+     *   class ExampleRequestParam
+     *   extends AbstractHttpRequestParams<HttpResultResponse<Character>> {
+     *      private static final long serialVersionUID = 6115216307330001269L;
+     *         Override
+     *         public HttpSdkEnum matchHttpSdk() {
+     *             return null;
+     *         }
+     *       }
+     *     }
+     * </pre></blockquote><hr>
+     * <p><strong>Implement an interface that carries the main class generic request.</strong>
+     * <hr><blockquote><pre>
+     *     {@code
+     *     interface
+     *     ExampleHttpRequest extends HttpRequest<HttpResultResponse<String>> {
+     *     }
+     *     class ExampleRequestParam implements ExampleHttpRequest {
+     *         private static final long serialVersionUID = 7371775319382181179L;
+     *     }
+     *     }
+     * </pre></blockquote><hr>
+     * <p><strong>Nested inheritance type.</strong>
+     * <hr><blockquote><pre>
+     *     {@code
+     *      class ExampleRequestParam extends AbstractHttpRequestParams<HttpResultResponse<String>> {
+     *         private static final long serialVersionUID = 6115216307330001269L;
+     *         Override
+     *         public HttpSdkEnum matchHttpSdk() {
+     *             return null;
+     *         }
+     *     }
+     *     class ExampleRequestParamSon extends ExampleRequestParam {
+     *         private static final long serialVersionUID = 2463029032762347802L;
+     *     }
+     *     }
+     * </pre></blockquote><hr>
+     * <p><strong>Nested implementation type.</strong>
+     * <hr><blockquote><pre>
+     *     {@code
+     *     class ExampleRequestParam implements HttpRequest<HttpResultResponse<String>> {
+     *         private static final long serialVersionUID = 6115216307330001269L;
+     *         ...
+     *     }
+     *     class ExampleRequestParamSon extends ExampleRequestParam {
+     *         private static final long serialVersionUID = 2463029032762347802L;
+     *     }
+     *     }
+     * </pre></blockquote><hr>
+     * <h3>Warn</h3>
+     * <p>If a custom response type has a generic indicator, it will not be supported
+     * and will obtain an unpredictable type. For example, {@code HttpResultResponse<T>}
+     * in {@code T} cannot locate a specific type from the subclass's generic.
+     *
+     * @return {@inheritDoc}
+     */
+    @Override
+    @NotNull
+    public Class<R> getResponseCls() {
+        Class<R> responseType;
+        try {
+            responseType = super.getResponseCls();
+        } catch (Exception e) {
+            responseType = (Class<R>) HttpSdkSupport
+                    .getResponseRequiredType(this, HttpResultResponse.class);
+        }
+        return responseType;
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Default to use {@code DefaultHttpClient}.
+     *
+     * @return {@inheritDoc}.
+     */
+    @Override
+    @NotNull
+    public Class<? extends Client> getClientCls() {
+        return DefaultHttpClient.class;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param clazz {@inheritDoc}
+     * @return {@inheritDoc}
+     */
+    @Override
+    public boolean isAssignableRequest(Class<?> clazz) {
+        return HttpRequest.class.isAssignableFrom(clazz);
+    }
+
+    /**
+     * Format the actual request address of the SDK and concatenate subsequent URLs.
+     *
+     * <p>Here, the splicing parameters of the {@link #urlJoin()} method will be
+     * automatically added for you. If you don't need to rewrite {@link #urlJoin()},
+     * you can do so.
+     *
+     * <p>Since version 1.0.2, if you provide {@link HttpProtocol}, you will no longer
+     * need to pay attention to the HTTP protocol type in URL formatting. The following
+     * method will be used to properly concatenate when {@code HttpProtocol} is not empty.
+     *
+     * @param url The URL address obtained after matching {@code HttpSdkEnum}.
+     * @return The request address for the SDK.
+     */
+    protected final String formatUrl(String url) {
+        HttpProtocol protocol = matchSdkEnum().getProtocol();
+        if (protocol != null) url = protocol.formatUrl(url);
+        return url + urlJoin();
+    }
+
+    /**
      * Given a request header map, process adding additional user-defined
      * request headers. When the provided request header is empty, provide
      * a new {@code LinkedHashMap} and add the custom request header.
@@ -86,7 +249,7 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
      * @return resolve result header map.
      * @since 1.0.2
      */
-    Map<String, Object> resolveAdditionalHeaders(Map<String, Object> headers) {
+    protected final Map<String, Object> resolveAdditionalHeaders(Map<String, Object> headers) {
         Map<String, Object> additionalHeads = additionalHeaders();
         if (MapUtils.isNotEmpty(additionalHeads)) {
             if (MapUtils.isEmpty(headers)) headers = new LinkedHashMap<>();
@@ -105,20 +268,7 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
      * @return additional headers.
      * @since 1.0.2
      */
-    public Map<String, Object> additionalHeaders() {
+    protected Map<String, Object> additionalHeaders() {
         return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * Default to use {@code DefaultHttpClient}.
-     *
-     * @return {@inheritDoc}.
-     */
-    @Override
-    @NotNull
-    public Class<? extends Client> getClientCls() {
-        return DefaultHttpClient.class;
     }
 }
