@@ -192,6 +192,15 @@ public abstract class AbstractRequestParams<R extends AbstractResponse> implemen
         return SdkSupport.getResponseType(this, defResponseType());
     }
 
+    /**
+     * Return the default conversion response type for this request.
+     * <p>
+     * When using the mechanism of method {@link #getResponseType()} to obtain
+     * the response type {@code Type}, there may be a situation where the retrieval
+     * is empty, so default value retrieval is performed in this method.
+     *
+     * @return the default conversion response type.
+     */
     @Nullable
     public Type defResponseType() {
         return null;
