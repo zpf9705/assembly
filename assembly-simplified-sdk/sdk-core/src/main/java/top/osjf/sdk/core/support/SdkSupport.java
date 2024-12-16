@@ -54,11 +54,8 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({"rawtypes"})
 public abstract class SdkSupport {
-
-    /***The prefix name of the set method.*/
-    protected static final String SET_METHOD_PREFIX = "set";
 
     /**
      * Since 1.0.2,cache modification to weak references, freeing up memory in appropriate
@@ -248,23 +245,13 @@ public abstract class SdkSupport {
      * @see Class#getGenericSuperclass()
      */
     public static Type getResponseType(@NotNull Request<?> request, @Nullable Type def) {
-
-
-        //The class object of the current request class.
         final Class<?> inletClass = request.getClass();
-
-        //Try reading the cache first.
         Type resultType = GENERIC_CACHE.get(inletClass);
         if (resultType != null) {
             return resultType;
         }
-
-        //There is no cache to execute the fetch logic.
         Class<?> clazz = inletClass;
         while (true) {
-
-            //Collect the type of the class for visual objects.
-            //Including interfaces and classes.
             ClassLoader classLoader = clazz.getClassLoader();
             List<Type> types = new ArrayList<>();
             Type genericSuperclass = clazz.getGenericSuperclass();
@@ -278,8 +265,6 @@ public abstract class SdkSupport {
             if (CollectionUtils.isEmpty(types)) {
                 break;
             }
-
-            //Filter the main class of the request main class, taking the first one.
             Pair pair = getTypePair(types, classLoader);
             Type type = pair.type;
             if (type instanceof ParameterizedType) {
@@ -292,9 +277,7 @@ public abstract class SdkSupport {
             } else {
                 clazz = pair.clazz;
             }
-
         }
-
         if (resultType == null) {
             if (def == null) {
                 throw new IllegalStateException("No available generic type were found.");
@@ -305,8 +288,6 @@ public abstract class SdkSupport {
         }
         return GENERIC_CACHE.get(inletClass);
     }
-
-
 
 
     /*  ################################### Internal assistance methods. ###################################  */
@@ -376,7 +357,7 @@ public abstract class SdkSupport {
         try {
             //First, directly instantiate the request class using the
             // construction method based on the parameters.
-            request = createRequest(requestType, args);
+            request = ReflectUtil.instantiates(requestType, args);
         } catch (Throwable e) {
             //This step determines whether the parameter is empty to
             // determine whether the above is an empty construction instantiation.
@@ -384,19 +365,6 @@ public abstract class SdkSupport {
             request = invokeCreateRequestUseSet(requestType, args);
         }
         return request;
-    }
-
-    static Request<?> createRequest(Class<? extends Request> requestType, Object... args)
-            throws Exception {
-        if (ArrayUtils.isEmpty(args)) {
-            return requestType.newInstance();
-        }
-        List<Class<?>> parameterTypes = new ArrayList<>();
-        for (Object arg : args) {
-            parameterTypes.add(arg.getClass());
-        }
-        return requestType.getConstructor(parameterTypes.toArray(new Class[]{}))
-                .newInstance(args);
     }
 
     static Request<?> invokeCreateRequestUseSet(Class<? extends Request> requestType,
@@ -421,7 +389,7 @@ public abstract class SdkSupport {
                 Object arg = args[order];
                 if (requestField.useReflect()) {
                     //Directly assign values in the case of sequential reflection assignment.
-                    setRequestFieldValue(request, field, arg);
+                    ReflectUtil.setFieldValue(request, field, arg);
                 } else {
                     //The real name of the field cannot be empty at this time.
                     String fieldName = requestField.value();
@@ -430,9 +398,7 @@ public abstract class SdkSupport {
                                 "the actual field name cannot be empty.");
                     }
                     //The set method performs an assignment.
-                    executeRequestFieldSetMethod(request, requestType,
-                            SET_METHOD_PREFIX + Character.toUpperCase(fieldName.charAt(0))
-                                    + fieldName.substring(1), arg);
+                    executeRequestFieldSetMethod(request, requestType, fieldName, arg);
                 }
             }
         } catch (Throwable e) {
@@ -443,38 +409,24 @@ public abstract class SdkSupport {
     }
 
     static void executeRequestFieldSetMethod(Request<?> request, Class<? extends Request> requestType,
-                                             String methodName, Object arg) throws Exception {
+                                             String filedName, Object arg) throws Exception {
+        final String setMethodName = "set" + Character.toUpperCase(filedName.charAt(0))
+                + filedName.substring(1);
         List<Method> methods = getRequestDeclaredMethods(requestType);
         for (Method method : methods) {
-            if (method.getName().equals(methodName) && method.getParameterTypes().length == 1
-                    && method.getParameterTypes()[0].equals(arg.getClass())) {
-                try {
-                    method.invoke(request, arg);
-                } catch (IllegalAccessException e) {
-                    method.setAccessible(true);
-                    method.invoke(request, arg);
-                    return;
-                }
+            if (method.getName().equals(setMethodName) // name equal
+                    && method.getParameterTypes().length == 1 // param len = 1
+                    && method.getParameterTypes()[0].isAssignableFrom(arg.getClass())) // arg is param instance
+            {
+                ReflectUtil.invoke(request, method, arg);
+                break;
             }
         }
-        throw new NoSuchMethodException(methodName);
+        throw new NoSuchMethodException(setMethodName);
     }
 
     static List<Method> getRequestDeclaredMethods(Class<? extends Request> requestType) {
-        return requestMethodCache.computeIfAbsent(requestType, SdkSupport::getRequestDeclaredMethods0);
-    }
-
-    static List<Method> getRequestDeclaredMethods0(Class<? extends Request> requestType) {
-        List<Method> allDeclaredMethods = new ArrayList<>();
-        Class<?> searchType = requestType;
-        while (searchType != null) {
-            Method[] declaredMethods = searchType.getDeclaredMethods();
-            if (ArrayUtils.isNotEmpty(declaredMethods)) {
-                allDeclaredMethods.addAll(Arrays.asList(declaredMethods));
-            }
-            searchType = Object.class.equals(searchType.getSuperclass()) ? null : searchType.getSuperclass();
-        }
-        return allDeclaredMethods;
+        return requestMethodCache.computeIfAbsent(requestType, ReflectUtil::getAllDeclaredMethods);
     }
 
     static List<Field> getAndFilterRequestAndSuperDeclaredFields(Class<? extends Request> requestType) {
@@ -483,26 +435,8 @@ public abstract class SdkSupport {
     }
 
     static List<Field> getAndFilterRequestAndSuperDeclaredFields0(Class<? extends Request> requestType) {
-        List<Field> allDeclaredFields = new ArrayList<>();
-        Class<?> searchType = requestType;
-        while (searchType != null) {
-            Field[] declaredFields = searchType.getDeclaredFields();
-            if (ArrayUtils.isNotEmpty(declaredFields)) {
-                allDeclaredFields.addAll(Arrays.asList(declaredFields));
-            }
-            searchType = Object.class.equals(searchType.getSuperclass()) ? null : searchType.getSuperclass();
-        }
-        return allDeclaredFields.stream()
+        return ReflectUtil.getAllDeclaredFields(requestType).stream()
                 .filter(field -> field.isAnnotationPresent(RequestField.class)).collect(Collectors.toList());
-    }
-
-    static void setRequestFieldValue(Request<?> request, Field field, Object arg) throws Exception {
-        try {
-            field.set(request, arg);
-        } catch (IllegalAccessException e) {
-            field.setAccessible(true);
-            field.set(request, arg);
-        }
     }
 
     static int getOrder(RequestField requestField, int i, List<Field> fields) {

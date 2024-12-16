@@ -20,10 +20,9 @@ import io.reactivex.rxjava3.functions.Supplier;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -374,5 +373,54 @@ public abstract class ReflectUtil {
             return actualTypeArguments;
         }
         throw new IllegalStateException(type + " is not java.lang.reflect.ParameterizedType");
+    }
+
+    public static List<Field> getAllDeclaredFields(Class<?> clazz) {
+        List<Field> allDeclaredFields = new ArrayList<>();
+        Class<?> searchType = clazz;
+        while (searchType != null) {
+            Field[] declaredFields = searchType.getDeclaredFields();
+            if (ArrayUtils.isNotEmpty(declaredFields)) {
+                allDeclaredFields.addAll(Arrays.asList(declaredFields));
+            }
+            searchType = Object.class.equals(searchType.getSuperclass()) ? null : searchType.getSuperclass();
+        }
+        return allDeclaredFields;
+    }
+
+    public static List<Method> getAllDeclaredMethods(Class<?> clazz) {
+        List<Method> allDeclaredMethods = new ArrayList<>();
+        Class<?> searchType = clazz;
+        while (searchType != null) {
+            Method[] declaredMethods = searchType.getDeclaredMethods();
+            if (ArrayUtils.isNotEmpty(declaredMethods)) {
+                allDeclaredMethods.addAll(Arrays.asList(declaredMethods));
+            }
+            searchType = Object.class.equals(searchType.getSuperclass()) ? null : searchType.getSuperclass();
+        }
+        return allDeclaredMethods;
+    }
+
+    public static void setFieldValue(Object obj, Field field, Object arg) {
+        try {
+            field.setAccessible(true);
+            field.set(obj, arg);
+        } catch (IllegalArgumentException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new IllegalArgumentException("set field failed ", e);
+        }
+    }
+
+    @Nullable
+    public static Object invoke(Object obj, Method method, Object... args) {
+        try {
+            method.setAccessible(true);
+            return method.invoke(obj, args);
+        } catch (IllegalArgumentException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new IllegalArgumentException("invoke method failed ", e);
+        }
     }
 }
