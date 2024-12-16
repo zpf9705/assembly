@@ -178,10 +178,6 @@ public abstract class AbstractRequestParams<R extends AbstractResponse> implemen
      *     }
      *     }
      * </pre></blockquote><hr>
-     * <h3>Warn</h3>
-     * <p>If a custom response type has a generic indicator, it will not be supported
-     * and will obtain an unpredictable type. For example, {@code ExampleResponse<T>}
-     * in {@code T} cannot locate a specific type from the subclass's generic.
      *
      * @return {@inheritDoc}
      * @since 1.0.2
