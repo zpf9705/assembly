@@ -16,8 +16,13 @@
 
 package top.osjf.sdk.core.process;
 
+import top.osjf.sdk.core.client.ClientExecutors;
 import top.osjf.sdk.core.exception.SdkException;
+import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.support.Nullable;
+import top.osjf.sdk.core.util.ReflectUtil;
 
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Map;
 
@@ -45,18 +50,50 @@ import java.util.Map;
  * <p>Note: The `serialVersionUID` field is used for serialization version control to ensure
  * compatibility during deserialization.
  *
- * @param <R> Implement a unified response class data type.
+ * @param <R> Subclass generic type of {@code AbstractResponse}.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public abstract class AbstractRequestParams<R extends AbstractResponse> implements Request<R>
-
-{
+public abstract class AbstractRequestParams<R extends AbstractResponse> implements Request<R> {
 
     private static final long serialVersionUID = 6875912567896987011L;
 
     /**
      * {@inheritDoc}
+     *
+     * @return {@code URL} instances of same {@code url}
+     * and {@code unique}.
+     */
+    @NotNull
+    public URL getUrl(@Nullable String host) {
+        return URL.same(matchSdkEnum().getUrl(host));
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return the {@literal null}.
+     */
+    @Nullable
+    @Override
+    public Object getRequestParam() {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return default {@code Charset} by {@link Charset#defaultCharset()}.
+     */
+    @Nullable
+    @Override
+    public Charset getCharset() {
+        return Charset.defaultCharset();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * @return an empty {@code Map}.
      */
     @Override
@@ -65,9 +102,33 @@ public abstract class AbstractRequestParams<R extends AbstractResponse> implemen
     }
 
     /**
-     * {@inheritDoc}
+     * no validate logic.
      */
     @Override
     public void validate() throws SdkException {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@inheritDoc}
+     */
+    @Override
+    @NotNull
+    public Class<R> getResponseCls() {
+        return ReflectUtil.getSuperGenericType(this, 0);
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Default to use {@link ClientExecutors} execute current {@code Request}.
+     *
+     * @param host {@inheritDoc}
+     * @return {@inheritDoc}
+     */
+    @Override
+    public R execute(@Nullable String host) {
+        return ClientExecutors.executeRequestClient(host, this);
     }
 }
