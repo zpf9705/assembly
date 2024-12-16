@@ -88,7 +88,7 @@ public interface HttpSdkEnum extends SdkEnum {
      * depending on the application's configuration or the current network environment.
      * <p>
      * This parameter is optional and depends on your return value in {@link #getUrl}.
-     * You can check the default operation of method {@link HttpRequest#formatUrl}.
+     * You can check the default operation of method {@link AbstractHttpRequestParams#formatUrl}.
      *
      * @return The currently used HTTP protocol enumeration instance (HTTPS or HTTP).
      * @since 1.0.2
