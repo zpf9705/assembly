@@ -24,7 +24,10 @@ import top.osjf.sdk.core.util.*;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -52,7 +55,7 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-@SuppressWarnings({"rawtypes"})
+@SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class SdkSupport {
 
     /***The prefix name of the set method.*/
@@ -71,6 +74,18 @@ public abstract class SdkSupport {
      */
     protected static final Map<Class<? extends Request>, List<Method>> requestMethodCache
             = new SynchronizedWeakHashMap<>();
+
+    /*** cache for dynamically obtain the type of response class.
+     * Since 1.0.2,cache modification to weak references, freeing up memory in appropriate
+     * places to prevent memory leaks.
+     * */
+    protected static final Map<Class<?>, Class<? extends Response>> GENERIC_CACHE = new SynchronizedWeakHashMap<>();
+
+    /***The left angle bracket included in the generic.*/
+    protected static final String LEFT_ANGLE_BRACKET = "<";
+
+    /***The right angle bracket included in the generic.*/
+    protected static final String RIGHT_ANGLE_BRACKET = ">";
 
     /**
      * Create corresponding request parameters based on extension
@@ -213,9 +228,140 @@ public abstract class SdkSupport {
         return instance;
     }
 
+    /**
+     * Retrieves the required response type for a given request.
+     *
+     * <p>This method determines and returns the required response type based on the
+     * passed request object and its inheritance hierarchy.
+     * It first attempts to retrieve the type from a cache, and if not found, traverses
+     * the class hierarchy (including interfaces and parent classes)
+     * of the request object to find a matching response type. If a matching generic type
+     * is found, it is returned; otherwise,
+     * if no matching type is found, the default type is returned.</p>
+     *
+     * @param request The request object used to determine the required response type.
+     * @param def     The default type to return if no matching response type is found.
+     * @return The required response type for the request, or the default type if none is found.
+     * @throws NullPointerException if input {@code Request} is {@literal null}.
+     * @see Class#getGenericInterfaces()
+     * @see Class#getGenericSuperclass()
+     */
+    public static <R extends Response> Class<R> getResponseRequiredType(@NotNull Request<?> request,
+                                                                        @Nullable Class<? extends Response> def) {
+
+
+        //The class object of the current request class.
+        final Class<?> inletClass = request.getClass();
+
+        //Try reading the cache first.
+        Class<? extends Response> resultClass = GENERIC_CACHE.get(inletClass);
+        if (resultClass != null) {
+            return (Class<R>) resultClass;
+        }
+
+        //Loop stop marker.
+        boolean goWhile = true;
+
+        //Cache temporary type class objects.
+        Map<Type, Class<?>> genericInternalCache = new ConcurrentHashMap<>(16);
+
+        //There is no cache to execute the fetch logic.
+        Class<?> clazz = inletClass;
+        while (goWhile) {
+            //Collect the type of the class for visual objects.
+            //Including interfaces and classes.
+            ClassLoader classLoader = clazz.getClassLoader();
+            List<Type> types = new ArrayList<>();
+            Type genericSuperclass = clazz.getGenericSuperclass();
+            if (genericSuperclass != null) {
+                types.add(genericSuperclass);
+            }
+            Type[] genericInterfaces = clazz.getGenericInterfaces();
+            if (ArrayUtils.isNotEmpty(genericInterfaces)) {
+                types.addAll(Arrays.asList(genericInterfaces));
+            }
+
+            //Filter the main class of the request main class, taking the first one.
+            Type typeFilter = types.stream().filter(linkType -> {
+                Class<?> typeClass = getTypeClass(linkType, classLoader);
+                if (typeClass == null) {
+                    return false;
+                }
+                //Cache the class objects of the current classes for future use
+                genericInternalCache.putIfAbsent(linkType, typeClass);
+                return request.isAssignableRequest(typeClass);
+            }).findFirst().orElse(null);
+
+            //If there is nothing available, simply exit the loop.
+            if (typeFilter == null) {
+                goWhile = false;
+                continue;
+            }
+
+            //If it is a type that carries a generic, then obtain whether
+            // it contains a generic that responds to the main class and obtain it.
+            if (typeFilter instanceof ParameterizedType) {
+                Class<? extends Response> typeClass = getResponseGenericTypeClass(typeFilter, clazz.getClassLoader());
+                if (typeClass != null) {
+                    resultClass = typeClass;
+                    //After obtaining it, bind the response generic of the
+                    // main class and use it for subsequent caching.
+                    GENERIC_CACHE.putIfAbsent(inletClass, resultClass);
+                    goWhile = false;
+                } else {
+
+                    //The paradigm does not carry response generics, and the class
+                    // object logic for filtering types is executed.
+                    // According to the specification of the idea, it will not go this far.
+                    clazz = genericInternalCache.get(typeFilter);
+                }
+            } else {
+
+                //Non generic classes, directly use class objects of filter types for subsequent logic.
+                clazz = genericInternalCache.get(typeFilter);
+            }
+
+        }
+
+        //If the type is empty, cache a default type.
+        if (resultClass == null && def != null) {
+            GENERIC_CACHE.put(inletClass, def);
+        }
+        return (Class<R>) GENERIC_CACHE.get(inletClass);
+    }
+
 
 
     /*  ################################### Internal assistance methods. ###################################  */
+
+
+    private static Class<? extends Response> getResponseGenericTypeClass(Type type, ClassLoader classLoader) {
+        Type[] actualTypeArguments = ((ParameterizedType) type).getActualTypeArguments();
+        // as Response and retrieve the first one.
+        Class<? extends Response> responseTypeClass = null;
+        for (Type actualTypeArgument : actualTypeArguments) {
+            Class<?> typeClass = getTypeClass(actualTypeArgument, classLoader);
+            if (Response.class.isAssignableFrom(typeClass)) {
+                responseTypeClass = (Class<? extends Response>) typeClass;
+                break;
+            }
+        }
+        return responseTypeClass;
+    }
+
+    private static Class<?> getTypeClass(Type type, ClassLoader classLoader) {
+        if (type instanceof Class) {
+            return (Class<?>) type;
+        }
+        String typeName = type.getTypeName();
+        String className = typeName;
+        //A generic type name that carries<...>, After removing such content,
+        // the original name of the class is obtained.
+        if (typeName.contains(LEFT_ANGLE_BRACKET) && typeName.contains(RIGHT_ANGLE_BRACKET)) {
+            className = typeName.split(LEFT_ANGLE_BRACKET)[0];
+        }
+        return ReflectUtil.loadClass(className, classLoader);
+    }
 
 
     static Request<?> invokeCreateRequestConstructorWhenFailedUseSet(Class<? extends Request> requestType,
