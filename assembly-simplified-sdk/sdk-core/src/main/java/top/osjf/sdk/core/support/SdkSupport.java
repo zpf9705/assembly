@@ -242,7 +242,9 @@ public abstract class SdkSupport {
      * @param request The request object used to determine the required response type.
      * @param def     The default type to return if no matching response type is found.
      * @return The required response type for the request, or the default type if none is found.
-     * @throws NullPointerException if input {@code Request} is {@literal null}.
+     * @throws NullPointerException  if input {@code Request} is {@literal null}.
+     * @throws IllegalStateException If no available generic class is found and there is
+     *                               no default value.
      * @see Class#getGenericInterfaces()
      * @see Class#getGenericSuperclass()
      */
@@ -324,7 +326,10 @@ public abstract class SdkSupport {
         }
 
         //If the type is empty, cache a default type.
-        if (resultClass == null && def != null) {
+        if (resultClass == null) {
+            if (def == null) {
+                throw new IllegalStateException("No available generic classes were found.");
+            }
             GENERIC_CACHE.put(inletClass, def);
         }
         return (Class<R>) GENERIC_CACHE.get(inletClass);
