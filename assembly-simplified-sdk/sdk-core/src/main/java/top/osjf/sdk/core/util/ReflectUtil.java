@@ -222,10 +222,27 @@ public abstract class ReflectUtil {
 
     /**
      * Retrieve the type at the specified index in the parent generic
-     * type of the object.
+     * {@code Class} of the object.
      *
      * @param <R>   Generic return type, representing the type at the
      *              specified index in the parent generic type.
+     * @param obj   target object, used to obtain generic type information
+     *              of its parent class.
+     * @param index The value represents the position of the generic type
+     *              to be obtained in the parent class generic type list (starting from 0).
+     * @return Returns generic type information at the specified index,
+     * encapsulated as a Class object.
+     * @throws NullPointerException If the input object is {@literal null}.
+     * @throws ClassCastException   if the obtained {@code Type} is not of type {@code Class}.
+     */
+    public static <R> Class<R> getSuperGenericClass(@NotNull Object obj, int index) {
+        return typeCastClass(getSuperGenericType(obj, index));
+    }
+
+    /**
+     * Retrieve the type at the specified index in the parent generic
+     * {@code Type} of the object.
+     *
      * @param obj   target object, used to obtain generic type information
      *              of its parent class.
      * @param index The value represents the position of the generic type
@@ -236,8 +253,8 @@ public abstract class ReflectUtil {
      * @throws IndexOutOfBoundsException The selected index exceeds the length
      *                                   of the parent class generic array.
      */
-    public static <R> Class<R> getSuperGenericType(@NotNull Object obj, int index) {
-        return (Class<R>) getSuperAllGenericType(obj)[index];
+    public static Type getSuperGenericType(@NotNull Object obj, int index) {
+        return getSuperAllGenericType(obj)[index];
     }
 
     /**
@@ -254,12 +271,50 @@ public abstract class ReflectUtil {
     }
 
     /**
-     * The returned type is a single generic type obtained by taking the {@code index}
+     * The returned type is a single generic {@code Class}  obtained by taking the {@code index}
      * specified index from all generic arrays that implement the {@code interfaceIndex}
      * position interface specified by the target object.
      *
      * @param <R>            Generic return type, representing the type at the
      *                       specified index in the interface generic type.
+     * @param obj            is the target object used to obtain the interface information
+     *                       of its implementation.
+     * @param interfaceIndex specifies the index of the interface to obtain generic type
+     *                       parameters in the interface array implemented by the target object.
+     * @param index          This parameter is the index position of the parameter to be taken
+     *                       from the array of all generic parameters of the specified implementation
+     *                       location interface obtained by parameter {@code interfaceIndex}.
+     * @return an array containing generic type parameters for a specified interface.
+     * @throws NullPointerException If the input object is {@literal null}.
+     * @throws ClassCastException   If the length of the reflection parameter for obtaining
+     *                              the specified implementation index position interface
+     *                              is less than or equal to the length of the input third
+     *                              method parameter {@code index}.
+     */
+    public static <R> Class<R> getIndexedInterfaceGenericClass(@NotNull Object obj, int interfaceIndex, int index) {
+        return typeCastClass(getIndexedInterfaceGenericType(obj, interfaceIndex, index));
+    }
+
+    /**
+     * Cast a {@code Type} to {@code Class},if <pre>{@code type instanceof Class}</pre>
+     *
+     * @param type input {@code Type}.
+     * @param <R>  Generic return type.
+     * @return cast result be a {@code Class}.
+     * @throws ClassCastException if the obtained {@code Type} is not of type {@code Class}.
+     */
+    private static <R> Class<R> typeCastClass(Type type) {
+        if (type instanceof Class) {
+            return (Class<R>) type;
+        }
+        throw new ClassCastException(type.getClass().getName() + " cannot be cast to " + Class.class.getName());
+    }
+
+    /**
+     * The returned type is a single generic {@code Type} obtained by taking the {@code index}
+     * specified index from all generic arrays that implement the {@code interfaceIndex}
+     * position interface specified by the target object.
+     *
      * @param obj            is the target object used to obtain the interface information
      *                       of its implementation.
      * @param interfaceIndex specifies the index of the interface to obtain generic type
@@ -274,8 +329,8 @@ public abstract class ReflectUtil {
      *                                   is less than or equal to the length of the input third
      *                                   method parameter {@code index}.
      */
-    public static <R> Class<R> getIndexedInterfaceGenericType(@NotNull Object obj, int interfaceIndex, int index) {
-        return (Class<R>) getIndexedInterfaceAllGenericType(obj, interfaceIndex)[index];
+    public static Type getIndexedInterfaceGenericType(@NotNull Object obj, int interfaceIndex, int index) {
+        return getIndexedInterfaceAllGenericType(obj, interfaceIndex)[index];
     }
 
     /**
