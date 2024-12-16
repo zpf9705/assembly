@@ -147,15 +147,6 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
     /**
      * {@inheritDoc}
      *
-     * @return {@inheritDoc}
-     */
-    @NotNull
-    @Override
-    Class<R> getResponseCls();
-
-    /**
-     * {@inheritDoc}
-     *
      * @param clazz {@inheritDoc}
      * @return {@inheritDoc}
      */
