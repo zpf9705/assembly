@@ -22,6 +22,7 @@ import top.osjf.sdk.core.support.Nullable;
  * Define {@code Request} as an executable interface aimed at facilitating
  * SDK calls and returning specific response types.
  *
+ * @param <R> Subclass generic type of {@code Response}.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
@@ -39,8 +40,8 @@ public interface Executable<R extends Response> {
 
     /**
      * Carry the request host address parameter (can be empty, depending
-     * on method {@link SdkEnum#getUrl}) to obtain
-     * a specific response type object.
+     * on method {@link SdkEnum#getUrl}) to obtain a specific response type
+     * object.
      *
      * @param host the real server hostname.
      * @return Specific response.
