@@ -60,7 +60,7 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      * Return the {@code URL} instance built by the service host.
      * <p>
      * The service host name is not required and depends on the method
-     * {@link #matchSdkEnum()#getUrl}.
+     * {@link SdkEnum#getUrl}.
      *
      * @param host the real server hostname.
      * @return {@code URL} Object of packaging tags and URL addresses

@@ -51,6 +51,8 @@ import java.util.Map;
  * <li>Overrides the execute {@link #execute}method, executing the current
  * request using {@code ClientExecutors} by default and returning the response
  * object.</li>
+ * <li>By rewriting the {@link #isAssignableRequest} method, check if the given
+ * class implements the {@code Request} interface.</li>
  * </ul>
  *
  * <p>This class is designed to be inherited by specific request parameter
@@ -141,5 +143,16 @@ public abstract class AbstractRequestParams<R extends AbstractResponse> implemen
     @Override
     public R execute(@Nullable String host) {
         return ClientExecutors.executeRequestClient(host, this);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param clazz {@inheritDoc}
+     * @return {@inheritDoc}
+     */
+    @Override
+    public boolean isAssignableRequest(Class<?> clazz) {
+        return Request.class.isAssignableFrom(clazz);
     }
 }
