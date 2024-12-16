@@ -32,7 +32,7 @@ import java.util.function.Supplier;
  * specifications to achieve rapid development, and custom inheritance
  * {@link AbstractHttpResponse} is also possible.
  *
- * @param <T> Response data types.
+ * @param <T> Response data type.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
