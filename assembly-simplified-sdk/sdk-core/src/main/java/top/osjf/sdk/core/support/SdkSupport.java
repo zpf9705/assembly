@@ -319,17 +319,13 @@ public abstract class SdkSupport {
             this.type = type;
             this.clazz = clazz;
         }
-
-        boolean canResolve() {
-            return type != null && clazz != null;
-        }
     }
 
     private static Pair getTypePair(List<Type> types, ClassLoader classLoader) {
         Type requestType = null;
         Class<?> requestClass = null;
         for (Type type : types) {
-            requestClass = getTypeClass(Request.class, type, classLoader);
+            requestClass = getAssignableTypeClass(Request.class, type, classLoader);
             if (requestClass != null) {
                 requestType = type;
                 break;
@@ -343,7 +339,7 @@ public abstract class SdkSupport {
         // as Response and retrieve the first one.
         Type responseType = null;
         for (Type actualType : actualTypes) {
-            if (getTypeClass(Response.class, actualType, classLoader) != null) {
+            if (getAssignableTypeClass(Response.class, actualType, classLoader) != null) {
                 responseType = actualType;
                 break;
             }
@@ -351,7 +347,7 @@ public abstract class SdkSupport {
         return responseType;
     }
 
-    static Class<?> getTypeClass(Class<?> clazz, Type type, ClassLoader classLoader) {
+    static Class<?> getAssignableTypeClass(Class<?> clazz, Type type, ClassLoader classLoader) {
         Class<?> typeClass = getTypeClass(type, classLoader);
         if (clazz.isAssignableFrom(typeClass)) {
             return typeClass;
