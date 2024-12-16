@@ -27,6 +27,7 @@ import top.osjf.sdk.http.HttpProtocol;
 import top.osjf.sdk.http.client.DefaultHttpClient;
 import top.osjf.sdk.http.support.HttpSdkSupport;
 
+import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -41,7 +42,7 @@ import java.util.Map;
  * <p>
  * This abstract class mainly provides the following default feature rewriting:
  * <ul>
- *     <li>Rewrite method {@link #getUrl}, after obtaining {@link #matchSdkEnum()#getUrl},
+ *     <li>Rewrite method {@link #getUrl}, after obtaining {@link HttpSdkEnum#getUrl},
  *     use method {@link #formatUrl} to format the two key points of
  *     {@link HttpSdkEnum#getRequestMethod()} and {@link #urlJoin()}.</li>
  *     <li>Request header management: By rewriting the {@link #getHeadMap()} method, the
@@ -118,82 +119,10 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
         return super.getHeadMap();
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>If neither is provided, {@link HttpSdkSupport#getResponseRequiredType}
-     * will be used for generic retrieval of the response.
-     * <p><strong>The specific supported formats are shown below.</strong></p>
-     * <p><strong>The abstract {@link AbstractHttpRequestParams} provided directly is followed
-     * by a response implementation with a generic type.</strong>
-     * <hr><blockquote><pre>
-     *     {@code
-     *   class ExampleRequestParam
-     *   extends AbstractHttpRequestParams<HttpResultResponse<Character>> {
-     *      private static final long serialVersionUID = 6115216307330001269L;
-     *         Override
-     *         public HttpSdkEnum matchHttpSdk() {
-     *             return null;
-     *         }
-     *       }
-     *     }
-     * </pre></blockquote><hr>
-     * <p><strong>Implement an interface that carries the main class generic request.</strong>
-     * <hr><blockquote><pre>
-     *     {@code
-     *     interface
-     *     ExampleHttpRequest extends HttpRequest<HttpResultResponse<String>> {
-     *     }
-     *     class ExampleRequestParam implements ExampleHttpRequest {
-     *         private static final long serialVersionUID = 7371775319382181179L;
-     *     }
-     *     }
-     * </pre></blockquote><hr>
-     * <p><strong>Nested inheritance type.</strong>
-     * <hr><blockquote><pre>
-     *     {@code
-     *      class ExampleRequestParam extends AbstractHttpRequestParams<HttpResultResponse<String>> {
-     *         private static final long serialVersionUID = 6115216307330001269L;
-     *         Override
-     *         public HttpSdkEnum matchHttpSdk() {
-     *             return null;
-     *         }
-     *     }
-     *     class ExampleRequestParamSon extends ExampleRequestParam {
-     *         private static final long serialVersionUID = 2463029032762347802L;
-     *     }
-     *     }
-     * </pre></blockquote><hr>
-     * <p><strong>Nested implementation type.</strong>
-     * <hr><blockquote><pre>
-     *     {@code
-     *     class ExampleRequestParam implements HttpRequest<HttpResultResponse<String>> {
-     *         private static final long serialVersionUID = 6115216307330001269L;
-     *         ...
-     *     }
-     *     class ExampleRequestParamSon extends ExampleRequestParam {
-     *         private static final long serialVersionUID = 2463029032762347802L;
-     *     }
-     *     }
-     * </pre></blockquote><hr>
-     * <h3>Warn</h3>
-     * <p>If a custom response type has a generic indicator, it will not be supported
-     * and will obtain an unpredictable type. For example, {@code HttpResultResponse<T>}
-     * in {@code T} cannot locate a specific type from the subclass's generic.
-     *
-     * @return {@inheritDoc}
-     */
+    @Nullable
     @Override
-    @NotNull
-    public Class<R> getResponseCls() {
-        Class<R> responseType;
-        try {
-            responseType = super.getResponseCls();
-        } catch (Exception e) {
-            responseType = (Class<R>) HttpSdkSupport
-                    .getResponseRequiredType(this, HttpResultResponse.class);
-        }
-        return responseType;
+    public Type defResponseType() {
+        return HttpResultResponse.class;
     }
 
     /**
@@ -237,7 +166,8 @@ public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> 
     protected final String formatUrl(String url) {
         HttpProtocol protocol = matchSdkEnum().getProtocol();
         if (protocol != null) url = protocol.formatUrl(url);
-        return url + urlJoin();
+        String uj = urlJoin();
+        return url + (StringUtils.isNotBlank(uj) ? uj : "");
     }
 
     /**

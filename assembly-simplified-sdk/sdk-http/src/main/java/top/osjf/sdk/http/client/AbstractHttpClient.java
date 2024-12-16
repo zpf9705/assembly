@@ -26,6 +26,7 @@ import top.osjf.sdk.core.process.URL;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.support.ServiceLoadManager;
+import top.osjf.sdk.core.util.ArrayUtils;
 import top.osjf.sdk.core.util.ExceptionUtils;
 import top.osjf.sdk.http.executor.HttpRequestExecutor;
 import top.osjf.sdk.http.process.HttpRequest;
@@ -313,13 +314,13 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
     @Override
     public void handlerSdkError(HttpRequest<?> request, SdkException e) {
         sdkError().accept("Client request fail, apiName={}, error=[{}]",
-                HttpSdkSupport.toLoggerArray(request.matchSdkEnum().name(), e.getMessage()));
+                ArrayUtils.toArray(request.matchSdkEnum().name(), e.getMessage()));
     }
 
     @Override
     public void handlerUnKnowError(HttpRequest<?> request, Throwable e) {
         unKnowError().accept("Client request fail, apiName={}, error=[{}]",
-                HttpSdkSupport.toLoggerArray(request.matchSdkEnum().name(), ExceptionUtils.getMessage(e)));
+                ArrayUtils.toArray(request.matchSdkEnum().name(), ExceptionUtils.getMessage(e)));
     }
 
     @Override
@@ -333,11 +334,11 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
         if (info.noHappenError().get()) {
             String msgFormat = "Request end, name={}, request={}, response={}, time={}ms";
             normal().accept(msgFormat,
-                    HttpSdkSupport.toLoggerArray(name, body, response, spendTotalTimeMillis));
+                    ArrayUtils.toArray(name, body, response, spendTotalTimeMillis));
         } else {
             String msgFormat = "Request fail, name={}, request={}, response={}, error={}, time={}ms";
             normal().accept(msgFormat,
-                    HttpSdkSupport.toLoggerArray(name, body, response, info.getErrorMessage(), spendTotalTimeMillis));
+                    ArrayUtils.toArray(name, body, response, info.getErrorMessage(), spendTotalTimeMillis));
         }
     }
 }

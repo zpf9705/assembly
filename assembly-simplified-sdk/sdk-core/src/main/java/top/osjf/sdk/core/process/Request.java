@@ -23,6 +23,7 @@ import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
 
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.util.Map;
 
@@ -151,16 +152,16 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
     Class<? extends Client> getClientCls();
 
     /**
-     * Return the {@code Class} type of the {@code Response} object for this
+     * Return the {@code Type} type of the {@code Response} object for this
      * request class.
      *
      * <p>This attribute is used to convert the response data into the provided
      * {@code Response} type after the request is completed.
      *
-     * @return the {@code Class} type of the {@code Response} object.
+     * @return the {@code Type} type of the {@code Response} object.
      */
     @NotNull
-    Class<R> getResponseCls();
+    Type getResponseType();
 
     /**
      * Attempting to obtain the generic indicators of an inherited class or

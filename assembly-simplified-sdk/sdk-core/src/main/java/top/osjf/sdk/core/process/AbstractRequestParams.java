@@ -20,8 +20,9 @@ import top.osjf.sdk.core.client.ClientExecutors;
 import top.osjf.sdk.core.exception.SdkException;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
-import top.osjf.sdk.core.util.ReflectUtil;
+import top.osjf.sdk.core.support.SdkSupport;
 
+import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Map;
@@ -46,7 +47,7 @@ import java.util.Map;
  * by default, indicating no header information.</li>
  * <li>Overrides the validate {@link #validate()} method, not performing
  * any validation logic by default.</li>
- * <li>Overrides the getResponseCls {@link #getResponseCls()} method,
+ * <li>Overrides the getResponseCls {@link #getResponseType()} method,
  * obtaining the Class object of the response type using reflection.</li>
  * <li>Overrides the execute {@link #execute}method, executing the current
  * request using {@code ClientExecutors} by default and returning the response
@@ -122,13 +123,78 @@ public abstract class AbstractRequestParams<R extends AbstractResponse> implemen
     /**
      * {@inheritDoc}
      *
+     * <p>If neither is provided, {@link SdkSupport#getResponseType}
+     * will be used for generic retrieval of the response.
+     * <p><strong>The specific supported formats are shown below.</strong></p>
+     * <p><strong>The abstract {@link AbstractRequestParams} provided directly is followed
+     * by a response implementation with a generic type.</strong>
+     * <hr><blockquote><pre>
+     *     {@code
+     *   class ExampleRequestParam
+     *   extends AbstractRequestParams<ExampleResponse<Character>> {
+     *      private static final long serialVersionUID = 6115216307330001269L;
+     *         Override
+     *         public SdkEnum matchSdkEnum() {
+     *             return null;
+     *         }
+     *       }
+     *     }
+     * </pre></blockquote><hr>
+     * <p><strong>Implement an interface that carries the main class generic request.</strong>
+     * <hr><blockquote><pre>
+     *     {@code
+     *     interface
+     *     ExampleRequest extends Request<ExampleResponse<String>> {
+     *     }
+     *     class ExampleRequestParam implements ExampleRequest {
+     *         private static final long serialVersionUID = 7371775319382181179L;
+     *     }
+     *     }
+     * </pre></blockquote><hr>
+     * <p><strong>Nested inheritance type.</strong>
+     * <hr><blockquote><pre>
+     *     {@code
+     *      class ExampleRequestParam extends AbstractRequestParams<ExampleResponse<String>> {
+     *         private static final long serialVersionUID = 6115216307330001269L;
+     *         Override
+     *         public SdkEnum matchSdkEnum() {
+     *             return null;
+     *         }
+     *     }
+     *     class ExampleRequestParamSon extends ExampleRequestParam {
+     *         private static final long serialVersionUID = 2463029032762347802L;
+     *     }
+     *     }
+     * </pre></blockquote><hr>
+     * <p><strong>Nested implementation type.</strong>
+     * <hr><blockquote><pre>
+     *     {@code
+     *     class ExampleRequestParam implements Request<ExampleResponse<String>> {
+     *         private static final long serialVersionUID = 6115216307330001269L;
+     *         ...
+     *     }
+     *     class ExampleRequestParamSon extends ExampleRequestParam {
+     *         private static final long serialVersionUID = 2463029032762347802L;
+     *     }
+     *     }
+     * </pre></blockquote><hr>
+     * <h3>Warn</h3>
+     * <p>If a custom response type has a generic indicator, it will not be supported
+     * and will obtain an unpredictable type. For example, {@code ExampleResponse<T>}
+     * in {@code T} cannot locate a specific type from the subclass's generic.
+     *
      * @return {@inheritDoc}
      * @since 1.0.2
      */
     @Override
     @NotNull
-    public Class<R> getResponseCls() {
-        return ReflectUtil.getSuperGenericType(this, 0);
+    public Type getResponseType() {
+        return SdkSupport.getResponseType(this, defResponseType());
+    }
+
+    @Nullable
+    public Type defResponseType() {
+        return null;
     }
 
     /**

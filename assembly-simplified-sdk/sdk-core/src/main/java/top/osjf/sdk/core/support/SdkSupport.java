@@ -79,7 +79,7 @@ public abstract class SdkSupport {
      * Since 1.0.2,cache modification to weak references, freeing up memory in appropriate
      * places to prevent memory leaks.
      * */
-    protected static final Map<Class<?>, Class<? extends Response>> GENERIC_CACHE = new SynchronizedWeakHashMap<>();
+    protected static final Map<Class<?>, Type> GENERIC_CACHE = new SynchronizedWeakHashMap<>();
 
     /***The left angle bracket included in the generic.*/
     protected static final String LEFT_ANGLE_BRACKET = "<";
@@ -248,17 +248,16 @@ public abstract class SdkSupport {
      * @see Class#getGenericInterfaces()
      * @see Class#getGenericSuperclass()
      */
-    public static <R extends Response> Class<R> getResponseRequiredType(@NotNull Request<?> request,
-                                                                        @Nullable Class<? extends Response> def) {
+    public static Type getResponseType(@NotNull Request<?> request, @Nullable Type def) {
 
 
         //The class object of the current request class.
         final Class<?> inletClass = request.getClass();
 
         //Try reading the cache first.
-        Class<? extends Response> resultClass = GENERIC_CACHE.get(inletClass);
-        if (resultClass != null) {
-            return (Class<R>) resultClass;
+        Type resultType = GENERIC_CACHE.get(inletClass);
+        if (resultType != null) {
+            return resultType;
         }
 
         //Loop stop marker.
@@ -303,12 +302,11 @@ public abstract class SdkSupport {
             //If it is a type that carries a generic, then obtain whether
             // it contains a generic that responds to the main class and obtain it.
             if (typeFilter instanceof ParameterizedType) {
-                Class<? extends Response> typeClass = getResponseGenericTypeClass(typeFilter, clazz.getClassLoader());
-                if (typeClass != null) {
-                    resultClass = typeClass;
+                resultType = getResponseGenericType(typeFilter, clazz.getClassLoader());
+                if (resultType != null) {
                     //After obtaining it, bind the response generic of the
                     // main class and use it for subsequent caching.
-                    GENERIC_CACHE.putIfAbsent(inletClass, resultClass);
+                    GENERIC_CACHE.putIfAbsent(inletClass, resultType);
                     goWhile = false;
                 } else {
 
@@ -326,13 +324,13 @@ public abstract class SdkSupport {
         }
 
         //If the type is empty, cache a default type.
-        if (resultClass == null) {
+        if (resultType == null) {
             if (def == null) {
-                throw new IllegalStateException("No available generic classes were found.");
+                throw new IllegalStateException("No available generic type were found.");
             }
             GENERIC_CACHE.put(inletClass, def);
         }
-        return (Class<R>) GENERIC_CACHE.get(inletClass);
+        return GENERIC_CACHE.get(inletClass);
     }
 
 
@@ -340,21 +338,30 @@ public abstract class SdkSupport {
     /*  ################################### Internal assistance methods. ###################################  */
 
 
-    private static Class<? extends Response> getResponseGenericTypeClass(Type type, ClassLoader classLoader) {
-        Type[] actualTypeArguments = ((ParameterizedType) type).getActualTypeArguments();
+    private static Type getResponseGenericType(Type type, ClassLoader classLoader) {
+        Type[] actualTypes = ((ParameterizedType) type).getActualTypeArguments();
         // as Response and retrieve the first one.
-        Class<? extends Response> responseTypeClass = null;
-        for (Type actualTypeArgument : actualTypeArguments) {
-            Class<?> typeClass = getTypeClass(actualTypeArgument, classLoader);
-            if (Response.class.isAssignableFrom(typeClass)) {
-                responseTypeClass = (Class<? extends Response>) typeClass;
+        Type responseType = null;
+        for (Type actualType : actualTypes) {
+            if (isResponseType(actualType, classLoader)) {
+                responseType = actualType;
                 break;
             }
         }
-        return responseTypeClass;
+        return responseType;
     }
 
-    private static Class<?> getTypeClass(Type type, ClassLoader classLoader) {
+    static boolean isResponseType(Type type, ClassLoader classLoader) {
+        Class<?> typeClass;
+        if (type instanceof Class) {
+            typeClass = (Class<?>) type;
+        } else {
+            typeClass = getTypeClass(type, classLoader);
+        }
+        return Response.class.isAssignableFrom(typeClass);
+    }
+
+    static Class<?> getTypeClass(Type type, ClassLoader classLoader) {
         if (type instanceof Class) {
             return (Class<?>) type;
         }
