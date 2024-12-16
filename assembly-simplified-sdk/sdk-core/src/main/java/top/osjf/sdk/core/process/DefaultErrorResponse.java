@@ -136,7 +136,7 @@ public final class DefaultErrorResponse extends AbstractResponse {
      */
     public static <R extends Response> R parseErrorResponse(Throwable error, ErrorType type, Request<R> request) {
         DefaultErrorResponse response = type.convertToDefaultErrorResponse(error);
-        R r = JSONUtil.parseObject(response.asJson(), request.getResponseRequiredType());
+        R r = JSONUtil.parseObject(response.asJson(), request.getResponseCls());
         r.setErrorCode(response.getCode());
         r.setErrorMessage(response.getMessage());
         return r;
