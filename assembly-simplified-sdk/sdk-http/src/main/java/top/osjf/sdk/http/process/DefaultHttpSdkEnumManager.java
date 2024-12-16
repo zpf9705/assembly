@@ -26,7 +26,7 @@ import top.osjf.sdk.core.util.org.hibernate.validator.internal.util.v6_2_0_final
  * Uses {@code ConcurrentReferenceHashMap} as a cache to store client objects, supporting
  * thread safety and soft references.
  *
- * @param <R> Implement a unified response class data type.
+ * @param <R> Subclass generic type of {@code HttpResponse}.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
