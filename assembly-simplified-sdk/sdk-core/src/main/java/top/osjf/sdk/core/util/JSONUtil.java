@@ -82,7 +82,7 @@ public abstract class JSONUtil {
         } else if (requiredType instanceof Type) {
             result = parseObject(jsonStr, (Type) requiredType);
         } else {
-            result = null;
+            throw new UnsupportedOperationException(requiredType.getClass().getName());
         }
         return result;
     }
@@ -113,7 +113,6 @@ public abstract class JSONUtil {
      * @param <T>          required Type.
      * @return {@link T} or {@code null}
      * @throws JSONException If a parsing error occurs
-     * @since 1.0.9
      */
     public static <T> T parseObject(String jsonStr, Type requiredType) {
         return JSON.parseObject(jsonStr, requiredType);
@@ -129,7 +128,6 @@ public abstract class JSONUtil {
      * @throws JSONException If a parsing error occurs
      * @see #parseArray(String, Type)
      * @see #parseArray(String, Class)
-     * @since 1.0.9
      */
     @SuppressWarnings("unchecked")
     public static <T> List<T> parseArray(String jsonStr, Object requiredType) {
@@ -142,7 +140,7 @@ public abstract class JSONUtil {
         } else if (requiredType instanceof Type) {
             result = parseArray(jsonStr, (Type) requiredType);
         } else {
-            result = null;
+            throw new UnsupportedOperationException(requiredType.getClass().getName());
         }
         return result;
     }
@@ -157,7 +155,6 @@ public abstract class JSONUtil {
      * @param <T>          required Type.
      * @return {@link List} or {@code null}
      * @throws JSONException If a parsing error occurs
-     * @since 1.0.9
      */
     public static <T> List<T> parseArray(String jsonStr, Class<T> requiredType) {
         return JSON.parseArray(jsonStr, requiredType);
@@ -173,7 +170,6 @@ public abstract class JSONUtil {
      * @param <T>          required Type.
      * @return {@link List} or {@code null}
      * @throws JSONException If a parsing error occurs
-     * @since 1.0.9
      */
     public static <T> List<T> parseArray(String jsonStr, Type requiredType) {
         return JSON.parseArray(jsonStr, requiredType);
@@ -287,7 +283,6 @@ public abstract class JSONUtil {
      * @param <T>  required Type.
      * @param type the specified actual type
      * @return empty {@link T}.
-     * @since 1.0.9
      */
     public static <T> T toEmptyObj(Type type) {
         return JSON.parseObject("{}", type);
