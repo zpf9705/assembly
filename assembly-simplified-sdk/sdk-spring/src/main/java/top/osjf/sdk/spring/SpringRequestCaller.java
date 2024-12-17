@@ -24,6 +24,7 @@ import top.osjf.sdk.core.Request;
 import top.osjf.sdk.core.Response;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
+import top.osjf.sdk.core.util.CollectionUtils;
 import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.core.util.caller.CallOptions;
 import top.osjf.sdk.core.util.caller.Callback;
@@ -70,9 +71,10 @@ public class SpringRequestCaller extends RequestCaller implements ApplicationCon
      *     directly and return.</li>
      * </ul>
      *
-     * @param request input {@code Request} obj.
-     * @param host    the real server hostname.
-     * @param method  The method object to be executed.
+     * @param request   input {@code Request} obj.
+     * @param host      the real server hostname.
+     * @param method    the method object to be executed.
+     * @param callbacks the provider {@code Callback} instances.
      * @return The {@code Response} object obtained from the response
      * returns empty when {@link CallOptions#callbackClass()} exists.
      * @throws NullPointerException if input args is {@literal null}.
@@ -80,15 +82,58 @@ public class SpringRequestCaller extends RequestCaller implements ApplicationCon
     @Nullable
     public Response resolveRequestExecuteWithTypeOrMethodOptions(@NotNull Request<?> request,
                                                                  String host,
-                                                                 @NotNull Method method) {
+                                                                 @NotNull Method method,
+                                                                 @Nullable List<Callback> callbacks) {
         CallOptions callOptions = method.getAnnotation(CallOptions.class);
         if (callOptions == null) {
             callOptions = method.getDeclaringClass().getAnnotation(CallOptions.class);
             if (callOptions == null) {
-                return request.execute(host);
+                return noCallOptionsToExecute(request, host, callbacks);
             }
         }
-        return super.resolveRequestExecuteWithOptions(request, host, callOptions);
+        return super.resolveRequestExecuteWithOptions(request, host, callOptions, callbacks);
+    }
+
+    /**
+     * The proxy method did not find the execution method for annotation {@code CallOptions}.
+     *
+     * @param request   input {@code Request} obj.
+     * @param host      the real server hostname.
+     * @param callbacks the provider {@code Callback} instances.
+     * @return Response result {@code Response} object, returns {@literal null}
+     * in case of exception.
+     */
+    @Nullable
+    private Response noCallOptionsToExecute(@NotNull Request<?> request,
+                                            String host,
+                                            @Nullable List<Callback> callbacks) {
+        boolean hasCallbacks = CollectionUtils.isNotEmpty(callbacks);
+        try {
+            Response response = request.execute(host);
+            if (response.isSuccess())
+                if (hasCallbacks)
+                    callbacks.forEach(c -> c.success(response));
+            return response;
+        } catch (Throwable e) {
+            if (hasCallbacks) {
+                callbacks.forEach(c -> c.exception(request.matchSdkEnum().name(), e));
+            } else
+                throw e;
+        }
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Sort by {@link AnnotationAwareOrderComparator} use annotation
+     * {@link org.springframework.core.annotation.Order}.
+     *
+     * @param callbacks {@inheritDoc}
+     */
+    @Override
+    protected void sortCallbacks(List<Callback> callbacks) {
+        AnnotationAwareOrderComparator.sort(callbacks);
     }
 
     /**
