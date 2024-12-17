@@ -57,8 +57,8 @@ import java.util.function.Predicate;
  * it into the parameters required for SDK execution.
  *
  * <p>The corresponding executor will be selected based on the full name
- * of a single {@link top.osjf.sdk.core.client.Client},
- * as shown in {@link Request#getClientCls()}.
+ * of a single {@link top.osjf.sdk.core.client.Client}, as shown in
+ * {@link Request#getClientType()}.
  *
  * <p>Simply obtain the host parameter from the corresponding proxy class
  * entity to complete the SDK request.
@@ -204,8 +204,9 @@ public abstract class AbstractSdkProxyBean<T> extends HierarchicalProxySupport<T
      * rewritten by subclasses, defined according to their own situation.
      * <p>Here, a default processing posture that conforms to SDK is provided.
      *
-     * <p>Support for {@link RequestParameter} and {@link RequestParam} and
-     * {@link ResponseData} has been added.
+     * <p>Support for {@link top.osjf.sdk.core.RequestTypeSupplier} and
+     * {@link top.osjf.sdk.core.RequestType} and {@link ResponseData} has been
+     * added.
      *
      * @param proxy  Proxy object.
      * @param method The method object executed by the proxy class.
