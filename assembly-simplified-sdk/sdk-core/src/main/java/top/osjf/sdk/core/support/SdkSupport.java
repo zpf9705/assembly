@@ -434,7 +434,7 @@ public abstract class SdkSupport {
             }
             throw new IllegalArgumentException(new NoSuchMethodException(setMethodName));
         });
-        ReflectUtil.invoke(request, setMethod, arg);
+        ReflectUtil.invokeMethod(request, setMethod, arg);
     }
 
     //gets appoint requestType has annotation @RequestField fields.

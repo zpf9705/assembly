@@ -376,9 +376,16 @@ public abstract class ReflectUtil {
         throw new IllegalStateException(type + " is not java.lang.reflect.ParameterizedType");
     }
 
-    public static List<Field> getAllDeclaredFields(Class<?> clazz) {
+    /**
+     * Get all declared fields (including those from parent classes) for the given
+     * target class.
+     *
+     * @param targetClass the target object class.
+     * @return all declared fields (including those from parent classes).
+     */
+    public static List<Field> getAllDeclaredFields(Class<?> targetClass) {
         List<Field> allDeclaredFields = new ArrayList<>();
-        Class<?> searchType = clazz;
+        Class<?> searchType = targetClass;
         while (searchType != null) {
             Field[] declaredFields = searchType.getDeclaredFields();
             if (ArrayUtils.isNotEmpty(declaredFields)) {
@@ -389,9 +396,16 @@ public abstract class ReflectUtil {
         return allDeclaredFields;
     }
 
-    public static List<Method> getAllDeclaredMethods(Class<?> clazz) {
+    /**
+     * Get all declared methods (including those from parent classes) for the
+     * given target class.
+     *
+     * @param targetClass the target object class.
+     * @return all declared methods (including those from parent classes).
+     */
+    public static List<Method> getAllDeclaredMethods(Class<?> targetClass) {
         List<Method> allDeclaredMethods = new ArrayList<>();
-        Class<?> searchType = clazz;
+        Class<?> searchType = targetClass;
         while (searchType != null) {
             Method[] declaredMethods = searchType.getDeclaredMethods();
             if (ArrayUtils.isNotEmpty(declaredMethods)) {
@@ -402,26 +416,45 @@ public abstract class ReflectUtil {
         return allDeclaredMethods;
     }
 
-    public static void setFieldValue(Object obj, Field field, Object arg) {
+    /**
+     * Use reflection mechanism to perform the assignment operation of the target field.
+     *
+     * @param target operate the target object.
+     * @param field  operate the target field.
+     * @param arg    the assigned value.
+     * @throws IllegalStateException    if invoke method failed to find cause.
+     * @throws IllegalArgumentException by field set throw.
+     */
+    public static void setFieldValue(Object target, Field field, Object arg) {
         try {
             field.setAccessible(true);
-            field.set(obj, arg);
+            field.set(target, arg);
         } catch (IllegalArgumentException e) {
             throw e;
         } catch (Exception e) {
-            throw new IllegalArgumentException("set field failed ", e);
+            throw new IllegalStateException("set field failed ", e);
         }
     }
 
+    /**
+     * Returns the value of executing the target method using reflection mechanism.
+     *
+     * @param target operate the target object.
+     * @param method operate the target method.
+     * @param args   the execution parameters of the target operation method.
+     * @return The return value after executing the target method.
+     * @throws IllegalStateException    if invoke method failed to find cause.
+     * @throws IllegalArgumentException by method invoke throw.
+     */
     @Nullable
-    public static Object invoke(Object obj, Method method, Object... args) {
+    public static Object invokeMethod(Object target, Method method, Object... args) {
         try {
             method.setAccessible(true);
-            return method.invoke(obj, args);
+            return method.invoke(target, args);
         } catch (IllegalArgumentException e) {
             throw e;
         } catch (Exception e) {
-            throw new IllegalArgumentException("invoke method failed ", e);
+            throw new IllegalStateException("invoke method failed ", e);
         }
     }
 }
