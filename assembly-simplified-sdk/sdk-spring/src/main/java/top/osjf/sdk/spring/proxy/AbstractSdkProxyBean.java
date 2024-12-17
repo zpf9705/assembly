@@ -216,7 +216,7 @@ public abstract class AbstractSdkProxyBean<T> extends HierarchicalProxySupport<T
      * @return The result returned by the proxy execution method.
      */
     private Object handleInternal(@SuppressWarnings("unused") Object proxy,
-                                  Method method, Object[] args) {
+                                  Method method, @Nullable Object[] args) {
 
         if ("toString".equals(method.getName())) return toString();
         Class<T> targetType = getType();

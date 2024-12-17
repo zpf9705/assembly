@@ -84,6 +84,11 @@ public abstract class SdkSupport {
      * Create corresponding request parameters based on extension
      * type annotations and interfaces.
      *
+     * <p>In version 1.0.2, proxy methods are supported to directly
+     * add {@link Callback} parameters or their array forms. This
+     * method can be self parsed and retained for execution at a
+     * reasonable time in the future.
+     *
      * @param method Proxy target method.
      * @param args   Request parameters.
      * @return the {@code Pair} with first {@code Request} and second
@@ -91,12 +96,16 @@ public abstract class SdkSupport {
      * @throws NullPointerException If the input method is {@literal null}.
      * @see ResponseData
      * @see RequestType
+     * @see Callback
      */
-    public static Pair<Request<?>, List<Callback>> invokeCreateRequest(@NotNull Method method, Object[] args) {
+    public static Pair<Request<?>, List<Callback>> invokeCreateRequest(@NotNull Method method, @Nullable Object[] args) {
         Request<?> request = null;
         List<Callback> callbacks = null;
-        int length = ArrayUtils.isEmpty(args) ? 0 : args.length;
-        if (length > 0) {
+
+        boolean hasArgs = ArrayUtils.isNotEmpty(args);
+        //Loop parameter array to find the single or array form of the Request
+        // class and callback interface that supports method parsing.
+        if (hasArgs) {
             for (Object arg : args) {
                 if (arg instanceof Request) {
                     if (request == null) {
@@ -128,7 +137,7 @@ public abstract class SdkSupport {
 
         if (request == null) {
 
-            //When a single parameter is not a request, use reflection to construct
+            //When no found request in args , use reflection to construct
             // the request parameter based on the marked request type.
 
             /* Participate more in the processing logic of 0 parameters. */
@@ -144,16 +153,19 @@ public abstract class SdkSupport {
             } else {
 
                 //Secondly, consider whether the parameters inherit specific interfaces.
-                List<Class<? extends Request>> requestTypes = Arrays.stream(args)
-                        .map((Function<Object, Class<? extends Request>>) o ->
-                                o instanceof RequestTypeSupplier ? ((RequestTypeSupplier) o).getRequestType() : null)
-                        .filter(Objects::nonNull)
-                        .distinct()
-                        .collect(Collectors.toList());
+                List<Class<? extends Request>> requestTypes = null;
+                if (hasArgs) {
+                    requestTypes = Arrays.stream(args)
+                            .map((Function<Object, Class<? extends Request>>) o ->
+                                    o instanceof RequestTypeSupplier ? ((RequestTypeSupplier) o).getRequestType() : null)
+                            .filter(Objects::nonNull)
+                            .distinct()
+                            .collect(Collectors.toList());
+                }
 
-                //If a specific interface with multiple parameters is used to indicate
-                // the request type, I cannot know the specific type without ensuring uniqueness.
-                if (CollectionUtils.isNotEmpty(requestTypes) || requestTypes.size() > 1) {
+                //If no relevant type is found or the number of found is greater
+                // than 1, it cannot be confirmed as unique and will not be processed.
+                if (CollectionUtils.isEmpty(requestTypes) || requestTypes.size() > 1) {
                     throw new UnknownRequestParameterException();
                 }
 
