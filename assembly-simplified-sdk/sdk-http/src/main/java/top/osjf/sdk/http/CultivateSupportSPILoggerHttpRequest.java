@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 the original author or authors.
+ * Copyright 2024-? the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http.process;
+package top.osjf.sdk.http;
 
 import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.http.client.ServiceLoaderLoggerHttpClient;
 
 /**
- * Extends for {@code JsonSerialHttpRequest} to provider a {@code Client}
+ * Extends for {@code CultivateSupportHttpRequest} to provider a {@code Client}
  * is {@code ServiceLoaderLoggerHttpClient}.
  *
  * @param <R> Subclass generic type of {@code AbstractHttpResponse}.
@@ -29,10 +29,10 @@ import top.osjf.sdk.http.client.ServiceLoaderLoggerHttpClient;
  * @since 1.0.2
  */
 @SuppressWarnings("rawtypes")
-public abstract class JsonSerialSPILoggerHttpRequest<R extends AbstractHttpResponse> extends
-        JsonSerialHttpRequest<R> {
+public abstract class CultivateSupportSPILoggerHttpRequest<R extends AbstractHttpResponse>
+        extends CultivateSupportHttpRequest<R> {
 
-    private static final long serialVersionUID = 4587196966635484290L;
+    private static final long serialVersionUID = -6471181067117106377L;
 
     /**
      * {@inheritDoc}

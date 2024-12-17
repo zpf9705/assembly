@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http.process;
+package top.osjf.sdk.http;
 
 import top.osjf.sdk.core.support.NotNull;
 
-import static top.osjf.sdk.http.process.CultivateSupportHttpRequest.InstanceHolder.getSdkEnumManager;
+import static top.osjf.sdk.http.CultivateSupportHttpRequest.InstanceHolder.getSdkEnumManager;
 
 /**
  * Extended from {@code JsonSerialHttpRequest}, with its functionality

@@ -17,7 +17,6 @@
 package top.osjf.sdk.http;
 
 import top.osjf.sdk.core.util.StringUtils;
-import top.osjf.sdk.http.process.HttpSdkEnum;
 import top.osjf.sdk.http.util.UrlUtils;
 
 import java.net.URL;

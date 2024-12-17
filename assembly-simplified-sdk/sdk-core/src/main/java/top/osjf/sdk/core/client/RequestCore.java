@@ -16,7 +16,8 @@
 
 package top.osjf.sdk.core.client;
 
-import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.Request;
+import top.osjf.sdk.core.Response;
 import top.osjf.sdk.core.support.NotNull;
 
 /**
@@ -41,7 +42,7 @@ public interface RequestCore<R extends Response> extends RequestBinder<R> {
 
     /**
      * Return the response body {@code Response} of this {@code Client} request,
-     * and use the parameter {@link top.osjf.sdk.core.process.Request} in the
+     * and use the parameter {@link Request} in the
      * binding settings and should call {@link #bindRequest} to bind parameters
      * before calling this method, or parameter exceptions will occur.
      *

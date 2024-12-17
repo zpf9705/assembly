@@ -17,21 +17,21 @@
 package top.osjf.sdk.http.client;
 
 import com.google.common.base.Stopwatch;
+import top.osjf.sdk.core.ErrorResponse;
 import top.osjf.sdk.core.client.AbstractClient;
 import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.core.exception.SdkException;
-import top.osjf.sdk.core.process.DefaultErrorResponse;
-import top.osjf.sdk.core.process.Request;
-import top.osjf.sdk.core.process.URL;
+import top.osjf.sdk.core.DefaultErrorResponse;
+import top.osjf.sdk.core.Request;
+import top.osjf.sdk.core.URL;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.support.ServiceLoadManager;
 import top.osjf.sdk.core.util.ArrayUtils;
 import top.osjf.sdk.core.util.ExceptionUtils;
 import top.osjf.sdk.http.executor.HttpRequestExecutor;
-import top.osjf.sdk.http.process.HttpRequest;
-import top.osjf.sdk.http.process.HttpResponse;
-import top.osjf.sdk.http.support.HttpSdkSupport;
+import top.osjf.sdk.http.HttpRequest;
+import top.osjf.sdk.http.HttpResponse;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -238,9 +238,9 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
      * <p>
      * All request related exception issues will be parsed class by class
      * and converted to the current response type, requiring the two
-     * methods {@link top.osjf.sdk.core.process.ErrorResponse#setErrorCode}
-     * and {@link top.osjf.sdk.core.process.ErrorResponse#setErrorMessage}
-     * of {@link top.osjf.sdk.core.process.ErrorResponse} to obtain the relevant
+     * methods {@link ErrorResponse#setErrorCode}
+     * and {@link ErrorResponse#setErrorMessage}
+     * of {@link ErrorResponse} to obtain the relevant
      * content defined in this framework.
      *
      * @return {@inheritDoc}

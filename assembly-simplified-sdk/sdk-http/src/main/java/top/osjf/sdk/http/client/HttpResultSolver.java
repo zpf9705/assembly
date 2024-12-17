@@ -17,8 +17,8 @@
 package top.osjf.sdk.http.client;
 
 import top.osjf.sdk.core.exception.SdkException;
-import top.osjf.sdk.core.process.Request;
-import top.osjf.sdk.http.process.HttpRequest;
+import top.osjf.sdk.core.Request;
+import top.osjf.sdk.http.HttpRequest;
 
 import java.util.function.Supplier;
 

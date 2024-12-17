@@ -16,9 +16,9 @@
 
 package top.osjf.sdk.core.client;
 
-import top.osjf.sdk.core.process.DefaultErrorResponse;
-import top.osjf.sdk.core.process.Request;
-import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.DefaultErrorResponse;
+import top.osjf.sdk.core.Request;
+import top.osjf.sdk.core.Response;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.util.CollectionUtils;
 import top.osjf.sdk.core.util.JSONUtil;

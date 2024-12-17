@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http.process;
+package top.osjf.sdk.http;
 
 import top.osjf.sdk.core.support.NotNull;
 
-import static top.osjf.sdk.http.process.CultivateSupportHttpRequest.InstanceHolder.getSdkEnumManager;
+import static top.osjf.sdk.http.CultivateSupportHttpRequest.InstanceHolder.getSdkEnumManager;
 
 /**
  * Extended from {@code UrlQuerySPILoggerHttpRequest}, with its functionality
@@ -38,7 +38,7 @@ public abstract class CultivateSupportUrlQuerySPILoggerHttpRequest<R extends Abs
 
     /**
      * Get {@code HttpSdkEnum} managed by
-     * {@code SdkEnumCultivateSupportHttpRequestParams#InstanceHolder#SDK_EUM_MANAGER}.
+     * {@code CultivateSupportHttpRequest#InstanceHolder#SDK_EUM_MANAGER}.
      *
      * @return {@inheritDoc}
      */

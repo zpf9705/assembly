@@ -16,9 +16,9 @@
 
 package top.osjf.sdk.http.client;
 
-import top.osjf.sdk.core.process.URL;
+import top.osjf.sdk.core.URL;
 import top.osjf.sdk.core.support.NotNull;
-import top.osjf.sdk.http.process.HttpResponse;
+import top.osjf.sdk.http.HttpResponse;
 
 /**
  * Default impl for {@link top.osjf.sdk.core.client.Client}.

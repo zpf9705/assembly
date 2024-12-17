@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http.process;
+package top.osjf.sdk.http;
 
-import top.osjf.sdk.core.process.SdkEnum;
+import top.osjf.sdk.core.SdkEnum;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
-import top.osjf.sdk.http.HttpProtocol;
-import top.osjf.sdk.http.HttpRequestMethod;
 
 /**
  * <p>HTTP SDK Enumeration Interface, extending from the {@code SdkEnum} interface.
@@ -88,7 +86,7 @@ public interface HttpSdkEnum extends SdkEnum {
      * depending on the application's configuration or the current network environment.
      * <p>
      * This parameter is optional and depends on your return value in {@link #getUrl}.
-     * You can check the default operation of method {@link AbstractHttpRequestParams#formatUrl}.
+     * You can check the default operation of method {@link AbstractHttpRequest#formatUrl}.
      *
      * @return The currently used HTTP protocol enumeration instance (HTTPS or HTTP).
      * @since 1.0.2

@@ -18,8 +18,8 @@ package top.osjf.sdk.http.client;
 
 import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.http.executor.HttpRequestExecutor;
-import top.osjf.sdk.http.process.HttpRequest;
-import top.osjf.sdk.http.process.HttpResponse;
+import top.osjf.sdk.http.HttpRequest;
+import top.osjf.sdk.http.HttpResponse;
 
 /**
  * The HTTP client interface extends the client interface and adds the ability to resolve

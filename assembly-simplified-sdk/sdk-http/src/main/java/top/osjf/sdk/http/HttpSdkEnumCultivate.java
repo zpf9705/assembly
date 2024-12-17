@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http.process;
-
-import top.osjf.sdk.http.HttpProtocol;
-import top.osjf.sdk.http.HttpRequestMethod;
-import top.osjf.sdk.http.process.HttpSdkEnum;
+package top.osjf.sdk.http;
 
 import java.lang.annotation.*;
 
@@ -34,8 +30,8 @@ import java.lang.annotation.*;
  * dynamically obtained during program runtime.
  *
  * <p>This annotation is marked on the class of the specified implementation
- * {@link top.osjf.sdk.http.process.HttpRequest}, which can provide a default
- * {@link top.osjf.sdk.http.process.HttpRequest} implementation when <pre>
+ * {@link HttpRequest}, which can provide a default
+ * {@link HttpRequest} implementation when <pre>
  * {@code HttpRequest#matchSdkEnum} is {@literal null} //Although this method
  * requires a non null return.</pre>, and the rules follow the requirements
  * of {@link HttpSdkEnum}.

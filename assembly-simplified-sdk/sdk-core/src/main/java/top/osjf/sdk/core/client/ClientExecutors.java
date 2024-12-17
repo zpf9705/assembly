@@ -17,9 +17,9 @@
 package top.osjf.sdk.core.client;
 
 import top.osjf.sdk.core.exception.ClientRequestFailedException;
-import top.osjf.sdk.core.process.Request;
-import top.osjf.sdk.core.process.Response;
-import top.osjf.sdk.core.process.URL;
+import top.osjf.sdk.core.Request;
+import top.osjf.sdk.core.Response;
+import top.osjf.sdk.core.URL;
 import top.osjf.sdk.core.util.ReflectUtil;
 
 import java.util.function.Supplier;

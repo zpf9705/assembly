@@ -18,9 +18,9 @@ package top.osjf.sdk.core.client;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import top.osjf.sdk.core.process.Request;
-import top.osjf.sdk.core.process.Response;
-import top.osjf.sdk.core.process.URL;
+import top.osjf.sdk.core.Request;
+import top.osjf.sdk.core.Response;
+import top.osjf.sdk.core.URL;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.SdkSupport;
 import top.osjf.sdk.core.util.StringUtils;

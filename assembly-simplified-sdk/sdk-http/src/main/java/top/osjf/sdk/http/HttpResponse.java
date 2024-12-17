@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http.process;
+package top.osjf.sdk.http;
 
-import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.Response;
 
 /**
  * The {@code HttpResponse} interface extends the Response interface and is used to define

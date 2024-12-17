@@ -16,10 +16,10 @@
 
 package top.osjf.sdk.core.support;
 
+import top.osjf.sdk.core.*;
 import top.osjf.sdk.core.exception.RequestCreateException;
 import top.osjf.sdk.core.exception.UnknownRequestParameterException;
 import top.osjf.sdk.core.exception.UnknownResponseParameterException;
-import top.osjf.sdk.core.process.*;
 import top.osjf.sdk.core.util.*;
 
 import java.lang.reflect.Field;
@@ -302,7 +302,7 @@ public abstract class SdkSupport {
         }
     }
 
-    //Find a subclass belonging to top.osjf.sdk.core.process.Request from numerous generic classes.
+    //Find a subclass belonging to top.osjf.sdk.core.Request from numerous generic classes.
     private static Pair getTypePair(List<Type> types, ClassLoader classLoader) {
         Type requestType = null;
         Class<?> requestClass = null;
@@ -316,7 +316,7 @@ public abstract class SdkSupport {
         return new Pair(requestType, requestClass);
     }
 
-    //Find the subclass generics belonging to top.osjf.sdk.core.process.Response
+    //Find the subclass generics belonging to top.osjf.sdk.core.Response
     // from the numerous generics of the specified type.
     static Type getResponseGenericType(Type type, ClassLoader classLoader) {
         Type[] actualTypes = ((ParameterizedType) type).getActualTypeArguments();

@@ -20,7 +20,7 @@ import com.google.common.collect.Lists;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.util.MapUtils;
-import top.osjf.sdk.http.process.HttpRequest;
+import top.osjf.sdk.http.HttpRequest;
 
 import java.io.Serializable;
 import java.nio.charset.Charset;

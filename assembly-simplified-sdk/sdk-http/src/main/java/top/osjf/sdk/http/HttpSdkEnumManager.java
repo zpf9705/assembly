@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http.process;
+package top.osjf.sdk.http;
 
 import top.osjf.sdk.core.support.NotNull;
-import top.osjf.sdk.http.process.HttpRequest;
-import top.osjf.sdk.http.process.HttpResponse;
-import top.osjf.sdk.http.process.HttpSdkEnum;
 
 import javax.annotation.concurrent.ThreadSafe;
 

@@ -16,7 +16,7 @@
 
 package top.osjf.sdk.http.client;
 
-import top.osjf.sdk.http.process.HttpRequest;
+import top.osjf.sdk.http.HttpRequest;
 
 import java.io.Serializable;
 import java.util.function.Supplier;

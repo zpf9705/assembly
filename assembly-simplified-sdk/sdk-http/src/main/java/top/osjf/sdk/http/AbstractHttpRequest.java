@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http.process;
+package top.osjf.sdk.http;
 
 import top.osjf.sdk.core.client.Client;
-import top.osjf.sdk.core.process.AbstractRequest;
-import top.osjf.sdk.core.process.URL;
+import top.osjf.sdk.core.AbstractRequest;
+import top.osjf.sdk.core.URL;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.core.util.StringUtils;
-import top.osjf.sdk.http.HttpProtocol;
 import top.osjf.sdk.http.client.DefaultHttpClient;
 import top.osjf.sdk.http.support.HttpSdkSupport;
 

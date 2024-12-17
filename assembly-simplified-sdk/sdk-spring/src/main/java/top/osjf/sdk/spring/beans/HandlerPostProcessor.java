@@ -18,8 +18,9 @@ package top.osjf.sdk.spring.beans;
 
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import top.osjf.sdk.core.process.Request;
-import top.osjf.sdk.core.process.ResponseData;
+import top.osjf.sdk.core.Response;
+import top.osjf.sdk.core.Request;
+import top.osjf.sdk.core.ResponseData;
 
 import java.lang.reflect.Method;
 
@@ -31,7 +32,7 @@ import java.lang.reflect.Method;
  * created request parameter.
  *
  * <p>When processing SDK proxy response data, at the method level, after obtaining the
- * response result (specified data type for {@link top.osjf.sdk.core.process.Response}
+ * response result (specified data type for {@link Response}
  * or {@link ResponseData}), this interface method {@link #postProcessResultAfterHandle}
  * can be used to customize and modify the above response result parameters, and obtain the
  * final request response result. The default cannot be empty, and return the original

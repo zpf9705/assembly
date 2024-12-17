@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http.process;
+package top.osjf.sdk.http;
 
-import top.osjf.sdk.core.process.AbstractResponse;
-import top.osjf.sdk.core.process.DefaultErrorResponse;
+import top.osjf.sdk.core.AbstractResponse;
+import top.osjf.sdk.core.DefaultErrorResponse;
 
 import java.util.Objects;
 

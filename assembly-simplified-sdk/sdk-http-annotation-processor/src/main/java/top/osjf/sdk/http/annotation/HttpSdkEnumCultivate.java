@@ -17,8 +17,9 @@
 package top.osjf.sdk.http.annotation;
 
 import top.osjf.sdk.http.HttpProtocol;
+import top.osjf.sdk.http.HttpRequest;
 import top.osjf.sdk.http.HttpRequestMethod;
-import top.osjf.sdk.http.process.HttpSdkEnum;
+import top.osjf.sdk.http.HttpSdkEnum;
 
 import java.lang.annotation.*;
 
@@ -32,11 +33,11 @@ import java.lang.annotation.*;
  *
  * <p>Since the Retention policy of this annotation is {@code SOURCE}, it only
  * exists in the source code and will be discarded in the compiled bytecode and
- * this is the only difference from the annotation {@link top.osjf.sdk.http.process.HttpSdkEnumCultivate}.
+ * this is the only difference from the annotation {@link top.osjf.sdk.http.HttpSdkEnumCultivate}.
  *
  * <p>This annotation is marked on the class of the specified implementation
- * {@link top.osjf.sdk.http.process.HttpRequest}, which can provide a default
- * {@link top.osjf.sdk.http.process.HttpRequest} implementation when <pre>
+ * {@link HttpRequest}, which can provide a default
+ * {@link HttpRequest} implementation when <pre>
  * {@code HttpRequest#matchSdkEnum} is {@literal null} //Although this method
  * requires a non null return.</pre>, and the rules follow the requirements
  * of {@link HttpSdkEnum}.
