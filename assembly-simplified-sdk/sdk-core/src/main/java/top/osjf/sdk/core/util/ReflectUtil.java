@@ -318,7 +318,7 @@ public abstract class ReflectUtil {
      * @param targetClass    is the target object class used to obtain the interface information
      *                       of its implementation.
      * @param interfaceIndex specifies the index of the interface to obtain generic type
-     *                       parameters in the interface array implemented by the target object.
+     *                       parameters in the interface array implemented by the target object class.
      * @param index          This parameter is the index position of the parameter to be taken
      *                       from the array of all generic parameters of the specified implementation
      *                       location interface obtained by parameter {@code interfaceIndex}.
@@ -340,7 +340,7 @@ public abstract class ReflectUtil {
      * @param targetClass    is the target object class used to obtain the interface information
      *                       of its implementation.
      * @param interfaceIndex specifies the index of the interface to obtain generic type
-     *                       parameters in the interface array implemented by the target object.
+     *                       parameters in the interface array implemented by the target object class.
      * @return an array containing generic type parameters for a specified interface.
      * @throws NullPointerException      If the input target class is {@literal null}.
      * @throws IllegalArgumentException  If the input target class does not implement any interface.
