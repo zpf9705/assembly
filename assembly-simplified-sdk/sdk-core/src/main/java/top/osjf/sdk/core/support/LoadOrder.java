@@ -17,6 +17,7 @@
 package top.osjf.sdk.core.support;
 
 import java.lang.annotation.*;
+import java.util.Comparator;
 
 /**
  * This annotation is used to mark the classes that need to be loaded in a specific order.
@@ -62,7 +63,28 @@ public @interface LoadOrder {
     /**
      * The order value.
      * <p>Default is {@link Integer#MAX_VALUE}.
+     *
      * @return int order value.
      */
     int value() default Integer.MAX_VALUE;
+
+    /**
+     * The {@code SortRegulation} class provides a comparison mechanism for
+     * sorting objects based on the value of the {@code LoadOrder} annotation
+     * on the class.
+     *
+     * <p>This class defines a static {@code Comparator} that can be used to compare
+     * instances of any class with LoadOrder annotation, and its comparison
+     * rules are standardized according to the requirements of annotation
+     * {@code LoadOrder}.
+     */
+    class SortRegulation {
+        public static final Comparator<Object> COMPARATOR = (o1, o2) -> {
+            LoadOrder order1 = o1.getClass().getAnnotation(LoadOrder.class);
+            LoadOrder order2 = o2.getClass().getAnnotation(LoadOrder.class);
+            int value1 = order1 != null ? order1.value() : Integer.MAX_VALUE;
+            int value2 = order2 != null ? order2.value() : Integer.MAX_VALUE;
+            return Integer.compare(value1, value2);
+        };
+    }
 }
