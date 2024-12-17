@@ -221,62 +221,62 @@ public abstract class ReflectUtil {
 
     /**
      * Retrieve the type at the specified index in the parent generic
-     * {@code Class} of the object.
+     * {@code Class} of the object class.
      *
-     * @param <R>   Generic return type, representing the type at the
-     *              specified index in the parent generic type.
-     * @param obj   target object, used to obtain generic type information
-     *              of its parent class.
-     * @param index The value represents the position of the generic type
-     *              to be obtained in the parent class generic type list (starting from 0).
+     * @param <R>         Generic return type, representing the type at the
+     *                    specified index in the parent generic type.
+     * @param targetClass target object class, used to obtain generic type information
+     *                    of its parent class.
+     * @param index       The value represents the position of the generic type
+     *                    to be obtained in the parent class generic type list (starting from 0).
      * @return Returns generic type information at the specified index,
      * encapsulated as a Class object.
-     * @throws NullPointerException If the input object is {@literal null}.
+     * @throws NullPointerException If the input target class is {@literal null}.
      * @throws ClassCastException   if the obtained {@code Type} is not of type {@code Class}.
      */
-    public static <R> Class<R> getSuperGenericClass(@NotNull Object obj, int index) {
-        return typeCastClass(getSuperGenericType(obj, index));
+    public static <R> Class<R> getSuperGenericClass(@NotNull Class<?> targetClass, int index) {
+        return typeCastClass(getSuperGenericType(targetClass, index));
     }
 
     /**
      * Retrieve the type at the specified index in the parent generic
-     * {@code Type} of the object.
+     * {@code Type} of the object class.
      *
-     * @param obj   target object, used to obtain generic type information
-     *              of its parent class.
-     * @param index The value represents the position of the generic type
-     *              to be obtained in the parent class generic type list (starting from 0).
+     * @param targetClass target object class, used to obtain generic type information
+     *                    of its parent class.
+     * @param index       The value represents the position of the generic type
+     *                    to be obtained in the parent class generic type list (starting from 0).
      * @return Returns generic type information at the specified index,
      * encapsulated as a Class object.
-     * @throws NullPointerException      If the input object is {@literal null}.
+     * @throws NullPointerException      If the input target class is {@literal null}.
      * @throws IndexOutOfBoundsException The selected index exceeds the length
      *                                   of the parent class generic array.
      */
-    public static Type getSuperGenericType(@NotNull Object obj, int index) {
-        return getSuperAllGenericType(obj)[index];
+    public static Type getSuperGenericType(@NotNull Class<?> targetClass, int index) {
+        return getSuperAllGenericType(targetClass)[index];
     }
 
     /**
-     * Retrieve all generic type information of the parent class of the object.
+     * Retrieve all generic type information of the parent class of the object class.
      *
-     * @param obj target object, used to obtain generic type information
-     *            of its parent class.
+     * @param targetClass target object class, used to obtain generic type information
+     *                    of its parent class.
      * @return Return an array of generic type information for the parent class.
-     * @throws NullPointerException If the input object is {@literal null}.
+     * @throws NullPointerException If the input target class is {@literal null}.
      */
-    public static Type[] getSuperAllGenericType(@NotNull Object obj) {
-        Type genericSuperclass = obj.getClass().getGenericSuperclass();
+    public static Type[] getSuperAllGenericType(@NotNull Class<?> targetClass) {
+        Type genericSuperclass = targetClass.getGenericSuperclass();
         return getActualGenericTypes(genericSuperclass);
     }
 
     /**
      * The returned type is a single generic {@code Class}  obtained by taking the {@code index}
      * specified index from all generic arrays that implement the {@code interfaceIndex}
-     * position interface specified by the target object.
+     * position interface specified by the target object class.
      *
      * @param <R>            Generic return type, representing the type at the
      *                       specified index in the interface generic type.
-     * @param obj            is the target object used to obtain the interface information
+     * @param targetClass    is the target object class used to obtain the interface information
      *                       of its implementation.
      * @param interfaceIndex specifies the index of the interface to obtain generic type
      *                       parameters in the interface array implemented by the target object.
@@ -284,14 +284,15 @@ public abstract class ReflectUtil {
      *                       from the array of all generic parameters of the specified implementation
      *                       location interface obtained by parameter {@code interfaceIndex}.
      * @return an array containing generic type parameters for a specified interface.
-     * @throws NullPointerException If the input object is {@literal null}.
+     * @throws NullPointerException If the input target class is {@literal null}.
      * @throws ClassCastException   If the length of the reflection parameter for obtaining
      *                              the specified implementation index position interface
      *                              is less than or equal to the length of the input third
      *                              method parameter {@code index}.
      */
-    public static <R> Class<R> getIndexedInterfaceGenericClass(@NotNull Object obj, int interfaceIndex, int index) {
-        return typeCastClass(getIndexedInterfaceGenericType(obj, interfaceIndex, index));
+    public static <R> Class<R> getIndexedInterfaceGenericClass(@NotNull Class<?> targetClass, int interfaceIndex,
+                                                               int index) {
+        return typeCastClass(getIndexedInterfaceGenericType(targetClass, interfaceIndex, index));
     }
 
     /**
@@ -312,9 +313,9 @@ public abstract class ReflectUtil {
     /**
      * The returned type is a single generic {@code Type} obtained by taking the {@code index}
      * specified index from all generic arrays that implement the {@code interfaceIndex}
-     * position interface specified by the target object.
+     * position interface specified by the target object class.
      *
-     * @param obj            is the target object used to obtain the interface information
+     * @param targetClass    is the target object class used to obtain the interface information
      *                       of its implementation.
      * @param interfaceIndex specifies the index of the interface to obtain generic type
      *                       parameters in the interface array implemented by the target object.
@@ -322,34 +323,34 @@ public abstract class ReflectUtil {
      *                       from the array of all generic parameters of the specified implementation
      *                       location interface obtained by parameter {@code interfaceIndex}.
      * @return an array containing generic type parameters for a specified interface.
-     * @throws NullPointerException      If the input object is {@literal null}.
+     * @throws NullPointerException      If the input target class is {@literal null}.
      * @throws IndexOutOfBoundsException If the length of the reflection parameter for obtaining
      *                                   the specified implementation index position interface
      *                                   is less than or equal to the length of the input third
      *                                   method parameter {@code index}.
      */
-    public static Type getIndexedInterfaceGenericType(@NotNull Object obj, int interfaceIndex, int index) {
-        return getIndexedInterfaceAllGenericType(obj, interfaceIndex)[index];
+    public static Type getIndexedInterfaceGenericType(@NotNull Class<?> targetClass, int interfaceIndex, int index) {
+        return getIndexedInterfaceAllGenericType(targetClass, interfaceIndex)[index];
     }
 
     /**
      * Retrieve all generic type parameters of the specified implementation location
-     * index interface implemented by the target object.
+     * index interface implemented by the target object class.
      *
-     * @param obj            is the target object used to obtain the interface information
+     * @param targetClass    is the target object class used to obtain the interface information
      *                       of its implementation.
      * @param interfaceIndex specifies the index of the interface to obtain generic type
      *                       parameters in the interface array implemented by the target object.
      * @return an array containing generic type parameters for a specified interface.
-     * @throws NullPointerException      If the input object is {@literal null}.
-     * @throws IllegalArgumentException  If the input object does not implement any interface.
+     * @throws NullPointerException      If the input target class is {@literal null}.
+     * @throws IllegalArgumentException  If the input target class does not implement any interface.
      * @throws IndexOutOfBoundsException If the input index is greater than or equal to the length
      *                                   of the generic interface array obtained.
      */
-    public static Type[] getIndexedInterfaceAllGenericType(@NotNull Object obj, int interfaceIndex) {
-        Type[] genericInterfaces = obj.getClass().getGenericInterfaces();
+    public static Type[] getIndexedInterfaceAllGenericType(@NotNull Class<?> targetClass, int interfaceIndex) {
+        Type[] genericInterfaces = targetClass.getGenericInterfaces();
         if (ArrayUtils.isEmpty(genericInterfaces))
-            throw new IllegalArgumentException(obj.getClass() + " no implements interfaces");
+            throw new IllegalArgumentException(targetClass + " no implements interfaces");
         return getActualGenericTypes(genericInterfaces[interfaceIndex]);
     }
 
