@@ -61,15 +61,14 @@ public abstract class SdkSupport {
      * Since 1.0.2,cache modification to weak references, freeing up memory in appropriate
      * places to prevent memory leaks.
      */
-    protected static final Map<Class<? extends Request>, List<Field>> requestFilteredDeclaredFieldCache
+    protected static final Map<Class<? extends Request>, List<Field>> FIELD_CACHE
             = new SynchronizedWeakHashMap<>();
 
     /**
      * Since 1.0.2,cache modification to weak references, freeing up memory in appropriate
      * places to prevent memory leaks.
      */
-    protected static final Map<Class<? extends Request>, List<Method>> requestMethodCache
-            = new SynchronizedWeakHashMap<>();
+    protected static final Map<String, Method> METHOD_CACHE = new SynchronizedWeakHashMap<>();
 
     /*** cache for dynamically obtain the type of response class.
      * Since 1.0.2,cache modification to weak references, freeing up memory in appropriate
@@ -292,6 +291,7 @@ public abstract class SdkSupport {
 
     /*  ################################### Internal assistance methods. ###################################  */
 
+    //Assist in obtaining type {@code Type} and {@code Class} objects.
     static class Pair {
         final Type type;
         final Class<?> clazz;
@@ -302,6 +302,7 @@ public abstract class SdkSupport {
         }
     }
 
+    //Find a subclass belonging to top.osjf.sdk.core.process.Request from numerous generic classes.
     private static Pair getTypePair(List<Type> types, ClassLoader classLoader) {
         Type requestType = null;
         Class<?> requestClass = null;
@@ -315,6 +316,8 @@ public abstract class SdkSupport {
         return new Pair(requestType, requestClass);
     }
 
+    //Find the subclass generics belonging to top.osjf.sdk.core.process.Response
+    // from the numerous generics of the specified type.
     static Type getResponseGenericType(Type type, ClassLoader classLoader) {
         Type[] actualTypes = ((ParameterizedType) type).getActualTypeArguments();
         // as Response and retrieve the first one.
@@ -328,6 +331,8 @@ public abstract class SdkSupport {
         return responseType;
     }
 
+    //Determine whether the specified type is a subclass of a certain type,
+    // and if so, return it, not null.
     static Class<?> getAssignableTypeClass(Class<?> clazz, Type type, ClassLoader classLoader) {
         Class<?> typeClass = getTypeClass(type, classLoader);
         if (clazz.isAssignableFrom(typeClass)) {
@@ -336,6 +341,7 @@ public abstract class SdkSupport {
         return null;
     }
 
+    //Obtain a class of type {@code Type} and consider the type {@code java.lang.reflect.ParameterizedType}.
     static Class<?> getTypeClass(Type type, ClassLoader classLoader) {
         if (type instanceof Class) {
             return (Class<?>) type;
@@ -350,7 +356,8 @@ public abstract class SdkSupport {
         return ReflectUtil.loadClass(className, classLoader);
     }
 
-
+    //First, create the request according to the construction method.
+    // If the creation fails, use the set method or reflection assignment with specific annotations.
     static Request<?> invokeCreateRequestConstructorWhenFailedUseSet(Class<? extends Request> requestType,
                                                                      Object... args) {
         Request<?> request;
@@ -367,15 +374,17 @@ public abstract class SdkSupport {
         return request;
     }
 
+    //Create an object using an empty construct, and assign
+    // values to its properties using the set method.
     static Request<?> invokeCreateRequestUseSet(Class<? extends Request> requestType,
                                                 Object... args) {
         Request<?> request;
         try {
             //When parameter construction fails, first use an empty
             // construction to instantiate, and then find the set method.
-            request = requestType.newInstance();
+            request = ReflectUtil.instantiates(requestType);
 
-            List<Field> fields = getAndFilterRequestAndSuperDeclaredFields(requestType);
+            List<Field> fields = getRequestFieldAnnotationFields(requestType);
             if (CollectionUtils.isEmpty(fields)) {
                 //When using methods for assignment, annotations must be identified.
                 throw new IllegalArgumentException("When no construction method is provided, please " +
@@ -408,37 +417,35 @@ public abstract class SdkSupport {
         return request;
     }
 
+    //find and exec set method.
     static void executeRequestFieldSetMethod(Request<?> request, Class<? extends Request> requestType,
-                                             String filedName, Object arg) throws Exception {
+                                             String filedName, Object arg) {
         final String setMethodName = "set" + Character.toUpperCase(filedName.charAt(0))
                 + filedName.substring(1);
-        List<Method> methods = getRequestDeclaredMethods(requestType);
-        for (Method method : methods) {
-            if (method.getName().equals(setMethodName) // name equal
-                    && method.getParameterTypes().length == 1 // param len = 1
-                    && method.getParameterTypes()[0].isAssignableFrom(arg.getClass())) // arg is param instance
-            {
-                ReflectUtil.invoke(request, method, arg);
-                break;
+        final String cacheKey = requestType.getName() + "@" + setMethodName;
+        Method setMethod = METHOD_CACHE.computeIfAbsent(cacheKey, s -> {
+            for (Method method : ReflectUtil.getAllDeclaredMethods(requestType)) {
+                if (method.getName().equals(setMethodName) // name equal
+                        && method.getParameterTypes().length == 1 // param len = 1
+                        && method.getParameterTypes()[0].isAssignableFrom(arg.getClass())) // arg is param instance
+                {
+                    return method;
+                }
             }
-        }
-        throw new NoSuchMethodException(setMethodName);
+            throw new IllegalArgumentException(new NoSuchMethodException(setMethodName));
+        });
+        ReflectUtil.invoke(request, setMethod, arg);
     }
 
-    static List<Method> getRequestDeclaredMethods(Class<? extends Request> requestType) {
-        return requestMethodCache.computeIfAbsent(requestType, ReflectUtil::getAllDeclaredMethods);
+    //gets appoint requestType has annotation @RequestField fields.
+    static List<Field> getRequestFieldAnnotationFields(Class<? extends Request> requestType) {
+        return FIELD_CACHE.computeIfAbsent(requestType,
+                t -> ReflectUtil.getAllDeclaredFields(requestType).stream()
+                        .filter(field -> field.isAnnotationPresent(RequestField.class))
+                        .collect(Collectors.toList()));
     }
 
-    static List<Field> getAndFilterRequestAndSuperDeclaredFields(Class<? extends Request> requestType) {
-        return requestFilteredDeclaredFieldCache.computeIfAbsent(requestType,
-                SdkSupport::getAndFilterRequestAndSuperDeclaredFields0);
-    }
-
-    static List<Field> getAndFilterRequestAndSuperDeclaredFields0(Class<? extends Request> requestType) {
-        return ReflectUtil.getAllDeclaredFields(requestType).stream()
-                .filter(field -> field.isAnnotationPresent(RequestField.class)).collect(Collectors.toList());
-    }
-
+    //get method arg order
     static int getOrder(RequestField requestField, int i, List<Field> fields) {
         int order = requestField.order();
         if (order == -1) {
