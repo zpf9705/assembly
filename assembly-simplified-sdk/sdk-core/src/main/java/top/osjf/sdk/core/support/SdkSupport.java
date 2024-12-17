@@ -91,7 +91,7 @@ public abstract class SdkSupport {
      * @return The request class parameters created.
      * @throws NullPointerException If the input method is {@literal null}.
      * @see ResponseData
-     * @see RequestParam
+     * @see RequestType
      */
     public static Request<?> invokeCreateRequest(@NotNull Method method, Object[] args) {
         int length = ArrayUtils.isEmpty(args) ? 0 : args.length;
@@ -114,15 +114,15 @@ public abstract class SdkSupport {
         Class<? extends Request> requestType;
 
         //Consider annotations first.
-        RequestParam requestParam = method.getAnnotation(RequestParam.class);
-        if (requestParam != null) {
-            requestType = requestParam.value();
+        RequestType requestTypeAnnotation = method.getAnnotation(RequestType.class);
+        if (requestTypeAnnotation != null) {
+            requestType = requestTypeAnnotation.value();
         } else {
 
             //Secondly, consider whether the parameters inherit specific interfaces.
             List<Class<? extends Request>> requestTypes = Arrays.stream(args)
                     .map((Function<Object, Class<? extends Request>>) o ->
-                            o instanceof RequestParameter ? ((RequestParameter) o).getRequestType() : null)
+                            o instanceof RequestTypeSupplier ? ((RequestTypeSupplier) o).getRequestType() : null)
                     .filter(Objects::nonNull)
                     .distinct()
                     .collect(Collectors.toList());

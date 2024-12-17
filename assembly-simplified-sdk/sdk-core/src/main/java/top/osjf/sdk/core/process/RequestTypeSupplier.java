@@ -27,7 +27,7 @@ import top.osjf.sdk.core.support.SdkSupport;
  *
  * <div><h3>Examples of usage methods are as follows</h3></div>
  * <pre>
- *  public class QueryDto implements RequestParameter {
+ *  public class QueryDto implements RequestTypeSupplier {
  *
  *      private String token;
  *
@@ -39,14 +39,14 @@ import top.osjf.sdk.core.support.SdkSupport;
  * </pre>
  *
  * Starting from version 1.0.2, when searching for the {@link Request} type, its priority
- * level will be lower than the annotation {@link RequestParam}.
+ * level will be lower than the annotation {@link RequestType}.
  *
  * @see SdkSupport#invokeCreateRequest
- * @see RequestParam
+ * @see RequestType
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public interface RequestParameter {
+public interface RequestTypeSupplier {
 
     /**
      * Return the type of the request parameter.

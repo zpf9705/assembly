@@ -25,7 +25,7 @@ import java.lang.annotation.*;
  * encapsulated by the current request input parameter during the
  * execution of the SDK method using annotations.
  *
- * <p>On the basis of {@link RequestParameter},supporting multiple
+ * <p>On the basis of {@link RequestTypeSupplier},supporting multiple
  * parameters, first find the construction method based on the order
  * of parameters, and if there is no construction method, find the
  * set method.Of course, these need to be used in conjunction with
@@ -41,7 +41,7 @@ import java.lang.annotation.*;
  * implementation example code:
  * <pre>
  *  public class ExampleHttpRequestParams
- *  extends AbstractHttpRequestParams&lt;HttpResultResponse&lt;List&lt;Example&gt;&gt;&gt; {
+ *  extends AbstractHttpRequest&lt;HttpResultResponse&lt;List&lt;Example&gt;&gt;&gt; {
  *
  *      &#064;RequestField("queryDto")
  *      private QueryDto queryDto;
@@ -80,24 +80,24 @@ import java.lang.annotation.*;
  *
  *    &#064;Sdk(hostProperty = "${your.host}")
  *    public interface Service {
- *        &#064;RequestParam(ExampleHttpRequestParams.class)
+ *        &#064;RequestType(ExampleHttpRequestParams.class)
  *        HttpResultResponse&lt;List&lt;Example&gt;&gt; queryData(QueryDto dto,String token);
  *    }
  * </pre>
  * <p>
  * Starting from version 1.0.2, this annotation will be used to mark {@link Request}
  * types, and when searching for {@link Request} types, its priority level will be
- * higher than {@link RequestParameter}.
+ * higher than {@link RequestTypeSupplier}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @see SdkSupport#invokeCreateRequest
- * @see RequestParameter
+ * @see RequestTypeSupplier
  * @since 1.0.0
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface RequestParam {
+public @interface RequestType {
 
     /**
      * Return the type of the request parameter.
