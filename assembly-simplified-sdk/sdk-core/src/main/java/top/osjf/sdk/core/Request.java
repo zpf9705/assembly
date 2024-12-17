@@ -148,7 +148,7 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      * @return the {@code Class} object of the {@code Client}
      */
     @NotNull
-    Class<? extends Client> getClientCls();
+    Class<? extends Client> getClientType();
 
     /**
      * Return the {@code Type} type of the {@code Response} object for this

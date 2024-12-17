@@ -106,7 +106,7 @@ public class ClientExecutors {
                 .InstanceHolder
                 .getClientManager()
                 .getMaintainedClient(url.getUnique(),
-                        (Supplier<Client<R>>) () -> ReflectUtil.instantiates(request.getClientCls(), url))
+                        (Supplier<Client<R>>) () -> ReflectUtil.instantiates(request.getClientType(), url))
                 .bindRequest(request)
                 .bindUrl(url.getUrl());
     }

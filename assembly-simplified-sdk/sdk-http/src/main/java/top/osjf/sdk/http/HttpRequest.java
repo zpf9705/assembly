@@ -142,7 +142,7 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
      */
     @NotNull
     @Override
-    Class<? extends Client> getClientCls();
+    Class<? extends Client> getClientType();
 
     /**
      * {@inheritDoc}

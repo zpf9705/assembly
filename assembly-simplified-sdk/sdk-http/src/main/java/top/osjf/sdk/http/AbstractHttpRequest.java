@@ -131,7 +131,7 @@ public abstract class AbstractHttpRequest<R extends AbstractHttpResponse> extend
      */
     @Override
     @NotNull
-    public Class<? extends Client> getClientCls() {
+    public Class<? extends Client> getClientType() {
         return DefaultHttpClient.class;
     }
 

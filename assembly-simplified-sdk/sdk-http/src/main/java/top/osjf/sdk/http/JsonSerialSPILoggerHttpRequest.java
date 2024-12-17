@@ -43,7 +43,7 @@ public abstract class JsonSerialSPILoggerHttpRequest<R extends AbstractHttpRespo
      */
     @Override
     @NotNull
-    public final Class<? extends Client> getClientCls() {
+    public final Class<? extends Client> getClientType() {
         return ServiceLoaderLoggerHttpClient.class;
     }
 }

@@ -43,7 +43,7 @@ public abstract class UrlQuerySPILoggerHttpRequest<R extends AbstractHttpRespons
      */
     @Override
     @NotNull
-    public final Class<? extends Client> getClientCls() {
+    public final Class<? extends Client> getClientType() {
         return ServiceLoaderLoggerHttpClient.class;
     }
 }
