@@ -18,22 +18,23 @@ package top.osjf.sdk.http.process;
 
 import top.osjf.sdk.core.support.NotNull;
 
-import static top.osjf.sdk.http.process.CultivateSupportHttpRequestParams.InstanceHolder.getSdkEnumManager;
+import static top.osjf.sdk.http.process.CultivateSupportHttpRequest.InstanceHolder.getSdkEnumManager;
 
 /**
- * Extended from {@code UrlQuerySPILoggerHttpRequestParams}, with its functionality
- * implementation and support as {@code CultivateSupportHttpRequestParams} to find
+ * Extended from {@code UrlQueryHttpRequest}, with its functionality
+ * implementation and support as {@code CultivateSupportHttpRequest} to find
  * {@link HttpSdkEnumCultivate} annotations transform {@link HttpSdkEnum} and benefit
  * from {@link HttpSdkEnumManager} management.
+ *
  * @param <R> Subclass generic type of {@code AbstractHttpResponse}.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
 @SuppressWarnings({"unchecked"})
-public abstract class CultivateSupportUrlQuerySPILoggerHttpRequestParams<R extends AbstractHttpResponse>
-        extends UrlQuerySPILoggerHttpRequestParams<R> {
+public abstract class CultivateSupportUrlQueryHttpRequest<R extends AbstractHttpResponse>
+        extends UrlQueryHttpRequest<R> {
 
-    private static final long serialVersionUID = -453091418670430519L;
+    private static final long serialVersionUID = -7236532941889401818L;
 
     /**
      * Get {@code HttpSdkEnum} managed by

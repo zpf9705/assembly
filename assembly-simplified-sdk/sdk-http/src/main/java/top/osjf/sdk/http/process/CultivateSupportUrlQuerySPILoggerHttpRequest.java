@@ -16,34 +16,35 @@
 
 package top.osjf.sdk.http.process;
 
-import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.core.support.NotNull;
-import top.osjf.sdk.http.client.ServiceLoaderLoggerHttpClient;
+
+import static top.osjf.sdk.http.process.CultivateSupportHttpRequest.InstanceHolder.getSdkEnumManager;
 
 /**
- * Extends for {@code CultivateSupportHttpRequestParams} to provider a {@code Client}
- * is {@code ServiceLoaderLoggerHttpClient}.
+ * Extended from {@code UrlQuerySPILoggerHttpRequest}, with its functionality
+ * implementation and support as {@code CultivateSupportHttpRequest} to find
+ * {@link HttpSdkEnumCultivate} annotations transform {@link HttpSdkEnum} and benefit
+ * from {@link HttpSdkEnumManager} management.
  *
  * @param <R> Subclass generic type of {@code AbstractHttpResponse}.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-@SuppressWarnings("rawtypes")
-public abstract class CultivateSupportSPILoggerHttpRequestParams<R extends AbstractHttpResponse>
-        extends CultivateSupportHttpRequestParams<R> {
+@SuppressWarnings({"unchecked"})
+public abstract class CultivateSupportUrlQuerySPILoggerHttpRequest<R extends AbstractHttpResponse>
+        extends UrlQuerySPILoggerHttpRequest<R> {
 
-    private static final long serialVersionUID = -6471181067117106377L;
+    private static final long serialVersionUID = -453091418670430519L;
 
     /**
-     * {@inheritDoc}
-     * <p>
-     * Use {@code ServiceLoaderLoggerHttpClient}.
+     * Get {@code HttpSdkEnum} managed by
+     * {@code SdkEnumCultivateSupportHttpRequestParams#InstanceHolder#SDK_EUM_MANAGER}.
      *
-     * @return {@inheritDoc}.
+     * @return {@inheritDoc}
      */
     @Override
     @NotNull
-    public final Class<? extends Client> getClientCls() {
-        return ServiceLoaderLoggerHttpClient.class;
+    public final HttpSdkEnum matchSdkEnum() {
+        return getSdkEnumManager().getAndSetHttpSdkEnum(this);
     }
 }

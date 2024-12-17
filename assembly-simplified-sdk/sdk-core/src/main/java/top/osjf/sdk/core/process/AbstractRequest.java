@@ -28,7 +28,7 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * The {@code AbstractRequestParams} class is an abstract class that implements
+ * The {@code AbstractRequest} class is an abstract class that implements
  * the {@code Request} interface and provides a set of default behaviors.
  *
  * <p>This class restricts the response type to be an instance of {@code AbstractResponse}
@@ -63,7 +63,7 @@ import java.util.Map;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public abstract class AbstractRequestParams<R extends AbstractResponse> implements Request<R> {
+public abstract class AbstractRequest<R extends AbstractResponse> implements Request<R> {
 
     private static final long serialVersionUID = 6875912567896987011L;
 
@@ -126,12 +126,12 @@ public abstract class AbstractRequestParams<R extends AbstractResponse> implemen
      * <p>If neither is provided, {@link SdkSupport#getResponseType}
      * will be used for generic retrieval of the response.
      * <p><strong>The specific supported formats are shown below.</strong></p>
-     * <p><strong>The abstract {@link AbstractRequestParams} provided directly is followed
+     * <p><strong>The abstract {@link AbstractRequest} provided directly is followed
      * by a response implementation with a generic type.</strong>
      * <hr><blockquote><pre>
      *     {@code
      *   class ExampleRequestParam
-     *   extends AbstractRequestParams<ExampleResponse<Character>> {
+     *   extends AbstractRequest<ExampleResponse<Character>> {
      *      private static final long serialVersionUID = 6115216307330001269L;
      *         Override
      *         public SdkEnum matchSdkEnum() {
@@ -154,7 +154,7 @@ public abstract class AbstractRequestParams<R extends AbstractResponse> implemen
      * <p><strong>Nested inheritance type.</strong>
      * <hr><blockquote><pre>
      *     {@code
-     *      class ExampleRequestParam extends AbstractRequestParams<ExampleResponse<String>> {
+     *      class ExampleRequestParam extends AbstractRequest<ExampleResponse<String>> {
      *         private static final long serialVersionUID = 6115216307330001269L;
      *         Override
      *         public SdkEnum matchSdkEnum() {

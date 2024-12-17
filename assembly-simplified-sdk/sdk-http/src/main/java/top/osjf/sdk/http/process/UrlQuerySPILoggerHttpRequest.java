@@ -21,7 +21,7 @@ import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.http.client.ServiceLoaderLoggerHttpClient;
 
 /**
- * Extends for {@code UrlQuerySPILoggerHttpRequestParams} to provider a {@code Client}
+ * Extends for {@code UrlQuerySPILoggerHttpRequest} to provider a {@code Client}
  * is {@code ServiceLoaderLoggerHttpClient}.
  *
  * @param <R> Subclass generic type of {@code AbstractHttpResponse}.
@@ -29,8 +29,8 @@ import top.osjf.sdk.http.client.ServiceLoaderLoggerHttpClient;
  * @since 1.0.2
  */
 @SuppressWarnings("rawtypes")
-public abstract class UrlQuerySPILoggerHttpRequestParams<R extends AbstractHttpResponse>
-        extends UrlQueryHttpRequestParams<R> {
+public abstract class UrlQuerySPILoggerHttpRequest<R extends AbstractHttpResponse>
+        extends UrlQueryHttpRequest<R> {
 
     private static final long serialVersionUID = -3904631145903947614L;
 

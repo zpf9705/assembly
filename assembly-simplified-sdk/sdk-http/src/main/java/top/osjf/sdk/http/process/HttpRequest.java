@@ -108,7 +108,7 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
      *     to inform the framework of relevant information about interface {@code HttpSdkEnum}. The
      *     framework will dynamically obtain annotation {@code HttpSdkEnumCultivate} at runtime to
      *     obtain the relevant metadata of this SDK, and make HTTP related requests accordingly
-     *     and just inherit {@link CultivateSupportHttpRequestParams} and it will automatically
+     *     and just inherit {@link CultivateSupportHttpRequest} and it will automatically
      *     help you manage {@code HttpSdkEnum}.</li>
      *     <li>Annotate {@code top.osjf.sdk.http.annotation.HttpSdkEnumCultivate} onto the implementation
      *     class of {@code HttpRequest}, and then override this method to return {@literal null}. This

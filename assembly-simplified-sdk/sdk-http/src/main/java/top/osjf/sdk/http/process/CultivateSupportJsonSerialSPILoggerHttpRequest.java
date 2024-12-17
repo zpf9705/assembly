@@ -18,11 +18,11 @@ package top.osjf.sdk.http.process;
 
 import top.osjf.sdk.core.support.NotNull;
 
-import static top.osjf.sdk.http.process.CultivateSupportHttpRequestParams.InstanceHolder.getSdkEnumManager;
+import static top.osjf.sdk.http.process.CultivateSupportHttpRequest.InstanceHolder.getSdkEnumManager;
 
 /**
- * Extended from {@code JsonSerialSPILoggerHttpRequestParams}, with its functionality
- * implementation and support as {@code CultivateSupportHttpRequestParams} to find
+ * Extended from {@code JsonSerialSPILoggerHttpRequest}, with its functionality
+ * implementation and support as {@code CultivateSupportHttpRequest} to find
  * {@link HttpSdkEnumCultivate} annotations transform {@link HttpSdkEnum} and benefit
  * from {@link HttpSdkEnumManager} management.
  *
@@ -31,14 +31,14 @@ import static top.osjf.sdk.http.process.CultivateSupportHttpRequestParams.Instan
  * @since 1.0.2
  */
 @SuppressWarnings({"unchecked"})
-public abstract class CultivateSupportJsonSerialSPILoggerHttpRequestParams<R extends AbstractHttpResponse>
-        extends JsonSerialSPILoggerHttpRequestParams<R> {
+public abstract class CultivateSupportJsonSerialSPILoggerHttpRequest<R extends AbstractHttpResponse>
+        extends JsonSerialSPILoggerHttpRequest<R> {
 
     private static final long serialVersionUID = -7551894800516076762L;
 
     /**
      * Get {@code HttpSdkEnum} managed by
-     * {@code SdkEnumCultivateSupportHttpRequestParams#InstanceHolder#SDK_EUM_MANAGER}.
+     * {@code SdkEnumCultivateSupportHttpRequest#InstanceHolder#SDK_EUM_MANAGER}.
      *
      * @return {@inheritDoc}
      */

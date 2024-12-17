@@ -20,7 +20,7 @@ import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.SdkSupport;
 
 /**
- * It is an abstract extension of {@code AbstractHttpRequestParams}, dedicated
+ * It is an abstract extension of {@code AbstractHttpRequest}, dedicated
  * to simplifying the direct rewriting of {@link HttpRequest#matchSdkEnum()}
  * methods instead of using annotations {@link HttpSdkEnumCultivate}.
  *
@@ -37,8 +37,8 @@ import top.osjf.sdk.core.support.SdkSupport;
  * @since 1.0.2
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public abstract class CultivateSupportHttpRequestParams<R extends AbstractHttpResponse>
-        extends AbstractHttpRequestParams<R> {
+public abstract class CultivateSupportHttpRequest<R extends AbstractHttpResponse>
+        extends AbstractHttpRequest<R> {
 
     private static final long serialVersionUID = 3512402192630016740L;
 

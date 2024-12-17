@@ -23,15 +23,15 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * {@code JsonSequenceHttpRequestParams} is an abstract class that extends
- * from {@code AbstractHttpRequestParams} and is used to handle HTTP request
+ * {@code JsonSerialHttpRequest} is an abstract class that extends
+ * from {@code AbstractHttpRequest} and is used to handle HTTP request
  * parameters that need to be serialized into JSON format.
  * <p>
  * <strong>The code usage example is as follows:</strong>
  * </p>
  * <pre>
  * {@code
- * public class ExampleJsonHttpRequestParams extends JsonSerialHttpRequestParams<...//Omitted here> {
+ * public class ExampleJsonSerialHttpRequest extends JsonSerialHttpRequest<...//Omitted here> {
  *     public HttpSdkEnum matchSdk() {
  *         ... //Omitted here.
  *     }
@@ -45,7 +45,7 @@ import java.util.Map;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-public abstract class JsonSerialHttpRequestParams<R extends AbstractHttpResponse> extends AbstractHttpRequestParams<R> {
+public abstract class JsonSerialHttpRequest<R extends AbstractHttpResponse> extends AbstractHttpRequest<R> {
 
     private static final long serialVersionUID = -2384526879073656928L;
 

@@ -17,7 +17,7 @@
 package top.osjf.sdk.http.process;
 
 import top.osjf.sdk.core.client.Client;
-import top.osjf.sdk.core.process.AbstractRequestParams;
+import top.osjf.sdk.core.process.AbstractRequest;
 import top.osjf.sdk.core.process.URL;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
@@ -32,8 +32,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * The {@code AbstractHttpRequestParams} class is an abstract class that extends
- * the {@code AbstractRequestParams} class and implements the {@code HttpRequest}
+ * The {@code AbstractHttpRequest} class is an abstract class that extends
+ * the {@code AbstractRequest} class and implements the {@code HttpRequest}
  * interface.
  *
  * <p>This class provides a general abstract implementation for HTTP request parameters
@@ -59,7 +59,7 @@ import java.util.Map;
  * @since 1.0.0
  */
 @SuppressWarnings("rawtypes")
-public abstract class AbstractHttpRequestParams<R extends AbstractHttpResponse> extends AbstractRequestParams<R>
+public abstract class AbstractHttpRequest<R extends AbstractHttpResponse> extends AbstractRequest<R>
         implements HttpRequest<R> {
 
     private static final long serialVersionUID = 7487068349280012103L;
