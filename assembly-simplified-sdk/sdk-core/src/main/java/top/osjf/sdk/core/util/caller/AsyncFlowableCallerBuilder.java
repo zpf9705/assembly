@@ -16,7 +16,7 @@
 
 package top.osjf.sdk.core.util.caller;
 
-import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.Response;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
 
@@ -33,7 +33,7 @@ import java.util.function.Supplier;
  * executors to control the execution and result processing of asynchronous operations.
  *
  * @param <R> Generic R represents the type returned by an operation, which must
- *            inherit from the {@link top.osjf.sdk.core.process.Response} class.
+ *            inherit from the {@link Response} class.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */

@@ -16,8 +16,8 @@
 
 package top.osjf.sdk.core.util.caller;
 
-import top.osjf.sdk.core.process.Response;
-import top.osjf.sdk.core.process.SdkEnum;
+import top.osjf.sdk.core.Response;
+import top.osjf.sdk.core.SdkEnum;
 import top.osjf.sdk.core.support.NotNull;
 
 /**

@@ -18,7 +18,7 @@ package top.osjf.sdk.core.util.caller;
 
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.disposables.Disposable;
-import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.Response;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
 

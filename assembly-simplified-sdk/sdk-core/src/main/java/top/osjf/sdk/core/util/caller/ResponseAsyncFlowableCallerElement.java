@@ -16,7 +16,7 @@
 
 package top.osjf.sdk.core.util.caller;
 
-import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.Response;
 import top.osjf.sdk.core.support.Nullable;
 
 import java.util.concurrent.Executor;

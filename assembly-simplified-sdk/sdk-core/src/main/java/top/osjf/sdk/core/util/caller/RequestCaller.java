@@ -16,9 +16,9 @@
 
 package top.osjf.sdk.core.util.caller;
 
-import top.osjf.sdk.core.process.Request;
-import top.osjf.sdk.core.process.Response;
-import top.osjf.sdk.core.process.SdkEnum;
+import top.osjf.sdk.core.Request;
+import top.osjf.sdk.core.Response;
+import top.osjf.sdk.core.SdkEnum;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.util.ReflectUtil;

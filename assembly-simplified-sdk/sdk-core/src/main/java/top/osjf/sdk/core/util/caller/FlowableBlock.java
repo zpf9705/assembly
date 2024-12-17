@@ -16,7 +16,7 @@
 
 package top.osjf.sdk.core.util.caller;
 
-import top.osjf.sdk.core.process.Response;
+import top.osjf.sdk.core.Response;
 
 /**
  * The {@code FlowableBlock} interface defines a generic blocking transmission subscription
