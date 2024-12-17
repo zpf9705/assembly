@@ -139,13 +139,7 @@ public final class ServiceLoadManager {
         List<T> instances = new ArrayList<>();
         ServiceLoader.load(type).forEach(instances::add);
         if (sort && !instances.isEmpty()) {
-            instances.sort((o1, o2) -> {
-                LoadOrder order1 = o1.getClass().getAnnotation(LoadOrder.class);
-                LoadOrder order2 = o2.getClass().getAnnotation(LoadOrder.class);
-                int value1 = order1.value();
-                int value2 = order2.value();
-                return Integer.compare(value1, value2);
-            });
+            instances.sort(LoadOrder.SortRegulation.COMPARATOR);
         }
         return instances;
     }
