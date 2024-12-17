@@ -16,7 +16,7 @@
 
 package top.osjf.sdk.core.exception;
 
-import top.osjf.sdk.core.process.DefaultErrorResponse;
+import top.osjf.sdk.core.DefaultErrorResponse;
 
 /**
  * {@link DefaultErrorResponse} of abnormal conversion of response data.

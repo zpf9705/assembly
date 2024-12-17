@@ -16,11 +16,11 @@
 
 package top.osjf.sdk.core.exception;
 
-import top.osjf.sdk.core.process.RequestTypeSupplier;
+import top.osjf.sdk.core.RequestTypeSupplier;
 
 /**
  * Create throw types for request class parameter exceptions based on
- * {@link RequestType} and {@link RequestTypeSupplier}.
+ * {@link top.osjf.sdk.core.RequestType} and {@link RequestTypeSupplier}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
