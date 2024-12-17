@@ -16,6 +16,7 @@
 
 package top.osjf.sdk.core.support;
 
+import com.google.common.collect.Lists;
 import top.osjf.sdk.core.*;
 import top.osjf.sdk.core.exception.RequestCreateException;
 import top.osjf.sdk.core.exception.UnknownRequestParameterException;
@@ -102,11 +103,12 @@ public abstract class SdkSupport {
         Request<?> request = null;
         List<Callback> callbacks = null;
 
-        boolean hasArgs = ArrayUtils.isNotEmpty(args);
+        List<Object> argList = args == null ? Lists.newArrayList() : Lists.newArrayList(args);
+
         //Loop parameter array to find the single or array form of the Request
         // class and callback interface that supports method parsing.
-        if (hasArgs) {
-            for (Object arg : args) {
+        if (!argList.isEmpty()) {
+            for (Object arg : argList) {
                 if (arg instanceof Request) {
                     if (request == null) {
                         request = (Request<?>) arg;
@@ -137,6 +139,10 @@ public abstract class SdkSupport {
 
         if (request == null) {
 
+            //The callback method parameters do not participate in the
+            // reflection dynamic construction of the request.
+            if (callbacks != null) argList.removeAll(callbacks);
+
             //When no found request in args , use reflection to construct
             // the request parameter based on the marked request type.
 
@@ -154,7 +160,7 @@ public abstract class SdkSupport {
 
                 //Secondly, consider whether the parameters inherit specific interfaces.
                 List<Class<? extends Request>> requestTypes = null;
-                if (hasArgs) {
+                if (!argList.isEmpty()) {
                     requestTypes = Arrays.stream(args)
                             .map((Function<Object, Class<? extends Request>>) o ->
                                     o instanceof RequestTypeSupplier ? ((RequestTypeSupplier) o).getRequestType() : null)
