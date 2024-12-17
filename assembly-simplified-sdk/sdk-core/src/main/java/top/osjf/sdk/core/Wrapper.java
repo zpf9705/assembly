@@ -16,9 +16,6 @@
 
 package top.osjf.sdk.core;
 
-import top.osjf.sdk.core.process.Request;
-import top.osjf.sdk.core.process.Response;
-
 /**
  * Wrapper Interface: Defines the basic behavior of a wrapper, allowing objects to
  * be type-cast and unwrapped at runtime.

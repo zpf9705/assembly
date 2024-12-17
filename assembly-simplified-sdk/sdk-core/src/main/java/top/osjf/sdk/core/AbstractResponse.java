@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.core.process;
+package top.osjf.sdk.core;
 
 /**
  * Abstract response class, defining basic properties and methods for response objects.

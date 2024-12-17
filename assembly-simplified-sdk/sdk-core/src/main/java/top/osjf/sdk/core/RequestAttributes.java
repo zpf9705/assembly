@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.core.process;
+package top.osjf.sdk.core;
 
 /**
  * Regarding the definition property of {@link Request},
