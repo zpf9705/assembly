@@ -80,15 +80,4 @@ public abstract class AbstractHttpResponse extends AbstractResponse implements H
     public String getMessage() {
         return isSuccess() ? SUCCESS_MESSAGE : FAILED_MESSAGE;
     }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * Default return internal server error code and please rewrite its method
-     * accord to method {@link #isSuccess()}.
-     */
-    @Override
-    public Object getCode() {
-        return SC_INTERNAL_SERVER_ERROR;
-    }
 }
