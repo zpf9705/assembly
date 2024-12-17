@@ -26,7 +26,7 @@ import java.lang.reflect.Method;
 
 /**
  * When processing SDK proxy requests, at the method level, after creating {@link Request},
- * this interface method {@link #postProcessRequestBeforeHandle(Request, Class, Method,Object[])}
+ * this interface method {@link #postProcessRequestBeforeHandle(Request, Class, Method, Object[])}
  * can be used to customize the above {@link Request} parameters and obtain the final
  * request parameter result, which cannot be empty by default and returns the original
  * created request parameter.
@@ -56,17 +56,22 @@ import java.lang.reflect.Method;
  */
 public interface HandlerPostProcessor {
 
+
     /**
-     * You can return a new {@link Request} in this method, or you can
-     * use relevant information to record and customize some of your
-     * actions before the request without customizing the parameters.
+     * Post-process the request before it is handled.
      *
-     * @param request     The original request parameters.
-     * @param targetType  The target type being represented.
-     * @param proxyMethod The target method of the agent.
-     * @param args        The real parameters executed by the
-     *                    proxy method.
-     * @return Customized request parameters.
+     * <p>This method allows custom modifications or enhancements to the request
+     * object before the target method is invoked.
+     *
+     * <p>The default implementation directly returns the original request object
+     * without any modifications.
+     *
+     * @param request     the original request object.
+     * @param targetType  the Class object of the target class.
+     * @param proxyMethod the method being proxied.
+     * @param args        the array of arguments passed when invoking the target method.
+     * @return The processed request object, which should typically be the modified
+     * request object or the original request object.
      */
     @NonNull
     default Request<?> postProcessRequestBeforeHandle(Request<?> request, Class<?> targetType, Method proxyMethod,
@@ -75,22 +80,29 @@ public interface HandlerPostProcessor {
     }
 
     /**
-     * In this method, a new response result can be returned, and the input
-     * type is determined based on your requirements for the corresponding
-     * action. Of course, customization is not necessary, and relevant
-     * information can be used to record and customize some of your actions
-     * after the request.
+     * Post-process the result after the request is handled.
      *
-     * @param result      The original corresponding parameters.
-     * @param targetType  The target type being represented.
-     * @param proxyMethod The target method of the agent.
-     * @param args        The real parameters executed by the
-     *                    proxy method.
-     * @return Customized response result.
+     * <p>This method allows custom modifications or enhancements to the result
+     * object after the target method is invoked and returns a result.
+     *
+     * <p>The default implementation directly returns the original result object
+     * without any modifications.
+     *
+     * @param result      the result object returned by the target method
+     *                    (Not necessarily {@code Response}, it is necessary to
+     *                    understand the existence and function of its derived interfaces
+     *                    {@code ResponseData} and {@code InspectionResponseData}).
+     * @param request     the original request object.
+     * @param targetType  the Class object of the target class.
+     * @param proxyMethod the method being proxied.
+     * @param args        the array of arguments passed when invoking the
+     *                    target method.
+     * @return The processed result object, which should typically be the modified
+     * result object or the original result object
      */
     @Nullable
-    default Object postProcessResultAfterHandle(@Nullable Object result, Class<?> targetType, Method proxyMethod,
-                                                @Nullable Object[] args) {
+    default Object postProcessResultAfterHandle(@Nullable Object result, Request<?> request,
+                                                Class<?> targetType, Method proxyMethod, @Nullable Object[] args) {
         return result;
     }
 
