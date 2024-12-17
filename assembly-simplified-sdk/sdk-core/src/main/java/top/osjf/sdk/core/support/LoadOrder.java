@@ -77,6 +77,7 @@ public @interface LoadOrder {
      * instances of any class with LoadOrder annotation, and its comparison
      * rules are standardized according to the requirements of annotation
      * {@code LoadOrder}.
+     * @since 1.0.2
      */
     class SortRegulation {
         public static final Comparator<Object> COMPARATOR = (o1, o2) -> {
