@@ -32,8 +32,10 @@ import top.osjf.sdk.core.RequestAttributes;
 import top.osjf.sdk.core.Response;
 import top.osjf.sdk.core.ResponseData;
 import top.osjf.sdk.core.support.Nullable;
+import top.osjf.sdk.core.util.Pair;
 import top.osjf.sdk.core.util.StringUtils;
 import top.osjf.sdk.core.util.caller.CallOptions;
+import top.osjf.sdk.core.util.caller.Callback;
 import top.osjf.sdk.http.support.HttpSdkSupport;
 import top.osjf.sdk.spring.SpringRequestCaller;
 import top.osjf.sdk.spring.beans.DeterminantDisposableBean;
@@ -208,30 +210,55 @@ public abstract class AbstractSdkProxyBean<T> extends HierarchicalProxySupport<T
      * {@link top.osjf.sdk.core.RequestType} and {@link ResponseData} has been
      * added.
      *
-     * @param proxy  Proxy object.
-     * @param method The method object executed by the proxy class.
-     * @param args   The real parameters executed by the proxy method.
+     * @param proxy  proxy object.
+     * @param method the method object executed by the proxy class.
+     * @param args   the real parameters executed by the proxy method.
      * @return The result returned by the proxy execution method.
      */
     private Object handleInternal(@SuppressWarnings("unused") Object proxy,
                                   Method method, Object[] args) {
-        //Supports toString and returns proxy metadata.
+
         if ("toString".equals(method.getName())) return toString();
-        //Get target type.
         Class<T> targetType = getType();
-        //Create a request class based on the extension.
-        Request<?> request = HttpSdkSupport.invokeCreateRequest(method, args);
-        //Dynamically customize request parameters.
+        Pair<Request<?>, List<Callback>> pair = HttpSdkSupport.invokeCreateRequest(method, args);
+        Request<?> request = pair.getFirst();
+        postProcessRequestBeforeHandle(request, targetType, method, args);
+        Response response = execute(request, method, pair.getSecond());
+        Object result = HttpSdkSupport.getResponse(method, response);
+        return postProcessResultAfterHandle(result, request, targetType, method, args);
+    }
+
+    /**
+     * Execute the preprocessor.
+     *
+     * @param request    the original request object.
+     * @param targetType the Class object of the target class.
+     * @param method     the method being proxied.
+     * @param args       the array of arguments passed when invoking the target method.
+     */
+    private void postProcessRequestBeforeHandle(Request<?> request, Class<T> targetType,
+                                                Method method, Object[] args) {
         for (HandlerPostProcessor postProcessor : postProcessors) {
-            request = postProcessor.postProcessRequestBeforeHandle(request, targetType,
-                    method, args);
+            request = postProcessor.postProcessRequestBeforeHandle(request, targetType, method, args);
         }
-        //Execute the request.
-        Object result = HttpSdkSupport.getResponse(method, execute(request, method));
-        //Dynamic customization of request response results.
+    }
+
+    /**
+     * Execute the post processor.
+     *
+     * @param result     the result object returned by the target method.
+     * @param request    the original request object.
+     * @param targetType the Class object of the target class.
+     * @param method     the method being proxied.
+     * @param args       the array of arguments passed when invoking the
+     *                   target method.
+     * @return The processed result object, which should typically be the modified
+     * result object or the original result object
+     */
+    private Object postProcessResultAfterHandle(Object result, Request<?> request, Class<T> targetType,
+                                                Method method, Object[] args) {
         for (HandlerPostProcessor postProcessor : postProcessors) {
-            result = postProcessor.postProcessResultAfterHandle(result, targetType,
-                    method, args);
+            result = postProcessor.postProcessResultAfterHandle(result, request, targetType, method, args);
         }
         return result;
     }
@@ -240,14 +267,15 @@ public abstract class AbstractSdkProxyBean<T> extends HierarchicalProxySupport<T
      * Execute {@code Request} based on the presence of {@code CallOptions}
      * annotations.
      *
-     * @param request input {@code Request} obj.
-     * @param method  The method object to be executed.
+     * @param request   input {@code Request} obj.
+     * @param method    the method object to be executed.
+     * @param callbacks method args provider {@code Callback} instances.
      * @return The {@code Response} object obtained from the response
      * returns empty when {@link CallOptions#callbackClass()} exists.
      */
     @Nullable
-    private Response execute(Request<?> request, Method method) {
-        return requestCaller.resolveRequestExecuteWithTypeOrMethodOptions(request, getHost(), method);
+    private Response execute(Request<?> request, Method method, List<Callback> callbacks) {
+        return requestCaller.resolveRequestExecuteWithTypeOrMethodOptions(request, getHost(), method, callbacks);
     }
 
     /**

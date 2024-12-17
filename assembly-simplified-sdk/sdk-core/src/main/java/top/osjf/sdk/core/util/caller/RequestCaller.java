@@ -75,7 +75,7 @@ public class RequestCaller {
      * @param request     input {@code Request} obj.
      * @param host        the real server hostname.
      * @param callOptions {@code CallOptions} annotation.
-     * @param callbacks   the {@code Callback} instances.
+     * @param callbacks   the provider {@code Callback} instances.
      * @return The {@code Response} object obtained from the response
      * returns empty when {@link CallOptions#callbackClass()} exists.
      * @throws NullPointerException if input request or {@code CallOptions} is {@literal null}.
@@ -100,7 +100,7 @@ public class RequestCaller {
      * @param supplier    the provider function of the {@code Response} object.
      * @param name        the sdk name,as see {@link SdkEnum#name()}.
      * @param callOptions {@code CallOptions} annotation.
-     * @param callbacks   the {@code Callback} instances.
+     * @param callbacks   the provider {@code Callback} instances.
      * @return The {@code Response} object obtained from the response
      * returns empty when {@link CallOptions#callbackClass()} exists.
      * @throws NullPointerException if input request or {@code CallOptions} is {@literal null}.
@@ -146,7 +146,7 @@ public class RequestCaller {
      * @param whenResponseNonSuccessRetry      when response nonSuccess retry boolean mark.
      * @param whenResponseNonSuccessFinalThrow when response nonSuccess final throw exception mark.
      * @param name                             the sdk name,as see {@link SdkEnum#name()}.
-     * @param callbacks                        the {@code Callback} instances.
+     * @param callbacks                        the provider {@code Callback} instances.
      * @return The {@code Response} object obtained from the response
      * returns empty when {@link CallOptions#callbackClass()} exists.
      * @throws NullPointerException if input args is {@literal null}.

@@ -92,7 +92,7 @@ public interface HandlerPostProcessor {
      *                    (Not necessarily {@code Response}, it is necessary to
      *                    understand the existence and function of its derived interfaces
      *                    {@code ResponseData} and {@code InspectionResponseData}).
-     * @param request     the original request object.
+     * @param request     the original request object. //since 1.0.2
      * @param targetType  the Class object of the target class.
      * @param proxyMethod the method being proxied.
      * @param args        the array of arguments passed when invoking the
