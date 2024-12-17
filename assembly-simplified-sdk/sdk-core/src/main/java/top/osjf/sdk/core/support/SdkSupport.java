@@ -165,6 +165,7 @@ public abstract class SdkSupport {
 
                 //If no relevant type is found or the number of found is greater
                 // than 1, it cannot be confirmed as unique and will not be processed.
+                //https://mvnrepository.com/artifact/top.osjf.sdk/sdk-core/1.0.1/issue1
                 if (CollectionUtils.isEmpty(requestTypes) || requestTypes.size() > 1) {
                     throw new UnknownRequestParameterException();
                 }
