@@ -21,11 +21,9 @@ import top.osjf.sdk.core.exception.RequestCreateException;
 import top.osjf.sdk.core.exception.UnknownRequestParameterException;
 import top.osjf.sdk.core.exception.UnknownResponseParameterException;
 import top.osjf.sdk.core.util.*;
+import top.osjf.sdk.core.util.caller.Callback;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -88,58 +86,87 @@ public abstract class SdkSupport {
      *
      * @param method Proxy target method.
      * @param args   Request parameters.
-     * @return The request class parameters created.
+     * @return the {@code Pair} with first {@code Request} and second
+     * {@code List<Callback>}.
      * @throws NullPointerException If the input method is {@literal null}.
      * @see ResponseData
      * @see RequestType
      */
-    public static Request<?> invokeCreateRequest(@NotNull Method method, Object[] args) {
+    public static Pair<Request<?>, List<Callback>> invokeCreateRequest(@NotNull Method method, Object[] args) {
+        Request<?> request = null;
+        List<Callback> callbacks = null;
         int length = ArrayUtils.isEmpty(args) ? 0 : args.length;
-
-        //In a single parameter scenario, only consider whether it is a request class.
-        if (length == 1) {
-            Object arg = args[0];
-            if (arg instanceof Request) {
-                //Consider first whether it is the actual request parameter.
-                return (Request<?>) arg;
+        if (length > 0) {
+            for (Object arg : args) {
+                if (arg instanceof Request) {
+                    if (request == null) {
+                        request = (Request<?>) arg;
+                    } else {
+                        throw new UnknownRequestParameterException();
+                    }
+                }
+                if (arg instanceof Collection) {
+                    Collection<?> argc = (Collection<?>) arg;
+                    for (Object ac : argc) {
+                        if (ac instanceof Callback) {
+                            if (callbacks == null) callbacks = new LinkedList<>();
+                            callbacks.add((Callback) ac);
+                        }
+                    }
+                }
+                if (arg.getClass().isArray()) {
+                    for (int i = 0; i < Array.getLength(arg); i++) {
+                        Object ac = Array.get(arg, i);
+                        if (ac instanceof Callback) {
+                            if (callbacks == null) callbacks = new LinkedList<>();
+                            callbacks.add((Callback) ac);
+                        }
+                    }
+                }
             }
         }
-        //When a single parameter is not a request, use reflection to construct
-        // the request parameter based on the marked request type.
 
-        /* Participate more in the processing logic of 0 parameters. */
+        if (request == null) {
 
-        //The following is how to discover the types of request parameters through
-        // specific annotations and interfaces.
-        Class<? extends Request> requestType;
+            //When a single parameter is not a request, use reflection to construct
+            // the request parameter based on the marked request type.
 
-        //Consider annotations first.
-        RequestType requestTypeAnnotation = method.getAnnotation(RequestType.class);
-        if (requestTypeAnnotation != null) {
-            requestType = requestTypeAnnotation.value();
-        } else {
+            /* Participate more in the processing logic of 0 parameters. */
 
-            //Secondly, consider whether the parameters inherit specific interfaces.
-            List<Class<? extends Request>> requestTypes = Arrays.stream(args)
-                    .map((Function<Object, Class<? extends Request>>) o ->
-                            o instanceof RequestTypeSupplier ? ((RequestTypeSupplier) o).getRequestType() : null)
-                    .filter(Objects::nonNull)
-                    .distinct()
-                    .collect(Collectors.toList());
+            //The following is how to discover the types of request parameters through
+            // specific annotations and interfaces.
+            Class<? extends Request> requestType;
 
-            //If a specific interface with multiple parameters is used to indicate
-            // the request type, I cannot know the specific type without ensuring uniqueness.
-            if (CollectionUtils.isNotEmpty(requestTypes) || requestTypes.size() > 1) {
-                throw new UnknownRequestParameterException();
+            //Consider annotations first.
+            RequestType requestTypeAnnotation = method.getAnnotation(RequestType.class);
+            if (requestTypeAnnotation != null) {
+                requestType = requestTypeAnnotation.value();
+            } else {
+
+                //Secondly, consider whether the parameters inherit specific interfaces.
+                List<Class<? extends Request>> requestTypes = Arrays.stream(args)
+                        .map((Function<Object, Class<? extends Request>>) o ->
+                                o instanceof RequestTypeSupplier ? ((RequestTypeSupplier) o).getRequestType() : null)
+                        .filter(Objects::nonNull)
+                        .distinct()
+                        .collect(Collectors.toList());
+
+                //If a specific interface with multiple parameters is used to indicate
+                // the request type, I cannot know the specific type without ensuring uniqueness.
+                if (CollectionUtils.isNotEmpty(requestTypes) || requestTypes.size() > 1) {
+                    throw new UnknownRequestParameterException();
+                }
+
+                //Select 1 for a specific type.
+                requestType = requestTypes.get(0);
             }
 
-            //Select 1 for a specific type.
-            requestType = requestTypes.get(0);
+            //After obtaining the type of the requested parameter, assign necessary
+            // property values based on the parameter and specific annotations.
+            request = invokeCreateRequestConstructorWhenFailedUseSet(requestType, args);
         }
 
-        //After obtaining the type of the requested parameter, assign necessary
-        // property values based on the parameter and specific annotations.
-        return invokeCreateRequestConstructorWhenFailedUseSet(requestType, args);
+        return Pair.create(request, callbacks);
     }
 
     /**
@@ -264,17 +291,17 @@ public abstract class SdkSupport {
             if (CollectionUtils.isEmpty(types)) {
                 break;
             }
-            Pair pair = getTypePair(types, classLoader);
-            Type type = pair.type;
+            Pair<Type, Class<?>> pair = getTypePair(types, classLoader);
+            Type type = pair.getFirst();
             if (type instanceof ParameterizedType) {
                 resultType = getResponseGenericType(type, classLoader);
                 if (resultType != null) {
                     break;
                 } else {
-                    clazz = pair.clazz;
+                    clazz = pair.getSecond();
                 }
             } else {
-                clazz = pair.clazz;
+                clazz = pair.getSecond();
             }
         }
         if (resultType == null) {
@@ -291,19 +318,8 @@ public abstract class SdkSupport {
 
     /*  ################################### Internal assistance methods. ###################################  */
 
-    //Assist in obtaining type {@code Type} and {@code Class} objects.
-    static class Pair {
-        final Type type;
-        final Class<?> clazz;
-
-        Pair(Type type, Class<?> clazz) {
-            this.type = type;
-            this.clazz = clazz;
-        }
-    }
-
     //Find a subclass belonging to top.osjf.sdk.core.Request from numerous generic classes.
-    private static Pair getTypePair(List<Type> types, ClassLoader classLoader) {
+    private static Pair<Type, Class<?>> getTypePair(List<Type> types, ClassLoader classLoader) {
         Type requestType = null;
         Class<?> requestClass = null;
         for (Type type : types) {
@@ -313,7 +329,7 @@ public abstract class SdkSupport {
                 break;
             }
         }
-        return new Pair(requestType, requestClass);
+        return Pair.create(requestType, requestClass);
     }
 
     //Find the subclass generics belonging to top.osjf.sdk.core.Response
