@@ -107,32 +107,47 @@ public abstract class SdkSupport {
 
         //Loop parameter array to find the single or array form of the Request
         // class and callback interface that supports method parsing.
+        List<Object> delArgs = null;
         if (!argList.isEmpty()) {
-            for (Object arg : argList) {
-                if (arg instanceof Request) {
-                    if (request == null) {
-                        request = (Request<?>) arg;
-                    } else {
-                        throw new UnknownRequestParameterException();
-                    }
+            List<Object> requestInstances = argList.stream()
+                    .filter(arg -> arg instanceof Request)
+                    .collect(Collectors.toList());
+
+            if (CollectionUtils.isNotEmpty(requestInstances)) {
+                if (requestInstances.size() > 1) {
+                    throw new UnknownRequestParameterException();
                 }
+                request = (Request<?>) requestInstances.get(0);
+            } else {
+                delArgs = new ArrayList<>();
+            }
+            for (Object arg : argList) {
                 if (arg instanceof Collection) {
                     Collection<?> argc = (Collection<?>) arg;
+                    List<Object> isCallback = null;
                     for (Object ac : argc) {
                         if (ac instanceof Callback) {
-                            if (callbacks == null) callbacks = new LinkedList<>();
+                            if (callbacks == null) callbacks = new ArrayList<>();
                             callbacks.add((Callback) ac);
+                            if (isCallback == null) isCallback = new ArrayList<>();
+                            isCallback.add(ac);
                         }
                     }
+                    if (delArgs != null && isCallback != null && isCallback.size() == argc.size()) delArgs.add(argc);
                 }
                 if (arg.getClass().isArray()) {
-                    for (int i = 0; i < Array.getLength(arg); i++) {
+                    List<Object> isCallback = null;
+                    int length = Array.getLength(arg);
+                    for (int i = 0; i < length; i++) {
                         Object ac = Array.get(arg, i);
                         if (ac instanceof Callback) {
-                            if (callbacks == null) callbacks = new LinkedList<>();
+                            if (callbacks == null) callbacks = new ArrayList<>();
                             callbacks.add((Callback) ac);
+                            if (isCallback == null) isCallback = new ArrayList<>();
+                            isCallback.add(ac);
                         }
                     }
+                    if (delArgs != null && isCallback != null && isCallback.size() == length) delArgs.add(arg);
                 }
             }
         }
@@ -141,7 +156,7 @@ public abstract class SdkSupport {
 
             //The callback method parameters do not participate in the
             // reflection dynamic construction of the request.
-            if (callbacks != null) argList.removeAll(callbacks);
+            if (delArgs != null) argList.removeAll(delArgs);
 
             //When no found request in args , use reflection to construct
             // the request parameter based on the marked request type.
@@ -182,7 +197,7 @@ public abstract class SdkSupport {
 
             //After obtaining the type of the requested parameter, assign necessary
             // property values based on the parameter and specific annotations.
-            request = invokeCreateRequestConstructorWhenFailedUseSet(requestType, args);
+            request = invokeCreateRequestConstructorWhenFailedUseSet(requestType, argList.toArray());
         }
 
         return Pair.create(request, callbacks);
