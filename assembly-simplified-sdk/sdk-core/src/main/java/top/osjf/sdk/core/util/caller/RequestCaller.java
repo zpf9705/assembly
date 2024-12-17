@@ -19,11 +19,15 @@ package top.osjf.sdk.core.util.caller;
 import top.osjf.sdk.core.Request;
 import top.osjf.sdk.core.Response;
 import top.osjf.sdk.core.SdkEnum;
+import top.osjf.sdk.core.support.LoadOrder;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
+import top.osjf.sdk.core.util.CollectionUtils;
 import top.osjf.sdk.core.util.ReflectUtil;
 import top.osjf.sdk.core.util.SynchronizedWeakHashMap;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -37,7 +41,7 @@ import java.util.function.Supplier;
  * instantiation function (to instantiate objects via reflection) and a constructor with a
  * {@code Function<Class<?>, Object>} parameter that allows users to customize instantiation logic.
  *
- * <p>The core method in this class is {@link #resolveRequestExecuteWithOptions(Supplier, String, CallOptions)},
+ * <p>The core method in this class is {@link #resolveRequestExecuteWithOptions(Supplier, String, CallOptions, List)},
  * which accepts a request object (provided through a {@code Supplier}) and a {@code CallOptions}
  * annotation as parameters and final call method {@code resolveRequestExecuteWithOptions(Supplier,
  * int, long, ThrowablePredicate, boolean, boolean, Callback)} (this method is not elaborated here
@@ -71,15 +75,18 @@ public class RequestCaller {
      * @param request     input {@code Request} obj.
      * @param host        the real server hostname.
      * @param callOptions {@code CallOptions} annotation.
+     * @param callbacks   the {@code Callback} instances.
      * @return The {@code Response} object obtained from the response
      * returns empty when {@link CallOptions#callbackClass()} exists.
-     * @throws NullPointerException if input request is {@literal null}.
+     * @throws NullPointerException if input request or {@code CallOptions} is {@literal null}.
      */
     @Nullable
-    public Response resolveRequestExecuteWithOptions(@NotNull Request<?> request, String host, CallOptions callOptions) {
+    public Response resolveRequestExecuteWithOptions(@NotNull Request<?> request, String host,
+                                                     @NotNull CallOptions callOptions,
+                                                     @Nullable List<Callback> callbacks) {
 
-        return resolveRequestExecuteWithOptions(() -> request.execute(host), request.matchSdkEnum().name(),
-                callOptions);
+        return resolveRequestExecuteWithOptions
+                (() -> request.execute(host), request.matchSdkEnum().name(), callOptions, callbacks);
     }
 
     /**
@@ -90,17 +97,19 @@ public class RequestCaller {
      * (Supplier, int, long, ThrowablePredicate, boolean, boolean, Callback)} for the
      * execution logic.
      *
-     * @param supplier    The provider function of the {@code Response} object.
+     * @param supplier    the provider function of the {@code Response} object.
      * @param name        the sdk name,as see {@link SdkEnum#name()}.
      * @param callOptions {@code CallOptions} annotation.
+     * @param callbacks   the {@code Callback} instances.
      * @return The {@code Response} object obtained from the response
      * returns empty when {@link CallOptions#callbackClass()} exists.
-     * @throws NullPointerException if input args is {@literal null}.
+     * @throws NullPointerException if input request or {@code CallOptions} is {@literal null}.
      */
     @Nullable
     public Response resolveRequestExecuteWithOptions(@NotNull Supplier<Response> supplier,
                                                      @NotNull String name,
-                                                     @NotNull CallOptions callOptions) {
+                                                     @NotNull CallOptions callOptions,
+                                                     @Nullable List<Callback> callbacks) {
         int retryTimes = getRetryTimesByOptions(callOptions);
         long retryIntervalMilliseconds = getRetryIntervalMillisecondsByOptions(callOptions);
         ThrowablePredicate throwablePredicate = getThrowablePredicateByOptions(name, callOptions);
@@ -108,7 +117,8 @@ public class RequestCaller {
         boolean whenResponseNonSuccessFinalThrow = getWhenResponseNonSuccessFinalThrowByOptions(callOptions);
         Callback callback = getCallbackByOptions(name, callOptions);
         return resolveRequestExecuteWithOptions(supplier, retryTimes, retryIntervalMilliseconds,
-                throwablePredicate, whenResponseNonSuccessRetry, whenResponseNonSuccessFinalThrow, name, callback);
+                throwablePredicate, whenResponseNonSuccessRetry, whenResponseNonSuccessFinalThrow, name,
+                fusionCallbacks(callback, callbacks));
     }
 
     /**
@@ -129,14 +139,14 @@ public class RequestCaller {
      * callbacks, but rather a synchronous mechanism that is suitable for synchronously
      * calling callback processing that does not focus on the return value.
      *
-     * @param supplier                         The provider function of the {@code Response} object.
-     * @param retryTimes                       The retry times.
-     * @param retryIntervalMilliseconds        The retry interval milliseconds.
-     * @param throwablePredicate               The Instance {@code ThrowablePredicate}.
-     * @param whenResponseNonSuccessRetry      When response nonSuccess retry boolean mark.
-     * @param whenResponseNonSuccessFinalThrow When response nonSuccess final throw exception mark.
+     * @param supplier                         the provider function of the {@code Response} object.
+     * @param retryTimes                       the retry times.
+     * @param retryIntervalMilliseconds        the retry interval milliseconds.
+     * @param throwablePredicate               the Instance {@code ThrowablePredicate}.
+     * @param whenResponseNonSuccessRetry      when response nonSuccess retry boolean mark.
+     * @param whenResponseNonSuccessFinalThrow when response nonSuccess final throw exception mark.
      * @param name                             the sdk name,as see {@link SdkEnum#name()}.
-     * @param callback                         The Instance {@code Callback}.
+     * @param callbacks                        the {@code Callback} instances.
      * @return The {@code Response} object obtained from the response
      * returns empty when {@link CallOptions#callbackClass()} exists.
      * @throws NullPointerException if input args is {@literal null}.
@@ -149,7 +159,7 @@ public class RequestCaller {
                                                      boolean whenResponseNonSuccessRetry,
                                                      boolean whenResponseNonSuccessFinalThrow,
                                                      @NotNull String name,
-                                                     @Nullable Callback callback) {
+                                                     @Nullable List<Callback> callbacks) {
         FlowableCallerBuilder<Response> builder = FlowableCallerBuilder.newBuilder()
                 .runBody(supplier)
                 .retryTimes(retryTimes)
@@ -157,13 +167,45 @@ public class RequestCaller {
                 .customRetryExceptionPredicate(throwablePredicate);
         if (whenResponseNonSuccessRetry) builder.whenResponseNonSuccessRetry();
         if (whenResponseNonSuccessFinalThrow) builder.whenResponseNonSuccessFinalThrow();
-        if (callback != null) {
-            builder.customSubscriptionRegularConsumer(callback::success);
-            builder.customSubscriptionExceptionConsumer(e -> callback.exception(name, e));
+        if (CollectionUtils.isNotEmpty(callbacks)) {
+            sortCallbacks(callbacks);
+            builder.customSubscriptionRegularConsumer(r -> callbacks.forEach(c -> c.success(r)));
+            builder.customSubscriptionExceptionConsumer(e -> callbacks.forEach(c -> c.exception(name, e)));
             builder.build().run();
             return null;
         }
         return builder.buildBlock().get();
+    }
+
+    /**
+     * Fuse annotation gets {@code Callback} and provider
+     * {@code Callback} list to a new {@code Callback} list.
+     *
+     * @param callback  annotation gets {@code Callback}.
+     * @param callbacks provider {@code Callback} list.
+     * @return fusion {@code Callback} list.
+     */
+    @Nullable
+    private List<Callback> fusionCallbacks(@Nullable Callback callback, @Nullable List<Callback> callbacks) {
+        List<Callback> fusion = null;
+        if (callback != null) {
+            fusion = new ArrayList<>();
+            fusion.add(callback);
+        }
+        if (CollectionUtils.isNotEmpty(callbacks)) {
+            if (fusion == null) fusion = new ArrayList<>();
+            fusion.addAll(callbacks);
+        }
+        return fusion;
+    }
+
+    /**
+     * Sort the {@code Callback} collection according to the specified rules.
+     *
+     * @param callbacks the {@code Callback} collection.
+     */
+    protected void sortCallbacks(List<Callback> callbacks) {
+        callbacks.sort(LoadOrder.SortRegulation.COMPARATOR);
     }
 
     /**
