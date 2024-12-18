@@ -20,18 +20,14 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
-import top.osjf.sdk.core.Request;
-import top.osjf.sdk.core.Response;
-import top.osjf.sdk.core.support.NotNull;
-import top.osjf.sdk.core.support.Nullable;
-import top.osjf.sdk.core.util.CollectionUtils;
-import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.core.caller.CallOptions;
 import top.osjf.sdk.core.caller.Callback;
 import top.osjf.sdk.core.caller.RequestCaller;
 import top.osjf.sdk.core.caller.ThrowablePredicate;
+import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.support.Nullable;
+import top.osjf.sdk.core.util.MapUtils;
 
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -55,72 +51,6 @@ public class SpringRequestCaller extends RequestCaller implements ApplicationCon
     @Override
     public void setApplicationContext(@NotNull ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
-    }
-
-    /**
-     * Resolves the {@code Request} and executes it, configuring the call options based
-     * on the {@code CallOptions} annotation on the method or class.
-     * <p>
-     * Regarding the search for the existence of {@code CallOptions} annotations,
-     * follow the following rules:
-     * <ul>
-     *     <li>Prioritize searching from the method, existing and ready to use.</li>
-     *     <li>The method did not search from the definition class, it exists and is
-     *     ready to use.</li>
-     *     <li>There are no methods or defined classes, execute {@code Request#execute}
-     *     directly and return.</li>
-     * </ul>
-     *
-     * @param request   input {@code Request} obj.
-     * @param host      the real server hostname.
-     * @param method    the method object to be executed.
-     * @param callbacks the provider {@code Callback} instances.
-     * @return The {@code Response} object obtained from the response
-     * returns empty when {@link CallOptions#callbackClass()} exists.
-     * @throws NullPointerException if input args is {@literal null}.
-     */
-    @Nullable
-    public Response resolveRequestExecuteWithTypeOrMethodOptions(@NotNull Request<?> request,
-                                                                 String host,
-                                                                 @NotNull Method method,
-                                                                 @Nullable List<Callback> callbacks) {
-        CallOptions callOptions = method.getAnnotation(CallOptions.class);
-        if (callOptions == null) {
-            callOptions = method.getDeclaringClass().getAnnotation(CallOptions.class);
-            if (callOptions == null) {
-                return noCallOptionsToExecute(request, host, callbacks);
-            }
-        }
-        return super.resolveRequestExecuteWithOptions(request, host, callOptions, callbacks);
-    }
-
-    /**
-     * The proxy method did not find the execution method for annotation {@code CallOptions}.
-     *
-     * @param request   input {@code Request} obj.
-     * @param host      the real server hostname.
-     * @param callbacks the provider {@code Callback} instances.
-     * @return Response result {@code Response} object, returns {@literal null}
-     * in case of exception.
-     */
-    @Nullable
-    private Response noCallOptionsToExecute(@NotNull Request<?> request,
-                                            String host,
-                                            @Nullable List<Callback> callbacks) {
-        boolean hasCallbacks = CollectionUtils.isNotEmpty(callbacks);
-        try {
-            Response response = request.execute(host);
-            if (response.isSuccess())
-                if (hasCallbacks)
-                    callbacks.forEach(c -> c.success(response));
-            return response;
-        } catch (Throwable e) {
-            if (hasCallbacks) {
-                callbacks.forEach(c -> c.exception(request.matchSdkEnum().name(), e));
-            } else
-                throw e;
-        }
-        return null;
     }
 
     /**

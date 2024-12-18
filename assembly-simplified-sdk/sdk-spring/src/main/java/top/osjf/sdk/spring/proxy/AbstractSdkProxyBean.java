@@ -275,7 +275,7 @@ public abstract class AbstractSdkProxyBean<T> extends HierarchicalProxySupport<T
      */
     @Nullable
     private Response execute(Request<?> request, Method method, List<Callback> callbacks) {
-        return requestCaller.resolveRequestExecuteWithTypeOrMethodOptions(request, getHost(), method, callbacks);
+        return requestCaller.resolveRequestExecuteWithOptions(request, getHost(), method, callbacks);
     }
 
     /**

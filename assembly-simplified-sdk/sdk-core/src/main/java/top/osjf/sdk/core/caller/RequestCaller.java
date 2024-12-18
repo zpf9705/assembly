@@ -26,6 +26,7 @@ import top.osjf.sdk.core.util.CollectionUtils;
 import top.osjf.sdk.core.util.ReflectUtil;
 import top.osjf.sdk.core.util.SynchronizedWeakHashMap;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,16 +42,18 @@ import java.util.function.Supplier;
  * instantiation function (to instantiate objects via reflection) and a constructor with a
  * {@code Function<Class<?>, Object>} parameter that allows users to customize instantiation logic.
  *
- * <p>The core method in this class is {@link #resolveRequestExecuteWithOptions(Supplier, String, CallOptions, List)},
- * which accepts a request object (provided through a {@code Supplier}) and a {@code CallOptions}
- * annotation as parameters and final call method {@code resolveRequestExecuteWithOptions(Supplier,
- * int, long, ThrowablePredicate, boolean, boolean, Callback)} (this method is not elaborated here
- * as a commonly used combination method in this package tool).It executes the request according
- * to the execution options configured in the annotation and returns the response object. If a {@code Callback}
- * class (callbackClass) is specified in the {@code CallOptions} annotation, the acquisition of the response
- * and exception handling will be completed within the callback class, and the method will return null at
- * this time; otherwise, the method will directly return the response object and throw exceptions directly
- * when they occur.
+ * <p>The core method in this class is {@link #resolveRequestExecuteWithOptions(Supplier, String,
+ * CallOptions, List)},which accepts a request object (provided through a {@code Supplier}) and
+ * sdk {@code String} name and a {@code CallOptions} annotation and provider {@code Callback} list
+ * as parameters and final call method {@link #resolveRequestExecuteWithOptions(Supplier, int, long,
+ * ThrowablePredicate, boolean, boolean, String, List)} (this method is not elaborated here as a
+ * commonly used combination method in this package tool).
+ * It executes the request according to the execution options configured in the annotation and returns
+ * the {@code Response} object.
+ * If a {@code Callback} class (callbackClass) is specified in the {@code CallOptions} annotation,
+ * the acquisition of the response and exception handling will be completed within the callback class,
+ * and the method will return null at this time; otherwise, the method will directly return the
+ * {@code Response} object and throw exceptions directly when they occur.
  *
  * <p>The class also provides some auxiliary methods for obtaining configured execution option values
  * from the {@code CallOptions} annotation, such as retry times, retry intervals, and so on.
@@ -67,6 +70,29 @@ public class RequestCaller {
      * This class involves caching maps for class instantiation.
      */
     private static final Map<String, Object> OBJECT_CACHE = new SynchronizedWeakHashMap<>();
+
+    /**
+     * Resolves the {@code Request} and executes it, configuring the call options based
+     * on the {@code CallOptions} annotation on the method or class.
+     *
+     * @param request   input {@code Request} obj.
+     * @param host      the real server hostname.
+     * @param method    the method object to be executed.
+     * @param callbacks the provider {@code Callback} instances.
+     * @return The {@code Response} object obtained from the response
+     * returns empty when {@link CallOptions#callbackClass()} exists.
+     * @throws NullPointerException if input request or {@code CallOptions} is {@literal null}.
+     */
+    @Nullable
+    public Response resolveRequestExecuteWithOptions(@NotNull Request<?> request, String host,
+                                                     @NotNull Method method,
+                                                     @Nullable List<Callback> callbacks) {
+        CallOptions callOptions = resolveMethodCallOptions(method);
+        if (callOptions == null) {
+            return noCallOptionsToExecute(request, host, callbacks);
+        }
+        return resolveRequestExecuteWithOptions(request, host, callOptions, callbacks);
+    }
 
     /**
      * Please refer to {@code resolveRequestExecuteWithOptions(Supplier, CallOptions)}
@@ -175,6 +201,61 @@ public class RequestCaller {
             return null;
         }
         return builder.buildBlock().get();
+    }
+
+    /**
+     * Resolves the {@code Request} and executes it, configuring the call options based
+     * on the {@code CallOptions} annotation on the method or class.
+     * <p>
+     * Regarding the search for the existence of {@code CallOptions} annotations,
+     * follow the following rules:
+     * <ul>
+     *     <li>Prioritize searching from the method, existing and ready to use.</li>
+     *     <li>The method did not search from the definition class, it exists and is
+     *     ready to use.</li>
+     *     <li>There are no methods or defined classes, execute {@code Request#execute}
+     *     directly and return.</li>
+     * </ul>
+     *
+     * @return priority order {@code CallOptions}.
+     * @throws NullPointerException if input {@code Method} is null.
+     */
+    @Nullable
+    protected CallOptions resolveMethodCallOptions(@NotNull Method method) {
+        CallOptions callOptions = method.getAnnotation(CallOptions.class);
+        if (callOptions == null) {
+            callOptions = method.getDeclaringClass().getAnnotation(CallOptions.class);
+        }
+        return callOptions;
+    }
+
+    /**
+     * The proxy method did not find the execution method for annotation {@code CallOptions}.
+     *
+     * @param request   input {@code Request} obj.
+     * @param host      the real server hostname.
+     * @param callbacks the provider {@code Callback} instances.
+     * @return Response result {@code Response} object, returns {@literal null}
+     * in case of exception.
+     */
+    @Nullable
+    private Response noCallOptionsToExecute(@NotNull Request<?> request,
+                                            String host,
+                                            @Nullable List<Callback> callbacks) {
+        boolean hasCallbacks = CollectionUtils.isNotEmpty(callbacks);
+        try {
+            Response response = request.execute(host);
+            if (response.isSuccess())
+                if (hasCallbacks)
+                    callbacks.forEach(c -> c.success(response));
+            return response;
+        } catch (Throwable e) {
+            if (hasCallbacks) {
+                callbacks.forEach(c -> c.exception(request.matchSdkEnum().name(), e));
+            } else
+                throw e;
+        }
+        return null;
     }
 
     /**
