@@ -22,7 +22,7 @@ import top.osjf.sdk.core.exception.RequestCreateException;
 import top.osjf.sdk.core.exception.UnknownRequestParameterException;
 import top.osjf.sdk.core.exception.UnknownResponseParameterException;
 import top.osjf.sdk.core.util.*;
-import top.osjf.sdk.core.util.caller.Callback;
+import top.osjf.sdk.core.caller.Callback;
 
 import java.lang.reflect.*;
 import java.util.*;

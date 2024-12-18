@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.core.util.caller;
+package top.osjf.sdk.core.caller;
 
 import java.lang.annotation.*;
 

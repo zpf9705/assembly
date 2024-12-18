@@ -27,6 +27,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
+import top.osjf.sdk.core.caller.CallOptions;
 import top.osjf.sdk.core.util.StringUtils;
 import top.osjf.sdk.spring.SpringRequestCaller;
 import top.osjf.sdk.spring.beans.AnnotationTypeScanningCandidateImportBeanDefinitionRegistrar;
@@ -191,7 +192,7 @@ public class SdkProxyBeanRegister extends AnnotationTypeScanningCandidateImportB
 
         /**
          * Create a {@code SpringRequestCaller} bean for sdk proxy bean
-         * to support resolve {@link top.osjf.sdk.core.util.caller.CallOptions}
+         * to support resolve {@link CallOptions}
          * annotation.
          *
          * @return a singleton for {@code SpringRequestCaller}.

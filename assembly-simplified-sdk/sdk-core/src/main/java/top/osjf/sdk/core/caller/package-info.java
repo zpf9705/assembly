@@ -25,4 +25,4 @@
  * (successful and failed consumption), and automatic cleaning of subscription resources (RXJava3's subscription
  * relationship is automatically terminated and resources are released).
  */
-package top.osjf.sdk.core.util.caller;
+package top.osjf.sdk.core.caller;

@@ -14,18 +14,24 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.core.util.caller;
+package top.osjf.sdk.core.caller;
 
-import io.reactivex.rxjava3.disposables.Disposable;
+import java.util.function.Predicate;
 
 /**
- * The interface for releasing {@link Disposable} resources after integrating
- * {@link Runnable} subscription actions.
- * <p>
- * As see {@code io.reactivex.rxjava3.disposables.RunnableDisposable}.
+ * Abnormal condition judgment interface, used to determine which Throwable
+ * objects meet specific conditions.
+ *
+ * <p>This interface is typically used in conjunction with a retry mechanism
+ * to determine whether a retry should occur in the event of an exception.
+ * For example, a {@code ThrowablePredicate} implementation can be defined,
+ *
+ * <p>This implementation only returns {@literal true} when the exception is of
+ * a specific type or meets specific conditions, triggering a retry.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-interface DisposableRunnable extends Runnable, Disposable {
+@FunctionalInterface
+public interface ThrowablePredicate extends Predicate<Throwable> {
 }
