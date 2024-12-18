@@ -53,7 +53,7 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-@SuppressWarnings({"rawtypes"})
+@SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class SdkSupport {
 
     /**
@@ -129,7 +129,7 @@ public abstract class SdkSupport {
      */
     public static Pair<Request<?>, List<Callback>> invokeCreateRequest(@NotNull Method method, @Nullable Object[] args) {
         Request<?> request = null;
-        List<Callback> callbacks = null;
+        List<Callback> callbacks = new ArrayList<>();
 
         List<Object> argList = args == null ? Lists.newArrayList() : Lists.newArrayList(args);
 
@@ -156,46 +156,34 @@ public abstract class SdkSupport {
             }
             for (Object arg : argList) {
 
+                if (arg instanceof Callback) {
+                    callbacks.add((Callback) arg);
+                    if (delArgs != null) delArgs.add(arg);
+
+                    /*
+                     * The following types of filtering rules take the available
+                     * top.osjf.sdk.core.util.caller.Callback parameters and keep
+                     * the rest.
+                     *
+                     * If all parameters are of type top.osjf.sdk.core.util.caller.Callback,
+                     * the entire parameter will be deleted and will not participate in the
+                     * subsequent dynamic construction of Request.
+                     * */
+
+                } else if (arg instanceof Collection) {
+
+                    //Collection type filtering.
+                    filteringCollection(arg, callbacks, delArgs);
+                } else if (arg.getClass().isArray()) {
+
+                    //Array type filtering.
+                    filteringArray(arg, callbacks, delArgs, argList);
+                }
+
                 /*
-                 * The following types of filtering rules take the available
-                 * top.osjf.sdk.core.util.caller.Callback parameters and keep
-                 * the rest.
-                 *
-                 * If all parameters are of type top.osjf.sdk.core.util.caller.Callback,
-                 * the entire parameter will be deleted and will not participate in the
-                 * subsequent dynamic construction of Request.
-                 * */
-
-                //Collection type filtering.
-                if (arg instanceof Collection) {
-                    Collection<?> argc = (Collection<?>) arg;
-                    List<Object> isCallback = null;
-                    for (Object ac : argc) {
-                        if (ac instanceof Callback) {
-                            if (callbacks == null) callbacks = new ArrayList<>();
-                            callbacks.add((Callback) ac);
-                            if (isCallback == null) isCallback = new ArrayList<>();
-                            isCallback.add(ac);
-                        }
-                    }
-                    if (delArgs != null && isCallback != null && isCallback.size() == argc.size()) delArgs.add(argc);
-                }
-
-                //Array type filtering.
-                if (arg.getClass().isArray()) {
-                    List<Object> isCallback = null;
-                    int length = Array.getLength(arg);
-                    for (int i = 0; i < length; i++) {
-                        Object ac = Array.get(arg, i);
-                        if (ac instanceof Callback) {
-                            if (callbacks == null) callbacks = new ArrayList<>();
-                            callbacks.add((Callback) ac);
-                            if (isCallback == null) isCallback = new ArrayList<>();
-                            isCallback.add(ac);
-                        }
-                    }
-                    if (delArgs != null && isCallback != null && isCallback.size() == length) delArgs.add(arg);
-                }
+                 * If you define callbacks in entity objects or maps,
+                 *  we do not support parsing here.
+                 */
             }
         }
 
@@ -205,7 +193,7 @@ public abstract class SdkSupport {
 
             //The callback method parameters do not participate in the
             // reflection dynamic construction of the request.
-            if (delArgs != null) argList.removeAll(delArgs);
+            if (CollectionUtils.isNotEmpty(delArgs)) argList.removeAll(delArgs);
 
             //When no found request in args , use reflection to construct
             // the request parameter based on the marked request type.
@@ -407,6 +395,56 @@ public abstract class SdkSupport {
 
 
     /*  ################################### Internal assistance methods. ###################################  */
+
+    // filtering collection type
+    //All hits are directly placed in the deletion list, and some hits delete some hit parameters.
+    static void filteringCollection(@NotNull Object arg, @NotNull List<Callback> callbacks,
+                                    @Nullable List<Object> delArgs) {
+        Collection<Object> argc = (Collection<Object>) arg;
+        List<Object> isCallbackArgs = null;
+        for (Object ac : argc) {
+            isCallbackArgs = resolveLoopCallback(ac, callbacks, isCallbackArgs);
+        }
+        if (delArgs != null && isCallbackArgs != null) {
+            if (isCallbackArgs.size() == argc.size()) {
+                delArgs.add(argc);
+            } else {
+                argc.removeAll(isCallbackArgs);
+            }
+        }
+    }
+
+    // filtering array type
+    //All hits are directly placed in the deletion list, and some
+    // hits delete some hit parameters and update the value.
+    static void filteringArray(@NotNull Object arg, @NotNull List<Callback> callbacks,
+                               @Nullable List<Object> delArgs, @NotNull List<Object> argList) {
+        Object[] array = ArrayUtils.toArray(arg);
+        List<Object> isCallbackArgs = null;
+        for (Object arr : array) {
+            isCallbackArgs = resolveLoopCallback(arr, callbacks, isCallbackArgs);
+        }
+        if (delArgs != null && isCallbackArgs != null) {
+            if (isCallbackArgs.size() == array.length) {
+                delArgs.add(arg);
+            } else {
+                List<Object> list = Lists.newArrayList(array);
+                list.removeAll(isCallbackArgs);
+                argList.set(argList.indexOf(arg), list.toArray());
+            }
+        }
+    }
+
+    //resolve arg to Callback in for loop.
+    static List<Object> resolveLoopCallback(@NotNull Object arg, @NotNull List<Callback> callbacks,
+                                            @Nullable List<Object> isCallback) {
+        if (arg instanceof Callback) {
+            callbacks.add((Callback) arg);
+            if (isCallback == null) isCallback = new ArrayList<>();
+            isCallback.add(arg);
+        }
+        return isCallback;
+    }
 
     //Find a subclass belonging to top.osjf.sdk.core.Request from numerous generic classes.
     private static Pair<Type, Class<?>> getTypePair(List<Type> types, ClassLoader classLoader) {

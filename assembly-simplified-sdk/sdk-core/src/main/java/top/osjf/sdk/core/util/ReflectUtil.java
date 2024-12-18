@@ -36,9 +36,6 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public abstract class ReflectUtil {
 
-    /*** Empty static Object array.*/
-    private static final Object[] EMPTY = new Object[]{};
-
     /**
      * Instantiate an object of the specified type through reflection
      * without passing arguments.
@@ -50,7 +47,7 @@ public abstract class ReflectUtil {
      * @throws NullPointerException If the input type is {@literal null}.
      */
     public static <T> T instantiates(@NotNull Class<T> type) {
-        return instantiates(type, EMPTY);
+        return instantiates(type, ArrayUtils.EMPTY_ARRAY);
     }
 
     /**

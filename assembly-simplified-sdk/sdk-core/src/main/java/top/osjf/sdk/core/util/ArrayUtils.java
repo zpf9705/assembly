@@ -26,6 +26,9 @@ import java.lang.reflect.Array;
  */
 public abstract class ArrayUtils {
 
+    /*** Empty static Object array.*/
+    protected static final Object[] EMPTY_ARRAY = new Object[]{};
+
     /**
      * <p>Checks if an array of Objects is not empty and not {@code null}.
      *
@@ -154,5 +157,29 @@ public abstract class ArrayUtils {
      */
     public static Object[] toArray(Object... args) {
         return args;
+    }
+
+    /**
+     * Convert the incoming array to a new Object type array and return
+     * a copy of this new array.
+     *
+     * @param array the array
+     * @return object array.
+     * @throws IllegalArgumentException if the object argument is not
+     *                                  an array.
+     */
+    public static Object[] toArray(Object array) {
+        if (array == null) {
+            return EMPTY_ARRAY;
+        }
+        if (!array.getClass().isArray()) {
+            throw new IllegalArgumentException("object argument is not an array");
+        }
+        int length = Array.getLength(array);
+        Object[] argClone = new Object[length];
+        for (int i = 0; i < length; i++) {
+            argClone[i] = Array.get(array, i);
+        }
+        return argClone;
     }
 }
