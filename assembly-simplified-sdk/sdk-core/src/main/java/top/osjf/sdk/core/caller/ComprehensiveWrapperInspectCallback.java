@@ -106,7 +106,7 @@ public abstract class ComprehensiveWrapperInspectCallback<REQ extends Request<RS
      * @param req the request object that matches the type.
      * @param rsp the response object that matches the type.
      */
-    public void successInternal(REQ req, RSP rsp) {
+    public void successInternal(@NotNull REQ req, @NotNull RSP rsp) {
         successInternal(rsp);
     }
 
