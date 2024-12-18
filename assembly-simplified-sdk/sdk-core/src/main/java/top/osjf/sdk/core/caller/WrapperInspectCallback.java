@@ -30,6 +30,7 @@ import top.osjf.sdk.core.util.ReflectUtil;
  * subclasses to implement the {@link #getType} method to specify the specific type of the
  * response and the {@link #successInternal} method to handle responses that match the type.
  *
+ * @param <R> Subclass generic type of {@code Response}.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
