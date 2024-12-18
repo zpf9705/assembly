@@ -26,6 +26,35 @@ import top.osjf.sdk.core.support.SdkSupport;
  * <p>Method {@link #failedSeatData()} establishes that
  * when a request fails, a default data is returned, which
  * is defined by the user.
+ * <div><h3>Examples of usage methods are as follows</h3></div>
+ * <pre>
+ *  public class ExampleInspectionResponseData extends AbstractHttpResponse implements InspectionResponseData {
+ *
+ *      private String token;
+ *      private static final requestFailedDefaultToken = "CR3-3120X1";
+ *
+ *     &#064;Override
+ *     public Object getData(){
+ *         return token;
+ *     }
+ *     &#064;Override
+ *     public Object failedSeatData(){
+ *         return requestFailedDefaultToken;
+ *     }
+ *  }
+ *
+ *  // When interface InspectionResponseData is not implemented,token return value.
+ *  interface ExampleInterface {
+ *      ExampleResponse getToken(ExampleRequest request);
+ *      //Failed call input return value: null
+ *  }
+ *
+ *  //When interface InspectionResponseData is implemented,token return value.
+ *  interface ExampleInterface {
+ *      String getToken(ExampleRequest request);
+ *      //Failed call input return value: "CR3-3120X1"
+ *  }
+ * </pre>
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
@@ -34,6 +63,7 @@ public interface InspectionResponseData extends ResponseData {
 
     /**
      * {@inheritDoc}
+     * @return Make sure to check if the response is successful.
      */
     @Override
     default boolean inspectionResponseResult() {

@@ -49,10 +49,11 @@ import top.osjf.sdk.core.support.SdkSupport;
  *
  *  // When interface ResponseData is not implemented:
  *  interface ExampleInterface {
- *      ExampleResponseData getToken(ExampleRequest request);
+ *      ExampleResponse getToken(ExampleRequest request);
  *  }
  *
- *  //When interface ResponseData is implemented:
+ *  //When interface ResponseData is implemented
+ *  //Just write the return value type as consistent with method #getData.
  *  interface ExampleInterface {
  *      String getToken(ExampleRequest request);
  *  }
