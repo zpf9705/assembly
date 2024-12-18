@@ -119,7 +119,8 @@ public abstract class SdkSupport {
      * @param args   exec target method args.
      * @return the {@code Pair} with first {@code Request} and second
      * {@code List<Callback>}.
-     * @throws NullPointerException If the input method is {@literal null}.
+     * @throws NullPointerException             If the input method is {@literal null}.
+     * @throws UnknownRequestParameterException
      * @see ResponseData
      * @see RequestType
      * @see Callback
@@ -135,20 +136,35 @@ public abstract class SdkSupport {
         List<Object> delArgs = null;
         if (!argList.isEmpty()) {
 
-            //
+            //Filter whether there is a Request instance in the parameter group.
             List<Object> requestInstances = argList.stream()
                     .filter(arg -> arg instanceof Request)
                     .collect(Collectors.toList());
 
+            //Ensure that there is only one Request instance.
             if (CollectionUtils.isNotEmpty(requestInstances)) {
                 if (requestInstances.size() > 1) {
                     throw new UnknownRequestParameterException();
                 }
                 request = (Request<?>) requestInstances.get(0);
             } else {
+                //Parameter filtering removes items and only initializes
+                // when the provided parameters do not have a Request instance.
                 delArgs = new ArrayList<>();
             }
             for (Object arg : argList) {
+
+                /*
+                 * The following types of filtering rules take the available
+                 * top.osjf.sdk.core.util.caller.Callback parameters and keep
+                 * the rest.
+                 *
+                 * If all parameters are of type top.osjf.sdk.core.util.caller.Callback,
+                 * the entire parameter will be deleted and will not participate in the
+                 * subsequent dynamic construction of Request.
+                 * */
+
+                //Collection type filtering.
                 if (arg instanceof Collection) {
                     Collection<?> argc = (Collection<?>) arg;
                     List<Object> isCallback = null;
@@ -162,6 +178,8 @@ public abstract class SdkSupport {
                     }
                     if (delArgs != null && isCallback != null && isCallback.size() == argc.size()) delArgs.add(argc);
                 }
+
+                //Array type filtering.
                 if (arg.getClass().isArray()) {
                     List<Object> isCallback = null;
                     int length = Array.getLength(arg);
@@ -179,6 +197,8 @@ public abstract class SdkSupport {
             }
         }
 
+        //When no relevant Request instance is found for the above parameters,
+        // perform a dynamic construction process.
         if (request == null) {
 
             //The callback method parameters do not participate in the
@@ -194,13 +214,15 @@ public abstract class SdkSupport {
             // specific annotations and interfaces.
             Class<? extends Request> requestType;
 
-            //Consider annotations first.
+            //Annotations take precedence over parameters.
+            //See top.osjf.sdk.core.RequestType javadoc.
             RequestType requestTypeAnnotation = method.getAnnotation(RequestType.class);
             if (requestTypeAnnotation != null) {
                 requestType = requestTypeAnnotation.value();
             } else {
 
-                //Secondly, consider whether the parameters inherit specific interfaces.
+                //When there are no annotations, consider whether
+                // the parameter provides a Request type.
                 List<Class<? extends Request>> requestTypes = null;
                 if (!argList.isEmpty()) {
                     requestTypes = Arrays.stream(args)
@@ -217,8 +239,6 @@ public abstract class SdkSupport {
                 if (CollectionUtils.isEmpty(requestTypes) || requestTypes.size() > 1) {
                     throw new UnknownRequestParameterException();
                 }
-
-                //Select 1 for a specific type.
                 requestType = requestTypes.get(0);
             }
 
@@ -231,13 +251,20 @@ public abstract class SdkSupport {
     }
 
     /**
-     * When obtaining a response, convert to the desired type, which can be
-     * specified in {@link ResponseData}.
+     * Determine the specific return value type based on the actual return type
+     * of the proxy method and whether the obtained {@code Response} instance
+     * extends to the {@link ResponseData} and {@link InspectionResponseData}
+     * interfaces.
      *
-     * @param method   Proxy target method.
-     * @param response The response type obtained.
+     * @param method   target method.
+     * @param response response instance.
      * @return The required return object.
-     * @throws NullPointerException If the input method is {@literal null}.
+     * @throws NullPointerException              if the input method is {@literal null}.
+     * @throws UnknownResponseParameterException If the {@code ClassCastException} error reason
+     *                                           is returned indicating that the object and code
+     *                                           method types are inconsistent.
+     * @see ResponseData
+     * @see InspectionResponseData
      */
     @Nullable
     public static Object getResponse(@NotNull Method method, @Nullable Response response) {

@@ -46,6 +46,16 @@ import top.osjf.sdk.core.support.SdkSupport;
  *         return token;
  *     }
  *  }
+ *
+ *  // When interface ResponseData is not implemented:
+ *  interface ExampleInterface {
+ *      ExampleResponseData getToken(ExampleRequest request);
+ *  }
+ *
+ *  //When interface ResponseData is implemented:
+ *  interface ExampleInterface {
+ *      String getToken(ExampleRequest request);
+ *  }
  * </pre>
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>

@@ -23,6 +23,10 @@ import top.osjf.sdk.core.support.SdkSupport;
  * whether the response is successful when the conditions
  * are met.
  *
+ * <p>Method {@link #failedSeatData()} establishes that
+ * when a request fails, a default data is returned, which
+ * is defined by the user.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
