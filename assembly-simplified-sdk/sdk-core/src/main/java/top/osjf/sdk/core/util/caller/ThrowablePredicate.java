@@ -32,5 +32,6 @@ import java.util.function.Predicate;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
+@FunctionalInterface
 public interface ThrowablePredicate extends Predicate<Throwable> {
 }
