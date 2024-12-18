@@ -217,6 +217,7 @@ public class RequestCaller {
      *     directly and return.</li>
      * </ul>
      *
+     * @param method the method object to be executed.
      * @return priority order {@code CallOptions}.
      * @throws NullPointerException if input {@code Method} is null.
      */
