@@ -82,16 +82,41 @@ public abstract class SdkSupport {
     protected static final String RIGHT_ANGLE_BRACKET = ">";
 
     /**
-     * Create corresponding request parameters based on extension
-     * type annotations and interfaces.
+     * When passing parameters that are not directly displayed as {@code Request},
+     * perform dynamic creation of {@code Request} based on specific annotations
+     * {@link RequestType} and related interfaces {@link RequestTypeSupplier}.
      *
      * <p>In version 1.0.2, proxy methods are supported to directly
      * add {@link Callback} parameters or their array forms. This
      * method can be self parsed and retained for execution at a
      * reasonable time in the future.
+     * <p>The code example is as follows:
+     * the passing parameters of {@code Callback} can be processed.
+     * <pre>{@code
+     *    public interface ExampleSdkInterface{
+     *          RequestType(ExampleRequest.class)
+     *          ExampleResponse test(Callback[] callbackArray,List<Callback> callbackList);
+     *    }
+     * }</pre>
+     * <p>It can also handle mixed data types of {@code Object} arrays
+     * or collections, filtering out {@code Callback} types and dynamically
+     * creating {@code Request} as parameters.
+     * <p>The code example is as follows:
+     * <pre>{@code
+     *    ExampleCallback exCallback = ...;
+     *    Object[] callbackArray = {1,2,exCallback}; // 1,2 will be filtered and used
+     *    //as a parameter to create a Request.
+     *    ExampleCallback exCallback0 = ...;
+     *    List<Object> callbackList = Lists.newArrayList("123",447,exCallback0); //"123",447 will
+     *    //be filtered and used as a parameter to create a Request.
+     *    public interface ExampleSdkInterface {
+     *          RequestType(ExampleRequest.class)
+     *          ExampleResponse test(Object[] callbackArray,List<Object> callbackList);
+     *    }
+     * }</pre>
      *
-     * @param method Proxy target method.
-     * @param args   Request parameters.
+     * @param method target method.
+     * @param args   exec target method args.
      * @return the {@code Pair} with first {@code Request} and second
      * {@code List<Callback>}.
      * @throws NullPointerException If the input method is {@literal null}.
@@ -109,6 +134,8 @@ public abstract class SdkSupport {
         // class and callback interface that supports method parsing.
         List<Object> delArgs = null;
         if (!argList.isEmpty()) {
+
+            //
             List<Object> requestInstances = argList.stream()
                     .filter(arg -> arg instanceof Request)
                     .collect(Collectors.toList());
