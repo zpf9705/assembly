@@ -18,7 +18,6 @@ package top.osjf.sdk.core.caller;
 
 import top.osjf.sdk.core.Request;
 import top.osjf.sdk.core.Response;
-import top.osjf.sdk.core.SdkEnum;
 import top.osjf.sdk.core.support.LoadOrder;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
@@ -42,11 +41,11 @@ import java.util.function.Supplier;
  * instantiation function (to instantiate objects via reflection) and a constructor with a
  * {@code Function<Class<?>, Object>} parameter that allows users to customize instantiation logic.
  *
- * <p>The core method in this class is {@link #resolveRequestExecuteWithOptions(Supplier, String,
+ * <p>The core method in this class is {@link #resolveRequestExecuteWithOptions(Supplier, Request,
  * CallOptions, List)},which accepts a request object (provided through a {@code Supplier}) and
  * sdk {@code String} name and a {@code CallOptions} annotation and provider {@code Callback} list
  * as parameters and final call method {@link #resolveRequestExecuteWithOptions(Supplier, int, long,
- * ThrowablePredicate, boolean, boolean, String, List)} (this method is not elaborated here as a
+ * ThrowablePredicate, boolean, boolean, Request, List)} (this method is not elaborated here as a
  * commonly used combination method in this package tool).
  * It executes the request according to the execution options configured in the annotation and returns
  * the {@code Response} object.
@@ -112,7 +111,7 @@ public class RequestCaller {
                                                      @Nullable List<Callback> callbacks) {
 
         return resolveRequestExecuteWithOptions
-                (() -> request.execute(host), request.matchSdkEnum().name(), callOptions, callbacks);
+                (() -> request.execute(host), request, callOptions, callbacks);
     }
 
     /**
@@ -124,7 +123,7 @@ public class RequestCaller {
      * execution logic.
      *
      * @param supplier    the provider function of the {@code Response} object.
-     * @param name        the sdk name,as see {@link SdkEnum#name()}.
+     * @param request     input {@code Request} obj.
      * @param callOptions {@code CallOptions} annotation.
      * @param callbacks   the provider {@code Callback} instances.
      * @return The {@code Response} object obtained from the response
@@ -133,17 +132,18 @@ public class RequestCaller {
      */
     @Nullable
     public Response resolveRequestExecuteWithOptions(@NotNull Supplier<Response> supplier,
-                                                     @NotNull String name,
+                                                     @NotNull Request<?> request,
                                                      @NotNull CallOptions callOptions,
                                                      @Nullable List<Callback> callbacks) {
         int retryTimes = getRetryTimesByOptions(callOptions);
         long retryIntervalMilliseconds = getRetryIntervalMillisecondsByOptions(callOptions);
+        String name = request.matchSdkEnum().name();
         ThrowablePredicate throwablePredicate = getThrowablePredicateByOptions(name, callOptions);
         boolean whenResponseNonSuccessRetry = getWhenResponseNonSuccessRetryOptions(callOptions);
         boolean whenResponseNonSuccessFinalThrow = getWhenResponseNonSuccessFinalThrowByOptions(callOptions);
         Callback callback = getCallbackByOptions(name, callOptions);
         return resolveRequestExecuteWithOptions(supplier, retryTimes, retryIntervalMilliseconds,
-                throwablePredicate, whenResponseNonSuccessRetry, whenResponseNonSuccessFinalThrow, name,
+                throwablePredicate, whenResponseNonSuccessRetry, whenResponseNonSuccessFinalThrow, request,
                 fusionCallbacks(callback, callbacks));
     }
 
@@ -171,7 +171,7 @@ public class RequestCaller {
      * @param throwablePredicate               the Instance {@code ThrowablePredicate}.
      * @param whenResponseNonSuccessRetry      when response nonSuccess retry boolean mark.
      * @param whenResponseNonSuccessFinalThrow when response nonSuccess final throw exception mark.
-     * @param name                             the sdk name,as see {@link SdkEnum#name()}.
+     * @param request                          input {@code Request} obj.
      * @param callbacks                        the provider {@code Callback} instances.
      * @return The {@code Response} object obtained from the response
      * returns empty when {@link CallOptions#callbackClass()} exists.
@@ -184,7 +184,7 @@ public class RequestCaller {
                                                      @Nullable ThrowablePredicate throwablePredicate,
                                                      boolean whenResponseNonSuccessRetry,
                                                      boolean whenResponseNonSuccessFinalThrow,
-                                                     @NotNull String name,
+                                                     @NotNull Request<?> request,
                                                      @Nullable List<Callback> callbacks) {
         FlowableCallerBuilder<Response> builder = FlowableCallerBuilder.newBuilder()
                 .runBody(supplier)
@@ -195,8 +195,8 @@ public class RequestCaller {
         if (whenResponseNonSuccessFinalThrow) builder.whenResponseNonSuccessFinalThrow();
         if (CollectionUtils.isNotEmpty(callbacks)) {
             sortCallbacks(callbacks);
-            builder.customSubscriptionRegularConsumer(r -> callbacks.forEach(c -> c.success(r)));
-            builder.customSubscriptionExceptionConsumer(e -> callbacks.forEach(c -> c.exception(name, e)));
+            builder.customSubscriptionRegularConsumer(rep -> callbacks.forEach(c -> c.success(request, rep)));
+            builder.customSubscriptionExceptionConsumer(e -> callbacks.forEach(c -> c.exception(request, e)));
             builder.build().run();
             return null;
         }
@@ -248,11 +248,11 @@ public class RequestCaller {
             Response response = request.execute(host);
             if (response.isSuccess())
                 if (hasCallbacks)
-                    callbacks.forEach(c -> c.success(response));
+                    callbacks.forEach(c -> c.success(request, response));
             return response;
         } catch (Throwable e) {
             if (hasCallbacks) {
-                callbacks.forEach(c -> c.exception(request.matchSdkEnum().name(), e));
+                callbacks.forEach(c -> c.exception(request, e));
             } else
                 throw e;
         }

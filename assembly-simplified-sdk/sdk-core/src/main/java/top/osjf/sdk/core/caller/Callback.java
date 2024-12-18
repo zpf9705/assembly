@@ -16,12 +16,14 @@
 
 package top.osjf.sdk.core.caller;
 
+import top.osjf.sdk.core.Request;
 import top.osjf.sdk.core.Response;
 import top.osjf.sdk.core.SdkEnum;
 import top.osjf.sdk.core.support.NotNull;
 
 /**
- * Callback interface, used to handle the results of asynchronous operations.
+ * Callback interface, used to handle the results of synchronous or asynchronous
+ * operations.
  *
  * <p>This interface defines two methods {@link #success} and {@link #exception}
  * are used to handle the success and failure of synchronous or asynchronous
@@ -37,25 +39,63 @@ import top.osjf.sdk.core.support.NotNull;
 public interface Callback {
 
     /**
-     * The result of successfully handling asynchronous operations.
+     * The default successful callback method implemented.
+     *
+     * <p>When the synchronous or asynchronous operation is successfully completed,
+     * this method will be called by default. This method takes a {@code Request}
+     * object and a {@code Response} object as parameters.
+     *
+     * <p>This method is mainly used in frameworks or interfaces to provide a default
+     * behavior that allows subclasses or implementation classes to override it when
+     * necessary.
+     *
+     * @param request  {@code Request} object, although not used in this default implementation.
+     * @param response is a {@code Response} object that contains the results or related data of
+     *                 synchronous or asynchronous operations.
+     */
+    default void success(@NotNull Request<?> request, @NotNull Response response) {
+        success(response);
+    }
+
+    /**
+     * The result of successfully handling synchronous or asynchronous operations.
      *
      * <p>When synchronous or asynchronous operations are successfully completed,
      * call this method. It receives a {@code Response} object as a parameter, which
      * contains the result of the operation or related data.
      *
-     * @param response The object contains the asynchronous operation result.
+     * @param response is a {@code Response} object that contains the results or related
+     *                 data of synchronous or asynchronous operations.
      */
     void success(@NotNull Response response);
 
     /**
-     * Exception thrown when handling asynchronous operation failure.
+     * The default implemented exception callback method.
+     *
+     * <p>When synchronous or asynchronous operations fail, this method is called by default.
+     * This method takes a {@code Request} object and a {@code Throwable} object as parameters.
+     *
+     * <p>This method is mainly used in frameworks or interfaces to provide a default behavior
+     * that allows subclasses or implementation classes to override it when necessary.
+     *
+     * @param request {@code Request} object, although not used in this default implementation.
+     * @param e       represents the {@code Throwable} object where synchronous or asynchronous
+     *                operations fail.
+     */
+    default void exception(@NotNull Request<?> request, @NotNull Throwable e) {
+        exception(request.matchSdkEnum().name(), e);
+    }
+
+    /**
+     * Exception thrown when handling synchronous or asynchronous operation failure.
      *
      * <p>When a synchronous or asynchronous operation fails and throws an exception,
      * call this method. It takes a {@code Throwable} object as a parameter, which
      * represents the exception that occurred.
      *
      * @param name the sdk name,as see {@link SdkEnum#name()}.
-     * @param e    represents the 'Throwable' object where asynchronous operations fail.
+     * @param e    represents the {@code Throwable} object where synchronous or asynchronous
+     *             operations fail.
      */
     void exception(@NotNull String name, @NotNull Throwable e);
 }
