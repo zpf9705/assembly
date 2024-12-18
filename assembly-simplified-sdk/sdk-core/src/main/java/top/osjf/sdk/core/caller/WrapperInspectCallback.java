@@ -41,22 +41,14 @@ public abstract class WrapperInspectCallback<R extends Response> implements Call
      * conversion check.
      *
      * @param response {@inheritDoc}
-     * @throws ClassCastException An error is thrown when the expected
-     *                            type is inconsistent with the type
-     *                            provided by the callback.
      */
     @Override
-    public void success(@NotNull Response response) throws ClassCastException {
-        Class<R> type = getType();
-        if (response.isWrapperFor(type)) {
-            successInternal(response.unwrap(type));
-        } else {
-            throw new ClassCastException(response.getClass().getName() + " cannot be cast to " + type.getName());
-        }
+    public final void success(@NotNull Response response) {
+        successInternal(unwrapRsp(response));
     }
 
     /**
-     * Gets the expected response type.
+     * Gets the expected {@code Response} type.
      *
      * <p>This method should be implemented by subclasses to return
      * a {@code Class} object representing the expected response type.
@@ -78,4 +70,21 @@ public abstract class WrapperInspectCallback<R extends Response> implements Call
      * @param response the response object that matches the type.
      */
     public abstract void successInternal(@NotNull R response);
+
+    /**
+     * Unwrap a {@code Response} to expected  generic type.
+     *
+     * @param response input {@code Response}
+     * @return {@code Response} instance after unwrap.
+     * @throws ClassCastException An error is thrown when the expected
+     *                            type is inconsistent with the type
+     *                            provided by the callback.
+     */
+    protected final R unwrapRsp(Response response) throws ClassCastException {
+        Class<R> type = getType();
+        if (!response.isWrapperFor(type)) {
+            throw new ClassCastException(response.getClass().getName() + " cannot be cast to " + type.getName());
+        }
+        return response.unwrap(type);
+    }
 }
