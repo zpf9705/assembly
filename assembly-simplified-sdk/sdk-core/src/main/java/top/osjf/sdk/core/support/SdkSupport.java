@@ -120,7 +120,9 @@ public abstract class SdkSupport {
      * @return the {@code Pair} with first {@code Request} and second
      * {@code List<Callback>}.
      * @throws NullPointerException             If the input method is {@literal null}.
-     * @throws UnknownRequestParameterException
+     * @throws UnknownRequestParameterException If the {@code Request} instance found from the parameter
+     *                                          is not unique or the {@code Request} type is not found
+     *                                          from dynamic annotations or parameter specific interfaces.
      * @see ResponseData
      * @see RequestType
      * @see Callback
