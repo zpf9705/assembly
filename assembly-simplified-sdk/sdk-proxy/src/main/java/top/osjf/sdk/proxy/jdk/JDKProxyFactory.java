@@ -41,10 +41,9 @@ public class JDKProxyFactory extends AbstractProxyFactory<JDKDelegationCallback>
      * @param callback JDK synthesizes the interface between
      *                 {@link java.lang.reflect.InvocationHandler}
      *                 and {@link top.osjf.sdk.proxy.DelegationCallback}.
-     * @throws IllegalArgumentException if input {@code Class} type not an interface.
      */
     @Override
-    public <T> T newProxyInternal(Class<T> type, JDKDelegationCallback callback) throws Throwable {
+    public <T> T newProxyInternal(Class<T> type, JDKDelegationCallback callback) {
         if (!type.isInterface()) {
             throw new IllegalArgumentException(type.getName() + " not an interface.");
         }
