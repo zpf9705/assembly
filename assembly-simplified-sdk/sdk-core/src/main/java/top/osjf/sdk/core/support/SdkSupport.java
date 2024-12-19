@@ -142,9 +142,8 @@ public abstract class SdkSupport {
             List<Object> requestInstances = Arrays.stream(args)
                     .filter(r -> r instanceof Request).collect(Collectors.toList());
             if (CollectionUtils.isNotEmpty(requestInstances)) {
-                if (requestInstances.size() > 1) {
+                if (requestInstances.size() > 1)
                     throw new UnknownRequestParameterException(); //Only one request can exist.
-                }
                 request = (Request<?>) requestInstances.get(0);
             }
             //the reflection creation type when there is no request for the parameter.
