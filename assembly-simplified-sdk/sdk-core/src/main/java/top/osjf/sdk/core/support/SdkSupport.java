@@ -170,6 +170,7 @@ public abstract class SdkSupport {
                         }
                     }
                 }
+                Parameter parameter = parameters[i];
                 /*
                  * Support type 2: Callback type parameter parsing, supporting object instance,
                  * collection, array and other types for subsequent parsing.
@@ -177,23 +178,22 @@ public abstract class SdkSupport {
                 if (arg instanceof Callback) {
                     callbacks.add((Callback) arg);
                 } else if (arg instanceof Collection) {
-                    if (!((Collection<?>) arg).stream().allMatch(c -> c instanceof Callback)) {
-                        throw new IllegalArgumentException();
+                    //2-arg-collection-1: all of them are Callback elements.
+                    if (((Collection<?>) arg).stream().allMatch(c -> c instanceof Callback)) {
+                        callbacks.addAll((Collection<? extends Callback>) arg);
                     }
-                    callbacks.addAll((Collection<? extends Callback>) arg);
                 } else if (arg.getClass().isArray()) {
-                    if (!Callback.class.isAssignableFrom(arg.getClass().getComponentType())) {
-                        throw new IllegalArgumentException();
-                    }
-                    for (Object o : ArrayUtils.toArray(arg)) {
-                        callbacks.add((Callback) o);
+                    //2-arg-array-1: all of them are Callback elements.
+                    if (Callback.class.isAssignableFrom(arg.getClass().getComponentType())) {
+                        for (Object o : ArrayUtils.toArray(arg)) {
+                            callbacks.add((Callback) o);
+                        }
                     }
                 }
                 /*
                  * Support type 3: Support annotation RequestConstructor parsing, provided that
                  * the parameter array does not have a Request instance.
                  */
-                Parameter parameter = parameters[i];
                 if (request == null && parameter.isAnnotationPresent(RequestConstructor.class)) {
                     RequestConstructor requestConstructor = parameter.getAnnotation(RequestConstructor.class);
                     if (requestConstructor.required()) {
