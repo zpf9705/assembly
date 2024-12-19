@@ -37,7 +37,7 @@ public class CglibProxyFactory extends AbstractProxyFactory<CglibDelegationCallb
      * @return {@inheritDoc}
      */
     @Override
-    public <T> T newProxyInternal(Class<T> type, CglibDelegationCallback callback) throws Throwable {
+    public <T> T newProxyInternal(Class<T> type, CglibDelegationCallback callback) {
         final Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(type);
         enhancer.setCallback(callback);
