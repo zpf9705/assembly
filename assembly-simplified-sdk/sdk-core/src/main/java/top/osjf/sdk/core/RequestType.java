@@ -38,6 +38,16 @@ import java.lang.annotation.*;
  * indicated by the specific interface {@link RequestTypeSupplier}
  * at the parameter level.
  *
+ * <p>Here is a simple code example:
+ * <pre>
+ *     {@code
+ *     interface ExampleInterface {
+ *          RequestType(ExampleRequest.class)
+ *          ExampleResponse test(@RequestSetter String email);
+ *     }
+ *     }
+ * </pre>
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @see SdkSupport#createRequest
  * @see RequestTypeSupplier
