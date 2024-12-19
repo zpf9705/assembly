@@ -238,7 +238,7 @@ public abstract class SdkSupport {
                 if (assignmentInfo.getFirst()) {
                     ReflectUtil.setFieldValue(request, name, value);
                 } else {
-                    executeRequestFieldSetMethod(request, request.getClass(), name, value);
+                    executeSetMethod(request, request.getClass(), name, value);
                 }
             }
         }
@@ -561,55 +561,25 @@ public abstract class SdkSupport {
 
     /*  ################################### Internal assistance methods. ###################################  */
 
-//    // filtering collection type
-//    //All hits are directly placed in the deletion list, and some hits delete some hit parameters.
-//    static void filteringCollection(@NotNull Object arg, @NotNull List<Callback> callbacks,
-//                                    @Nullable List<Object> delArgs) {
-//        Collection<Object> argc = (Collection<Object>) arg;
-//        List<Object> isCallbackArgs = null;
-//        for (Object ac : argc) {
-//            isCallbackArgs = resolveLoopCallback(ac, callbacks, isCallbackArgs);
-//        }
-//        if (delArgs != null && isCallbackArgs != null) {
-//            if (isCallbackArgs.size() == argc.size()) {
-//                delArgs.add(argc);
-//            } else {
-//                argc.removeAll(isCallbackArgs);
-//            }
-//        }
-//    }
-//
-//    // filtering array type
-//    //All hits are directly placed in the deletion list, and some
-//    // hits delete some hit parameters and update the value.
-//    static void filteringArray(@NotNull Object arg, @NotNull List<Callback> callbacks,
-//                               @Nullable List<Object> delArgs, @NotNull List<Object> argList) {
-//        Object[] array = ArrayUtils.toArray(arg);
-//        List<Object> isCallbackArgs = null;
-//        for (Object arr : array) {
-//            isCallbackArgs = resolveLoopCallback(arr, callbacks, isCallbackArgs);
-//        }
-//        if (delArgs != null && isCallbackArgs != null) {
-//            if (isCallbackArgs.size() == array.length) {
-//                delArgs.add(arg);
-//            } else {
-//                List<Object> list = Lists.newArrayList(array);
-//                list.removeAll(isCallbackArgs);
-//                argList.set(argList.indexOf(arg), list.toArray());
-//            }
-//        }
-//    }
-//
-//    //resolve arg to Callback in for loop.
-//    static List<Object> resolveLoopCallback(@NotNull Object arg, @NotNull List<Callback> callbacks,
-//                                            @Nullable List<Object> isCallback) {
-//        if (arg instanceof Callback) {
-//            callbacks.add((Callback) arg);
-//            if (isCallback == null) isCallback = new ArrayList<>();
-//            isCallback.add(arg);
-//        }
-//        return isCallback;
-//    }
+    //find and exec set method.
+    static void executeSetMethod(Request<?> request, Class<? extends Request> requestType,
+                                 String filedName, Object arg) {
+        final String setMethodName = "set" + Character.toUpperCase(filedName.charAt(0))
+                + filedName.substring(1);
+        final String cacheKey = requestType.getName() + "@" + setMethodName;
+        Method setMethod = METHOD_CACHE.computeIfAbsent(cacheKey, s -> {
+            for (Method method : ReflectUtil.getAllDeclaredMethods(requestType)) {
+                if (method.getName().equals(setMethodName) // name equal
+                        && method.getParameterTypes().length == 1 // param len = 1
+                        && method.getParameterTypes()[0].isAssignableFrom(arg.getClass())) // arg is param instance
+                {
+                    return method;
+                }
+            }
+            throw new IllegalArgumentException(new NoSuchMethodException(setMethodName));
+        });
+        ReflectUtil.invokeMethod(request, setMethod, arg);
+    }
 
     //Find a subclass belonging to top.osjf.sdk.core.Request from numerous generic classes.
     private static Pair<Type, Class<?>> getTypePair(List<Type> types, ClassLoader classLoader) {
@@ -664,109 +634,4 @@ public abstract class SdkSupport {
         }
         return ReflectUtil.loadClass(className, classLoader);
     }
-
-//    //First, create the request according to the construction method.
-//    // If the creation fails, use the set method or reflection assignment with specific annotations.
-//    static Request<?> invokeCreateRequestConstructorWhenFailedUseSet(Class<? extends Request> requestType,
-//                                                                     Object... args) {
-//        Request<?> request;
-//        try {
-//            //First, directly instantiate the request class using the
-//            // construction method based on the parameters.
-//            request = ReflectUtil.instantiates(requestType, args);
-//        } catch (Throwable e) {
-//            //This step determines whether the parameter is empty to
-//            // determine whether the above is an empty construction instantiation.
-//            if (ArrayUtils.isEmpty(args)) throw new RequestCreateException(e);
-//            request = invokeCreateRequestUseSet(requestType, args);
-//        }
-//        return request;
-//    }
-
-    //Create an object using an empty construct, and assign
-    // values to its properties using the set method.
-//    static Request<?> invokeCreateRequestUseSet(Class<? extends Request> requestType,
-//                                                Object... args) {
-//        Request<?> request;
-//        try {
-//            //When parameter construction fails, first use an empty
-//            // construction to instantiate, and then find the set method.
-//            request = ReflectUtil.instantiates(requestType);
-//
-//            List<Field> fields = getRequestFieldAnnotationFields(requestType);
-//            if (CollectionUtils.isEmpty(fields)) {
-//                //When using methods for assignment, annotations must be identified.
-//                throw new IllegalArgumentException("When no construction method is provided, please " +
-//                        "use \"top.osjf.assembly.simplified.sdk.process.RequestField\" to mark the real" +
-//                        " name of the field.");
-//            }
-//            for (int i = 0; i < fields.size(); i++) {
-//                Field field = fields.get(i);
-//                RequestField requestField = field.getAnnotation(RequestField.class);
-//                int order = getOrder(requestField, i, fields);
-//                Object arg = args[order];
-//                if (requestField.useReflect()) {
-//                    //Directly assign values in the case of sequential reflection assignment.
-//                    ReflectUtil.setFieldValue(request, field, arg);
-//                } else {
-//                    //The real name of the field cannot be empty at this time.
-//                    String fieldName = requestField.value();
-//                    if (StringUtils.isBlank(fieldName)) {
-//                        throw new IllegalArgumentException("When using the set method to set a value, " +
-//                                "the actual field name cannot be empty.");
-//                    }
-//                    //The set method performs an assignment.
-//                    executeRequestFieldSetMethod(request, requestType, fieldName, arg);
-//                }
-//            }
-//        } catch (Throwable e) {
-//            //There is no remedy at this step, simply throw an exception.
-//            throw new RequestCreateException(e);
-//        }
-//        return request;
-//    }
-
-    //find and exec set method.
-    static void executeRequestFieldSetMethod(Request<?> request, Class<? extends Request> requestType,
-                                             String filedName, Object arg) {
-        final String setMethodName = "set" + Character.toUpperCase(filedName.charAt(0))
-                + filedName.substring(1);
-        final String cacheKey = requestType.getName() + "@" + setMethodName;
-        Method setMethod = METHOD_CACHE.computeIfAbsent(cacheKey, s -> {
-            for (Method method : ReflectUtil.getAllDeclaredMethods(requestType)) {
-                if (method.getName().equals(setMethodName) // name equal
-                        && method.getParameterTypes().length == 1 // param len = 1
-                        && method.getParameterTypes()[0].isAssignableFrom(arg.getClass())) // arg is param instance
-                {
-                    return method;
-                }
-            }
-            throw new IllegalArgumentException(new NoSuchMethodException(setMethodName));
-        });
-        ReflectUtil.invokeMethod(request, setMethod, arg);
-    }
-
-    //gets appoint requestType has annotation @RequestField fields.
-//    static List<Field> getRequestFieldAnnotationFields(Class<? extends Request> requestType) {
-//        return FIELD_CACHE.computeIfAbsent(requestType,
-//                t -> ReflectUtil.getAllDeclaredFields(requestType).stream()
-//                        .filter(field -> field.isAnnotationPresent(RequestField.class))
-//                        .collect(Collectors.toList()));
-//    }
-//
-//    //get method arg order
-//    static int getOrder(RequestField requestField, int i, List<Field> fields) {
-//        int order = requestField.order();
-//        if (order == -1) {
-//            //If the default value is used for sorting,
-//            // it will be sorted in the default order of times.
-//            order = i;
-//        } else {
-//            if (order >= fields.size()) {
-//                throw new ArrayIndexOutOfBoundsException("Current order " + order + "," +
-//                        " parameter length " + fields.size() + ".");
-//            }
-//        }
-//        return order;
-//    }
 }
