@@ -16,6 +16,8 @@
 
 package top.osjf.sdk.proxy;
 
+import top.osjf.sdk.core.support.NotNull;
+
 /**
  * Factory interface for proxy object creation.
  *
@@ -64,5 +66,5 @@ public interface ProxyFactory {
      * @return specify {@code T} the type of proxy object.
      * @throws Throwable it can be any error that can be thrown.
      */
-    <T> T newProxy(Object... args) throws Throwable;
+    <T> T newProxy(@NotNull Object... args) throws Throwable;
 }
