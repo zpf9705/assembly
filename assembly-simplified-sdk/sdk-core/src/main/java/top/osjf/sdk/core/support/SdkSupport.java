@@ -24,6 +24,7 @@ import top.osjf.sdk.core.util.*;
 
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * SDK Support class for handling the creation of request objects and conversion
@@ -137,45 +138,41 @@ public abstract class SdkSupport {
             }
             request = ReflectUtil.instantiates(requestType.value());
         } else {
+            //First, filter to see if there are any Request instances.
+            List<Object> requestInstances = Arrays.stream(args)
+                    .filter(r -> r instanceof Request).collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(requestInstances)) {
+                if (requestInstances.size() > 1) {
+                    throw new UnknownRequestParameterException(); //Only one request can exist.
+                }
+                request = (Request<?>) requestInstances.get(0);
+            }
             //the reflection creation type when there is no request for the parameter.
             Class<? extends Request> requestType = null;
             //support for RequestConstructor annotation as constructor args.
             //Arrange the construction parameter groups in the order provided by the annotations.
-            SortedMap<Integer, Object> constructorArgs = new TreeMap<>();
+            SortedMap<Integer, Object> constructorArgs = null;
+            if (request == null) constructorArgs = new TreeMap<>();//Initialize only when no instance exists.
             Parameter[] parameters = method.getParameters();
             for (int i = 0; i < args.length; i++) {
                 Object arg = args[i];
+                if (arg instanceof Request) continue;//It has been resolved in the above steps.
                 /*
-                 * Support type 1: Directly analyze request instance parameters.
+                 * Support type 1: Retrieve the type of Request from a specific interface
+                 * and support subsequent parsing.
                  */
-                if (arg instanceof Request) {
-                    if (request == null) {
-                        request = (Request<?>) arg;
+                if (arg instanceof RequestTypeSupplier && request == null) {
+                    Class<? extends Request> rt = ((RequestTypeSupplier) arg).getRequestType();
+                    if (requestType == null) {
+                        requestType = rt;
                     } else {
-                        if (!Objects.equals(arg.getClass(), request.getClass())) {
+                        if (!Objects.equals(requestType, rt)) {
                             throw new UnknownRequestParameterException();
                         }
                     }
-                    continue; //instance parameters do not support subsequent analysis.
                 }
                 /*
-                 * Support type 2: Retrieve the type of Request from a specific interface
-                 * and support subsequent parsing.
-                 */
-                if (arg instanceof RequestTypeSupplier) {
-                    if (request == null) {
-                        Class<? extends Request> rt = ((RequestTypeSupplier) arg).getRequestType();
-                        if (requestType == null) {
-                            requestType = rt;
-                        } else {
-                            if (!Objects.equals(requestType, rt)) {
-                                throw new UnknownRequestParameterException();
-                            }
-                        }
-                    }
-                }
-                /*
-                 * Support type 3: Callback type parameter parsing, supporting object instance,
+                 * Support type 2: Callback type parameter parsing, supporting object instance,
                  * collection, array and other types for subsequent parsing.
                  */
                 if (arg instanceof Callback) {
@@ -194,7 +191,7 @@ public abstract class SdkSupport {
                     }
                 }
                 /*
-                 * Support type 4: Support annotation RequestConstructor parsing, provided that
+                 * Support type 3: Support annotation RequestConstructor parsing, provided that
                  * the parameter array does not have a Request instance.
                  */
                 Parameter parameter = parameters[i];
@@ -205,7 +202,7 @@ public abstract class SdkSupport {
                     }
                 }
                 /*
-                 * Support type 5:Support annotation RequestSetter parsing, perform set related
+                 * Support type 4:Support annotation RequestSetter parsing, perform set related
                  * assignment after obtaining the Request instance.
                  */
                 if (parameter.isAnnotationPresent(RequestSetter.class)) {
