@@ -21,6 +21,13 @@ import net.sf.cglib.proxy.Enhancer;
 import top.osjf.sdk.proxy.AbstractProxyFactory;
 
 /**
+ * The {@code CglibProxy Factory} class extends the {@code AbstractProxyFactory}
+ * abstract class and is specifically designed for creating proxy objects based
+ * on CGLIB.
+ *
+ * <p>It generates subclasses of the target class through the {@code Enhancer} class
+ * provided by the CGLIB framework and inserts proxy logic into these subclasses.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
