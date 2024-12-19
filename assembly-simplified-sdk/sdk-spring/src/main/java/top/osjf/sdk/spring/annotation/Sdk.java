@@ -20,15 +20,15 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Component;
+import top.osjf.sdk.proxy.ProxyModel;
 import top.osjf.sdk.spring.beans.BeanProperty;
-import top.osjf.sdk.spring.proxy.ProxyModel;
 
 import java.lang.annotation.*;
 
 /**
  * Dynamic injection of Spring container annotations, which
  * only need to be annotated on the interface class that needs
- * dynamic injection, can be scanned by {@link SdkProxyBeanRegister}
+ * dynamic injection, can be scanned by {@link SdkBeanDefinitionRegistrar}
  * and automatically create proxy objects based on annotation properties.
  *
  * <p>The class that wears this annotation can be injected and
@@ -90,7 +90,7 @@ public @interface Sdk {
      *
      * <p>If it is an interface, use the default type.
      * <p>If it is a class level, then you may need to consider using
-     * {@link ProxyModel#SPRING_CJ_LIB} to create a proxy class.
+     * {@link ProxyModel#SPRING_CGLIB} to create a proxy class.
      *
      * @return The basic technical model for creating proxy classes.
      */
@@ -104,5 +104,5 @@ public @interface Sdk {
      *
      * @return The bean properties of the SDK proxy class.
      */
-    BeanProperty sdkProxyBeanProperty() default @BeanProperty;
+    BeanProperty property() default @BeanProperty;
 }
