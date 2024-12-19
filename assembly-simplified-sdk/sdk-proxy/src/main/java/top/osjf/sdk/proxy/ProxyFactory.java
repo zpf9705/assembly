@@ -62,7 +62,7 @@ public interface ProxyFactory {
      *             configurations or initialization data when creating the
      *             proxy object.
      * @return specify {@code T} the type of proxy object.
-     * @throws Exception it can be any error that can be thrown.
+     * @throws Throwable it can be any error that can be thrown.
      */
-    <T> T newProxy(Object... args) throws Exception;
+    <T> T newProxy(Object... args) throws Throwable;
 }
