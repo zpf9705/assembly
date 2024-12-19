@@ -44,36 +44,6 @@ import java.util.Map;
 public abstract class BeanPropertyUtils {
 
     /**
-     * @see BeanProperty#autowire()
-     */
-    private static final String AUTOWIRE = "autowire";
-
-    /**
-     * @see BeanProperty#autowireCandidate()
-     */
-    private static final String AUTOWIRE_CANDIDATE = "autowireCandidate";
-
-    /**
-     * @see BeanProperty#scope()
-     */
-    private static final String SCOPE = "scope";
-
-    /**
-     * @see BeanProperty#role()
-     */
-    private static final String ROLE = "role";
-
-    /**
-     * @see BeanProperty#lazyInit()
-     */
-    private static final String LAZY = "lazyInit";
-
-    /**
-     * @see BeanProperty#description()
-     */
-    private static final String DESCRIPTION = "description";
-
-    /**
      * Following the processing specification of {@link org.springframework.context.annotation.Bean},
      * the first name should be the main name of the bean.
      *
@@ -226,16 +196,16 @@ public abstract class BeanPropertyUtils {
     public static BeanDefinition fullBeanDefinition(BeanDefinitionBuilder builder,
                                                     AnnotationMetadata annotationMetadata,
                                                     AnnotationAttributes beanPropertyAttributes) {
-        Autowire autowire = beanPropertyAttributes.getEnum(AUTOWIRE);
-        boolean autowireCandidate = beanPropertyAttributes.getBoolean(AUTOWIRE_CANDIDATE);
+        Autowire autowire = beanPropertyAttributes.getEnum("autowire");
+        boolean autowireCandidate = beanPropertyAttributes.getBoolean("autowireCandidate");
         String scope = getMaybeAnnotationScope(annotationMetadata,
-                beanPropertyAttributes.getString(SCOPE));
+                beanPropertyAttributes.getString("scope"));
         int role = getMaybeAnnotationRole(annotationMetadata,
-                beanPropertyAttributes.<Integer>getNumber(ROLE));
+                beanPropertyAttributes.<Integer>getNumber("role"));
         boolean lazyInit = getMaybeAnnotationLazy(annotationMetadata,
-                beanPropertyAttributes.getBoolean(LAZY));
+                beanPropertyAttributes.getBoolean("lazyInit"));
         String description = getMaybeAnnotationDescription(annotationMetadata,
-                beanPropertyAttributes.getString(DESCRIPTION));
+                beanPropertyAttributes.getString("description"));
         //—————————————————————————— General attributes ——————————————————————————
         builder.setScope(scope);
         builder.setAutowireMode(autowire.value());
