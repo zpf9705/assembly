@@ -17,6 +17,8 @@
 
 package top.osjf.sdk.core;
 
+import top.osjf.sdk.core.support.SdkSupport;
+
 import java.lang.annotation.*;
 
 /**
@@ -35,7 +37,27 @@ import java.lang.annotation.*;
  * allow developers to clearly specify which parameters should be used as
  * constructor parameters.
  *
+ * <p>Here is a simple code example:
+ * <pre>
+ *     {@code
+ *     class ExampleRequest implements Request<ExampleResponse>{
+ *         private String email;
+ *         public ExampleRequest(String email){
+ *             this.email = email;
+ *         }
+ *     }
+ *
+ *     interface ExampleInterface {
+ *
+ *          RequestType(ExampleRequest.class)
+ *          ExampleResponse test(@RequestConstructor String email);
+ *     }
+ *     }
+ * </pre>
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
+ * @see SdkSupport#createRequest
+ * @see RequestSetter
  * @since 1.0.2
  */
 
