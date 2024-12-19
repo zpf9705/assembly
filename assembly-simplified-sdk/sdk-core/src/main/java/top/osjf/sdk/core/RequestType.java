@@ -59,9 +59,9 @@ import java.lang.annotation.*;
 public @interface RequestType {
 
     /**
-     * Return the type of the request parameter.
+     * Return the type of the {@code Request}.
      *
-     * @return type of the request parameter.
+     * @return the type of the {@code Request}.
      */
     @SuppressWarnings("rawtypes")
     Class<? extends Request> value();
