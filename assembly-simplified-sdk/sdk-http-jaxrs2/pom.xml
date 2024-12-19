@@ -16,9 +16,7 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <sdk-http>1.0.2</sdk-http>
         <jaxrs>2.1.1</jaxrs>
-        <jersey>2.45</jersey>
     </properties>
 
     <dependencies>
@@ -26,7 +24,6 @@
         <dependency>
             <groupId>top.osjf.sdk</groupId>
             <artifactId>sdk-http</artifactId>
-            <version>${sdk-http}</version>
         </dependency>
 
         <dependency>
@@ -38,13 +35,11 @@
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-client</artifactId>
-            <version>${jersey}</version>
         </dependency>
 
         <dependency>
             <groupId>org.glassfish.jersey.inject</groupId>
             <artifactId>jersey-hk2</artifactId>
-            <version>${jersey}</version>
         </dependency>
 
     </dependencies>

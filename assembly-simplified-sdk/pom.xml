@@ -17,6 +17,7 @@
 
     <modules>
         <module>sdk-core</module>
+        <module>sdk-proxy</module>
         <module>sdk-http</module>
         <module>sdk-http-annotation-processor</module>
         <module>sdk-help-maven-plugin</module>
@@ -39,5 +40,122 @@
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <open.feign.compent>13.5</open.feign.compent>
+        <jersey>2.45</jersey>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+
+            <dependency>
+                <groupId>top.osjf.sdk</groupId>
+                <artifactId>sdk-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>top.osjf.sdk</groupId>
+                <artifactId>sdk-proxy</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>top.osjf.sdk</groupId>
+                <artifactId>sdk-http</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>top.osjf.sdk</groupId>
+                <artifactId>sdk-http-annotation-processor</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>top.osjf.sdk</groupId>
+                <artifactId>sdk-http-apache</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>top.osjf.sdk</groupId>
+                <artifactId>sdk-http-ok</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>top.osjf.sdk</groupId>
+                <artifactId>sdk-http-google</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>top.osjf.sdk</groupId>
+                <artifactId>sdk-http-hc5</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>top.osjf.sdk</groupId>
+                <artifactId>sdk-http-jaxrs2</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>top.osjf.sdk</groupId>
+                <artifactId>sdk-http-feign-bridging</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>top.osjf.sdk</groupId>
+                <artifactId>sdk-http-feign-apache</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>top.osjf.sdk</groupId>
+                <artifactId>sdk-http-feign-ok</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>top.osjf.sdk</groupId>
+                <artifactId>sdk-http-feign-hc5</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>top.osjf.sdk</groupId>
+                <artifactId>sdk-http-feign-google</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>top.osjf.sdk</groupId>
+                <artifactId>sdk-http-feign-jaxrs2</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>top.osjf.sdk</groupId>
+                <artifactId>sdk-spring</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.glassfish.jersey.core</groupId>
+                <artifactId>jersey-client</artifactId>
+                <version>${jersey}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.glassfish.jersey.inject</groupId>
+                <artifactId>jersey-hk2</artifactId>
+                <version>${jersey}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
 </project>

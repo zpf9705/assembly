@@ -17,7 +17,6 @@
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.version>3.8.1</maven.version>
-        <sdk-http>1.0.2</sdk-http>
     </properties>
 
     <dependencies>
@@ -25,7 +24,6 @@
         <dependency>
             <groupId>top.osjf.sdk</groupId>
             <artifactId>sdk-http</artifactId>
-            <version>${sdk-http}</version>
         </dependency>
 
         <dependency>

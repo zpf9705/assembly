@@ -9,27 +9,38 @@
         <version>1.0.2</version>
     </parent>
 
-    <artifactId>sdk-http-feign-bridging</artifactId>
+    <artifactId>sdk-proxy</artifactId>
     <packaging>jar</packaging>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <cglib>3.3.0</cglib>
+        <spring.core>5.3.12</spring.core>
     </properties>
 
     <dependencies>
 
         <dependency>
             <groupId>top.osjf.sdk</groupId>
-            <artifactId>sdk-http</artifactId>
+            <artifactId>sdk-core</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>io.github.openfeign</groupId>
-            <artifactId>feign-core</artifactId>
-            <version>${open.feign.compent}</version>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+            <version>3.3.0</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${spring.core}</version>
+            <optional>true</optional>
         </dependency>
 
     </dependencies>
+
 </project>

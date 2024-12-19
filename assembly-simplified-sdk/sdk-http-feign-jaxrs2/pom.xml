@@ -16,8 +16,6 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <sdk-http-feign-bridging>1.0.2</sdk-http-feign-bridging>
-        <jersey>2.45</jersey>
     </properties>
 
     <dependencies>
@@ -25,7 +23,6 @@
         <dependency>
             <groupId>top.osjf.sdk</groupId>
             <artifactId>sdk-http-feign-bridging</artifactId>
-            <version>${sdk-http-feign-bridging}</version>
         </dependency>
 
         <dependency>
@@ -37,13 +34,11 @@
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-client</artifactId>
-            <version>${jersey}</version>
         </dependency>
 
         <dependency>
             <groupId>org.glassfish.jersey.inject</groupId>
             <artifactId>jersey-hk2</artifactId>
-            <version>${jersey}</version>
         </dependency>
 
     </dependencies>

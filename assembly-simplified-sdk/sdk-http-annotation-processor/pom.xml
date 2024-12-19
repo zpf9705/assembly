@@ -16,7 +16,6 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <sdk-http>1.0.2</sdk-http>
         <suntools>1.8.0_jdk8u275-b01_linux_x64</suntools>
     </properties>
 
@@ -25,7 +24,6 @@
         <dependency>
             <groupId>top.osjf.sdk</groupId>
             <artifactId>sdk-http</artifactId>
-            <version>${sdk-http}</version>
         </dependency>
 
         <dependency>
