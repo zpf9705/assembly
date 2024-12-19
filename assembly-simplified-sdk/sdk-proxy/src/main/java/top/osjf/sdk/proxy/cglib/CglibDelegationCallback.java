@@ -35,6 +35,13 @@ import java.lang.reflect.Method;
  */
 public interface CglibDelegationCallback extends MethodInterceptor, DelegationCallback {
 
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Call method {@link #callback}, pass proxy method and parameters,
+     * and other proxy information about {@code Cglib}.
+     */
     @Override
     default Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
         return callback(method, args, new CglibSpecificProxyOtherVariable(obj, proxy));

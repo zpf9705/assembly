@@ -33,6 +33,12 @@ import java.lang.reflect.Method;
  */
 public interface JDKDelegationCallback extends InvocationHandler, DelegationCallback {
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Call method {@link #callback}, pass proxy method and parameters,
+     * and other proxy information about {@code JDK}.
+     */
     @Override
     default Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         return callback(method, args, new JDKSpecificProxyOtherVariable(proxy));
