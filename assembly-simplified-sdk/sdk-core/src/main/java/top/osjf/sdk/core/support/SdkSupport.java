@@ -262,7 +262,7 @@ public abstract class SdkSupport {
      * @see InspectionResponseData
      */
     @Nullable
-    public static Object getResponse(@NotNull Method method, @Nullable Response response) {
+    public static Object resolveResponse(@NotNull Method method, @Nullable Response response) {
         if (response == null) return null;
         Class<?> returnType = method.getReturnType();
 
