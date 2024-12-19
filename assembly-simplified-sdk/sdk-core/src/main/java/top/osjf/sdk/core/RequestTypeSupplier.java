@@ -16,6 +16,7 @@
 
 package top.osjf.sdk.core;
 
+import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.SdkSupport;
 
 /**
@@ -23,7 +24,7 @@ import top.osjf.sdk.core.support.SdkSupport;
  * the type of request encapsulation class when calling the SDK function
  * with a single parameter.
  *
- * <p>The analysis case can be viewed in {@link SdkSupport#invokeCreateRequest}.
+ * <p>The analysis case can be viewed in {@link SdkSupport#createRequest}.
  *
  * <div><h3>Examples of usage methods are as follows</h3></div>
  * <pre>
@@ -41,7 +42,7 @@ import top.osjf.sdk.core.support.SdkSupport;
  * Starting from version 1.0.2, when searching for the {@link Request} type, its priority
  * level will be lower than the annotation {@link RequestType}.
  *
- * @see SdkSupport#invokeCreateRequest
+ * @see SdkSupport#createRequest
  * @see RequestType
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
@@ -54,5 +55,6 @@ public interface RequestTypeSupplier {
      * @return type of the request parameter.
      */
     @SuppressWarnings("rawtypes")
+    @NotNull
     Class<? extends Request> getRequestType();
 }
