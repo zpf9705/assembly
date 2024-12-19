@@ -21,76 +21,25 @@ import top.osjf.sdk.core.support.SdkSupport;
 import java.lang.annotation.*;
 
 /**
- * Used to mark the {@link Request} parameter type that needs to be
- * encapsulated by the current request input parameter during the
- * execution of the SDK method using annotations.
+ * The {@code RequestType} annotation is used to mark methods
+ * and specify the type of {@code Request} parameter.
  *
- * <p>On the basis of {@link RequestTypeSupplier},supporting multiple
- * parameters, first find the construction method based on the order
- * of parameters, and if there is no construction method, find the
- * set method.Of course, these need to be used in conjunction with
- * annotations {@link RequestField}.
+ * <p>This annotation defines the class type that request parameters
+ * should follow through the {@link #value()} attribute, which must
+ * be an instance of the {@code Request} class or its subclass.
+ * It is mainly used in this framework to identify and process specific
+ * types of {@code Request} parameters through reflection mechanisms.
  *
- * <p>The parsing scheme for implementing parameter diversification
- * processing by combining two annotations can be customized. For
- * the use of SDK proxies to parse the above annotations, you can
- * refer to method {@link SdkSupport#invokeCreateRequest}
- * and the following code examples.
- * <p>
- * Using its <a href="https://mvnrepository.com/artifact/top.osjf.sdk/sdk-http">sdk-http</a>
- * implementation example code:
- * <pre>
- *  public class ExampleHttpRequestParams
- *  extends AbstractHttpRequest&lt;HttpResultResponse&lt;List&lt;Example&gt;&gt;&gt; {
+ * <p>Developers can use this annotation on the method of handling
+ * HTTP requests to indicate the type of request parameters that
+ * the framework accepts for that method.
  *
- *      &#064;RequestField("queryDto")
- *      private QueryDto queryDto;
- *      &#064;RequestField("token")
- *      private String token;
- *
- *      public RequestImpl(QueryDto queryDto,String token){
- *          this.queryDto = queryDto;
- *          this.token = token;
- *      }
- *      public void setQueryDto(QueryDto queryDto){
- *          this.queryDto = queryDto;
- *      }
- *      public void setToken(String token){
- *          this.token = token;
- *      }
- *
- *      &#064;Override
- *      public HttpSdkEnum matchHttpSdk() {
- *          return new HttpSdkEnum() {
- *      &#064;Override
- *      public HttpRequestMethod getRequestMethod() {
- *          return HttpRequestMethod.POST;
- *      }
- *      &#064;Override
- *      public String getUlr(String host) {
- *          return "https:// + host +"example/query.json";
- *      }
- *      &#064;Override
- *      public String name() {
- *         return "EXAMPLE";
- *     }
- *      };
- *    }
- *  }
- *
- *    &#064;Sdk(hostProperty = "${your.host}")
- *    public interface Service {
- *        &#064;RequestType(ExampleHttpRequestParams.class)
- *        HttpResultResponse&lt;List&lt;Example&gt;&gt; queryData(QueryDto dto,String token);
- *    }
- * </pre>
- * <p>
- * Starting from version 1.0.2, this annotation will be used to mark {@link Request}
- * types, and when searching for {@link Request} types, its priority level will be
- * higher than {@link RequestTypeSupplier}.
+ * <p>The order priority is greater than the {@code Request} type
+ * indicated by the specific interface {@link RequestTypeSupplier}
+ * at the parameter level.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @see SdkSupport#invokeCreateRequest
+ * @see SdkSupport#createRequest
  * @see RequestTypeSupplier
  * @since 1.0.0
  */
