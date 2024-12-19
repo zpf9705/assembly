@@ -30,8 +30,13 @@ import java.lang.annotation.*;
  * set method for assignment, reflection can be used for assignment
  * when <pre>{@code useReflect == true }</pre>.
  *
+ * <p>This annotation and annotation {@link RequestConstructor} can
+ * only be chosen one of them. If annotation {@link RequestConstructor}
+ * has already been marked set <pre>{@code required = true }</pre>,
+ * the marking of this annotation will be invalid.
+ *
  * <p>Here is a simple code example:
- * <p><h3>use set method</h3></p>
+ * <h3>use set method</h3>
  * <pre>
  *     {@code
  *     class ExampleRequest implements Request<ExampleResponse>{
@@ -48,7 +53,7 @@ import java.lang.annotation.*;
  *     }
  *     }
  * </pre>
- * <p><h3>use reflect</h3></p>
+ * <h3>use reflect</h3>
  * <pre>
  *     {@code
  *     class ExampleRequest implements Request<ExampleResponse>{

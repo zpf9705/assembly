@@ -16,18 +16,14 @@
 
 package top.osjf.sdk.core.support;
 
-import com.google.common.collect.Lists;
 import top.osjf.sdk.core.*;
-import top.osjf.sdk.core.exception.RequestCreateException;
+import top.osjf.sdk.core.caller.Callback;
 import top.osjf.sdk.core.exception.UnknownRequestParameterException;
 import top.osjf.sdk.core.exception.UnknownResponseParameterException;
 import top.osjf.sdk.core.util.*;
-import top.osjf.sdk.core.caller.Callback;
 
 import java.lang.reflect.*;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * SDK Support class for handling the creation of request objects and conversion
@@ -86,34 +82,32 @@ public abstract class SdkSupport {
      * perform dynamic creation of {@code Request} based on specific annotations
      * {@link RequestType} and related interfaces {@link RequestTypeSupplier}.
      *
-     * <p>In version 1.0.2, proxy methods are supported to directly
-     * add {@link Callback} parameters or their array forms. This
-     * method can be self parsed and retained for execution at a
-     * reasonable time in the future.
-     * <p>The code example is as follows:
-     * the passing parameters of {@code Callback} can be processed.
+     * <p>Version 1.0.2 supports the use of dynamic parameters to build {@code Request}
+     * instances, which includes annotations for {@link RequestSetter} using the
+     * set scheme, {@link RequestConstructor} annotations using the constructor
+     * parameter scheme, and support for specific {@link Callback} type parameters.
+     *
+     * <p>Intuitively experience through code cases:
      * <pre>{@code
+     *
      *    public interface ExampleSdkInterface{
      *          RequestType(ExampleRequest.class)
-     *          ExampleResponse test(Callback[] callbackArray,List<Callback> callbackList);
+     *          ExampleResponse test(@RequestSetter String address,@RequestConstructor Integer status,
+     *          List<Callback> callbacks);
      *    }
-     * }</pre>
-     * <p>It can also handle mixed data types of {@code Object} arrays
-     * or collections, filtering out {@code Callback} types and dynamically
-     * creating {@code Request} as parameters.
-     * <p>The code example is as follows:
-     * <pre>{@code
-     *    ExampleCallback exCallback = ...;
-     *    Object[] callbackArray = {1,2,exCallback}; // 1,2 will be filtered and used
-     *    //as a parameter to create a Request.
-     *    ExampleCallback exCallback0 = ...;
-     *    List<Object> callbackList = Lists.newArrayList("123",447,exCallback0); //"123",447 will
-     *    //be filtered and used as a parameter to create a Request.
-     *    public interface ExampleSdkInterface {
-     *          RequestType(ExampleRequest.class)
-     *          ExampleResponse test(Object[] callbackArray,List<Object> callbackList);
+     *
+     *    class ExampleRequest implements Request<ExampleResponse>{
+     *        private Integer status;
+     *        private String address;
+     *        public ExampleRequest(Integer status){
+     *            this.status = status;
+     *        }
+     *        public void setAddress(String address){
+     *            this.address = address;
+     *        }
      *    }
-     * }</pre>
+     * }
+     * </pre>
      *
      * @param method target method.
      * @param args   exec target method args.
@@ -123,122 +117,297 @@ public abstract class SdkSupport {
      * @throws UnknownRequestParameterException If the {@code Request} instance found from the parameter
      *                                          is not unique or the {@code Request} type is not found
      *                                          from dynamic annotations or parameter specific interfaces.
-     * @see ResponseData
      * @see RequestType
-     * @see Callback
+     * @see RequestTypeSupplier
+     * @see RequestSetter
+     * @see RequestConstructor
      */
-    public static Pair<Request<?>, List<Callback>> invokeCreateRequest(@NotNull Method method, @Nullable Object[] args) {
-        Request<?> request = null;
-        List<Callback> callbacks = new ArrayList<>();
-
-        List<Object> argList = args == null ? Lists.newArrayList() : Lists.newArrayList(args);
-
-        //Loop parameter array to find the single or array form of the Request
-        // class and callback interface that supports method parsing.
-        List<Object> delArgs = null;
-        if (!argList.isEmpty()) {
-
-            //Filter whether there is a Request instance in the parameter group.
-            List<Object> requestInstances = argList.stream()
-                    .filter(arg -> arg instanceof Request)
-                    .collect(Collectors.toList());
-
-            //Ensure that there is only one Request instance.
-            if (CollectionUtils.isNotEmpty(requestInstances)) {
-                if (requestInstances.size() > 1) {
-                    throw new UnknownRequestParameterException();
-                }
-                request = (Request<?>) requestInstances.get(0);
-            } else {
-                //Parameter filtering removes items and only initializes
-                // when the provided parameters do not have a Request instance.
-                delArgs = new ArrayList<>();
+    public static Pair<Request<?>, List<Callback>> createRequest(@NotNull Method method, @Nullable Object[] args) {
+        Request<?> request = null; //create request.
+        List<Callback> callbacks = new ArrayList<>(); //parameter callbacks.
+        Map<String, Pair<Boolean, Object>> setterMetadata = new HashMap<>(); //support setter data.
+        /*
+         *  When the parameter does not provide the type of Request,
+         *  find the annotation for the method.
+         * */
+        if (args == null) {
+            RequestType requestType = method.getAnnotation(RequestType.class);
+            if (requestType == null) {
+                throw new UnknownRequestParameterException();
             }
-            for (Object arg : argList) {
-
+            request = ReflectUtil.instantiates(requestType.value());
+        } else {
+            //the reflection creation type when there is no request for the parameter.
+            Class<? extends Request> requestType = null;
+            //support for RequestConstructor annotation as constructor args.
+            //Arrange the construction parameter groups in the order provided by the annotations.
+            SortedMap<Integer, Object> constructorArgs = new TreeMap<>();
+            Parameter[] parameters = method.getParameters();
+            for (int i = 0; i < args.length; i++) {
+                Object arg = args[i];
+                /*
+                 * Support type 1: Directly analyze request instance parameters.
+                 */
+                if (arg instanceof Request) {
+                    if (request == null) {
+                        request = (Request<?>) arg;
+                    } else {
+                        if (!Objects.equals(arg.getClass(), request.getClass())) {
+                            throw new UnknownRequestParameterException();
+                        }
+                    }
+                    continue; //instance parameters do not support subsequent analysis.
+                }
+                /*
+                 * Support type 2: Retrieve the type of Request from a specific interface
+                 * and support subsequent parsing.
+                 */
+                if (arg instanceof RequestTypeSupplier) {
+                    if (request == null) {
+                        Class<? extends Request> rt = ((RequestTypeSupplier) arg).getRequestType();
+                        if (requestType == null) {
+                            requestType = rt;
+                        } else {
+                            if (!Objects.equals(requestType, rt)) {
+                                throw new UnknownRequestParameterException();
+                            }
+                        }
+                    }
+                }
+                /*
+                 * Support type 3: Callback type parameter parsing, supporting object instance,
+                 * collection, array and other types for subsequent parsing.
+                 */
                 if (arg instanceof Callback) {
                     callbacks.add((Callback) arg);
-                    if (delArgs != null) delArgs.add(arg);
-
-                    /*
-                     * The following types of filtering rules take the available
-                     * top.osjf.sdk.core.util.caller.Callback parameters and keep
-                     * the rest.
-                     *
-                     * If all parameters are of type top.osjf.sdk.core.util.caller.Callback,
-                     * the entire parameter will be deleted and will not participate in the
-                     * subsequent dynamic construction of Request.
-                     * */
-
                 } else if (arg instanceof Collection) {
-
-                    //Collection type filtering.
-                    filteringCollection(arg, callbacks, delArgs);
+                    if (!((Collection<?>) arg).stream().allMatch(c -> c instanceof Callback)) {
+                        throw new IllegalArgumentException();
+                    }
+                    callbacks.addAll((Collection<? extends Callback>) arg);
                 } else if (arg.getClass().isArray()) {
-
-                    //Array type filtering.
-                    filteringArray(arg, callbacks, delArgs, argList);
+                    if (!Callback.class.isAssignableFrom(arg.getClass().getComponentType())) {
+                        throw new IllegalArgumentException();
+                    }
+                    for (Object o : ArrayUtils.toArray(arg)) {
+                        callbacks.add((Callback) o);
+                    }
                 }
-
                 /*
-                 * If you define callbacks in entity objects or maps,
-                 *  we do not support parsing here.
+                 * Support type 4: Support annotation RequestConstructor parsing, provided that
+                 * the parameter array does not have a Request instance.
                  */
+                Parameter parameter = parameters[i];
+                if (request == null && parameter.isAnnotationPresent(RequestConstructor.class)) {
+                    RequestConstructor requestConstructor = parameter.getAnnotation(RequestConstructor.class);
+                    if (requestConstructor.required()) {
+                        constructorArgs.put(requestConstructor.order(), arg);
+                    }
+                }
+                /*
+                 * Support type 5:Support annotation RequestSetter parsing, perform set related
+                 * assignment after obtaining the Request instance.
+                 */
+                if (parameter.isAnnotationPresent(RequestSetter.class)) {
+                    RequestSetter requestSetter = parameter.getAnnotation(RequestSetter.class);
+                    String name = requestSetter.name();
+                    if (StringUtils.isBlank(name)) name = parameter.getName();
+                    setterMetadata.put(name, Pair.create(requestSetter.useReflect(), arg));
+                }
+            }
+            //After the loop ends, initialize using the type based on whether
+            // the request instance exists.
+            if (request == null) {
+                if (requestType == null) {
+                    RequestType annotation = method.getAnnotation(RequestType.class);
+                    if (annotation == null) {
+                        throw new UnknownRequestParameterException();
+                    }
+                    requestType = annotation.value();
+                }
+                if (constructorArgs.isEmpty()) {
+                    request = ReflectUtil.instantiates(requestType);
+                } else {
+                    request = ReflectUtil.instantiates(requestType,
+                            constructorArgs.values().toArray());
+                }
             }
         }
-
-        //When no relevant Request instance is found for the above parameters,
-        // perform a dynamic construction process.
-        if (request == null) {
-
-            //The callback method parameters do not participate in the
-            // reflection dynamic construction of the request.
-            if (CollectionUtils.isNotEmpty(delArgs)) argList.removeAll(delArgs);
-
-            //When no found request in args , use reflection to construct
-            // the request parameter based on the marked request type.
-
-            /* Participate more in the processing logic of 0 parameters. */
-
-            //The following is how to discover the types of request parameters through
-            // specific annotations and interfaces.
-            Class<? extends Request> requestType;
-
-            //Annotations take precedence over parameters.
-            //See top.osjf.sdk.core.RequestType javadoc.
-            RequestType requestTypeAnnotation = method.getAnnotation(RequestType.class);
-            if (requestTypeAnnotation != null) {
-                requestType = requestTypeAnnotation.value();
-            } else {
-
-                //When there are no annotations, consider whether
-                // the parameter provides a Request type.
-                List<Class<? extends Request>> requestTypes = null;
-                if (!argList.isEmpty()) {
-                    requestTypes = Arrays.stream(args)
-                            .map((Function<Object, Class<? extends Request>>) o ->
-                                    o instanceof RequestTypeSupplier ? ((RequestTypeSupplier) o).getRequestType() : null)
-                            .filter(Objects::nonNull)
-                            .distinct()
-                            .collect(Collectors.toList());
+        //Finally, perform set support assignment on the instantiated request instance.
+        if (!setterMetadata.isEmpty()) {
+            for (Map.Entry<String, Pair<Boolean, Object>> entry : setterMetadata.entrySet()) {
+                String name = entry.getKey();
+                Pair<Boolean, Object> assignmentInfo = entry.getValue();
+                Object value = assignmentInfo.getSecond();
+                if (assignmentInfo.getFirst()) {
+                    ReflectUtil.setFieldValue(request, name, value);
+                } else {
+                    executeRequestFieldSetMethod(request, request.getClass(), name, value);
                 }
-
-                //If no relevant type is found or the number of found is greater
-                // than 1, it cannot be confirmed as unique and will not be processed.
-                //https://mvnrepository.com/artifact/top.osjf.sdk/sdk-core/1.0.1/issue1
-                if (CollectionUtils.isEmpty(requestTypes) || requestTypes.size() > 1) {
-                    throw new UnknownRequestParameterException();
-                }
-                requestType = requestTypes.get(0);
             }
-
-            //After obtaining the type of the requested parameter, assign necessary
-            // property values based on the parameter and specific annotations.
-            request = invokeCreateRequestConstructorWhenFailedUseSet(requestType, argList.toArray());
         }
-
         return Pair.create(request, callbacks);
     }
+
+//    /**
+//     * When passing parameters that are not directly displayed as {@code Request},
+//     * perform dynamic creation of {@code Request} based on specific annotations
+//     * {@link RequestType} and related interfaces {@link RequestTypeSupplier}.
+//     *
+//     * <p>In version 1.0.2, proxy methods are supported to directly
+//     * add {@link Callback} parameters or their array forms. This
+//     * method can be self parsed and retained for execution at a
+//     * reasonable time in the future.
+//     * <p>The code example is as follows:
+//     * the passing parameters of {@code Callback} can be processed.
+//     * <pre>{@code
+//     *    public interface ExampleSdkInterface{
+//     *          RequestType(ExampleRequest.class)
+//     *          ExampleResponse test(Callback[] callbackArray,List<Callback> callbackList);
+//     *    }
+//     * }</pre>
+//     * <p>It can also handle mixed data types of {@code Object} arrays
+//     * or collections, filtering out {@code Callback} types and dynamically
+//     * creating {@code Request} as parameters.
+//     * <p>The code example is as follows:
+//     * <pre>{@code
+//     *    ExampleCallback exCallback = ...;
+//     *    Object[] callbackArray = {1,2,exCallback}; // 1,2 will be filtered and used
+//     *    //as a parameter to create a Request.
+//     *    ExampleCallback exCallback0 = ...;
+//     *    List<Object> callbackList = Lists.newArrayList("123",447,exCallback0); //"123",447 will
+//     *    //be filtered and used as a parameter to create a Request.
+//     *    public interface ExampleSdkInterface {
+//     *          RequestType(ExampleRequest.class)
+//     *          ExampleResponse test(Object[] callbackArray,List<Object> callbackList);
+//     *    }
+//     * }</pre>
+//     *
+//     * @param method target method.
+//     * @param args   exec target method args.
+//     * @return the {@code Pair} with first {@code Request} and second
+//     * {@code List<Callback>}.
+//     * @throws NullPointerException             If the input method is {@literal null}.
+//     * @throws UnknownRequestParameterException If the {@code Request} instance found from the parameter
+//     *                                          is not unique or the {@code Request} type is not found
+//     *                                          from dynamic annotations or parameter specific interfaces.
+//     * @see ResponseData
+//     * @see RequestType
+//     * @see Callback
+//     */
+//    public static Pair<Request<?>, List<Callback>> invokeCreateRequest(@NotNull Method method, @Nullable Object[] args) {
+//        Request<?> request = null;
+//        List<Callback> callbacks = new ArrayList<>();
+//
+//        List<Object> argList = args == null ? Lists.newArrayList() : Lists.newArrayList(args);
+//
+//        //Loop parameter array to find the single or array form of the Request
+//        // class and callback interface that supports method parsing.
+//        List<Object> delArgs = null;
+//        if (!argList.isEmpty()) {
+//
+//            //Filter whether there is a Request instance in the parameter group.
+//            List<Object> requestInstances = argList.stream()
+//                    .filter(arg -> arg instanceof Request)
+//                    .collect(Collectors.toList());
+//
+//            //Ensure that there is only one Request instance.
+//            if (CollectionUtils.isNotEmpty(requestInstances)) {
+//                if (requestInstances.size() > 1) {
+//                    throw new UnknownRequestParameterException();
+//                }
+//                request = (Request<?>) requestInstances.get(0);
+//            } else {
+//                //Parameter filtering removes items and only initializes
+//                // when the provided parameters do not have a Request instance.
+//                delArgs = new ArrayList<>();
+//            }
+//            for (Object arg : argList) {
+//
+//                if (arg instanceof Callback) {
+//                    callbacks.add((Callback) arg);
+//                    if (delArgs != null) delArgs.add(arg);
+//
+//                    /*
+//                     * The following types of filtering rules take the available
+//                     * top.osjf.sdk.core.util.caller.Callback parameters and keep
+//                     * the rest.
+//                     *
+//                     * If all parameters are of type top.osjf.sdk.core.util.caller.Callback,
+//                     * the entire parameter will be deleted and will not participate in the
+//                     * subsequent dynamic construction of Request.
+//                     * */
+//
+//                } else if (arg instanceof Collection) {
+//
+//                    //Collection type filtering.
+//                    filteringCollection(arg, callbacks, delArgs);
+//                } else if (arg.getClass().isArray()) {
+//
+//                    //Array type filtering.
+//                    filteringArray(arg, callbacks, delArgs, argList);
+//                }
+//
+//                /*
+//                 * If you define callbacks in entity objects or maps,
+//                 *  we do not support parsing here.
+//                 */
+//            }
+//        }
+//
+//
+//        //When no relevant Request instance is found for the above parameters,
+//        // perform a dynamic construction process.
+//        if (request == null) {
+//
+//            //The callback method parameters do not participate in the
+//            // reflection dynamic construction of the request.
+//            if (CollectionUtils.isNotEmpty(delArgs)) argList.removeAll(delArgs);
+//
+//            //When no found request in args , use reflection to construct
+//            // the request parameter based on the marked request type.
+//
+//            /* Participate more in the processing logic of 0 parameters. */
+//
+//            //The following is how to discover the types of request parameters through
+//            // specific annotations and interfaces.
+//            Class<? extends Request> requestType;
+//
+//            //Annotations take precedence over parameters.
+//            //See top.osjf.sdk.core.RequestType javadoc.
+//            RequestType requestTypeAnnotation = method.getAnnotation(RequestType.class);
+//            if (requestTypeAnnotation != null) {
+//                requestType = requestTypeAnnotation.value();
+//            } else {
+//
+//                //When there are no annotations, consider whether
+//                // the parameter provides a Request type.
+//                List<Class<? extends Request>> requestTypes = null;
+//                if (!argList.isEmpty()) {
+//                    requestTypes = Arrays.stream(args)
+//                            .map((Function<Object, Class<? extends Request>>) o ->
+//                                    o instanceof RequestTypeSupplier ? ((RequestTypeSupplier) o).getRequestType() : null)
+//                            .filter(Objects::nonNull)
+//                            .distinct()
+//                            .collect(Collectors.toList());
+//                }
+//
+//                //If no relevant type is found or the number of found is greater
+//                // than 1, it cannot be confirmed as unique and will not be processed.
+//                //https://mvnrepository.com/artifact/top.osjf.sdk/sdk-core/1.0.1/issue1
+//                if (CollectionUtils.isEmpty(requestTypes) || requestTypes.size() > 1) {
+//                    throw new UnknownRequestParameterException();
+//                }
+//                requestType = requestTypes.get(0);
+//            }
+//
+//            //After obtaining the type of the requested parameter, assign necessary
+//            // property values based on the parameter and specific annotations.
+//            request = invokeCreateRequestConstructorWhenFailedUseSet(requestType, argList.toArray());
+//        }
+//
+//        return Pair.create(request, callbacks);
+//    }
 
     /**
      * Determine the specific return value type based on the actual return type
@@ -396,55 +565,55 @@ public abstract class SdkSupport {
 
     /*  ################################### Internal assistance methods. ###################################  */
 
-    // filtering collection type
-    //All hits are directly placed in the deletion list, and some hits delete some hit parameters.
-    static void filteringCollection(@NotNull Object arg, @NotNull List<Callback> callbacks,
-                                    @Nullable List<Object> delArgs) {
-        Collection<Object> argc = (Collection<Object>) arg;
-        List<Object> isCallbackArgs = null;
-        for (Object ac : argc) {
-            isCallbackArgs = resolveLoopCallback(ac, callbacks, isCallbackArgs);
-        }
-        if (delArgs != null && isCallbackArgs != null) {
-            if (isCallbackArgs.size() == argc.size()) {
-                delArgs.add(argc);
-            } else {
-                argc.removeAll(isCallbackArgs);
-            }
-        }
-    }
-
-    // filtering array type
-    //All hits are directly placed in the deletion list, and some
-    // hits delete some hit parameters and update the value.
-    static void filteringArray(@NotNull Object arg, @NotNull List<Callback> callbacks,
-                               @Nullable List<Object> delArgs, @NotNull List<Object> argList) {
-        Object[] array = ArrayUtils.toArray(arg);
-        List<Object> isCallbackArgs = null;
-        for (Object arr : array) {
-            isCallbackArgs = resolveLoopCallback(arr, callbacks, isCallbackArgs);
-        }
-        if (delArgs != null && isCallbackArgs != null) {
-            if (isCallbackArgs.size() == array.length) {
-                delArgs.add(arg);
-            } else {
-                List<Object> list = Lists.newArrayList(array);
-                list.removeAll(isCallbackArgs);
-                argList.set(argList.indexOf(arg), list.toArray());
-            }
-        }
-    }
-
-    //resolve arg to Callback in for loop.
-    static List<Object> resolveLoopCallback(@NotNull Object arg, @NotNull List<Callback> callbacks,
-                                            @Nullable List<Object> isCallback) {
-        if (arg instanceof Callback) {
-            callbacks.add((Callback) arg);
-            if (isCallback == null) isCallback = new ArrayList<>();
-            isCallback.add(arg);
-        }
-        return isCallback;
-    }
+//    // filtering collection type
+//    //All hits are directly placed in the deletion list, and some hits delete some hit parameters.
+//    static void filteringCollection(@NotNull Object arg, @NotNull List<Callback> callbacks,
+//                                    @Nullable List<Object> delArgs) {
+//        Collection<Object> argc = (Collection<Object>) arg;
+//        List<Object> isCallbackArgs = null;
+//        for (Object ac : argc) {
+//            isCallbackArgs = resolveLoopCallback(ac, callbacks, isCallbackArgs);
+//        }
+//        if (delArgs != null && isCallbackArgs != null) {
+//            if (isCallbackArgs.size() == argc.size()) {
+//                delArgs.add(argc);
+//            } else {
+//                argc.removeAll(isCallbackArgs);
+//            }
+//        }
+//    }
+//
+//    // filtering array type
+//    //All hits are directly placed in the deletion list, and some
+//    // hits delete some hit parameters and update the value.
+//    static void filteringArray(@NotNull Object arg, @NotNull List<Callback> callbacks,
+//                               @Nullable List<Object> delArgs, @NotNull List<Object> argList) {
+//        Object[] array = ArrayUtils.toArray(arg);
+//        List<Object> isCallbackArgs = null;
+//        for (Object arr : array) {
+//            isCallbackArgs = resolveLoopCallback(arr, callbacks, isCallbackArgs);
+//        }
+//        if (delArgs != null && isCallbackArgs != null) {
+//            if (isCallbackArgs.size() == array.length) {
+//                delArgs.add(arg);
+//            } else {
+//                List<Object> list = Lists.newArrayList(array);
+//                list.removeAll(isCallbackArgs);
+//                argList.set(argList.indexOf(arg), list.toArray());
+//            }
+//        }
+//    }
+//
+//    //resolve arg to Callback in for loop.
+//    static List<Object> resolveLoopCallback(@NotNull Object arg, @NotNull List<Callback> callbacks,
+//                                            @Nullable List<Object> isCallback) {
+//        if (arg instanceof Callback) {
+//            callbacks.add((Callback) arg);
+//            if (isCallback == null) isCallback = new ArrayList<>();
+//            isCallback.add(arg);
+//        }
+//        return isCallback;
+//    }
 
     //Find a subclass belonging to top.osjf.sdk.core.Request from numerous generic classes.
     private static Pair<Type, Class<?>> getTypePair(List<Type> types, ClassLoader classLoader) {
@@ -500,66 +669,66 @@ public abstract class SdkSupport {
         return ReflectUtil.loadClass(className, classLoader);
     }
 
-    //First, create the request according to the construction method.
-    // If the creation fails, use the set method or reflection assignment with specific annotations.
-    static Request<?> invokeCreateRequestConstructorWhenFailedUseSet(Class<? extends Request> requestType,
-                                                                     Object... args) {
-        Request<?> request;
-        try {
-            //First, directly instantiate the request class using the
-            // construction method based on the parameters.
-            request = ReflectUtil.instantiates(requestType, args);
-        } catch (Throwable e) {
-            //This step determines whether the parameter is empty to
-            // determine whether the above is an empty construction instantiation.
-            if (ArrayUtils.isEmpty(args)) throw new RequestCreateException(e);
-            request = invokeCreateRequestUseSet(requestType, args);
-        }
-        return request;
-    }
+//    //First, create the request according to the construction method.
+//    // If the creation fails, use the set method or reflection assignment with specific annotations.
+//    static Request<?> invokeCreateRequestConstructorWhenFailedUseSet(Class<? extends Request> requestType,
+//                                                                     Object... args) {
+//        Request<?> request;
+//        try {
+//            //First, directly instantiate the request class using the
+//            // construction method based on the parameters.
+//            request = ReflectUtil.instantiates(requestType, args);
+//        } catch (Throwable e) {
+//            //This step determines whether the parameter is empty to
+//            // determine whether the above is an empty construction instantiation.
+//            if (ArrayUtils.isEmpty(args)) throw new RequestCreateException(e);
+//            request = invokeCreateRequestUseSet(requestType, args);
+//        }
+//        return request;
+//    }
 
     //Create an object using an empty construct, and assign
     // values to its properties using the set method.
-    static Request<?> invokeCreateRequestUseSet(Class<? extends Request> requestType,
-                                                Object... args) {
-        Request<?> request;
-        try {
-            //When parameter construction fails, first use an empty
-            // construction to instantiate, and then find the set method.
-            request = ReflectUtil.instantiates(requestType);
-
-            List<Field> fields = getRequestFieldAnnotationFields(requestType);
-            if (CollectionUtils.isEmpty(fields)) {
-                //When using methods for assignment, annotations must be identified.
-                throw new IllegalArgumentException("When no construction method is provided, please " +
-                        "use \"top.osjf.assembly.simplified.sdk.process.RequestField\" to mark the real" +
-                        " name of the field.");
-            }
-            for (int i = 0; i < fields.size(); i++) {
-                Field field = fields.get(i);
-                RequestField requestField = field.getAnnotation(RequestField.class);
-                int order = getOrder(requestField, i, fields);
-                Object arg = args[order];
-                if (requestField.useReflect()) {
-                    //Directly assign values in the case of sequential reflection assignment.
-                    ReflectUtil.setFieldValue(request, field, arg);
-                } else {
-                    //The real name of the field cannot be empty at this time.
-                    String fieldName = requestField.value();
-                    if (StringUtils.isBlank(fieldName)) {
-                        throw new IllegalArgumentException("When using the set method to set a value, " +
-                                "the actual field name cannot be empty.");
-                    }
-                    //The set method performs an assignment.
-                    executeRequestFieldSetMethod(request, requestType, fieldName, arg);
-                }
-            }
-        } catch (Throwable e) {
-            //There is no remedy at this step, simply throw an exception.
-            throw new RequestCreateException(e);
-        }
-        return request;
-    }
+//    static Request<?> invokeCreateRequestUseSet(Class<? extends Request> requestType,
+//                                                Object... args) {
+//        Request<?> request;
+//        try {
+//            //When parameter construction fails, first use an empty
+//            // construction to instantiate, and then find the set method.
+//            request = ReflectUtil.instantiates(requestType);
+//
+//            List<Field> fields = getRequestFieldAnnotationFields(requestType);
+//            if (CollectionUtils.isEmpty(fields)) {
+//                //When using methods for assignment, annotations must be identified.
+//                throw new IllegalArgumentException("When no construction method is provided, please " +
+//                        "use \"top.osjf.assembly.simplified.sdk.process.RequestField\" to mark the real" +
+//                        " name of the field.");
+//            }
+//            for (int i = 0; i < fields.size(); i++) {
+//                Field field = fields.get(i);
+//                RequestField requestField = field.getAnnotation(RequestField.class);
+//                int order = getOrder(requestField, i, fields);
+//                Object arg = args[order];
+//                if (requestField.useReflect()) {
+//                    //Directly assign values in the case of sequential reflection assignment.
+//                    ReflectUtil.setFieldValue(request, field, arg);
+//                } else {
+//                    //The real name of the field cannot be empty at this time.
+//                    String fieldName = requestField.value();
+//                    if (StringUtils.isBlank(fieldName)) {
+//                        throw new IllegalArgumentException("When using the set method to set a value, " +
+//                                "the actual field name cannot be empty.");
+//                    }
+//                    //The set method performs an assignment.
+//                    executeRequestFieldSetMethod(request, requestType, fieldName, arg);
+//                }
+//            }
+//        } catch (Throwable e) {
+//            //There is no remedy at this step, simply throw an exception.
+//            throw new RequestCreateException(e);
+//        }
+//        return request;
+//    }
 
     //find and exec set method.
     static void executeRequestFieldSetMethod(Request<?> request, Class<? extends Request> requestType,
@@ -582,26 +751,26 @@ public abstract class SdkSupport {
     }
 
     //gets appoint requestType has annotation @RequestField fields.
-    static List<Field> getRequestFieldAnnotationFields(Class<? extends Request> requestType) {
-        return FIELD_CACHE.computeIfAbsent(requestType,
-                t -> ReflectUtil.getAllDeclaredFields(requestType).stream()
-                        .filter(field -> field.isAnnotationPresent(RequestField.class))
-                        .collect(Collectors.toList()));
-    }
-
-    //get method arg order
-    static int getOrder(RequestField requestField, int i, List<Field> fields) {
-        int order = requestField.order();
-        if (order == -1) {
-            //If the default value is used for sorting,
-            // it will be sorted in the default order of times.
-            order = i;
-        } else {
-            if (order >= fields.size()) {
-                throw new ArrayIndexOutOfBoundsException("Current order " + order + "," +
-                        " parameter length " + fields.size() + ".");
-            }
-        }
-        return order;
-    }
+//    static List<Field> getRequestFieldAnnotationFields(Class<? extends Request> requestType) {
+//        return FIELD_CACHE.computeIfAbsent(requestType,
+//                t -> ReflectUtil.getAllDeclaredFields(requestType).stream()
+//                        .filter(field -> field.isAnnotationPresent(RequestField.class))
+//                        .collect(Collectors.toList()));
+//    }
+//
+//    //get method arg order
+//    static int getOrder(RequestField requestField, int i, List<Field> fields) {
+//        int order = requestField.order();
+//        if (order == -1) {
+//            //If the default value is used for sorting,
+//            // it will be sorted in the default order of times.
+//            order = i;
+//        } else {
+//            if (order >= fields.size()) {
+//                throw new ArrayIndexOutOfBoundsException("Current order " + order + "," +
+//                        " parameter length " + fields.size() + ".");
+//            }
+//        }
+//        return order;
+//    }
 }

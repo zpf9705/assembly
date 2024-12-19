@@ -416,6 +416,27 @@ public abstract class ReflectUtil {
     /**
      * Use reflection mechanism to perform the assignment operation of the target field.
      *
+     * @param target    operate the target object.
+     * @param fieldName operate the target field name.
+     * @param arg       the assigned value.
+     * @throws IllegalStateException    if invoke method failed to find cause.
+     * @throws IllegalArgumentException by field set throw.
+     */
+    public static void setFieldValue(Object target, String fieldName, Object arg) {
+        try {
+            Field field = target.getClass().getField(fieldName);
+            field.setAccessible(true);
+            field.set(target, arg);
+        } catch (IllegalArgumentException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new IllegalStateException("set field failed ", e);
+        }
+    }
+
+    /**
+     * Use reflection mechanism to perform the assignment operation of the target field.
+     *
      * @param target operate the target object.
      * @param field  operate the target field.
      * @param arg    the assigned value.

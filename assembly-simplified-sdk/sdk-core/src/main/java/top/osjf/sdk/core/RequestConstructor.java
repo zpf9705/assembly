@@ -37,6 +37,10 @@ import java.lang.annotation.*;
  * allow developers to clearly specify which parameters should be used as
  * constructor parameters.
  *
+ * <p>This annotation can only be chosen from annotation {@link RequestSetter}.
+ * If this annotation has already been marked and set <pre>{@code required = true }
+ * </pre>, marking annotation {@link RequestSetter} here will be invalid.
+ *
  * <p>Here is a simple code example:
  * <pre>
  *     {@code
@@ -50,7 +54,7 @@ import java.lang.annotation.*;
  *     interface ExampleInterface {
  *
  *          RequestType(ExampleRequest.class)
- *          ExampleResponse test(@RequestConstructor String email);
+ *          ExampleResponse test(@RequestConstructor(order = 1) String email);
  *     }
  *     }
  * </pre>
@@ -65,6 +69,15 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface RequestConstructor {
+
+    /**
+     * Return the order of the parameter in the corresponding
+     * constructor of the {@code Request} class.
+     *
+     * @return the order of the parameter in the corresponding
+     * constructor.
+     */
+    int order() default -1;
 
     /**
      * Return the option to participate as a constructor
