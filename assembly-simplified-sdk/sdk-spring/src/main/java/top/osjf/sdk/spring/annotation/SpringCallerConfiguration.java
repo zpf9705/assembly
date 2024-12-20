@@ -20,6 +20,8 @@ package top.osjf.sdk.spring.annotation;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import top.osjf.sdk.core.caller.CallOptions;
+import top.osjf.sdk.core.caller.RequestCaller;
+import top.osjf.sdk.core.util.ReflectUtil;
 import top.osjf.sdk.spring.SpringRequestCaller;
 import top.osjf.sdk.spring.proxy.SdkProxyFactoryBean;
 
@@ -51,8 +53,8 @@ public class SpringCallerConfiguration {
      * Find the attribute name of SpringRequestCaller from the AbstractSdkProxyBean class.
      * */
     static {
-        for (Field declaredField : SdkProxyFactoryBean.class.getDeclaredFields()) {
-            if (SpringRequestCaller.class.isAssignableFrom(declaredField.getType())) {
+        for (Field declaredField : ReflectUtil.getAllDeclaredFields(SdkProxyFactoryBean.class)) {
+            if (RequestCaller.class.isAssignableFrom(declaredField.getType())) {
                 SPRING_REQUEST_CALLER_FIELD_NAME = declaredField.getName();
                 break;
             }
