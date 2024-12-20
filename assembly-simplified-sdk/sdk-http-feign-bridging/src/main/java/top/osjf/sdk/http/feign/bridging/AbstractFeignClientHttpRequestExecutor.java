@@ -79,7 +79,8 @@ public abstract class AbstractFeignClientHttpRequestExecutor implements FeignCli
 
         //Automatically close the resource information that responds.
         try (Response response = execute(feignRequest, feignOptions)) {
-            return new String(IOUtils.readAllBytes(response.body().asInputStream()), charset);
+            byte[] bytes = IOUtils.readAllBytes(response.body().asInputStream());
+            return charset != null ? new String(bytes, charset) : new String(bytes);
         }
     }
 }
