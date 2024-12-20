@@ -19,57 +19,58 @@ package top.osjf.sdk.spring.annotation;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AliasFor;
+import org.springframework.stereotype.Component;
 
 import java.lang.annotation.*;
 
 /**
- * This annotation is mainly annotated on the class where the
- * Spring injection class annotation is located, which can implement
- * the interface class with automatic injection annotation {@link Sdk}
+ * This annotation is mainly annotated on the class where the Spring
+ * injection class annotation is located, which can implement the
+ * interface class with automatic injection annotation {@link Sdk}
  * and automatically create the implementation class, it mainly relies
- * on {@link SdkProxyBeanRegister}.
- * <p>Redirect {@link #value()} and {@link #basePackages()}
- * to the {@link ComponentScan} annotation.
+ * on {@link SdkBeanDefinitionRegistrar}.
+ *
+ * <p>Redirect {@link #value()} and {@link #basePackages()}to the
+ * {@link ComponentScan} annotation, defined the path for SDK scanning
+ * graffiti representation. If the path contains a regular class
+ * {@link Sdk}without annotations, it will not be used to create
+ * proxy beans. However,if it holds annotations created by Spring
+ * container beans, such as {@link Component}, it will still be parsed
+ * by Spring and added to the Spring container for use.
+ *
+ * <p>According to the framework dynamic registration configuration
+ * {@link SdkBeanDefinitionRegistrar}, non interfaces and abstract
+ * classes do not participate in the dynamic construction of SDK beans.
+ * The annotation {@link Sdk} marks the {@link Component} annotation,
+ * which is not created by the Spring container, but by the dynamic
+ * configuration mentioned above. Therefore, the Spring bean prompt
+ * is displayed in the editing software, only in the UI, not directly
+ * created by the Spring annotation.
+ *
+ * <p><strong>Warn UI Support</strong>
+ * <p>Please be cautious when merging annotation {@code org.springframework
+ * .boot.autoconfigure.SpringBootApplication}, as it is used together with
+ * {@link ComponentScan},it will cause the current scanning path of the main
+ * startup annotation to become invalid.
+ *
+ * <p>Suggested for separate configuration classes, such as the following
+ * example:
  * <p><u><strong>For example code:</strong></u>
  * <pre>
  *     &#064;Configuration(proxyBeanMethods = false)
  *     &#064;Role(BeanDefinition.ROLE_INFRASTRUCTURE)
- *     public class AutoConfiguration {
- *
- *     &#064;Configuration(proxyBeanMethods = false)
- *     &#064;Role(BeanDefinition.ROLE_INFRASTRUCTURE)
  *     &#064;EnableSdkProxyRegister(Constance.SDK_SCAN_PATH)
- *     public static class Configuration {
- *     }
+ *     public class ExampleSdkRegisterConfiguration {
  * }
  * </pre>
- * <p>Please refer to its attribute explanation for specific explanations
- * and {@link #value()} and {@link #basePackages()}still maintain bidirectional
- * binding, which is specifically implemented in {@link ComponentScan}.
- * <p> <strong> Warn UI Support </strong>
- * <p>Please be cautious when merging {@code org.springframework.boot.autoconfigure
- * .SpringBootApplication}, as it is used together with {@link ComponentScan}.
- * <p>The former is to scan the beans in the specified path of this project in
- * seconds, while this annotation is to provide injected UI support for automatically
- * registering the SDK interface of the implementation class.
- * <p>The former has a higher priority and greater effect.
- * <p>Therefore, it is recommended to use this annotation and create a separate
- * configuration class.
- * <p><strong>If is forcibly merged, UI support will be invalidated.</strong>
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @see org.springframework.context.annotation.ImportBeanDefinitionRegistrar
- * @see top.osjf.sdk.spring.beans.AbstractImportBeanDefinitionRegistrar
- * @see top.osjf.sdk.spring.beans.AnnotationTypeScanningCandidateImportBeanDefinitionRegistrar
- * @see SdkProxyBeanRegister
- * @see ComponentScan
  * @since 1.0.0
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import({SdkProxyBeanRegister.class,
-        SdkProxyBeanRegister.InternalConfiguration.class})
+@Import({SdkBeanDefinitionRegistrar.class, SpringCallerConfiguration.class})
 @ComponentScan
 public @interface EnableSdkProxyRegister {
 
