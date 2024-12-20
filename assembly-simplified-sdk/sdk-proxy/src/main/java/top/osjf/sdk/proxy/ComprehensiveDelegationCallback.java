@@ -186,6 +186,7 @@ public class ComprehensiveDelegationCallback implements
      */
     @Override
     public Object callback(Method method, Object[] args, SpecificProxyOtherVariable variable) throws Throwable {
+        if ("toString".equals(method.getName())) return toString();
         Pair<Request<?>, List<Callback>> pair = SdkSupport.createRequest(method, args);
         Request<?> request = pair.getFirst();
         if (CollectionUtils.isNotEmpty(postProcessors)) {
@@ -207,5 +208,14 @@ public class ComprehensiveDelegationCallback implements
             }
         }
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "ComprehensiveDelegationCallback{" +
+                "host='" + host + '\'' +
+                ", postProcessors=" + postProcessors +
+                ", requestCaller=" + requestCaller +
+                '}';
     }
 }
