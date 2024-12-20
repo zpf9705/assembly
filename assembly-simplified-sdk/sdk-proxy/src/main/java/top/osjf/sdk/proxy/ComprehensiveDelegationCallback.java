@@ -33,6 +33,20 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 /**
+ * The {@code ComprehensiveDelegationCallback} class is a callback class that
+ * implements multiple proxy callback interfaces, mainly used to provide flexible
+ * extension points during SDK request execution.
+ *
+ * <p>Through this type, custom logic can be executed before and after request
+ * processing , such as {@code HandlerPostProcessor} pre-processing of request
+ * parameters and post-processing of response results. In addition, this class
+ * also supports setting the host name of the request, the caller {@code RequestCaller}
+ * of the request, and the list of post processors.
+ *
+ * <p>This class implements {@code JDKDelegationCallback}, {@code CglibDelegationCallback},
+ * {@code SpringCglibDelegate} callback interface, can be integrated with multiple
+ * proxy frameworks to achieve unified management of proxy logic.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
