@@ -16,45 +16,41 @@
 
 package top.osjf.sdk.spring.beans;
 
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.lang.NonNull;
+import org.springframework.core.annotation.Order;
 
 /**
  * Interface to be implemented by beans that need to react once all their properties
- * have been set by a {@link org.springframework.beans.factory.BeanFactory}: e.g. to perform custom initialization,
- * or merely to check that all mandatory properties have been set.
+ * have been set by a {@link org.springframework.beans.factory.BeanFactory}: e.g. to
+ * perform custom initialization,or merely to check that all mandatory properties have
+ * been set.
  *
  * <p>An alternative to implementing {@code InitializingBean} is specifying a custom
- * init method, for example in an XML bean definition. For a list of all bean
- * lifecycle methods, see the {@link org.springframework.beans.factory.BeanFactory BeanFactory javadocs}.
+ * init method, for example in an XML bean definition. For a list of all bean lifecycle
+ * methods, see the {@link BeanFactory BeanFactory javadocs}.
  *
- * <p><span>The above fixation is copied from {@link org.springframework.beans.factory.InitializingBean}.
- * </span>
+ * <p><span>The above fixation is copied from {@link InitializingBean}.</span>
  *
  * <p>Dynamically retrieve this interface from the container, match it with the specified
  * type of {@link #getType()}, and perform the corresponding initialization operation at
  * time {@link InitializingBean#afterPropertiesSet()}.
  *
- * <p>When specifying multiple {@link DeterminantInitializingBean}, if you want to specify the
- * execution order, you can use the concept of {@link org.springframework.core.annotation.Order}
- * to specify it. Support for it has been added because the implementation class of this
- * interface requires adding a Spring container to take effect.
+ * <p>When specifying multiple {@link DeterminantInitializingBean}, if you want to specify
+ * the execution order, you can use the concept of {@link Order} to specify it. Support
+ * for it has been added because the implementation class of this interface requires adding
+ * a Spring container to take effect.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @see org.springframework.beans.factory.InitializingBean
  * @since 1.0.0
  */
-public interface DeterminantInitializingBean {
-
-    /**
-     * @return Return the type of proxy service required.
-     */
-    @NonNull
-    Class<?> getType();
+public interface DeterminantInitializingBean extends DeterminantType {
 
     /**
      * Copy from {@link org.springframework.beans.factory.InitializingBean}.
+     * <p>
      * Invoked by the containing {@code BeanFactory} after it has set all bean properties
      * and satisfied {@link BeanFactoryAware}, {@code ApplicationContextAware} etc.
      * <p>This method allows the bean instance to perform validation of its overall

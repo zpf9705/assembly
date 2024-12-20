@@ -18,7 +18,7 @@ package top.osjf.sdk.spring.beans;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.lang.NonNull;
+import org.springframework.core.annotation.Order;
 
 /**
  * Interface to be implemented by beans that want to release resources on destruction.
@@ -31,32 +31,26 @@ import org.springframework.lang.NonNull;
  * custom destroy method, for example in an XML bean definition. For a list of all
  * bean lifecycle methods, see the {@link BeanFactory BeanFactory javadocs}.
  *
- * <p><span>The above fixation is copied from {@link org.springframework.beans.factory.DisposableBean}.
- * </span>
+ * <p><span>The above fixation is copied from {@link DisposableBean}.</span>
  *
  * <p>Dynamically retrieve this interface from the container, match it with the
  * specified type of {@link #getType()}, and perform the corresponding destruction
  * operation at time {@link DisposableBean#destroy()}.
  *
  * <p>When specifying multiple {@link DeterminantDisposableBean}, if you want to specify the
- * execution order, you can use the concept of {@link org.springframework.core.annotation.Order}
- * to specify it. Support for it has been added because the implementation class of this
- * interface requires adding a Spring container to take effect.
+ * execution order, you can use the concept of {@link Order} to specify it. Support for
+ * it has been added because the implementation class of this interface requires adding
+ * a Spring container to take effect.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @see org.springframework.beans.factory.DisposableBean
  * @since 1.0.0
  */
-public interface DeterminantDisposableBean {
-
-    /**
-     * @return Return the type of proxy service required.
-     */
-    @NonNull
-    Class<?> getType();
+public interface DeterminantDisposableBean extends DeterminantType {
 
     /**
      * Copy from {@link org.springframework.beans.factory.DisposableBean}.
+     * <p>
      * Invoked by the containing {@code BeanFactory} on destruction of a bean.
      *
      * @throws Exception in case of shutdown errors. Exceptions will get logged
