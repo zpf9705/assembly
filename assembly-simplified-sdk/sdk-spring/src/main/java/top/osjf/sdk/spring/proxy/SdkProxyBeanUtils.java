@@ -51,9 +51,9 @@ public abstract class SdkProxyBeanUtils {
      * {@link BeanDefinitionHolder}. If it is a special scope outside of this range,
      * a proxy bean will be created first to meet the special scope.
      *
-     * @param definition The builder of {@link BeanDefinitionBuilder}.
-     * @param beanName   The name of the proxy bean.
-     * @param alisa      The alias set of proxy beans.
+     * @param definition the builder of {@link BeanDefinitionBuilder}.
+     * @param beanName   the name of the proxy bean.
+     * @param alisa      the alias set of proxy beans.
      * @param registry   the bean definition registry.
      * @return The information registration body of {@link BeanDefinition}.
      * @see ScopedProxyUtils#createScopedProxy(BeanDefinitionHolder, BeanDefinitionRegistry, boolean)
@@ -73,8 +73,8 @@ public abstract class SdkProxyBeanUtils {
      * When no bean name is provided for the SDK proxy bean,
      * this method is used as an alternative.
      *
-     * @param beanName  The defined bean name.
-     * @param className The fully qualified name of the target class.
+     * @param beanName  the defined bean name.
+     * @param className the fully qualified name of the target class.
      * @return The name of the proxy bean.
      */
     public static String getTargetBeanName(String beanName, String className) {
