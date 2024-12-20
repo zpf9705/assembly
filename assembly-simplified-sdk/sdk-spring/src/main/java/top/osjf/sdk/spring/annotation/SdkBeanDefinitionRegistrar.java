@@ -157,8 +157,7 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
             for (BeanDefinition beanDefinition : provider.findCandidateComponents(packageName)) {
                 if (beanDefinition instanceof AnnotatedBeanDefinition) {
                     AnnotatedBeanDefinition annotatedBeanDefinition = (AnnotatedBeanDefinition) beanDefinition;
-                    AnnotationMetadata annotationMetadata = annotatedBeanDefinition.getMetadata();
-                    if (annotationMetadata.isInterface() || annotationMetadata.isAbstract()) {
+                    if (isSupportAnnotatedBeanDefinition(annotatedBeanDefinition)) {
                         BeanDefinitionHolder holder = createBeanDefinitionHolder(annotatedBeanDefinition, registry);
                         if (holder != null)
                             BeanDefinitionReaderUtils.registerBeanDefinition(holder, registry);
@@ -184,6 +183,20 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
     private String getPackageName(String className) {
         int theLastIndex = className.lastIndexOf(".");
         return className.substring(0, theLastIndex);
+    }
+
+    /**
+     * Determine whether the given {@code AnnotatedBeanDefinition}
+     * metadata is of a specific underlying class.
+     *
+     * @param annotatedBeanDefinition a {@code AnnotatedBeanDefinition}.
+     * @return If the class corresponding to the annotated Bean definition
+     * is an interface or abstract class, return {@literal true}; Otherwise,
+     * return {@literal false}.
+     */
+    private boolean isSupportAnnotatedBeanDefinition(AnnotatedBeanDefinition annotatedBeanDefinition) {
+        AnnotationMetadata annotationMetadata = annotatedBeanDefinition.getMetadata();
+        return annotationMetadata.isInterface() || annotationMetadata.isAbstract();
     }
 
     /**
