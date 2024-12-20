@@ -140,6 +140,17 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
         this.registerBeanDefinitions(importingClassMetadata, registry);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Analyze the marked path of a specific trigger annotation
+     * {@literal EnableSdkProxyRegister}, and register proxy beans
+     * of a specific base type marked with a modified path {@link Sdk}
+     * annotation.
+     *
+     * @param importingClassMetadata {@inheritDoc}
+     * @param registry               {@inheritDoc}
+     */
     @Override
     public void registerBeanDefinitions(@NonNull AnnotationMetadata importingClassMetadata,
                                         @NonNull BeanDefinitionRegistry registry) {
