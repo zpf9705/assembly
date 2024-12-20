@@ -30,15 +30,13 @@
         <dependency>
             <groupId>cglib</groupId>
             <artifactId>cglib</artifactId>
-            <version>3.3.0</version>
-            <optional>true</optional>
+            <version>${cglib}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
             <version>${spring.core}</version>
-            <optional>true</optional>
         </dependency>
 
     </dependencies>
