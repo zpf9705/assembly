@@ -28,7 +28,7 @@ import top.osjf.sdk.core.support.SdkSupport;
  *
  * <p>Of course, regarding the SDK proxy result analysis, an implementation
  * of the interface definition concept has been added. You can focus on
- * method {@link SdkSupport#getResponse}.
+ * method {@link SdkSupport#resolveResponse}.
  *
  * <div><h3>Examples of usage methods are as follows</h3></div>
  * <pre>
