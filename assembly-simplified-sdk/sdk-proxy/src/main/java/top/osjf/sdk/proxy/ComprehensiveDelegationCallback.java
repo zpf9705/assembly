@@ -83,8 +83,6 @@ public class ComprehensiveDelegationCallback implements RequestAttributes,
 
     /**
      * {@inheritDoc}
-     *
-     * @return {@inheritDoc}
      */
     @Override
     public void setHost(@Nullable String host) {
@@ -133,8 +131,6 @@ public class ComprehensiveDelegationCallback implements RequestAttributes,
 
     /**
      * {@inheritDoc}
-     *
-     * @return {@inheritDoc}
      */
     @Override
     public void setRequestCaller(@Nullable RequestCaller requestCaller) {
