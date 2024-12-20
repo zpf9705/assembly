@@ -14,25 +14,30 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.spring.proxy;
 
-import java.lang.reflect.Method;
+package top.osjf.sdk.spring.beans;
 
 /**
- * Proxy callback processing interface.
+ * Method to obtain the type of proxy service required.
+ *
+ * <p>In practical applications, this interface can be used
+ * to dynamically identify and process different types of
+ * proxy services at runtime,such as automatically wiring
+ * corresponding beans based on the type of proxy service
+ * in a dependency injection framework,or selecting the
+ * correct processing logic based on type in a proxy
+ * service invocation chain.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 1.0.2
  */
-public interface ProxyHandler {
+public interface DeterminantType {
 
     /**
-     * Proxy callback processing method.
+     * Method to obtain the type of proxy service required.
      *
-     * @param obj    Generally, it is a proxy object.
-     * @param method The method object of the proxy.
-     * @param args   Method parameters.
-     * @return Execute the processing result.
+     * @return Returns a Class object representing the type
+     * of the proxy service.
      */
-    Object handle(Object obj, Method method, Object[] args);
+    Class<?> getType();
 }
