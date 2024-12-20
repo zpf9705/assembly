@@ -247,8 +247,7 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
         builder.addConstructorArgValue(className);
         builder.addPropertyReference(SpringCallerConfiguration.SPRING_REQUEST_CALLER_FIELD_NAME,
                 SpringCallerConfiguration.INTERNAL_SPRING_REQUEST_CALLER);
-        AnnotationAttributes beanPropertyAttributes = annotationAttributes
-                .getAnnotation("sdkProxyBeanProperty");
+        AnnotationAttributes beanPropertyAttributes = annotationAttributes.getAnnotation("property");
         String[] names = beanPropertyAttributes.getStringArray("name");
         String beanName = SdkProxyBeanUtils.getTargetBeanName(BeanPropertyUtils.getBeanName(names), className);
         String[] alisaNames = BeanPropertyUtils.getAlisaNames(names);
