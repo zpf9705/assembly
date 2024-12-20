@@ -18,6 +18,7 @@
 package top.osjf.sdk.proxy;
 
 import top.osjf.sdk.core.Request;
+import top.osjf.sdk.core.RequestAttributes;
 import top.osjf.sdk.core.Response;
 import top.osjf.sdk.core.caller.Callback;
 import top.osjf.sdk.core.caller.RequestCaller;
@@ -50,7 +51,7 @@ import java.util.List;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-public class ComprehensiveDelegationCallback implements
+public class ComprehensiveDelegationCallback implements RequestAttributes,
         JDKDelegationCallback, CglibDelegationCallback, SpringCglibDelegationCallback {
 
     /**
@@ -81,28 +82,22 @@ public class ComprehensiveDelegationCallback implements
     }
 
     /**
-     * Sets the host name.
-     * <p>
-     * This method is used to set the host name for the
-     * current object. If the passed host parameter is null,
-     * it means no host name is set.
+     * {@inheritDoc}
      *
-     * @param host The host name, which can be null.
+     * @return {@inheritDoc}
      */
+    @Override
     public void setHost(@Nullable String host) {
         this.host = host;
     }
 
     /**
-     * Gets the host name.
-     * <p>
-     * This method is used to retrieve the host name set
-     * for the current object. If no host name has been
-     * set before, it will return null.
+     * {@inheritDoc}
      *
-     * @return The host name, which may be null.
+     * @return {@inheritDoc}
      */
     @Nullable
+    @Override
     public String getHost() {
         return host;
     }
@@ -137,28 +132,22 @@ public class ComprehensiveDelegationCallback implements
     }
 
     /**
-     * Sets the request caller {@code RequestCaller}.
+     * {@inheritDoc}
      *
-     * <p>This method is used to set a request caller {@code RequestCaller}
-     * for the current object,if the passed {@code RequestCaller} parameter
-     * is null, it means no request caller is set.
-     *
-     * @param requestCaller The request caller, which can be null.
+     * @return {@inheritDoc}
      */
+    @Override
     public void setRequestCaller(@Nullable RequestCaller requestCaller) {
         this.requestCaller = requestCaller;
     }
 
     /**
-     * Gets the request caller {@code RequestCaller}.
+     * {@inheritDoc}
      *
-     * <p>This method is used to retrieve the request caller
-     * {@code RequestCaller} set for the current object. If no
-     * request caller has been set before, it will return null.
-     *
-     * @return The request caller, which may be null.
+     * @return {@inheritDoc}
      */
     @Nullable
+    @Override
     public RequestCaller getRequestCaller() {
         return requestCaller;
     }
