@@ -56,7 +56,7 @@ public interface DelegationCallback extends IsInstanceWrapper {
      * @return the result object of the proxy method callback processing.
      * @throws Throwable it can be any error that can be thrown.
      */
-    Object callback(Method method, Object[] args, SpecificProxyOtherVariable variable) throws Throwable;
+    Object callback(Method method, Object[] args, PeculiarProxyVariable variable) throws Throwable;
 
     /**
      * An internal interface that extends the {@code IsInstanceWrapper}
@@ -68,7 +68,7 @@ public interface DelegationCallback extends IsInstanceWrapper {
      * <p>The specific implementation of a subclass can contain any additional
      * information related to the proxy object or proxy logic.
      */
-    interface SpecificProxyOtherVariable extends IsInstanceWrapper {
+    interface PeculiarProxyVariable extends IsInstanceWrapper {
         /**
          * Return the string information of the remaining proxy information.
          *
