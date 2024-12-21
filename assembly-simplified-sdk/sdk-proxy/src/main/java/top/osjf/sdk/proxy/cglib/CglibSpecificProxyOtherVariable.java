@@ -50,4 +50,12 @@ public class CglibSpecificProxyOtherVariable implements DelegationCallback.Speci
     public MethodProxy getMethodProxy() {
         return methodProxy;
     }
+
+    @Override
+    public String toString() {
+        return "CglibSpecificProxyOtherVariable{" +
+                "obj=" + obj +
+                ", methodProxy=" + methodProxy +
+                '}';
+    }
 }

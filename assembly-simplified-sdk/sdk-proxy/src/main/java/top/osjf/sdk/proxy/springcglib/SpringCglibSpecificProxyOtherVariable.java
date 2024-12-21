@@ -50,4 +50,12 @@ public class SpringCglibSpecificProxyOtherVariable implements DelegationCallback
     public MethodProxy getMethodProxy() {
         return methodProxy;
     }
+
+    @Override
+    public String toString() {
+        return "SpringCglibSpecificProxyOtherVariable{" +
+                "obj=" + obj +
+                ", methodProxy=" + methodProxy +
+                '}';
+    }
 }

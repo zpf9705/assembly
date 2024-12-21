@@ -40,4 +40,11 @@ public class JDKSpecificProxyOtherVariable implements DelegationCallback.Specifi
     public Object getProxy() {
         return proxy;
     }
+
+    @Override
+    public String toString() {
+        return "JDKSpecificProxyOtherVariable{" +
+                "proxy=" + proxy +
+                '}';
+    }
 }
