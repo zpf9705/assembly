@@ -22,7 +22,6 @@ import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import top.osjf.sdk.core.util.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -37,12 +36,9 @@ import java.util.stream.Stream;
  */
 public abstract class SdkProxyBeanUtils {
 
-    /***A collection of regular bean scopes.*/
+    /** A collection of regular bean scopes.*/
     public static final List<String> ROUTINE_SCOPES = Stream.of(BeanDefinition.SCOPE_SINGLETON,
             BeanDefinition.SCOPE_PROTOTYPE, AbstractBeanDefinition.SCOPE_DEFAULT).collect(Collectors.toList());
-
-    /*** The name suffix of the SDK proxy bean.*/
-    public static final String BEAN_NAME_SUFFIX = "@sdk.proxy.bean";
 
     /**
      * When dynamically registering a bean, it is classified and registered based on
@@ -67,23 +63,5 @@ public abstract class SdkProxyBeanUtils {
             return holder;
         }
         return ScopedProxyUtils.createScopedProxy(holder, registry, true);
-    }
-
-    /**
-     * When no bean name is provided for the SDK proxy bean,
-     * this method is used as an alternative.
-     *
-     * @param beanName  the defined bean name.
-     * @param className the fully qualified name of the target class.
-     * @return The name of the proxy bean.
-     */
-    public static String getTargetBeanName(String beanName, String className) {
-        if (StringUtils.isNotBlank(beanName)) {
-            return beanName + BEAN_NAME_SUFFIX;
-        }
-        if (StringUtils.isBlank(className))
-            throw new IllegalArgumentException("When 'beanName' is not provided, please ensure that " +
-                    "'className' is built as the default name and cannot be empty.");
-        return className + BEAN_NAME_SUFFIX;
     }
 }
