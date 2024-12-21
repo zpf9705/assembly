@@ -172,7 +172,7 @@ public class ComprehensiveDelegationCallback implements RequestAttributes,
     @Override
     public Object callback(Method method, Object[] args, PeculiarProxyVariable variable) throws Throwable {
         if ("toString".equals(method.getName())) {
-            return toString(variable);
+            return toStringWithPeculiar(variable);
         }
         Pair<Request<?>, List<Callback>> pair = SdkSupport.createRequest(method, args);
         Request<?> request = pair.getFirst();
@@ -206,7 +206,7 @@ public class ComprehensiveDelegationCallback implements RequestAttributes,
      * @return the string value of the unique proxy change for the current proxy
      * callback model.
      */
-    protected String toString(PeculiarProxyVariable variable) {
+    protected String toStringWithPeculiar(PeculiarProxyVariable variable) {
         return variable.toString();
     }
 }
