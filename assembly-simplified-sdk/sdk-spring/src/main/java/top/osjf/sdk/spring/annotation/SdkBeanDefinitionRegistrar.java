@@ -133,13 +133,6 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
         return Ordered.HIGHEST_PRECEDENCE + 1;
     }
 
-    @Override
-    public void registerBeanDefinitions(@NonNull AnnotationMetadata importingClassMetadata,
-                                        @NonNull BeanDefinitionRegistry registry,
-                                        @NonNull BeanNameGenerator beanNameGenerator) {
-        this.registerBeanDefinitions(importingClassMetadata, registry);
-    }
-
     /**
      * {@inheritDoc}
      * <p>
@@ -153,7 +146,8 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
      */
     @Override
     public void registerBeanDefinitions(@NonNull AnnotationMetadata importingClassMetadata,
-                                        @NonNull BeanDefinitionRegistry registry) {
+                                        @NonNull BeanDefinitionRegistry registry,
+                                        @NonNull BeanNameGenerator beanNameGenerator) {
         Map<String, Object> annotationAttributes = importingClassMetadata
                 .getAnnotationAttributes(EnableSdkProxyRegister.class.getCanonicalName());
         AnnotationAttributes annotationAttributesObj = AnnotationAttributes.fromMap(annotationAttributes);
@@ -248,11 +242,12 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
         builder.addPropertyReference(SpringCallerConfiguration.SPRING_REQUEST_CALLER_FIELD_NAME,
                 SpringCallerConfiguration.INTERNAL_SPRING_REQUEST_CALLER);
         AnnotationAttributes beanPropertyAttributes = annotationAttributes.getAnnotation("property");
-        String[] names = beanPropertyAttributes.getStringArray("name");
-        String beanName = SdkProxyBeanUtils.getTargetBeanName(BeanPropertyUtils.getBeanName(names), className);
-        String[] alisaNames = BeanPropertyUtils.getAlisaNames(names);
         BeanDefinition beanDefinition =
                 BeanPropertyUtils.fullBeanDefinition(builder, markedAnnotationMetadata, beanPropertyAttributes);
+        String[] names = beanPropertyAttributes.getStringArray("name");
+        String beanName = BeanPropertyUtils.getBeanName(names);
+        if (StringUtils.isBlank(beanName)) beanName = className;
+        String[] alisaNames = BeanPropertyUtils.getAlisaNames(names);
         return SdkProxyBeanUtils.createBeanDefinitionHolderDistinguishScope(beanDefinition, beanName, alisaNames,
                 registry);
     }

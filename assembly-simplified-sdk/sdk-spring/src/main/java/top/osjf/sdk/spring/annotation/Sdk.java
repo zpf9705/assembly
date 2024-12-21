@@ -102,6 +102,10 @@ public @interface Sdk {
      * {@link org.springframework.context.annotation.Bean} and
      * {@link BeanDefinition}.
      *
+     * <p>If you do not provide the {@link BeanProperty#name()} value
+     * for this annotation method, the naming of the proxy bean will
+     * be based on the fully qualified class name of the proxy type.
+     *
      * @return The bean properties of the SDK proxy class.
      */
     BeanProperty property() default @BeanProperty;
