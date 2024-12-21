@@ -76,7 +76,7 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
         ResourceLoaderAware, Ordered {
 
     /**
-     * Prefix for system property placeholders: "${"
+     * Prefix for system property placeholders: "${".
      */
     private static final String PLACEHOLDER_PREFIX = "${";
 
