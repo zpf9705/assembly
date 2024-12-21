@@ -40,11 +40,4 @@ public class JDKPeculiarProxyVariable implements DelegationCallback.PeculiarProx
     public Object getProxy() {
         return proxy;
     }
-
-    @Override
-    public String toString() {
-        return "JDKSpecificProxyOtherVariable{" +
-                "proxy=" + proxy +
-                '}';
-    }
 }

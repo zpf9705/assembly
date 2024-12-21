@@ -43,9 +43,9 @@ public interface DelegationCallback extends IsInstanceWrapper {
     /**
      * This method proxy execution passes the proxy method object
      * {@code Method}, proxy method parameters, and other proxy
-     * information {@code SpecificProxyOtherVariable} (determined
-     * by the underlying framework), passes them to the processing
-     * class for processing, and returns the result.
+     * information {@code PeculiarProxyVariable} (determined by the
+     * underlying framework), passes them to the processing class
+     * for processing, and returns the result.
      *
      * <p>When the proxy class is called, this method will be called.
      *
@@ -69,11 +69,5 @@ public interface DelegationCallback extends IsInstanceWrapper {
      * information related to the proxy object or proxy logic.
      */
     interface PeculiarProxyVariable extends IsInstanceWrapper {
-        /**
-         * Return the string information of the remaining proxy information.
-         *
-         * @return string information of the remaining proxy information.
-         */
-        String toString();
     }
 }
