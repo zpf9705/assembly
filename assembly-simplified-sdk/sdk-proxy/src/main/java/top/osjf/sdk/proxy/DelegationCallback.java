@@ -69,5 +69,11 @@ public interface DelegationCallback extends IsInstanceWrapper {
      * information related to the proxy object or proxy logic.
      */
     interface SpecificProxyOtherVariable extends IsInstanceWrapper {
+        /**
+         * Return the string information of the remaining proxy information.
+         *
+         * @return string information of the remaining proxy information.
+         */
+        String toString();
     }
 }
