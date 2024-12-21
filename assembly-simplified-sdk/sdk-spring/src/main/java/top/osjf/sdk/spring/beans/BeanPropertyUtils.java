@@ -19,10 +19,7 @@ package top.osjf.sdk.spring.beans;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.context.annotation.Description;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.context.annotation.Role;
-import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.*;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.type.AnnotationMetadata;
@@ -44,7 +41,7 @@ import java.util.Map;
 public abstract class BeanPropertyUtils {
 
     /**
-     * Following the processing specification of {@link org.springframework.context.annotation.Bean},
+     * Following the processing specification of {@link Bean},
      * the first name should be the main name of the bean.
      *
      * @param names Define a collection of names.
@@ -58,7 +55,7 @@ public abstract class BeanPropertyUtils {
     }
 
     /**
-     * According to the definition specification of {@link org.springframework.context.annotation.Bean},
+     * According to the definition specification of {@link Bean},
      * the non empty element array after removing the first element is
      * called an alias element array.
      *
