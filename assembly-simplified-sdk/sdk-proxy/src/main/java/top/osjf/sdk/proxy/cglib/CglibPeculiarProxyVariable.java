@@ -15,20 +15,21 @@
  */
 
 
-package top.osjf.sdk.proxy.springcglib;
+package top.osjf.sdk.proxy.cglib;
 
-import org.springframework.cglib.proxy.MethodProxy;
+import net.sf.cglib.proxy.MethodProxy;
 import top.osjf.sdk.proxy.DelegationCallback;
 
 /**
- * The {@code SpringCglibSpecificProxyOtherVariable} class used to provide
- * additional information related to a specific proxy instance and
- * {@code MethodProxy} instance in the context of Spring Cglib dynamic proxy.
+ * The {@code CglibPeculiarProxyVariable} class used to provide
+ * additional information related to a specific proxy instance
+ * and {@code MethodProxy} instance in the context of Cglib dynamic
+ * proxy.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-public class SpringCglibSpecificProxyOtherVariable implements DelegationCallback.SpecificProxyOtherVariable {
+public class CglibPeculiarProxyVariable implements DelegationCallback.PeculiarProxyVariable {
     /**
      * "this", the enhanced object.
      */
@@ -38,7 +39,7 @@ public class SpringCglibSpecificProxyOtherVariable implements DelegationCallback
      */
     private final MethodProxy methodProxy;
 
-    public SpringCglibSpecificProxyOtherVariable(Object obj, MethodProxy methodProxy) {
+    public CglibPeculiarProxyVariable(Object obj, MethodProxy methodProxy) {
         this.obj = obj;
         this.methodProxy = methodProxy;
     }
@@ -53,7 +54,7 @@ public class SpringCglibSpecificProxyOtherVariable implements DelegationCallback
 
     @Override
     public String toString() {
-        return "SpringCglibSpecificProxyOtherVariable{" +
+        return "CglibSpecificProxyOtherVariable{" +
                 "obj=" + obj +
                 ", methodProxy=" + methodProxy +
                 '}';

@@ -44,6 +44,6 @@ public interface CglibDelegationCallback extends MethodInterceptor, DelegationCa
      */
     @Override
     default Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-        return callback(method, args, new CglibSpecificProxyOtherVariable(obj, proxy));
+        return callback(method, args, new CglibPeculiarProxyVariable(obj, proxy));
     }
 }

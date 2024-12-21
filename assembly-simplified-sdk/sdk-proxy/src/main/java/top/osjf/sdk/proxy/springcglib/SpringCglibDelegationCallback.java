@@ -42,6 +42,6 @@ public interface SpringCglibDelegationCallback extends MethodInterceptor, Delega
      */
     @Override
     default Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
-        return callback(method, objects, new SpringCglibSpecificProxyOtherVariable(o, methodProxy));
+        return callback(method, objects, new SpringCglibPeculiarProxyVariable(o, methodProxy));
     }
 }

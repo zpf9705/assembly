@@ -20,20 +20,20 @@ package top.osjf.sdk.proxy.jdk;
 import top.osjf.sdk.proxy.DelegationCallback;
 
 /**
- * The {@code JDKSpecificProxyOtherVariable} class used to provide
- * additional information related to a specific proxy instance in
- * the context of JDK dynamic proxy.
+ * The {@code JDKPeculiarProxyVariable} class used to provide
+ * additional information related to a specific proxy instance
+ * in the context of JDK dynamic proxy.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-public class JDKSpecificProxyOtherVariable implements DelegationCallback.SpecificProxyOtherVariable {
+public class JDKPeculiarProxyVariable implements DelegationCallback.PeculiarProxyVariable {
     /**
      * the proxy instance that the method was invoked on.
      */
     private final Object proxy;
 
-    public JDKSpecificProxyOtherVariable(Object proxy) {
+    public JDKPeculiarProxyVariable(Object proxy) {
         this.proxy = proxy;
     }
 

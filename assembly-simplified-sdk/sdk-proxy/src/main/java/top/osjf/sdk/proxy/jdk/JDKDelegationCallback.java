@@ -41,6 +41,6 @@ public interface JDKDelegationCallback extends InvocationHandler, DelegationCall
      */
     @Override
     default Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        return callback(method, args, new JDKSpecificProxyOtherVariable(proxy));
+        return callback(method, args, new JDKPeculiarProxyVariable(proxy));
     }
 }
