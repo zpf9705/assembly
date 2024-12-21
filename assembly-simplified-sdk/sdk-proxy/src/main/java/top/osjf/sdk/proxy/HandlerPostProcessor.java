@@ -71,7 +71,7 @@ public interface HandlerPostProcessor {
     @NonNull
     default Request<?> postProcessRequestBeforeHandle(@NotNull Request<?> request, @NotNull Method proxyMethod,
                                                       @Nullable Object[] args,
-                                                      @NotNull DelegationCallback.SpecificProxyOtherVariable variable) {
+                                                      @NotNull DelegationCallback.PeculiarProxyVariable variable) {
         return request;
     }
 
@@ -101,7 +101,7 @@ public interface HandlerPostProcessor {
     default Object postProcessResultAfterHandle(@Nullable Object result, @NotNull Request<?> request,
                                                 @NotNull Method proxyMethod,
                                                 @Nullable Object[] args,
-                                                @NotNull DelegationCallback.SpecificProxyOtherVariable variable) {
+                                                @NotNull DelegationCallback.PeculiarProxyVariable variable) {
         return result;
     }
 }
