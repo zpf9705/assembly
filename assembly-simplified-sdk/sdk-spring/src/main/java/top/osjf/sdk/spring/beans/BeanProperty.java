@@ -66,6 +66,8 @@ public @interface BeanProperty {
      * <p>Intended to be used when no other attributes are needed, for example:
      * {@code @Bean("customBeanName")}.
      *
+     * @return A string array with the bean name as the first character and the rest
+     * as aliases.
      * @see #name
      */
     @AliasFor(annotation = Bean.class)
@@ -78,6 +80,8 @@ public @interface BeanProperty {
      * <p>The bean name and aliases may also be configured via the {@link #value}
      * attribute if no other attributes are declared.
      *
+     * @return A string array with the bean name as the first character and the rest
+     * as aliases.
      * @see #value
      */
     @AliasFor(annotation = Bean.class)
@@ -91,6 +95,7 @@ public @interface BeanProperty {
      * externally driven autowiring only, not affecting any autowiring demands that the
      * bean class itself expresses through annotations.
      *
+     * @return {@link Autowire}.
      * @see Autowire#BY_NAME
      * @see Autowire#BY_TYPE
      * @deprecated as of 5.1, since {@code @Bean} factory method argument resolution and
@@ -104,6 +109,9 @@ public @interface BeanProperty {
      * Is this bean a candidate for getting autowired into some other bean?
      * <p>Default is {@code true}; set this to {@code false} for internal delegates
      * that are not meant to get in the way of beans of the same type in other places.
+     *
+     * @return Is this bean a Boolean marker that automatically connects to other
+     * bean candidates.
      */
     @AliasFor(annotation = Bean.class)
     boolean autowireCandidate() default true;
@@ -113,7 +121,6 @@ public @interface BeanProperty {
      * Not commonly used, given that the method may be called programmatically directly
      * within the body of a Bean-annotated method.
      * <p>The default value is {@code ""}, indicating no init method to be called.
-     * <p>
      * <h3>Remind</h3>
      * <p>If you want to use this annotation as a replacement for {@link Bean},
      * then this property will still be effective in its usage with {@link Bean},
@@ -151,7 +158,6 @@ public @interface BeanProperty {
      * <p>Note: Only invoked on beans whose lifecycle is under the full control of the
      * factory, which is always the case for singletons but not guaranteed for any
      * other scope.
-     * <p>
      * <h3>Remind</h3>
      * <p>If you want to use this annotation as a replacement for {@link Bean},
      * then this property will still be effective in its usage with {@link Bean},
