@@ -44,7 +44,7 @@ public abstract class BeanPropertyUtils {
      * Following the processing specification of {@link Bean},
      * the first name should be the main name of the bean.
      *
-     * @param names Define a collection of names.
+     * @param names define a collection of names.
      * @return The primary name of the bean.
      */
     public static String getBeanName(String[] names) {
