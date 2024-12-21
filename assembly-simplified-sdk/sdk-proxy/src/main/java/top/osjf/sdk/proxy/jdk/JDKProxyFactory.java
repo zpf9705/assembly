@@ -22,7 +22,7 @@ import top.osjf.sdk.proxy.AbstractProxyFactory;
 import java.lang.reflect.Proxy;
 
 /**
- * A JDK proxy factory class that extends {@code AbstractProxyFactory}
+ * The {@code JDKProxyFactory} class that extends {@code AbstractProxyFactory}
  * and is specifically used to create JDK dynamic proxy objects.
  *
  * <p>This class implements the newProxyInternal method to create proxy
