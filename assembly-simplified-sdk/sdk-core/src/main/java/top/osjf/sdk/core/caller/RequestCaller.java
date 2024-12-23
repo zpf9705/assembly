@@ -74,10 +74,10 @@ public class RequestCaller {
      * Resolves the {@code Request} and executes it, configuring the call options based
      * on the {@code CallOptions} annotation on the method or class.
      *
-     * @param request   input {@code Request} obj.
-     * @param host      the real server hostname.
-     * @param method    the method object to be executed.
-     * @param callbacks the provider {@code Callback} instances.
+     * @param request           input {@code Request} obj.
+     * @param host              the real server hostname.
+     * @param method            the method object to be executed.
+     * @param providerCallbacks the provider {@code Callback} instances.
      * @return The {@code Response} object obtained from the response
      * returns empty when {@link CallOptions#callbackClass()} exists.
      * @throws NullPointerException if input request or {@code CallOptions} is {@literal null}.
@@ -85,22 +85,22 @@ public class RequestCaller {
     @Nullable
     public Response resolveRequestExecuteWithOptions(@NotNull Request<?> request, String host,
                                                      @NotNull Method method,
-                                                     @Nullable List<Callback> callbacks) {
+                                                     @Nullable List<Callback> providerCallbacks) {
         CallOptions callOptions = resolveMethodCallOptions(method);
         if (callOptions == null) {
-            return noCallOptionsToExecute(request, host, callbacks);
+            return noCallOptionsToExecute(request, host, providerCallbacks);
         }
-        return resolveRequestExecuteWithOptions(request, host, callOptions, callbacks);
+        return resolveRequestExecuteWithOptions(request, host, callOptions, providerCallbacks);
     }
 
     /**
      * Please refer to {@code resolveRequestExecuteWithOptions(Supplier, CallOptions)}
      * for the execution logic.
      *
-     * @param request     input {@code Request} obj.
-     * @param host        the real server hostname.
-     * @param callOptions {@code CallOptions} annotation.
-     * @param callbacks   the provider {@code Callback} instances.
+     * @param request           input {@code Request} obj.
+     * @param host              the real server hostname.
+     * @param callOptions       {@code CallOptions} annotation.
+     * @param providerCallbacks the provider {@code Callback} instances.
      * @return The {@code Response} object obtained from the response
      * returns empty when {@link CallOptions#callbackClass()} exists.
      * @throws NullPointerException if input request or {@code CallOptions} is {@literal null}.
@@ -108,10 +108,10 @@ public class RequestCaller {
     @Nullable
     public Response resolveRequestExecuteWithOptions(@NotNull Request<?> request, String host,
                                                      @NotNull CallOptions callOptions,
-                                                     @Nullable List<Callback> callbacks) {
+                                                     @Nullable List<Callback> providerCallbacks) {
 
         return resolveRequestExecuteWithOptions
-                (() -> request.execute(host), request, callOptions, callbacks);
+                (() -> request.execute(host), request, callOptions, providerCallbacks);
     }
 
     /**
@@ -122,10 +122,10 @@ public class RequestCaller {
      * (Supplier, int, long, ThrowablePredicate, boolean, boolean, Callback)} for the
      * execution logic.
      *
-     * @param supplier    the provider function of the {@code Response} object.
-     * @param request     input {@code Request} obj.
-     * @param callOptions {@code CallOptions} annotation.
-     * @param callbacks   the provider {@code Callback} instances.
+     * @param supplier          the provider function of the {@code Response} object.
+     * @param request           input {@code Request} obj.
+     * @param callOptions       {@code CallOptions} annotation.
+     * @param providerCallbacks the provider {@code Callback} instances.
      * @return The {@code Response} object obtained from the response
      * returns empty when {@link CallOptions#callbackClass()} exists.
      * @throws NullPointerException if input request or {@code CallOptions} is {@literal null}.
@@ -134,7 +134,7 @@ public class RequestCaller {
     public Response resolveRequestExecuteWithOptions(@NotNull Supplier<Response> supplier,
                                                      @NotNull Request<?> request,
                                                      @NotNull CallOptions callOptions,
-                                                     @Nullable List<Callback> callbacks) {
+                                                     @Nullable List<Callback> providerCallbacks) {
         int retryTimes = getRetryTimesByOptions(callOptions);
         long retryIntervalMilliseconds = getRetryIntervalMillisecondsByOptions(callOptions);
         String name = request.matchSdkEnum().name();
@@ -144,7 +144,7 @@ public class RequestCaller {
         Callback callback = getCallbackByOptions(name, callOptions);
         return resolveRequestExecuteWithOptions(supplier, retryTimes, retryIntervalMilliseconds,
                 throwablePredicate, whenResponseNonSuccessRetry, whenResponseNonSuccessFinalThrow, request,
-                fusionCallbacks(callback, callbacks));
+                fusionCallbacks(callback, providerCallbacks, getOnlyUseProvidedCallback(callOptions)));
     }
 
     /**
@@ -240,7 +240,7 @@ public class RequestCaller {
      * in case of exception.
      */
     @Nullable
-    private Response noCallOptionsToExecute(@NotNull Request<?> request,
+    protected Response noCallOptionsToExecute(@NotNull Request<?> request,
                                             String host,
                                             @Nullable List<Callback> callbacks) {
         boolean hasCallbacks = CollectionUtils.isNotEmpty(callbacks);
@@ -263,20 +263,23 @@ public class RequestCaller {
      * Fuse annotation gets {@code Callback} and provider
      * {@code Callback} list to a new {@code Callback} list.
      *
-     * @param callback  annotation gets {@code Callback}.
-     * @param callbacks provider {@code Callback} list.
+     * @param callback                annotation gets {@code Callback}.
+     * @param providerCallbacks       provider {@code Callback} list.
+     * @param onlyUseProvidedCallback should we only use the boolean variable
+     *                                of the provided {@code Callback}.
      * @return fusion {@code Callback} list.
      */
     @Nullable
-    private List<Callback> fusionCallbacks(@Nullable Callback callback, @Nullable List<Callback> callbacks) {
+    protected List<Callback> fusionCallbacks(@Nullable Callback callback, @Nullable List<Callback> providerCallbacks,
+                                           boolean onlyUseProvidedCallback) {
         List<Callback> fusion = null;
-        if (callback != null) {
+        if (callback != null && !onlyUseProvidedCallback) {
             fusion = new ArrayList<>();
             fusion.add(callback);
         }
-        if (CollectionUtils.isNotEmpty(callbacks)) {
+        if (CollectionUtils.isNotEmpty(providerCallbacks)) {
             if (fusion == null) fusion = new ArrayList<>();
-            fusion.addAll(callbacks);
+            fusion.addAll(providerCallbacks);
         }
         return fusion;
     }
@@ -360,6 +363,18 @@ public class RequestCaller {
             return null;
         }
         return getClassedInstance(name, callbackClass);
+    }
+
+    /**
+     * Get a boolean variable for only use provided {@code Callback} by
+     * annotation {@code CallOptions}
+     *
+     * @param callOptions {@code CallOptions} annotation.
+     * @return A boolean variable for only use {@code Callback} in method
+     * args.
+     */
+    protected boolean getOnlyUseProvidedCallback(CallOptions callOptions) {
+        return callOptions.onlyUseProvidedCallback();
     }
 
     /**
