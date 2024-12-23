@@ -20,10 +20,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
-import top.osjf.sdk.core.caller.CallOptions;
 import top.osjf.sdk.core.caller.Callback;
 import top.osjf.sdk.core.caller.RequestCaller;
-import top.osjf.sdk.core.caller.ThrowablePredicate;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.util.MapUtils;
@@ -64,36 +62,6 @@ public class SpringRequestCaller extends RequestCaller implements ApplicationCon
     @Override
     protected void sortCallbacks(List<Callback> callbacks) {
         AnnotationAwareOrderComparator.sort(callbacks);
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * Execute the rewrite method {@link #getClassedInstance} of this class.
-     *
-     * @param name        {@inheritDoc}
-     * @param callOptions {@inheritDoc}
-     * @return {@inheritDoc}
-     */
-    @Nullable
-    @Override
-    protected ThrowablePredicate getThrowablePredicateByOptions(String name, CallOptions callOptions) {
-        return getClassedInstance(name, callOptions.retryThrowablePredicateClass());
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * Execute the rewrite method {@link #getClassedInstance} of this class.
-     *
-     * @param name        {@inheritDoc}
-     * @param callOptions {@inheritDoc}
-     * @return {@inheritDoc}
-     */
-    @Nullable
-    @Override
-    protected Callback getCallbackByOptions(String name, CallOptions callOptions) {
-        return getClassedInstance(name, callOptions.callbackClass());
     }
 
     /**
