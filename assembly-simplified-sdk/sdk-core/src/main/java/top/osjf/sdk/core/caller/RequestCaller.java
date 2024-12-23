@@ -27,6 +27,7 @@ import top.osjf.sdk.core.util.SynchronizedWeakHashMap;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -144,7 +145,7 @@ public class RequestCaller {
         Callback callback = getCallbackByOptions(name, callOptions);
         return resolveRequestExecuteWithOptions(supplier, retryTimes, retryIntervalMilliseconds,
                 throwablePredicate, whenResponseNonSuccessRetry, whenResponseNonSuccessFinalThrow, request,
-                fusionCallbacks(callback, providerCallbacks, getOnlyUseProvidedCallback(callOptions)));
+                fusionOrProviderCallbacks(callback, providerCallbacks, getOnlyUseProvidedCallback(callOptions)));
     }
 
     /**
@@ -241,8 +242,8 @@ public class RequestCaller {
      */
     @Nullable
     protected Response noCallOptionsToExecute(@NotNull Request<?> request,
-                                            String host,
-                                            @Nullable List<Callback> callbacks) {
+                                              String host,
+                                              @Nullable List<Callback> callbacks) {
         boolean hasCallbacks = CollectionUtils.isNotEmpty(callbacks);
         try {
             Response response = request.execute(host);
@@ -260,28 +261,34 @@ public class RequestCaller {
     }
 
     /**
-     * Fuse annotation gets {@code Callback} and provider
-     * {@code Callback} list to a new {@code Callback} list.
+     * Determine whether to return the fused {@code Callback} list,
+     * provided {@code Callback} list, or parsed {@code Callback}
+     * from annotations based on {@code Boolean} identifiers.
      *
      * @param callback                annotation gets {@code Callback}.
      * @param providerCallbacks       provider {@code Callback} list.
      * @param onlyUseProvidedCallback should we only use the boolean variable
      *                                of the provided {@code Callback}.
-     * @return fusion {@code Callback} list.
+     * @return The result {@code Callback} list defaults to an empty list.
+     * @see CallOptions#onlyUseProvidedCallback()
      */
-    @Nullable
-    protected List<Callback> fusionCallbacks(@Nullable Callback callback, @Nullable List<Callback> providerCallbacks,
-                                           boolean onlyUseProvidedCallback) {
-        List<Callback> fusion = null;
-        if (callback != null && !onlyUseProvidedCallback) {
-            fusion = new ArrayList<>();
-            fusion.add(callback);
+    protected List<Callback> fusionOrProviderCallbacks(@Nullable Callback callback,
+                                                       @Nullable List<Callback> providerCallbacks,
+                                                       boolean onlyUseProvidedCallback) {
+        if (onlyUseProvidedCallback && CollectionUtils.isNotEmpty(providerCallbacks)) {
+            return providerCallbacks;
+        }
+        if (onlyUseProvidedCallback && CollectionUtils.isEmpty(providerCallbacks) && callback != null) {
+            return Collections.singletonList(callback);
+        }
+        List<Callback> fusionCallbacks = new ArrayList<>();
+        if (callback != null) {
+            fusionCallbacks.add(callback);
         }
         if (CollectionUtils.isNotEmpty(providerCallbacks)) {
-            if (fusion == null) fusion = new ArrayList<>();
-            fusion.addAll(providerCallbacks);
+            fusionCallbacks.addAll(providerCallbacks);
         }
-        return fusion;
+        return fusionCallbacks;
     }
 
     /**
