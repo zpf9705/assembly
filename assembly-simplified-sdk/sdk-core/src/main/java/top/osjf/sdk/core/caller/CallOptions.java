@@ -72,7 +72,7 @@ public @interface CallOptions {
      * @return is an exception condition class used to determine whether
      * a retry is necessary.
      */
-    Class<? extends ThrowablePredicate> retryThrowablePredicateClass() default ThrowablePredicate.class;
+    Class<? extends ThrowablePredicate> retryThrowablePredicateClass() default DefaultThrowablePredicate.class;
 
     /**
      * Whether to retry when the response is unsuccessful.
@@ -111,7 +111,7 @@ public @interface CallOptions {
      *
      * @return is a class used for callback processing.
      */
-    Class<? extends Callback> callbackClass() default Callback.class;
+    Class<? extends Callback> callbackClass() default DefaultCallback.class;
 
     /**
      * Only use the {@code Boolean} tag of the provided {@code Callback}.
@@ -132,4 +132,20 @@ public @interface CallOptions {
      * @return only use {@code Boolean} tags that provide callbacks.
      */
     boolean onlyUseProvidedCallback() default false;
+
+    /**
+     * Default annotation placeholder, default {@code Callback} for no operation.
+     */
+    final class DefaultCallback implements Callback {
+    }
+
+    /**
+     * Default annotation placeholder, default {@code ThrowablePredicate} for no operation.
+     */
+    final class DefaultThrowablePredicate implements ThrowablePredicate {
+        @Override
+        public boolean test(Throwable throwable) {
+            return false;
+        }
+    }
 }
