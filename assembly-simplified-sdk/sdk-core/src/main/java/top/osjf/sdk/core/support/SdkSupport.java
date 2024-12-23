@@ -57,13 +57,6 @@ public abstract class SdkSupport {
      * Since 1.0.2,cache modification to weak references, freeing up memory in appropriate
      * places to prevent memory leaks.
      */
-    protected static final Map<Class<? extends Request>, List<Field>> FIELD_CACHE
-            = new SynchronizedWeakHashMap<>();
-
-    /**
-     * Since 1.0.2,cache modification to weak references, freeing up memory in appropriate
-     * places to prevent memory leaks.
-     */
     protected static final Map<String, Method> METHOD_CACHE = new SynchronizedWeakHashMap<>();
 
     /*** cache for dynamically obtain the type of response class.
@@ -155,6 +148,7 @@ public abstract class SdkSupport {
             Parameter[] parameters = method.getParameters();
             for (int i = 0; i < args.length; i++) {
                 Object arg = args[i];
+                if (arg == null) continue; // null filter continue.
                 if (arg instanceof Request) continue;//It has been resolved in the above steps.
                 /*
                  * Support type 1: Retrieve the type of Request from a specific interface
