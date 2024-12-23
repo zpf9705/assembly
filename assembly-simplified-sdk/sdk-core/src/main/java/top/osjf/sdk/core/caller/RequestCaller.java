@@ -330,7 +330,7 @@ public class RequestCaller {
     @Nullable
     protected ThrowablePredicate getThrowablePredicateByOptions(String name, CallOptions callOptions) {
         Class<? extends ThrowablePredicate> throwablePredicateClass = callOptions.retryThrowablePredicateClass();
-        if (throwablePredicateClass == ThrowablePredicate.class) {
+        if (throwablePredicateClass == CallOptions.DefaultThrowablePredicate.class) {
             return null;
         }
         return getClassedInstance(name, throwablePredicateClass);
@@ -366,7 +366,7 @@ public class RequestCaller {
     @Nullable
     protected Callback getCallbackByOptions(String name, CallOptions callOptions) {
         Class<? extends Callback> callbackClass = callOptions.callbackClass();
-        if (callbackClass == Callback.class) {
+        if (callbackClass == CallOptions.DefaultCallback.class) {
             return null;
         }
         return getClassedInstance(name, callbackClass);
