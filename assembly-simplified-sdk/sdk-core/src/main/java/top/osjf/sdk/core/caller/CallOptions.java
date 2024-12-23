@@ -112,4 +112,24 @@ public @interface CallOptions {
      * @return is a class used for callback processing.
      */
     Class<? extends Callback> callbackClass() default Callback.class;
+
+    /**
+     * Only use the {@code Boolean} tag of the provided {@code Callback}.
+     *
+     * <p>The default is {@code false}, which means that the {@code Callback}
+     * type of this annotation and the other provided {@code Callback} are used
+     * together as the execution class of the callback; If set to {@code true},
+     * only the provided {@code Callback} will be used as the class for executing
+     * callback functions, and the fixed {@link #callbackClass()} type set in
+     * the annotation will no longer be valid, provided that the provided callback
+     * class exists. If the provided callback class is empty, the fixed
+     * {@link #callbackClass()} type set in this annotation will still be valid.
+     * This setting is usually used in scenarios where {@code Callback} classes are
+     * dynamically set.
+     *
+     * <p>The implementation logic can be viewed as {@code RequestCaller#fusionCallbacks}.
+     *
+     * @return only use {@code Boolean} tags that provide callbacks.
+     */
+    boolean onlyUseProvidedCallback() default false;
 }
