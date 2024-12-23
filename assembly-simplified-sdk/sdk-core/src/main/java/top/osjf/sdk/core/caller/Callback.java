@@ -67,7 +67,8 @@ public interface Callback {
      * @param response is a {@code Response} object that contains the results or related
      *                 data of synchronous or asynchronous operations.
      */
-    void success(@NotNull Response response);
+    default void success(@NotNull Response response){
+    }
 
     /**
      * The default implemented exception callback method.
@@ -97,5 +98,6 @@ public interface Callback {
      * @param e    represents the {@code Throwable} object where synchronous or asynchronous
      *             operations fail.
      */
-    void exception(@NotNull String name, @NotNull Throwable e);
+    default void exception(@NotNull String name, @NotNull Throwable e){
+    }
 }
