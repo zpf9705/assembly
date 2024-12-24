@@ -20,6 +20,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.lang.NonNull;
 
@@ -33,6 +34,8 @@ import org.springframework.lang.NonNull;
  * completion, and clear the name collection of optimized beans
  * marked by {@link ServiceContextBeanNameGenerator} in the event
  * content.</li>
+ * <li>Calling the {@link #close()} method can elegantly close
+ * the Spring context {@link ApplicationContext}.</li>
  * </ul>
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
@@ -50,15 +53,17 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
 
     @Override
     public void onApplicationEvent(@NonNull ContextRefreshedEvent event) {
-        close();
-    }
-
-    public ApplicationContext getApplicationContext() {
-        return context;
+        ServiceContextBeanNameGenerator.clear();
     }
 
     @Override
     public void close() {
-        ServiceContextBeanNameGenerator.clear();
+        if (context instanceof ConfigurableApplicationContext) {
+            ((ConfigurableApplicationContext) context).close();
+        }
+    }
+
+    public ApplicationContext getApplicationContext() {
+        return context;
     }
 }
