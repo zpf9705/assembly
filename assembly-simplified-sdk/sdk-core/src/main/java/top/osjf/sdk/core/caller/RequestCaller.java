@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 
 /**
@@ -46,8 +47,8 @@ import java.util.function.Supplier;
  * CallOptions, List)},which accepts a request object (provided through a {@code Supplier}) and
  * sdk {@code String} name and a {@code CallOptions} annotation and provider {@code Callback} list
  * as parameters and final call method {@link #resolveRequestExecuteWithOptions(Supplier, int, long,
- * ThrowablePredicate, boolean, boolean, Request, List)} (this method is not elaborated here as a
- * commonly used combination method in this package tool).
+ * ThrowablePredicate, boolean, boolean, Request, List, Executor)} (this method is not elaborated
+ * here as a commonly used combination method in this package tool).
  * It executes the request according to the execution options configured in the annotation and returns
  * the {@code Response} object.
  * If a {@code Callback} class (callbackClass) is specified in the {@code CallOptions} annotation,
@@ -57,9 +58,6 @@ import java.util.function.Supplier;
  *
  * <p>The class also provides some auxiliary methods for obtaining configured execution option values
  * from the {@code CallOptions} annotation, such as retry times, retry intervals, and so on.
- *
- * <p>The following methods only provide a synchronous running mechanism. If asynchronous correlation
- * is required, please implement it yourself.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
@@ -143,9 +141,11 @@ public class RequestCaller {
         boolean whenResponseNonSuccessRetry = getWhenResponseNonSuccessRetryOptions(callOptions);
         boolean whenResponseNonSuccessFinalThrow = getWhenResponseNonSuccessFinalThrowByOptions(callOptions);
         Callback callback = getCallbackByOptions(name, callOptions);
+        Executor executor = getExecutorByOptions(name, callOptions);
         return resolveRequestExecuteWithOptions(supplier, retryTimes, retryIntervalMilliseconds,
                 throwablePredicate, whenResponseNonSuccessRetry, whenResponseNonSuccessFinalThrow, request,
-                fusionOrProviderCallbacks(callback, providerCallbacks, getOnlyUseProvidedCallback(callOptions)));
+                fusionOrProviderCallbacks(callback, providerCallbacks, getOnlyUseProvidedCallback(callOptions)),
+                executor);
     }
 
     /**
@@ -162,9 +162,9 @@ public class RequestCaller {
      *     exception will be thrown directly.</li>
      * </ul>
      * <p>
-     * Regarding callback {@code Callback}, this method does not refer to asynchronous
-     * callbacks, but rather a synchronous mechanism that is suitable for synchronously
-     * calling callback processing that does not focus on the return value.
+     * Regarding callback {@code Callback}, asynchronous support is provided when the
+     * thread pool {@code Executor} value is provided, and vice versa, it remains
+     * synchronized with the current thread execution.
      *
      * @param supplier                         the provider function of the {@code Response} object.
      * @param retryTimes                       the retry times.
@@ -174,6 +174,7 @@ public class RequestCaller {
      * @param whenResponseNonSuccessFinalThrow when response nonSuccess final throw exception mark.
      * @param request                          input {@code Request} obj.
      * @param callbacks                        the provider {@code Callback} instances.
+     * @param executor                         asynchronous execution of thread pool instances.
      * @return The {@code Response} object obtained from the response
      * returns empty when {@link CallOptions#callbackClass()} exists.
      * @throws NullPointerException if input args is {@literal null}.
@@ -186,15 +187,24 @@ public class RequestCaller {
                                                      boolean whenResponseNonSuccessRetry,
                                                      boolean whenResponseNonSuccessFinalThrow,
                                                      @NotNull Request<?> request,
-                                                     @Nullable List<Callback> callbacks) {
-        FlowableCallerBuilder<Response> builder = FlowableCallerBuilder.newBuilder()
-                .runBody(supplier)
+                                                     @Nullable List<Callback> callbacks,
+                                                     @Nullable Executor executor) {
+        boolean hasCallbacks = CollectionUtils.isNotEmpty(callbacks);
+        FlowableCallerBuilder<Response> builder;
+        if (executor != null) {
+            builder = AsyncFlowableCallerBuilder.newBuilder()
+                    .customSubscriptionExecutor(executor)
+                    .customObserveExecutor(hasCallbacks ? executor : null);
+        } else {
+            builder = FlowableCallerBuilder.newBuilder();
+        }
+        builder.runBody(supplier)
                 .retryTimes(retryTimes)
                 .retryIntervalMilliseconds(retryIntervalMilliseconds)
                 .customRetryExceptionPredicate(throwablePredicate);
         if (whenResponseNonSuccessRetry) builder.whenResponseNonSuccessRetry();
         if (whenResponseNonSuccessFinalThrow) builder.whenResponseNonSuccessFinalThrow();
-        if (CollectionUtils.isNotEmpty(callbacks)) {
+        if (hasCallbacks) {
             sortCallbacks(callbacks);
             builder.customSubscriptionRegularConsumer(rep -> callbacks.forEach(c -> c.success(request, rep)));
             builder.customSubscriptionExceptionConsumer(e -> callbacks.forEach(c -> c.exception(request, e)));
@@ -301,7 +311,7 @@ public class RequestCaller {
     }
 
     /**
-     * Get the retry times by annotation {@code CallOptions}
+     * Get the retry times by annotation {@code CallOptions}.
      *
      * @param callOptions {@code CallOptions} annotation.
      * @return The retry times.
@@ -311,7 +321,7 @@ public class RequestCaller {
     }
 
     /**
-     * Get the retry interval milliseconds by annotation {@code CallOptions}
+     * Get the retry interval milliseconds by annotation {@code CallOptions}.
      *
      * @param callOptions {@code CallOptions} annotation.
      * @return The retry interval milliseconds.
@@ -321,7 +331,7 @@ public class RequestCaller {
     }
 
     /**
-     * Get an Instance {@code ThrowablePredicate} by annotation {@code CallOptions}
+     * Get an Instance {@code ThrowablePredicate} by annotation {@code CallOptions}.
      *
      * @param name        current sdk name.
      * @param callOptions {@code CallOptions} annotation.
@@ -337,7 +347,7 @@ public class RequestCaller {
     }
 
     /**
-     * Get when response nonSuccess retry boolean mark by annotation {@code CallOptions}
+     * Get when response nonSuccess retry boolean mark by annotation {@code CallOptions}.
      *
      * @param callOptions {@code CallOptions} annotation.
      * @return When response nonSuccess retry boolean mark.
@@ -347,7 +357,7 @@ public class RequestCaller {
     }
 
     /**
-     * Get when response nonSuccess final throw exception mark by annotation {@code CallOptions}
+     * Get when response nonSuccess final throw exception mark by annotation {@code CallOptions}.
      *
      * @param callOptions {@code CallOptions} annotation.
      * @return When response nonSuccess final throw exception mark.
@@ -357,7 +367,7 @@ public class RequestCaller {
     }
 
     /**
-     * Get an Instance {@code Callback} by annotation {@code CallOptions}
+     * Get an Instance {@code Callback} by annotation {@code CallOptions}.
      *
      * @param name        current sdk name.
      * @param callOptions {@code CallOptions} annotation.
@@ -374,7 +384,7 @@ public class RequestCaller {
 
     /**
      * Get a boolean variable for only use provided {@code Callback} by
-     * annotation {@code CallOptions}
+     * annotation {@code CallOptions}.
      *
      * @param callOptions {@code CallOptions} annotation.
      * @return A boolean variable for only use {@code Callback} in method
@@ -382,6 +392,22 @@ public class RequestCaller {
      */
     protected boolean getOnlyUseProvidedCallback(CallOptions callOptions) {
         return callOptions.onlyUseProvidedCallback();
+    }
+
+    /**
+     * Get an Instance {@code Executor} by annotation {@code CallOptions}.
+     *
+     * @param name        current sdk name.
+     * @param callOptions {@code CallOptions} annotation.
+     * @return The Instance {@code Callback}.
+     */
+    @Nullable
+    protected Executor getExecutorByOptions(String name, CallOptions callOptions) {
+        Class<? extends Executor> callbackClass = callOptions.executorClass();
+        if (callbackClass == CallOptions.DefaultExecutor.class) {
+            return null;
+        }
+        return getClassedInstance(name, callbackClass);
     }
 
     /**

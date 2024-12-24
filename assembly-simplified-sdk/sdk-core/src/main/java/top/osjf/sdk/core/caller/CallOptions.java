@@ -16,7 +16,10 @@
 
 package top.osjf.sdk.core.caller;
 
+import top.osjf.sdk.core.support.NotNull;
+
 import java.lang.annotation.*;
+import java.util.concurrent.Executor;
 
 /**
  * Call option annotation, used to configure the calling behavior of methods
@@ -32,6 +35,7 @@ import java.lang.annotation.*;
  * of the same annotation attribute applied to the class containing the method.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
+ * @see RequestCaller
  * @since 1.0.2
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
@@ -68,6 +72,9 @@ public @interface CallOptions {
      * <p>
      * Developers can define more specific retry conditions by providing custom
      * {@code ThrowablePredicate} implementations.
+     *
+     * <p>The default type is {@link DefaultThrowablePredicate}, and marking
+     * this type indicates that {@code ThrowablePredicate} is not provided.
      *
      * @return is an exception condition class used to determine whether
      * a retry is necessary.
@@ -109,6 +116,9 @@ public @interface CallOptions {
      * <p>Developers can define more specific callback behaviors by
      * providing custom {@code Callback} implementations.
      *
+     * <p>The default type is {@link DefaultCallback}, and marking
+     * this type indicates that {@code Callback} is not provided.
+     *
      * @return is a class used for callback processing.
      */
     Class<? extends Callback> callbackClass() default DefaultCallback.class;
@@ -134,6 +144,31 @@ public @interface CallOptions {
     boolean onlyUseProvidedCallback() default false;
 
     /**
+     * Specify the thread pool type for asynchronous execution.
+     *
+     * <p>If the type of thread pool is specified, asynchronous
+     * methods will be executed, and if not specified, synchronous
+     * execution will still occur.
+     *
+     * <p>This type of setting can be applied according to the scenario.
+     * When there is no asynchronous support for external calls, this
+     * type can be set, and internal calls will be executed asynchronously.
+     * Of course, developers should also be prepared for asynchronous execution.
+     *
+     * <p>In the parsing of method {@link RequestCaller#getExecutorByOptions}
+     * , the {@code Executor} type you provide needs to have the configuration
+     * information about the thread pool set in advance. This method only
+     * initializes through empty constructs.
+     *
+     * <p>The default type is {@link DefaultExecutor}, and marking
+     * this type indicates that {@code Executor} is not provided.
+     *
+     * @return The type of {@code Executor} provided for asynchronous
+     * execution.
+     */
+    Class<? extends Executor> executorClass() default DefaultExecutor.class;
+
+    /**
      * Default annotation placeholder, default {@code Callback} for no operation.
      */
     final class DefaultCallback implements Callback {
@@ -146,6 +181,16 @@ public @interface CallOptions {
         @Override
         public boolean test(Throwable throwable) {
             return false;
+        }
+    }
+
+    /**
+     * Default annotation placeholder, default {@code Executor} for no operation.
+     */
+    final class DefaultExecutor implements Executor {
+
+        @Override
+        public void execute(@NotNull Runnable command) {
         }
     }
 }
