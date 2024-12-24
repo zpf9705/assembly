@@ -16,8 +16,6 @@
 
 package top.osjf.sdk.core.caller;
 
-import top.osjf.sdk.core.support.NotNull;
-
 import java.lang.annotation.*;
 import java.util.concurrent.Executor;
 
@@ -144,29 +142,21 @@ public @interface CallOptions {
     boolean onlyUseProvidedCallback() default false;
 
     /**
-     * Specify the thread pool type for asynchronous execution.
+     * Subscription observation relationship executor interface
+     * {@code AsyncPubSubExecutorProvider} type retrieval.
      *
-     * <p>If the type of thread pool is specified, asynchronous
-     * methods will be executed, and if not specified, synchronous
-     * execution will still occur.
+     * <p>The callback corresponding to the {@link #callbackClass()}
+     * type defined in this annotation corresponds to the observer role,
+     * while the executed response is the subscriber role. Therefore,
+     * the relevant executor {@code Executor} provided by this method
+     * determines whether to use asynchronous execution between the two.
      *
-     * <p>This type of setting can be applied according to the scenario.
-     * When there is no asynchronous support for external calls, this
-     * type can be set, and internal calls will be executed asynchronously.
-     * Of course, developers should also be prepared for asynchronous execution.
-     *
-     * <p>In the parsing of method {@link RequestCaller#getExecutorByOptions}
-     * , the {@code Executor} type you provide needs to have the configuration
-     * information about the thread pool set in advance. This method only
-     * initializes through empty constructs.
-     *
-     * <p>The default type is {@link DefaultExecutor}, and marking
-     * this type indicates that {@code Executor} is not provided.
-     *
-     * @return The type of {@code Executor} provided for asynchronous
-     * execution.
+     * <p>It is not mandatory for both threads to exist, and the running
+     * protocol for null value situations is as described in the interface
+     * {@code AsyncPubSubExecutorProvider} comments.
      */
-    Class<? extends Executor> executorClass() default DefaultExecutor.class;
+    Class<? extends AsyncPubSubExecutorProvider> pubSubExecutorProviderClass()
+            default DefaultAsyncPubSubExecutorProvider.class;
 
     /**
      * Default annotation placeholder, default {@code Callback} for no operation.
@@ -185,11 +175,17 @@ public @interface CallOptions {
     }
 
     /**
-     * Default annotation placeholder, default {@code Executor} for no operation.
+     * Default annotation placeholder, default {@code AsyncPubSubExecutorProvider} for no operation.
      */
-    final class DefaultExecutor implements Executor {
+    final class DefaultAsyncPubSubExecutorProvider implements AsyncPubSubExecutorProvider {
         @Override
-        public void execute(@NotNull Runnable command) {
+        public Executor getCustomSubscriptionExecutor() {
+            return null;
+        }
+
+        @Override
+        public Executor getCustomObserveExecutor() {
+            return null;
         }
     }
 }
