@@ -27,25 +27,21 @@ import org.springframework.core.Ordered;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
-import java.util.Objects;
-
 /**
- * To implement {@link ServiceContextAware}'s bean setting {@link ServiceContext},
- * the loading time should be after {@link ServiceContext} is loaded.
+ * The {@code ServiceContextAwareBeanPostProcessor} class is a custom Spring
+ * Bean post processor that is primarily responsible for checking whether the
+ * Bean implements the custom {@link ServiceContextAware} interface before
+ * initializing the Bean in the Spring container. If so, it injects the current
+ * {@link ServiceContext} instance.
  *
- * <p>Using this type of configuration caused me to encounter
- * dependency beans losing their AOP weaving function. The reason is that the
- * implementation of AOP function is also dependent on {@link BeanPostProcessor}.
- * The configuration in this class caused the dependency {@link ServiceContext} to
- * be instantiated earlier, resulting in the loss of AOP function implementation.
- * Here, I solved this problem using lazy loading {@link org.springframework.context.annotation.Lazy}.
- * If you also encounter this problem, you can refer to <a href="https://learn.skyofit.com/archives/2020">
- * Spring - BeanPostProcessor Unable to Use AOP - Reason/Solution</a>.
+ * <p>The instance of {@code ServiceContext} is not created or injected through
+ * initialization of this class, but is initialized when the implementation of
+ * {@code ServiceContextAware} bean is recognized.
  *
- * <p>The current class dependency {@link ServiceContext} can easily cause the
- * above-mentioned problems.Therefore, since version 1.0.2, when placing the bean
- * that first implements{@link ServiceContextAware}, it is necessary to obtain
- * {@link ServiceContext} and initialize it.
+ * <p>In addition, it also implements the {@code BeanFactoryPostProcessor}
+ * interface to tell the Spring container to ignore the dependency injection
+ * of the {@code ServiceContextAware} interface, as we will manually inject
+ * it through programming.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
@@ -53,29 +49,9 @@ import java.util.Objects;
 public class ServiceContextAwareBeanPostProcessor implements BeanPostProcessor, BeanFactoryPostProcessor,
         ApplicationContextAware, Ordered {
 
-    /*** The service context that has already been loaded.*/
     private ServiceContext serviceContext;
 
     private ApplicationContext applicationContext;
-
-    /**
-     * A constructor without parameters.
-     * @since 1.0.2
-     */
-    public ServiceContextAwareBeanPostProcessor() {
-    }
-
-    /**
-     * The construction method of carrying service context.
-     *
-     * @param serviceContext carrying service context
-     * @deprecated 1.0.2
-     */
-    @Deprecated
-    public ServiceContextAwareBeanPostProcessor(ServiceContext serviceContext) {
-        Objects.requireNonNull(serviceContext, "ServiceContext must not be null");
-        this.serviceContext = serviceContext;
-    }
 
     @Override
     public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
