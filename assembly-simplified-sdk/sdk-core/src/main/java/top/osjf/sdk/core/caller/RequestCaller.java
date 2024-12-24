@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 
 /**
@@ -47,8 +46,8 @@ import java.util.function.Supplier;
  * CallOptions, List)},which accepts a request object (provided through a {@code Supplier}) and
  * sdk {@code String} name and a {@code CallOptions} annotation and provider {@code Callback} list
  * as parameters and final call method {@link #resolveRequestExecuteWithOptions(Supplier, int, long,
- * ThrowablePredicate, boolean, boolean, Request, List, Executor)} (this method is not elaborated
- * here as a commonly used combination method in this package tool).
+ * ThrowablePredicate, boolean, boolean, Request, List, AsyncPubSubExecutorProvider)} (this method
+ * is not elaborated here as a commonly used combination method in this package tool).
  * It executes the request according to the execution options configured in the annotation and returns
  * the {@code Response} object.
  * If a {@code Callback} class (callbackClass) is specified in the {@code CallOptions} annotation,
@@ -141,11 +140,11 @@ public class RequestCaller {
         boolean whenResponseNonSuccessRetry = getWhenResponseNonSuccessRetryOptions(callOptions);
         boolean whenResponseNonSuccessFinalThrow = getWhenResponseNonSuccessFinalThrowByOptions(callOptions);
         Callback callback = getCallbackByOptions(name, callOptions);
-        Executor executor = getExecutorByOptions(name, callOptions);
+        AsyncPubSubExecutorProvider pubSubExecutorProvider = getAsyncPubSubExecutorProviderByOptions(name, callOptions);
         return resolveRequestExecuteWithOptions(supplier, retryTimes, retryIntervalMilliseconds,
                 throwablePredicate, whenResponseNonSuccessRetry, whenResponseNonSuccessFinalThrow, request,
                 fusionOrProviderCallbacks(callback, providerCallbacks, getOnlyUseProvidedCallback(callOptions)),
-                executor);
+                pubSubExecutorProvider);
     }
 
     /**
@@ -174,7 +173,7 @@ public class RequestCaller {
      * @param whenResponseNonSuccessFinalThrow when response nonSuccess final throw exception mark.
      * @param request                          input {@code Request} obj.
      * @param callbacks                        the provider {@code Callback} instances.
-     * @param executor                         asynchronous execution of thread pool instances.
+     * @param pubSubExecutorProvider           the {@code AsyncPubSubExecutorProvider} instance.
      * @return The {@code Response} object obtained from the response
      * returns empty when {@link CallOptions#callbackClass()} exists.
      * @throws NullPointerException if input args is {@literal null}.
@@ -188,13 +187,14 @@ public class RequestCaller {
                                                      boolean whenResponseNonSuccessFinalThrow,
                                                      @NotNull Request<?> request,
                                                      @Nullable List<Callback> callbacks,
-                                                     @Nullable Executor executor) {
+                                                     @Nullable AsyncPubSubExecutorProvider pubSubExecutorProvider) {
         boolean hasCallbacks = CollectionUtils.isNotEmpty(callbacks);
         FlowableCallerBuilder<Response> builder;
-        if (executor != null) {
+        if (pubSubExecutorProvider != null) {
             builder = AsyncFlowableCallerBuilder.newBuilder()
-                    .customSubscriptionExecutor(executor)
-                    .customObserveExecutor(hasCallbacks ? executor : null);
+                    .customSubscriptionExecutor(pubSubExecutorProvider.getCustomSubscriptionExecutor())
+                    .customObserveExecutor(hasCallbacks ? pubSubExecutorProvider.getCustomSubscriptionExecutor()
+                            : null);
         } else {
             builder = FlowableCallerBuilder.newBuilder();
         }
@@ -395,19 +395,21 @@ public class RequestCaller {
     }
 
     /**
-     * Get an Instance {@code Executor} by annotation {@code CallOptions}.
+     * Get an Instance {@code AsyncPubSubExecutorProvider} by annotation {@code CallOptions}.
      *
      * @param name        current sdk name.
      * @param callOptions {@code CallOptions} annotation.
-     * @return The Instance {@code Callback}.
+     * @return The Instance {@code AsyncPubSubExecutorProvider}.
      */
     @Nullable
-    protected Executor getExecutorByOptions(String name, CallOptions callOptions) {
-        Class<? extends Executor> callbackClass = callOptions.executorClass();
-        if (callbackClass == CallOptions.DefaultExecutor.class) {
+    protected AsyncPubSubExecutorProvider getAsyncPubSubExecutorProviderByOptions(String name,
+                                                                                  CallOptions callOptions) {
+        Class<? extends AsyncPubSubExecutorProvider> pubSubExecutorProviderClass
+                = callOptions.pubSubExecutorProviderClass();
+        if (pubSubExecutorProviderClass == CallOptions.DefaultAsyncPubSubExecutorProvider.class) {
             return null;
         }
-        return getClassedInstance(name, callbackClass);
+        return getClassedInstance(name, pubSubExecutorProviderClass);
     }
 
     /**
