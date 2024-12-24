@@ -70,7 +70,7 @@ public class ServiceContextBeanNameGenerator extends AnnotationBeanNameGenerator
      * Record the main name collection of beans named by this custom naming
      * {@code BeanNameGenerator}.
      */
-    static final List<String> RECORD_BEAN_NAMES = new CopyOnWriteArrayList<>();
+    private static final List<String> RECORD_BEAN_NAMES = new CopyOnWriteArrayList<>();
 
     /**
      * The scope name required for beans that accept custom naming.
@@ -85,6 +85,22 @@ public class ServiceContextBeanNameGenerator extends AnnotationBeanNameGenerator
      */
     public ServiceContextBeanNameGenerator(String applicationId) {
         this.applicationId = applicationId;
+    }
+
+    /**
+     * Return record bean names.
+     *
+     * @return record bean names.
+     */
+    protected static List<String> getRecordBeanNames() {
+        return RECORD_BEAN_NAMES;
+    }
+
+    /**
+     * Clear record bean names.
+     */
+    protected static void clear() {
+        RECORD_BEAN_NAMES.clear();
     }
 
     @Override
