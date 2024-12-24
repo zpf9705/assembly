@@ -80,9 +80,10 @@ public interface ServiceContext extends Closeable {
      * @param requiredType type the bean must match,can be an interface or superclass.
      * @param <S>          the type of service to retrieve.
      * @return The service instance obtained by parsing the service name and type.
-     * @throws NoSuchServiceException if there is no such service.
+     * @throws NoAvailableServiceException if there is no available service.
+     * @throws NullPointerException        if input serviceName or requiredType is {@literal null}.
      */
-    <S> S getService(String serviceName, Class<S> requiredType) throws NoSuchServiceException;
+    <S> S getService(String serviceName, Class<S> requiredType) throws NoAvailableServiceException;
 
     /**
      * Add a service instance based on the provided service name and type, where the service
@@ -106,6 +107,7 @@ public interface ServiceContext extends Closeable {
      * @param <S>         the type of service to add.
      * @return If {@code true} is returned, it indicates successful addition; otherwise,
      * it indicates failed addition.
+     * @throws NullPointerException if input serviceType is {@literal null}.
      * @since 1.0.2
      */
     <S> boolean addService(@Nullable String serviceName, Class<S> serviceType);
@@ -123,6 +125,7 @@ public interface ServiceContext extends Closeable {
      * @param requiredType type the bean must match; can be an interface or superclass.
      * @param <S>          the type of service to contains.
      * @return If {@code true} is returned, this service exists, otherwise it does not exist.
+     * @throws NullPointerException if input serviceName or requiredType is {@literal null}.
      * @since 1.0.2
      */
     <S> boolean containsService(String serviceName, Class<S> requiredType);
@@ -140,6 +143,7 @@ public interface ServiceContext extends Closeable {
      * @param <S>          the type of service to remove.
      * @return If {@code true} is returned, the service has been successfully removed,
      * otherwise it does not exist or the removal has failed.
+     * @throws NullPointerException if input serviceName or requiredType is {@literal null}.
      * @since 1.0.2
      */
     <S> boolean removeService(String serviceName, Class<S> requiredType);
