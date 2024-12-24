@@ -16,19 +16,18 @@
 
 package top.osjf.optimize.service_bean.context;
 
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-
 /**
- * An exception thrown when the service is not queried.
+ * If no suitable service instance is found for the known service
+ * name and type, this exception will be thrown as a reminder.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 1.0.3
  */
-public class NoSuchServiceException extends NoSuchBeanDefinitionException {
+public class NoAvailableServiceException extends IllegalStateException {
 
     private static final long serialVersionUID = 922435911357767431L;
-    public NoSuchServiceException(String serviceName, Class<?> requiredType) {
-        super("Required type " + requiredType.getName() + " no service named " + serviceName +
-                " was found from the service context");
+
+    public NoAvailableServiceException(String serviceName, Class<?> requiredType) {
+        super("No available " + requiredType.getName() + " type for service name " + serviceName + ".");
     }
 }
