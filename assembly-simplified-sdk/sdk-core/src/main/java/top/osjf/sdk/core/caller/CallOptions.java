@@ -188,7 +188,6 @@ public @interface CallOptions {
      * Default annotation placeholder, default {@code Executor} for no operation.
      */
     final class DefaultExecutor implements Executor {
-
         @Override
         public void execute(@NotNull Runnable command) {
         }
