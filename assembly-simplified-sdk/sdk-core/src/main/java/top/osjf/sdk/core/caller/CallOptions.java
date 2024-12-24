@@ -154,6 +154,8 @@ public @interface CallOptions {
      * <p>It is not mandatory for both threads to exist, and the running
      * protocol for null value situations is as described in the interface
      * {@code AsyncPubSubExecutorProvider} comments.
+     *
+     * @return the {@code AsyncPubSubExecutorProvider} type.
      */
     Class<? extends AsyncPubSubExecutorProvider> pubSubExecutorProviderClass()
             default DefaultAsyncPubSubExecutorProvider.class;
