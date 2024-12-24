@@ -28,10 +28,6 @@ import java.util.concurrent.Executor;
  * Developers can customize the execution threads or thread pools for
  * subscription and observation operations through these methods.
  *
- * <p>If the custom {@code Executor} is not set (i.e. the returned {@code Executor}
- * is empty), subscription and observation operations will be executed in
- * the main thread.
- *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
@@ -43,8 +39,6 @@ public interface AsyncPubSubExecutorProvider {
      * It allows users to customize the execution thread or thread pool for
      * subscription operations (e.g., subscribing to messages, events, etc.).
      *
-     * <p>If it is empty, the subscription will be executed in the main thread.
-     *
      * @return custom subscription {@code Executor}.
      */
     Executor getCustomSubscriptionExecutor();
@@ -54,8 +48,6 @@ public interface AsyncPubSubExecutorProvider {
      * to observation or responses.
      * It allows users to customize the execution thread or thread pool for observation
      * operations (e.g., responding to events, handling callbacks, etc.).
-     *
-     * <p>If it is empty, to observe will be executed in the main thread.
      *
      * @return custom observe {@code Executor}.
      */
