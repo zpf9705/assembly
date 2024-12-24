@@ -32,7 +32,11 @@ import top.osjf.optimize.service_bean.context.ServiceContextAwareBeanPostProcess
  * <li>Defined the default implementation class {@link DefaultServiceContext}
  * for {@code ServiceContext}.</li>
  * <li>Defined the {@link org.springframework.beans.factory.Aware} extension
- * for {@code ServiceContext}.</li>
+ * for {@code ServiceContext}.
+ * <p>Regarding the definition of {@link ServiceContextAwareBeanPostProcessor},
+ * it is a bean processor that works internally and is not related to the end user,
+ * so {@link BeanDefinition#ROLE_INFRASTRUCTURE} is set.
+ * </li>
  * </ul>
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
