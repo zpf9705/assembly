@@ -17,27 +17,52 @@
 package top.osjf.optimize.service_bean.annotation;
 
 import org.springframework.context.annotation.Import;
-import top.osjf.optimize.service_bean.ServiceContextUtils;
+import top.osjf.optimize.service_bean.context.ServiceContext;
+import top.osjf.optimize.service_bean.context.ServiceContextBeanNameGenerator;
+import top.osjf.optimize.service_bean.context.ServiceScopeBeanPostProcessor;
 
 import java.lang.annotation.*;
 
 /**
- * The third version of service collection is more accurate
- * than the previous two versions, which collects rule bean
- * names during bean renaming.
+ * The {@code EnableServiceCollection} annotation is the key to enabling
+ * service collection functionality.
  *
- * <p>The collection of services has been changed to store within
- * the scope {@link ServiceContextUtils#SERVICE_SCOPE}.
+ * <p>Annotation {@code EnableServiceCollection} is intended as a switch
+ * to activate the core configuration and functionality of the service
+ * collection framework. It provides a set of service components in the
+ * application by importing specific configuration classes and registers
+ * a unified mechanism for collection, management, and scope
+ * {@link ServiceContext#SUPPORT_SCOPE} control.
  *
- * @see ServiceContextRecordConfiguration
- * @see ServiceContextRecordConfiguration.ServiceContextRecordImportConfiguration
+ * <p>Overview of core functions:</p>
+ * <ul>
+ * <li><strong>import {@code ServiceContextConfiguration}</strong>
+ * <p>this configuration class is responsible for initializing the service
+ * context instance {@link ServiceContext}.</li>
+ * <li><strong>import {@code ServiceScopeBeanPostProcessorRegistrar}</strong>
+ * <p>Register a {@link ServiceScopeBeanPostProcessor} to optimize the beans
+ * corresponding to the list of eligible bean names collected by
+ * {@link ServiceContextBeanNameGenerator}.
+ * </li>
+ * </ul>
+ *
+ * <p>When developers need to introduce a set of support components with
+ * different types of bean names that can be defined repeatedly in Spring
+ * applications, they can quickly enable the framework by adding the
+ * {@code EnableServiceCollection} annotation on the configuration class.
+ *
+ * <p>This will automatically import necessary configurations and components,
+ * allowing developers to focus on the implementation of business logic
+ * without having to pay too much attention to the underlying details of
+ * service management.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import({ServiceContextRecordConfiguration.class,
-        ServiceContextRecordConfiguration.ServiceContextRecordImportConfiguration.class})
+@Import({ServiceContextConfiguration.class,
+        ServiceScopeBeanPostProcessorRegistrar.class})
 public @interface EnableServiceCollection {
 }
