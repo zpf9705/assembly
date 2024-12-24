@@ -28,6 +28,20 @@ import java.util.concurrent.Executor;
  * Developers can customize the execution threads or thread pools for
  * subscription and observation operations through these methods.
  *
+ * <p><strong>Usage precautions</strong>
+ * <p>The presence or absence of both determines the execution situation:
+ * <ul>
+ * <li>The subscriber executor is not empty, and the observer executor is empty:
+ * the observer will use the current thread of the subscriber.
+ * </li>
+ * <li>The subscriber executor is empty, and the observer executor is not empty:
+ * The subscriber will execute using the current thread, while the observer will
+ * initiate asynchronous thread execution.
+ * </li>
+ * <li>Both are empty:Both subscribers and observers will execute on the current
+ * thread.</li>
+ * </ul>
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
