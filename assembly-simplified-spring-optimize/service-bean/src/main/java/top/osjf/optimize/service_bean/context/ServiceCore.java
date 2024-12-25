@@ -56,6 +56,18 @@ public abstract class ServiceCore {
 
     /**
      * Return a boolean tag indicating whether the input name is an enhanced
+     * bean service name.
+     *
+     * @param serviceName the input service name.
+     * @return If {@code true} is returned, it means yes, otherwise it is not.
+     */
+    public static boolean isEnhancementBeanServiceName(String serviceName) {
+        Objects.requireNonNull(serviceName, "serviceName = null");
+        return serviceName.endsWith(BEAN_NAME_CLOSE_TAG);
+    }
+
+    /**
+     * Return a boolean tag indicating whether the input name is an enhanced
      * service name.
      *
      * @param serviceName the input service name.
@@ -63,38 +75,46 @@ public abstract class ServiceCore {
      */
     public static boolean isEnhancementServiceName(String serviceName) {
         Objects.requireNonNull(serviceName, "serviceName = null");
-        return serviceName.endsWith(BEAN_NAME_CLOSE_TAG) || serviceName.endsWith(ALISA_NAME_CLOSE_TAG);
+        return isEnhancementBeanServiceName(serviceName) || serviceName.endsWith(ALISA_NAME_CLOSE_TAG);
     }
 
     /**
-     * Generate and return a list of candidate names for enhancement based on the
-     * given name, required type.
+     * Based on whether the incoming type contains a record type, return the bean name after
+     * enhancement. If it is not a record type, return a null value.
      *
      * @param serviceName  the original service  name to be enhancement is usually the
      *                     name.
      * @param requiredType type the bean must match; can be an interface or superclass.
-     * @return a list of candidate names for enhancement based on the given name, required
-     * type.
-     * @see #enhancementBeanName
-     * @see #enhancementAlisaName
+     * @return enhanced and optimized service name.
      */
-    public static List<String> getEnhancementCandidateNames(String serviceName, Class<?> requiredType) {
+    @Nullable
+    public static String getEnhancementBeanName(String serviceName, Class<?> requiredType) {
         Objects.requireNonNull(serviceName, "serviceName = null");
         Objects.requireNonNull(requiredType, "requiredType = null");
 
-        if (isEnhancementServiceName(serviceName)) {
-            return Collections.singletonList(serviceName);
+        if (ServiceContextBeanNameGenerator.getRecordBeanTypes().contains(requiredType)) {
+            return enhancementBeanName(requiredType, serviceName);
         }
+        return null;
+    }
 
-        List<String> candidateNames = new ArrayList<>();
-
-        candidateNames.add(enhancementAlisaName(requiredType, serviceName));
+    /**
+     * Return the enhanced bean name or alias based on whether the incoming type contains
+     * a record type.
+     *
+     * @param serviceName  the original service  name to be enhancement is usually the
+     *                     name.
+     * @param requiredType type the bean must match; can be an interface or superclass.
+     * @return enhanced and optimized service name.
+     */
+    public static String getEnhancementName(String serviceName, Class<?> requiredType) {
+        Objects.requireNonNull(serviceName, "serviceName = null");
+        Objects.requireNonNull(requiredType, "requiredType = null");
 
         if (ServiceContextBeanNameGenerator.getRecordBeanTypes().contains(requiredType)) {
-            candidateNames.add(enhancementBeanName(requiredType, serviceName)); //is main bean type
+            return enhancementBeanName(requiredType, serviceName);
         }
-
-        return candidateNames;
+        return enhancementAlisaName(requiredType, serviceName);
     }
 
     /**
