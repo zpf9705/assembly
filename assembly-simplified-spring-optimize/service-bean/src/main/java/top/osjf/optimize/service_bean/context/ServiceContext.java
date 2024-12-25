@@ -16,9 +16,6 @@
 
 package top.osjf.optimize.service_bean.context;
 
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanDefinitionStoreException;
-import org.springframework.beans.factory.BeanNotOfRequiredTypeException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.lang.Nullable;
@@ -99,12 +96,9 @@ public interface ServiceContext extends Closeable {
      * @param <S>  the type of service to retrieve.
      * @return The service instance obtained by parsing the name.
      * @throws NoAvailableServiceException if there is no available service.
-     * @throws BeansException              if the bean could not be obtained
-     * @throws ClassCastException          If the bean obtained by name is not the
-     *                                     required generic type.
      * @throws NullPointerException        if input serviceName is {@literal null}.
      */
-    <S> S getService(String name) throws NoAvailableServiceException, ClassCastException;
+    <S> S getService(String name) throws NoAvailableServiceException;
 
     /**
      * Returns a service instance with the specified name and type, which can be shared or independent.
@@ -123,8 +117,6 @@ public interface ServiceContext extends Closeable {
      * @param <S>          the type of service to retrieve.
      * @return The service instance obtained by parsing the name and type.
      * @throws NoAvailableServiceException    if there is no available service.
-     * @throws BeanNotOfRequiredTypeException if the bean is not of the required type
-     * @throws BeansException                 if the bean could not be created
      * @throws NullPointerException           if input serviceName or requiredType is {@literal null}.
      */
     <S> S getService(String name, Class<S> requiredType) throws NoAvailableServiceException;
@@ -157,7 +149,6 @@ public interface ServiceContext extends Closeable {
      * @param <S>         the type of service to add.
      * @return If {@code true} is returned, it indicates successful addition; otherwise,
      * it indicates failed addition.
-     * @throws BeanDefinitionStoreException if registration failed.
      * @throws NullPointerException         if input serviceType is {@literal null}.
      * @since 1.0.2
      */
@@ -222,8 +213,6 @@ public interface ServiceContext extends Closeable {
      * @param serviceName the name of the service to remove.
      * @return If {@code true} is returned, the service has been successfully removed,
      * otherwise it does not exist or not end with {@code ServiceCore#BEAN_NAME_CLOSE_TAG}.
-     * @throws IllegalArgumentException if beanName does not correspond to an object in a mutable scope.
-     * @throws IllegalStateException    if no Scope SPI registered for certain scope name.
      * @throws NullPointerException     if input serviceName is {@literal null}.
      */
     boolean removeService(String serviceName);
@@ -252,8 +241,6 @@ public interface ServiceContext extends Closeable {
      * @param <S>          the type of service to remove.
      * @return If {@code true} is returned, the service has been successfully removed,
      * otherwise it does not exist or not end with {@code ServiceCore#BEAN_NAME_CLOSE_TAG}.
-     * @throws IllegalArgumentException if beanName does not correspond to an object in a mutable scope.
-     * @throws IllegalStateException    if no Scope SPI registered for certain scope name.
      * @throws NullPointerException     if input serviceName or requiredType is {@literal null}.
      * @since 1.0.2
      */

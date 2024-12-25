@@ -19,6 +19,9 @@ package top.osjf.optimize.service_bean.context;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanDefinitionStoreException;
+import org.springframework.beans.factory.BeanNotOfRequiredTypeException;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
@@ -50,6 +53,17 @@ public class DefaultServiceContext extends AbstractServiceContext {
 
     private static final Logger logger = LoggerFactory.getLogger(ServiceContext.class);
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param name {@inheritDoc}
+     * @param <S>  {@inheritDoc}
+     * @return {@inheritDoc}
+     * @throws NoAvailableServiceException {@inheritDoc}
+     * @throws BeansException              if the bean could not be obtained
+     * @throws ClassCastException          If the bean obtained by name is not the
+     *                                     required generic type.
+     */
     @Override
     @SuppressWarnings("unchecked")
     public <S> S getService(String name) throws NoAvailableServiceException {
@@ -61,6 +75,17 @@ public class DefaultServiceContext extends AbstractServiceContext {
         return (S) applicationContext.getBean(name);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param name         {@inheritDoc}
+     * @param requiredType {@inheritDoc}
+     * @param <S>          {@inheritDoc}
+     * @return {@inheritDoc}
+     * @throws NoAvailableServiceException    {@inheritDoc}
+     * @throws BeanNotOfRequiredTypeException if the bean is not of the required type
+     * @throws BeansException                 if the bean could not be created
+     */
     @Override
     public <S> S getService(String name, Class<S> requiredType) throws NoAvailableServiceException {
         ApplicationContext applicationContext = getContext();
@@ -75,6 +100,15 @@ public class DefaultServiceContext extends AbstractServiceContext {
         return service;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param name        {@inheritDoc}
+     * @param serviceType {@inheritDoc}
+     * @param <S>         {@inheritDoc}
+     * @return {@inheritDoc}
+     * @throws BeanDefinitionStoreException if registration failed.
+     */
     @Override
     public <S> boolean addService(@Nullable String name, Class<S> serviceType) {
 
@@ -129,6 +163,14 @@ public class DefaultServiceContext extends AbstractServiceContext {
         return getContext().containsBean(enhancementName);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param serviceName {@inheritDoc}
+     * @return {@inheritDoc}
+     * @throws IllegalArgumentException if beanName does not correspond to an object in a mutable scope.
+     * @throws IllegalStateException    if no Scope SPI registered for certain scope name.
+     */
     @Override
     public boolean removeService(String serviceName) {
         if (!ServiceCore.isEnhancementBeanServiceName(serviceName)
@@ -141,6 +183,16 @@ public class DefaultServiceContext extends AbstractServiceContext {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param serviceName  {@inheritDoc}
+     * @param requiredType {@inheritDoc}
+     * @param <S>          {@inheritDoc}
+     * @return {@inheritDoc}
+     * @throws IllegalArgumentException if beanName does not correspond to an object in a mutable scope.
+     * @throws IllegalStateException    if no Scope SPI registered for certain scope name.
+     */
     @Override
     public <S> boolean removeService(String serviceName, Class<S> requiredType) {
         String enhancementBeanName = ServiceCore.getEnhancementBeanName(serviceName, requiredType);
