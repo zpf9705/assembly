@@ -221,7 +221,7 @@ public interface ServiceContext extends Closeable {
      *
      * @param serviceName the name of the service to remove.
      * @return If {@code true} is returned, the service has been successfully removed,
-     * otherwise it does not exist or the removal has failed.
+     * otherwise it does not exist or not end with {@code ServiceCore#BEAN_NAME_CLOSE_TAG}.
      * @throws IllegalArgumentException if beanName does not correspond to an object in a mutable scope.
      * @throws IllegalStateException    if no Scope SPI registered for certain scope name.
      * @throws NullPointerException     if input serviceName is {@literal null}.
@@ -251,7 +251,7 @@ public interface ServiceContext extends Closeable {
      * @param requiredType type the bean must match; can be an interface or superclass.
      * @param <S>          the type of service to remove.
      * @return If {@code true} is returned, the service has been successfully removed,
-     * otherwise it does not exist or the removal has failed.
+     * otherwise it does not exist or not end with {@code ServiceCore#BEAN_NAME_CLOSE_TAG}.
      * @throws IllegalArgumentException if beanName does not correspond to an object in a mutable scope.
      * @throws IllegalStateException    if no Scope SPI registered for certain scope name.
      * @throws NullPointerException     if input serviceName or requiredType is {@literal null}.
