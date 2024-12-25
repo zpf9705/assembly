@@ -122,6 +122,12 @@ public interface ServiceContext extends Closeable {
      * recognized by Spring will be automatically added to the current context, so this must be
      * noted.
      *
+     * <p>Service classes that meet the scanning conditions of the Spring framework will be
+     * executed, while other service classes that have not been scanned can be dynamically
+     * registered using this method. This method will dynamically create Spring beans and
+     * participate in renaming operations based on the parent class or interface of annotation
+     * {@link ServiceCollection} marked on this bean.
+     *
      * @param serviceName the name of the service to add,can be empty, when empty,
      *                    use a type qualified name instead.
      * @param serviceType real and instantiated service types,can be an interface or
@@ -129,10 +135,11 @@ public interface ServiceContext extends Closeable {
      * @param <S>         the type of service to add.
      * @return If {@code true} is returned, it indicates successful addition; otherwise,
      * it indicates failed addition.
-     * @throws NullPointerException if input serviceType is {@literal null}.
+     * @throws NullPointerException  if input serviceType is {@literal null}.
+     * @throws IllegalStateException if input serviceType is an interface or abstract.
      * @since 1.0.2
      */
-    <S> boolean addService(@Nullable String serviceName, Class<S> serviceType);
+    <S> boolean addService(@Nullable String serviceName, Class<S> serviceType) throws IllegalStateException;
 
     /**
      * Returns a {@code Boolean} value representing the result of the containing operation,
