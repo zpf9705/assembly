@@ -130,8 +130,8 @@ public interface ServiceContext extends Closeable {
      *
      * @param serviceName the name of the service to add,can be empty, when empty,
      *                    use a type qualified name instead.
-     * @param serviceType real and instantiated service types,can be an interface or
-     *                    superclass.
+     * @param serviceType the type of service class added must be instantiated and the
+     *                    parent class or interface must meet the annotation {@link ServiceCollection}.
      * @param <S>         the type of service to add.
      * @return If {@code true} is returned, it indicates successful addition; otherwise,
      * it indicates failed addition.
