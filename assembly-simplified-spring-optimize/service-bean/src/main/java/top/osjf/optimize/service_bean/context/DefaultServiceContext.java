@@ -52,34 +52,31 @@ public class DefaultServiceContext extends AbstractServiceContext {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <S> S getService(String serviceName) throws NoAvailableServiceException {
+    public <S> S getService(String name) throws NoAvailableServiceException {
         ApplicationContext applicationContext = getContext();
-        if (!ServiceCore.isEnhancementServiceName(serviceName)
-                || !applicationContext.containsBean(serviceName)) {
-            throw new NoAvailableServiceException(serviceName);
+        if (!ServiceCore.isEnhancementServiceName(name)
+                || !applicationContext.containsBean(name)) {
+            throw new NoAvailableServiceException(name);
         }
-        return (S) applicationContext.getBean(serviceName);
+        return (S) applicationContext.getBean(name);
     }
 
     @Override
-    public <S> S getService(String serviceName, Class<S> requiredType) throws NoAvailableServiceException {
+    public <S> S getService(String name, Class<S> requiredType) throws NoAvailableServiceException {
         ApplicationContext applicationContext = getContext();
         S service = null;
-        for (String candidateName :
-                ServiceCore.getEnhancementCandidateNames(serviceName, requiredType)) {
-            if (applicationContext.containsBean(candidateName)) {
-                service = applicationContext.getBean(candidateName, requiredType);
-                break;
-            }
+        String enhancementName = ServiceCore.getEnhancementName(name, requiredType);
+        if (applicationContext.containsBean(enhancementName)) {
+            service = applicationContext.getBean(enhancementName, requiredType);
         }
         if (service == null) {
-            throw new NoAvailableServiceException(serviceName, requiredType);
+            throw new NoAvailableServiceException(name, requiredType);
         }
         return service;
     }
 
     @Override
-    public <S> boolean addService(@Nullable String serviceName, Class<S> serviceType) {
+    public <S> boolean addService(@Nullable String name, Class<S> serviceType) {
 
         Objects.requireNonNull(serviceType, "ServiceType no be null");
 
@@ -95,10 +92,9 @@ public class DefaultServiceContext extends AbstractServiceContext {
 
         //The service name provides priority adoption, but does not provide the name after
         // the first lowercase of the abbreviation according to JavaBean specifications.
-        serviceName = StringUtils.isNotBlank(serviceName) ? serviceName
-                : Introspector.decapitalize(serviceType.getSimpleName());
+        name = StringUtils.isNotBlank(name) ? name : Introspector.decapitalize(serviceType.getSimpleName());
 
-        String beanName = ServiceCore.enhancementBeanName(serviceType, serviceName);
+        String beanName = ServiceCore.enhancementBeanName(serviceType, name);
 
         List<String> alisaNames = new ArrayList<>();
         for (Class<?> targetServiceType : targetServiceTypes) {
@@ -123,21 +119,20 @@ public class DefaultServiceContext extends AbstractServiceContext {
     }
 
     @Override
-    public boolean containsService(String serviceName) {
-        return ServiceCore.isEnhancementServiceName(serviceName) && getContext().containsBean(serviceName);
+    public boolean containsService(String name) {
+        return ServiceCore.isEnhancementServiceName(name) && getContext().containsBean(name);
     }
 
     @Override
-    public <S> boolean containsService(String serviceName, Class<S> requiredType) {
-        ApplicationContext applicationContext = getContext();
-        return ServiceCore.getEnhancementCandidateNames(serviceName, requiredType)
-                .stream()
-                .anyMatch(applicationContext::containsBean);
+    public <S> boolean containsService(String name, Class<S> requiredType) {
+        String enhancementName = ServiceCore.getEnhancementName(name, requiredType);
+        return getContext().containsBean(enhancementName);
     }
 
     @Override
     public boolean removeService(String serviceName) {
-        if (!containsService(serviceName)) {
+        if (!ServiceCore.isEnhancementBeanServiceName(serviceName)
+                || !getContext().containsBean(serviceName)) {
             return false;
         }
         unwrapApplicationContext(ConfigurableApplicationContext.class)
@@ -148,17 +143,13 @@ public class DefaultServiceContext extends AbstractServiceContext {
 
     @Override
     public <S> boolean removeService(String serviceName, Class<S> requiredType) {
-        ConfigurableApplicationContext applicationContext =
-                unwrapApplicationContext(ConfigurableApplicationContext.class);
-        boolean removeResult = false;
-        for (String name
-                : ServiceCore.getEnhancementCandidateNames(serviceName, requiredType)) {
-            if (applicationContext.containsBean(name)) {
-                applicationContext.getBeanFactory().destroyScopedBean(name);
-                removeResult = true;
-                break;
-            }
+        String enhancementBeanName = ServiceCore.getEnhancementBeanName(serviceName, requiredType);
+        if (StringUtils.isBlank(enhancementBeanName) || !getContext().containsBean(enhancementBeanName)) {
+            return false;
         }
-        return removeResult;
+        unwrapApplicationContext(ConfigurableApplicationContext.class)
+                .getBeanFactory()
+                .destroyScopedBean(enhancementBeanName);
+        return true;
     }
 }
