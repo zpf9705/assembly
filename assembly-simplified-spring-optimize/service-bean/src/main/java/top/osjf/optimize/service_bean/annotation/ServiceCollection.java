@@ -35,6 +35,10 @@ import java.lang.annotation.*;
  * parent class, but it does not participate in renaming and cannot be uniquely
  * converted in the context object {@link ServiceContext}.
  *
+ * <p>If you need to dynamically add service class mappings, you can use method
+ * {@link ServiceContext#addService} to manually register instead of the functionality
+ * of this annotation.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  * @see top.osjf.optimize.service_bean.context.ServiceCore#getTargetServiceTypes
