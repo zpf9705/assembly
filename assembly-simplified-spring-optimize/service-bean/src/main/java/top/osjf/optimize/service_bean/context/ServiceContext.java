@@ -20,6 +20,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
+import top.osjf.optimize.service_bean.annotation.ServiceCollection;
 
 import java.io.Closeable;
 
@@ -65,16 +66,37 @@ public interface ServiceContext extends Closeable {
     String SUPPORT_SCOPE = "service";
 
     /**
-     * Returns a service with a specified name, which can be shared or independent.
+     * Returns a service instance with a specified name, which can be shared or independent.
      *
-     * <p>The operation is equivalent to {@link ApplicationContext#getBean(String, Class)}},
-     * and on this basis,Add the class name {@link Class#getName()}} of the routing service
-     * in the name to prevent potential bean duplication issues, in order to better adapt to
-     * single interface multi implementation class routing scenarios in the Spring framework.
+     * <p>The operation is equivalent to {@link ApplicationContext#getBean(String)}},and on
+     * this basis, tag the exploration annotation {@link ServiceCollection} of the routing
+     * service interface or parent class to prevent potential bean duplication issues, in
+     * order to better adapt to single interface multi implementation class routing scenarios
+     * in the Spring framework.
      *
      * <p>According to the specifications of Spring's beans, multiple alias queries are supported,
-     * but methods in the context will be called to support {@link ApplicationContext#getBean(
-     *String, Class)}.
+     * but methods in the context will be called to support {@link ApplicationContext#getBean(String)}.
+     *
+     * @param serviceName the name of the service to retrieve.
+     * @param <S>         the type of service to retrieve.
+     * @return The service instance obtained by parsing the service name.
+     * @throws NoAvailableServiceException if there is no available service.
+     * @throws ClassCastException          If the bean obtained by name is not the
+     *                                     required generic type.
+     */
+    <S> S getService(String serviceName) throws NoAvailableServiceException, ClassCastException;
+
+    /**
+     * Returns a service instance with the specified name and type, which can be shared or independent.
+     *
+     * <p>The operation is equivalent to {@link ApplicationContext#getBean(String, Class)}},
+     * and on this basis, tag the exploration annotation {@link ServiceCollection} of the routing
+     * service interface or parent class to prevent potential bean duplication issues, in order
+     * to better adapt to single interface multi implementation class routing scenarios in the
+     * Spring framework.
+     *
+     * <p>According to the specifications of Spring's beans, multiple alias queries are supported,
+     * but methods in the context will be called to support {@link ApplicationContext#getBean(String, Class)}.
      *
      * @param serviceName  the name of the service to retrieve.
      * @param requiredType type the bean must match,can be an interface or superclass.
