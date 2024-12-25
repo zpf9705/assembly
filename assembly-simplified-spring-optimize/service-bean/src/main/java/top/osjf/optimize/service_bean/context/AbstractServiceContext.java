@@ -80,7 +80,26 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
         }
     }
 
-    protected ApplicationContext getApplicationContext() {
+    /**
+     * Return the context object of Spring.
+     *
+     * @return the context object of Spring.
+     */
+    protected ApplicationContext getContext() {
         return context;
+    }
+
+    /**
+     * Return the Spring context converted object based on the specified type.
+     *
+     * @param clazz the specified type.
+     * @param <T>   the specified generic.
+     * @return the Spring context converted object based on the specified type.
+     */
+    protected <T> T unwrapApplicationContext(Class<T> clazz) {
+        if (!clazz.isInstance(context)) {
+            throw new ClassCastException(context.getClass().getName() + " cannot be cast " + clazz.getName());
+        }
+        return clazz.cast(context);
     }
 }
