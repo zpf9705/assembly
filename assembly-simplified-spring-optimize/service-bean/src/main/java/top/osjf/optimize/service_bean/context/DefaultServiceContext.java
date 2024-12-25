@@ -16,7 +16,6 @@
 
 package top.osjf.optimize.service_bean.context;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
@@ -27,7 +26,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
-import top.osjf.optimize.service_bean.ServiceContextUtils;
 import top.osjf.optimize.service_bean.annotation.ServiceCollection;
 
 import java.util.ArrayList;
@@ -43,10 +41,6 @@ import java.util.Objects;
  * manage and operate service beans, supporting dynamic addition and removal
  * of services.
  *
- * <p>This type utilizes the utility class {@link ServiceContextUtils} to assist
- * in tasks such as service name resolution and alias generation, in order to
- * achieve the goal of heterogeneous naming.
- *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
@@ -55,16 +49,24 @@ public class DefaultServiceContext extends AbstractServiceContext {
     private static final Logger logger = LoggerFactory.getLogger(ServiceContext.class);
 
     @Override
-    public <S> S getService(String serviceName, Class<S> requiredType) throws NoAvailableServiceException {
-        Objects.requireNonNull(serviceName, "serviceName = null");
-        Objects.requireNonNull(requiredType, "requiredType = null");
+    @SuppressWarnings("unchecked")
+    public <S> S getService(String serviceName) throws NoAvailableServiceException {
+        ApplicationContext applicationContext = getContext();
+        if (!ServiceCore.isEnhancementServiceName(serviceName)
+                || !applicationContext.containsBean(serviceName)) {
+            throw new NoAvailableServiceException(serviceName);
+        }
+        return (S) applicationContext.getBean(serviceName);
+    }
 
-        ApplicationContext applicationContext = getApplicationContext();
+    @Override
+    public <S> S getService(String serviceName, Class<S> requiredType) throws NoAvailableServiceException {
+        ApplicationContext applicationContext = getContext();
         S service = null;
-        for (String candidateServiceName :
-                ServiceContextUtils.getCandidateServiceNames(serviceName, requiredType, applicationContext.getId())) {
-            if (applicationContext.containsBean(candidateServiceName)) {
-                service = applicationContext.getBean(candidateServiceName, requiredType);
+        for (String candidateName :
+                ServiceCore.getEnhancementCandidateNames(serviceName, requiredType)) {
+            if (applicationContext.containsBean(candidateName)) {
+                service = applicationContext.getBean(candidateName, requiredType);
                 break;
             }
         }
@@ -79,58 +81,23 @@ public class DefaultServiceContext extends AbstractServiceContext {
 
         Objects.requireNonNull(serviceType, "ServiceType no be null");
 
-        if (serviceType.isInterface()) {
-            throw new IllegalStateException("Specified class is an interface");
-        }
+        List<Class<?>> targetServiceTypes = ServiceCore.getTargetServiceTypes(serviceType);
 
-        List<Class<?>> filterServices = ServiceContextUtils.getFilterServices(serviceType);
-        /*
-         * When adding a service entity, it is necessary to ensure that its parent class or
-         *  implementation interface has a specific identifier for the service to obtain annotations.
-         * You can view the process of redefining names : top.osjf.optimize.service_bean.context
-         * .AbstractServiceContext.ServiceContextBeanNameGenerator#generateBeanName
-         * */
-        if (CollectionUtils.isEmpty(filterServices)) {
+        if (CollectionUtils.isEmpty(targetServiceTypes)) {
             if (logger.isWarnEnabled()) {
                 logger.warn("No annotation {} was found on the related parent class or interface of type {}.",
-                        serviceType.getName(), ServiceCollection.class.getName());
+                        ServiceCollection.class.getName(), serviceType.getName());
             }
             return false;
         }
 
-        ApplicationContext applicationContext = getApplicationContext();
-        String applicationId = applicationContext.getId();
+        serviceName = ServiceCore.resolveNameByType(serviceType);
 
-        //Get the format prefix of the alias encoding.
-        List<String> classAlisa = ServiceContextUtils.analyzeClassAlias(serviceType, true);
+        String beanName = ServiceCore.enhancementBeanName(serviceType, serviceName);
 
-        //Prioritize formatting based on the provided service name, followed by
-        // limiting the name based on the type.
-        String encodeSuffix = StringUtils.isNotBlank(serviceName) ? serviceName : serviceType.getName();
-
-        //Collection list of aliases.
-        List<String> beanAlisaNames = new ArrayList<>();
-
-        //Directly implemented interfaces or parent classes are preferred for
-        // formatting bean main names.
-        Class<?> ms = filterServices.get(0);
-
-        String beanName = ServiceContextUtils.formatId(ms, encodeSuffix, applicationId);
-
-        //All parent classes or interfaces carrying specific tags need to be encoded
-        // and formatted according to specific alias rules.
-        for (String ca : classAlisa) {
-            beanAlisaNames.add(ServiceContextUtils.formatAlisa(ms, ca, applicationId));
-        }
-
-        filterServices.remove(0);
-        if (!CollectionUtils.isEmpty(filterServices)) {
-            for (Class<?> filterService : filterServices) {
-                beanAlisaNames.add(ServiceContextUtils.formatAlisa(filterService, encodeSuffix, applicationId));
-                for (String ca : classAlisa) {
-                    beanAlisaNames.add(ServiceContextUtils.formatAlisa(filterService, ca, applicationId));
-                }
-            }
+        List<String> alisaNames = new ArrayList<>();
+        for (Class<?> targetServiceType : targetServiceTypes) {
+            alisaNames.add(ServiceCore.enhancementAlisaName(targetServiceType, beanName));
         }
 
         //Because beans that can be recognized by the Spring container will already be automatically
@@ -139,10 +106,10 @@ public class DefaultServiceContext extends AbstractServiceContext {
                 .setScope(ServiceContext.SUPPORT_SCOPE);
         BeanDefinitionReaderUtils.registerBeanDefinition
                 (new BeanDefinitionHolder(builder.getBeanDefinition(), beanName,
-                        beanAlisaNames.toArray(new String[]{})), (BeanDefinitionRegistry) applicationContext);
+                        alisaNames.toArray(new String[]{})), unwrapApplicationContext(BeanDefinitionRegistry.class));
 
         //After registration, activate the bean and initialize it.
-        applicationContext.getBean(beanName, serviceType);
+        getContext().getBean(beanName, serviceType);
 
         if (logger.isInfoEnabled()) {
             logger.info("Created a dynamic bean for name {} and type {}.", beanName, serviceType.getName());
@@ -151,26 +118,36 @@ public class DefaultServiceContext extends AbstractServiceContext {
     }
 
     @Override
-    public <S> boolean containsService(String serviceName, Class<S> requiredType) {
-        Objects.requireNonNull(serviceName, "serviceName = null");
-        Objects.requireNonNull(requiredType, "requiredType = null");
+    public boolean containsService(String serviceName) {
+        return ServiceCore.isEnhancementServiceName(serviceName) && getContext().containsBean(serviceName);
+    }
 
-        ApplicationContext applicationContext = getApplicationContext();
-        return ServiceContextUtils.getCandidateServiceNames(serviceName, requiredType, applicationContext.getId())
+    @Override
+    public <S> boolean containsService(String serviceName, Class<S> requiredType) {
+        ApplicationContext applicationContext = getContext();
+        return ServiceCore.getEnhancementCandidateNames(serviceName, requiredType)
                 .stream()
                 .anyMatch(applicationContext::containsBean);
     }
 
     @Override
-    public <S> boolean removeService(String serviceName, Class<S> requiredType) {
-        Objects.requireNonNull(serviceName, "serviceName = null");
-        Objects.requireNonNull(requiredType, "requiredType = null");
+    public boolean removeService(String serviceName) {
+        if (!containsService(serviceName)) {
+            return true;
+        }
+        unwrapApplicationContext(ConfigurableApplicationContext.class)
+                .getBeanFactory()
+                .destroyScopedBean(serviceName);
+        return true;
+    }
 
+    @Override
+    public <S> boolean removeService(String serviceName, Class<S> requiredType) {
         ConfigurableApplicationContext applicationContext =
-                (ConfigurableApplicationContext) getApplicationContext();
+                unwrapApplicationContext(ConfigurableApplicationContext.class);
         boolean removeResult = false;
         for (String name
-                : ServiceContextUtils.getCandidateServiceNames(serviceName, requiredType, applicationContext.getId())) {
+                : ServiceCore.getEnhancementCandidateNames(serviceName, requiredType)) {
             if (applicationContext.containsBean(name)) {
                 applicationContext.getBeanFactory().destroyScopedBean(name);
                 removeResult = true;
