@@ -29,37 +29,25 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * The scope processing class of the corresponding bean for
- * service collection. The services to be collected will
- * not be initialized at project startup, but will be
- * separately initialized when the context is actually
- * used for retrieval, and saved to the storage structure
- * of the current class.
- *
- * <p>The corresponding service cache lifecycle is equivalent
- * to that of an application, and a unified {@link DisposableBean}
- * destruction callback is performed when the application is closed.
- *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
 public class ServiceScope implements Scope, DisposableBean {
 
-    /*** There is a map for service mapping.*/
+    /**
+     * there is a map for service mapping.
+     */
     private final Map<String, Object> serviceMap = new ConcurrentHashMap<>(16);
 
-    /*** Destroy the cache collection of logic {@link DisposableBean}.*/
+    /**
+     * destroy the cache collection of logic {@link DisposableBean}.
+     */
     private final List<Runnable> destructionCallbacks = new LinkedList<>();
 
-    /*** placeholder for {@link #getConversationId()}*/
-    private final String uniqueId = UUID.randomUUID().toString();
-
     /**
-     * An empty construct carries a hook function that performs a destroy callback.
+     * placeholder for {@link #getConversationId()}
      */
-    public ServiceScope() {
-        Runtime.getRuntime().addShutdownHook(new Thread(this::destroy));
-    }
+    private final String uniqueId = UUID.randomUUID().toString();
 
     @Override
     @NonNull
