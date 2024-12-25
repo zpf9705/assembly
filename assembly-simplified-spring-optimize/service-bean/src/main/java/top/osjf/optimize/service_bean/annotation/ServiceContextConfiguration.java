@@ -23,11 +23,12 @@ import org.springframework.context.annotation.Role;
 import top.osjf.optimize.service_bean.context.DefaultServiceContext;
 import top.osjf.optimize.service_bean.context.ServiceContext;
 import top.osjf.optimize.service_bean.context.ServiceContextAwareBeanPostProcessor;
+import top.osjf.optimize.service_bean.context.ServiceScope;
 
 /**
  * The related configuration classes of {@code ServiceContext}.
  *
- * <p>This configuration class mainly defines two beans:
+ * <p>This configuration class mainly defines three beans:
  * <ul>
  * <li>Defined the default implementation class {@link DefaultServiceContext}
  * for {@code ServiceContext}.</li>
@@ -37,6 +38,9 @@ import top.osjf.optimize.service_bean.context.ServiceContextAwareBeanPostProcess
  * it is a bean processor that works internally and is not related to the end user,
  * so {@link BeanDefinition#ROLE_INFRASTRUCTURE} is set.
  * </li>
+ * <li>Defined a {@link ServiceScope} scope implementation to support the new
+ * scope {@link ServiceContext#SUPPORT_SCOPE} defined by this architecture.
+ * </li>
  * </ul>
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
@@ -44,6 +48,12 @@ import top.osjf.optimize.service_bean.context.ServiceContextAwareBeanPostProcess
  */
 @Configuration(proxyBeanMethods = false)
 public class ServiceContextConfiguration {
+
+    /**
+     * The name of the internal bean {@code ServiceScope}.
+     */
+    protected static final String INTERNAL_SERVICE_SCOPE
+            = "top.osjf.optimize.service_bean.context.ServiceScope.internal";
 
     @Bean
     public ServiceContext recordServiceContext() {
@@ -54,5 +64,10 @@ public class ServiceContextConfiguration {
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     public ServiceContextAwareBeanPostProcessor serviceContextAwareBeanPostProcessor() {
         return new ServiceContextAwareBeanPostProcessor();
+    }
+
+    @Bean(INTERNAL_SERVICE_SCOPE)
+    public ServiceScope serviceScope() {
+        return new ServiceScope();
     }
 }
