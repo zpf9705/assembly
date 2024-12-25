@@ -210,8 +210,11 @@ public interface ServiceContext extends Closeable {
      * @param serviceName the name of the service to remove.
      * @return If {@code true} is returned, the service has been successfully removed,
      * otherwise it does not exist or the removal has failed.
+     * @throws IllegalArgumentException if beanName does not correspond to an object in a mutable scope.
+     * @throws IllegalStateException    if no Scope SPI registered for certain scope name.
+     * @throws NullPointerException     if input serviceName is {@literal null}.
      */
-    boolean removeService(String serviceName) throws NoAvailableServiceException;
+    boolean removeService(String serviceName);
 
     /**
      * Return a boolean type result representing the result of service removal,
