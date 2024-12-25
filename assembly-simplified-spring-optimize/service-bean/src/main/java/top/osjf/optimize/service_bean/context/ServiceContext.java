@@ -49,6 +49,16 @@ import java.io.Closeable;
  *
  * <p>The underlying implementation utilizes the bean query function method of spring
  * context central interface {@link ApplicationContext}.
+ * <p>
+ * <strong>Note:</strong>
+ * <p>The parameter names of the following methods are {@code name}, which can
+ * be used to encode the final service name using the parent class or interface
+ * (for Spring, it is the name or alias of the available bean); the parameter
+ * name is {@code serviceName}, which means that only the type of the service
+ * class itself can participate in the encoding of the final service name (for
+ * Spring, only the name of the bean can be used).
+ * <p>All methods in the current context only support operations related to service
+ * classes with scope {@link #SUPPORT_SCOPE}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
@@ -81,20 +91,20 @@ public interface ServiceContext extends Closeable {
      * but methods in the context will be called to support {@link ApplicationContext#getBean(String)}.
      * <p>
      * <strong>Note:</strong>
-     * <p>The transmission of this service name requires the use of the original core processing
+     * <p>The transmission of this name requires the use of the original core processing
      * class {@link ServiceCore} method {@code ServiceCore#enhancement}, which has been specially
      * processed.
      *
-     * @param serviceName the name of the service to retrieve.
-     * @param <S>         the type of service to retrieve.
-     * @return The service instance obtained by parsing the service name.
+     * @param name the name of the service to retrieve.
+     * @param <S>  the type of service to retrieve.
+     * @return The service instance obtained by parsing the name.
      * @throws NoAvailableServiceException if there is no available service.
      * @throws BeansException              if the bean could not be obtained
      * @throws ClassCastException          If the bean obtained by name is not the
      *                                     required generic type.
      * @throws NullPointerException        if input serviceName is {@literal null}.
      */
-    <S> S getService(String serviceName) throws NoAvailableServiceException, ClassCastException;
+    <S> S getService(String name) throws NoAvailableServiceException, ClassCastException;
 
     /**
      * Returns a service instance with the specified name and type, which can be shared or independent.
@@ -108,23 +118,23 @@ public interface ServiceContext extends Closeable {
      * <p>According to the specifications of Spring's beans, multiple alias queries are supported,
      * but methods in the context will be called to support {@link ApplicationContext#getBean(String, Class)}.
      *
-     * @param serviceName  the name of the service to retrieve.
+     * @param name         the name of the service to retrieve.
      * @param requiredType type the bean must match,can be an interface or superclass.
      * @param <S>          the type of service to retrieve.
-     * @return The service instance obtained by parsing the service name and type.
+     * @return The service instance obtained by parsing the name and type.
      * @throws NoAvailableServiceException    if there is no available service.
      * @throws BeanNotOfRequiredTypeException if the bean is not of the required type
      * @throws BeansException                 if the bean could not be created
      * @throws NullPointerException           if input serviceName or requiredType is {@literal null}.
      */
-    <S> S getService(String serviceName, Class<S> requiredType) throws NoAvailableServiceException;
+    <S> S getService(String name, Class<S> requiredType) throws NoAvailableServiceException;
 
     /**
-     * Add a service instance based on the provided service name and type, where the service
+     * Add a service instance based on the provided name and type, where the service
      * name is not required to be provided and defaults to the encoded qualified name of the
      * type.
      *
-     * <p>The setting of the service name is passed like the value provided by the annotation
+     * <p>The setting of the name is passed like the value provided by the annotation
      * {@link Component#value()}, which is dynamically passed here. The initialization of the
      * instance is carried out by the implementation to ensure that the type has the necessary
      * elements such as public construction methods.
@@ -140,7 +150,7 @@ public interface ServiceContext extends Closeable {
      * participate in renaming operations based on the parent class or interface of annotation
      * {@link ServiceCollection} marked on this bean.
      *
-     * @param serviceName the name of the service to add,can be empty, when empty,
+     * @param name        the name of the service to add,can be empty, when empty,
      *                    use a type qualified name instead.
      * @param serviceType the type of service class added must be instantiated and the
      *                    parent class or interface must meet the annotation {@link ServiceCollection}.
@@ -151,10 +161,10 @@ public interface ServiceContext extends Closeable {
      * @throws NullPointerException         if input serviceType is {@literal null}.
      * @since 1.0.2
      */
-    <S> boolean addService(@Nullable String serviceName, Class<S> serviceType);
+    <S> boolean addService(@Nullable String name, Class<S> serviceType);
 
     /**
-     * Return a boolean tag indicating whether the current input service name contains
+     * Return a boolean tag indicating whether the current input name contains
      * the corresponding service instance.
      *
      * <p>Essentially call the factory method of {@link ApplicationContext#containsBean} and
@@ -162,37 +172,37 @@ public interface ServiceContext extends Closeable {
      *
      * <p>
      * <strong>Note:</strong>
-     * <p>The transmission of this service name requires the use of the original core processing
+     * <p>The transmission of this name requires the use of the original core processing
      * class {@link ServiceCore} method {@code ServiceCore#enhancement}, which has been specially
      * processed.
      *
-     * @param serviceName the name of the service to retrieve.
+     * @param name the name of the service to contains.
      * @return If {@code true} is returned, this service exists, otherwise it does not exist.
      * @throws NullPointerException if input serviceName is {@literal null}.
      */
-    boolean containsService(String serviceName);
+    boolean containsService(String name);
 
     /**
      * Returns a boolean value representing the result of the containing operation, which re
-     * encodes the final service name using the provided service name and type to match the
+     * encodes the final name using the provided name and type to match the
      * bean of the specific type provided.This method does not throw undiscovered exceptions
      * and is represented by a boolean result.
      *
      * <p>Essentially call the factory method of {@link ApplicationContext#containsBean} and
      * make intake adjustments in the name stage.
      *
-     * @param serviceName  the name of the service to contains.
+     * @param name         the name of the service to contains.
      * @param requiredType type the bean must match; can be an interface or superclass.
      * @param <S>          the type of service to contains.
      * @return If {@code true} is returned, this service exists, otherwise it does not exist.
      * @throws NullPointerException if input serviceName or requiredType is {@literal null}.
      * @since 1.0.2
      */
-    <S> boolean containsService(String serviceName, Class<S> requiredType);
+    <S> boolean containsService(String name, Class<S> requiredType);
 
     /**
      * Return a boolean tag representing the result of deleting the corresponding
-     * service instance using the provided service name.
+     * service instance using the provided name.
      *
      * <p>The removed service will be destroyed in the Spring container at the
      * same time as it is removed in the context of this service, with a callback
@@ -204,9 +214,10 @@ public interface ServiceContext extends Closeable {
      *
      * <p>
      * <strong>Note:</strong>
-     * <p>The transmission of this service name requires the use of the original core processing
-     * class {@link ServiceCore} method {@code ServiceCore#enhancement}, which has been specially
-     * processed.
+     * <p>The transmission of this service name requires the use of the original core
+     * processing class {@link ServiceCore} method {@code ServiceCore#enhancement}
+     * and it must be a service name ending with {@code ServiceCore#BEAN_NAME_CLOSE_TAG}
+     * , which has been specially processed.
      *
      * @param serviceName the name of the service to remove.
      * @return If {@code true} is returned, the service has been successfully removed,
@@ -219,7 +230,7 @@ public interface ServiceContext extends Closeable {
 
     /**
      * Return a boolean type result representing the result of service removal,
-     * based on the re encoding of the provided name and type.
+     * based on the re encoding of the provided service name and type.
      *
      * <p>The removed service will be destroyed in the Spring container at the
      * same time as it is removed in the context of this service, with a callback
@@ -228,6 +239,13 @@ public interface ServiceContext extends Closeable {
      * <p>Only applicable for deleting service classes that have specific scope
      * {@link org.springframework.beans.factory.config.Scope} storage, such as
      * the currently supported {@link ServiceScope}, developers can push this type.
+     *
+     * <p>
+     * <strong>Note:</strong>
+     * <p>Due to the limitations of the Spring framework for removing beans from
+     * specific scopes, the {@code requiredType} of this method must be the native
+     * type of the service class used to construct the name of the bean for removing
+     * beans from specific scopes.
      *
      * @param serviceName  the name of the service to remove.
      * @param requiredType type the bean must match; can be an interface or superclass.
