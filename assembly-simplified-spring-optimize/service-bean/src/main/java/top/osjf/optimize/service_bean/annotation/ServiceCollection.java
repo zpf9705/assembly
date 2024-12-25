@@ -37,6 +37,7 @@ import java.lang.annotation.*;
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
+ * @see top.osjf.optimize.service_bean.context.ServiceCore#getTargetServiceTypes
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
