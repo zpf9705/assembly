@@ -151,7 +151,7 @@ public interface ServiceContext extends Closeable {
      * @throws NullPointerException         if input serviceType is {@literal null}.
      * @since 1.0.2
      */
-    <S> boolean addService(@Nullable String serviceName, Class<S> serviceType) throws IllegalStateException;
+    <S> boolean addService(@Nullable String serviceName, Class<S> serviceType);
 
     /**
      * Return a boolean tag indicating whether the current input service name contains
@@ -168,6 +168,7 @@ public interface ServiceContext extends Closeable {
      *
      * @param serviceName the name of the service to retrieve.
      * @return If {@code true} is returned, this service exists, otherwise it does not exist.
+     * @throws NullPointerException if input serviceName is {@literal null}.
      */
     boolean containsService(String serviceName);
 
