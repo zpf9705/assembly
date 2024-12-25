@@ -27,6 +27,10 @@ public class NoAvailableServiceException extends IllegalStateException {
 
     private static final long serialVersionUID = 922435911357767431L;
 
+    public NoAvailableServiceException(String serviceName) {
+        super("No available service named " + serviceName + ".");
+    }
+
     public NoAvailableServiceException(String serviceName, Class<?> requiredType) {
         super("No available " + requiredType.getName() + " type for service name " + serviceName + ".");
     }
