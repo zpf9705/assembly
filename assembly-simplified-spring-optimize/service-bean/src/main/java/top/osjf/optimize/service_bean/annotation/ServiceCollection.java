@@ -16,16 +16,24 @@
 
 package top.osjf.optimize.service_bean.annotation;
 
+import top.osjf.optimize.service_bean.context.ServiceContext;
+
 import java.lang.annotation.*;
 
 /**
  * {@code ServiceCollection} tag annotation is used to mark the parent
- * class or interface of a service class, and the tagged person will
+ * class or interface of a service class, and the tagged class  will
  * participate in the renaming of the service class in the Spring framework.
  *
  * <p>The unique attribute method {@link #value()} is used for distinguishing
  * when the bean name is not unique. If this value is empty, the fully qualified
  * name of the current tag class is used as the unique identifier.
+ *
+ * <p>The tagged class can be converted between the defined name of the service
+ * class and the type of the current tagged person in the context object
+ * {@link ServiceContext}. Without a tagged class, it can be an interface or
+ * parent class, but it does not participate in renaming and cannot be uniquely
+ * converted in the context object {@link ServiceContext}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
