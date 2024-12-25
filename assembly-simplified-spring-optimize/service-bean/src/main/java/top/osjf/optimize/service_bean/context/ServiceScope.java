@@ -29,6 +29,19 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * {@code ServiceScope} is an effective support class for scope
+ * {@link ServiceContext#SUPPORT_SCOPE},and all beans that affect
+ * {@link ServiceContext#SUPPORT_SCOPE} are managed by this class.
+ *
+ * <p>This type will perform secure addition and deletion operations
+ * on beans within the scope on the basis of thread safety. At the
+ * same time, it supports registration and destruction callbacks to
+ * perform necessary cleanup work during scope destruction.
+ *
+ * <p>Each {@code ServiceScope} instance has a unique identifier (uniqueId)
+ * used to identify and distinguish different scope sessions, and each
+ * identifier is generated through {@code UUID} to ensure global uniqueness.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
