@@ -67,6 +67,11 @@ public class ServiceContextBeanNameGenerator extends AnnotationBeanNameGenerator
      * {@code BeanNameGenerator}.
      */
     private static final Set<String> RECORD_BEAN_NAMES = new CopyOnWriteArraySet<>();
+    /**
+     * Record the main name collection of beans type by this custom naming
+     * {@code BeanNameGenerator}.
+     */
+    private static final Set<Class<?>> RECORD_BEAN_TYPES = new CopyOnWriteArraySet<>();
 
     /**
      * The scope name required for beans that accept custom naming.
@@ -81,6 +86,15 @@ public class ServiceContextBeanNameGenerator extends AnnotationBeanNameGenerator
      */
     protected static Set<String> getRecordBeanNames() {
         return Collections.unmodifiableSet(RECORD_BEAN_NAMES);
+    }
+
+    /**
+     * Return un modifiable set of record bean type.
+     *
+     * @return un modifiable set of record bean type.
+     */
+    protected static Set<Class<?>> getRecordBeanTypes() {
+        return Collections.unmodifiableSet(RECORD_BEAN_TYPES);
     }
 
     /**
@@ -138,6 +152,8 @@ public class ServiceContextBeanNameGenerator extends AnnotationBeanNameGenerator
 
                     //cache the name of the main bean.
                     RECORD_BEAN_NAMES.add(beanName);
+                    //cache the type of the main bean.
+                    RECORD_BEAN_TYPES.add(clazz);
 
                     //enhancement alisa name for target clazz to this bean.
                     for (Class<?> targetServiceType : targetServiceTypes) {
