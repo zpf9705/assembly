@@ -19,10 +19,13 @@ package top.osjf.optimize.service_bean.annotation;
 import java.lang.annotation.*;
 
 /**
- * The annotation that needs to be annotated for service interfaces/abstract classes
- * is mainly used to tell you that once the class is annotated, its implementation
- * class or subclass can be automatically collected, provided that it has been added
- * to the Spring container and can be collected.
+ * {@code ServiceCollection} tag annotation is used to mark the parent
+ * class or interface of a service class, and the tagged person will
+ * participate in the renaming of the service class in the Spring framework.
+ *
+ * <p>The unique attribute method {@link #value()} is used for distinguishing
+ * when the bean name is not unique. If this value is empty, the fully qualified
+ * name of the current tag class is used as the unique identifier.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
@@ -31,9 +34,10 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface ServiceCollection {
-
     /**
-     * @return Service name prefix,the default is {@link Class#getName()}.
+     * The unique distinguishing string of the name, which defaults
+     * to the fully qualified name of the class.
+     * @return the unique distinguishing string of the name.
      */
-    String prefix() default "";
+    String value() default "";
 }
