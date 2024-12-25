@@ -62,6 +62,7 @@ public abstract class ServiceCore {
      * @return If {@code true} is returned, it means yes, otherwise it is not.
      */
     public static boolean isEnhancementServiceName(String serviceName) {
+        Objects.requireNonNull(serviceName, "serviceName = null");
         return serviceName.endsWith(BEAN_NAME_CLOSE_TAG) || serviceName.endsWith(ALISA_NAME_CLOSE_TAG);
     }
 
