@@ -16,6 +16,7 @@
 
 package top.osjf.optimize.service_bean.context;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
@@ -28,6 +29,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
 import top.osjf.optimize.service_bean.annotation.ServiceCollection;
 
+import java.beans.Introspector;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -91,7 +93,10 @@ public class DefaultServiceContext extends AbstractServiceContext {
             return false;
         }
 
-        serviceName = ServiceCore.resolveNameByType(serviceType);
+        //The service name provides priority adoption, but does not provide the name after
+        // the first lowercase of the abbreviation according to JavaBean specifications.
+        serviceName = StringUtils.isNotBlank(serviceName) ? serviceName
+                : Introspector.decapitalize(serviceType.getSimpleName());
 
         String beanName = ServiceCore.enhancementBeanName(serviceType, serviceName);
 
@@ -133,7 +138,7 @@ public class DefaultServiceContext extends AbstractServiceContext {
     @Override
     public boolean removeService(String serviceName) {
         if (!containsService(serviceName)) {
-            return true;
+            return false;
         }
         unwrapApplicationContext(ConfigurableApplicationContext.class)
                 .getBeanFactory()
