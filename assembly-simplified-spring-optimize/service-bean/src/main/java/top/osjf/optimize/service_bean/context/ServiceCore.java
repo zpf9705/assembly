@@ -21,7 +21,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
 import top.osjf.optimize.service_bean.annotation.ServiceCollection;
@@ -31,7 +30,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * The core name of this service framework is the static method class,
@@ -57,32 +55,62 @@ public abstract class ServiceCore {
     private static final String ALISA_NAME_CLOSE_TAG = "@service.alisa.name";
 
     /**
-     * Generate and return a list of candidate names for depolarization based on the
-     * given name, required type, and optional application ID.
+     * Return a boolean tag indicating whether the input name is an enhanced
+     * service name.
      *
-     * @param name          input the original name to be generated.
-     * @param requiredType  the specified required type.
-     * @param applicationId optional application ID, which may be used to generate name
-     *                      variants specific to the application. If not available, null
-     *                      can be passed in.
-     * @return a list of candidate names for depolarization based on the given name,
-     * required type, and optional application ID.
-     * @see #decapitalizeDefinitionBeanName
-     * @see #decapitalizeAlisaName
+     * @param serviceName the input service name.
+     * @return If {@code true} is returned, it means yes, otherwise it is not.
      */
-    public static List<String> getDecapitalizeCandidateNames(String name, Class<?> requiredType,
-                                                             @Nullable String applicationId) {
-        return Stream.of(name,
-                        decapitalizeDefinitionBeanName(requiredType, name, applicationId),
-                        decapitalizeAlisaName(requiredType, name, applicationId))
-                .collect(Collectors.toList());
+    public static boolean isEnhancementServiceName(String serviceName) {
+        return serviceName.endsWith(BEAN_NAME_CLOSE_TAG) || serviceName.endsWith(ALISA_NAME_CLOSE_TAG);
     }
 
+    /**
+     * Generate and return a list of candidate names for enhancement based on the
+     * given name, required type.
+     *
+     * @param serviceName  the original service  name to be enhancement is usually the
+     *                     name.
+     * @param requiredType type the bean must match; can be an interface or superclass.
+     * @return a list of candidate names for enhancement based on the given name, required
+     * type.
+     * @see #enhancementBeanName
+     * @see #enhancementAlisaName
+     */
+    public static List<String> getEnhancementCandidateNames(String serviceName, Class<?> requiredType) {
+        Objects.requireNonNull(serviceName, "serviceName = null");
+        Objects.requireNonNull(requiredType, "requiredType = null");
+
+        if (isEnhancementServiceName(serviceName)) {
+            return Collections.singletonList(serviceName);
+        }
+
+        List<String> candidateNames = new ArrayList<>();
+
+        candidateNames.add(enhancementAlisaName(requiredType, serviceName));
+
+        candidateNames.add(enhancementBeanName(requiredType, serviceName));
+
+        return candidateNames;
+    }
+
+    /**
+     * Return the class type of the current input, with its interface or parent class
+     * marked with annotation {@link ServiceCollection} as a collection of class types.
+     * <p>
+     * <strong>Note:</strong>
+     * According to the requirement of annotation {@link ServiceCollection}, this method
+     * only filters the parent class or interface of tag {}, and discards all others.
+     *
+     * @param clazz input class.
+     * @return Marked with annotation {@link ServiceCollection} as a collection of
+     * class types.
+     */
     public static List<Class<?>> getTargetServiceTypes(Class<?> clazz) {
         if (clazz == null) {
             return Collections.emptyList();
         }
-        LinkedList<Class<?>> sortServiceTypes = new LinkedList<>();
+        List<Class<?>> serviceTypes = new ArrayList<>();
 
         //Interface directly implemented by class
         Class<?>[] canSeeInterfaces = clazz.getInterfaces();
@@ -97,7 +125,7 @@ public abstract class ServiceCore {
             } else {
                 //must comply with annotation requirements.
                 if (TARGET_FILTER.test(superclass)) {
-                    sortServiceTypes.add(superclass);
+                    serviceTypes.add(superclass);
                 }
             }
         } else {
@@ -105,7 +133,7 @@ public abstract class ServiceCore {
                     .findFirst().orElse(null);
             //For interfaces, use any one of the current IDs, and take the first one here.
             if (clazz0 != null) {
-                sortServiceTypes.add(clazz0);
+                serviceTypes.add(clazz0);
             }
         }
 
@@ -120,27 +148,27 @@ public abstract class ServiceCore {
 
         //If the first element is not yet present at this point,
         // take the first one from all filtered parent and interface classes.
-        if (sortServiceTypes.isEmpty()) {
+        if (serviceTypes.isEmpty()) {
             if (!interfaces.isEmpty()) {
-                sortServiceTypes.add(interfaces.get(0));
+                serviceTypes.add(interfaces.get(0));
             } else {
                 if (!supers.isEmpty()) {
-                    sortServiceTypes.add(supers.get(0));
+                    serviceTypes.add(supers.get(0));
                 }
             }
         }
 
         //If it is still empty, return null directly.
-        if (CollectionUtils.isEmpty(sortServiceTypes)) return null;
+        if (CollectionUtils.isEmpty(serviceTypes)) return null;
 
         interfaces.addAll(supers);
 
-        interfaces.removeAll(sortServiceTypes);
+        interfaces.removeAll(serviceTypes);
 
         //After removing the duplicate from the first position, add it directly.
-        sortServiceTypes.addAll(interfaces);
+        serviceTypes.addAll(interfaces);
 
-        return sortServiceTypes;
+        return serviceTypes;
     }
 
     /**
@@ -178,89 +206,75 @@ public abstract class ServiceCore {
 
     /**
      * Generate a specially processed MD5 encrypted hexadecimal string based on the
-     * given class, defined Bean name, and application ID.
+     * given class, defined service name.
      *
-     * <p>This method is mainly used to handle defining the Bean name {@code definitionBeanName},
-     * calling another private method named {@link #decapitalize}, and passing in the
-     * parent class, defining the Bean name, application ID, and a fixed ending tag
-     * {@link #BEAN_NAME_CLOSE_TAG}.
+     * <p>This method is mainly used to handle defining the service name , calling another
+     * private method named {@link #enhancement}, and passing in the appointment class,
+     * defining the service name, and a fixed ending tag{@link #BEAN_NAME_CLOSE_TAG}.
      *
-     * @param parent             the Class object of the parent class is used to
-     *                           obtain the value (if any) of the {@code ServiceCollection}.
-     * @param definitionBeanName the bean name to be processed is usually the identifier of
-     *                           a bean.
-     * @param applicationId      application ID, if not empty, will be used as a prefix
-     *                           for generating strings; If it is empty or contains only
-     *                           blank characters, ignore it.
+     * @param clazz       the Class object is used to obtain the value (if any)
+     *                    of the {@code ServiceCollection}.
+     * @param serviceName the original service  name to be enhancement is usually the
+     *                    name.
      * @return Return a hexadecimal string that has been processed by the {@code decapitalize}
-     * method with a defined Bean name (possibly with an application ID prefix and a fixed ending
-     * tag), and then encrypted with MD5.
+     * method with a defined Bean name (fixed ending tag), and then encrypted with MD5.
      */
-    public static String decapitalizeDefinitionBeanName(Class<?> parent, String definitionBeanName,
-                                                        @Nullable String applicationId) {
-        return decapitalize(parent, definitionBeanName, applicationId, BEAN_NAME_CLOSE_TAG);
+    public static String enhancementBeanName(Class<?> clazz, String serviceName) {
+        return enhancement(clazz, serviceName, BEAN_NAME_CLOSE_TAG);
     }
 
     /**
      * Generate a specially processed MD5 encrypted hexadecimal string based
-     * on the given class, alias, and application ID.
+     * on the given class, service name.
      *
-     * <p>This method is mainly used to handle aliases, which call another
-     * private method called {@link #decapitalize},and pass in the parent
-     * class, alias, application ID, and a fixed ending tag is {@link #ALISA_NAME_CLOSE_TAG}.
+     * <p>This method is mainly used to handle alisa of service name, which call another
+     * private method called {@link #enhancement},and pass in the appointment
+     * class, service name , and a fixed ending tag is {@link #ALISA_NAME_CLOSE_TAG}.
      *
-     * @param parent        the Class object of the parent class is used to
-     *                      obtain the value (if any) of the {@code ServiceCollection}.
-     * @param alisaName     the alias to be processed is usually the alias of
-     *                      the component.
-     * @param applicationId application ID, if not empty, will be used as a prefix
-     *                      for generating strings; If it is empty or contains only
-     *                      blank characters, ignore it.
+     * @param clazz       the Class object is used to obtain the value (if any)
+     *                    of the {@code ServiceCollection}.
+     * @param serviceName the original service name to be enhancement is usually the
+     *                    name.
      * @return Returns a hexadecimal string encrypted with MD5 after specific processing
-     * by an alias (possibly with an application ID prefix and a fixed ending tag).
+     * by an service name (fixed ending tag).
      */
-    public static String decapitalizeAlisaName(Class<?> parent, String alisaName,
-                                               @Nullable String applicationId) {
-        return decapitalize(parent, alisaName, applicationId, ALISA_NAME_CLOSE_TAG);
+    public static String enhancementAlisaName(Class<?> clazz, String serviceName) {
+        return enhancement(clazz, serviceName, ALISA_NAME_CLOSE_TAG);
     }
 
     /**
      * Generate an MD5 encrypted hexadecimal string based on the given class,
-     * name, application ID, and ending tag.
+     * service name and ending tag.
      *
      * <p>The method first attempts to obtain the {@code ServiceCollection}
-     * annotation from the given parent class, and uses the value or class
-     * name in the annotation as the prefix for the service collection.
-     * Then, the application ID (if not empty), prefix, original name, and
-     * ending tag are concatenated to form the final string, which is then
-     * MD5 encrypted.
+     * annotation from the given class, and uses the value or class name in
+     * the annotation as the prefix for the service collection.
      *
-     * @param parent        the Class object of the parent class is used to
-     *                      obtain the value (if any) of the {@code ServiceCollection}.
-     * @param name          the original name to be processed is usually the name
-     *                      of a property or method.
-     * @param applicationId application ID, if not empty, will be used as a prefix
-     *                      for generating strings; If it is empty or contains only
-     *                      blank characters, ignore it.
-     * @param closingTag    the end tag will be attached to the end of the processed
-     *                      name.
+     * <p>Then, prefix, original service name , and ending tag are concatenated
+     * to form the final string, which is then MD5 encrypted.
+     *
+     * @param clazz       the Class object is used to obtain the value (if any)
+     *                    of the {@code ServiceCollection}.
+     * @param serviceName the original service name to be enhancement is usually the
+     *                    name.
+     * @param closingTag  the end tag will be attached to the end of the processed
+     *                    name.
      * @return Return a hexadecimal string encrypted by MD5 using the original name
      * (possibly with a prefix and ending label).
-     * @throws NullPointerException if input parent or name or closingTag is null.
+     * @throws NullPointerException if input clazz or name or closingTag is null.
      */
-    private static String decapitalize(Class<?> parent, String name, @Nullable String applicationId,
-                                       String closingTag) {
-        Objects.requireNonNull(parent, "parent = null");
-        Objects.requireNonNull(name, "name = null");
+    private static String enhancement(Class<?> clazz, String serviceName, String closingTag) {
+        Objects.requireNonNull(clazz, "clazz = null");
+        Objects.requireNonNull(serviceName, "serviceName = null");
         Objects.requireNonNull(closingTag, "closingTag =null");
-        ServiceCollection serviceCollection = parent.getAnnotation(ServiceCollection.class);
-        Assert.notNull(serviceCollection,
-                "No annotation top.osjf.optimize.service_bean.annotation.ServiceCollection.");
-        String value = serviceCollection.value();
-        if (StringUtils.isBlank(value)) value = parent.getName();
-        final String decapitalizeName = (StringUtils.isNotBlank(applicationId) ? applicationId : "")
-                + value + name + closingTag;
-        return DigestUtils.md5DigestAsHex(decapitalizeName.getBytes(StandardCharsets.UTF_8));
+        String annotationValue;
+        ServiceCollection serviceCollection = clazz.getAnnotation(ServiceCollection.class);
+        if (serviceCollection != null) {
+            annotationValue = serviceCollection.value();
+        } else annotationValue = clazz.getName();
+        final String enhancementBeanName = annotationValue + serviceName;
+        return DigestUtils
+                .md5DigestAsHex(enhancementBeanName.getBytes(StandardCharsets.UTF_8)) + closingTag;
     }
 
     /**
