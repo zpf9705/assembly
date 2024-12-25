@@ -51,11 +51,28 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
         this.context = context;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * After the container is refreshed, clear the collection of bean names marked
+     * in the cache.
+     *
+     * @param event event raised when an {@code ApplicationContext} gets
+     *              initialized or refreshed.
+     */
     @Override
     public void onApplicationEvent(@NonNull ContextRefreshedEvent event) {
         ServiceContextBeanNameGenerator.clear();
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Close the current Spring configurable context object.
+     * <p>
+     * If the context instance is an instance of {@code ConfigurableApplicationContext},
+     * call its close method to close the context.
+     */
     @Override
     public void close() {
         if (context instanceof ConfigurableApplicationContext) {
@@ -63,7 +80,7 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
         }
     }
 
-    public ApplicationContext getApplicationContext() {
+    protected ApplicationContext getApplicationContext() {
         return context;
     }
 }
