@@ -16,16 +16,17 @@
 
 package top.osjf.spring.autoconfigure.optimize.service_bean;
 
+import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.lang.NonNull;
 import org.springframework.util.ClassUtils;
-import top.osjf.optimize.service_bean.context.AbstractServiceContext;
+import top.osjf.optimize.service_bean.context.ServiceContextApplicationRunListener;
 
 /**
- * Set {@code enableCustomBeanNameGeneratorSet} as early as possible so that custom
- * {@link org.springframework.beans.factory.support.BeanNameGenerator} can be set to
- * {@link ConfigurableApplicationContext} properly.
+ * Set {@code setCustomBeanNameGeneratorForSpringApplicationContext} as early as possible
+ * so that custom{@link BeanNameGenerator} can be set to{@link ConfigurableApplicationContext}
+ * properly.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.1
@@ -49,7 +50,7 @@ public class EarlyAllowCustomBeanNameGeneratorInitializer
     @Override
     public void initialize(@NonNull ConfigurableApplicationContext context) {
         if (isPresent) {
-            AbstractServiceContext.ServiceContextRunListener.setForApplicationContextCustomBeanNameGenerator(context);
+            ServiceContextApplicationRunListener.setCustomBeanNameGeneratorForSpringApplicationContext(context);
         }
     }
 }
