@@ -90,7 +90,9 @@ public abstract class ServiceCore {
 
         candidateNames.add(enhancementAlisaName(requiredType, serviceName));
 
-        candidateNames.add(enhancementBeanName(requiredType, serviceName));
+        if (ServiceContextBeanNameGenerator.getRecordBeanTypes().contains(requiredType)) {
+            candidateNames.add(enhancementBeanName(requiredType, serviceName)); //is main bean type
+        }
 
         return candidateNames;
     }
