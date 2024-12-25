@@ -25,7 +25,10 @@ import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.lang.NonNull;
 import top.osjf.optimize.service_bean.context.ServiceContext;
+import top.osjf.optimize.service_bean.context.ServiceScope;
 import top.osjf.optimize.service_bean.context.ServiceScopeBeanPostProcessor;
+
+import java.lang.reflect.Field;
 
 /**
  * The {@code ServiceScopeBeanPostProcessorRegistrar} class is a Spring component
@@ -46,10 +49,27 @@ public class ServiceScopeBeanPostProcessorRegistrar implements ImportBeanDefinit
     public void registerBeanDefinitions(@NonNull AnnotationMetadata importingClassMetadata,
                                         @NonNull BeanDefinitionRegistry registry,
                                         @NonNull BeanNameGenerator importBeanNameGenerator) {
-        BeanDefinition beanDefinition =
-                BeanDefinitionBuilder
-                        .genericBeanDefinition(ServiceScopeBeanPostProcessor.class).getBeanDefinition();
+        BeanDefinitionBuilder builder
+                = BeanDefinitionBuilder.genericBeanDefinition(ServiceScopeBeanPostProcessor.class);
+        builder.addPropertyReference(SERVICE_SCOPE_FILE_NAME, ServiceContextConfiguration.INTERNAL_SERVICE_SCOPE);
+        BeanDefinition beanDefinition = builder.getBeanDefinition();
         registry.registerBeanDefinition(importBeanNameGenerator.generateBeanName(beanDefinition, registry),
                 beanDefinition);
+    }
+
+    /*
+    *
+    * get the ServiceScope class field name in ServiceScopeBeanPostProcessor class
+    *
+    * */
+
+    static String SERVICE_SCOPE_FILE_NAME;
+
+    static {
+        for (Field declaredField : ServiceScopeBeanPostProcessor.class.getDeclaredFields()) {
+            if (ServiceScope.class.isAssignableFrom(declaredField.getType())) {
+                SERVICE_SCOPE_FILE_NAME = declaredField.getName();
+            }
+        }
     }
 }
