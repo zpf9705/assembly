@@ -43,9 +43,10 @@ import org.springframework.lang.NonNull;
  * </li>
  * <li><strong>Register custom scope:</strong>
  * <p>
- * In the postProcessBeanFactory method, this class registers a new {@link Scope} scope implementation
- * class with BeanFactory, named {@link ServiceScope}, which defines how to create, destroy, and manage
- * the lifecycle of beans under the {@link ServiceContext#SUPPORT_SCOPE} scope.
+ * In the {@code postProcessBeanFactory} method, this class registers a  {@link Scope} scope
+ * implementation class with BeanFactory and {@link ServiceScope} comes from the configuration
+ * definition, named {@link ServiceScope}, which defines how to create, destroy, and manage the
+ * lifecycle of beans under the {@link ServiceContext#SUPPORT_SCOPE} scope.
  * </li>
  * </ul>
  *
@@ -53,6 +54,16 @@ import org.springframework.lang.NonNull;
  * @since 1.0.3
  */
 public class ServiceScopeBeanPostProcessor implements BeanDefinitionRegistryPostProcessor {
+
+    private ServiceScope serviceScope;
+
+    /**
+     * Set a new nonNull {@code ServiceScope}.
+     * @param serviceScope service {@link Scope} instance.
+     */
+    public void setServiceScope(ServiceScope serviceScope) {
+        this.serviceScope = serviceScope;
+    }
 
     @Override
     public void postProcessBeanDefinitionRegistry(@NonNull BeanDefinitionRegistry registry) throws BeansException {
@@ -64,6 +75,6 @@ public class ServiceScopeBeanPostProcessor implements BeanDefinitionRegistryPost
 
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-        beanFactory.registerScope(ServiceContext.SUPPORT_SCOPE, new ServiceScope());
+        beanFactory.registerScope(ServiceContext.SUPPORT_SCOPE, serviceScope);
     }
 }
