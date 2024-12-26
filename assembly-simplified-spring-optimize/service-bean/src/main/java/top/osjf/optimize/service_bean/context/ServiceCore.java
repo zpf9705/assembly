@@ -17,19 +17,19 @@
 
 package top.osjf.optimize.service_bean.context;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.Nullable;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
 import top.osjf.optimize.service_bean.annotation.ServiceCollection;
 
 import java.beans.Introspector;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /**
  * The core name of this service framework is the static method class,
@@ -136,61 +136,17 @@ public abstract class ServiceCore {
         }
         List<Class<?>> serviceTypes = new ArrayList<>();
 
-        //Interface directly implemented by class
-        Class<?>[] canSeeInterfaces = clazz.getInterfaces();
-
-        //If the interface directly implemented by the class does not exist, query the inherited class.
-        if (ArrayUtils.isEmpty(canSeeInterfaces)) {
-            Class<?> superclass = clazz.getSuperclass();
-            //It cannot be an Object .
-            if ("java.lang.Object".equals(superclass.getName())) {
-                //No interface, no parent class, directly returning null.
-                return Collections.emptyList();
-            } else {
-                //must comply with annotation requirements.
-                if (TARGET_FILTER.test(superclass)) {
-                    serviceTypes.add(superclass);
-                }
-            }
-        } else {
-            Class<?> clazz0 = Arrays.stream(canSeeInterfaces).filter(TARGET_FILTER)
-                    .findFirst().orElse(null);
-            //For interfaces, use any one of the current IDs, and take the first one here.
-            if (clazz0 != null) {
-                serviceTypes.add(clazz0);
+        for (Class<?> inerfaceClass : ClassUtils.getAllInterfaces(clazz)) {
+            if (TARGET_FILTER.test(inerfaceClass)) {
+                serviceTypes.add(inerfaceClass);
             }
         }
 
-        //get all super classes
-        List<Class<?>> supers = ClassUtils.getAllSuperclasses(clazz);
-        supers.remove(Object.class);
-        supers = supers.stream().filter(TARGET_FILTER).collect(Collectors.toList());
-
-        //get all interfaces
-        List<Class<?>> interfaces = ClassUtils.getAllInterfaces(clazz);
-        interfaces = interfaces.stream().filter(TARGET_FILTER).collect(Collectors.toList());
-
-        //If the first element is not yet present at this point,
-        // take the first one from all filtered parent and interface classes.
-        if (serviceTypes.isEmpty()) {
-            if (!interfaces.isEmpty()) {
-                serviceTypes.add(interfaces.get(0));
-            } else {
-                if (!supers.isEmpty()) {
-                    serviceTypes.add(supers.get(0));
-                }
+        for (Class<?> superclass : ClassUtils.getAllSuperclasses(clazz)) {
+            if (!Objects.equals(Object.class, superclass) && TARGET_FILTER.test(superclass)) {
+                serviceTypes.add(superclass);
             }
         }
-
-        //If it is still empty, return null directly.
-        if (CollectionUtils.isEmpty(serviceTypes)) return null;
-
-        interfaces.addAll(supers);
-
-        interfaces.removeAll(serviceTypes);
-
-        //After removing the duplicate from the first position, add it directly.
-        serviceTypes.addAll(interfaces);
 
         return serviceTypes;
     }
