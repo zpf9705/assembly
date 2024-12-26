@@ -130,9 +130,10 @@ public abstract class ServiceCore {
      * @return Marked with annotation {@link ServiceCollection} as a collection of
      * class types.
      */
+    @Nullable
     public static List<Class<?>> getTargetServiceTypes(Class<?> clazz) {
         if (clazz == null) {
-            return Collections.emptyList();
+            return null;
         }
         List<Class<?>> serviceTypes = new ArrayList<>();
 
