@@ -23,10 +23,8 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.DigestUtils;
 import top.osjf.optimize.service_bean.annotation.ServiceCollection;
 
-import java.beans.Introspector;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -150,39 +148,6 @@ public abstract class ServiceCore {
         }
 
         return serviceTypes;
-    }
-
-    /**
-     * Parse and return a series of aliases based on the given class
-     * and whether to ignore the lowercase first letter flag.
-     *
-     * <p>These aliases include the simple name of the class (excluding
-     * package name), the fully qualified name of the class (including
-     * package name), and (if not ignored) the lowercase version of the
-     * first letter of the simple name of the class.
-     *
-     * @param clazz               to resolve the class object of the alias.
-     *                            If null is passed, an empty list is returned.
-     * @param ignoredDecapitalize a Boolean value indicating whether to ignore
-     *                            the capitalization of the first letter of a
-     *                            class's simple name.
-     * @return A list containing the resolved aliases. The list should include
-     * at least the simple name and fully qualified name of the class. If
-     * {@code ignoredDecapitalize} is false, it will also include the lowercase
-     * version of the class's simple name.
-     */
-    public static List<String> resolveAliasNames(Class<?> clazz, boolean ignoredDecapitalize) {
-        if (clazz == null) {
-            return Collections.emptyList();
-        }
-        List<String> alisaNames = new ArrayList<>();
-        String simpleName = clazz.getSimpleName();
-        alisaNames.add(simpleName);
-        alisaNames.add(clazz.getName());
-        if (!ignoredDecapitalize) {
-            alisaNames.add(Introspector.decapitalize(simpleName));
-        }
-        return alisaNames;
     }
 
     /**
