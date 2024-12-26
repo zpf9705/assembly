@@ -123,7 +123,8 @@ public abstract class ServiceCore {
      * <p>
      * <strong>Note:</strong>
      * According to the requirement of annotation {@link ServiceCollection}, this method
-     * only filters the parent class or interface of tag {}, and discards all others.
+     * only filters the parent class or interface of tag {@link ServiceCollection}, and
+     * discards all others.
      *
      * @param clazz input class.
      * @return Marked with annotation {@link ServiceCollection} as a collection of
