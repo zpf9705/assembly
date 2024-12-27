@@ -18,7 +18,6 @@ package top.osjf.cron.quartz.lifestyle;
 
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import top.osjf.cron.core.exception.CronLifeStyleException;
 import top.osjf.cron.core.lifestyle.LifeStyle;
 import top.osjf.cron.core.lifestyle.StartupProperties;
 
@@ -46,20 +45,20 @@ public class QuartzCronLifeStyle implements LifeStyle {
     }
 
     @Override
-    public void start(StartupProperties properties) throws CronLifeStyleException {
+    public void start(StartupProperties properties) {
         try {
             scheduler.start();
         } catch (SchedulerException e) {
-            throw new CronLifeStyleException(e);
+            throw new IllegalStateException(e);
         }
     }
 
     @Override
-    public void stop() throws CronLifeStyleException {
+    public void stop() {
         try {
             scheduler.shutdown(true);
         } catch (SchedulerException e) {
-            throw new CronLifeStyleException(e);
+            throw new IllegalStateException(e);
         }
     }
 

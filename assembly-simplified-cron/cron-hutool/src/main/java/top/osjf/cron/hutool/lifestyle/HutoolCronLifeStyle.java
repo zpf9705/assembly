@@ -17,7 +17,6 @@
 package top.osjf.cron.hutool.lifestyle;
 
 import cn.hutool.cron.CronUtil;
-import top.osjf.cron.core.exception.CronLifeStyleException;
 import top.osjf.cron.core.lifestyle.LifeStyle;
 import top.osjf.cron.core.lifestyle.StartupProperties;
 
@@ -30,17 +29,15 @@ import top.osjf.cron.core.lifestyle.StartupProperties;
 public class HutoolCronLifeStyle implements LifeStyle {
 
     @Override
-    public void start(StartupProperties properties) throws CronLifeStyleException {
-        doLifeStyle(() -> {
-            HutoolCronStartupArgs startupArgs = HutoolCronStartupArgs.of(properties.getStartUpProperties());
-            CronUtil.setMatchSecond(startupArgs.isMatchSecond());
-            CronUtil.start(startupArgs.isDaemon());
-        });
+    public void start(StartupProperties properties) {
+        HutoolCronStartupArgs startupArgs = HutoolCronStartupArgs.of(properties.asProperties());
+        CronUtil.setMatchSecond(startupArgs.isMatchSecond());
+        CronUtil.start(startupArgs.isDaemon());
     }
 
     @Override
-    public void stop() throws CronLifeStyleException {
-        doLifeStyle(CronUtil::stop);
+    public void stop() {
+        CronUtil.stop();
     }
 
     @Override
