@@ -24,7 +24,7 @@ import java.util.Collection;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class CollectionUtils {
+public abstract class CollectionUtils {
 
     /**
      * Null-safe check if the specified collection is not empty.

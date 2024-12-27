@@ -24,7 +24,7 @@ import java.lang.reflect.Array;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class ArrayUtils {
+public abstract class ArrayUtils {
 
     /**
      * <p>Checks if an array of Objects is empty or {@code null}.

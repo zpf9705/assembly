@@ -24,7 +24,7 @@ import java.util.Map;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class MapUtils {
+public abstract class MapUtils {
 
     /**
      * Null-safe check if the specified map is not empty.
