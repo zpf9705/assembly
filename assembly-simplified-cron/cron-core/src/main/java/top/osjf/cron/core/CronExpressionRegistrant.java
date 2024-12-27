@@ -14,13 +14,24 @@
  * limitations under the License.
  */
 
-package top.osjf.cron.spring;
+package top.osjf.cron.core;
+
+import java.util.Objects;
 
 /**
- * The tagging interface for the registration body.
- *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 1.0.3
  */
-public interface Registrant {
+public abstract class CronExpressionRegistrant implements Registrant {
+
+    private final String cronExpression;
+
+    public CronExpressionRegistrant(String cronExpression) {
+        Objects.requireNonNull(cronExpression, "cronExpression = null");
+        this.cronExpression = cronExpression;
+    }
+
+    public String getCronExpression() {
+        return cronExpression;
+    }
 }

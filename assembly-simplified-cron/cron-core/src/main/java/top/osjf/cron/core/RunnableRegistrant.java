@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-package top.osjf.cron.spring;
+package top.osjf.cron.core;
 
-import org.springframework.lang.NonNull;
+
+import java.util.Objects;
 
 /**
- * Register entity classes for cron tasks in the form
- * of {@link Runnable}.
- *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 1.0.3
  */
-public abstract class RunnableRegistrant extends CronRegistrant {
+public abstract class RunnableRegistrant extends CronExpressionRegistrant {
 
     private final Runnable runnable;
 
-    public RunnableRegistrant(String cronExpression, @NonNull Runnable runnable) {
+    public RunnableRegistrant(String cronExpression, Runnable runnable) {
         super(cronExpression);
+        Objects.requireNonNull(runnable, "runnable = null");
         this.runnable = runnable;
     }
 

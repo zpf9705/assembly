@@ -14,32 +14,15 @@
  * limitations under the License.
  */
 
-package top.osjf.cron.spring;
+package top.osjf.cron.core;
 
 /**
- * Timed task registration actor interface, dividing the registration
- * of different components.
- *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 1.0.3
  */
-public interface CronTaskRealRegistrant {
+public interface CronTaskRegistry {
 
-    /**
-     * Returns whether the currently passed {@link Registrant} is a
-     * type that supports registration.
-     *
-     * @param registrant The true type of bean.
-     * @return whether the currently {@link Registrant} support register.
-     */
     boolean supports(Registrant registrant);
 
-    /**
-     * Register scheduled tasks based on the bean's conditions.
-     *
-     * @param registrant The true type of bean.
-     * @throws Exception Possible abnormal issues that may arise from
-     *                   registration behavior.
-     */
     void register(Registrant registrant) throws Exception;
 }

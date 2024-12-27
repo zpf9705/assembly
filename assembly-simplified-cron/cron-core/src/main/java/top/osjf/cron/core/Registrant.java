@@ -14,25 +14,14 @@
  * limitations under the License.
  */
 
-package top.osjf.cron.spring;
-
-import org.springframework.lang.NonNull;
+package top.osjf.cron.core;
 
 /**
- * Implement {@link Registrant} with cron expression.
- *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 1.0.3
  */
-public abstract class CronRegistrant implements Registrant {
-
-    private final String cronExpression;
-
-    public CronRegistrant(@NonNull String cronExpression) {
-        this.cronExpression = cronExpression;
-    }
-
-    public String getCronExpression() {
-        return cronExpression;
+public interface Registrant {
+    default <T> T unwrap(Class<T> type) {
+        return type.cast(this);
     }
 }
