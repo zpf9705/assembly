@@ -24,6 +24,7 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.context.annotation.AnnotationBeanNameGenerator;
+import org.springframework.context.annotation.Bean;
 import org.springframework.lang.NonNull;
 import org.springframework.util.CollectionUtils;
 import top.osjf.optimize.service_bean.annotation.ServiceCollection;
@@ -57,6 +58,15 @@ import java.util.stream.Stream;
  * of {@link AnnotationBeanNameGenerator} are uniformly called, which also
  * ensures the standard naming of beans related to the parent class and
  * interface without annotation {@link ServiceCollection}.
+ *
+ * <p>
+ * <strong>Note:</strong>
+ * <p>Service collection is limited to beans that participate in this bean name
+ * generator {@link ServiceContextBeanNameGenerator}, which means it only applies
+ * to internal beans.Beans imported using {@link Bean} annotation in the configuration
+ * class cannot participate in this {@link ServiceContextBeanNameGenerator}, so they
+ * cannot be collected in {@link #RECORD_BEAN_NAMES} or {@link #RECORD_BEAN_TYPES} and
+ * cannot participate in renaming encoding.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
