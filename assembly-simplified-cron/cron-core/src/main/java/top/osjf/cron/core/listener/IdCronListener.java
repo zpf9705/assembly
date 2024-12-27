@@ -17,7 +17,6 @@
 package top.osjf.cron.core.listener;
 
 /**
- * /**
  * The IdCronListener interface provides the ability to listen for execution events
  * of scheduled tasks with specific identifiers (IDs).
  *
@@ -52,7 +51,7 @@ public interface IdCronListener<ID> {
     /**
      * This method is called when a scheduled task with a specific ID fails to execute.
      *
-     * @param id     The unique identifier of the scheduled task, identifying the
+     * @param id        The unique identifier of the scheduled task, identifying the
      *                  task that failed to execute.
      * @param exception The captured exception, indicating the reason for the failure
      *                  of the scheduled task to execute.
