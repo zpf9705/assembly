@@ -6,12 +6,12 @@
     <parent>
         <groupId>top.osjf.cron</groupId>
         <artifactId>assembly-simplified-cron</artifactId>
-        <version>1.0.1</version>
+        <version>1.0.3</version>
     </parent>
 
     <artifactId>cron-cron4j</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.1</version>
+
     <description>
         Cron Task: Implementation of Cron4j.
     </description>
@@ -20,7 +20,6 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <core>1.0.1</core>
     </properties>
 
     <dependencies>
@@ -28,7 +27,6 @@
         <dependency>
             <groupId>top.osjf.cron</groupId>
             <artifactId>cron-core</artifactId>
-            <version>${core}</version>
         </dependency>
 
     </dependencies>

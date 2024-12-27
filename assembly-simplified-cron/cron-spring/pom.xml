@@ -6,12 +6,12 @@
     <parent>
         <groupId>top.osjf.cron</groupId>
         <artifactId>assembly-simplified-cron</artifactId>
-        <version>1.0.1</version>
+        <version>1.0.3</version>
     </parent>
 
     <artifactId>cron-spring</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.1</version>
+
     <description>
         Cron task integrates Spring framework.
     </description>
@@ -21,7 +21,6 @@
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring>5.3.12</spring>
-        <cron.impl>1.0.1</cron.impl>
         <jsr305>3.0.2</jsr305>
     </properties>
 
@@ -30,21 +29,18 @@
         <dependency>
             <groupId>top.osjf.cron</groupId>
             <artifactId>cron-hutool</artifactId>
-            <version>${cron.impl}</version>
             <optional>true</optional>
         </dependency>
 
         <dependency>
             <groupId>top.osjf.cron</groupId>
             <artifactId>cron-quartz</artifactId>
-            <version>${cron.impl}</version>
             <optional>true</optional>
         </dependency>
 
         <dependency>
             <groupId>top.osjf.cron</groupId>
             <artifactId>cron-cron4j</artifactId>
-            <version>${cron.impl}</version>
             <optional>true</optional>
         </dependency>
 
