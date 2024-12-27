@@ -27,17 +27,17 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportAware;
 import org.springframework.context.annotation.Role;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.MergedAnnotation;
-import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import top.osjf.cron.core.CronTaskRegistry;
+import top.osjf.cron.core.Registrant;
 import top.osjf.cron.core.lifestyle.LifeStyle;
 import top.osjf.cron.core.lifestyle.StartupProperties;
 import top.osjf.cron.core.listener.CronListener;
@@ -49,7 +49,10 @@ import top.osjf.cron.spring.hutool.EnableHutoolCronTaskRegister;
 import top.osjf.cron.spring.quartz.EnableQuartzCronTaskRegister;
 
 import java.lang.annotation.Annotation;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -73,13 +76,11 @@ import java.util.stream.Stream;
 @Configuration(proxyBeanMethods = false)
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 public class CronTaskRegisterPostProcessor implements ImportAware, ApplicationContextAware,
-        ApplicationListener<ContextRefreshedEvent>, MergedBeanDefinitionPostProcessor, EnvironmentAware, Ordered {
+        ApplicationListener<ContextRefreshedEvent>, MergedBeanDefinitionPostProcessor, Ordered {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private ApplicationContext applicationContext;
-
-    private Environment environment;
 
     private RegistrantCollector collector;
 
@@ -96,11 +97,6 @@ public class CronTaskRegisterPostProcessor implements ImportAware, ApplicationCo
     }
 
     @Override
-    public void setEnvironment(@NonNull Environment environment) {
-        this.environment = environment;
-    }
-
-    @Override
     public void setImportMetadata(@NonNull AnnotationMetadata annotationMetadata) {
         Map<String, Object> map = new HashMap<>();
         for (MergedAnnotation<Annotation> annotation : annotationMetadata.getAnnotations()) {
@@ -109,7 +105,7 @@ public class CronTaskRegisterPostProcessor implements ImportAware, ApplicationCo
                         getAnnotationAttributes(annotation.getType().getCanonicalName())));
             }
         }
-        properties.addStartupProperties(map);
+        properties.addProperties(map);
     }
 
     @Override
@@ -141,16 +137,7 @@ public class CronTaskRegisterPostProcessor implements ImportAware, ApplicationCo
              * */
             collector = applicationContext.getBean(RegistrantCollector.class);
         }
-        try {
-            collector.add(realBeanType, bean, environment);
-        } catch (Exception e) {
-            //Print the stack first.
-            e.printStackTrace(System.err);
-            if (log.isErrorEnabled()) {
-                log.error("Add of timed task for the real type [{}] of bean [{}] failed," +
-                        " reason for failure: {}.", realBeanType.getName(), beanName, e.getMessage());
-            }
-        }
+        collector.add(realBeanType, bean);
         return bean;
     }
 
@@ -181,13 +168,13 @@ public class CronTaskRegisterPostProcessor implements ImportAware, ApplicationCo
 
         //Retrieve the true registrant instance from the Spring application context to
         // complete the registration of the form.
-        CronTaskRealRegistrant realRegistrant = applicationContext.getBean(CronTaskRealRegistrant.class);
+        CronTaskRegistry cronTaskRegistry = applicationContext.getBean(CronTaskRegistry.class);
 
         while (collector.hasNext()) {
             Registrant registrant = collector.next();
-            if (realRegistrant.supports(registrant)) {
+            if (cronTaskRegistry.supports(registrant)) {
                 try {
-                    realRegistrant.register(registrant);
+                    cronTaskRegistry.register(registrant);
                 } catch (Exception e) {
                     //Print exception stack information to standard error stream
                     e.printStackTrace(System.err);
@@ -212,7 +199,7 @@ public class CronTaskRegisterPostProcessor implements ImportAware, ApplicationCo
         //Prepare startup parameters, retrieve all Startup Properties
         //instances from the Spring application context, and add them to the property collection.
         for (StartupProperties value : applicationContext.getBeansOfType(StartupProperties.class).values()) {
-            properties.addStartupProperties(value);
+            properties.addProperties(value);
         }
 
         //Start scheduled tasks using prepared attributes.

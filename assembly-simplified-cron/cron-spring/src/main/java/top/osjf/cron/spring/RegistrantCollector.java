@@ -16,30 +16,18 @@
 
 package top.osjf.cron.spring;
 
-import org.springframework.core.env.Environment;
+import top.osjf.cron.core.Registrant;
 
 import java.util.Iterator;
 
 /**
- * Add function to the condition of registering body {@link Registrant}.
- *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
 public interface RegistrantCollector extends Iterator<Registrant>, AutoCloseable {
 
-    /**
-     * Add a scheduled task based on the bean's conditions.
-     *
-     * @param realBeanType The true type of bean.
-     * @param bean         Beans awaiting registration and inspection.
-     * @param environment  Spring's environment variables.
-     * @throws Exception Possible abnormal issues that may arise from
-     *                   registration behavior.
-     */
-    void add(Class<?> realBeanType, Object bean, Environment environment) throws Exception;
+    void add(Class<?> targetType, Object target);
 
-    /** {@inheritDoc}*/
     @Override
     void close();
 }
