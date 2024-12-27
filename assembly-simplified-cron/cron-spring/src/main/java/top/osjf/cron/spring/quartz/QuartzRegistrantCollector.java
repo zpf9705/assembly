@@ -16,8 +16,7 @@
 
 package top.osjf.cron.spring.quartz;
 
-import top.osjf.cron.spring.AbstractMethodRunnableRegistrantCollector;
-import top.osjf.cron.spring.RunnableRegistrant;
+import top.osjf.cron.spring.AbstractRegistrantCollector;
 
 import java.lang.reflect.Method;
 
@@ -27,15 +26,10 @@ import java.lang.reflect.Method;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class QuartzRegistrantCollector extends AbstractMethodRunnableRegistrantCollector {
+public class QuartzRegistrantCollector extends AbstractRegistrantCollector {
 
     @Override
-    public void addRunnableRegistrant(String expression, Runnable rab, Method element) {
-        addRegistrant(new QuartzMethodLevelRegistrant(expression, element));
-    }
-
-    @Override
-    protected RunnableRegistrant addRunnableRegistrantInternal(String expression, Runnable rab, Method element) {
-        throw new UnsupportedOperationException();
+    public void addRunnableRegistrant(String expression, Runnable rab, Method method) {
+        getRegistrants().add(new QuartzMethodLevelRegistrant(expression, method));
     }
 }

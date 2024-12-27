@@ -17,6 +17,7 @@
 package top.osjf.cron.spring.quartz;
 
 import org.quartz.JobBuilder;
+import top.osjf.cron.quartz.QuartzRegistrant;
 
 import java.lang.reflect.Method;
 
