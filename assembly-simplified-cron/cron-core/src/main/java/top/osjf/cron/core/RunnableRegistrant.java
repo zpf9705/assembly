@@ -19,7 +19,7 @@ package top.osjf.cron.core;
 
 /**
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 2024.12.27
+ * @since 1.0.3
  */
 public interface RunnableRegistrant extends Registrant {
     Runnable getRunnable();

@@ -23,7 +23,7 @@ import top.osjf.cron.core.repository.CronTaskRepository;
 
 /**
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.2
+ * @since 1.0.3
  */
 public class DefaultCronTaskRegisterConfiguration {
     @Bean
