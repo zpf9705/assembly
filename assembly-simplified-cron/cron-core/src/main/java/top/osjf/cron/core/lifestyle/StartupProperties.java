@@ -20,77 +20,100 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * StartupProperties interface provides methods for managing startup properties.
- * <p>
- * It allows retrieving the current startup properties, adding new properties, and
- * initializing properties from various sources such as Maps, Properties objects,
- * or other StartupProperties instances.
+ * The {@code StartupProperties} interface defines a set of methods
+ * for managing and manipulating startup parameters.
+ *
+ * <p>These parameters are typically used to configure scheduled tasks
+ * or other components initialized at application startup, and it allows
+ * retrieving the current startup properties, adding new properties,
+ * and initializing properties from various sources such as {@code Map},
+ * {@code Properties} objects, or other {@code StartupProperties} instances.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.1
  */
 public interface StartupProperties {
 
-    /**
-     * Retrieves the current startup properties.
-     *
-     * @return The current startup properties as a {@link Properties} object.
-     */
-    Properties getStartUpProperties();
+    /* --------------------------------------------------------------------------- */
+    /* -------------------------- conventional method ---------------------------- */
+    /* --------------------------------------------------------------------------- */
 
     /**
-     * Adds a set of new properties to the startup properties.
+     * Add a set of startup parameters through a {@code Properties} object.
      *
-     * @param properties The new properties to add, represented as a {@link Properties} object.
+     * @param properties the {@code Properties} object containing the startup
+     *                   parameters to be added.
+     * @throws NullPointerException if input properties is null.
      */
-    void addStartupProperties(Properties properties);
+    void addProperties(Properties properties);
 
     /**
-     * Adds a set of new properties to the startup properties, sourced from a Map.
+     * Add a set of startup parameters through a {@code Map}.
      *
-     * @param properties A Map containing the new properties to add, where the keys
-     *                   are Strings and the values can be any Object type.
+     * @param map a {@code Map} containing the startup parameters to be added,
+     *            where the key is of string type and the value is of object type.
+     * @throws NullPointerException if input map is null.
      */
-    void addStartupProperties(Map<String, Object> properties);
+    void addProperties(Map<String, Object> map);
 
     /**
-     * Merges the properties from another StartupProperties instance into this instance.
+     * Copy the startup parameters from another {@code StartupProperties} object.
      *
-     * @param properties Another StartupProperties instance whose properties will be
-     *                   merged into this instance.
+     * @param startupProperties another {@code StartupProperties} instance to merge.
+     * @throws NullPointerException if input startupProperties is null.
      */
-    void addStartupProperties(StartupProperties properties);
+    void addProperties(StartupProperties startupProperties);
 
     /**
-     * Creates a new, empty StartupProperties instance.
+     * Convert all properties in the current {@code StartupProperties} into a
+     * {@code Properties} object.
      *
-     * @return A new, empty StartupProperties instance.
+     * @return the {@code Properties} object that contains all the properties in
+     * the current instance.
+     */
+    Properties asProperties();
+
+    /* --------------------------------------------------------------------------- */
+    /* -------------------------- static factory method -------------------------- */
+    /* --------------------------------------------------------------------------- */
+
+    /**
+     * Creates a new {@code StartupProperties} without args.
+     *
+     * @return a without args {@code StartupProperties} instance.
      */
     static StartupProperties of() {
         return new DefaultStartupProperties();
     }
 
     /**
-     * Creates a new StartupProperties instance initialized with the properties from the provided Map.
+     * Creates a new {@code StartupProperties} instance initialized with the
+     * properties from the provided Map.
      *
-     * @param properties A Map containing the initial properties, where the keys are Strings and
-     *                   the values can be any Object type.
-     * @return A new StartupProperties instance initialized with the provided properties.
+     * @param map a {@code Map} containing the initial properties, where the
+     *            keys are Strings and the values can be any Object type.
+     * @return a new {@code StartupProperties}  instance initialized with the {@code Map}.
      */
-    static StartupProperties of(Map<String, Object> properties) {
-        return new DefaultStartupProperties(properties);
+    static StartupProperties of(Map<String, Object> map) {
+        return new DefaultStartupProperties(map);
     }
 
     /**
-     * Creates a new StartupProperties instance initialized with the properties from
-     * the provided {@link Properties} object.
+     * Creates a new {@code StartupProperties} instance initialized with the
+     * properties from the provided {@code Properties} object.
      *
-     * @param properties The initial properties, represented as a {@link Properties} object.
-     * @return A new StartupProperties instance initialized with the provided properties.
+     * @param properties the initial properties, represented as a {@code Properties}
+     *                   object.
+     * @return a new {@code StartupProperties} instance initialized with the provided
+     * {@code Properties}.
      */
     static StartupProperties of(Properties properties) {
         return new DefaultStartupProperties(properties);
     }
+
+    /* --------------------------------------------------------------------------- */
+    /* ------------------------------ default impl ------------------------------- */
+    /* --------------------------------------------------------------------------- */
 
     /**
      * Default impl for {@link StartupProperties}.
@@ -99,35 +122,35 @@ public interface StartupProperties {
 
         private final Properties properties = new Properties();
 
-        public DefaultStartupProperties() {
+        DefaultStartupProperties() {
         }
 
-        public DefaultStartupProperties(Map<String, Object> properties) {
-            addStartupProperties(properties);
+        DefaultStartupProperties(Map<String, Object> map) {
+            properties.putAll(map);
         }
 
-        public DefaultStartupProperties(Properties properties) {
-            addStartupProperties(properties);
+        DefaultStartupProperties(Properties properties) {
+            this.properties.putAll(properties);
         }
 
         @Override
-        public Properties getStartUpProperties() {
+        public void addProperties(Properties properties) {
+            this.properties.putAll(properties);
+        }
+
+        @Override
+        public void addProperties(Map<String, Object> properties) {
+            this.properties.putAll(properties);
+        }
+
+        @Override
+        public void addProperties(StartupProperties properties) {
+            this.properties.putAll(properties.asProperties());
+        }
+
+        @Override
+        public Properties asProperties() {
             return properties;
-        }
-
-        @Override
-        public void addStartupProperties(Properties properties) {
-            this.properties.putAll(properties);
-        }
-
-        @Override
-        public void addStartupProperties(Map<String, Object> properties) {
-            this.properties.putAll(properties);
-        }
-
-        @Override
-        public void addStartupProperties(StartupProperties properties) {
-            addStartupProperties(properties.getStartUpProperties());
         }
     }
 }
