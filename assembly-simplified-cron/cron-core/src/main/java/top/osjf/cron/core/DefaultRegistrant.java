@@ -14,20 +14,23 @@
  * limitations under the License.
  */
 
-package top.osjf.cron.spring.hutool;
 
-import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
-import top.osjf.cron.spring.AbstractRunnableCronTaskRealRegistrant;
+package top.osjf.cron.core;
 
 /**
- * Hutool of scheduled task registration actors.
- *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 1.0.2
  */
-public class HutoolCronTaskRealRegistrant extends AbstractRunnableCronTaskRealRegistrant {
+public class DefaultRegistrant extends ExpressionRegistrant implements RunnableRegistrant {
+    private final Runnable runnable;
 
-    public HutoolCronTaskRealRegistrant(HutoolCronTaskRepository cronTaskRepository) {
-        super(cronTaskRepository);
+    public DefaultRegistrant(String expression, Runnable runnable) {
+        super(expression);
+        this.runnable = runnable;
+    }
+
+    @Override
+    public Runnable getRunnable() {
+        return runnable;
     }
 }

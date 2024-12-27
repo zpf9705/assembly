@@ -14,26 +14,13 @@
  * limitations under the License.
  */
 
+
 package top.osjf.cron.core;
-
-
-import java.util.Objects;
 
 /**
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.3
+ * @since 2024.12.27
  */
-public abstract class RunnableRegistrant extends CronExpressionRegistrant {
-
-    private final Runnable runnable;
-
-    public RunnableRegistrant(String cronExpression, Runnable runnable) {
-        super(cronExpression);
-        Objects.requireNonNull(runnable, "runnable = null");
-        this.runnable = runnable;
-    }
-
-    public Runnable getRunnable() {
-        return runnable;
-    }
+public interface RunnableRegistrant extends Registrant {
+    Runnable getRunnable();
 }

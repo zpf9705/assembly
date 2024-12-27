@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-package top.osjf.cron.spring.cron4j;
 
-import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
-import top.osjf.cron.spring.AbstractRunnableCronTaskRealRegistrant;
+package top.osjf.cron.core;
 
 /**
- * Cron4j of scheduled task registration actors.
- *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 1.0.2
  */
-public class Cron4jCronTaskRealRegistrant extends AbstractRunnableCronTaskRealRegistrant {
+public abstract class ExpressionRegistrant implements Registrant {
+    private final String expression;
 
-    public Cron4jCronTaskRealRegistrant(Cron4jCronTaskRepository cronTaskRepository) {
-        super(cronTaskRepository);
+    public ExpressionRegistrant(String expression) {
+        this.expression = expression;
+    }
+
+    public String getExpression(){
+        return expression;
     }
 }

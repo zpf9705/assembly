@@ -37,7 +37,7 @@ public class DefaultCronTaskRegistry implements CronTaskRegistry {
 
     @Override
     public void register(Registrant registrant) throws Exception {
-        RunnableRegistrant runnableRegistrant = registrant.unwrap(RunnableRegistrant.class);
-        cronTaskRepository.register(runnableRegistrant.getCronExpression(), runnableRegistrant.getRunnable());
+        DefaultRegistrant defaultRegistrant = registrant.unwrap(DefaultRegistrant.class);
+        cronTaskRepository.register(defaultRegistrant.getExpression(), defaultRegistrant.getRunnable());
     }
 }
