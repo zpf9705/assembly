@@ -14,24 +14,22 @@
  * limitations under the License.
  */
 
-package top.osjf.cron.spring.quartz;
+package top.osjf.cron.quartz;
 
-import org.quartz.JobDetail;
-import top.osjf.cron.core.repository.CronTaskRepository;
+import top.osjf.cron.core.CronTaskRegistry;
+import top.osjf.cron.core.Registrant;
 import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
-import top.osjf.cron.spring.AbstractCronTaskRealRegistrant;
-import top.osjf.cron.spring.Registrant;
 
 /**
- * Quartz of scheduled task registration actors.
- *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 1.0.3
  */
-public class QuartzCronTaskRealRegistrant extends AbstractCronTaskRealRegistrant {
+public class QuartzCronTaskRegistry implements CronTaskRegistry {
 
-    public QuartzCronTaskRealRegistrant(QuartzCronTaskRepository cronTaskRepository) {
-        super(cronTaskRepository);
+    private final QuartzCronTaskRepository cronTaskRepository;
+
+    public QuartzCronTaskRegistry(QuartzCronTaskRepository cronTaskRepository) {
+        this.cronTaskRepository = cronTaskRepository;
     }
 
     @Override
@@ -41,8 +39,7 @@ public class QuartzCronTaskRealRegistrant extends AbstractCronTaskRealRegistrant
 
     @Override
     public void register(Registrant registrant) throws Exception {
-        CronTaskRepository<String, JobDetail> cronTaskRepository = getCronTaskRepository();
         QuartzRegistrant quartzRegistrant = (QuartzRegistrant) registrant;
-        cronTaskRepository.register(quartzRegistrant.getCronExpression(), quartzRegistrant.getJobDetail());
+        cronTaskRepository.register(quartzRegistrant.getExpression(), quartzRegistrant.getJobDetail());
     }
 }

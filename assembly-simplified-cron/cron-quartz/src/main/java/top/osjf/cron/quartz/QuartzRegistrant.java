@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package top.osjf.cron.spring.quartz;
+package top.osjf.cron.quartz;
 
 import org.quartz.JobDetail;
-import top.osjf.cron.spring.CronRegistrant;
+import top.osjf.cron.core.ExpressionRegistrant;
 
 /**
- * Quartz's implementation of {@link top.osjf.cron.spring.Registrant}.
- *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 1.0.3
  */
-public class QuartzRegistrant extends CronRegistrant {
+public class QuartzRegistrant extends ExpressionRegistrant {
 
     private final JobDetail jobDetail;
 
