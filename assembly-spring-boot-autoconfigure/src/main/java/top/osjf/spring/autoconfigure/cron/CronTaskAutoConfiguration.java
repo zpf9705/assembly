@@ -19,6 +19,7 @@ package top.osjf.spring.autoconfigure.cron;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import top.osjf.cron.spring.CronTaskConfiguration;
 
 /**
  * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration}
@@ -33,6 +34,6 @@ import org.springframework.context.annotation.Import;
         QuartzCronTaskImportConfiguration.class,
         Cron4jCronTaskImportConfiguration.class,
         SchedulingImportConfiguration.class,
-        ConfigurableCronTaskRegisterPostProcessor.class})
+        CronTaskConfiguration.class})
 public class CronTaskAutoConfiguration {
 }
