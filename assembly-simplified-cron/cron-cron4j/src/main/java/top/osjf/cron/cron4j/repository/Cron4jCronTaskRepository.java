@@ -16,7 +16,11 @@
 
 package top.osjf.cron.cron4j.repository;
 
+import it.sauronsoftware.cron4j.InvalidPatternException;
 import it.sauronsoftware.cron4j.Scheduler;
+import top.osjf.cron.core.CronTask;
+import top.osjf.cron.core.RepositoryUtils;
+import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.repository.CronListenerRepository;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.cron4j.listener.Cron4jCronListener;
@@ -28,8 +32,7 @@ import top.osjf.cron.cron4j.listener.Cron4jCronListener;
  * @since 1.0.0
  */
 public class Cron4jCronTaskRepository implements CronTaskRepository<String, Runnable>,
-        CronListenerRepository<Cron4jCronListener>
-{
+        CronListenerRepository<Cron4jCronListener> {
 
     /*** scheduler management*/
     private final Scheduler scheduler;
@@ -58,13 +61,21 @@ public class Cron4jCronTaskRepository implements CronTaskRepository<String, Runn
      * separated by a space, representing "minute", "hour", "day", "month",
      * "week" from left to right, and does not include the second part.
      *
-     * @param cronExpression {@inheritDoc}
-     * @param runnable       {@inheritDoc}
+     * @param expression {@inheritDoc}
+     * @param runnable   {@inheritDoc}
      * @return {@inheritDoc}
      */
     @Override
-    public String register(String cronExpression, Runnable runnable) {
-        return scheduler.schedule(cronExpression, runnable);
+    @NotNull
+    public String register(@NotNull String expression, @NotNull Runnable runnable) {
+        return RepositoryUtils.doRegister(() ->
+                scheduler.schedule(expression, runnable), InvalidPatternException.class);
+    }
+
+    @Override
+    @NotNull
+    public String register(@NotNull CronTask task) {
+        return register(task.getExpression(), task.getRunnable());
     }
 
     /**
@@ -75,17 +86,19 @@ public class Cron4jCronTaskRepository implements CronTaskRepository<String, Runn
      * separated by a space, representing "minute", "hour", "day", "month",
      * "week" from left to right, and does not include the second part.
      *
-     * @param taskId            {@inheritDoc}
-     * @param newCronExpression {@inheritDoc}
+     * @param taskId        {@inheritDoc}
+     * @param newExpression {@inheritDoc}
      */
     @Override
-    public void update(String taskId, String newCronExpression) {
-        scheduler.reschedule(taskId, newCronExpression);
+    public void update(@NotNull String taskId, @NotNull String newExpression) {
+        RepositoryUtils.doVoidInvoke(() ->
+                scheduler.reschedule(taskId, newExpression), InvalidPatternException.class);
     }
 
     @Override
-    public void remove(String taskId) {
-        scheduler.deschedule(taskId);
+    public void remove(@NotNull String taskId) {
+        RepositoryUtils.doVoidInvoke(() ->
+                scheduler.deschedule(taskId), null);
     }
 
     @Override
