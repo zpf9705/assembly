@@ -23,7 +23,6 @@ import org.quartz.spi.JobFactory;
 import top.osjf.cron.core.CronTask;
 import top.osjf.cron.core.RepositoryUtils;
 import top.osjf.cron.core.lang.NotNull;
-import top.osjf.cron.core.repository.CronListenerRepository;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.quartz.MethodLevelJob;
 import top.osjf.cron.quartz.listener.QuartzCronListener;
@@ -38,8 +37,7 @@ import java.util.Properties;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class QuartzCronTaskRepository implements CronTaskRepository<JobKey, JobDetail>,
-        CronListenerRepository<QuartzCronListener> {
+public class QuartzCronTaskRepository implements CronTaskRepository<JobKey, JobDetail, QuartzCronListener> {
 
     /*** the scheduled task management class of Quartz.*/
     private Scheduler scheduler;
@@ -144,12 +142,12 @@ public class QuartzCronTaskRepository implements CronTaskRepository<JobKey, JobD
     }
 
     @Override
-    public void addCronListener(QuartzCronListener cronListener) {
-        listenerManager.addJobListener(cronListener);
+    public void addListener(@NotNull QuartzCronListener listener) {
+        listenerManager.addJobListener(listener);
     }
 
     @Override
-    public void removeCronListener(QuartzCronListener cronListener) {
-        listenerManager.removeJobListener(cronListener.getName());
+    public void removeListener(@NotNull QuartzCronListener listener) {
+        listenerManager.removeJobListener(listener.getName());
     }
 }

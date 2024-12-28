@@ -24,7 +24,7 @@ import org.springframework.core.NamedThreadLocal;
 import org.springframework.lang.NonNull;
 import org.springframework.scheduling.config.ScheduledTask;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
-import top.osjf.cron.core.repository.CronListenerRepository;
+import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.core.util.StringUtils;
 import top.osjf.cron.spring.scheduler.task.*;
@@ -38,26 +38,32 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class SchedulingRepository extends AnyTaskSupport
-        implements CronTaskRepository<String, Runnable>, CronListenerRepository<SchedulingListener>,
-        TaskEnhanceConvertFactory, ApplicationContextAware, InitializingBean
-{
+public class SchedulingRepository extends AnyTaskSupport implements
+        CronTaskRepository<String, Runnable, SchedulingListener>, TaskEnhanceConvertFactory, ApplicationContextAware,
+        InitializingBean {
 
-    /*** Internally, {@link ScheduledTask} is assigned an actual ID storage map to
+    /**
+     * Internally, {@link ScheduledTask} is assigned an actual ID storage map to
      * record the unique ID of the task, in order to facilitate the implementation
-     * of {@link CronTaskRepository}'s related operations.*/
-    private final Map<String, ScheduledTask> scheduledTaskMap = new ConcurrentHashMap<>();
+     * of {@link CronTaskRepository}'s related operations.
+     */
+    private final Map<String, ScheduledTask> scheduledTaskCache = new ConcurrentHashMap<>();
 
-    /*** Used to temporarily store the ID of the current thread operation task.*/
+    /**
+     * Used to temporarily store the ID of the current thread operation task.
+     */
     private final ThreadLocal<String> ID = new NamedThreadLocal<>("ID LOCAL");
 
-    /*** Collection of scheduled task listeners.*/
+    /**
+     * Collection of scheduled task listeners.
+     */
     private final List<SchedulingListener> schedulingListeners = new ArrayList<>();
 
-    /*** Enhanced version of timed task registration class.*/
+    /**
+     * Enhanced version of timed task registration class.
+     */
     private final EnhanceScheduledTaskRegistrar taskRegistrar = new EnhanceScheduledTaskRegistrar(this);
 
-    /*** spring context*/
     private ApplicationContext applicationContext;
 
     @Override
@@ -79,7 +85,7 @@ public class SchedulingRepository extends AnyTaskSupport
      * @param scheduledTask spring scheduledTask.
      */
     public void registerScheduledTask(String id, ScheduledTask scheduledTask) {
-        scheduledTaskMap.putIfAbsent(id, scheduledTask);
+        scheduledTaskCache.putIfAbsent(id, scheduledTask);
     }
 
     /**
@@ -101,37 +107,42 @@ public class SchedulingRepository extends AnyTaskSupport
     }
 
     @Override
-    public String register(String cronExpression, Runnable runsBody) throws Exception {
+    @NotNull
+    public String register(@NotNull String expression, @NotNull Runnable runsBody) {
         SchedulingRunnable schedulingRunnable = newSchedulingRunnable(runsBody);
-        taskRegistrar.scheduleCronTask(new CronTask(schedulingRunnable, cronExpression));
+        taskRegistrar.scheduleCronTask(new CronTask(schedulingRunnable, expression));
         return schedulingRunnable.getSchedulingInfo().getId();
     }
 
     @Override
-    public void update(String id, String newCronExpression) throws Exception {
-        remove(id);
-        ID.set(id);
-        register(newCronExpression, scheduledTaskMap.get(id).getTask().getRunnable());
+    @NotNull
+    public String register(@NotNull top.osjf.cron.core.CronTask task) {
+        return register(task.getExpression(), task.getRunnable());
     }
 
     @Override
-    public void remove(String id) {
-        ScheduledTask scheduledTask = scheduledTaskMap.get(id);
+    public void update(@NotNull String id, @NotNull String newExpression) {
+        remove(id);
+        ID.set(id);
+        register(newExpression, scheduledTaskCache.get(id).getTask().getRunnable());
+    }
+
+    @Override
+    public void remove(@NotNull String id) {
+        ScheduledTask scheduledTask = scheduledTaskCache.get(id);
         if (scheduledTask != null) {
             scheduledTask.cancel();
         }
     }
 
     @Override
-    public void addCronListener(SchedulingListener cronListener) {
-        if (!schedulingListeners.contains(cronListener)) {
-            schedulingListeners.add(cronListener);
-        }
+    public void addListener(@NotNull SchedulingListener listener) {
+        schedulingListeners.add(listener);
     }
 
     @Override
-    public void removeCronListener(SchedulingListener cronListener) {
-        schedulingListeners.remove(cronListener);
+    public void removeListener(@NotNull SchedulingListener listener) {
+        schedulingListeners.remove(listener);
     }
 
     @Override
@@ -143,7 +154,7 @@ public class SchedulingRepository extends AnyTaskSupport
     protected SchedulingRunnable newSchedulingRunnable(Runnable runnable) {
         String id = ID.get();
         if (StringUtils.isBlank(id)) {
-            id = generateID();
+            id = UUID.randomUUID().toString();
         } else ID.remove();
         return new SchedulingRunnable(id, runnable, getSchedulingListeners());
     }
@@ -180,10 +191,5 @@ public class SchedulingRepository extends AnyTaskSupport
         }
         return new FixedRateTask(newSchedulingRunnable(fixedRateTask.getRunnable()),
                 fixedRateTask.getInterval(), fixedRateTask.getInitialDelay());
-    }
-
-    //generate ID using UUID
-    private String generateID() {
-        return UUID.randomUUID().toString();
     }
 }
