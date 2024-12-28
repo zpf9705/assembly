@@ -30,6 +30,9 @@ import java.util.Objects;
 public abstract class RepositoryUtils {
 
     /**
+     * Perform {@link top.osjf.cron.core.repository.CronTaskRepository} related registration
+     * task operations.
+     *
      * @param register                       a Task registration body function.
      * @param inValidExpressionExceptionType specify the type of exception thrown when the
      *                                       registration timing expression is invalid using
@@ -51,6 +54,9 @@ public abstract class RepositoryUtils {
     }
 
     /**
+     * Perform {@link top.osjf.cron.core.repository.CronTaskRepository} related operations
+     * with no return value.
+     *
      * @param invoke                         a void invoke function.
      * @param inValidExpressionExceptionType specify the type of exception thrown when the
      *                                       registration timing expression is invalid using
@@ -88,10 +94,12 @@ public abstract class RepositoryUtils {
         if (inValidExpressionExceptionType != null) {
             if (inValidExpressionExceptionType.isAssignableFrom(e.getClass())) {
                 re = new IllegalArgumentException("Invalid expression.", e);
-            } else {
+            }
+            else {
                 re = new CronInternalException(e);
             }
-        } else {
+        }
+        else {
             re = new CronInternalException(e);
         }
         return re;
