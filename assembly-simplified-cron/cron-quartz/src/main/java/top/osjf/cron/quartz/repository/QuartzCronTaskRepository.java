@@ -25,7 +25,7 @@ import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.repository.CronListenerRepository;
 import top.osjf.cron.core.repository.CronTaskRepository;
-import top.osjf.cron.quartz.MethodJob;
+import top.osjf.cron.quartz.MethodLevelJob;
 import top.osjf.cron.quartz.listener.QuartzCronListener;
 
 import java.lang.reflect.Method;
@@ -138,7 +138,7 @@ public class QuartzCronTaskRepository implements CronTaskRepository<JobKey, JobD
         if (method == null) {
             throw new IllegalArgumentException("<Method> == <null>");
         }
-        return register(task.getExpression(), JobBuilder.newJob(MethodJob.class)
+        return register(task.getExpression(), JobBuilder.newJob(MethodLevelJob.class)
                 .withIdentity(method.getName(), method.getDeclaringClass().getName()).build());
     }
 
