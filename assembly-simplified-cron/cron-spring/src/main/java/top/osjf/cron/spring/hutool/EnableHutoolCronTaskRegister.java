@@ -18,8 +18,9 @@ package top.osjf.cron.spring.hutool;
 
 import org.springframework.context.annotation.Import;
 import top.osjf.cron.hutool.lifestyle.HutoolCronLifeStyle;
+import top.osjf.cron.spring.CronTaskConfiguration;
 import top.osjf.cron.spring.annotation.Cron;
-import top.osjf.cron.spring.CronTaskRegisterPostProcessor;
+import top.osjf.cron.spring.CronAnnotationPostProcessor;
 
 import java.lang.annotation.*;
 
@@ -27,7 +28,7 @@ import java.lang.annotation.*;
  * Enable the scheduled task registration annotation based on hutool cron,
  * which will register the lifecycle beans of hutool cron and the registration
  * beans at runtime for scheduled task registration of methods carrying
- * {@link Cron} in {@link CronTaskRegisterPostProcessor}.
+ * {@link Cron} in {@link CronAnnotationPostProcessor}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
@@ -36,7 +37,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Import({HutoolCronTaskConfiguration.class,
-        CronTaskRegisterPostProcessor.class})
+        CronTaskConfiguration.class})
 public @interface EnableHutoolCronTaskRegister {
 
     /**

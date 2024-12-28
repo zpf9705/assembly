@@ -16,13 +16,10 @@
 
 package top.osjf.cron.spring.hutool;
 
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Role;
 import top.osjf.cron.hutool.lifestyle.HutoolCronLifeStyle;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
-import top.osjf.cron.spring.DefaultCronTaskRegisterConfiguration;
 
 /**
  * Regarding the configuration classes related to scheduled task
@@ -33,13 +30,7 @@ import top.osjf.cron.spring.DefaultCronTaskRegisterConfiguration;
  * @since 1.0.0
  */
 @Configuration(proxyBeanMethods = false)
-@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-public class HutoolCronTaskConfiguration extends DefaultCronTaskRegisterConfiguration {
-
-    @Bean
-    public HutoolRegistrantCollector hutoolRegistrantCollector() {
-        return new HutoolRegistrantCollector();
-    }
+public class HutoolCronTaskConfiguration {
 
     @Bean(destroyMethod = "stop")
     public HutoolCronLifeStyle hutoolCronLifeStyle() {
