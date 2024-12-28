@@ -23,7 +23,6 @@ import cn.hutool.cron.pattern.CronPattern;
 import top.osjf.cron.core.CronTask;
 import top.osjf.cron.core.RepositoryUtils;
 import top.osjf.cron.core.lang.NotNull;
-import top.osjf.cron.core.repository.CronListenerRepository;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.hutool.listener.HutoolCronListener;
 
@@ -33,8 +32,7 @@ import top.osjf.cron.hutool.listener.HutoolCronListener;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class HutoolCronTaskRepository implements CronTaskRepository<String, Runnable>,
-        CronListenerRepository<HutoolCronListener> {
+public class HutoolCronTaskRepository implements CronTaskRepository<String, Runnable, HutoolCronListener> {
 
     /*** scheduler management*/
     private final Scheduler scheduler;
@@ -70,12 +68,12 @@ public class HutoolCronTaskRepository implements CronTaskRepository<String, Runn
     }
 
     @Override
-    public void addCronListener(HutoolCronListener cronListener) {
-        scheduler.addListener(cronListener);
+    public void addListener(@NotNull HutoolCronListener listener) {
+        scheduler.addListener(listener);
     }
 
     @Override
-    public void removeCronListener(HutoolCronListener cronListener) {
-        scheduler.removeListener(cronListener);
+    public void removeListener(@NotNull HutoolCronListener listener) {
+        scheduler.removeListener(listener);
     }
 }

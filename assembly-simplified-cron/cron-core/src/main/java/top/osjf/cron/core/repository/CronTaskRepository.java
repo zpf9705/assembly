@@ -19,12 +19,14 @@ package top.osjf.cron.core.repository;
 import top.osjf.cron.core.CronTask;
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.lang.NotNull;
+import top.osjf.cron.core.listener.CronListener;
 
 /**
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public interface CronTaskRepository<ID, BODY> {
+@SuppressWarnings("rawtypes")
+public interface CronTaskRepository<ID, BODY, L extends CronListener> {
 
     /**
      * @param expression a valid cron expression.
@@ -72,4 +74,16 @@ public interface CronTaskRepository<ID, BODY> {
      * @throws NullPointerException  if input id is {@literal null}.
      */
     void remove(@NotNull ID id) throws CronInternalException;
+
+    /**
+     * @param listener l
+     * @throws NullPointerException if input listener is {@literal null}.
+     */
+    void addListener(@NotNull L listener);
+
+    /**
+     * @param listener l
+     * @throws NullPointerException if input listener is {@literal null}.
+     */
+    void removeListener(@NotNull L listener);
 }
