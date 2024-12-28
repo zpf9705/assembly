@@ -16,13 +16,10 @@
 
 package top.osjf.cron.spring.cron4j;
 
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Role;
 import top.osjf.cron.cron4j.lifestyle.Cron4jCronLifeStyle;
 import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
-import top.osjf.cron.spring.DefaultCronTaskRegisterConfiguration;
 
 /**
  * Regarding the configuration classes related to scheduled task
@@ -33,20 +30,14 @@ import top.osjf.cron.spring.DefaultCronTaskRegisterConfiguration;
  * @since 1.0.0
  */
 @Configuration(proxyBeanMethods = false)
-@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-public class Cron4jCronTaskConfiguration extends DefaultCronTaskRegisterConfiguration {
-
-    @Bean
-    public Cron4jRegistrantCollector cron4jRegistrantCollector(){
-        return new Cron4jRegistrantCollector();
-    }
+public class Cron4jCronTaskConfiguration {
 
     @Bean
     public Cron4jCronTaskRepository cron4jCronTaskRepository() {
         return new Cron4jCronTaskRepository();
     }
 
-    @Bean(destroyMethod = "stop")
+    @Bean
     public Cron4jCronLifeStyle cron4jCronLifeStyle(Cron4jCronTaskRepository cronTaskRepository) {
         return new Cron4jCronLifeStyle(cronTaskRepository.getScheduler());
     }

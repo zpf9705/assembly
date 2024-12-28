@@ -18,7 +18,7 @@ package top.osjf.cron.spring.cron4j;
 
 import org.springframework.context.annotation.Import;
 import top.osjf.cron.cron4j.lifestyle.Cron4jCronLifeStyle;
-import top.osjf.cron.spring.CronTaskRegisterPostProcessor;
+import top.osjf.cron.spring.CronTaskConfiguration;
 import top.osjf.cron.spring.annotation.Cron;
 
 import java.lang.annotation.*;
@@ -27,7 +27,7 @@ import java.lang.annotation.*;
  * Enable the scheduled task registration annotation based on Cron4j cron,
  * which will register the lifecycle beans of Cron4j cron and the registration
  * beans at runtime for scheduled task registration of methods carrying
- * {@link Cron} in {@link CronTaskRegisterPostProcessor}.
+ * {@link Cron} in {@link top.osjf.cron.spring.CronAnnotationPostProcessor}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
@@ -36,7 +36,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Import({Cron4jCronTaskConfiguration.class,
-        CronTaskRegisterPostProcessor.class})
+        CronTaskConfiguration.class})
 public @interface EnableCron4jCronTaskRegister {
 
     /**
