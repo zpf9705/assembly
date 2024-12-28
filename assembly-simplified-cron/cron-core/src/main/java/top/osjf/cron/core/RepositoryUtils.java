@@ -38,6 +38,7 @@ public abstract class RepositoryUtils {
      * which can be used for subsequent updates and deletions.
      * @throws NullPointerException if input register is {@literal null}.
      */
+    @NotNull
     public static <ID> ID doRegister(@NotNull Register<ID> register,
                                      @Nullable Class<? extends Exception> inValidExpressionExceptionType) {
         Objects.requireNonNull(register, "<Register> == <null>");
@@ -45,9 +46,8 @@ public abstract class RepositoryUtils {
             return register.register();
         }
         catch (Exception e) {
-            resolveException(e, inValidExpressionExceptionType);
+            throw resolveExceptionAsRuntime(e, inValidExpressionExceptionType);
         }
-        return null;
     }
 
     /**
@@ -58,13 +58,13 @@ public abstract class RepositoryUtils {
      * @throws NullPointerException if input register is {@literal null}.
      */
     public static void doVoidInvoke(@NotNull VoidInvoke invoke,
-                                @Nullable Class<? extends Exception> inValidExpressionExceptionType) {
+                                    @Nullable Class<? extends Exception> inValidExpressionExceptionType) {
         Objects.requireNonNull(invoke, "<VoidInvoke> == <null>");
         try {
             invoke.invoke();
         }
         catch (Exception e) {
-            resolveException(e, inValidExpressionExceptionType);
+            throw resolveExceptionAsRuntime(e, inValidExpressionExceptionType);
         }
     }
 
@@ -81,13 +81,19 @@ public abstract class RepositoryUtils {
      *                                  in {@link CronInternalException#getCause()}.
      * @throws IllegalArgumentException if input expression is invalid.
      */
-    private static void resolveException(Exception e,
-                                         @Nullable Class<? extends Exception> inValidExpressionExceptionType) {
+    private static RuntimeException resolveExceptionAsRuntime(Exception e,
+                                                              @Nullable Class<? extends Exception>
+                                                                      inValidExpressionExceptionType) {
+        RuntimeException re;
         if (inValidExpressionExceptionType != null) {
             if (inValidExpressionExceptionType.isAssignableFrom(e.getClass())) {
-                throw new IllegalArgumentException("Invalid expression.", e);
+                re = new IllegalArgumentException("Invalid expression.", e);
+            } else {
+                re = new CronInternalException(e);
             }
+        } else {
+            re = new CronInternalException(e);
         }
-        throw new CronInternalException(e);
+        return re;
     }
 }
