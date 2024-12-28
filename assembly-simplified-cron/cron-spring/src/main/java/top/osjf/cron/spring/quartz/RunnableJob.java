@@ -16,8 +16,8 @@
 
 package top.osjf.cron.spring.quartz;
 
+import org.quartz.Job;
 import org.quartz.JobExecutionContext;
-import org.springframework.lang.NonNull;
 
 /**
  * Dynamically register {@link org.quartz.Job} beans of
@@ -26,11 +26,11 @@ import org.springframework.lang.NonNull;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class DynamicMethodJob implements MethodJob {
+public class RunnableJob implements Job {
 
     private final Runnable runnable;
 
-    public DynamicMethodJob(@NonNull Runnable runnable) {
+    public RunnableJob(Runnable runnable) {
         this.runnable = runnable;
     }
 
