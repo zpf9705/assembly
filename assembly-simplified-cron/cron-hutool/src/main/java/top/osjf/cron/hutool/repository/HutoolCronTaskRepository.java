@@ -16,9 +16,13 @@
 
 package top.osjf.cron.hutool.repository;
 
+import cn.hutool.cron.CronException;
 import cn.hutool.cron.CronUtil;
 import cn.hutool.cron.Scheduler;
 import cn.hutool.cron.pattern.CronPattern;
+import top.osjf.cron.core.CronTask;
+import top.osjf.cron.core.RepositoryUtils;
+import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.repository.CronListenerRepository;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.hutool.listener.HutoolCronListener;
@@ -30,8 +34,7 @@ import top.osjf.cron.hutool.listener.HutoolCronListener;
  * @since 1.0.0
  */
 public class HutoolCronTaskRepository implements CronTaskRepository<String, Runnable>,
-        CronListenerRepository<HutoolCronListener>
-{
+        CronListenerRepository<HutoolCronListener> {
 
     /*** scheduler management*/
     private final Scheduler scheduler;
@@ -42,18 +45,28 @@ public class HutoolCronTaskRepository implements CronTaskRepository<String, Runn
     }
 
     @Override
-    public String register(String cronExpression, Runnable runnable) {
-        return scheduler.schedule(cronExpression, runnable);
+    @NotNull
+    public String register(@NotNull String cronExpression, @NotNull Runnable runnable) {
+        return RepositoryUtils.doRegister(() ->
+                scheduler.schedule(cronExpression, runnable), CronException.class);
     }
 
     @Override
-    public void update(String taskId, String newCronExpression) {
-        scheduler.updatePattern(taskId, new CronPattern(newCronExpression));
+    @NotNull
+    public String register(@NotNull CronTask task) {
+        return register(task.getExpression(), task.getRunnable());
     }
 
     @Override
-    public void remove(String taskId) {
-        scheduler.descheduleWithStatus(taskId);
+    public void update(@NotNull String taskId, @NotNull String newExpression) {
+        RepositoryUtils.doVoidInvoke(() ->
+                scheduler.updatePattern(taskId, new CronPattern(newExpression)), CronException.class);
+    }
+
+    @Override
+    public void remove(@NotNull String taskId) {
+        RepositoryUtils.doVoidInvoke(() -> scheduler.descheduleWithStatus(taskId), null);
+
     }
 
     @Override
