@@ -78,7 +78,6 @@ public class CronMethodRunnable implements Runnable {
     @Override
     public void run() {
         try {
-
             makeAccessible(this.method);
             this.method.invoke(this.target);
         } catch (InvocationTargetException ex) {

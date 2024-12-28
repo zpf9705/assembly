@@ -30,8 +30,7 @@ import java.util.Objects;
 public abstract class RepositoryUtils {
 
     /**
-     * Perform {@link top.osjf.cron.core.repository.CronTaskRepository} related registration
-     * task operations.
+     * Handle APIs with return values and resolve exceptions to runtime.
      *
      * @param register                       a Task registration body function.
      * @param inValidExpressionExceptionType specify the type of exception thrown when the
@@ -54,8 +53,7 @@ public abstract class RepositoryUtils {
     }
 
     /**
-     * Perform {@link top.osjf.cron.core.repository.CronTaskRepository} related operations
-     * with no return value.
+     * Handle APIs with no return values and resolve exceptions to runtime.
      *
      * @param invoke                         a void invoke function.
      * @param inValidExpressionExceptionType specify the type of exception thrown when the
