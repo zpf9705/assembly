@@ -30,7 +30,6 @@ import top.osjf.cron.quartz.listener.QuartzCronListener;
 
 import java.lang.reflect.Method;
 import java.text.ParseException;
-import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -109,8 +108,6 @@ public class QuartzCronTaskRepository implements CronTaskRepository<JobKey, JobD
     @Override
     @NotNull
     public JobKey register(@NotNull String expression, @NotNull JobDetail jobDetail) {
-        Objects.requireNonNull(expression, "<expression> == null");
-        Objects.requireNonNull(jobDetail, "<JobDetail> == null");
         return RepositoryUtils.doRegister(() -> {
             JobKey key = jobDetail.getKey();
             TriggerBuilder<CronTrigger> triggerBuilder = TriggerBuilder.newTrigger()
@@ -125,19 +122,13 @@ public class QuartzCronTaskRepository implements CronTaskRepository<JobKey, JobD
     @Override
     @NotNull
     public JobKey register(@NotNull CronTask task) {
-        Objects.requireNonNull(task, "<CronTask> == null");
-        Method method = task.getMethod();
-        if (method == null) {
-            throw new IllegalArgumentException("<Method> == <null>");
-        }
+        Method method = task.getRunnable().getMethod();
         return register(task.getExpression(), JobBuilder.newJob(MethodLevelJob.class)
                 .withIdentity(method.getName(), method.getDeclaringClass().getName()).build());
     }
 
     @Override
     public void update(@NotNull JobKey jobKey, @NotNull String newExpression) {
-        Objects.requireNonNull(jobKey, "<jobKey> == <null>");
-        Objects.requireNonNull(newExpression, "<newExpression> == <null>");
         String name = jobKey.getName();
         RepositoryUtils.doVoidInvoke(() -> scheduler.rescheduleJob(new TriggerKey(name), TriggerBuilder.newTrigger()
                 .withIdentity(name)
@@ -148,7 +139,6 @@ public class QuartzCronTaskRepository implements CronTaskRepository<JobKey, JobD
 
     @Override
     public void remove(@NotNull JobKey jobKey) {
-        Objects.requireNonNull(jobKey, "<jobKey> == <null>");
         RepositoryUtils.doVoidInvoke(() ->
                 scheduler.deleteJob(jobKey), null);
     }
