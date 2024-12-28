@@ -21,7 +21,6 @@
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring>5.3.12</spring>
-        <jsr305>3.0.2</jsr305>
     </properties>
 
     <dependencies>
@@ -62,13 +61,6 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
             <version>${spring}</version>
-            <optional>true</optional>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
-            <version>${jsr305}</version>
             <optional>true</optional>
         </dependency>
 
