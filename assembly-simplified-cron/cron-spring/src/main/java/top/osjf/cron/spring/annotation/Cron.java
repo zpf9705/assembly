@@ -17,7 +17,7 @@
 package top.osjf.cron.spring.annotation;
 
 import org.springframework.core.annotation.AliasFor;
-import top.osjf.cron.spring.CronTaskRegisterPostProcessor;
+import top.osjf.cron.spring.CronAnnotationPostProcessor;
 
 import java.lang.annotation.*;
 
@@ -27,7 +27,7 @@ import java.lang.annotation.*;
  * {@link org.springframework.core.env.Environment} registration,
  * and provides fixed initialization parameters.
  *
- * <p>Relying on {@link CronTaskRegisterPostProcessor} to scan, obtain,
+ * <p>Relying on {@link CronAnnotationPostProcessor} to scan, obtain,
  * and register corresponding annotation methods，filter the non-static,
  * publicly county-wide, and annotated methods defined in the current
  * class as a timed runtime.
@@ -38,6 +38,7 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Repeatable(Crones.class)
 public @interface Cron {
 
     /**
@@ -46,19 +47,6 @@ public @interface Cron {
      * for the current task is once every 1 second.
      */
     String DEFAULT_CRON_EXPRESSION = "0/1 * * * * ?";
-
-    /**
-     * After annotation mapping the map structure, map the key value of
-     * the annotation attribute {@link #expression()}.
-     */
-    String SELECT_OF_EXPRESSION_NAME = "expression";
-
-
-    /**
-     * After annotation mapping the map structure, map the key value of
-     * the annotation attribute {@link #profiles()}.
-     */
-    String SELECT_OF_PROFILES_NAME = "profiles";
 
     /**
      * Alias for {@link #expression}.
