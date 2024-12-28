@@ -58,8 +58,8 @@ public interface LifeStyle {
      * <li>ime intervals and triggering conditions for task scheduling</li>
      * <li>Thread pool configuration for task execution (such as number of threads,
      * queue size, etc.)</li>
-     * <li>Log configuration (such as log level, log output location, etc.)</li>
-     * Other configurations related to task execution (such as task retry strategy,
+     * <li>Log configuration (such as log level, log output location, etc.),
+     * other configurations related to task execution (such as task retry strategy,
      * exception handling, etc.)</li>
      * </ul>
      *
