@@ -21,7 +21,6 @@ import it.sauronsoftware.cron4j.Scheduler;
 import top.osjf.cron.core.CronTask;
 import top.osjf.cron.core.RepositoryUtils;
 import top.osjf.cron.core.lang.NotNull;
-import top.osjf.cron.core.repository.CronListenerRepository;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.cron4j.listener.Cron4jCronListener;
 
@@ -31,8 +30,7 @@ import top.osjf.cron.cron4j.listener.Cron4jCronListener;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class Cron4jCronTaskRepository implements CronTaskRepository<String, Runnable>,
-        CronListenerRepository<Cron4jCronListener> {
+public class Cron4jCronTaskRepository implements CronTaskRepository<String, Runnable, Cron4jCronListener> {
 
     /*** scheduler management*/
     private final Scheduler scheduler;
@@ -102,12 +100,12 @@ public class Cron4jCronTaskRepository implements CronTaskRepository<String, Runn
     }
 
     @Override
-    public void addCronListener(Cron4jCronListener cronListener) {
-        scheduler.addSchedulerListener(cronListener);
+    public void addListener(@NotNull Cron4jCronListener listener) {
+        scheduler.addSchedulerListener(listener);
     }
 
     @Override
-    public void removeCronListener(Cron4jCronListener cronListener) {
-        scheduler.removeSchedulerListener(cronListener);
+    public void removeListener(@NotNull Cron4jCronListener listener) {
+        scheduler.removeSchedulerListener(listener);
     }
 }

@@ -60,6 +60,7 @@ public class CronMethodRunnable implements Runnable {
 
     /**
      * Return the target instance to call the method on.
+     * @return  the target instance to call the method on.
      */
     public Object getTarget() {
         return this.target;
@@ -67,6 +68,7 @@ public class CronMethodRunnable implements Runnable {
 
     /**
      * Return the target method to call.
+     * @return the target method to call.
      */
     public Method getMethod() {
         return this.method;

@@ -30,14 +30,10 @@ import java.util.Objects;
  */
 public class Cron4jCronLifeStyle implements LifeStyle {
 
-    /*** scheduler management*/
     private final Scheduler scheduler;
 
-    /*** The construction method of scheduler management class {@link Scheduler}
-     * @param scheduler scheduler management.
-     **/
     public Cron4jCronLifeStyle(Scheduler scheduler) {
-        Objects.requireNonNull(scheduler, "Cron4j Scheduler");
+        Objects.requireNonNull(scheduler, "<Scheduler> == <null>");
         this.scheduler = scheduler;
     }
 

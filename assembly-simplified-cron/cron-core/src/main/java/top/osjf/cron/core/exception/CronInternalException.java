@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package top.osjf.cron.core;
+
+package top.osjf.cron.core.exception;
 
 /**
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public interface Registrant {
-    default <T> T unwrap(Class<T> type) {
-        return type.cast(this);
+public class CronInternalException extends RuntimeException {
+
+    private static final long serialVersionUID = 1460657936213652266L;
+
+    public CronInternalException(Throwable cause) {
+        super(cause);
     }
 }
