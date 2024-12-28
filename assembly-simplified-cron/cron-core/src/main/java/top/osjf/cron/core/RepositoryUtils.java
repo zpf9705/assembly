@@ -49,7 +49,7 @@ public abstract class RepositoryUtils {
             return register.register();
         }
         catch (Exception e) {
-            throw resolveExceptionAsRuntime(e, inValidExpressionExceptionType);
+            throw resolveExceptionToRuntime(e, inValidExpressionExceptionType);
         }
     }
 
@@ -70,7 +70,7 @@ public abstract class RepositoryUtils {
             invoke.invoke();
         }
         catch (Exception e) {
-            throw resolveExceptionAsRuntime(e, inValidExpressionExceptionType);
+            throw resolveExceptionToRuntime(e, inValidExpressionExceptionType);
         }
     }
 
@@ -87,7 +87,7 @@ public abstract class RepositoryUtils {
      *                                  in {@link CronInternalException#getCause()}.
      * @throws IllegalArgumentException if input expression is invalid.
      */
-    private static RuntimeException resolveExceptionAsRuntime(Exception e,
+    private static RuntimeException resolveExceptionToRuntime(Exception e,
                                                               @Nullable Class<? extends Exception>
                                                                       inValidExpressionExceptionType) {
         RuntimeException re;
