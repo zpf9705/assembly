@@ -35,6 +35,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 import top.osjf.cron.core.exception.CronException;
+import top.osjf.cron.quartz.MethodLevelJob;
 
 import java.lang.reflect.Method;
 
@@ -46,7 +47,7 @@ import java.lang.reflect.Method;
  * <p>Convert Quartz's scheduled tasks for class structure to method level,
  * use the registered {@link JobDetail} to obtain the specific method for
  * executing the bean, and dynamically create a bean to execute the scheduled
- * task. The structure can be viewed from {@link DynamicMethodJob}.
+ * task. The structure can be viewed from {@link RunnableJob}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
@@ -76,7 +77,7 @@ public class QuartzJobFactory implements JobFactory, ApplicationContextAware, Be
 
         // MethodJob assignable is method level scheduled task
         //Dynamically create beans and execute them
-        if (MethodJob.class.isAssignableFrom(jobDetail.getJobClass())) {
+        if (MethodLevelJob.class.isAssignableFrom(jobDetail.getJobClass())) {
             return getMethodJobBean(jobDetail);
         }
 
@@ -85,7 +86,7 @@ public class QuartzJobFactory implements JobFactory, ApplicationContextAware, Be
         return applicationContext.getBean(jobDetail.getJobClass());
     }
 
-    private DynamicMethodJob getMethodJobBean(JobDetail jobDetail) {
+    private RunnableJob getMethodJobBean(JobDetail jobDetail) {
 
         JobKey key = jobDetail.getKey();
 
@@ -93,22 +94,22 @@ public class QuartzJobFactory implements JobFactory, ApplicationContextAware, Be
 
         if (applicationContext.containsBean(beanName)) {
 
-            return applicationContext.getBean(beanName, DynamicMethodJob.class);
+            return applicationContext.getBean(beanName, RunnableJob.class);
         }
 
         return registerAndInitialize(key, beanName);
     }
 
-    private DynamicMethodJob registerAndInitialize(JobKey key, String beanName) {
+    private RunnableJob registerAndInitialize(JobKey key, String beanName) {
 
-        BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(DynamicMethodJob.class)
+        BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(RunnableJob.class)
                 .setScope(BeanDefinition.SCOPE_SINGLETON)
                 .addConstructorArgValue(getRunnable(key.getGroup(), key.getName()));
 
         BeanDefinitionReaderUtils.registerBeanDefinition(new BeanDefinitionHolder(builder.getBeanDefinition(),
                 beanName), beanDefinitionRegistry);
 
-        return applicationContext.getBean(beanName, DynamicMethodJob.class);
+        return applicationContext.getBean(beanName, RunnableJob.class);
     }
 
     private Runnable getRunnable(String beanClassName, String methodName) {
