@@ -20,10 +20,17 @@ import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.simpl.SimpleThreadPool;
 import org.quartz.spi.JobFactory;
+import top.osjf.cron.core.CronTask;
+import top.osjf.cron.core.exception.CronInternalException;
+import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.repository.CronListenerRepository;
 import top.osjf.cron.core.repository.CronTaskRepository;
+import top.osjf.cron.quartz.MethodJob;
 import top.osjf.cron.quartz.listener.QuartzCronListener;
 
+import java.lang.reflect.Method;
+import java.text.ParseException;
+import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -33,8 +40,7 @@ import java.util.Properties;
  * @since 1.0.0
  */
 public class QuartzCronTaskRepository implements CronTaskRepository<JobKey, JobDetail>,
-        CronListenerRepository<QuartzCronListener>
-{
+        CronListenerRepository<QuartzCronListener> {
 
     /*** the scheduled task management class of Quartz.*/
     private Scheduler scheduler;
@@ -94,36 +100,78 @@ public class QuartzCronTaskRepository implements CronTaskRepository<JobKey, JobD
     /**
      * Return the scheduled task management class of Quartz.
      *
-     * @return {@link Scheduler}.
+     * @return the scheduled task management.
      */
     public Scheduler getScheduler() {
         return scheduler;
     }
 
     @Override
-    public JobKey register(String cronExpression, JobDetail jobDetail) throws Exception {
+    @NotNull
+    public JobKey register(@NotNull String expression, @NotNull JobDetail jobDetail) {
+        Objects.requireNonNull(expression, "<cronExpression> == null");
+        Objects.requireNonNull(jobDetail, "<JobDetail> == null");
+        CronExpression cronExpression;
+        try {
+            cronExpression = new CronExpression(expression);
+        } catch (ParseException parseException) {
+            throw new IllegalArgumentException(parseException);
+        }
         JobKey key = jobDetail.getKey();
         TriggerBuilder<CronTrigger> triggerBuilder = TriggerBuilder.newTrigger()
                 .withIdentity(key.getName())
                 .startNow()
                 .withSchedule(CronScheduleBuilder.cronSchedule(cronExpression));
-        scheduler.scheduleJob(jobDetail, triggerBuilder.build());
+        try {
+            scheduler.scheduleJob(jobDetail, triggerBuilder.build());
+        } catch (SchedulerException schedulerException) {
+            throw new CronInternalException(schedulerException);
+        }
         return jobDetail.getKey();
     }
 
     @Override
-    public void update(JobKey jobKey, String newCronExpression) throws Exception {
-        String name = jobKey.getName();
-        scheduler.rescheduleJob(new TriggerKey(name), TriggerBuilder.newTrigger()
-                .withIdentity(name)
-                .startNow()
-                .withSchedule(CronScheduleBuilder.cronSchedule(newCronExpression))
-                .build());
+    @NotNull
+    public JobKey register(@NotNull CronTask task) {
+        Objects.requireNonNull(task, "<CronTask> == null");
+        Method method = task.getMethod();
+        if (method == null) {
+            throw new IllegalArgumentException("<Method> == <null>");
+        }
+        return register(task.getExpression(), JobBuilder.newJob(MethodJob.class)
+                .withIdentity(method.getName(), method.getDeclaringClass().getName()).build());
     }
 
     @Override
-    public void remove(JobKey jobKey) throws Exception {
-        scheduler.deleteJob(jobKey);
+    public void update(@NotNull JobKey jobKey, @NotNull String newExpression) {
+        Objects.requireNonNull(jobKey, "<jobKey> == <null>");
+        Objects.requireNonNull(newExpression, "<newExpression> == <null>");
+        CronExpression newCronExpression;
+        try {
+            newCronExpression = new CronExpression(newExpression);
+        } catch (ParseException parseException) {
+            throw new IllegalArgumentException(parseException);
+        }
+        String name = jobKey.getName();
+        try {
+            scheduler.rescheduleJob(new TriggerKey(name), TriggerBuilder.newTrigger()
+                    .withIdentity(name)
+                    .startNow()
+                    .withSchedule(CronScheduleBuilder.cronSchedule(newCronExpression))
+                    .build());
+        } catch (SchedulerException schedulerException) {
+            throw new CronInternalException(schedulerException);
+        }
+    }
+
+    @Override
+    public void remove(@NotNull JobKey jobKey) {
+        Objects.requireNonNull(jobKey, "<jobKey> == <null>");
+        try {
+            scheduler.deleteJob(jobKey);
+        } catch (SchedulerException schedulerException) {
+            throw new CronInternalException(schedulerException);
+        }
     }
 
     @Override
