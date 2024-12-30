@@ -47,7 +47,7 @@ import java.lang.annotation.*;
  * are semantically identical, meaning they should have the same value. If the values
  * of these two attributes are different, it usually means there is inconsistency in
  * the configuration, which may lead to runtime errors or unpredictable behavior.
- * <p>
+ *
  * <h2>Example usage</h2>
  * <pre>
  * &#64;Cron(expression = "0 0/5 * * * ?", profiles = {"dev"})
