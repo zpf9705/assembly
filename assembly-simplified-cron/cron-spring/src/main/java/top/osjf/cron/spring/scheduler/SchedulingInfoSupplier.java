@@ -16,13 +16,14 @@
 
 package top.osjf.cron.spring.scheduler;
 
+import java.util.function.Supplier;
+
 /**
- * The interface for carrying and obtaining {@link SchedulingInfo}.
+ * Extend the functional interface {@link Supplier} to provide an
+ * instance of {@link SchedulingInfo}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 1.0.3
  */
-public interface SchedulingInfoCapable {
-
-    SchedulingInfo getSchedulingInfo();
+public interface SchedulingInfoSupplier extends Supplier<SchedulingInfo> {
 }
