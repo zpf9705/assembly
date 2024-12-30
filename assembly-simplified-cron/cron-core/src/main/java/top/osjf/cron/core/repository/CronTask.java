@@ -15,9 +15,13 @@
  */
 
 
-package top.osjf.cron.core;
+package top.osjf.cron.core.repository;
 
 /**
+ * The {@code CronTask} class represents a timed task execution information wrapper
+ * object, which contains a cron expression and a task to be executed (implemented
+ * through {@code CronMethodRunnable}).
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
@@ -27,15 +31,31 @@ public final class CronTask {
 
     private final CronMethodRunnable runnable;
 
+    /**
+     * Construct a {@code CronTask} instance by given cron expression and {@code CronMethodRunnable}.
+     *
+     * @param expression the cron expression defines the execution time of the task.
+     * @param runnable   the task to be executed is implemented through {@code CronMethodRunnable}.
+     */
     public CronTask(String expression, CronMethodRunnable runnable) {
         this.expression = expression;
         this.runnable = runnable;
     }
 
+    /**
+     * Get a cron expression that represents the frequency of task execution.
+     *
+     * @return the cron expression defines the execution time of the task.
+     */
     public String getExpression() {
         return expression;
     }
 
+    /**
+     * Get the task to be executed {@code CronMethodRunnable}.
+     *
+     * @return the task to be executed is implemented through {@code CronMethodRunnable}.
+     */
     public CronMethodRunnable getRunnable() {
         return runnable;
     }
