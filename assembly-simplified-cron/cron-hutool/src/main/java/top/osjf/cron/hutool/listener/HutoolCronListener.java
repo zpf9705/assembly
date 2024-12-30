@@ -21,10 +21,41 @@ import cn.hutool.cron.listener.TaskListener;
 import top.osjf.cron.core.listener.CronListener;
 
 /**
- * The Hutool cron task {@link CronListener},reply to {@link TaskListener}.
+ * The Hutool cron task listener {@link CronListener}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 1.0.3
  */
-public interface HutoolCronListener extends TaskListener, CronListener<TaskExecutor> {
+public class HutoolCronListener implements TaskListener, CronListener {
+
+    @Override
+    public final void onStart(TaskExecutor executor) {
+        start(newCron4jListenerContent(executor));
+    }
+
+    @Override
+    public final void onSucceeded(TaskExecutor executor) {
+        success(newCron4jListenerContent(executor));
+    }
+
+    @Override
+    public final void onFailed(TaskExecutor executor, Throwable exception) {
+        failed(newCron4jListenerContent(executor), exception);
+    }
+
+    final HutoolListenerContent newCron4jListenerContent(TaskExecutor executor) {
+        return new HutoolListenerContent(String.valueOf(executor.getCronTask().getId()), executor);
+    }
+
+    @Override
+    public void startWithId(String id) {
+    }
+
+    @Override
+    public void successWithId(String id) {
+    }
+
+    @Override
+    public void failedWithId(String id, Throwable exception) {
+    }
 }
