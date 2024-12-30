@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.cron.core;
+package top.osjf.cron.core.repository;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -22,6 +22,14 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.UndeclaredThrowableException;
 
 /**
+ * The {@code CronMethodRunnable} class implements the Runnable interface,
+ * allowing specified methods to be called on specified target objects
+ * through reflection mechanisms.
+ *
+ * <p>This class is particularly suitable for scenarios where a certain object
+ * method needs to be executed at regular intervals, such as when scheduling
+ * tasks using cron expressions.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
@@ -60,7 +68,8 @@ public class CronMethodRunnable implements Runnable {
 
     /**
      * Return the target instance to call the method on.
-     * @return  the target instance to call the method on.
+     *
+     * @return the target instance to call the method on.
      */
     public Object getTarget() {
         return this.target;
@@ -68,6 +77,7 @@ public class CronMethodRunnable implements Runnable {
 
     /**
      * Return the target method to call.
+     *
      * @return the target method to call.
      */
     public Method getMethod() {
@@ -89,8 +99,7 @@ public class CronMethodRunnable implements Runnable {
                 throw (Error) targetException;
             }
             throw new UndeclaredThrowableException(targetException);
-        }
-        catch (IllegalAccessException ex) {
+        } catch (IllegalAccessException ex) {
             throw new UndeclaredThrowableException(ex);
         }
     }
