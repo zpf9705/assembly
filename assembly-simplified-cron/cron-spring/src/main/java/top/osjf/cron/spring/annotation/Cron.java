@@ -17,14 +17,58 @@
 package top.osjf.cron.spring.annotation;
 
 import org.springframework.core.annotation.AliasFor;
+import top.osjf.cron.spring.CronAnnotationPostProcessor;
+import top.osjf.cron.spring.cron4j.EnableCron4jCronTaskRegister;
+import top.osjf.cron.spring.hutool.EnableHutoolCronTaskRegister;
+import top.osjf.cron.spring.quartz.EnableQuartzCronTaskRegister;
 
 import java.lang.annotation.*;
 
 /**
+ * <p>This annotation is used to define the execution plan of scheduled tasks
+ * and control the execution cycle of tasks through specified cron expressions.
+ * It can be applied to methods or annotation class to mark tasks or configurations
+ * that' need to be executed at scheduled intervals according to cron expressions.
+ *
+ * <p>Cron expression is a powerful way of describing timing rules, which extends
+ * traditional UNIX cron expressions by adding second level trigger support (except
+ * for cron4j), allowing for finer time control.
+ *
+ * <p>This annotation is processed in {@link CronAnnotationPostProcessor} and can be
+ * triggered for parsing based on the tags of the following annotations:
+ * <ul>
+ * <li>{@link EnableHutoolCronTaskRegister @EnableHutoolCronTaskRegister}</li>
+ * <li>{@link EnableQuartzCronTaskRegister @EnableQuartzCronTaskRegister}</li>
+ * <li>{@link EnableCron4jCronTaskRegister @EnableCron4jCronTaskRegister}</li>
+ * </ul>
+ *
+ * <p>The attributes of {@link #value()} and {@link #expression()} are considered
+ * equivalent to {@link AliasFor}, but in reality, it declares that these two attributes
+ * are semantically identical, meaning they should have the same value. If the values
+ * of these two attributes are different, it usually means there is inconsistency in
+ * the configuration, which may lead to runtime errors or unpredictable behavior.
+ * <p>
+ * <h2>Example usage</h2>
+ * <pre>
+ * &#64;Cron(expression = "0 0/5 * * * ?", profiles = {"dev"})
+ * public void myCronTask() {
+ *     // Implementation logic of timed tasks
+ *     System.out.println("Hello, Cron framework!");
+ * }
+ * </pre>
+ * <p>In the above example {@code myCronTask} method is marked as a scheduled task
+ * with a cron expression of {@code 0 0/5 * * * ?}, which means it is executed every
+ * 5 minutes. Meanwhile, this task is only executed when the 'dev' configuration file
+ * is activated.
+ *
+ * <p>In summary, {@code Cron} annotations provide a flexible and powerful way to define
+ * timed tasks that can be executed according to specified cron expressions and environment
+ * configurations.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-@Target({ElementType.METHOD, ElementType.TYPE})
+@Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Repeatable(Crones.class)
