@@ -24,6 +24,14 @@ import top.osjf.cron.core.lang.Nullable;
 import java.util.Objects;
 
 /**
+ * This class is a utility class designed to assist in executing and verifying
+ * the relevant APIs of {@link CronTaskRepository}.
+ *
+ * <p>Specify some interfaces such as {@link Register} and {@link VoidInvoke},in
+ * addition to normal exception interception and parsing as {@link CronInternalException},
+ * add special validation cron expression failure exception types for judgment
+ * and conversion into {@link IllegalArgumentException} throws.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
