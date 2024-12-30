@@ -45,7 +45,8 @@ public class HutoolCronTaskRepository implements CronTaskRepository {
     @NotNull
     public String register(@NotNull String cronExpression, @NotNull TaskBody body) {
         return RepositoryUtils.doRegister(() ->
-                scheduler.schedule(cronExpression, body.unwrap(Runnable.class)), CronException.class);
+                scheduler.schedule(cronExpression, body.unwrap(RunnableTaskBody.class)
+                        .getRunnable()), CronException.class);
     }
 
     @Override

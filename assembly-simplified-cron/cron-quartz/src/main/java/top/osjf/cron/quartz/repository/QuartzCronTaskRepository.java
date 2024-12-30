@@ -114,7 +114,7 @@ public class QuartzCronTaskRepository implements CronTaskRepository {
     @NotNull
     public String register(@NotNull String expression, @NotNull TaskBody body) {
         return RepositoryUtils.doRegister(() -> {
-            JobDetail jobDetail = body.unwrap(JobDetail.class);
+            JobDetail jobDetail = body.unwrap(JobDetailTaskBody.class).getJobDetail();
             JobKey key = jobDetail.getKey();
             TriggerBuilder<CronTrigger> triggerBuilder = TriggerBuilder.newTrigger()
                     .withIdentity(key.getName())

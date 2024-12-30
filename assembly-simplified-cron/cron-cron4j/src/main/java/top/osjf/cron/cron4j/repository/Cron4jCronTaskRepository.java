@@ -66,7 +66,8 @@ public class Cron4jCronTaskRepository implements CronTaskRepository {
     @NotNull
     public String register(@NotNull String expression, @NotNull TaskBody body) {
         return RepositoryUtils.doRegister(() ->
-                scheduler.schedule(expression, body.unwrap(Runnable.class)), InvalidPatternException.class);
+                scheduler.schedule(expression, body.unwrap(RunnableTaskBody.class).getRunnable()),
+                InvalidPatternException.class);
     }
 
     @Override
