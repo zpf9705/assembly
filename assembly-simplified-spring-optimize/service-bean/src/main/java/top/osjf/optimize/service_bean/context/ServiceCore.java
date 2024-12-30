@@ -217,6 +217,7 @@ public abstract class ServiceCore {
         ServiceCollection serviceCollection = clazz.getAnnotation(ServiceCollection.class);
         if (serviceCollection != null) {
             annotationValue = serviceCollection.value();
+            if (StringUtils.isBlank(annotationValue)) annotationValue = clazz.getName();
         } else annotationValue = clazz.getName();
         final String enhancementBeanName = annotationValue + serviceName;
         return DigestUtils
