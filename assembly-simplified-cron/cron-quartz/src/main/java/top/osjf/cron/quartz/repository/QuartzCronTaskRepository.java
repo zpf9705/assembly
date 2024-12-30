@@ -20,10 +20,13 @@ import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.simpl.SimpleThreadPool;
 import org.quartz.spi.JobFactory;
-import top.osjf.cron.core.CronTask;
-import top.osjf.cron.core.RepositoryUtils;
 import top.osjf.cron.core.lang.NotNull;
+import top.osjf.cron.core.listener.CronListener;
+import top.osjf.cron.core.repository.CronTask;
 import top.osjf.cron.core.repository.CronTaskRepository;
+import top.osjf.cron.core.repository.RepositoryUtils;
+import top.osjf.cron.core.repository.TaskBody;
+import top.osjf.cron.quartz.IDJSONConversion;
 import top.osjf.cron.quartz.MethodLevelJob;
 import top.osjf.cron.quartz.listener.QuartzCronListener;
 
@@ -32,17 +35,21 @@ import java.text.ParseException;
 import java.util.Properties;
 
 /**
- * The Quartz cron task {@link CronTaskRepository}.
+ * The Quartz cron task repository {@link CronTaskRepository}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class QuartzCronTaskRepository implements CronTaskRepository<JobKey, JobDetail, QuartzCronListener> {
+public class QuartzCronTaskRepository implements CronTaskRepository {
 
-    /*** the scheduled task management class of Quartz.*/
+    /**
+     * The scheduled task management class of Quartz.
+     */
     private Scheduler scheduler;
 
-    /*** The Quartz management interface for the listener.*/
+    /**
+     * The Quartz management interface for the listener.
+     */
     private final ListenerManager listenerManager;
 
     /**
@@ -105,28 +112,30 @@ public class QuartzCronTaskRepository implements CronTaskRepository<JobKey, JobD
 
     @Override
     @NotNull
-    public JobKey register(@NotNull String expression, @NotNull JobDetail jobDetail) {
+    public String register(@NotNull String expression, @NotNull TaskBody body) {
         return RepositoryUtils.doRegister(() -> {
+            JobDetail jobDetail = body.unwrap(JobDetail.class);
             JobKey key = jobDetail.getKey();
             TriggerBuilder<CronTrigger> triggerBuilder = TriggerBuilder.newTrigger()
                     .withIdentity(key.getName())
                     .startNow()
                     .withSchedule(CronScheduleBuilder.cronSchedule(expression));
             scheduler.scheduleJob(jobDetail, triggerBuilder.build());
-            return key;
+            return IDJSONConversion.convertJobKeyAsJSONID(key);
         }, ParseException.class);
     }
 
     @Override
     @NotNull
-    public JobKey register(@NotNull CronTask task) {
+    public String register(@NotNull CronTask task) {
         Method method = task.getRunnable().getMethod();
-        return register(task.getExpression(), JobBuilder.newJob(MethodLevelJob.class)
-                .withIdentity(method.getName(), method.getDeclaringClass().getName()).build());
+        return register(task.getExpression(), new JobDetailTaskBody(JobBuilder.newJob(MethodLevelJob.class)
+                .withIdentity(method.getName(), method.getDeclaringClass().getName()).build()));
     }
 
     @Override
-    public void update(@NotNull JobKey jobKey, @NotNull String newExpression) {
+    public void update(@NotNull String id, @NotNull String newExpression) {
+        JobKey jobKey = IDJSONConversion.convertJSONIDAsJobKey(id);
         String name = jobKey.getName();
         RepositoryUtils.doVoidInvoke(() -> scheduler.rescheduleJob(new TriggerKey(name), TriggerBuilder.newTrigger()
                 .withIdentity(name)
@@ -136,18 +145,18 @@ public class QuartzCronTaskRepository implements CronTaskRepository<JobKey, JobD
     }
 
     @Override
-    public void remove(@NotNull JobKey jobKey) {
+    public void remove(@NotNull String id) {
         RepositoryUtils.doVoidInvoke(() ->
-                scheduler.deleteJob(jobKey), null);
+                scheduler.deleteJob(IDJSONConversion.convertJSONIDAsJobKey(id)), null);
     }
 
     @Override
-    public void addListener(@NotNull QuartzCronListener listener) {
-        listenerManager.addJobListener(listener);
+    public void addListener(@NotNull CronListener listener) {
+        listenerManager.addJobListener(listener.unwrap(QuartzCronListener.class));
     }
 
     @Override
-    public void removeListener(@NotNull QuartzCronListener listener) {
-        listenerManager.removeJobListener(listener.getName());
+    public void removeListener(@NotNull CronListener listener) {
+        listenerManager.removeJobListener(listener.unwrap(QuartzCronListener.class).getName());
     }
 }
