@@ -34,7 +34,6 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.lang.NonNull;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
-import top.osjf.cron.core.exception.CronException;
 import top.osjf.cron.quartz.MethodLevelJob;
 
 import java.lang.reflect.Method;
@@ -120,7 +119,9 @@ public class QuartzJobFactory implements JobFactory, ApplicationContextAware, Be
 
             Method method = ReflectionUtils.findMethod(clazz, methodName);
 
-            if (method == null) throw new CronException(new NoSuchMethodException(methodName));
+            if (method == null) {
+                throw new IllegalArgumentException(new NoSuchMethodException(methodName));
+            }
 
             ReflectionUtils.invokeMethod(method, applicationContext.getBean(clazz));
         };
