@@ -26,5 +26,9 @@ package top.osjf.cron.core.repository;
  */
 @FunctionalInterface
 public interface VoidInvoke {
+    /**
+     * Set a custom behavior for a function based operation with no return value.
+     * @throws Exception Internal exception generated when handling operations with no return value.
+     */
     void invoke() throws Exception;
 }
