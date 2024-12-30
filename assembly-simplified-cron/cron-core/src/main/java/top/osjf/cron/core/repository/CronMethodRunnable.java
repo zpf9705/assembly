@@ -30,6 +30,8 @@ import java.lang.reflect.UndeclaredThrowableException;
  * method needs to be executed at regular intervals, such as when scheduling
  * tasks using cron expressions.
  *
+ * <p>Copy from org.springframework.scheduling.support.ScheduledMethodRunnable.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
