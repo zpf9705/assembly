@@ -75,13 +75,6 @@ import java.lang.annotation.*;
 public @interface Cron {
 
     /**
-     * Provide a default cron expression. When the value of {@link #value()}
-     * or {@link #expression()} is not filled in, the default execution cycle
-     * for the current task is once every 1 second.
-     */
-    String DEFAULT_CRON_EXPRESSION = "0/1 * * * * ?";
-
-    /**
      * Alias for {@link #expression}.
      * <p>Intended to be used when no other attributes are needed, for example:
      * {@code @Cron("0/1 * * * * ?")}.

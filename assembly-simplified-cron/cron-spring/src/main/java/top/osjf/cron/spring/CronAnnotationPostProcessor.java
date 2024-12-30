@@ -48,6 +48,7 @@ import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.repository.CronMethodRunnable;
 import top.osjf.cron.core.repository.CronTask;
 import top.osjf.cron.core.repository.CronTaskRepository;
+import top.osjf.cron.core.support.ExpressionSupport;
 import top.osjf.cron.core.util.ArrayUtils;
 import top.osjf.cron.core.util.StringUtils;
 import top.osjf.cron.spring.annotation.Cron;
@@ -222,9 +223,9 @@ public class CronAnnotationPostProcessor implements ImportAware, ApplicationCont
         String expression = cron.expression();
         if (StringUtils.isBlank(expression)) {
             if (isCron4j) {
-                expression = "* * * * *"; //Cron4j only supports minute level support.
+                expression = ExpressionSupport.minuteLevelDefaultExpression();
             } else {
-                expression = Cron.DEFAULT_CRON_EXPRESSION; //Default execution time is 1 second.
+                expression = ExpressionSupport.secondLevelDefaultExpression();
             }
         }
         synchronized (this.cronTasks) {
