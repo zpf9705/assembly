@@ -21,29 +21,29 @@ import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.listener.CronListener;
 
 /**
- * The {@code CronTaskRepository} interface defines a resource interface for
- * registering, updating, deleting scheduled tasks, and managing task listeners.
+ * {@code CronTaskRepository} Interface is a dedicated repository for managing scheduled
+ * tasks based on Cron expressions.
  *
- * <p>This interface aims to provide a universal abstraction layer that allows
- * users to manage the execution of scheduled tasks through cron expressions.
+ * <p>This interface provides a set of methods for registering, updating, deleting scheduled
+ * tasks,and allows for the addition and removal of task listeners. It is designed as a
+ * general-purpose task management interface suitable for systems requiring task scheduling
+ * based on Cron expressions.
  *
- * <p>The task run body and listener {@code CronListener} supported by this
- * interface are generic parameters and allow users to customize task content
- * and listener behavior based on specific needs.
+ * <p>Scheduled tasks are defined by their execution schedules through Cron expressions,
+ * which specify when tasks should be run. The methods in this interface allow users to
+ * register new tasks, update the Cron expressions of existing tasks, delete tasks, and
+ * manage task listeners.
  *
- * <p>It is recommended that developers can use this interface globally during
- * initialization, dynamically register tasks at runtime, and dynamically add
- * or delete tasks and their listening classes, which is the original design
- * intention of this interface.
+ * <p>Task listeners {@code CronListener} allow for the execution of specific logic before
+ * and after task execution, providing extension points during the task execution process.
  *
- * @param <ID>   the unique identifier type returned after task registration.
- * @param <BODY> the runtime data type required for task execution.
- * @param <L>    the task listener type must be a subclass of {@code CronListener}.
+ * <p>All methods provide detailed exception handling to ensure that invalid input or internal
+ * errors {@link CronInternalException} are correctly notified to the caller.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-@SuppressWarnings("rawtypes")
-public interface CronTaskRepository<ID, BODY, L extends CronListener> {
+public interface CronTaskRepository {
 
     /**
      * Register a new scheduled task using the given cron expression and task body.
@@ -63,7 +63,7 @@ public interface CronTaskRepository<ID, BODY, L extends CronListener> {
      * @throws NullPointerException     if input expression or body is {@literal null}.
      */
     @NotNull
-    ID register(@NotNull String expression, @NotNull BODY body) throws CronInternalException;
+    String register(@NotNull String expression, @NotNull TaskBody body) throws CronInternalException;
 
     /**
      * Register a new scheduled task using the given {@code CronTask} object.
@@ -84,7 +84,7 @@ public interface CronTaskRepository<ID, BODY, L extends CronListener> {
      * @throws NullPointerException     if input {@code CronTask} or body is {@literal null}.
      */
     @NotNull
-    ID register(@NotNull CronTask task) throws CronInternalException;
+    String register(@NotNull CronTask task) throws CronInternalException;
 
     /**
      * Update the cron expression for registered scheduled tasks.
@@ -101,7 +101,7 @@ public interface CronTaskRepository<ID, BODY, L extends CronListener> {
      * @throws IllegalArgumentException if input newExpression is invalid.
      * @throws NullPointerException     if input id or newExpression is {@literal null}.
      */
-    void update(@NotNull ID id, @NotNull String newExpression) throws CronInternalException;
+    void update(@NotNull String id, @NotNull String newExpression) throws CronInternalException;
 
     /**
      * Delete registered scheduled tasks.
@@ -115,7 +115,7 @@ public interface CronTaskRepository<ID, BODY, L extends CronListener> {
      *                               in {@link CronInternalException#getCause()}.
      * @throws NullPointerException  if input id is {@literal null}.
      */
-    void remove(@NotNull ID id) throws CronInternalException;
+    void remove(@NotNull String id) throws CronInternalException;
 
     /**
      * Add a task listener {@code CronListener} instance.
@@ -128,7 +128,7 @@ public interface CronTaskRepository<ID, BODY, L extends CronListener> {
      * @param listener the task listener {@code CronListener} object to be added.
      * @throws NullPointerException if input listener is {@literal null}.
      */
-    void addListener(@NotNull L listener);
+    void addListener(@NotNull CronListener listener);
 
     /**
      * Remove a task listener {@code CronListener} instance.
@@ -139,5 +139,5 @@ public interface CronTaskRepository<ID, BODY, L extends CronListener> {
      * @param listener the task listener object to be removed.
      * @throws NullPointerException if input listener is {@literal null}.
      */
-    void removeListener(@NotNull L listener);
+    void removeListener(@NotNull CronListener listener);
 }
