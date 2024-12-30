@@ -38,7 +38,7 @@ public class CronTaskConfiguration {
      * The bean name of the internally managed cron annotation processor.
      */
     static final String CRON_ANNOTATION_PROCESSOR_BEAN_NAME =
-            "org.springframework.context.annotation.internalScheduledAnnotationProcessor";
+            "org.springframework.context.annotation.internalCronAnnotationPostProcessor";
 
     @Bean(name = CRON_ANNOTATION_PROCESSOR_BEAN_NAME)
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
