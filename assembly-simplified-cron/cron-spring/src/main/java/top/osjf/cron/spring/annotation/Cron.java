@@ -17,21 +17,10 @@
 package top.osjf.cron.spring.annotation;
 
 import org.springframework.core.annotation.AliasFor;
-import top.osjf.cron.spring.CronAnnotationPostProcessor;
 
 import java.lang.annotation.*;
 
 /**
- * Flag annotation for timed task method registration, only supports
- * starting with cron expression, supports spring specified environment
- * {@link org.springframework.core.env.Environment} registration,
- * and provides fixed initialization parameters.
- *
- * <p>Relying on {@link CronAnnotationPostProcessor} to scan, obtain,
- * and register corresponding annotation methods，filter the non-static,
- * publicly county-wide, and annotated methods defined in the current
- * class as a timed runtime.
- *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
@@ -84,15 +73,40 @@ public @interface Cron {
     @AliasFor("value") String expression() default "";
 
     /**
-     * Since the implementation of this annotation needs to be in the
-     * springboot environment, the purpose of this parameter is to restrict
-     * the environment for registering scheduled tasks.
-     * <p>Referring to the configuration parameters of
-     * <pre>{@code Spring.profiles.active}</pre>, this parameter can be
-     * registered to the scheduled thread pool after being configured as above.
+     * Specify the environment configuration for activating tasks in Spring.
      *
-     * @return The array of registered environment parameters needs to be restricted.
-     * If it is empty, it will be directly registered to the task thread pool.
+     * <p>This is an annotation attribute used to define under which Spring
+     * profiles the currently annotated task or configuration should be activated
+     * and executed. By listing different profile names in an array, the task
+     * can be precisely controlled in which environments it should run.
+     *
+     * <p>Provides a method for configuring applications for different environments,
+     * such as development, testing, and production.By using this property, developers
+     * can ensure that tasks are executed only in specific environment configurations,
+     * thereby avoiding potentially harmful or unsuitable code running in inappropriate
+     * environments.
+     *
+     * <p>For example, a task may only run in a development environment for debugging
+     * and testing purposes, but not in a production environment. By setting the {@code profiles}
+     * property of this task to {@code dev}, it can be ensured that it only executes when
+     * the development configuration file is activated.
+     * <pre>
+     *     {@code
+     *     class CronExample {
+     *      Cron(profiles={"dev"})
+     *      public void test() {
+     *          System.out.println("Hello , Cron framework !")
+     *      }
+     *     }
+     *    }
+     * </pre>
+     *
+     * <p>If no execution environment is specified (i.e. default to an empty array), the
+     * task will not be restricted by the configuration file and can be executed under
+     * any activated environment configuration.
+     *
+     * @return A string array containing the name of a configuration file, used
+     * to specify the environment configuration for task activation.
      */
     String[] profiles() default {};
 }

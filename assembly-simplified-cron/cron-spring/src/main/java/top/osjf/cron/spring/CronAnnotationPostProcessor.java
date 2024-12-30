@@ -49,6 +49,7 @@ import top.osjf.cron.core.repository.CronMethodRunnable;
 import top.osjf.cron.core.repository.CronTask;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.core.util.ArrayUtils;
+import top.osjf.cron.core.util.StringUtils;
 import top.osjf.cron.spring.annotation.Cron;
 import top.osjf.cron.spring.annotation.Crones;
 import top.osjf.cron.spring.cron4j.EnableCron4jCronTaskRegister;
@@ -81,7 +82,6 @@ import java.util.concurrent.ScheduledExecutorService;
  * the collection process), automatically register and start.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
  * @see Cron
  * @see Crones
  * @see EnableHutoolCronTaskRegister
@@ -91,6 +91,7 @@ import java.util.concurrent.ScheduledExecutorService;
  * @see CronListener
  * @see top.osjf.cron.core.listener.ListenerContext
  * @see LifeStyle
+ * @since 1.0.0
  */
 public class CronAnnotationPostProcessor implements ImportAware, ApplicationContextAware, EnvironmentAware,
         SmartInitializingSingleton, ApplicationListener<ContextRefreshedEvent>, MergedBeanDefinitionPostProcessor {
@@ -212,11 +213,14 @@ public class CronAnnotationPostProcessor implements ImportAware, ApplicationCont
     protected void processCron(Cron cron, Method method, Object bean) {
         CronMethodRunnable runnable = createRunnable(bean, method);
         String[] profiles = cron.profiles();
-        /*
-         * The minimum execution dimension compatible with cron4j is minutes.
-         * */
-        String expression = Objects.equals(cron.expression(), Cron.DEFAULT_CRON_EXPRESSION)
-                && isCron4j ? "* * * * *" : cron.expression();
+        String expression = cron.expression();
+        if (StringUtils.isBlank(expression)) {
+            if (isCron4j) {
+                expression = "* * * * *"; //Cron4j only supports minute level support.
+            } else {
+                expression = Cron.DEFAULT_CRON_EXPRESSION; //Default execution time is 1 second.
+            }
+        }
         synchronized (this.cronTasks) {
             //No environment specified or specified environment adapted
             // to the current activated environment.
