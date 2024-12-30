@@ -15,13 +15,13 @@
  */
 
 
-package top.osjf.cron.core;
+package top.osjf.cron.core.repository;
 
 /**
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
 @FunctionalInterface
-public interface Register<ID> {
-    ID register() throws Exception;
+public interface VoidInvoke {
+    void invoke() throws Exception;
 }
