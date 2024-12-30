@@ -17,6 +17,8 @@
 
 package top.osjf.cron.core.listener;
 
+import top.osjf.cron.core.lang.Wrapper;
+
 /**
  * The information interface for callback during the scheduled task execution phase
  * defines the key information required for callback.
@@ -57,7 +59,7 @@ package top.osjf.cron.core.listener;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public interface ListenerContext {
+public interface ListenerContext extends Wrapper {
 
     /**
      * Get the unique identifier of the scheduled task.

@@ -16,6 +16,8 @@
 
 package top.osjf.cron.core.listener;
 
+import top.osjf.cron.core.lang.Wrapper;
+
 /**
  * The scheduled task callback interface defines callback methods for task start,
  * successful completion, and failure.
@@ -51,7 +53,7 @@ package top.osjf.cron.core.listener;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public interface CronListener {
+public interface CronListener extends Wrapper {
 
     /**
      * The default callback method executed at the beginning of a
