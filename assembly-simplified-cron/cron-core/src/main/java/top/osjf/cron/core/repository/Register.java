@@ -18,10 +18,13 @@
 package top.osjf.cron.core.repository;
 
 /**
+ * An auxiliary functional interface for convenient execution of
+ * scheduled task registration.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
 @FunctionalInterface
-public interface Register<ID> {
-    ID register() throws Exception;
+public interface Register {
+    String register() throws Exception;
 }
