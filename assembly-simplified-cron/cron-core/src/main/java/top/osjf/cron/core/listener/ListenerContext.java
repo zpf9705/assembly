@@ -56,6 +56,10 @@ import top.osjf.cron.core.lang.Wrapper;
  * and structure of contextual information to ensure that they can meet the requirements of
  * specific task scenarios.
  *
+ * <p>This interface implements {@link Wrapper} and can always perform supervisor
+ * conversion. In subsequent usage scenarios, conversion operations can be performed
+ * based on the current usage type, making it more convenient and accurate to handle.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */

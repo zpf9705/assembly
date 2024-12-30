@@ -50,6 +50,10 @@ import top.osjf.cron.core.lang.Wrapper;
  * different stages of task execution, thereby achieving flexible task monitoring and processing
  * strategies.
  *
+ * <p>This interface implements {@link Wrapper} and can always perform supervisor
+ * conversion. In subsequent usage scenarios, conversion operations can be performed
+ * based on the current usage type, making it more convenient and accurate to handle.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
