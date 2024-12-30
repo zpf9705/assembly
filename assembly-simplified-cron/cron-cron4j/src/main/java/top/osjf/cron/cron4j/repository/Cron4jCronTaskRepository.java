@@ -18,19 +18,18 @@ package top.osjf.cron.cron4j.repository;
 
 import it.sauronsoftware.cron4j.InvalidPatternException;
 import it.sauronsoftware.cron4j.Scheduler;
-import top.osjf.cron.core.CronTask;
-import top.osjf.cron.core.RepositoryUtils;
 import top.osjf.cron.core.lang.NotNull;
-import top.osjf.cron.core.repository.CronTaskRepository;
+import top.osjf.cron.core.listener.CronListener;
+import top.osjf.cron.core.repository.*;
 import top.osjf.cron.cron4j.listener.Cron4jCronListener;
 
 /**
- * The Cron4j cron task {@link CronTaskRepository}.
+ * The Cron4j cron task repository {@link CronTaskRepository}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class Cron4jCronTaskRepository implements CronTaskRepository<String, Runnable, Cron4jCronListener> {
+public class Cron4jCronTaskRepository implements CronTaskRepository {
 
     /*** scheduler management*/
     private final Scheduler scheduler;
@@ -60,20 +59,20 @@ public class Cron4jCronTaskRepository implements CronTaskRepository<String, Runn
      * "week" from left to right, and does not include the second part.
      *
      * @param expression {@inheritDoc}
-     * @param runnable   {@inheritDoc}
+     * @param body       {@inheritDoc}
      * @return {@inheritDoc}
      */
     @Override
     @NotNull
-    public String register(@NotNull String expression, @NotNull Runnable runnable) {
+    public String register(@NotNull String expression, @NotNull TaskBody body) {
         return RepositoryUtils.doRegister(() ->
-                scheduler.schedule(expression, runnable), InvalidPatternException.class);
+                scheduler.schedule(expression, body.unwrap(Runnable.class)), InvalidPatternException.class);
     }
 
     @Override
     @NotNull
     public String register(@NotNull CronTask task) {
-        return register(task.getExpression(), task.getRunnable());
+        return register(task.getExpression(), new RunnableTaskBody(task.getRunnable()));
     }
 
     /**
@@ -100,12 +99,12 @@ public class Cron4jCronTaskRepository implements CronTaskRepository<String, Runn
     }
 
     @Override
-    public void addListener(@NotNull Cron4jCronListener listener) {
-        scheduler.addSchedulerListener(listener);
+    public void addListener(@NotNull CronListener listener) {
+        scheduler.addSchedulerListener(listener.unwrap(Cron4jCronListener.class));
     }
 
     @Override
-    public void removeListener(@NotNull Cron4jCronListener listener) {
-        scheduler.removeSchedulerListener(listener);
+    public void removeListener(@NotNull CronListener listener) {
+        scheduler.removeSchedulerListener(listener.unwrap(Cron4jCronListener.class));
     }
 }
