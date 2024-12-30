@@ -40,6 +40,7 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor;
 import org.springframework.util.Assert;
 import top.osjf.cron.core.lifestyle.LifeStyle;
 import top.osjf.cron.core.lifestyle.StartupProperties;
@@ -61,13 +62,31 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 
 /**
+ * Bean post-processor that registers methods annotated with {@link Cron @Cron} to
+ * be invoked by a {@link CronTaskRepository} according to the "cron" expression
+ * provided via the annotation.
+ *
+ * <p>This post-processor is automatically registered in the configuration
+ * {@link CronTaskConfiguration} according to any of the following:
+ * <ul>
+ * <li>{@link EnableHutoolCronTaskRegister @EnableHutoolCronTaskRegister}</li>
+ * <li>{@link EnableQuartzCronTaskRegister @EnableQuartzCronTaskRegister}</li>
+ * <li>{@link EnableCron4jCronTaskRegister @EnableCron4jCronTaskRegister}</li>
+ * </ul>
+ *
+ * <p>Automatically detect instances of {@link CronTaskRepository CronTaskRepository},
+ * {@link CronListener CronListener}, {@link LifeStyle LifeStyle} in the container,
+ * and after collection is complete (copying the logic from
+ * {@link ScheduledAnnotationBeanPostProcessor#postProcessAfterInitialization} during
+ * the collection process), automatically register and start.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  * @see Cron
  * @see Crones
- * @see EnableCron4jCronTaskRegister
- * @see EnableQuartzCronTaskRegister
  * @see EnableHutoolCronTaskRegister
+ * @see EnableQuartzCronTaskRegister
+ * @see EnableCron4jCronTaskRegister
  * @see CronTaskRepository
  * @see CronListener
  * @see top.osjf.cron.core.listener.ListenerContext
