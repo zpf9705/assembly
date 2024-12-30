@@ -113,7 +113,7 @@ public class SchedulingRepository extends AnyTaskSupport implements CronTaskRepo
     public String register(@NotNull String expression, @NotNull TaskBody body) {
         SchedulingRunnable schedulingRunnable = newSchedulingRunnable(body.unwrap(Runnable.class));
         taskRegistrar.scheduleCronTask(new CronTask(schedulingRunnable, expression));
-        return schedulingRunnable.getSchedulingInfo().getId();
+        return schedulingRunnable.get().getId();
     }
 
     @Override

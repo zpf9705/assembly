@@ -29,7 +29,7 @@ import java.util.List;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class SchedulingRunnable implements Runnable, SchedulingInfoCapable {
+public class SchedulingRunnable implements Runnable, SchedulingInfoSupplier {
 
     private final SchedulingInfo info;
 
@@ -98,7 +98,7 @@ public class SchedulingRunnable implements Runnable, SchedulingInfoCapable {
     }
 
     @Override
-    public SchedulingInfo getSchedulingInfo() {
+    public SchedulingInfo get() {
         return info;
     }
 }
