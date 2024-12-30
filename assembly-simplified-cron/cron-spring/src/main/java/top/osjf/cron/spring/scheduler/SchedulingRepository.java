@@ -25,7 +25,10 @@ import org.springframework.lang.NonNull;
 import org.springframework.scheduling.config.ScheduledTask;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import top.osjf.cron.core.lang.NotNull;
+import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.repository.CronTaskRepository;
+import top.osjf.cron.core.repository.RunnableTaskBody;
+import top.osjf.cron.core.repository.TaskBody;
 import top.osjf.cron.core.util.StringUtils;
 import top.osjf.cron.spring.scheduler.task.*;
 
@@ -38,9 +41,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class SchedulingRepository extends AnyTaskSupport implements
-        CronTaskRepository<String, Runnable, SchedulingListener>, TaskEnhanceConvertFactory, ApplicationContextAware,
-        InitializingBean {
+public class SchedulingRepository extends AnyTaskSupport implements CronTaskRepository, TaskEnhanceConvertFactory,
+        ApplicationContextAware, InitializingBean {
 
     /**
      * Internally, {@link ScheduledTask} is assigned an actual ID storage map to
@@ -108,23 +110,23 @@ public class SchedulingRepository extends AnyTaskSupport implements
 
     @Override
     @NotNull
-    public String register(@NotNull String expression, @NotNull Runnable runsBody) {
-        SchedulingRunnable schedulingRunnable = newSchedulingRunnable(runsBody);
+    public String register(@NotNull String expression, @NotNull TaskBody body) {
+        SchedulingRunnable schedulingRunnable = newSchedulingRunnable(body.unwrap(Runnable.class));
         taskRegistrar.scheduleCronTask(new CronTask(schedulingRunnable, expression));
         return schedulingRunnable.getSchedulingInfo().getId();
     }
 
     @Override
     @NotNull
-    public String register(@NotNull top.osjf.cron.core.CronTask task) {
-        return register(task.getExpression(), task.getRunnable());
+    public String register(@NotNull top.osjf.cron.core.repository.CronTask task) {
+        return register(task.getExpression(), new RunnableTaskBody(task.getRunnable()));
     }
 
     @Override
     public void update(@NotNull String id, @NotNull String newExpression) {
         remove(id);
         ID.set(id);
-        register(newExpression, scheduledTaskCache.get(id).getTask().getRunnable());
+        register(newExpression, new RunnableTaskBody(scheduledTaskCache.get(id).getTask().getRunnable()));
     }
 
     @Override
@@ -136,13 +138,13 @@ public class SchedulingRepository extends AnyTaskSupport implements
     }
 
     @Override
-    public void addListener(@NotNull SchedulingListener listener) {
-        schedulingListeners.add(listener);
+    public void addListener(@NotNull CronListener listener) {
+        schedulingListeners.add(listener.unwrap(SchedulingListener.class));
     }
 
     @Override
-    public void removeListener(@NotNull SchedulingListener listener) {
-        schedulingListeners.remove(listener);
+    public void removeListener(@NotNull CronListener listener) {
+        schedulingListeners.remove(listener.unwrap(SchedulingListener.class));
     }
 
     @Override
