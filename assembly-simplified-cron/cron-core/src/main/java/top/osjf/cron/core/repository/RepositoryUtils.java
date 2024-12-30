@@ -49,8 +49,8 @@ public abstract class RepositoryUtils {
      * @throws NullPointerException if input register is {@literal null}.
      */
     @NotNull
-    public static <ID> ID doRegister(@NotNull Register<ID> register,
-                                     @Nullable Class<? extends Exception> inValidExpressionExceptionType) {
+    public static String doRegister(@NotNull Register register,
+                                    @Nullable Class<? extends Exception> inValidExpressionExceptionType) {
         Objects.requireNonNull(register, "<Register> == <null>");
         try {
             return register.register();
@@ -100,12 +100,10 @@ public abstract class RepositoryUtils {
         if (inValidExpressionExceptionType != null) {
             if (inValidExpressionExceptionType.isAssignableFrom(e.getClass())) {
                 re = new IllegalArgumentException("Invalid expression.", e);
-            }
-            else {
+            } else {
                 re = new CronInternalException(e);
             }
-        }
-        else {
+        } else {
             re = new CronInternalException(e);
         }
         return re;
