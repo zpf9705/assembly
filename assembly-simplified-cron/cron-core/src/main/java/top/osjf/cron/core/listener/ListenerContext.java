@@ -18,37 +18,75 @@
 package top.osjf.cron.core.listener;
 
 /**
- * The context interface for the scheduled task listener callback.
+ * The information interface for callback during the scheduled task execution phase
+ * defines the key information required for callback.
  *
- * <p>In the implementation of timed task or event listeners, such contextual
- * interfaces are often used to convey relevant information about tasks or events,
- * such as the unique ID of the task, the status of the task, and related business
- * data. By implementing this interface, it is easy to share this information between
- * different listeners or processors.
+ * <p>This interface aims to provide standardized contextual information for callback
+ * mechanisms during scheduled task execution, including the unique identifier of the
+ * task and the original contextual object.
  *
- * <p>The ID tag of this interface adopts generic symbols, which is compatible
- * with and solves the problem of inconsistent ID types in multiple frameworks.
+ * <p>By implementing this interface, the framework can pass necessary task information
+ * and execution environment to the listener, allowing developers to execute specific
+ * logic at different stages of the task.
  *
- * @param <ID> the type of context unique identifier generally represents the unique
- *             identifier of the callback task being executed.
+ * <p>The {@link #getID()} method in the interface is used to obtain the unique identifier
+ * of the scheduled task. This identifier remains unchanged throughout the lifecycle of
+ * the task and can be used to uniquely identify the task instance in callbacks. It is
+ * crucial for scenarios such as tracking task status, logging, or associating related
+ * resources.
+ *
+ * <p>The {@link #getSourceContext()} method  returns the original context object used
+ * when executing the scheduled task.</code>. This object represents the environment in
+ * which tasks are triggered and executed, and may contain key information such as task
+ * scheduling information, business data, user identity, etc. By accessing this context
+ * object, developers can utilize this information in callbacks to execute more complex
+ * logic.
+ *
+ * <p>When designing and implementing a timed task system, this interface provides a critical
+ * information transmission mechanism, ensuring loose coupling between the task execution
+ * phase and callback logic. Developers can create custom context classes by implementing
+ * this interface and trigger callbacks at different stages of task execution (such as start,
+ * in progress, completion, or failure), thereby achieving flexible and scalable listening
+ * and processing mechanisms without affecting task execution logic. It is worth noting that
+ * although this interface defines a standard method for obtaining context information, the
+ * specific context content and structure depend on the class that implements this interface.
+ * Therefore, when implementing and using it, developers need to carefully consider the type
+ * and structure of contextual information to ensure that they can meet the requirements of
+ * specific task scenarios.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public interface ListenerContext<ID> {
+public interface ListenerContext {
 
     /**
-     * Return the unique ID of the scheduled task for this callback.
+     * Get the unique identifier of the scheduled task.
      *
-     * @return the unique ID of the scheduled task for this callback.
+     * <p>This method returns the unique identifier of the timed task associated with the
+     * current context, which remains unchanged throughout the lifecycle of the task.
+     *
+     * <p>The callback uniquely identifies the task instance and is typically used to track
+     * task status, log, or associate related resources.
+     *
+     * @return The unique identifier of a scheduled task, usually a string.
      */
-    ID getID();
+    String getID();
 
     /**
-     * Return the original context information object of the callback
-     * task, and return different original objects according to the
-     * different frameworks used.
+     * Retrieve the original context object used for executing scheduled tasks, referring
+     * to the one provided by the framework.
      *
-     * @return the original context information object.
+     * <p>This method returns the original context object associated with the current context,
+     * which represents the environment in which the task was triggered and executed.
+     *
+     * <p>It may contain key information such as task scheduling information, business data,
+     * user identity, etc., which are crucial for executing specific logic in callbacks.
+     *
+     * <p>Developers can customize the type and structure of context objects as needed, and use
+     * this information to execute complex logic at different stages of task execution.
+     *
+     * @return the original context object provided by the framework used for executing scheduled
+     * tasks.
      */
     Object getSourceContext();
 }
