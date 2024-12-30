@@ -20,27 +20,28 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.JobListener;
 import top.osjf.cron.core.listener.CronListener;
+import top.osjf.cron.quartz.IDJSONConversion;
 
 /**
- * The Quartz cron task {@link CronListener}.
+ * The Quartz cron task listener {@link CronListener}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public interface QuartzCronListener extends JobListener, CronListener<JobExecutionContext> {
+public class QuartzCronListener implements JobListener, CronListener {
 
     /**
      * @return The default value is the fully qualified name of the
      * currently running class.
      */
     @Override
-    default String getName() {
+    public String getName() {
         return getClass().getName();
     }
 
     @Override
-    default void jobToBeExecuted(JobExecutionContext context) {
-        onStart(context);
+    public final void jobToBeExecuted(JobExecutionContext context) {
+        start(newQuartzListenerContent(context));
     }
 
     /**
@@ -53,8 +54,7 @@ public interface QuartzCronListener extends JobListener, CronListener<JobExecuti
      * @param context {@link JobExecutionContext}.
      */
     @Override
-    default void jobExecutionVetoed(JobExecutionContext context) {
-
+    public void jobExecutionVetoed(JobExecutionContext context) {
     }
 
     /**
@@ -65,11 +65,28 @@ public interface QuartzCronListener extends JobListener, CronListener<JobExecuti
      * @param jobException {@inheritDoc}
      */
     @Override
-    default void jobWasExecuted(JobExecutionContext context, JobExecutionException jobException) {
+    public final void jobWasExecuted(JobExecutionContext context, JobExecutionException jobException) {
         if (jobException != null) {
-            onFailed(context, jobException);
+            failed(newQuartzListenerContent(context), jobException);
         } else {
-            onSucceeded(context);
+            success(newQuartzListenerContent(context));
         }
+    }
+
+    final QuartzListenerContent newQuartzListenerContent(JobExecutionContext context) {
+        return new QuartzListenerContent(IDJSONConversion.convertJobKeyAsJSONID(context.getJobDetail().getKey()),
+                context);
+    }
+
+    @Override
+    public void startWithId(String id) {
+    }
+
+    @Override
+    public void successWithId(String id) {
+    }
+
+    @Override
+    public void failedWithId(String id, Throwable exception) {
     }
 }
