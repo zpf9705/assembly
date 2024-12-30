@@ -20,19 +20,18 @@ import cn.hutool.cron.CronException;
 import cn.hutool.cron.CronUtil;
 import cn.hutool.cron.Scheduler;
 import cn.hutool.cron.pattern.CronPattern;
-import top.osjf.cron.core.CronTask;
-import top.osjf.cron.core.RepositoryUtils;
+import top.osjf.cron.core.listener.CronListener;
+import top.osjf.cron.core.repository.*;
 import top.osjf.cron.core.lang.NotNull;
-import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.hutool.listener.HutoolCronListener;
 
 /**
- * The Hutool cron task {@link CronTaskRepository}.
+ * The Hutool cron task repository {@link CronTaskRepository}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class HutoolCronTaskRepository implements CronTaskRepository<String, Runnable, HutoolCronListener> {
+public class HutoolCronTaskRepository implements CronTaskRepository {
 
     /*** scheduler management*/
     private final Scheduler scheduler;
@@ -44,15 +43,15 @@ public class HutoolCronTaskRepository implements CronTaskRepository<String, Runn
 
     @Override
     @NotNull
-    public String register(@NotNull String cronExpression, @NotNull Runnable runnable) {
+    public String register(@NotNull String cronExpression, @NotNull TaskBody body) {
         return RepositoryUtils.doRegister(() ->
-                scheduler.schedule(cronExpression, runnable), CronException.class);
+                scheduler.schedule(cronExpression, body.unwrap(Runnable.class)), CronException.class);
     }
 
     @Override
     @NotNull
     public String register(@NotNull CronTask task) {
-        return register(task.getExpression(), task.getRunnable());
+        return register(task.getExpression(), new RunnableTaskBody(task.getRunnable()));
     }
 
     @Override
@@ -68,12 +67,12 @@ public class HutoolCronTaskRepository implements CronTaskRepository<String, Runn
     }
 
     @Override
-    public void addListener(@NotNull HutoolCronListener listener) {
-        scheduler.addListener(listener);
+    public void addListener(@NotNull CronListener listener) {
+        scheduler.addListener(listener.unwrap(HutoolCronListener.class));
     }
 
     @Override
-    public void removeListener(@NotNull HutoolCronListener listener) {
-        scheduler.removeListener(listener);
+    public void removeListener(@NotNull CronListener listener) {
+        scheduler.removeListener(listener.unwrap(HutoolCronListener.class));
     }
 }
