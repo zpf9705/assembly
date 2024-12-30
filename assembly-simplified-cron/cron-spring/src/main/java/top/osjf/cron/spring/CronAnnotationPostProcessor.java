@@ -204,13 +204,6 @@ public class CronAnnotationPostProcessor implements ImportAware, ApplicationCont
 
     /**
      * Process the given {@code @Cron} method declaration on the given bean.
-     * <p>Regarding the regulations on expressions, the following default values
-     * are provided:
-     * <ul>
-     * <li>Supports second level frameworks, default values are:{@link Cron#DEFAULT_CRON_EXPRESSION}</li>
-     * <li>Non second level frameworks, such as {@code Cron4j}, specify the minimum unit they support.</li>
-     * </ul>
-     *
      * @param cron   the {@code @Cron} annotation
      * @param method the method that the annotation has been declared on
      * @param bean   the target bean instance
