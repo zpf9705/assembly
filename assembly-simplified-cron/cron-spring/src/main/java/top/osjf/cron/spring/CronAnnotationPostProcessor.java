@@ -41,11 +41,11 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.util.Assert;
-import top.osjf.cron.core.CronMethodRunnable;
-import top.osjf.cron.core.CronTask;
 import top.osjf.cron.core.lifestyle.LifeStyle;
 import top.osjf.cron.core.lifestyle.StartupProperties;
 import top.osjf.cron.core.listener.CronListener;
+import top.osjf.cron.core.repository.CronMethodRunnable;
+import top.osjf.cron.core.repository.CronTask;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.core.util.ArrayUtils;
 import top.osjf.cron.spring.annotation.Cron;
@@ -221,23 +221,18 @@ public class CronAnnotationPostProcessor implements ImportAware, ApplicationCont
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void finishRegistration() {
-
         CronTaskRepository cronTaskRepository = applicationContext.getBean(CronTaskRepository.class);
-        //Registration task.
         for (CronTask cronTask : cronTasks) {
             cronTaskRepository.register(cronTask);
         }
-        //Register task execution listener.
         for (CronListener listener : applicationContext.getBeansOfType(CronListener.class).values()) {
             cronTaskRepository.addListener(listener);
         }
-        //Collect startup parameters.
         for (StartupProperties properties : applicationContext.getBeansOfType(StartupProperties.class).values()) {
             startupProperties.addProperties(properties);
         }
-
-        //Execute startup.
         LifeStyle lifeStyle = applicationContext.getBean(LifeStyle.class);
         lifeStyle.start(startupProperties);
+        cronTasks.clear();
     }
 }
