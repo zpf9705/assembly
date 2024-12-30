@@ -18,7 +18,7 @@
 package top.osjf.cron.core.lang;
 
 /**
- * The Wrapper interface defines a pattern that allows objects to implement wrapping
+ * The {@code Wrapper} interface defines a pattern that allows objects to implement wrapping
  * and unwrapping functionalities.It provides generic support through default methods,
  * enabling any object implementing this interface to determine if it can be considered
  * as a wrapper for a specific type and to convert (unwrap) itself into the specified
