@@ -31,7 +31,6 @@ import java.util.List;
  */
 public class SchedulingRunnable implements Runnable, SchedulingInfoCapable {
 
-    /*** Task scheduled info */
     private final SchedulingInfo info;
 
     private final Runnable runnable;
@@ -56,19 +55,35 @@ public class SchedulingRunnable implements Runnable, SchedulingInfoCapable {
         this.hasSchedulingListener = CollectionUtils.isNotEmpty(schedulingListeners);
     }
 
-    /*** Execute the callback that is ready to start.*/
+    /**
+     * Execute the callback that is ready to start.
+     */
     void onStart() {
-        if (hasSchedulingListener) schedulingListeners.forEach(c -> c.onStart(info));
+        if (hasSchedulingListener) {
+            schedulingListeners.forEach(c -> c.start(newSchedulingListenerContext()));
+        }
     }
 
-    /*** Successful callback execution.*/
+    /**
+     * Successful callback execution.
+     */
     void onSucceeded() {
-        if (hasSchedulingListener) schedulingListeners.forEach(c -> c.onSucceeded(info));
+        if (hasSchedulingListener) {
+            schedulingListeners.forEach(c -> c.success(newSchedulingListenerContext()));
+        }
     }
 
-    /*** The callback that failed to execute.*/
+    /**
+     * The callback that failed to execute.
+     */
     void onFailed(Throwable e) {
-        if (hasSchedulingListener) schedulingListeners.forEach(c -> c.onFailed(info, e));
+        if (hasSchedulingListener) {
+            schedulingListeners.forEach(c -> c.failed(newSchedulingListenerContext(), e));
+        }
+    }
+
+    private SchedulingListenerContext newSchedulingListenerContext() {
+        return new SchedulingListenerContext(info.getId(), info);
     }
 
     @Override
