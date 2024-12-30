@@ -29,7 +29,6 @@ import org.springframework.scheduling.config.*;
  */
 public class EnhanceScheduledTaskRegistrar extends ScheduledTaskRegistrar {
 
-    /*** Scheduling repository.*/
     private final SchedulingRepository repository;
 
     public EnhanceScheduledTaskRegistrar(SchedulingRepository repository) {
@@ -87,8 +86,8 @@ public class EnhanceScheduledTaskRegistrar extends ScheduledTaskRegistrar {
      * @param scheduledTask Spring scheduling task.
      */
     private void registerScheduledTask(Task task, ScheduledTask scheduledTask) {
-        if (task instanceof SchedulingInfoCapable) {
-            SchedulingInfo schedulingInfo = ((SchedulingInfoCapable) task).getSchedulingInfo();
+        if (task instanceof SchedulingInfoSupplier) {
+            SchedulingInfo schedulingInfo = ((SchedulingInfoSupplier) task).get();
             repository.registerScheduledTask(schedulingInfo.getId(), scheduledTask);
         }
     }
