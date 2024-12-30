@@ -64,6 +64,9 @@ public interface Wrapper {
      *                            {@code clazz} type, this exception is thrown.
      */
     default <T> T unwrap(Class<T> clazz) {
+        if (!isWrapperFor(clazz)) {
+            throw new ClassCastException(getClass().getName() + " cannot be cast to " + clazz.getName());
+        }
         return clazz.cast(this);
     }
 }
