@@ -18,6 +18,12 @@
 package top.osjf.cron.core.exception;
 
 /**
+ * The internal exception thrown by the framework during scheduled task
+ * execution has its real cause in {@link CronInternalException#getCause()}.
+ *
+ * <p>To convert it into a runtime exception, developers need to obtain the
+ * cause of the exception for analysis.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
