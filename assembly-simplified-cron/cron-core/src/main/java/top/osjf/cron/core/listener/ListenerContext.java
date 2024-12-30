@@ -38,7 +38,7 @@ import top.osjf.cron.core.lang.Wrapper;
  * resources.
  *
  * <p>The {@link #getSourceContext()} method  returns the original context object used
- * when executing the scheduled task.</code>. This object represents the environment in
+ * when executing the scheduled  task  and  this object represents the environment in
  * which tasks are triggered and executed, and may contain key information such as task
  * scheduling information, business data, user identity, etc. By accessing this context
  * object, developers can utilize this information in callbacks to execute more complex
