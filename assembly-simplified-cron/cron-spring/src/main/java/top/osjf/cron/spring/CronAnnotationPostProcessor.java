@@ -42,6 +42,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import top.osjf.cron.core.lifestyle.LifeStyle;
 import top.osjf.cron.core.lifestyle.StartupProperties;
 import top.osjf.cron.core.listener.CronListener;
@@ -103,8 +104,6 @@ public class CronAnnotationPostProcessor implements ImportAware, ApplicationCont
 
     private List<String> activeProfiles;
 
-    private boolean isCron4j;
-
     private final StartupProperties startupProperties = StartupProperties.of();
 
     private final Set<Class<?>> nonAnnotatedClasses = Collections.newSetFromMap(new ConcurrentHashMap<>(16));
@@ -115,6 +114,13 @@ public class CronAnnotationPostProcessor implements ImportAware, ApplicationCont
             EnableCron4jCronTaskRegister.class,
             EnableQuartzCronTaskRegister.class);
 
+    private static final boolean isCron4j;
+
+    static {
+        isCron4j = ClassUtils.isPresent("top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository",
+                CronAnnotationPostProcessor.class.getClassLoader());
+    }
+
     @Override
     public void setImportMetadata(@NonNull AnnotationMetadata annotationMetadata) {
         for (MergedAnnotation<Annotation> annotation : annotationMetadata.getAnnotations()) {
@@ -122,7 +128,6 @@ public class CronAnnotationPostProcessor implements ImportAware, ApplicationCont
             if (annotationClasses.contains(type)) {
                 startupProperties.addProperties(annotationMetadata.getAnnotationAttributes
                         (annotation.getType().getCanonicalName()));
-                isCron4j = Objects.equals(type, EnableCron4jCronTaskRegister.class);
             }
         }
     }
