@@ -63,6 +63,15 @@ import java.util.concurrent.ScheduledExecutorService;
 /**
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
+ * @see Cron
+ * @see Crones
+ * @see EnableCron4jCronTaskRegister
+ * @see EnableQuartzCronTaskRegister
+ * @see EnableHutoolCronTaskRegister
+ * @see CronTaskRepository
+ * @see CronListener
+ * @see top.osjf.cron.core.listener.ListenerContext
+ * @see LifeStyle
  */
 public class CronAnnotationPostProcessor implements ImportAware, ApplicationContextAware, EnvironmentAware,
         SmartInitializingSingleton, ApplicationListener<ContextRefreshedEvent>, MergedBeanDefinitionPostProcessor {
@@ -185,8 +194,8 @@ public class CronAnnotationPostProcessor implements ImportAware, ApplicationCont
         CronMethodRunnable runnable = createRunnable(bean, method);
         String[] profiles = cron.profiles();
         /*
-        * The minimum execution dimension compatible with cron4j is minutes.
-        * */
+         * The minimum execution dimension compatible with cron4j is minutes.
+         * */
         String expression = Objects.equals(cron.expression(), Cron.DEFAULT_CRON_EXPRESSION)
                 && isCron4j ? "* * * * *" : cron.expression();
         synchronized (this.cronTasks) {
@@ -219,7 +228,6 @@ public class CronAnnotationPostProcessor implements ImportAware, ApplicationCont
     /**
      * Perform registration work after collecting scheduled task information.
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
     private void finishRegistration() {
         CronTaskRepository cronTaskRepository = applicationContext.getBean(CronTaskRepository.class);
         for (CronTask cronTask : cronTasks) {
