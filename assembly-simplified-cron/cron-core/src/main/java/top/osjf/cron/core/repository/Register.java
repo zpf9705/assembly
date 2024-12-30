@@ -26,5 +26,11 @@ package top.osjf.cron.core.repository;
  */
 @FunctionalInterface
 public interface Register {
+    /**
+     * Set up a custom registration behavior for a timed task written in a functional way.
+     * @return After successful registration, return the unique ID of the registration task,
+     * which can be used for subsequent updates and deletions.
+     * @throws Exception Internal abnormality of the product during task registration.
+     */
     String register() throws Exception;
 }
