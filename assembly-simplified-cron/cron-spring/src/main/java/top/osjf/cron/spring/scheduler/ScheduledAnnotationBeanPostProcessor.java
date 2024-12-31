@@ -41,8 +41,8 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
-import org.springframework.scheduling.annotation.*;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.*;
 import org.springframework.scheduling.config.*;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.scheduling.support.ScheduledMethodRunnable;
@@ -83,7 +83,6 @@ import java.util.concurrent.TimeUnit;
  * @author Elizabeth Chatman
  * @author Victor Brown
  * @author Sam Brannen
- * @since 3.0
  * @see Scheduled
  * @see Cron
  * @see EnableScheduling
@@ -92,6 +91,7 @@ import java.util.concurrent.TimeUnit;
  * @see ScheduledTaskRegistrar
  * @see EnhanceScheduledTaskRegistrar
  * @see AsyncAnnotationBeanPostProcessor
+ * @since 3.0
  */
 public class ScheduledAnnotationBeanPostProcessor
         implements ScheduledTaskHolder, MergedBeanDefinitionPostProcessor, DestructionAwareBeanPostProcessor,
@@ -110,7 +110,7 @@ public class ScheduledAnnotationBeanPostProcessor
 
     protected final Log logger = LogFactory.getLog(getClass());
 
-    private ScheduledTaskRegistrar registrar;
+    private final ScheduledTaskRegistrar registrar;
 
     @Nullable
     private Object scheduler;
@@ -134,6 +134,26 @@ public class ScheduledAnnotationBeanPostProcessor
 
     private final Map<Object, Set<ScheduledTask>> scheduledTasks = new IdentityHashMap<>(16);
 
+    /**
+     * Create a default {@code ScheduledAnnotationBeanPostProcessor}.
+     */
+    public ScheduledAnnotationBeanPostProcessor() {
+        this.registrar = new ScheduledTaskRegistrar();
+    }
+
+    /**
+     * Create a {@code ScheduledAnnotationBeanPostProcessor} delegating to the
+     * specified {@link ScheduledTaskRegistrar}.
+     *
+     * @param registrar the ScheduledTaskRegistrar to register {@code @Scheduled}
+     *                  tasks on
+     * @since 5.1
+     */
+    public ScheduledAnnotationBeanPostProcessor(ScheduledTaskRegistrar registrar) {
+        Assert.notNull(registrar, "ScheduledTaskRegistrar is required");
+        this.registrar = registrar;
+    }
+
     @Override
     public int getOrder() {
         return LOWEST_PRECEDENCE;
@@ -149,8 +169,8 @@ public class ScheduledAnnotationBeanPostProcessor
      * a {@link ScheduledExecutorService} bean. If neither of the two is resolvable,
      * a local single-threaded default scheduler will be created within the registrar.
      *
-     * @see #DEFAULT_TASK_SCHEDULER_BEAN_NAME
      * @param scheduler scheduler instance.
+     * @see #DEFAULT_TASK_SCHEDULER_BEAN_NAME
      */
     public void setScheduler(Object scheduler) {
         this.scheduler = scheduler;
@@ -197,9 +217,8 @@ public class ScheduledAnnotationBeanPostProcessor
         this.nonAnnotatedClasses.clear();
 
         if (this.applicationContext == null) {
-            this.registrar = new ScheduledTaskRegistrar();
             // Not running in an ApplicationContext -> register tasks early...
-            finishRegistration();
+            finishRegistration(null);
         }
     }
 
@@ -209,25 +228,39 @@ public class ScheduledAnnotationBeanPostProcessor
             // Running in an ApplicationContext -> register tasks this late...
             // giving other ContextRefreshedEvent listeners a chance to perform
             // their work at the same time (e.g. Spring Batch's job registration).
-            assert beanFactory != null;
-
-            Map<String, ScheduledTaskRegistrar> beansOfType
-                    = applicationContext.getBeansOfType(ScheduledTaskRegistrar.class);
-            if (beansOfType.isEmpty()) {
-                this.registrar = new ScheduledTaskRegistrar();
-            } else {
-                List<ScheduledTaskRegistrar> scheduledTaskRegistrarBeans = new ArrayList<>(beansOfType.values());
-                AnnotationAwareOrderComparator.sort(scheduledTaskRegistrarBeans);
-                this.registrar = scheduledTaskRegistrarBeans.get(0);
-            }
-
-            finishRegistration();
+            finishRegistration(getRegistrarBean());
         }
     }
 
-    private void finishRegistration() {
+    @Nullable
+    private ScheduledTaskRegistrar getRegistrarBean() {
+        Assert.state(applicationContext != null, "Not running in an ApplicationContext");
+        Map<String, ScheduledTaskRegistrar> beansOfType
+                = applicationContext.getBeansOfType(ScheduledTaskRegistrar.class);
+        if (!beansOfType.isEmpty()) {
+            List<ScheduledTaskRegistrar> scheduledTaskRegistrarBeans = new ArrayList<>(beansOfType.values());
+            AnnotationAwareOrderComparator.sort(scheduledTaskRegistrarBeans);
+            return copyThisRegistrarAvailableDataToBean(scheduledTaskRegistrarBeans.get(0));
+        }
+        return null;
+    }
+
+    private ScheduledTaskRegistrar copyThisRegistrarAvailableDataToBean(ScheduledTaskRegistrar registrarBean) {
+        TaskScheduler taskScheduler = this.registrar.getScheduler();
+        if (taskScheduler != null) {
+            registrarBean.setTaskScheduler(taskScheduler);
+        }
+        registrarBean.setCronTasksList(this.registrar.getCronTaskList());
+        registrarBean.setFixedDelayTasksList(this.registrar.getFixedDelayTaskList());
+        registrarBean.setFixedRateTasksList(this.registrar.getFixedRateTaskList());
+        registrarBean.setTriggerTasksList(this.registrar.getTriggerTaskList());
+        return registrarBean;
+    }
+
+    private void finishRegistration(ScheduledTaskRegistrar registrar) {
+        final ScheduledTaskRegistrar finalRegistrar = registrar != null ? registrar : this.registrar;
         if (this.scheduler != null) {
-            this.registrar.setScheduler(this.scheduler);
+            finalRegistrar.setScheduler(this.scheduler);
         }
 
         if (this.beanFactory instanceof ListableBeanFactory) {
@@ -236,22 +269,22 @@ public class ScheduledAnnotationBeanPostProcessor
             List<SchedulingConfigurer> configurers = new ArrayList<>(beans.values());
             AnnotationAwareOrderComparator.sort(configurers);
             for (SchedulingConfigurer configurer : configurers) {
-                configurer.configureTasks(this.registrar);
+                configurer.configureTasks(finalRegistrar);
             }
         }
 
-        if (this.registrar.hasTasks() && this.registrar.getScheduler() == null) {
+        if (finalRegistrar.hasTasks() && finalRegistrar.getScheduler() == null) {
             Assert.state(this.beanFactory != null, "BeanFactory must be set to find scheduler by type");
             try {
                 // Search for TaskScheduler bean...
-                this.registrar.setTaskScheduler(resolveSchedulerBean(this.beanFactory, TaskScheduler.class, false));
+                finalRegistrar.setTaskScheduler(resolveSchedulerBean(this.beanFactory, TaskScheduler.class, false));
             } catch (NoUniqueBeanDefinitionException ex) {
                 if (logger.isTraceEnabled()) {
                     logger.trace("Could not find unique TaskScheduler bean - attempting to resolve by name: " +
                             ex.getMessage());
                 }
                 try {
-                    this.registrar.setTaskScheduler(resolveSchedulerBean(this.beanFactory, TaskScheduler.class, true));
+                    finalRegistrar.setTaskScheduler(resolveSchedulerBean(this.beanFactory, TaskScheduler.class, true));
                 } catch (NoSuchBeanDefinitionException ex2) {
                     if (logger.isInfoEnabled()) {
                         logger.info("More than one TaskScheduler bean exists within the context, and " +
@@ -268,14 +301,14 @@ public class ScheduledAnnotationBeanPostProcessor
                 }
                 // Search for ScheduledExecutorService bean next...
                 try {
-                    this.registrar.setScheduler(resolveSchedulerBean(this.beanFactory, ScheduledExecutorService.class, false));
+                    finalRegistrar.setScheduler(resolveSchedulerBean(this.beanFactory, ScheduledExecutorService.class, false));
                 } catch (NoUniqueBeanDefinitionException ex2) {
                     if (logger.isTraceEnabled()) {
                         logger.trace("Could not find unique ScheduledExecutorService bean - attempting to resolve by name: " +
                                 ex2.getMessage());
                     }
                     try {
-                        this.registrar.setScheduler(resolveSchedulerBean(this.beanFactory, ScheduledExecutorService.class, true));
+                        finalRegistrar.setScheduler(resolveSchedulerBean(this.beanFactory, ScheduledExecutorService.class, true));
                     } catch (NoSuchBeanDefinitionException ex3) {
                         if (logger.isInfoEnabled()) {
                             logger.info("More than one ScheduledExecutorService bean exists within the context, and " +
@@ -296,7 +329,7 @@ public class ScheduledAnnotationBeanPostProcessor
             }
         }
 
-        this.registrar.afterPropertiesSet();
+        finalRegistrar.afterPropertiesSet();
     }
 
     private <T> T resolveSchedulerBean(BeanFactory beanFactory, Class<T> schedulerType, boolean byName) {
