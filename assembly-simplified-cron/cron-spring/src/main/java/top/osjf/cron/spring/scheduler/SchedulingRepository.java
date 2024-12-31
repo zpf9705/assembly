@@ -16,7 +16,10 @@
 
 package top.osjf.cron.spring.scheduler;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.scheduling.config.ScheduledTask;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.util.IdGenerator;
@@ -71,7 +74,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @since 1.0.0
  */
 public class SchedulingRepository extends ManageableTaskSupport implements CronTaskRepository,
-        EnhanceTaskConvertFactory {
+        EnhanceTaskConvertFactory, ApplicationContextAware, InitializingBean {
 
     private final Map<String, ScheduledTask> scheduledTaskCache = new ConcurrentHashMap<>();
 
@@ -81,9 +84,16 @@ public class SchedulingRepository extends ManageableTaskSupport implements CronT
 
     private final IdGenerator idGenerator = new SimpleIdGenerator();
 
-    @Autowired(required = false)
-    public void setSchedulingListeners(List<SchedulingListener> schedulingListeners) {
-        this.schedulingListeners.addAll(schedulingListeners);
+    private ApplicationContext applicationContext;
+
+    @Override
+    public void setApplicationContext(@NotNull ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
+
+    @Override
+    public void afterPropertiesSet() {
+        this.schedulingListeners.addAll(applicationContext.getBeansOfType(SchedulingListener.class).values());
     }
 
     /**
