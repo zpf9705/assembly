@@ -24,42 +24,52 @@ import org.springframework.scheduling.config.TriggerTask;
 import top.osjf.cron.spring.scheduler.SchedulingRunnable;
 
 /**
- * The support with {@link FixedDelayTask} and {@link FixedRateTask} and {@link TriggerTask}.
+ * {@code ManageableTaskSupport} is an abstract class that provides support for
+ * Spring scheduled task management.
+ *
+ * <p>By obtaining a {@link ScheduledTaskRegistrar} for managing scheduled tasks
+ * and using a factory method to transform the original runtime {@link Runnable}
+ * into a manageable {@link SchedulingRunnable} instance, tasks can be dynamically
+ * added and managed at runtime.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public abstract class AnyTaskSupport {
+public abstract class ManageableTaskSupport {
 
     /**
-     * Return to the scheduled task registry.
-     * @return scheduled task registry.
+     * Return a {@code ScheduledTaskRegistrar} instance for registering and
+     * managing scheduled tasks.
+     *
+     * @return a {@code ScheduledTaskRegistrar} instance.
      */
     protected abstract ScheduledTaskRegistrar getScheduledTaskRegistrar();
 
     /**
-     * Return a new {@link SchedulingRunnable} created using the original {@link Runnable}.
+     * Return a manageable {@code SchedulingRunnable} instance that
+     * encapsulates {@link Runnable}.
+     *
      * @param runnable raw runnable.
-     * @return new {@link SchedulingRunnable}.
+     * @return new {@code SchedulingRunnable} instance.
      */
     protected abstract SchedulingRunnable newSchedulingRunnable(Runnable runnable);
 
     /**
-     * Schedule a new {@link TriggerTask}.
+     * Schedule a new trigger task.
      *
-     * @param runnable the underlying task to execute
-     * @param trigger  specifies when the task should be executed
+     * @param runnable the underlying task to execute.
+     * @param trigger  specifies when the task should be executed.
      */
     public void scheduleTriggerTask(Runnable runnable, Trigger trigger) {
         getScheduledTaskRegistrar().scheduleTriggerTask(new TriggerTask(newSchedulingRunnable(runnable), trigger));
     }
 
     /**
-     * Schedule a new {@code FixedDelayTask}.
+     * Schedule a new fixed delay task.
      *
-     * @param runnable     the underlying task to execute
-     * @param interval     how often in milliseconds the task should be executed
-     * @param initialDelay the initial delay before first execution of the task
+     * @param runnable     the underlying task to execute.
+     * @param interval     how often in milliseconds the task should be executed.
+     * @param initialDelay the initial delay before first execution of the task.
      */
     public void scheduleFixedDelayTask(Runnable runnable, long interval, long initialDelay) {
         getScheduledTaskRegistrar().scheduleFixedDelayTask(new FixedDelayTask(newSchedulingRunnable(runnable),
@@ -67,11 +77,11 @@ public abstract class AnyTaskSupport {
     }
 
     /**
-     * Schedule a new {@code FixedRateTask}.
+     * Schedule a new fixed rate task.
      *
-     * @param runnable     the underlying task to execute
-     * @param interval     how often in milliseconds the task should be executed
-     * @param initialDelay the initial delay before first execution of the task
+     * @param runnable     the underlying task to execute.
+     * @param interval     how often in milliseconds the task should be executed.
+     * @param initialDelay the initial delay before first execution of the task.
      */
     public void scheduleFixedRateTask(Runnable runnable, long interval, long initialDelay) {
         getScheduledTaskRegistrar().scheduleFixedRateTask(new FixedRateTask(newSchedulingRunnable(runnable),
