@@ -20,14 +20,20 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import top.osjf.cron.hutool.lifestyle.HutoolCronLifeStyle;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
+import top.osjf.cron.spring.CronAnnotationPostProcessor;
+import top.osjf.cron.spring.annotation.Cron;
 
 /**
- * Regarding the configuration classes related to scheduled task
- * registration for hutool.
+ * {@code @Configuration} class that registers a {@link CronAnnotationPostProcessor}
+ * bean capable of processing Spring's @{@link Cron} annotation.
+ *
+ * <p>This configuration class is automatically imported when using the
+ * {@link EnableHutoolCronTaskRegister @EnableHutoolCronTaskRegister} annotation. See
+ * {@code @EnableHutoolCronTaskRegister}'s javadoc for complete usage details.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @see EnableHutoolCronTaskRegister
  * @since 1.0.0
+ * @see EnableHutoolCronTaskRegister
  */
 @Configuration(proxyBeanMethods = false)
 public class HutoolCronTaskConfiguration {
