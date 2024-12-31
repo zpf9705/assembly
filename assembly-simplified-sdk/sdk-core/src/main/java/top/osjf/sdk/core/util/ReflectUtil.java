@@ -159,7 +159,11 @@ public abstract class ReflectUtil {
             instanceSupplier = type::newInstance;
         } else {
             instanceSupplier =
-                    () -> getConstructor(type, parameterTypes.toArray(new Class[]{})).newInstance(args);
+                    () -> {
+                        Constructor<T> constructor = getConstructor(type, parameterTypes.toArray(new Class[]{}));
+                        makeAccessible(constructor);
+                        return constructor.newInstance(args);
+                    };
         }
         try {
             return instanceSupplier.get();
@@ -425,7 +429,7 @@ public abstract class ReflectUtil {
     public static void setFieldValue(Object target, String fieldName, Object arg) {
         try {
             Field field = target.getClass().getField(fieldName);
-            field.setAccessible(true);
+            makeAccessible(field);
             field.set(target, arg);
         } catch (IllegalArgumentException e) {
             throw e;
@@ -445,7 +449,7 @@ public abstract class ReflectUtil {
      */
     public static void setFieldValue(Object target, Field field, Object arg) {
         try {
-            field.setAccessible(true);
+            makeAccessible(field);
             field.set(target, arg);
         } catch (IllegalArgumentException e) {
             throw e;
@@ -467,12 +471,57 @@ public abstract class ReflectUtil {
     @Nullable
     public static Object invokeMethod(Object target, Method method, Object... args) {
         try {
-            method.setAccessible(true);
+            makeAccessible(method);
             return method.invoke(target, args);
         } catch (IllegalArgumentException e) {
             throw e;
         } catch (Exception e) {
             throw new IllegalStateException("invoke method failed ", e);
+        }
+    }
+
+    /**
+     * Make the given constructor accessible, explicitly setting it accessible
+     * if necessary. The {@code setAccessible(true)} method is only called
+     * when actually necessary, to avoid unnecessary conflicts with a JVM
+     * SecurityManager (if active).
+     * @param ctor the constructor to make accessible
+     */
+    public static void makeAccessible(Constructor<?> ctor) {
+        if ((!Modifier.isPublic(ctor.getModifiers()) ||
+                !Modifier.isPublic(ctor.getDeclaringClass().getModifiers())) && !ctor.isAccessible()) {
+            ctor.setAccessible(true);
+        }
+    }
+
+    /**
+     * Make the given method accessible, explicitly setting it accessible if
+     * necessary. The {@code setAccessible(true)} method is only called
+     * when actually necessary, to avoid unnecessary conflicts with a JVM
+     * SecurityManager (if active).
+     *
+     * @param method the method to make accessible.
+     */
+    public static void makeAccessible(Method method) {
+        if ((!Modifier.isPublic(method.getModifiers()) ||
+                !Modifier.isPublic(method.getDeclaringClass().getModifiers())) && !method.isAccessible()) {
+            method.setAccessible(true);
+        }
+    }
+
+    /**
+     * Make the given field accessible, explicitly setting it accessible if
+     * necessary. The {@code setAccessible(true)} method is only called
+     * when actually necessary, to avoid unnecessary conflicts with a JVM
+     * SecurityManager (if active).
+     *
+     * @param field the field to make accessible.
+     */
+    public static void makeAccessible(Field field) {
+        if ((!Modifier.isPublic(field.getModifiers()) ||
+                !Modifier.isPublic(field.getDeclaringClass().getModifiers()) ||
+                Modifier.isFinal(field.getModifiers())) && !field.isAccessible()) {
+            field.setAccessible(true);
         }
     }
 }
