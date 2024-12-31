@@ -22,7 +22,7 @@ import top.osjf.cron.spring.scheduler.SchedulingInfoSupplier;
 import top.osjf.cron.spring.scheduler.SchedulingRunnable;
 
 /**
- * Enhance for {@link org.springframework.scheduling.config.TriggerTask}.
+ * The enhanced version class of  {@link org.springframework.scheduling.config.TriggerTask}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
