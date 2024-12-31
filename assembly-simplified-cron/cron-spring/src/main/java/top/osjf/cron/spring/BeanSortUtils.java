@@ -31,9 +31,10 @@ public abstract class BeanSortUtils {
 /**
 * Retrieve the bean with the highest priority.
 * @param beans bean list.
+* @param <T>   bean type.
 * @return the highest priority bean.
 */
-public Object getPriorityBean(@NotNull List<Object> beans) {
+public static <T> T getPriorityBean(@NotNull List<T> beans) {
     AnnotationAwareOrderComparator.sort(beans);
     return beans.get(0);
 }
