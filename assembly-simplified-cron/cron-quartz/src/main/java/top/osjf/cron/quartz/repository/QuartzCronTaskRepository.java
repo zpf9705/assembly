@@ -21,6 +21,7 @@ import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.simpl.SimpleThreadPool;
 import org.quartz.spi.JobFactory;
 import top.osjf.cron.core.lang.NotNull;
+import top.osjf.cron.core.lifestyle.StartupProperties;
 import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.repository.CronTask;
 import top.osjf.cron.core.repository.CronTaskRepository;
@@ -53,15 +54,30 @@ public class QuartzCronTaskRepository implements CronTaskRepository {
     private final ListenerManager listenerManager;
 
     /**
-     * Create a construction method for {@link Scheduler} using a configuration properties.
+     * Creates a new {@code QuartzCronTaskRepository} using given {@code StartupProperties}
+     * and {@code JobFactory}.
      *
-     * @param properties {@link StdSchedulerFactory} configuration properties.
-     * @param jobFactory Quartz task production factory.
+     * @param properties a {@code StartupProperties} instance for {@link StdSchedulerFactory}
+     *                   configuration.
+     * @param jobFactory a task generates {@code JobFactory} instances.
+     */
+    public QuartzCronTaskRepository(StartupProperties properties, JobFactory jobFactory) {
+        this(properties != null ? properties.asProperties() : null, jobFactory);
+    }
+
+    /**
+     * Creates a new {@code QuartzCronTaskRepository} using given {@code Properties}
+     * and {@code JobFactory}.
+     *
+     * @param properties a {@code Properties} instance for {@link StdSchedulerFactory}
+     *                   configuration.
+     * @param jobFactory a task generates {@code JobFactory} instances.
+     * @throws IllegalArgumentException if input {@code JobFactory} is {@literal null}.
      */
     public QuartzCronTaskRepository(Properties properties, JobFactory jobFactory) {
         if (properties == null) properties = System.getProperties();
         try {
-            getScheduler(new StdSchedulerFactory(), properties);
+            createScheduler(new StdSchedulerFactory(), properties);
             if (jobFactory != null) {
                 scheduler.setJobFactory(jobFactory);
             }
@@ -72,15 +88,17 @@ public class QuartzCronTaskRepository implements CronTaskRepository {
     }
 
     /**
-     * Set up a scheduled scheduler, and if there is a retrieval failure,
-     * adjust the scheduler factory parameters according to the abnormal
-     * situation and continue to retrieve.
+     * Produce a timed task executor instance {@code Scheduler} using the given
+     * {@code StdSchedulerFactory} factory instance and configuration items.
      *
-     * @param schedulerFactory Scheduling factory.
-     * @param properties       Configuration file object.
+     * @param schedulerFactory the production factory instance of task executor {@code Scheduler}.
+     * @param properties       a {@code Properties} instance for {@link StdSchedulerFactory}
+     *                         configuration.
+     * @throws SchedulerException If an error occurs during the production process.
      * @see SimpleThreadPool#initialize()
      */
-    void getScheduler(StdSchedulerFactory schedulerFactory, Properties properties) throws SchedulerException {
+    private void createScheduler(StdSchedulerFactory schedulerFactory, Properties properties)
+            throws SchedulerException {
         SchedulerException getSchedulerIssue = null;
         schedulerFactory.initialize(properties);
         try {
