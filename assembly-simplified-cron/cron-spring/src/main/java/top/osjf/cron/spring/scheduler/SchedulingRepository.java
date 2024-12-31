@@ -16,105 +16,91 @@
 
 package top.osjf.cron.spring.scheduler;
 
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.core.NamedThreadLocal;
-import org.springframework.lang.NonNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.config.ScheduledTask;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
+import org.springframework.util.IdGenerator;
+import org.springframework.util.SimpleIdGenerator;
 import top.osjf.cron.core.lang.NotNull;
+import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.core.repository.RunnableTaskBody;
 import top.osjf.cron.core.repository.TaskBody;
-import top.osjf.cron.core.util.StringUtils;
 import top.osjf.cron.spring.scheduler.task.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Integrate the Spring scheduled task resource class of {@link CronTaskRepository}.
+ * {@code SchedulingRepository} is a class that extends {@code ManageableTaskSupport}
+ * and implements {@code CronTaskRepository} and {@code EnhanceTaskConvertFactory}
+ * interfaces , it provides management functionality for scheduled tasks, including
+ * registering, updating, deleting scheduled tasks, and monitoring task changes.
+ *
+ * <p>This class stores scheduled tasks by using an internal cache {@link #scheduledTaskCache}
+ * and registers these tasks using {@link ScheduledTaskRegistrar}. In addition, it also
+ * supports defining the execution time of tasks through Cron expressions.
+ *
+ * <p> This class maintains a {@link ScheduledTask} to store registered scheduled tasks.
+ * It also maintains a list of Scheduling Listeners {@link #schedulingListeners}, used to
+ * monitor changes in scheduled tasks. The {@code ScheduledTaskRegistrar} instance is used
+ * to interact with Spring's scheduled task scheduler, the {@code IdGenerator} instance is
+ * used to generate unique task identifiers.
+ *
+ * <p>Scheduling Repository provides multiple methods for managing scheduled tasks:
+ * <ul>
+ *     <li>register(String expression, TaskBody body): Register a new scheduled task based on the given
+ *     Cron expression and task body, and return the unique identifier of the task</li>
+ *     <li>register(CronTask task): Register a new scheduled task directly using the {@code CronTask}
+ *     instance</li>
+ *     <li>update(String id, String newExpression): Update the Cron expression of the scheduled task
+ *     with the specified identifier</li>
+ *     <li>remove(String id):  Delete the specified scheduled task based on the identifier</li>
+ *     <li>addListener(CronListener listener): Add a listener to monitor changes in scheduled tasks</li>
+ *     <li>removeListener(CronListener listener): Remove a listener</li>
+ * </ul>
+ *
+ * <p>In addition, this class also provides conversion methods for Spring scheduled task configuration
+ * objects (such as TriggerTask, CronTask, FixedDelayTask, FixedRateTask), allowing the original convert
+ * the Spring scheduled task configuration object to an enhanced or manageable version.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class SchedulingRepository extends AnyTaskSupport implements CronTaskRepository, TaskEnhanceConvertFactory,
-        ApplicationContextAware, InitializingBean {
+public class SchedulingRepository extends ManageableTaskSupport implements CronTaskRepository,
+        EnhanceTaskConvertFactory {
 
-    /**
-     * Internally, {@link ScheduledTask} is assigned an actual ID storage map to
-     * record the unique ID of the task, in order to facilitate the implementation
-     * of {@link CronTaskRepository}'s related operations.
-     */
     private final Map<String, ScheduledTask> scheduledTaskCache = new ConcurrentHashMap<>();
 
-    /**
-     * Used to temporarily store the ID of the current thread operation task.
-     */
-    private final ThreadLocal<String> ID = new NamedThreadLocal<>("ID LOCAL");
-
-    /**
-     * Collection of scheduled task listeners.
-     */
     private final List<SchedulingListener> schedulingListeners = new ArrayList<>();
 
-    /**
-     * Enhanced version of timed task registration class.
-     */
-    private final EnhanceScheduledTaskRegistrar taskRegistrar = new EnhanceScheduledTaskRegistrar(this);
+    private final ScheduledTaskRegistrar scheduledTaskRegistrar = new EnhanceScheduledTaskRegistrar(this);
 
-    private ApplicationContext applicationContext;
+    private final IdGenerator idGenerator = new SimpleIdGenerator();
 
-    @Override
-    public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
-
-    @Override
-    public void afterPropertiesSet() {
-        schedulingListeners.addAll(applicationContext.getBeansOfType(SchedulingListener.class).values());
+    @Autowired(required = false)
+    public void setSchedulingListeners(List<SchedulingListener> schedulingListeners) {
+        this.schedulingListeners.addAll(schedulingListeners);
     }
 
     /**
-     * Register the {@link ScheduledTask} task, assign a unique ID,
-     * and in subsequent {@link CronTaskRepository} operations, update,
-     * delete, and perform other operations based on the ID.
+     * Registers a scheduled task in the cache, without overwriting an existing
+     * task with the same ID.
      *
-     * @param id            unique ID of {@link ScheduledTask}.
-     * @param scheduledTask spring scheduledTask.
+     * @param id            the unique identifier for the scheduled task.
+     * @param scheduledTask the {@code ScheduledTask} object to be registered.
      */
-    public void registerScheduledTask(String id, ScheduledTask scheduledTask) {
+    protected void registerScheduledTask(String id, ScheduledTask scheduledTask) {
         scheduledTaskCache.putIfAbsent(id, scheduledTask);
-    }
-
-    /**
-     * Return enhanced version of timed task registration class.
-     *
-     * @return {@link EnhanceScheduledTaskRegistrar}.
-     */
-    public EnhanceScheduledTaskRegistrar getTaskRegistrar() {
-        return taskRegistrar;
-    }
-
-    /**
-     * Return a list of immutable listener collections.
-     *
-     * @return list of immutable listener collections.
-     */
-    public List<SchedulingListener> getSchedulingListeners() {
-        return Collections.unmodifiableList(schedulingListeners);
     }
 
     @Override
     @NotNull
     public String register(@NotNull String expression, @NotNull TaskBody body) {
-        SchedulingRunnable schedulingRunnable
-                = newSchedulingRunnable(body.unwrap(RunnableTaskBody.class).getRunnable());
-        taskRegistrar.scheduleCronTask(new CronTask(schedulingRunnable, expression));
-        return schedulingRunnable.get().getId();
+        return registerOrUpdateSchedulingTask(expression, body, null);
     }
 
     @Override
@@ -125,14 +111,34 @@ public class SchedulingRepository extends AnyTaskSupport implements CronTaskRepo
 
     @Override
     public void update(@NotNull String id, @NotNull String newExpression) {
+        Runnable raw = scheduledTaskCache.get(id).getTask().getRunnable();
         remove(id);
-        ID.set(id);
-        register(newExpression, new RunnableTaskBody(scheduledTaskCache.get(id).getTask().getRunnable()));
+        registerOrUpdateSchedulingTask(newExpression, new RunnableTaskBody(raw), id);
+    }
+
+    /**
+     * Register or update for a scheduled task based on the given expression and
+     * {@code TaskBody} instance, where the ID is not required to be provided.
+     * When it is not provided, call {@link #newSchedulingRunnableInternal} to
+     * generate it automatically, which can be used to update the task instance.
+     *
+     * @param expression the Cron expression defining the scheduling time for the task.
+     * @param body       the task body containing the logic to be executed.
+     * @param id         an optional unique identifier to identify this scheduled task.
+     *                   If null, a unique identifier will be generated automatically.
+     * @return The unique identifier returned after successful registration, used to
+     * identify this scheduled task.
+     */
+    private String registerOrUpdateSchedulingTask(String expression, TaskBody body, @Nullable String id) {
+        SchedulingRunnable schedulingRunnable
+                = newSchedulingRunnableInternal(body.unwrap(RunnableTaskBody.class).getRunnable(), id);
+        scheduledTaskRegistrar.scheduleCronTask(new CronTask(schedulingRunnable, expression));
+        return schedulingRunnable.get().getId();
     }
 
     @Override
     public void remove(@NotNull String id) {
-        ScheduledTask scheduledTask = scheduledTaskCache.get(id);
+        ScheduledTask scheduledTask = scheduledTaskCache.remove(id);
         if (scheduledTask != null) {
             scheduledTask.cancel();
         }
@@ -150,16 +156,31 @@ public class SchedulingRepository extends AnyTaskSupport implements CronTaskRepo
 
     @Override
     protected ScheduledTaskRegistrar getScheduledTaskRegistrar() {
-        return taskRegistrar;
+        return scheduledTaskRegistrar;
     }
 
     @Override
     protected SchedulingRunnable newSchedulingRunnable(Runnable runnable) {
-        String id = ID.get();
-        if (StringUtils.isBlank(id)) {
-            id = UUID.randomUUID().toString();
-        } else ID.remove();
-        return new SchedulingRunnable(id, runnable, getSchedulingListeners());
+        return newSchedulingRunnableInternal(runnable, null);
+    }
+
+    /**
+     * Creates a new {@code scheduling runnable} instance that encapsulates the
+     * given {@code Runnable} object and assigns it a unique identifier if not
+     * provided.
+     *
+     * @param runnable the Runnable object to be scheduled for execution.
+     * @param id       an optional unique identifier to identify this scheduling
+     *                 runnable instance. If null, a unique identifier will be
+     *                 generated automatically.
+     * @return a new {@code scheduling runnable} instance that encapsulates the given
+     * Runnable, with a unique identifier and scheduling listeners set.
+     */
+    private SchedulingRunnable newSchedulingRunnableInternal(Runnable runnable, @Nullable String id) {
+        if (id == null) {
+            id = idGenerator.generateId().toString();
+        }
+        return new SchedulingRunnable(id, runnable, schedulingListeners);
     }
 
     @Override
