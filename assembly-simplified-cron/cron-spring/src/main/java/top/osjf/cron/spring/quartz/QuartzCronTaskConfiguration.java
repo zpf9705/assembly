@@ -16,6 +16,7 @@
 
 package top.osjf.cron.spring.quartz;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -48,9 +49,10 @@ public class QuartzCronTaskConfiguration {
 
     @Bean
     @Order
-    public QuartzCronTaskRepository quartzCronTaskRepository(StartupProperties startupProperties,
+    public QuartzCronTaskRepository quartzCronTaskRepository(ObjectProvider<StartupProperties> provider,
                                                              QuartzJobFactory quartzJobFactory) {
-        return new QuartzCronTaskRepository(startupProperties.asProperties(), quartzJobFactory);
+        StartupProperties properties = provider.orderedStream().findFirst().orElse(null);
+        return new QuartzCronTaskRepository(properties, quartzJobFactory);
     }
 
     @Bean(destroyMethod = "stop")
