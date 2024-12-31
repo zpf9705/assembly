@@ -16,10 +16,9 @@
 
 package top.osjf.cron.core.repository;
 
-import java.lang.reflect.InvocationTargetException;
+import top.osjf.cron.core.util.ReflectUtils;
+
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.UndeclaredThrowableException;
 
 /**
  * The {@code CronMethodRunnable} class implements the Runnable interface,
@@ -89,28 +88,7 @@ public class CronMethodRunnable implements Runnable {
 
     @Override
     public void run() {
-        try {
-            makeAccessible(this.method);
-            this.method.invoke(this.target);
-        } catch (InvocationTargetException ex) {
-            Throwable targetException = ex.getTargetException();
-            if (targetException instanceof RuntimeException) {
-                throw (RuntimeException) targetException;
-            }
-            if (targetException instanceof Error) {
-                throw (Error) targetException;
-            }
-            throw new UndeclaredThrowableException(targetException);
-        } catch (IllegalAccessException ex) {
-            throw new UndeclaredThrowableException(ex);
-        }
-    }
-
-    void makeAccessible(Method method) {
-        if ((!Modifier.isPublic(method.getModifiers()) ||
-                !Modifier.isPublic(method.getDeclaringClass().getModifiers())) && !method.isAccessible()) {
-            method.setAccessible(true);
-        }
+        ReflectUtils.invokeMethod(this.target, this.method);
     }
 
     @Override
