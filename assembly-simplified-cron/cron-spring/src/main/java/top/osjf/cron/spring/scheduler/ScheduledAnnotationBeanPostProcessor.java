@@ -41,14 +41,17 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.*;
+import org.springframework.scheduling.annotation.AsyncAnnotationBeanPostProcessor;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.annotation.Schedules;
+import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.*;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.scheduling.support.ScheduledMethodRunnable;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.util.StringValueResolver;
+import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.support.ExpressionSupport;
 import top.osjf.cron.core.util.ArrayUtils;
 import top.osjf.cron.spring.annotation.Cron;
@@ -84,15 +87,16 @@ import java.util.concurrent.TimeUnit;
  * @author Elizabeth Chatman
  * @author Victor Brown
  * @author Sam Brannen
+ * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
+ * @since 3.0
  * @see Scheduled
  * @see Cron
- * @see EnableScheduling
+ * @see org.springframework.scheduling.annotation.EnableScheduling
  * @see SchedulingConfigurer
  * @see TaskScheduler
  * @see ScheduledTaskRegistrar
  * @see EnhanceScheduledTaskRegistrar
  * @see AsyncAnnotationBeanPostProcessor
- * @since 3.0
  */
 public class ScheduledAnnotationBeanPostProcessor
         implements ScheduledTaskHolder, MergedBeanDefinitionPostProcessor, DestructionAwareBeanPostProcessor,
@@ -173,17 +177,17 @@ public class ScheduledAnnotationBeanPostProcessor
      * @param scheduler scheduler instance.
      * @see #DEFAULT_TASK_SCHEDULER_BEAN_NAME
      */
-    public void setScheduler(Object scheduler) {
+    public void setScheduler(@NotNull Object scheduler) {
         this.scheduler = scheduler;
     }
 
     @Override
-    public void setEmbeddedValueResolver(StringValueResolver resolver) {
+    public void setEmbeddedValueResolver(@NotNull StringValueResolver resolver) {
         this.embeddedValueResolver = resolver;
     }
 
     @Override
-    public void setBeanName(String beanName) {
+    public void setBeanName(@NotNull String beanName) {
         this.beanName = beanName;
     }
 
@@ -193,7 +197,7 @@ public class ScheduledAnnotationBeanPostProcessor
      * a {@link #setScheduler scheduler} has to be explicitly configured.
      */
     @Override
-    public void setBeanFactory(BeanFactory beanFactory) {
+    public void setBeanFactory(@NotNull BeanFactory beanFactory) {
         this.beanFactory = beanFactory;
     }
 
@@ -354,16 +358,17 @@ public class ScheduledAnnotationBeanPostProcessor
 
 
     @Override
-    public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName) {
+    public void postProcessMergedBeanDefinition(@NotNull RootBeanDefinition beanDefinition, @NotNull Class<?> beanType,
+                                                @NotNull String beanName) {
     }
 
     @Override
-    public Object postProcessBeforeInitialization(Object bean, String beanName) {
+    public Object postProcessBeforeInitialization(@NotNull Object bean, @NotNull String beanName) {
         return bean;
     }
 
     @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) {
+    public Object postProcessAfterInitialization(@NotNull Object bean, @NotNull String beanName) {
         if (bean instanceof AopInfrastructureBean || bean instanceof TaskScheduler ||
                 bean instanceof ScheduledExecutorService) {
             // Ignore AOP infrastructure such as scoped proxies.
@@ -611,6 +616,7 @@ public class ScheduledAnnotationBeanPostProcessor
      * @since 5.0.2
      */
     @Override
+    @NotNull
     public Set<ScheduledTask> getScheduledTasks() {
         Set<ScheduledTask> result = new LinkedHashSet<>();
         synchronized (this.scheduledTasks) {
@@ -624,7 +630,7 @@ public class ScheduledAnnotationBeanPostProcessor
     }
 
     @Override
-    public void postProcessBeforeDestruction(Object bean, String beanName) {
+    public void postProcessBeforeDestruction(@NotNull Object bean, @NotNull String beanName) {
         Set<ScheduledTask> tasks;
         synchronized (this.scheduledTasks) {
             tasks = this.scheduledTasks.remove(bean);
@@ -637,7 +643,7 @@ public class ScheduledAnnotationBeanPostProcessor
     }
 
     @Override
-    public boolean requiresDestruction(Object bean) {
+    public boolean requiresDestruction(@NotNull Object bean) {
         synchronized (this.scheduledTasks) {
             return this.scheduledTasks.containsKey(bean);
         }
