@@ -22,7 +22,6 @@ import org.springframework.aop.framework.AopInfrastructureBean;
 import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.support.MergedBeanDefinitionPostProcessor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.ApplicationContext;
@@ -40,7 +39,6 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import top.osjf.cron.core.lifestyle.LifeStyle;
@@ -80,7 +78,7 @@ import java.util.concurrent.ScheduledExecutorService;
  * <p>Automatically detect instances of {@link CronTaskRepository CronTaskRepository},
  * {@link CronListener CronListener}, {@link LifeStyle LifeStyle} in the container,
  * and after collection is complete (copying the logic from
- * {@link ScheduledAnnotationBeanPostProcessor#postProcessAfterInitialization} during
+ * {@link CronAnnotationPostProcessor#postProcessAfterInitialization} during
  * the collection process), automatically register and start.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
@@ -96,7 +94,7 @@ import java.util.concurrent.ScheduledExecutorService;
  * @see LifeStyle
  */
 public class CronAnnotationPostProcessor implements ImportAware, ApplicationContextAware, EnvironmentAware,
-        SmartInitializingSingleton, ApplicationListener<ContextRefreshedEvent>, MergedBeanDefinitionPostProcessor {
+        ApplicationListener<ContextRefreshedEvent>, MergedBeanDefinitionPostProcessor {
 
     private static final Logger logger = LoggerFactory.getLogger(CronAnnotationPostProcessor.class);
 
@@ -185,18 +183,6 @@ public class CronAnnotationPostProcessor implements ImportAware, ApplicationCont
         return bean;
     }
 
-
-    @Override
-    public void afterSingletonsInstantiated() {
-        // Remove resolved singleton classes from cache
-        this.nonAnnotatedClasses.clear();
-
-        if (this.applicationContext == null) {
-            // Not running in an ApplicationContext -> register tasks early...
-            finishRegistration();
-        }
-    }
-
     @Override
     public void onApplicationEvent(@NonNull ContextRefreshedEvent event) {
         if (event.getApplicationContext() == this.applicationContext) {
@@ -209,6 +195,7 @@ public class CronAnnotationPostProcessor implements ImportAware, ApplicationCont
 
     /**
      * Process the given {@code @Cron} method declaration on the given bean.
+     *
      * @param cron   the {@code @Cron} annotation
      * @param method the method that the annotation has been declared on
      * @param bean   the target bean instance
@@ -257,6 +244,11 @@ public class CronAnnotationPostProcessor implements ImportAware, ApplicationCont
      * Perform registration work after collecting scheduled task information.
      */
     private void finishRegistration() {
+        // Check the number of specific interface beans to determine their unique existence.
+        checkBeanNumber(CronTaskRepository.class);
+        checkBeanNumber(LifeStyle.class);
+
+        // Register and start the scheduled task collection.
         CronTaskRepository cronTaskRepository = applicationContext.getBean(CronTaskRepository.class);
         for (CronTask cronTask : cronTasks) {
             cronTaskRepository.register(cronTask);
@@ -270,5 +262,13 @@ public class CronAnnotationPostProcessor implements ImportAware, ApplicationCont
         LifeStyle lifeStyle = applicationContext.getBean(LifeStyle.class);
         lifeStyle.start(startupProperties);
         cronTasks.clear();
+    }
+
+    private void checkBeanNumber(Class<?> clazz) {
+        Map<String, ?> beansOfType = applicationContext.getBeansOfType(clazz);
+        int size = beansOfType.size();
+        Assert.state(size > 1,
+                "expected single matching bean but found " + size + ": " +
+                        org.springframework.util.StringUtils.collectionToCommaDelimitedString(beansOfType.keySet()));
     }
 }
