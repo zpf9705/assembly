@@ -210,18 +210,18 @@ import java.util.concurrent.Executor;
  *     private SchedulingRepository schedulingRepository;
  *
  *     Override
- *     public void onStart(SchedulingInfo value) {
+ *     public void start(SchedulingInfo value) {
  *         System.out.println("spring task start！");
  *     }
  *
  *     Override
- *     public void onSucceeded(SchedulingInfo value) {
+ *     public void success(SchedulingInfo value) {
  *         System.out.println("spring task success！");
  *         schedulingRepository.remove(value.getId());
  *     }
  *
  *     Override
- *     public void onFailed(SchedulingInfo value, Throwable exception) {
+ *     public void failed(SchedulingInfo value, Throwable exception) {
  *         System.out.println("spring task failed！");
  *     }
  * }
