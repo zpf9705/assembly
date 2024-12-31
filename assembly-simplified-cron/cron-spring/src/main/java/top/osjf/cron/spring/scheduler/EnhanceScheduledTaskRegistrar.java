@@ -21,8 +21,13 @@ import org.springframework.lang.Nullable;
 import org.springframework.scheduling.config.*;
 
 /**
- * The enhanced version of {@link ScheduledTaskRegistrar} added {@link SchedulingListener}
- * callbacks to the task execution cycle in version 1.0.0.
+ * An enhanced version of {@code ScheduledTaskRegistrar} that supports the use
+ * of resource class {@link SchedulingRepository} to manage {@link ScheduledTask}
+ * collections.
+ *
+ * <p>The parameters of the method rewritten in the following code, such as
+ * {@link TriggerTask}, will all be converted to the inheritance type of this
+ * framework for enhanced functionality, making it easier to manage uniformly.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
