@@ -33,7 +33,7 @@ import top.osjf.cron.spring.scheduler.SchedulingRunnable;
  * added and managed at runtime.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 1.0.3
  */
 public abstract class ManageableTaskSupport {
 
