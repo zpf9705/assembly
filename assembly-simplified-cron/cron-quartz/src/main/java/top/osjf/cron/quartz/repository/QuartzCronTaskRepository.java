@@ -99,17 +99,15 @@ public class QuartzCronTaskRepository implements CronTaskRepository {
      */
     private void createScheduler(StdSchedulerFactory schedulerFactory, Properties properties)
             throws SchedulerException {
-        SchedulerException getSchedulerIssue = null;
+        SchedulerException ex = null;
         schedulerFactory.initialize(properties);
         try {
             scheduler = schedulerFactory.getScheduler();
         } catch (SchedulerException e) {
-            getSchedulerIssue = e;
+            ex = e;
         }
-        if (getSchedulerIssue == null) {
-            return;
-        }
-        String message = getSchedulerIssue.getMessage();
+        if (ex == null) return;
+        String message = ex.getMessage();
         if (message.contains("Thread count must be > 0")) {
             //If the number of threads is not configured, give a default value of number of available cores+1.
             properties.setProperty(StdSchedulerFactory.PROP_THREAD_POOL_PREFIX + ".threadCount",
