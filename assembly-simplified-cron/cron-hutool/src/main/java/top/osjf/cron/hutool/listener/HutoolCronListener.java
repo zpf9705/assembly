@@ -26,36 +26,69 @@ import top.osjf.cron.core.listener.CronListener;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public class HutoolCronListener implements TaskListener, CronListener {
+public interface HutoolCronListener extends TaskListener, CronListener {
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <strong>Note:</strong>
+     * <p>If this method is rewritten, the {@link #start} and {@link #startWithId}
+     * methods will become invalid and need to be handled by oneself.
+     *
+     * @param executor {@inheritDoc}
+     */
     @Override
-    public final void onStart(TaskExecutor executor) {
+    default void onStart(TaskExecutor executor) {
         start(newCron4jListenerContent(executor));
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <strong>Note:</strong>
+     * <p>If this method is rewritten, the {@link #success} and {@link #successWithId}
+     * methods will become invalid and need to be handled by oneself.
+     *
+     * @param executor {@inheritDoc}
+     */
     @Override
-    public final void onSucceeded(TaskExecutor executor) {
+    default void onSucceeded(TaskExecutor executor) {
         success(newCron4jListenerContent(executor));
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <strong>Note:</strong>
+     * <p>If this method is rewritten, the {@link #failed} and {@link #failedWithId}
+     * methods will become invalid and need to be handled by oneself.
+     *
+     * @param executor {@inheritDoc}
+     */
     @Override
-    public final void onFailed(TaskExecutor executor, Throwable exception) {
+    default void onFailed(TaskExecutor executor, Throwable exception) {
         failed(newCron4jListenerContent(executor), exception);
     }
 
-    final HutoolListenerContent newCron4jListenerContent(TaskExecutor executor) {
+    /**
+     * Creates a new {@code HutoolListenerContent} by given {@code TaskExecutor}.
+     *
+     * @param executor hutool task executor {@code TaskExecutor}.
+     * @return a new {@code HutoolListenerContent}.
+     */
+    static HutoolListenerContent newCron4jListenerContent(TaskExecutor executor) {
         return new HutoolListenerContent(String.valueOf(executor.getCronTask().getId()), executor);
     }
 
     @Override
-    public void startWithId(String id) {
+    default void startWithId(String id) {
     }
 
     @Override
-    public void successWithId(String id) {
+    default void successWithId(String id) {
     }
 
     @Override
-    public void failedWithId(String id, Throwable exception) {
+    default void failedWithId(String id, Throwable exception) {
     }
 }
