@@ -150,6 +150,7 @@ public class ScheduledAnnotationBeanPostProcessor
      * a local single-threaded default scheduler will be created within the registrar.
      *
      * @see #DEFAULT_TASK_SCHEDULER_BEAN_NAME
+     * @param scheduler scheduler instance.
      */
     public void setScheduler(Object scheduler) {
         this.scheduler = scheduler;
@@ -535,6 +536,7 @@ public class ScheduledAnnotationBeanPostProcessor
      *
      * @param target the target bean instance
      * @param method the scheduled method to call
+     * @return a new {@code ScheduledMethodRunnable} instance.
      * @see ScheduledMethodRunnable#ScheduledMethodRunnable(Object, Method)
      * @since 5.1
      */
