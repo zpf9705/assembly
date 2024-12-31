@@ -16,10 +16,7 @@
 
 package top.osjf.cron.spring.scheduler;
 
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.config.ScheduledTask;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.util.IdGenerator;
@@ -73,8 +70,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class SchedulingRepository extends ManageableTaskSupport implements CronTaskRepository,
-        EnhanceTaskConvertFactory, ApplicationContextAware, InitializingBean {
+public class SchedulingRepository extends ManageableTaskSupport implements CronTaskRepository, EnhanceTaskConvertFactory {
 
     private final Map<String, ScheduledTask> scheduledTaskCache = new ConcurrentHashMap<>();
 
@@ -84,16 +80,21 @@ public class SchedulingRepository extends ManageableTaskSupport implements CronT
 
     private final IdGenerator idGenerator = new SimpleIdGenerator();
 
-    private ApplicationContext applicationContext;
-
-    @Override
-    public void setApplicationContext(@NotNull ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
-
-    @Override
-    public void afterPropertiesSet() {
-        this.schedulingListeners.addAll(applicationContext.getBeansOfType(SchedulingListener.class).values());
+    /**
+     * Set all {@link SchedulingListener} beans in the container to the
+     * current bean.
+     *
+     * <p><strong>Note:</strong></p>
+     * If a bean depends on this bean {@code SchedulingRepository} and implements
+     * {@code SchedulingListener}, it is also a {@code SchedulingListener} bean, which
+     * will result in circular dependencies and program errors. It is recommended to
+     * separate the logic extraction and processing.
+     *
+     * @param schedulingListeners all {@link SchedulingListener} beans in the container.
+     */
+    @Autowired(required = false)
+    public void setSchedulingListeners(List<SchedulingListener> schedulingListeners) {
+        this.schedulingListeners.addAll(schedulingListeners);
     }
 
     /**

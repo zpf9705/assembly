@@ -133,6 +133,12 @@ public class SdkProxyFactoryBean<T> extends ComprehensiveDelegationCallback impl
      * annotation, finding the {@code HandlerPostProcessor} bean list defined in
      * the Spring container.
      *
+     * <p><strong>Note:</strong></p>
+     * If a bean depends on this bean {@code SdkProxyFactoryBean} and implements
+     * {@code HandlerPostProcessor}, it is also a {@code HandlerPostProcessor} bean, which
+     * will result in circular dependencies and program errors. It is recommended to
+     * separate the logic extraction and processing.
+     *
      * @param postProcessors The list of post-processors in Spring container.
      */
     @Override
@@ -146,6 +152,12 @@ public class SdkProxyFactoryBean<T> extends ComprehensiveDelegationCallback impl
      * finding the {@code DeterminantInitializingBean} bean list defined in the Spring
      * container.
      *
+     * <p><strong>Note:</strong></p>
+     * If a bean depends on this bean {@code SdkProxyFactoryBean} and implements
+     * {@code DeterminantInitializingBean}, it is also a {@code DeterminantInitializingBean}
+     * bean, which will result in circular dependencies and program errors. It is recommended to
+     * separate the logic extraction and processing.
+     *
      * @param initializingBeans The list of {@code DeterminantInitializingBean} in
      *                          Spring container.
      */
@@ -158,6 +170,12 @@ public class SdkProxyFactoryBean<T> extends ComprehensiveDelegationCallback impl
      * This method achieves automatic assembly through {@link Autowired} annotation,
      * finding the {@code DeterminantDisposableBean} bean list defined in the Spring
      * container.
+     *
+     * <p><strong>Note:</strong></p>
+     * If a bean depends on this bean {@code SdkProxyFactoryBean} and implements
+     * {@code DeterminantDisposableBean}, it is also a {@code DeterminantDisposableBean}
+     * bean, which will result in circular dependencies and program errors. It is recommended to
+     * separate the logic extraction and processing.
      *
      * @param disposableBeans The list of {@code DeterminantDisposableBean} in
      *                        Spring container.
