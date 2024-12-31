@@ -16,21 +16,28 @@
 
 package top.osjf.cron.spring.scheduler;
 
+import java.util.List;
+
 /**
- * Default impl for {@link SchedulingInfo}.
+ * Default impl of {@link SchedulingContext}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class DefaultSchedulingInfo implements SchedulingInfo {
+public class DefaultSchedulingContext implements SchedulingContext {
 
     private final String id;
 
-    private final Runnable runnable;
+    private final Runnable rawRunnable;
 
-    public DefaultSchedulingInfo(String id, Runnable runnable) {
+    private final List<SchedulingListener> rawSchedulingListeners;
+
+    public DefaultSchedulingContext(String id,
+                                    Runnable rawRunnable,
+                                    List<SchedulingListener> rawSchedulingListeners) {
         this.id = id;
-        this.runnable = runnable;
+        this.rawRunnable = rawRunnable;
+        this.rawSchedulingListeners = rawSchedulingListeners;
     }
 
     @Override
@@ -39,7 +46,12 @@ public class DefaultSchedulingInfo implements SchedulingInfo {
     }
 
     @Override
-    public Runnable getRaw() {
-        return runnable;
+    public Runnable getRawRunnable() {
+        return rawRunnable;
+    }
+
+    @Override
+    public List<SchedulingListener> getRawListeners() {
+        return rawSchedulingListeners;
     }
 }
