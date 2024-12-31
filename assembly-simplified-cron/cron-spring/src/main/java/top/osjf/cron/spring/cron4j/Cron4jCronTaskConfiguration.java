@@ -22,6 +22,7 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.annotation.Order;
 import top.osjf.cron.cron4j.lifestyle.Cron4jCronLifeStyle;
 import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
+import top.osjf.cron.spring.BeanSortUtils;
 import top.osjf.cron.spring.CronAnnotationPostProcessor;
 import top.osjf.cron.spring.annotation.Cron;
 
@@ -51,6 +52,6 @@ public class Cron4jCronTaskConfiguration {
     @Bean
     public Cron4jCronLifeStyle cron4jCronLifeStyle(List<Cron4jCronTaskRepository> cron4jCronTaskRepositories) {
         AnnotationAwareOrderComparator.sort(cron4jCronTaskRepositories);
-        return new Cron4jCronLifeStyle(cron4jCronTaskRepositories.get(0).getScheduler());
+        return new Cron4jCronLifeStyle(BeanSortUtils.getPriorityBean(cron4jCronTaskRepositories).getScheduler());
     }
 }
