@@ -91,8 +91,8 @@ public class EnhanceScheduledTaskRegistrar extends ScheduledTaskRegistrar {
      * @param scheduledTask Spring scheduling task.
      */
     private void registerScheduledTask(Task task, ScheduledTask scheduledTask) {
-        if (task instanceof SchedulingInfoSupplier) {
-            SchedulingInfo schedulingInfo = ((SchedulingInfoSupplier) task).get();
+        if (task instanceof SchedulingContextSupplier) {
+            SchedulingContext schedulingInfo = ((SchedulingContextSupplier) task).get();
             repository.registerScheduledTask(schedulingInfo.getId(), scheduledTask);
         }
     }

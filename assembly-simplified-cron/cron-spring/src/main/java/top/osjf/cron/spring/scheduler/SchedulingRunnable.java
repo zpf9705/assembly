@@ -29,28 +29,30 @@ import java.util.List;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class SchedulingRunnable implements Runnable, SchedulingInfoSupplier {
+public class SchedulingRunnable implements Runnable, SchedulingContextSupplier {
 
-    private final SchedulingInfo info;
+    private final SchedulingContext context;
 
     private final Runnable runnable;
 
     private final List<SchedulingListener> schedulingListeners;
 
-    /*** Is {@link #schedulingListeners} empty. */
+    /**
+     * Is {@link #schedulingListeners} empty.
+     */
     private final boolean hasSchedulingListener;
 
     /**
      * Create a new {@code SchedulingRunnable} within any task info.
      *
-     * @param id                  The unique ID of the task.
-     * @param runnable            The executor of the task.
-     * @param schedulingListeners The collection of listeners for the task.
+     * @param id                  the unique ID of the task.
+     * @param runnable            the executor of the task.
+     * @param schedulingListeners the collection of listeners for the task.
      */
     public SchedulingRunnable(@NonNull String id, @NonNull Runnable runnable,
                               @Nullable List<SchedulingListener> schedulingListeners) {
         this.runnable = runnable;
-        this.info = new DefaultSchedulingInfo(id, runnable);
+        this.context = new DefaultSchedulingContext(id, runnable, schedulingListeners);
         this.schedulingListeners = schedulingListeners;
         this.hasSchedulingListener = CollectionUtils.isNotEmpty(schedulingListeners);
     }
@@ -83,7 +85,7 @@ public class SchedulingRunnable implements Runnable, SchedulingInfoSupplier {
     }
 
     private SchedulingListenerContext newSchedulingListenerContext() {
-        return new SchedulingListenerContext(info.getId(), info);
+        return new SchedulingListenerContext(context.getId(), context);
     }
 
     @Override
@@ -98,7 +100,7 @@ public class SchedulingRunnable implements Runnable, SchedulingInfoSupplier {
     }
 
     @Override
-    public SchedulingInfo get() {
-        return info;
+    public SchedulingContext get() {
+        return context;
     }
 }

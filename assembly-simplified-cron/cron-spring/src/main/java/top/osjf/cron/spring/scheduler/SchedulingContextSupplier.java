@@ -20,10 +20,10 @@ import java.util.function.Supplier;
 
 /**
  * Extend the functional interface {@link Supplier} to provide an
- * instance of {@link SchedulingInfo}.
+ * instance of {@link SchedulingContext}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public interface SchedulingInfoSupplier extends Supplier<SchedulingInfo> {
+public interface SchedulingContextSupplier extends Supplier<SchedulingContext> {
 }
