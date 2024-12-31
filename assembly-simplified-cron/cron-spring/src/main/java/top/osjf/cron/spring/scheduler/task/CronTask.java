@@ -16,8 +16,8 @@
 
 package top.osjf.cron.spring.scheduler.task;
 
-import top.osjf.cron.spring.scheduler.SchedulingInfo;
-import top.osjf.cron.spring.scheduler.SchedulingInfoSupplier;
+import top.osjf.cron.spring.scheduler.SchedulingContext;
+import top.osjf.cron.spring.scheduler.SchedulingContextSupplier;
 import top.osjf.cron.spring.scheduler.SchedulingRunnable;
 
 /**
@@ -26,7 +26,7 @@ import top.osjf.cron.spring.scheduler.SchedulingRunnable;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class CronTask extends org.springframework.scheduling.config.CronTask implements SchedulingInfoSupplier {
+public class CronTask extends org.springframework.scheduling.config.CronTask implements SchedulingContextSupplier {
 
     private final SchedulingRunnable schedulingRunnable;
 
@@ -42,7 +42,7 @@ public class CronTask extends org.springframework.scheduling.config.CronTask imp
     }
 
     @Override
-    public SchedulingInfo get() {
+    public SchedulingContext get() {
         return schedulingRunnable.get();
     }
 }
