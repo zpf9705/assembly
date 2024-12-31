@@ -22,11 +22,8 @@ import org.springframework.core.annotation.Order;
 import top.osjf.cron.core.lifestyle.StartupProperties;
 import top.osjf.cron.quartz.lifestyle.QuartzCronLifeStyle;
 import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
-import top.osjf.cron.spring.BeanSortUtils;
 import top.osjf.cron.spring.CronAnnotationPostProcessor;
 import top.osjf.cron.spring.annotation.Cron;
-
-import java.util.List;
 
 /**
  * {@code @Configuration} class that registers a {@link CronAnnotationPostProcessor}
@@ -51,15 +48,13 @@ public class QuartzCronTaskConfiguration {
 
     @Bean
     @Order
-    public QuartzCronTaskRepository quartzCronTaskRepository(List<StartupProperties> startupProperties,
-                                                             List<QuartzJobFactory> quartzJobFactories) {
-        return new QuartzCronTaskRepository(
-                BeanSortUtils.getPriorityBean(startupProperties).asProperties(),
-                BeanSortUtils.getPriorityBean(quartzJobFactories));
+    public QuartzCronTaskRepository quartzCronTaskRepository(StartupProperties startupProperties,
+                                                             QuartzJobFactory quartzJobFactory) {
+        return new QuartzCronTaskRepository(startupProperties.asProperties(), quartzJobFactory);
     }
 
     @Bean(destroyMethod = "stop")
-    public QuartzCronLifeStyle quartzCronLifeStyle(List<QuartzCronTaskRepository> quartzCronTaskRepositories) {
-        return new QuartzCronLifeStyle(BeanSortUtils.getPriorityBean(quartzCronTaskRepositories).getScheduler());
+    public QuartzCronLifeStyle quartzCronLifeStyle(QuartzCronTaskRepository quartzCronTaskRepository) {
+        return new QuartzCronLifeStyle(quartzCronTaskRepository.getScheduler());
     }
 }
