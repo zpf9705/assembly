@@ -26,36 +26,69 @@ import top.osjf.cron.core.listener.CronListener;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public class Cron4jCronListener implements SchedulerListener, CronListener {
+public interface Cron4jCronListener extends SchedulerListener, CronListener {
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <strong>Note:</strong>
+     * <p>If this method is rewritten, the {@link #start} and {@link #startWithId}
+     * methods will become invalid and need to be handled by oneself.
+     *
+     * @param executor {@inheritDoc}
+     */
     @Override
-    public final void taskLaunching(TaskExecutor executor) {
+    default void taskLaunching(TaskExecutor executor) {
         start(newCron4jListenerContent(executor));
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <strong>Note:</strong>
+     * <p>If this method is rewritten, the {@link #success} and {@link #successWithId}
+     * methods will become invalid and need to be handled by oneself.
+     *
+     * @param executor {@inheritDoc}
+     */
     @Override
-    public final void taskSucceeded(TaskExecutor executor) {
+    default void taskSucceeded(TaskExecutor executor) {
         success(newCron4jListenerContent(executor));
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <strong>Note:</strong>
+     * <p>If this method is rewritten, the {@link #failed} and {@link #failedWithId}
+     * methods will become invalid and need to be handled by oneself.
+     *
+     * @param executor {@inheritDoc}
+     */
     @Override
-    public final void taskFailed(TaskExecutor executor, Throwable exception) {
+    default void taskFailed(TaskExecutor executor, Throwable exception) {
         failed(newCron4jListenerContent(executor), exception);
     }
 
-    final Cron4jListenerContent newCron4jListenerContent(TaskExecutor executor) {
+    /**
+     * Creates a new {@code Cron4jListenerContent} by given {@code TaskExecutor}.
+     *
+     * @param executor cron4j task executor {@code TaskExecutor}.
+     * @return a new {@code Cron4jListenerContent}.
+     */
+    static Cron4jListenerContent newCron4jListenerContent(TaskExecutor executor) {
         return new Cron4jListenerContent(String.valueOf(executor.getTask().getId()), executor);
     }
 
     @Override
-    public void startWithId(String id) {
+    default void startWithId(String id) {
     }
 
     @Override
-    public void successWithId(String id) {
+    default void successWithId(String id) {
     }
 
     @Override
-    public void failedWithId(String id, Throwable exception) {
+    default void failedWithId(String id, Throwable exception) {
     }
 }
