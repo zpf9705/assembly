@@ -16,41 +16,50 @@
 
 package top.osjf.cron.spring.quartz;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
+import top.osjf.cron.core.lifestyle.StartupProperties;
 import top.osjf.cron.quartz.lifestyle.QuartzCronLifeStyle;
 import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
+import top.osjf.cron.spring.BeanSortUtils;
+import top.osjf.cron.spring.CronAnnotationPostProcessor;
+import top.osjf.cron.spring.annotation.Cron;
 
-import java.util.Properties;
+import java.util.List;
 
 /**
- * Regarding the configuration classes related to scheduled task
- * registration for Quartz.
+ * {@code @Configuration} class that registers a {@link CronAnnotationPostProcessor}
+ * bean capable of processing Spring's @{@link Cron} annotation.
+ *
+ * <p>This configuration class is automatically imported when using the
+ * {@link EnableQuartzCronTaskRegister @EnableQuartzCronTaskRegister} annotation. See
+ * {@code @EnableQuartzCronTaskRegister}'s javadoc for complete usage details.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @see EnableQuartzCronTaskRegister
  * @since 1.0.0
+ * @see EnableQuartzCronTaskRegister
  */
 @Configuration(proxyBeanMethods = false)
 public class QuartzCronTaskConfiguration {
 
     @Bean
+    @Order
     public QuartzJobFactory quartzJobFactory() {
         return new QuartzJobFactory();
     }
 
     @Bean
-    public QuartzCronTaskRepository quartzCronTaskRepository(ObjectProvider<QuartzPropertiesGainer> provider,
-                                                             QuartzJobFactory quartzJobFactory) {
-        Properties properties = null;
-        QuartzPropertiesGainer gainer = provider.getIfAvailable();
-        if (gainer != null) properties = gainer.getQuartzProperties();
-        return new QuartzCronTaskRepository(properties, quartzJobFactory);
+    @Order
+    public QuartzCronTaskRepository quartzCronTaskRepository(List<StartupProperties> startupProperties,
+                                                             List<QuartzJobFactory> quartzJobFactories) {
+        return new QuartzCronTaskRepository(
+                BeanSortUtils.getPriorityBean(startupProperties).asProperties(),
+                BeanSortUtils.getPriorityBean(quartzJobFactories));
     }
 
     @Bean(destroyMethod = "stop")
-    public QuartzCronLifeStyle quartzCronLifeStyle(QuartzCronTaskRepository quartzCronTaskRepository) {
-        return new QuartzCronLifeStyle(quartzCronTaskRepository.getScheduler());
+    public QuartzCronLifeStyle quartzCronLifeStyle(List<QuartzCronTaskRepository> quartzCronTaskRepositories) {
+        return new QuartzCronLifeStyle(BeanSortUtils.getPriorityBean(quartzCronTaskRepositories).getScheduler());
     }
 }
