@@ -17,18 +17,25 @@
 package top.osjf.cron.spring.scheduler.task;
 
 /**
- * Enhanced production conversion factory interface for related task types.
+ * The {@code EnhanceTaskConvertFactory} interface defines a set of methods for
+ * converting timed tasks in the Spring framework (such as {@link TriggerTask},
+ * {@link CronTask}, {@link FixedDelayTask}, {@link FixedRateTask}) into enhanced
+ * versions.
+ *
+ * <p>This transformation involves adding additional functionality, modifying the
+ * behavior of task execution, or simply wrapping the original task for use in an
+ * enhanced environment.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 1.0.3
  */
-public interface TaskEnhanceConvertFactory {
+public interface EnhanceTaskConvertFactory {
 
     /**
      * Use Spring {@code TriggerTask} create new enhance {@link TriggerTask}.
      *
      * @param triggerTask Spring TriggerTask.
-     * @return Enhance version for {@link org.springframework.scheduling.config.TriggerTask}.
+     * @return Enhance version instance of {@link org.springframework.scheduling.config.TriggerTask}.
      */
     TriggerTask newTriggerTask(org.springframework.scheduling.config.TriggerTask triggerTask);
 
@@ -36,7 +43,7 @@ public interface TaskEnhanceConvertFactory {
      * Use Spring {@code CronTask} create new enhance {@link CronTask}.
      *
      * @param cronTask Spring CronTask.
-     * @return Enhance version for {@link org.springframework.scheduling.config.CronTask}.
+     * @return Enhance version instance of {@link org.springframework.scheduling.config.CronTask}.
      */
     CronTask newCronTask(org.springframework.scheduling.config.CronTask cronTask);
 
@@ -44,7 +51,7 @@ public interface TaskEnhanceConvertFactory {
      * Use Spring {@code FixedDelayTask} create new enhance {@link FixedDelayTask}.
      *
      * @param fixedDelayTask Spring FixedDelayTask.
-     * @return Enhance version for {@link org.springframework.scheduling.config.FixedDelayTask}.
+     * @return Enhance version instance of {@link org.springframework.scheduling.config.FixedDelayTask}.
      */
     FixedDelayTask newFixedDelayTask(org.springframework.scheduling.config.FixedDelayTask fixedDelayTask);
 
@@ -52,7 +59,7 @@ public interface TaskEnhanceConvertFactory {
      * Use Spring {@code FixedRateTask} create new enhance {@link FixedRateTask}.
      *
      * @param fixedRateTask Spring FixedRateTask.
-     * @return Enhance version for {@link org.springframework.scheduling.config.FixedRateTask}.
+     * @return Enhance version instance of {@link org.springframework.scheduling.config.FixedRateTask}.
      */
     FixedRateTask newFixedRateTask(org.springframework.scheduling.config.FixedRateTask fixedRateTask);
 }
