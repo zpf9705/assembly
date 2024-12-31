@@ -24,6 +24,7 @@ import org.springframework.context.annotation.Import;
 import top.osjf.cron.core.lifestyle.StartupProperties;
 import top.osjf.cron.cron4j.lifestyle.Cron4jCronLifeStyle;
 import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
+import top.osjf.cron.spring.CronTaskConfiguration;
 import top.osjf.cron.spring.cron4j.Cron4jCronTaskConfiguration;
 
 /**
@@ -33,7 +34,7 @@ import top.osjf.cron.spring.cron4j.Cron4jCronTaskConfiguration;
  * @since 1.0.1
  */
 @Configuration(proxyBeanMethods = false)
-@Import(Cron4jCronTaskConfiguration.class)
+@Import({Cron4jCronTaskConfiguration.class, CronTaskConfiguration.class})
 @ConditionalOnClass({Cron4jCronLifeStyle.class, Cron4jCronTaskRepository.class})
 @ConditionalOnProperty(name = "spring.schedule.cron.client-type", havingValue = "cron4j", matchIfMissing = true)
 public class Cron4jCronTaskImportConfiguration {

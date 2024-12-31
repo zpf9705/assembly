@@ -16,11 +16,11 @@
 
 package top.osjf.spring.autoconfigure.cron;
 
-import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Role;
+import top.osjf.cron.core.lifestyle.LifeStyle;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.spring.scheduler.EnableScheduling;
 
@@ -35,8 +35,8 @@ import top.osjf.cron.spring.scheduler.EnableScheduling;
  * @since 1.0.1
  */
 @Configuration(proxyBeanMethods = false)
-@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-@EnableScheduling
 @ConditionalOnMissingBean(CronTaskRepository.class)
+@ConditionalOnClass({CronTaskRepository.class, LifeStyle.class})
+@EnableScheduling
 public class SchedulingImportConfiguration {
 }
