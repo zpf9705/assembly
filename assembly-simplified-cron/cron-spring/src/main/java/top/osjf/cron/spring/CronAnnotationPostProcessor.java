@@ -267,7 +267,7 @@ public class CronAnnotationPostProcessor implements ImportAware, ApplicationCont
     private void checkBeanNumber(Class<?> clazz) {
         Map<String, ?> beansOfType = applicationContext.getBeansOfType(clazz);
         int size = beansOfType.size();
-        Assert.state(size > 1,
+        Assert.state(size == 1,
                 "expected single matching bean but found " + size + ": " +
                         org.springframework.util.StringUtils.collectionToCommaDelimitedString(beansOfType.keySet()));
     }
