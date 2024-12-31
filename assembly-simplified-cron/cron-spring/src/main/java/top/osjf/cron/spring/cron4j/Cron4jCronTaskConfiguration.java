@@ -18,27 +18,39 @@ package top.osjf.cron.spring.cron4j;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.core.annotation.Order;
 import top.osjf.cron.cron4j.lifestyle.Cron4jCronLifeStyle;
 import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
+import top.osjf.cron.spring.CronAnnotationPostProcessor;
+import top.osjf.cron.spring.annotation.Cron;
+
+import java.util.List;
 
 /**
- * Regarding the configuration classes related to scheduled task
- * registration for Cron4j.
+ * {@code @Configuration} class that registers a {@link CronAnnotationPostProcessor}
+ * bean capable of processing Spring's @{@link Cron} annotation.
+ *
+ * <p>This configuration class is automatically imported when using the
+ * {@link EnableCron4jCronTaskRegister @EnableCron4jCronTaskRegister} annotation. See
+ * {@code @EnableCron4jCronTaskRegister}'s javadoc for complete usage details.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @see EnableCron4jCronTaskRegister
  * @since 1.0.0
+ * @see EnableCron4jCronTaskRegister
  */
 @Configuration(proxyBeanMethods = false)
 public class Cron4jCronTaskConfiguration {
 
     @Bean
+    @Order
     public Cron4jCronTaskRepository cron4jCronTaskRepository() {
         return new Cron4jCronTaskRepository();
     }
 
     @Bean
-    public Cron4jCronLifeStyle cron4jCronLifeStyle(Cron4jCronTaskRepository cronTaskRepository) {
-        return new Cron4jCronLifeStyle(cronTaskRepository.getScheduler());
+    public Cron4jCronLifeStyle cron4jCronLifeStyle(List<Cron4jCronTaskRepository> cron4jCronTaskRepositories) {
+        AnnotationAwareOrderComparator.sort(cron4jCronTaskRepositories);
+        return new Cron4jCronLifeStyle(cron4jCronTaskRepositories.get(0).getScheduler());
     }
 }
