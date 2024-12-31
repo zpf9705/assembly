@@ -28,19 +28,28 @@ import top.osjf.cron.quartz.IDJSONConversion;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class QuartzCronListener implements JobListener, CronListener {
+public interface QuartzCronListener extends JobListener, CronListener {
 
     /**
      * @return The default value is the fully qualified name of the
      * currently running class.
      */
     @Override
-    public String getName() {
+    default String getName() {
         return getClass().getName();
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <strong>Note:</strong>
+     * <p>If this method is rewritten, the {@link #start} and {@link #startWithId}
+     * methods will become invalid and need to be handled by oneself.
+     *
+     * @param context {@inheritDoc}
+     */
     @Override
-    public final void jobToBeExecuted(JobExecutionContext context) {
+    default void jobToBeExecuted(JobExecutionContext context) {
         start(newQuartzListenerContent(context));
     }
 
@@ -54,18 +63,23 @@ public class QuartzCronListener implements JobListener, CronListener {
      * @param context {@link JobExecutionContext}.
      */
     @Override
-    public void jobExecutionVetoed(JobExecutionContext context) {
+    default void jobExecutionVetoed(JobExecutionContext context) {
     }
 
     /**
      * When {@code JobExecutionException} is {@literal null}, it is judged to have
      * run successfully, otherwise it will run unsuccessfully.
+     * <p>
+     * <strong>Note:</strong>
+     * <p>If this method is rewritten, the {@link #success} and {@link #successWithId}
+     * and {@link #failed} and {@link #failedWithId} methods will become invalid and need
+     * to be handled by oneself.
      *
      * @param context      {@inheritDoc}
      * @param jobException {@inheritDoc}
      */
     @Override
-    public final void jobWasExecuted(JobExecutionContext context, JobExecutionException jobException) {
+    default void jobWasExecuted(JobExecutionContext context, JobExecutionException jobException) {
         if (jobException != null) {
             failed(newQuartzListenerContent(context), jobException);
         } else {
@@ -73,20 +87,26 @@ public class QuartzCronListener implements JobListener, CronListener {
         }
     }
 
-    final QuartzListenerContent newQuartzListenerContent(JobExecutionContext context) {
+    /**
+     * Creates a new {@code QuartzListenerContent} by given {@code JobExecutionContext}.
+     *
+     * @param context quartz callback listener params {@code JobExecutionContext}.
+     * @return a new {@code QuartzListenerContent}.
+     */
+    static QuartzListenerContent newQuartzListenerContent(JobExecutionContext context) {
         return new QuartzListenerContent(IDJSONConversion.convertJobKeyAsJSONID(context.getJobDetail().getKey()),
                 context);
     }
 
     @Override
-    public void startWithId(String id) {
+    default void startWithId(String id) {
     }
 
     @Override
-    public void successWithId(String id) {
+    default void successWithId(String id) {
     }
 
     @Override
-    public void failedWithId(String id, Throwable exception) {
+    default void failedWithId(String id, Throwable exception) {
     }
 }
