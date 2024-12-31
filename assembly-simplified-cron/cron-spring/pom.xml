@@ -27,6 +27,11 @@
 
         <dependency>
             <groupId>top.osjf.cron</groupId>
+            <artifactId>cron-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>top.osjf.cron</groupId>
             <artifactId>cron-hutool</artifactId>
             <optional>true</optional>
         </dependency>
