@@ -19,7 +19,7 @@ package top.osjf.cron.quartz;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import top.osjf.cron.core.util.ReflectUtils;
+import top.osjf.cron.core.repository.CronMethodRunnable;
 
 import java.lang.reflect.Method;
 
@@ -31,16 +31,14 @@ import java.lang.reflect.Method;
  * @since 1.0.3
  */
 public class MethodLevelJob implements Job {
-    private final Object target;
-    private final Method method;
+    private final CronMethodRunnable cronMethodRunnable;
 
     public MethodLevelJob(Object target, Method method) {
-        this.target = target;
-        this.method = method;
+        this.cronMethodRunnable = new CronMethodRunnable(target, method);
     }
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        ReflectUtils.invokeMethod(target, method);
+        cronMethodRunnable.run();
     }
 }
