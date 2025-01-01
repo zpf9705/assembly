@@ -35,21 +35,39 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class MethodLevelJobFactory implements JobFactory {
 
+    /**
+     * Job instance cache.
+     */
     private final Map<String, Job> JOB_CACHE = new ConcurrentHashMap<>(64);
 
     @Override
-    public Job newJob(TriggerFiredBundle bundle, Scheduler scheduler) {
+    public final Job newJob(TriggerFiredBundle bundle, Scheduler scheduler) {
         JobDetail jobDetail = bundle.getJobDetail();
+        // MethodJob assignable is method level scheduled task
+        //Dynamically create beans and execute them
         if (!MethodLevelJob.class.isAssignableFrom(jobDetail.getJobClass())) {
             throw new UnsupportedOperationException("Only supports task execution of " +
                     "<top.osjf.cron.quartz.MethodLevelJob> type.");
         }
         JobKey key = jobDetail.getKey();
+        //JobKey.name is method name.
         String methodName = key.getName();
+        //JobKey.group is declaring class name.
         String declaringClassName = key.getGroup();
         return getJob(declaringClassName, methodName);
     }
 
+    /**
+     * Gets a {@code Job} instance by given {@code declaringClassName}
+     * and {@code methodName}.
+     *
+     * <p>Loading condition: Calculate and create only when <strong>declaringClassName + @ + methodName</strong>
+     * does not exist, and read the rest directly from the cache {@link #JOB_CACHE}.
+     *
+     * @param declaringClassName the declaring class name.
+     * @param methodName         the method name.
+     * @return a {@code Job} instance gets from {@link #JOB_CACHE}.
+     */
     protected Job getJob(String declaringClassName, String methodName) {
         final String cacheKey = methodName + "@" + declaringClassName;
         return JOB_CACHE.computeIfAbsent(cacheKey, s -> {
