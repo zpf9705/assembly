@@ -23,12 +23,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Simple utility class for working with the reflection API and handling
  * reflection exceptions.
- *
- * <p>Copy from {@code org.springframework.util.ReflectionUtils}
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
@@ -40,6 +41,8 @@ public abstract class ReflectUtils {
     /**
      * Invoke the specified {@link Method} against the supplied target object with no arguments.
      * The target object can be {@code null} when invoking a static {@link Method}.
+     *
+     * <p>Copy from {@code org.springframework.util.ReflectionUtils}
      *
      * @param method the method to invoke
      * @param target the target object to invoke the method on
@@ -54,6 +57,8 @@ public abstract class ReflectUtils {
      * Invoke the specified {@link Method} against the supplied target object with the
      * supplied arguments. The target object can be {@code null} when invoking a
      * static {@link Method}.
+     *
+     * <p>Copy from {@code org.springframework.util.ReflectionUtils}
      *
      * @param method the method to invoke
      * @param target the target object to invoke the method on
@@ -85,6 +90,8 @@ public abstract class ReflectUtils {
      * when actually necessary, to avoid unnecessary conflicts with a JVM
      * SecurityManager (if active).
      *
+     * <p>Copy from {@code org.springframework.util.ReflectionUtils}
+     *
      * @param method the method to make accessible
      */
     public static void makeAccessible(Method method) {
@@ -92,5 +99,89 @@ public abstract class ReflectUtils {
                 !Modifier.isPublic(method.getDeclaringClass().getModifiers())) && !method.isAccessible()) {
             method.setAccessible(true);
         }
+    }
+
+    /**
+     * Determine whether the given class has a public method with the given signature,
+     * and return it if available (else throws an {@code IllegalStateException}).
+     * <p>In case of any signature specified, only returns the method if there is a
+     * unique candidate, i.e. a single public method with the specified name.
+     * <p>Essentially translates {@code NoSuchMethodException} to {@code IllegalStateException}.
+     *
+     * <p>Copy from {@code org.springframework.util.ClassUtils}
+     *
+     * @param clazz      the clazz to analyze
+     * @param methodName the name of the method
+     * @param paramTypes the parameter types of the method
+     *                   (may be {@code null} to indicate any signature)
+     * @return the method (never {@code null})
+     * @throws IllegalStateException if the method has not been found
+     */
+    public static Method getMethod(Class<?> clazz, String methodName, @Nullable Class<?>... paramTypes) {
+        Objects.requireNonNull(clazz, "Class must not be null");
+        Objects.requireNonNull(methodName, "Method name must not be null");
+        if (paramTypes != null) {
+            try {
+                return clazz.getMethod(methodName, paramTypes);
+            } catch (NoSuchMethodException ex) {
+                throw new IllegalStateException("Expected method not found: " + ex);
+            }
+        } else {
+            Set<Method> candidates = findMethodCandidatesByName(clazz, methodName);
+            if (candidates.size() == 1) {
+                return candidates.iterator().next();
+            } else if (candidates.isEmpty()) {
+                throw new IllegalStateException("Expected method not found: " + clazz.getName() + '.' + methodName);
+            } else {
+                throw new IllegalStateException("No unique method found: " + clazz.getName() + '.' + methodName);
+            }
+        }
+    }
+
+    /**
+     * Use the API {@code forName} of {@link Class} to obtain a {@code Class} object with
+     * a given name without static initialization.
+     *
+     * @param className the given class name.
+     * @return a {@code Class} object by given name.
+     */
+    public static Class<?> forName(String className) {
+        try {
+            return Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            throw new UndeclaredThrowableException(e);
+        }
+    }
+
+    /**
+     * Create a new {@code T} object by given {@code Class<T>} according to {@link Class#newInstance()}.
+     *
+     * @param clazz given type.
+     * @param <T>   given generic type.
+     * @return new {@code T} object by given {@code Class<T>}.
+     */
+    public static <T> T newInstance(Class<T> clazz) {
+        try {
+            return clazz.newInstance();
+        } catch (InstantiationException e) {
+            throw new IllegalArgumentException(e);
+        } catch (IllegalAccessException e) {
+            throw new UndeclaredThrowableException(e);
+        }
+    }
+
+    /*
+     * Non Java doc.
+     * Copy from {@code org.springframework.util.ClassUtils}
+     */
+    private static Set<Method> findMethodCandidatesByName(Class<?> clazz, String methodName) {
+        Set<Method> candidates = new HashSet<>(1);
+        Method[] methods = clazz.getMethods();
+        for (Method method : methods) {
+            if (methodName.equals(method.getName())) {
+                candidates.add(method);
+            }
+        }
+        return candidates;
     }
 }
