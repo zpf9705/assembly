@@ -30,7 +30,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.lang.NonNull;
 import org.springframework.util.ClassUtils;
-import top.osjf.cron.core.util.ReflectUtils;
 import top.osjf.cron.quartz.MethodLevelJob;
 import top.osjf.cron.quartz.MethodLevelJobFactory;
 
@@ -84,7 +83,7 @@ public class QuartzJobFactory extends MethodLevelJobFactory implements Applicati
         }
         Class<?> beanClassName = ClassUtils.resolveClassName(declaringClassName, classLoader);
         Object targetBean = applicationContext.getBean(beanClassName);
-        Method method = ReflectUtils.getMethod(beanClassName, methodName);
+        Method method = ClassUtils.getMethod(beanClassName, methodName);
         BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(MethodLevelJob.class)
                 .setScope(BeanDefinition.SCOPE_SINGLETON)
                 .addConstructorArgValue(targetBean)
