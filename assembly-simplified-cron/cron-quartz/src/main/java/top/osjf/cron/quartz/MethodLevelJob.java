@@ -17,6 +17,11 @@
 package top.osjf.cron.quartz;
 
 import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+import top.osjf.cron.core.util.ReflectUtils;
+
+import java.lang.reflect.Method;
 
 /**
  * {@link Job} runs at the method level.
@@ -24,5 +29,17 @@ import org.quartz.Job;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public interface MethodLevelJob extends Job {
+public class MethodLevelJob implements Job {
+    private final Object target;
+    private final Method method;
+
+    public MethodLevelJob(Object target, Method method) {
+        this.target = target;
+        this.method = method;
+    }
+
+    @Override
+    public void execute(JobExecutionContext context) throws JobExecutionException {
+        ReflectUtils.invokeMethod(target, method);
+    }
 }
