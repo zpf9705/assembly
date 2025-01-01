@@ -24,10 +24,11 @@ import top.osjf.cron.core.util.ReflectUtils;
 import java.lang.reflect.Method;
 
 /**
- * {@link Job} runs at the method level.
+ * Method level execution {@link Job}, including the executor and method
+ * type, directly executes this task.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 1.0.3
  */
 public class MethodLevelJob implements Job {
     private final Object target;
