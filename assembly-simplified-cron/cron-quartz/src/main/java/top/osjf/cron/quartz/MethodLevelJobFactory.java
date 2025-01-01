@@ -17,10 +17,7 @@
 
 package top.osjf.cron.quartz;
 
-import org.quartz.Job;
-import org.quartz.JobDetail;
-import org.quartz.JobKey;
-import org.quartz.Scheduler;
+import org.quartz.*;
 import org.quartz.spi.JobFactory;
 import org.quartz.spi.TriggerFiredBundle;
 import top.osjf.cron.core.util.ReflectUtils;
@@ -30,6 +27,22 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * Method identity record {@link JobDetail#getKey()} level {@link Job} instance
+ * production factory class.
+ *
+ * <p>The production factory requires that the {@link JobDetail} attribute {@link JobKey}
+ * be set when using the {@link Scheduler#scheduleJob} API, with the following setting rules:
+ * <ul>
+ * <li>{@link JobKey#getName()} set as the name of the execution method.</li>
+ * <li>{@link JobKey#getGroup()} set as fully qualified name of the class defining
+ * the execution method.</li>
+ * </ul>
+ *
+ * <p>Use cache {@link #JOB_CACHE} for directed caching of {@link Job}, ensuring that object
+ * caching is used for subsequent execution after initialization to save memory space. See
+ * method {@link #getJob} for details. This method is extensible for subclasses and supported
+ * by singleton frameworks.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
@@ -37,6 +50,8 @@ public class MethodLevelJobFactory implements JobFactory {
 
     /**
      * Job instance cache.
+     * <p>Key is <strong>declaringClassName + @ + methodName</strong>
+     * <p>value is {@code Job} instance.
      */
     private final Map<String, Job> JOB_CACHE = new ConcurrentHashMap<>(64);
 
