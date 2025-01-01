@@ -24,8 +24,9 @@ import top.osjf.cron.core.repository.CronMethodRunnable;
 import java.lang.reflect.Method;
 
 /**
- * Method level execution {@link Job}, including the executor and method
- * type, directly executes this task.
+ * Method level execution {@link Job}, including the target and method
+ * to build a new {@link CronMethodRunnable}, directly executes this
+ * task using {@link CronMethodRunnable#run()}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
