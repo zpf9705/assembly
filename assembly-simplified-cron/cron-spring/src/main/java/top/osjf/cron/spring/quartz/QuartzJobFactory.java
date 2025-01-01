@@ -68,6 +68,14 @@ public class QuartzJobFactory extends MethodLevelJobFactory implements Applicati
         this.classLoader = classLoader;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>{@code Job} instance object is searched from the Spring container.
+     *
+     * @param declaringClassName {@inheritDoc}
+     * @param methodName         {@inheritDoc}
+     * @return a {@code Job} instance gets from {@link #applicationContext}.
+     */
     @Override
     protected Job getJob(String declaringClassName, String methodName) {
         final String beanName = methodName + "@" + declaringClassName;
