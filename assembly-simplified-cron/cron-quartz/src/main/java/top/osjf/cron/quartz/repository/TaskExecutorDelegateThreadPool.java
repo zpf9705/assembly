@@ -23,6 +23,12 @@ import org.quartz.spi.ThreadPool;
 import java.util.concurrent.Executor;
 
 /**
+ * The {@code TaskExecutorDelegateThreadPool} class implements Quartz's ThreadPool
+ * interface, and it allows Quartz to use an external Executor to execute tasks.
+ *
+ * <p>This class is primarily used to provide a bridge between the Quartz scheduler
+ * and user-defined thread pools.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
