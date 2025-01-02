@@ -89,19 +89,18 @@ public class HutoolCronTaskRepository implements CronTaskRepository {
      * <p>The configuration file cannot overwrite the value set by the external active
      * call to the set method.
      *
-     * @param hutoolProperties {@link StartupProperties} object for building the hutool
-     *                         task scheduler.
+     * @param startupProperties {@link StartupProperties} object for building the hutool
+     *                          task scheduler.
      * @since 1.0.3
      */
-    public void setHutoolProperties(StartupProperties hutoolProperties) {
-        if (hutoolProperties != null) {
-            Properties properties = hutoolProperties.asProperties();
+    public void setHutoolProperties(StartupProperties startupProperties) {
+        if (startupProperties != null) {
             if (!setDaemon)
-                setDaemon(getProperty(properties, "daemon", false));
+                startupProperties.getProperty("daemon", false);
             if (!setMatchSecond)
-                setMatchSecond(getProperty(properties, "isMatchSecond", true));
+                startupProperties.getProperty("isMatchSecond", true);
             if (!setTimeZone)
-                setTimeZone(getProperty(properties, "timeZone", TimeZone.getDefault()));
+                startupProperties.getProperty("timeZone", TimeZone.getDefault());
         }
     }
 
