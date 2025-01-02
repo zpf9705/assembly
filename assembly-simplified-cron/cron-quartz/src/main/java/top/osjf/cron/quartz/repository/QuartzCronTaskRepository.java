@@ -37,7 +37,6 @@ import javax.annotation.PostConstruct;
 import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.Properties;
-import java.util.PropertyPermission;
 import java.util.UUID;
 import java.util.concurrent.Executor;
 
@@ -144,23 +143,19 @@ public class QuartzCronTaskRepository implements CronTaskRepository {
      * Set the parameter {@link StartupProperties} object for building the quartz task
      * factory, compatible with the Cron framework startup parameter series.
      *
-     * @param quartzProperties {@link StartupProperties} object for building the quartz
-     *                         task factory.
+     * <p>The configuration file cannot overwrite the value set by the external active
+     * call to the set method.
+     *
+     * @param startupProperties {@link StartupProperties} object for building the quartz
+     *                          task factory.
      * @since 1.0.3
      */
-    public void setQuartzProperties(StartupProperties quartzProperties) {
+    public void setQuartzProperties(StartupProperties startupProperties) {
         if (quartzProperties != null) {
-            this.quartzProperties = quartzProperties.asProperties();
+            this.quartzProperties = startupProperties.asProperties();
             if (!setSchedulerFactoryClass)
-                setSchedulerFactoryClass(getProperty(this.quartzProperties,
-                        "schedulerFactoryClass", StdSchedulerFactory.class));
+                startupProperties.getProperty("schedulerFactoryClass", StdSchedulerFactory.class);
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T> T getProperty(Properties properties, String propertyName, T def) {
-        T propertyValue = (T) properties.get(propertyName);
-        return propertyValue != null ? propertyValue : def;
     }
 
     /**

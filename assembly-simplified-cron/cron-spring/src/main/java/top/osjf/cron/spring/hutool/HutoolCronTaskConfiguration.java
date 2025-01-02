@@ -38,8 +38,8 @@ import java.util.concurrent.ExecutorService;
  * {@code @EnableHutoolCronTaskRegister}'s javadoc for complete usage details.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
  * @see EnableHutoolCronTaskRegister
+ * @since 1.0.0
  */
 @Configuration(proxyBeanMethods = false)
 public class HutoolCronTaskConfiguration {
@@ -62,6 +62,6 @@ public class HutoolCronTaskConfiguration {
 
     @Bean(destroyMethod = "stop")
     public HutoolCronLifeStyle hutoolCronLifeStyle(HutoolCronTaskRepository repository) {
-        return new HutoolCronLifeStyle();
+        return new HutoolCronLifeStyle(repository.getScheduler());
     }
 }
