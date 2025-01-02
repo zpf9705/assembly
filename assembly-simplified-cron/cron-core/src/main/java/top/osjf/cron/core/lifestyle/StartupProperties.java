@@ -39,6 +39,55 @@ public interface StartupProperties {
     /* --------------------------------------------------------------------------- */
 
     /**
+     * Retrieve the value of the specified attribute, and return the default value if the
+     * attribute does not exist.
+     *
+     * @param propertyName name of the attribute to be obtained. This name should match the
+     *                     property name defined in the object.
+     * @param <T>          generic type, representing the type of attribute value and the type
+     *                     of default value.
+     * @return Returns the value of the specified property, and if the property does not exist,
+     * returns the default value passed in.
+     * @throws NullPointerException if input propertyName is null.
+     * @since 1.0.3
+     */
+    <T> T getProperty(String propertyName, T def);
+
+    /**
+     * Adds a property to the property collection with a string key and string value.
+     *
+     * @param propertyKey   the key of the property, used to uniquely identify the property.
+     *                      Must be of type String.
+     * @param propertyValue the value associated with the key. Must be of type String.
+     * @throws NullPointerException if input key or value is null.
+     * @since 1.0.3
+     */
+    void addProperty(String propertyKey, String propertyValue);
+
+    /**
+     * Adds a property to the property collection with a string key and an object value.
+     *
+     * @param propertyKey   the key of the property, used to uniquely identify the property.
+     *                      Must be of type String.
+     * @param propertyValue the value associated with the key. Can be any type of object.
+     * @throws NullPointerException if input key or value is null.
+     * @since 1.0.3
+     */
+    void addProperty(String propertyKey, Object propertyValue);
+
+    /**
+     * Adds a property to the property collection where both the key and value can be any type
+     * of object.
+     *
+     * @param propertyKey   the key of the property, used to uniquely identify the property.
+     *                      Can be any type of object.
+     * @param propertyValue the value associated with the key. Can be any type of object.
+     * @throws NullPointerException if input key or value is null.
+     * @since 1.0.3
+     */
+    void addProperty(Object propertyKey, Object propertyValue);
+
+    /**
      * Add a set of startup parameters through a {@code Properties} object.
      *
      * @param properties the {@code Properties} object containing the startup
@@ -63,19 +112,6 @@ public interface StartupProperties {
      * @throws NullPointerException if input startupProperties is null.
      */
     void addProperties(StartupProperties startupProperties);
-
-    /**
-     * Retrieve the value of the specified attribute, and return the default value if the
-     * attribute does not exist.
-     *
-     * @param propertyName name of the attribute to be obtained. This name should match the
-     *                     property name defined in the object.
-     * @param <T>          generic type, representing the type of attribute value and the type
-     *                     of default value.
-     * @return Returns the value of the specified property, and if the property does not exist,
-     * returns the default value passed in.
-     */
-    <T> T getProperty(String propertyName, T def);
 
     /**
      * Convert all properties in the current {@code StartupProperties} into a
@@ -147,6 +183,31 @@ public interface StartupProperties {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
+        public <T> T getProperty(String propertyName, T def) {
+            Object o = properties.get(propertyName);
+            if (o == null) {
+                return def;
+            }
+            return (T) o;
+        }
+
+        @Override
+        public void addProperty(String propertyKey, String propertyValue) {
+            properties.setProperty(propertyKey, propertyValue);
+        }
+
+        @Override
+        public void addProperty(String propertyKey, Object propertyValue) {
+            properties.put(propertyKey, propertyValue);
+        }
+
+        @Override
+        public void addProperty(Object propertyKey, Object propertyValue) {
+            properties.put(propertyKey, propertyValue);
+        }
+
+        @Override
         public void addProperties(Properties properties) {
             this.properties.putAll(properties);
         }
@@ -164,16 +225,6 @@ public interface StartupProperties {
         @Override
         public Properties asProperties() {
             return properties;
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public <T> T getProperty(String propertyName, T def) {
-            Object o = properties.get(propertyName);
-            if (o == null) {
-                return def;
-            }
-            return (T) o;
         }
     }
 }
