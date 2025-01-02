@@ -16,12 +16,18 @@
 
 package top.osjf.cron.spring.hutool;
 
+import cn.hutool.cron.Scheduler;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import top.osjf.cron.core.lifestyle.StartupProperties;
 import top.osjf.cron.hutool.lifestyle.HutoolCronLifeStyle;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
 import top.osjf.cron.spring.CronAnnotationPostProcessor;
+import top.osjf.cron.spring.ObjectProviderUtils;
 import top.osjf.cron.spring.annotation.Cron;
+
+import java.util.concurrent.ExecutorService;
 
 /**
  * {@code @Configuration} class that registers a {@link CronAnnotationPostProcessor}
@@ -38,13 +44,24 @@ import top.osjf.cron.spring.annotation.Cron;
 @Configuration(proxyBeanMethods = false)
 public class HutoolCronTaskConfiguration {
 
-    @Bean(destroyMethod = "stop")
-    public HutoolCronLifeStyle hutoolCronLifeStyle() {
-        return new HutoolCronLifeStyle();
+    @Bean
+    public HutoolCronTaskRepository hutoolCronTaskRepository(ObjectProvider<Scheduler> schedulerProvider,
+                                                             ObjectProvider<StartupProperties> propertiesProvider,
+                                                             ObjectProvider<ExecutorService> executorServiceProvider) {
+        Scheduler scheduler = ObjectProviderUtils.getPriority(schedulerProvider);
+        if (scheduler != null) {
+            return new HutoolCronTaskRepository(scheduler);
+        }
+        HutoolCronTaskRepository repository = new HutoolCronTaskRepository();
+        StartupProperties properties = ObjectProviderUtils.getPriority(propertiesProvider);
+        repository.setHutoolProperties(properties);
+        ExecutorService executorService = ObjectProviderUtils.getPriority(executorServiceProvider);
+        repository.setThreadExecutor(executorService);
+        return repository;
     }
 
-    @Bean
-    public HutoolCronTaskRepository hutoolCronTaskRepository() {
-        return new HutoolCronTaskRepository();
+    @Bean(destroyMethod = "stop")
+    public HutoolCronLifeStyle hutoolCronLifeStyle(HutoolCronTaskRepository repository) {
+        return new HutoolCronLifeStyle();
     }
 }
