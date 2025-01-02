@@ -41,8 +41,8 @@ import org.springframework.lang.Nullable;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import top.osjf.cron.core.lifestyle.LifeStyle;
-import top.osjf.cron.core.lifestyle.StartupProperties;
+import top.osjf.cron.core.lifecycle.Lifecycle;
+import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.repository.CronMethodRunnable;
 import top.osjf.cron.core.repository.CronTask;
@@ -76,13 +76,12 @@ import java.util.concurrent.ScheduledExecutorService;
  * </ul>
  *
  * <p>Automatically detect instances of {@link CronTaskRepository CronTaskRepository},
- * {@link CronListener CronListener}, {@link LifeStyle LifeStyle} in the container,
+ * {@link CronListener CronListener}, {@link Lifecycle Lifecycle} in the container,
  * and after collection is complete (copying the logic from
  * {@link CronAnnotationPostProcessor#postProcessAfterInitialization} during
  * the collection process), automatically register and start.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
  * @see Cron
  * @see Crones
  * @see EnableHutoolCronTaskRegister
@@ -91,7 +90,8 @@ import java.util.concurrent.ScheduledExecutorService;
  * @see CronTaskRepository
  * @see CronListener
  * @see top.osjf.cron.core.listener.ListenerContext
- * @see LifeStyle
+ * @see top.osjf.cron.core.lifecycle.Lifecycle
+ * @since 1.0.0
  */
 public class CronAnnotationPostProcessor implements ImportAware, ApplicationContextAware, EnvironmentAware,
         ApplicationListener<ContextRefreshedEvent>, MergedBeanDefinitionPostProcessor {
@@ -102,7 +102,7 @@ public class CronAnnotationPostProcessor implements ImportAware, ApplicationCont
 
     private List<String> activeProfiles;
 
-    private final StartupProperties startupProperties = StartupProperties.of();
+    private final SuperiorProperties startupProperties = SuperiorProperties.of();
 
     private final Set<Class<?>> nonAnnotatedClasses = Collections.newSetFromMap(new ConcurrentHashMap<>(16));
 
@@ -150,8 +150,7 @@ public class CronAnnotationPostProcessor implements ImportAware, ApplicationCont
     public Object postProcessAfterInitialization(@NonNull Object bean, @NonNull String beanName) throws BeansException {
 
         if (bean instanceof AopInfrastructureBean || bean instanceof TaskScheduler ||
-                bean instanceof ScheduledExecutorService || bean instanceof CronTaskRepository ||
-                bean instanceof LifeStyle) {
+                bean instanceof ScheduledExecutorService || bean instanceof CronTaskRepository) {
             // Ignore AOP infrastructure such as scoped proxies.
             return bean;
         }
@@ -245,8 +244,7 @@ public class CronAnnotationPostProcessor implements ImportAware, ApplicationCont
      */
     private void finishRegistration() {
         // Check the number of specific interface beans to determine their unique existence.
-        checkBeanNumber(CronTaskRepository.class);
-        checkBeanNumber(LifeStyle.class);
+        checkRepositoryBeanNumber();
 
         // Register and start the scheduled task collection.
         CronTaskRepository cronTaskRepository = applicationContext.getBean(CronTaskRepository.class);
@@ -256,16 +254,12 @@ public class CronAnnotationPostProcessor implements ImportAware, ApplicationCont
         for (CronListener listener : applicationContext.getBeansOfType(CronListener.class).values()) {
             cronTaskRepository.addListener(listener);
         }
-        for (StartupProperties properties : applicationContext.getBeansOfType(StartupProperties.class).values()) {
-            startupProperties.addProperties(properties);
-        }
-        LifeStyle lifeStyle = applicationContext.getBean(LifeStyle.class);
-        lifeStyle.start(startupProperties);
+        cronTaskRepository.start();
         cronTasks.clear();
     }
 
-    private void checkBeanNumber(Class<?> clazz) {
-        Map<String, ?> beansOfType = applicationContext.getBeansOfType(clazz);
+    private void checkRepositoryBeanNumber() {
+        Map<String, CronTaskRepository> beansOfType = applicationContext.getBeansOfType(CronTaskRepository.class);
         int size = beansOfType.size();
         Assert.state(size == 1,
                 "expected single matching bean but found " + size + ": " +
