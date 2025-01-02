@@ -17,7 +17,6 @@
 package top.osjf.cron.spring.cron4j;
 
 import org.springframework.context.annotation.Import;
-import top.osjf.cron.cron4j.lifestyle.Cron4jCronLifeStyle;
 import top.osjf.cron.spring.CronTaskConfiguration;
 import top.osjf.cron.spring.annotation.Cron;
 
@@ -42,7 +41,7 @@ public @interface EnableCron4jCronTaskRegister {
     /**
      * Whether to start as a daemon thread.
      * <p>If true, the scheduled task executed immediately after calling the
-     * {@link Cron4jCronLifeStyle#stop()} method will end.
+     * {@link top.osjf.cron.core.repository.CronTaskRepository#stop()} method will end.
      * Otherwise, it will wait for the execution to complete before ending.
      *
      * @return Whether to start as a daemon thread.
