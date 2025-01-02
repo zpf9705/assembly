@@ -20,8 +20,7 @@ import cn.hutool.cron.Scheduler;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import top.osjf.cron.core.lifestyle.StartupProperties;
-import top.osjf.cron.hutool.lifestyle.HutoolCronLifeStyle;
+import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
 import top.osjf.cron.spring.CronAnnotationPostProcessor;
 import top.osjf.cron.spring.ObjectProviderUtils;
@@ -38,30 +37,25 @@ import java.util.concurrent.ExecutorService;
  * {@code @EnableHutoolCronTaskRegister}'s javadoc for complete usage details.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @see EnableHutoolCronTaskRegister
  * @since 1.0.0
+ * @see EnableHutoolCronTaskRegister
  */
 @Configuration(proxyBeanMethods = false)
 public class HutoolCronTaskConfiguration {
 
     @Bean
     public HutoolCronTaskRepository hutoolCronTaskRepository(ObjectProvider<Scheduler> schedulerProvider,
-                                                             ObjectProvider<StartupProperties> propertiesProvider,
+                                                             ObjectProvider<SuperiorProperties> propertiesProvider,
                                                              ObjectProvider<ExecutorService> executorServiceProvider) {
         Scheduler scheduler = ObjectProviderUtils.getPriority(schedulerProvider);
         if (scheduler != null) {
             return new HutoolCronTaskRepository(scheduler);
         }
         HutoolCronTaskRepository repository = new HutoolCronTaskRepository();
-        StartupProperties properties = ObjectProviderUtils.getPriority(propertiesProvider);
-        repository.setHutoolProperties(properties);
+        SuperiorProperties properties = ObjectProviderUtils.getPriority(propertiesProvider);
+        repository.setProperties(properties);
         ExecutorService executorService = ObjectProviderUtils.getPriority(executorServiceProvider);
         repository.setThreadExecutor(executorService);
         return repository;
-    }
-
-    @Bean(destroyMethod = "stop")
-    public HutoolCronLifeStyle hutoolCronLifeStyle(HutoolCronTaskRepository repository) {
-        return new HutoolCronLifeStyle(repository.getScheduler());
     }
 }
