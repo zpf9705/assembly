@@ -17,7 +17,6 @@
 package top.osjf.cron.spring.hutool;
 
 import org.springframework.context.annotation.Import;
-import top.osjf.cron.hutool.lifestyle.HutoolCronLifeStyle;
 import top.osjf.cron.spring.CronTaskConfiguration;
 import top.osjf.cron.spring.annotation.Cron;
 import top.osjf.cron.spring.CronAnnotationPostProcessor;
@@ -53,7 +52,7 @@ public @interface EnableHutoolCronTaskRegister {
     /**
      * Whether to start as a daemon thread.
      * <p>If true, the scheduled task executed immediately after calling the
-     * {@link HutoolCronLifeStyle#stop()} method will end.
+     * {@link top.osjf.cron.core.repository.CronTaskRepository#stop()} method will end.
      * Otherwise, it will wait for the execution to complete before ending.
      *
      * @return Whether to start as a daemon thread.
