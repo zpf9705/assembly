@@ -22,11 +22,11 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.task.TaskExecutor;
 import top.osjf.cron.core.lifestyle.StartupProperties;
 import top.osjf.cron.quartz.lifestyle.QuartzCronLifeStyle;
 import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
 import top.osjf.cron.spring.CronAnnotationPostProcessor;
+import top.osjf.cron.spring.ObjectProviderUtils;
 import top.osjf.cron.spring.annotation.Cron;
 
 import java.util.concurrent.Executor;
@@ -40,8 +40,8 @@ import java.util.concurrent.Executor;
  * {@code @EnableQuartzCronTaskRegister}'s javadoc for complete usage details.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
  * @see EnableQuartzCronTaskRegister
+ * @since 1.0.0
  */
 @Configuration(proxyBeanMethods = false)
 public class QuartzCronTaskConfiguration {
@@ -57,15 +57,15 @@ public class QuartzCronTaskConfiguration {
     public QuartzCronTaskRepository quartzCronTaskRepository(ObjectProvider<Scheduler> schedulerProvider,
                                                              ObjectProvider<SchedulerFactory> schedulerFactoryProvider,
                                                              ObjectProvider<StartupProperties> propertiesProvider,
-                                                             ObjectProvider<TaskExecutor> executorProvider,
+                                                             ObjectProvider<Executor> executorProvider,
                                                              QuartzJobFactory quartzJobFactory) {
-        Scheduler scheduler = schedulerProvider.orderedStream().findFirst().orElse(null);
+        Scheduler scheduler = ObjectProviderUtils.getPriority(schedulerProvider);
         if (scheduler != null) {
             QuartzCronTaskRepository repository = new QuartzCronTaskRepository(scheduler);
             repository.setJobFactory(quartzJobFactory);
             return repository;
         }
-        SchedulerFactory schedulerFactory = schedulerFactoryProvider.orderedStream().findFirst().orElse(null);
+        SchedulerFactory schedulerFactory = ObjectProviderUtils.getPriority(schedulerFactoryProvider);
         if (schedulerFactory != null) {
             QuartzCronTaskRepository repository = new QuartzCronTaskRepository(schedulerFactory);
             repository.setJobFactory(quartzJobFactory);
@@ -73,9 +73,9 @@ public class QuartzCronTaskConfiguration {
         }
         QuartzCronTaskRepository repository = new QuartzCronTaskRepository();
         repository.setJobFactory(quartzJobFactory);
-        StartupProperties properties = propertiesProvider.orderedStream().findFirst().orElse(null);
+        StartupProperties properties = ObjectProviderUtils.getPriority(propertiesProvider);
         repository.setQuartzProperties(properties);
-        Executor taskExecutor = executorProvider.orderedStream().findFirst().orElse(null);
+        Executor taskExecutor = ObjectProviderUtils.getPriority(executorProvider);
         repository.setTaskExecutor(taskExecutor);
         return repository;
     }
