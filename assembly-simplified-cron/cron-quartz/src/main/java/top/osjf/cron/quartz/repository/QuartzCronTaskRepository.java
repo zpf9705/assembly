@@ -37,6 +37,7 @@ import javax.annotation.PostConstruct;
 import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.Properties;
+import java.util.PropertyPermission;
 import java.util.UUID;
 import java.util.concurrent.Executor;
 
@@ -80,7 +81,8 @@ public class QuartzCronTaskRepository implements CronTaskRepository {
      */
     private ListenerManager listenerManager;
 
-    private boolean setSchedulerName = false;
+    private boolean setSchedulerName;
+    private boolean setSchedulerFactoryClass;
 
     /**
      * @since 1.0.3
@@ -134,6 +136,7 @@ public class QuartzCronTaskRepository implements CronTaskRepository {
     public void setSchedulerFactoryClass(Class<? extends SchedulerFactory> schedulerFactoryClass) {
         if (schedulerFactoryClass != null) {
             this.schedulerFactoryClass = schedulerFactoryClass;
+            setSchedulerFactoryClass = true;
         }
     }
 
@@ -148,7 +151,16 @@ public class QuartzCronTaskRepository implements CronTaskRepository {
     public void setQuartzProperties(StartupProperties quartzProperties) {
         if (quartzProperties != null) {
             this.quartzProperties = quartzProperties.asProperties();
+            if (!setSchedulerFactoryClass)
+                setSchedulerFactoryClass(getProperty(this.quartzProperties,
+                        "schedulerFactoryClass", StdSchedulerFactory.class));
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> T getProperty(Properties properties, String propertyName, T def) {
+        T propertyValue = (T) properties.get(propertyName);
+        return propertyValue != null ? propertyValue : def;
     }
 
     /**
@@ -181,6 +193,7 @@ public class QuartzCronTaskRepository implements CronTaskRepository {
      *
      * @throws SchedulerException Possible {@code SchedulerException} error objects generated
      *                            during initialization process.
+     * @since 1.0.3
      */
     @PostConstruct
     public void initialize() throws SchedulerException {
