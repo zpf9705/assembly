@@ -16,9 +16,11 @@
 
 package top.osjf.cron.hutool.lifestyle;
 
-import cn.hutool.cron.CronUtil;
+import cn.hutool.cron.Scheduler;
 import top.osjf.cron.core.lifestyle.LifeStyle;
 import top.osjf.cron.core.lifestyle.StartupProperties;
+
+import java.util.Objects;
 
 /**
  * The Hutool cron task {@link LifeStyle} impl.
@@ -28,20 +30,31 @@ import top.osjf.cron.core.lifestyle.StartupProperties;
  */
 public class HutoolCronLifeStyle implements LifeStyle {
 
+    private final Scheduler scheduler;
+
+    /**
+     * Creates a new {@code HutoolCronLifeStyle} by given {@link Scheduler} to
+     * control the lifecycle of the task scheduler.
+     *
+     * @param scheduler the task scheduler.
+     */
+    public HutoolCronLifeStyle(Scheduler scheduler) {
+        Objects.requireNonNull(scheduler, "<Scheduler> == null");
+        this.scheduler = scheduler;
+    }
+
     @Override
     public void start(StartupProperties properties) {
-        HutoolCronStartupArgs startupArgs = HutoolCronStartupArgs.of(properties.asProperties());
-        CronUtil.setMatchSecond(startupArgs.isMatchSecond());
-        CronUtil.start(startupArgs.isDaemon());
+        scheduler.start();
     }
 
     @Override
     public void stop() {
-        CronUtil.stop();
+        scheduler.stop();
     }
 
     @Override
     public boolean isStarted() {
-        return CronUtil.getScheduler().isStarted();
+        return scheduler.isStarted();
     }
 }
