@@ -45,60 +45,71 @@ public interface Lifecycle {
     /**
      * Start the scheduled task framework.
      *
-     * <p>When calling this method, the framework should load and parse the
-     * incoming startup parameter {@code StartupProperties}, initialize necessary
-     * resources based on parameter configuration (such as thread pool core
-     * configuration, etc.), and start executing registered tasks. If the
-     * framework has already been launched, it should be decided whether
-     * to throw an exception based on the implementation.
+     * <p>Prior to invoking this method, it is imperative to confirm that the scheduler
+     * for scheduled tasks has been properly initialized and configured. This method serves
+     * as the pivotal point for igniting the process of scheduling tasks in accordance with
+     * predefined time intervals and sequences.
      *
-     * <p>{@code StartupProperties} is a custom class used to encapsulate various
-     * configuration information required to start a timed task framework.
-     * These configuration information may include but are not limited to:
-     * <ul>
-     * <li>ime intervals and triggering conditions for task scheduling</li>
-     * <li>Thread pool configuration for task execution (such as number of threads,
-     * queue size, etc.)</li>
-     * <li>Log configuration (such as log level, log output location, etc.),
-     * other configurations related to task execution (such as task retry strategy,
-     * exception handling, etc.)</li>
-     * </ul>
+     * <p>The method leverages the underlying timing mechanism to orchestrate the execution
+     * of tasks at specified intervals, ensuring that they are performed in a timely and orderly
+     * manner. This, in turn, facilitates the seamless execution of periodic and recurring tasks
+     * within the application domain.
      *
-     * @throws IllegalArgumentException If the startup parameters have been validated
-     *                                  and there are invalid parameters.
-     * @throws IllegalStateException    If the timing framework has already been started.
+     * <p>It is worth noting that if the scheduled task framework has already been initiated,
+     * an {@link IllegalStateException} will be thrown to prevent potential conflicts and ensure
+     * the integrity of the system's operational state. This exception serves as a safeguard against
+     * accidental or inappropriate re-initiation of the framework.
+     *
+     * @throws IllegalStateException If the timing framework has already been started.
      */
     void start();
 
     /**
      * Stop the scheduled task framework.
      *
-     * <p>When calling this method, the framework should stop all executing tasks,
-     * free up occupied resources (such as thread pools, database connections, etc.),
-     * and save necessary state information for recovery at the next startup. If the
-     * framework has not been started yet, it should be decided whether to throw an
-     * exception based on the implementation.
      *
-     * <p>When implementing this method, developers should ensure that all tasks can
-     * be safely stopped and resources can be released correctly.
+     * <p>Upon invoking this method, the framework should terminate all ongoing tasks,
+     * relinquish occupied resources (such as thread pools, database connections, etc.),
+     * and persist necessary state information for restoration upon subsequent startups.
+     * If the framework has not yet been initiated, it is up to the specific implementation
+     * to decide whether to throw an exception.
      *
-     * @throws IllegalStateException If the timed task framework has not been started,
-     *                               throwing this exception to indicate that stopping
-     *                               the operation is not allowed.
+     * <p>When implementing this method, developers must ensure that all tasks can be safely
+     * halted and resources can be correctly released. This includes, but is not limited to,
+     * gracefully interrupting executing tasks, shutting down database connection pools, and
+     * freeing threads in thread pools. The halt operation should strive to guarantee data
+     * integrity and consistency, preventing data loss or inconsistent states during task
+     * execution.
+     *
+     * <p>It is noteworthy that if the scheduled task framework has already been halted or is
+     * in an uninitiated state, invoking this method again should not throw an exception, but
+     * may instead notify developers of the current state through logging or other means.
+     *
+     * @throws IllegalStateException if the scheduled task framework has not been initiated,
+     *                               this exception is thrown to indicate that the halt operation
+     *                               is not permitted.
      */
     void stop();
 
     /**
-     * Check if the scheduled task framework has been launched.
+     * Verifies whether the scheduled task framework has been launched.
      *
-     * <p>This method is used to query the current status of the scheduled task framework.
-     * If the framework has already been started, return true; Otherwise, return false.
+     * <p>This method serves to inquire about the current status of the scheduled task framework.
+     * If the framework has already been initiated, it returns {@code true}; otherwise, it returns
+     * {@code false}.
      *
-     * <p>When implementing this method, developers should ensure the atomicity and consistency
-     * of state query operations to avoid inconsistent states in concurrent environments.
+     * <p>When implementing this method, developers must ensure the atomicity and consistency of
+     * state inquiry operations,preventing inconsistent states in concurrent environments. This
+     * typically involves using synchronization mechanisms or thread-safe variables to store and
+     * access the initiation status of the framework.
      *
-     * @return If the scheduled task framework has already been launched,
-     * return true; Otherwise, return false.
+     * <p>The status information returned should accurately reflect the current state of the framework,
+     * enabling callers to make corresponding processing decisions based on the status information.
+     * For example, if the framework has already been initiated, re-initiation may not be permitted;
+     * if the framework has not been initiated, initialization operations may be required.
+     *
+     * @return Returns {@code true} if the scheduled task framework has been initiated; otherwise,
+     * returns {@code false}.
      */
     boolean isStarted();
 }
