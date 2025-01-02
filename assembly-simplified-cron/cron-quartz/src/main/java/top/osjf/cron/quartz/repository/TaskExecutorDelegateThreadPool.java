@@ -21,6 +21,8 @@ import org.quartz.SchedulerConfigException;
 import org.quartz.spi.ThreadPool;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionException;
 
 /**
  * The {@code TaskExecutorDelegateThreadPool} class implements Quartz's ThreadPool
@@ -34,7 +36,6 @@ import java.util.concurrent.Executor;
  */
 public class TaskExecutorDelegateThreadPool implements ThreadPool {
 
-
     private static final ThreadLocal<Executor> EXECUTOR_LOCAL_STORE = new ThreadLocal<>();
 
     private Executor taskExecutor;
@@ -47,17 +48,24 @@ public class TaskExecutorDelegateThreadPool implements ThreadPool {
 
     @Override
     public boolean runInThread(Runnable runnable) {
-        this.taskExecutor.execute(runnable);
+        try {
+            this.taskExecutor.execute(runnable);
+        }
+        catch (RejectedExecutionException e) {
+            return false;
+        }
         return true;
     }
 
+    /**
+     * When customizing the thread pool for execution, it is always ensured that
+     * the number of available threads is greater than 0, and all execution issues
+     * are handled by the {@link #runInThread} method.
+     *
+     * @return {@inheritDoc}
+     */
     @Override
     public int blockForAvailableThreads() {
-        // The present implementation always returns 1, making Quartz
-        // always schedule any tasks that it feels like scheduling.
-        // This could be made smarter for specific TaskExecutors,
-        // for example calling {@code getMaximumPoolSize() - getActiveCount()}
-        // on a {@code java.util.concurrent.ThreadPoolExecutor}.
         return 1;
     }
 
@@ -75,7 +83,13 @@ public class TaskExecutorDelegateThreadPool implements ThreadPool {
 
     @Override
     public void shutdown(boolean waitForJobsToComplete) {
-
+        if (taskExecutor instanceof ExecutorService) {
+            if (waitForJobsToComplete) {
+                ((ExecutorService) taskExecutor).shutdown();
+            } else {
+                ((ExecutorService) taskExecutor).shutdownNow();
+            }
+        }
     }
 
     @Override
