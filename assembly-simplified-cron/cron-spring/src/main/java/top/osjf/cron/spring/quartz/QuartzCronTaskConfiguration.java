@@ -46,7 +46,6 @@ import java.util.concurrent.Executor;
 public class QuartzCronTaskConfiguration {
 
     @Bean
-    @Order
     public QuartzJobFactory quartzJobFactory() {
         return new QuartzJobFactory();
     }
