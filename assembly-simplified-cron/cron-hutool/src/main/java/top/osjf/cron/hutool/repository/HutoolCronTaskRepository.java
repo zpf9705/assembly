@@ -86,7 +86,8 @@ public class HutoolCronTaskRepository implements CronTaskRepository {
      * Set the parameter {@link StartupProperties} object for building the hutool task
      * scheduler, compatible with the Cron framework startup parameter series.
      *
-     * <p>The configuration file cannot override the active settings of the set method.
+     * <p>The configuration file cannot overwrite the value set by the external active
+     * call to the set method.
      *
      * @param hutoolProperties {@link StartupProperties} object for building the hutool
      *                         task scheduler.
@@ -122,6 +123,7 @@ public class HutoolCronTaskRepository implements CronTaskRepository {
      */
     public void setMatchSecond(boolean matchSecond) {
         isMatchSecond = matchSecond;
+        setMatchSecond = true;
     }
 
     /**
@@ -139,6 +141,7 @@ public class HutoolCronTaskRepository implements CronTaskRepository {
      */
     public void setDaemon(boolean daemon) {
         this.daemon = daemon;
+        setDaemon = true;
     }
 
     /**
@@ -149,6 +152,7 @@ public class HutoolCronTaskRepository implements CronTaskRepository {
      */
     public void setTimeZone(TimeZone timeZone) {
         this.timeZone = timeZone;
+        setTimeZone = true;
     }
 
     /**
