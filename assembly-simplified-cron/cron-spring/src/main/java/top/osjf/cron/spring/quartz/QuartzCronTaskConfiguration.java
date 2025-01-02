@@ -40,8 +40,8 @@ import java.util.concurrent.Executor;
  * {@code @EnableQuartzCronTaskRegister}'s javadoc for complete usage details.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @see EnableQuartzCronTaskRegister
  * @since 1.0.0
+ * @see EnableQuartzCronTaskRegister
  */
 @Configuration(proxyBeanMethods = false)
 public class QuartzCronTaskConfiguration {
