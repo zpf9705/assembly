@@ -51,7 +51,7 @@ public class QuartzCronTaskConfiguration {
         return new QuartzJobFactory();
     }
 
-    @Bean(destroyMethod = "stop")
+    @Bean
     @Order
     public QuartzCronTaskRepository quartzCronTaskRepository(ObjectProvider<Scheduler> schedulerProvider,
                                                              ObjectProvider<SchedulerFactory> schedulerFactoryProvider,
