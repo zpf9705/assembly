@@ -194,25 +194,24 @@ public class QuartzCronTaskRepository implements CronTaskRepository {
             } else {
                 SchedulerFactory schedulerFactory = ReflectUtils.newInstance(schedulerFactoryClass);
                 if (schedulerFactory instanceof StdSchedulerFactory) {
-                    if (this.taskExecutor != null &&
-                            !quartzProperties.containsKey(StdSchedulerFactory.PROP_THREAD_POOL_CLASS)) {
-                        // Set the thread pool instance for proxy task execution and assign values
-                        // during the initialization phase.
-                        TaskExecutorDelegateThreadPool.setTaskExecutor(taskExecutor);
-                        quartzProperties.setProperty(StdSchedulerFactory.PROP_THREAD_POOL_CLASS,
-                                TaskExecutorDelegateThreadPool.class.getName());
-                    } else {
-                        // Set necessary default properties here, as Quartz will not apply
-                        // its default configuration when explicitly given properties.
-                        quartzProperties.setProperty(StdSchedulerFactory.PROP_THREAD_POOL_CLASS,
-                                SimpleThreadPool.class.getName());
-                        quartzProperties.setProperty(PROP_THREAD_COUNT, Integer.toString(DEFAULT_THREAD_COUNT));
+                    if (!quartzProperties.containsKey(StdSchedulerFactory.PROP_THREAD_POOL_CLASS)) {
+                        if (this.taskExecutor != null) {
+                            // Set the thread pool instance for proxy task execution and assign values
+                            // during the initialization phase.
+                            TaskExecutorDelegateThreadPool.setTaskExecutor(taskExecutor);
+                            quartzProperties.setProperty(StdSchedulerFactory.PROP_THREAD_POOL_CLASS,
+                                    TaskExecutorDelegateThreadPool.class.getName());
+                        } else {
+                            // Set necessary default properties here, as Quartz will not apply
+                            // its default configuration when explicitly given properties.
+                            quartzProperties.setProperty(StdSchedulerFactory.PROP_THREAD_POOL_CLASS,
+                                    SimpleThreadPool.class.getName());
+                            quartzProperties.setProperty(PROP_THREAD_COUNT, Integer.toString(DEFAULT_THREAD_COUNT));
+                        }
                     }
-                    if (!quartzProperties.containsKey(StdSchedulerFactory.PROP_SCHED_INSTANCE_NAME)) {
-                        // Set the name of the production task manager for the factory instance created
-                        // in this class and specify it for retrieval later.
-                        quartzProperties.setProperty(StdSchedulerFactory.PROP_SCHED_INSTANCE_NAME, schedulerName);
-                    }
+                    // Set the name of the production task manager for the factory instance created
+                    // in this class and specify it for retrieval later.
+                    quartzProperties.putIfAbsent(StdSchedulerFactory.PROP_SCHED_INSTANCE_NAME, schedulerName);
                     ((StdSchedulerFactory) schedulerFactory).initialize(quartzProperties);
                     schedulerFactory.getScheduler();
                     scheduler = schedulerFactory.getScheduler(schedulerName);
