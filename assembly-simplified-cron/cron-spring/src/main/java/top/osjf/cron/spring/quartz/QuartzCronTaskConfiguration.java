@@ -22,8 +22,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import top.osjf.cron.core.lifestyle.StartupProperties;
-import top.osjf.cron.quartz.lifestyle.QuartzCronLifeStyle;
+import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
 import top.osjf.cron.spring.CronAnnotationPostProcessor;
 import top.osjf.cron.spring.ObjectProviderUtils;
@@ -40,8 +39,8 @@ import java.util.concurrent.Executor;
  * {@code @EnableQuartzCronTaskRegister}'s javadoc for complete usage details.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
  * @see EnableQuartzCronTaskRegister
+ * @since 1.0.0
  */
 @Configuration(proxyBeanMethods = false)
 public class QuartzCronTaskConfiguration {
@@ -52,11 +51,11 @@ public class QuartzCronTaskConfiguration {
         return new QuartzJobFactory();
     }
 
-    @Bean
+    @Bean(destroyMethod = "stop")
     @Order
     public QuartzCronTaskRepository quartzCronTaskRepository(ObjectProvider<Scheduler> schedulerProvider,
                                                              ObjectProvider<SchedulerFactory> schedulerFactoryProvider,
-                                                             ObjectProvider<StartupProperties> propertiesProvider,
+                                                             ObjectProvider<SuperiorProperties> propertiesProvider,
                                                              ObjectProvider<Executor> executorProvider,
                                                              QuartzJobFactory quartzJobFactory) {
         Scheduler scheduler = ObjectProviderUtils.getPriority(schedulerProvider);
@@ -73,15 +72,10 @@ public class QuartzCronTaskConfiguration {
         }
         QuartzCronTaskRepository repository = new QuartzCronTaskRepository();
         repository.setJobFactory(quartzJobFactory);
-        StartupProperties properties = ObjectProviderUtils.getPriority(propertiesProvider);
-        repository.setQuartzProperties(properties);
+        SuperiorProperties properties = ObjectProviderUtils.getPriority(propertiesProvider);
+        repository.setProperties(properties);
         Executor taskExecutor = ObjectProviderUtils.getPriority(executorProvider);
         repository.setTaskExecutor(taskExecutor);
         return repository;
-    }
-
-    @Bean(destroyMethod = "stop")
-    public QuartzCronLifeStyle quartzCronLifeStyle(QuartzCronTaskRepository quartzCronTaskRepository) {
-        return new QuartzCronLifeStyle(quartzCronTaskRepository.getScheduler());
     }
 }
