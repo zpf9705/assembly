@@ -19,7 +19,6 @@ package top.osjf.cron.quartz.repository;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.simpl.SimpleThreadPool;
-import org.quartz.spi.JobFactory;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lifestyle.StartupProperties;
 import top.osjf.cron.core.listener.CronListener;
@@ -27,13 +26,19 @@ import top.osjf.cron.core.repository.CronTask;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.core.repository.RepositoryUtils;
 import top.osjf.cron.core.repository.TaskBody;
+import top.osjf.cron.core.util.ReflectUtils;
+import top.osjf.cron.core.util.StringUtils;
 import top.osjf.cron.quartz.IDJSONConversion;
 import top.osjf.cron.quartz.MethodLevelJob;
+import top.osjf.cron.quartz.MethodLevelJobFactory;
 import top.osjf.cron.quartz.listener.QuartzCronListener;
 
+import javax.annotation.PostConstruct;
 import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.Properties;
+import java.util.UUID;
+import java.util.concurrent.Executor;
 
 /**
  * The Quartz cron task repository {@link CronTaskRepository}.
@@ -44,101 +49,229 @@ import java.util.Properties;
 public class QuartzCronTaskRepository implements CronTaskRepository {
 
     /**
+     * The thread count property.
+     */
+    public static final String PROP_THREAD_COUNT = "org.quartz.threadPool.threadCount";
+
+    /**
+     * The default thread count.
+     */
+    public static final int DEFAULT_THREAD_COUNT = 10;
+
+    private String schedulerName = Scheduler.class.getName() + UUID.randomUUID();
+
+    private Properties quartzProperties = System.getProperties();
+
+    private Executor taskExecutor;
+
+    private MethodLevelJobFactory jobFactory = new MethodLevelJobFactory();
+
+    private SchedulerFactory schedulerFactory;
+
+    private Class<? extends SchedulerFactory> schedulerFactoryClass = StdSchedulerFactory.class;
+
+    /**
      * The scheduled task management class of Quartz.
      */
     private Scheduler scheduler;
 
     /**
-     * The Quartz management interface for the listener.
+     * The quartz management interface for the listener.
      */
-    private final ListenerManager listenerManager;
+    private ListenerManager listenerManager;
+
+    private boolean setSchedulerName = false;
 
     /**
-     * Creates a new {@code QuartzCronTaskRepository} using given {@code StartupProperties}
-     * and {@code JobFactory}.
-     *
-     * @param properties a {@code StartupProperties} instance for {@link StdSchedulerFactory}
-     *                   configuration.
-     * @param jobFactory a task generates {@code JobFactory} instances.
+     * @since 1.0.3
      */
-    public QuartzCronTaskRepository(StartupProperties properties, JobFactory jobFactory) {
-        this(properties != null ? properties.asProperties() : null, jobFactory);
+    public QuartzCronTaskRepository() {
     }
 
     /**
-     * Creates a new {@code QuartzCronTaskRepository} using given {@code Properties}
-     * and {@code JobFactory}.
+     * Creates a new {@code QuartzCronTaskRepository} using given {@code Scheduler}.
      *
-     * @param properties a {@code Properties} instance for {@link StdSchedulerFactory}
-     *                   configuration.
-     * @param jobFactory a task generates {@code JobFactory} instances.
-     * @throws IllegalArgumentException if input {@code JobFactory} is {@literal null}.
+     * @param scheduler quartz task scheduler instance.
+     * @since 1.0.3
      */
-    public QuartzCronTaskRepository(Properties properties, JobFactory jobFactory) {
-        if (properties == null) properties = System.getProperties();
-        try {
-            createScheduler(new StdSchedulerFactory(), properties);
-            if (jobFactory != null) {
-                scheduler.setJobFactory(jobFactory);
+    public QuartzCronTaskRepository(Scheduler scheduler) {
+        this.scheduler = scheduler;
+    }
+
+    /**
+     * Creates a new {@code QuartzCronTaskRepository} using given {@code SchedulerFactory}.
+     *
+     * @param schedulerFactory quartz {@code Scheduler} product factory instance.
+     * @since 1.0.3
+     */
+    public QuartzCronTaskRepository(SchedulerFactory schedulerFactory) {
+        this.schedulerFactory = schedulerFactory;
+    }
+
+    /**
+     * Set the name of the Scheduler to create via the SchedulerFactory, as an
+     * alternative to the {@code org.quartz.scheduler.instanceName} property.
+     *
+     * @param schedulerName the unique name of the Scheduler.
+     * @since 1.0.3
+     */
+    public void setSchedulerName(String schedulerName) {
+        if (!StringUtils.isBlank(schedulerName)) {
+            this.schedulerName = schedulerName;
+            setSchedulerName = true;
+        }
+    }
+
+    /**
+     * Set the class object of the {@code SchedulerFactory} implementation class.
+     * <p>When {@link #schedulerFactory} is not set, use this class object to implement
+     * class instantiation and ensure there are empty constructs.
+     *
+     * @param schedulerFactoryClass the class object of the {@code SchedulerFactory}
+     *                              implementation class.
+     * @since 1.0.3
+     */
+    public void setSchedulerFactoryClass(Class<? extends SchedulerFactory> schedulerFactoryClass) {
+        if (schedulerFactoryClass != null) {
+            this.schedulerFactoryClass = schedulerFactoryClass;
+        }
+    }
+
+    /**
+     * Set the parameter {@link StartupProperties} object for building the quartz task
+     * factory, compatible with the Cron framework startup parameter series.
+     *
+     * @param quartzProperties {@link StartupProperties} object for building the quartz
+     *                         task factory.
+     * @since 1.0.3
+     */
+    public void setQuartzProperties(StartupProperties quartzProperties) {
+        if (quartzProperties != null) {
+            this.quartzProperties = quartzProperties.asProperties();
+        }
+    }
+
+    /**
+     * Set up a thread pool instance for executing a quartz framework task.
+     *
+     * @param taskExecutor a thread pool instance for executing.
+     * @since 1.0.3
+     */
+    public void setTaskExecutor(Executor taskExecutor) {
+        this.taskExecutor = taskExecutor;
+    }
+
+    /**
+     * Set inheritance and subclass factory instance of {@link MethodLevelJobFactory}.
+     * <p>The {@link JobDetail} building rules must follow the specifications
+     * in {@link MethodLevelJobFactory#newJob}.
+     *
+     * @param jobFactory inheritance and subclass factory instance of
+     *                   {@link MethodLevelJobFactory}.
+     * @since 1.0.3
+     */
+    public void setJobFactory(MethodLevelJobFactory jobFactory) {
+        if (jobFactory != null) {
+            this.jobFactory = jobFactory;
+        }
+    }
+
+    /**
+     * Initialize the scheduled task manager based on the provided attributes.
+     *
+     * @throws SchedulerException Possible {@code SchedulerException} error objects generated
+     *                            during initialization process.
+     */
+    @PostConstruct
+    public void initialize() throws SchedulerException {
+        if (scheduler == null) {
+            if (schedulerFactory != null) {
+                if (setSchedulerName) {
+                    scheduler = schedulerFactory.getScheduler(schedulerName);
+                } else {
+                    scheduler = schedulerFactory.getScheduler();
+                }
+            } else {
+                SchedulerFactory schedulerFactory = ReflectUtils.newInstance(schedulerFactoryClass);
+                if (schedulerFactory instanceof StdSchedulerFactory) {
+                    if (this.taskExecutor != null &&
+                            !quartzProperties.containsKey(StdSchedulerFactory.PROP_THREAD_POOL_CLASS)) {
+                        TaskExecutorDelegateThreadPool.setTaskExecutor(taskExecutor);
+                        quartzProperties.setProperty(StdSchedulerFactory.PROP_THREAD_POOL_CLASS,
+                                TaskExecutorDelegateThreadPool.class.getName());
+                    } else {
+                        // Set necessary default properties here, as Quartz will not apply
+                        // its default configuration when explicitly given properties.
+                        quartzProperties.setProperty(StdSchedulerFactory.PROP_THREAD_POOL_CLASS,
+                                SimpleThreadPool.class.getName());
+                        quartzProperties.setProperty(PROP_THREAD_COUNT, Integer.toString(DEFAULT_THREAD_COUNT));
+                    }
+                    if (!quartzProperties.containsKey(StdSchedulerFactory.PROP_SCHED_INSTANCE_NAME)) {
+                        quartzProperties.setProperty(StdSchedulerFactory.PROP_SCHED_INSTANCE_NAME, schedulerName);
+                    }
+                    ((StdSchedulerFactory) schedulerFactory).initialize(quartzProperties);
+                    scheduler = schedulerFactory.getScheduler(schedulerName);
+                    scheduler.setJobFactory(jobFactory);
+                }
             }
-            listenerManager = scheduler.getListenerManager();
-        } catch (SchedulerException e) {
-            throw new RuntimeException(e);
         }
+        listenerManager = scheduler.getListenerManager();
     }
 
     /**
-     * Produce a timed task executor instance {@code Scheduler} using the given
-     * {@code StdSchedulerFactory} factory instance and configuration items.
+     * Return a quartz {@code Scheduler} after initialize.
      *
-     * @param schedulerFactory the production factory instance of task executor {@code Scheduler}.
-     * @param properties       a {@code Properties} instance for {@link StdSchedulerFactory}
-     *                         configuration.
-     * @throws SchedulerException If an error occurs during the production process.
-     * @see SimpleThreadPool#initialize()
-     */
-    private void createScheduler(StdSchedulerFactory schedulerFactory, Properties properties)
-            throws SchedulerException {
-        SchedulerException ex = null;
-        schedulerFactory.initialize(properties);
-        try {
-            scheduler = schedulerFactory.getScheduler();
-        } catch (SchedulerException e) {
-            ex = e;
-        }
-        if (ex == null) return;
-        String message = ex.getMessage();
-        if (message.contains("Thread count must be > 0")) {
-            //If the number of threads is not configured, give a default value of number of available cores+1.
-            properties.setProperty(StdSchedulerFactory.PROP_THREAD_POOL_PREFIX + ".threadCount",
-                    String.valueOf(Runtime.getRuntime().availableProcessors() + 1));
-        }
-        schedulerFactory.initialize(properties);
-        scheduler = schedulerFactory.getScheduler();
-    }
-
-    /**
-     * Return the scheduled task management class of Quartz.
-     *
-     * @return the scheduled task management.
+     * @return a quartz {@code Scheduler} after initialize.
      */
     public Scheduler getScheduler() {
         return scheduler;
     }
 
+
     @Override
     @NotNull
     public String register(@NotNull String expression, @NotNull TaskBody body) {
+        JobDetail jobDetail = body.unwrap(JobDetailTaskBody.class).getJobDetail();
+        JobKey key = jobDetail.getKey();
+        checkJobKeyRules(key);
         return RepositoryUtils.doRegister(() -> {
-            JobDetail jobDetail = body.unwrap(JobDetailTaskBody.class).getJobDetail();
-            JobKey key = jobDetail.getKey();
             TriggerBuilder<CronTrigger> triggerBuilder = TriggerBuilder.newTrigger()
-                    .withIdentity(key.getName())
+                    .withIdentity(key.getName(), key.getGroup())
                     .startNow()
                     .withSchedule(CronScheduleBuilder.cronSchedule(expression));
             scheduler.scheduleJob(jobDetail, triggerBuilder.build());
             return IDJSONConversion.convertJobKeyAsJSONID(key);
         }, ParseException.class);
+    }
+
+    private void checkJobKeyRules(JobKey key) {
+        String declaringClassName = key.getGroup();
+        if (StringUtils.isBlank(declaringClassName)) {
+            throw new IllegalArgumentException
+                    ("The attribute <org.quartz.JobKey#group> of <org.quartz.JobKey> is required and is" +
+                            " a fully qualified name for the existing class.");
+        }
+        String methodName = key.getName();
+        if (StringUtils.isBlank(methodName)) {
+            throw new IllegalArgumentException
+                    ("The attribute <org.quartz.JobKey#name> of <org.quartz.JobKey> is required and is" +
+                            " the executable method in class <" + declaringClassName + ">.");
+        }
+        Class<?> declaringClass;
+        try {
+            declaringClass = ReflectUtils.forName(declaringClassName);
+        } catch (Exception e) {
+            throw new IllegalStateException
+                    ("The input requirement for the <org.quartz.JobKey#group> attribute of " +
+                            "<org.quartz.JobKey> is the fully qualified name of the executing class.");
+        }
+        try {
+            ReflectUtils.getMethod(declaringClass, methodName);
+        } catch (Exception e) {
+            throw new IllegalStateException
+                    ("The input requirement for the <org.quartz.JobKey#name> attribute of " +
+                            "<org.quartz.JobKey> is the executable method in class <" + declaringClassName + ">.");
+        }
     }
 
     @Override
