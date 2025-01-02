@@ -65,6 +65,19 @@ public interface StartupProperties {
     void addProperties(StartupProperties startupProperties);
 
     /**
+     * Retrieve the value of the specified attribute, and return the default value if the
+     * attribute does not exist.
+     *
+     * @param propertyName name of the attribute to be obtained. This name should match the
+     *                     property name defined in the object.
+     * @param <T>          generic type, representing the type of attribute value and the type
+     *                     of default value.
+     * @return Returns the value of the specified property, and if the property does not exist,
+     * returns the default value passed in.
+     */
+    <T> T getProperty(String propertyName, T def);
+
+    /**
      * Convert all properties in the current {@code StartupProperties} into a
      * {@code Properties} object.
      *
@@ -151,6 +164,16 @@ public interface StartupProperties {
         @Override
         public Properties asProperties() {
             return properties;
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public <T> T getProperty(String propertyName, T def) {
+            Object o = properties.get(propertyName);
+            if (o == null) {
+                return def;
+            }
+            return (T) o;
         }
     }
 }
