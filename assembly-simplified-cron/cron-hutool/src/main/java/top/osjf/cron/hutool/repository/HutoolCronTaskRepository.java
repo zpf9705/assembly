@@ -33,12 +33,24 @@ import top.osjf.cron.hutool.listener.HutoolCronListener;
  */
 public class HutoolCronTaskRepository implements CronTaskRepository {
 
-    /*** scheduler management*/
     private final Scheduler scheduler;
 
-    /*** The construction method of scheduler management class {@link Scheduler}.*/
+    /**
+     * The default empty constructor method uses Hutool's CronUtil utility class to
+     * obtain a default Scheduler instance to initialize the task repository.
+     */
     public HutoolCronTaskRepository() {
         this.scheduler = CronUtil.getScheduler();
+    }
+
+    /**
+     * The constructor with parameter {@code Scheduler} allows developers to pass
+     * in a custom Scheduler instance to initialize the task repository.
+     *
+     * @param scheduler Custom {@code Scheduler} instance for task scheduling.
+     */
+    public HutoolCronTaskRepository(Scheduler scheduler) {
+        this.scheduler = scheduler;
     }
 
     @Override
