@@ -227,4 +227,20 @@ public class SchedulingRepository extends ManageableTaskSupport implements CronT
         return new FixedRateTask(newSchedulingRunnable(fixedRateTask.getRunnable()),
                 fixedRateTask.getInterval(), fixedRateTask.getInitialDelay());
     }
+
+    @Override
+    public void start() {
+        //start by spring...
+    }
+
+    @Override
+    public void stop() {
+        //stop by spring...
+    }
+
+    @Override
+    public boolean isStarted() {
+        //isStarted by spring...
+        return false;
+    }
 }
