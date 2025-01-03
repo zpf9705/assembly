@@ -28,7 +28,6 @@ import top.osjf.cron.spring.CronTaskConfiguration;
 import top.osjf.cron.spring.quartz.QuartzCronTaskConfiguration;
 
 import java.util.List;
-import java.util.Properties;
 
 /**
  * {@link Import Import Configuration} for Quartz Cron Task.
@@ -45,10 +44,9 @@ public class QuartzCronTaskImportConfiguration {
     @Bean
     public SuperiorProperties quartzProperties(ObjectProvider<List<QuartzPropertiesCustomizer>> provider,
                                                CronProperties cronProperties) {
-        Properties properties = new Properties();
-        properties.putAll(cronProperties.getQuartz().getProperties());
+        SuperiorProperties properties = cronProperties.getQuartz().toProperties();
         provider.orderedStream()
                 .forEach(customizers -> customizers.forEach(c -> c.customize(properties)));
-        return SuperiorProperties.of(properties);
+        return properties;
     }
 }
