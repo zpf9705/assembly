@@ -40,10 +40,13 @@ import top.osjf.cron.core.listener.CronListener;
  * <p>All methods provide detailed exception handling to ensure that invalid input or internal
  * errors {@link CronInternalException} are correctly notified to the caller.
  *
+ * <p>In version 1.0.3, the extension inherits the {@link LifecycleRepository} interface and
+ * directly uses the repository class to control the lifecycle operations of the internal scheduler.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public interface CronTaskRepository {
+public interface CronTaskRepository extends LifecycleRepository {
 
     /**
      * Register a new scheduled task using the given cron expression and task body.
