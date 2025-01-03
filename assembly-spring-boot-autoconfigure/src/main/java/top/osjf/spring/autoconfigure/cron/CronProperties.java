@@ -17,7 +17,8 @@
 package top.osjf.spring.autoconfigure.cron;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import top.osjf.cron.hutool.lifestyle.HutoolCronLifeStyle;
+import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
+import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -106,10 +107,15 @@ public class CronProperties {
         /**
          * Whether to start as a daemon thread.
          * <p>If true, the scheduled task executed immediately after calling the
-         * {@link HutoolCronLifeStyle#stop()} method will end.
+         * {@link top.osjf.cron.core.repository.CronTaskRepository#stop()} method will end.
          * Otherwise, it will wait for the execution to complete before ending.
          */
         private boolean isDaemon = false;
+
+        /**
+         * The time zone applied by the scheduler.
+         */
+        private TimeZone timezone = TimeZone.getDefault();
 
         public boolean isMatchSecond() {
             return isMatchSecond;
@@ -127,11 +133,20 @@ public class CronProperties {
             isDaemon = daemon;
         }
 
+        public TimeZone getTimezone() {
+            return timezone;
+        }
+
+        public void setTimezone(TimeZone timezone) {
+            this.timezone = timezone;
+        }
+
         @Override
         public Map<String, Object> toMetadata() {
             Map<String, Object> metadata = new LinkedHashMap<>();
-            metadata.put("isMatchSecond", isMatchSecond);
-            metadata.put("isDaemon", isDaemon);
+            metadata.put(HutoolCronTaskRepository.PROPERTY_NAME_OF_MATCH_SECOND, isMatchSecond);
+            metadata.put(HutoolCronTaskRepository.PROPERTY_NAME_OF_DAEMON, isDaemon);
+            metadata.put(HutoolCronTaskRepository.PROPERTY_NAME_OF_TIMEZONE, timezone);
             return metadata;
         }
     }
@@ -186,8 +201,8 @@ public class CronProperties {
         @Override
         public Map<String, Object> toMetadata() {
             Map<String, Object> metadata = new LinkedHashMap<>();
-            metadata.put("timezone", timezone);
-            metadata.put("daemon", daemon);
+            metadata.put(Cron4jCronTaskRepository.PROPERTY_NAME_OF_TIMEZONE, timezone);
+            metadata.put(Cron4jCronTaskRepository.PROPERTY_NAME_OF_DAEMON, daemon);
             return metadata;
         }
     }
