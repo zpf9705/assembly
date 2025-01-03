@@ -17,20 +17,40 @@
 package top.osjf.cron.spring.hutool;
 
 import org.springframework.context.annotation.Import;
+import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
+import top.osjf.cron.spring.CronAnnotationPostProcessor;
 import top.osjf.cron.spring.CronTaskConfiguration;
 import top.osjf.cron.spring.annotation.Cron;
-import top.osjf.cron.spring.CronAnnotationPostProcessor;
 
 import java.lang.annotation.*;
 
 /**
- * Enable the scheduled task registration annotation based on hutool cron,
- * which will register the lifecycle beans of hutool cron and the registration
- * beans at runtime for scheduled task registration of methods carrying
- * {@link Cron} in {@link CronAnnotationPostProcessor}.
+ * Enable Hutool scheduled task registration annotation.
+ *
+ * <p>This annotation aims to enable Hutool scheduled tasks in the Spring framework,
+ * allowing developers to define and manage scheduled tasks through simple annotations.
+ * By importing Hutool related configuration classes and registering corresponding beans
+ * at runtime, timed task registration and scheduling of methods with Cron expression
+ * annotations can be achieved.
+ *
+ * <p>When this annotation is marked on the Spring configuration class or startup class,
+ * the Spring container will automatically configure the environment required for Hutool
+ * scheduled tasks, including loading the core configuration of Hutool and registering
+ * the scheduled task processor.
+ *
+ * <p>This annotation will import two configurations, {@link HutoolCronTaskConfiguration}
+ * and {@link CronTaskConfiguration}, respectively configuring the core repository of
+ * {@link HutoolCronTaskRepository} and the post processor of {@link CronAnnotationPostProcessor}
+ * that scans the relevant beans wearing the annotation {@link Cron} and registers the task.
+ *
+ * <p>The registered attribute entries are all {@link cn.hutool.cron.Scheduler} core open
+ * attributes of the configuration scheduler.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
+ * @see HutoolCronTaskRepository
+ * @see Cron
+ * @see CronAnnotationPostProcessor
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
@@ -58,4 +78,13 @@ public @interface EnableHutoolCronTaskRegister {
      * @return Whether to start as a daemon thread.
      */
     boolean isDaemon() default false;
+
+    /**
+     * A time zone for which the cron expression will be resolved. By default, this
+     * attribute is the empty String (i.e. the server's local time zone will be used).
+     *
+     * @return a zone id accepted by {@link java.util.TimeZone#getTimeZone(String)},
+     * or an empty String to indicate the server's default time zone.
+     */
+    String timeZone() default "";
 }
