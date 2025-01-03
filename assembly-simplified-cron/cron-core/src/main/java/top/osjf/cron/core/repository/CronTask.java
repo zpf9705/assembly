@@ -59,4 +59,9 @@ public final class CronTask {
     public CronMethodRunnable getRunnable() {
         return runnable;
     }
+
+    @Override
+    public String toString() {
+        return expression + "@" + runnable.toString();
+    }
 }
