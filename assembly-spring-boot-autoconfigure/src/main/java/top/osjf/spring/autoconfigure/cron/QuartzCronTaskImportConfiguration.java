@@ -22,8 +22,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import top.osjf.cron.core.lifestyle.StartupProperties;
-import top.osjf.cron.quartz.lifestyle.QuartzCronLifeStyle;
+import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
 import top.osjf.cron.spring.CronTaskConfiguration;
 import top.osjf.cron.spring.quartz.QuartzCronTaskConfiguration;
@@ -39,17 +38,17 @@ import java.util.Properties;
  */
 @Configuration(proxyBeanMethods = false)
 @Import({QuartzCronTaskConfiguration.class, CronTaskConfiguration.class})
-@ConditionalOnClass({QuartzCronLifeStyle.class, QuartzCronTaskRepository.class})
+@ConditionalOnClass({QuartzCronTaskRepository.class})
 @ConditionalOnProperty(name = "spring.schedule.cron.client-type", havingValue = "quartz", matchIfMissing = true)
 public class QuartzCronTaskImportConfiguration {
 
     @Bean
-    public StartupProperties quartzStartupProperties(ObjectProvider<List<QuartzPropertiesCustomizer>> provider,
-                                                     CronProperties cronProperties) {
+    public SuperiorProperties quartzProperties(ObjectProvider<List<QuartzPropertiesCustomizer>> provider,
+                                               CronProperties cronProperties) {
         Properties properties = new Properties();
         properties.putAll(cronProperties.getQuartz().getProperties());
         provider.orderedStream()
                 .forEach(customizers -> customizers.forEach(c -> c.customize(properties)));
-        return StartupProperties.of(properties);
+        return SuperiorProperties.of(properties);
     }
 }
