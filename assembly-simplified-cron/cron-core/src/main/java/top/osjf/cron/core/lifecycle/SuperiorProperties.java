@@ -17,6 +17,8 @@
 
 package top.osjf.cron.core.lifecycle;
 
+import top.osjf.cron.core.lang.Nullable;
+
 import java.util.Map;
 import java.util.Properties;
 
@@ -42,6 +44,18 @@ public interface SuperiorProperties {
     /* --------------------------------------------------------------------------- */
     /* -------------------------- conventional method ---------------------------- */
     /* --------------------------------------------------------------------------- */
+
+    /**
+     * Retrieve the value of the specified property name,if there is no return {@literal null}.
+     *
+     * @param propertyName name of the attribute to be obtained. This name should match the
+     *                     property name defined in the object.
+     * @return Returns the value of the specified property name,if not exist return null.
+     * @throws NullPointerException if input propertyName is null.
+     * @since 1.0.3
+     */
+    @Nullable
+    Object getProperty(String propertyName);
 
     /**
      * Retrieve the value of the specified attribute, and return the default value if the
