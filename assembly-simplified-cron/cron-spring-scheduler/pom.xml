@@ -12,6 +12,10 @@
     <artifactId>cron-spring-scheduler</artifactId>
     <packaging>jar</packaging>
 
+    <description>
+        Cron Task: Implementation of enhance Spring scheduler.
+    </description>
+
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
