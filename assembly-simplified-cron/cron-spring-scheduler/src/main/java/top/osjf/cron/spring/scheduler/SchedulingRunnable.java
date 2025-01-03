@@ -27,7 +27,7 @@ import java.util.List;
  * each stage of the execution cycle.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 1.0.3
  */
 public class SchedulingRunnable implements Runnable, SchedulingContextSupplier {
 

@@ -30,7 +30,7 @@ import org.springframework.scheduling.config.*;
  * framework for enhanced functionality, making it easier to manage uniformly.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 1.0.3
  */
 public class EnhanceScheduledTaskRegistrar extends ScheduledTaskRegistrar {
 

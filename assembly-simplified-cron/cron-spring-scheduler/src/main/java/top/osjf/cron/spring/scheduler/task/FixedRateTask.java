@@ -21,23 +21,24 @@ import top.osjf.cron.spring.scheduler.SchedulingContextSupplier;
 import top.osjf.cron.spring.scheduler.SchedulingRunnable;
 
 /**
- * The enhanced version class of {@link org.springframework.scheduling.config.CronTask}.
+ * The enhanced version class of  {@link org.springframework.scheduling.config.FixedRateTask}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 1.0.3
  */
-public class CronTask extends org.springframework.scheduling.config.CronTask implements SchedulingContextSupplier {
+public class FixedRateTask extends org.springframework.scheduling.config.FixedRateTask implements SchedulingContextSupplier {
 
     private final SchedulingRunnable schedulingRunnable;
 
     /**
-     * Create a new {@code CronTask}.
+     * Create a new {@code IntervalTask}.
      *
-     * @param runnable   the underlying task to execute
-     * @param expression the cron expression defining when the task should be executed
+     * @param runnable     the underlying task to execute
+     * @param interval     how often in milliseconds the task should be executed
+     * @param initialDelay the initial delay before first execution of the task
      */
-    public CronTask(SchedulingRunnable runnable, String expression) {
-        super(runnable, expression);
+    public FixedRateTask(SchedulingRunnable runnable, long interval, long initialDelay) {
+        super(runnable, interval, initialDelay);
         this.schedulingRunnable = runnable;
     }
 

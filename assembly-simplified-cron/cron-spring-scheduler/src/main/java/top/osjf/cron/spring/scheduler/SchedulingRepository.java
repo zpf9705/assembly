@@ -68,7 +68,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * the Spring scheduled task configuration object to an enhanced or manageable version.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 1.0.3
  */
 public class SchedulingRepository extends ManageableTaskSupport implements CronTaskRepository, EnhanceTaskConvertFactory {
 

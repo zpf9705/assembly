@@ -33,7 +33,7 @@ import org.springframework.scheduling.config.TaskManagementConfigUtils;
  * {@code @EnableScheduling}'s javadoc for complete usage details.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 1.0.3
  * @see EnableScheduling
  */
 @Configuration(proxyBeanMethods = false)

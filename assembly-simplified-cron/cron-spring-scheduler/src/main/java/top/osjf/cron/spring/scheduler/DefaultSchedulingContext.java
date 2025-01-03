@@ -19,10 +19,10 @@ package top.osjf.cron.spring.scheduler;
 import java.util.List;
 
 /**
- * Default impl of {@link SchedulingContext}.
+ * The default implementation class for {@link SchedulingContext}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 1.0.3
  */
 public class DefaultSchedulingContext implements SchedulingContext {
 

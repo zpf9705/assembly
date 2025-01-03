@@ -73,12 +73,12 @@ import java.util.concurrent.TimeUnit;
  *
  * <p>This post-processor is automatically registered by Spring's
  * {@code <task:annotation-driven>} XML element, and also by the
- * {@link top.osjf.cron.spring.scheduler.EnableScheduling @EnableScheduling} annotation.
+ * {@link EnableScheduling @EnableScheduling} annotation.
  *
  * <p>Autodetects any {@link SchedulingConfigurer} instances in the container,
  * allowing for customization of the scheduler to be used or for fine-grained
  * control over task registration (e.g. registration of {@link Trigger} tasks).
- * See the {@link top.osjf.cron.spring.scheduler.EnableScheduling @EnableScheduling} javadocs for complete usage
+ * See the {@link EnableScheduling @EnableScheduling} javadocs for complete usage
  * details.
  *
  * @author Mark Fisher
