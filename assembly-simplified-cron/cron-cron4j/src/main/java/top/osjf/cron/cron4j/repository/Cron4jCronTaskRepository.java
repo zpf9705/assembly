@@ -29,7 +29,10 @@ import javax.annotation.PreDestroy;
 import java.util.TimeZone;
 
 /**
- * The Cron4j cron task repository {@link CronTaskRepository}.
+ * The {@link CronTaskRepository} implementation class of cron4j.
+ *
+ * <p>This implementation class includes the construction and lifecycle management
+ * of the cron4j build scheduler, as well as operations related to tasks and listeners.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
