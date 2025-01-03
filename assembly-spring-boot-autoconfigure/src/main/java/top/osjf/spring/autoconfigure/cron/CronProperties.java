@@ -157,7 +157,7 @@ public class CronProperties {
     /**
      * Quartz client properties.
      */
-    public static class Quartz {
+    public static class Quartz implements PropertiesConvert {
 
         /**
          * Additional Quartz Scheduler properties.
@@ -166,6 +166,19 @@ public class CronProperties {
 
         public Map<String, String> getProperties() {
             return properties;
+        }
+
+        /**
+         * Non Java doc.
+         * @since 1.0.3
+         */
+        @Override
+        public SuperiorProperties toProperties() {
+            SuperiorProperties superiorProperties = SuperiorProperties.of();
+            for (Map.Entry<String, String> entry : properties.entrySet()) {
+                superiorProperties.addProperty(entry.getKey(), entry.getValue());
+            }
+            return superiorProperties;
         }
     }
 
