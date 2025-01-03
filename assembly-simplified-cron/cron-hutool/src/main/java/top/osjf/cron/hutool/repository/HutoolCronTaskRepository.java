@@ -20,18 +20,21 @@ import cn.hutool.cron.CronException;
 import cn.hutool.cron.Scheduler;
 import cn.hutool.cron.pattern.CronPattern;
 import top.osjf.cron.core.lang.NotNull;
-import top.osjf.cron.core.lifestyle.StartupProperties;
+import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.repository.*;
 import top.osjf.cron.hutool.listener.HutoolCronListener;
 
 import javax.annotation.PostConstruct;
-import java.util.Properties;
+import javax.annotation.PreDestroy;
 import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
 
 /**
- * The Hutool cron task repository {@link CronTaskRepository}.
+ * The {@link CronTaskRepository} implementation class of hutool.
+ *
+ * <p>This implementation class includes the construction and lifecycle management
+ * of the hutool build scheduler, as well as operations related to tasks and listeners.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
@@ -62,7 +65,8 @@ public class HutoolCronTaskRepository implements CronTaskRepository {
      * The constructor with parameter {@code Scheduler} allows developers to pass
      * in a custom Scheduler instance to initialize the task repository.
      *
-     * @param scheduler Custom {@code Scheduler} instance for task scheduling.
+     * @param scheduler Custom {@code Scheduler} instance for task scheduling after
+     *                  initialize.
      * @since 1.0.3
      */
     public HutoolCronTaskRepository(Scheduler scheduler) {
@@ -83,31 +87,25 @@ public class HutoolCronTaskRepository implements CronTaskRepository {
     }
 
     /**
-     * Set the parameter {@link StartupProperties} object for building the hutool task
+     * Set the parameter {@link SuperiorProperties} object for building the hutool task
      * scheduler, compatible with the Cron framework startup parameter series.
      *
      * <p>The configuration file cannot overwrite the value set by the external active
      * call to the set method.
      *
-     * @param startupProperties {@link StartupProperties} object for building the hutool
-     *                          task scheduler.
+     * @param superiorProperties {@link SuperiorProperties} object for building the hutool
+     *                           task scheduler.
      * @since 1.0.3
      */
-    public void setHutoolProperties(StartupProperties startupProperties) {
-        if (startupProperties != null) {
+    public void setProperties(SuperiorProperties superiorProperties) {
+        if (superiorProperties != null) {
             if (!setDaemon)
-                startupProperties.getProperty("daemon", false);
+                setDaemon(superiorProperties.getProperty("daemon", false));
             if (!setMatchSecond)
-                startupProperties.getProperty("isMatchSecond", true);
+                setMatchSecond(superiorProperties.getProperty("isMatchSecond", true));
             if (!setTimeZone)
-                startupProperties.getProperty("timeZone", TimeZone.getDefault());
+                setTimeZone(superiorProperties.getProperty("timeZone", TimeZone.getDefault()));
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T> T getProperty(Properties properties, String propertyName, T def) {
-        T propertyValue = (T) properties.get(propertyName);
-        return propertyValue != null ? propertyValue : def;
     }
 
     /**
@@ -170,15 +168,6 @@ public class HutoolCronTaskRepository implements CronTaskRepository {
         }
     }
 
-    /**
-     * Return a hutool {@code Scheduler} after initialize.
-     *
-     * @return a hutool {@code Scheduler} after initialize.
-     */
-    public Scheduler getScheduler() {
-        return scheduler;
-    }
-
     @Override
     @NotNull
     public String register(@NotNull String cronExpression, @NotNull TaskBody body) {
@@ -213,5 +202,27 @@ public class HutoolCronTaskRepository implements CronTaskRepository {
     @Override
     public void removeListener(@NotNull CronListener listener) {
         scheduler.removeListener(listener.unwrap(HutoolCronListener.class));
+    }
+
+    @Override
+    public void start() {
+        if (isStarted()) {
+            throw new IllegalStateException("Scheduler has been started, please stop it first!");
+        }
+        scheduler.start();
+    }
+
+    @Override
+    @PreDestroy
+    public void stop() {
+        if (!isStarted()) {
+            throw new IllegalStateException("Scheduler not started !");
+        }
+        scheduler.stop();
+    }
+
+    @Override
+    public boolean isStarted() {
+        return scheduler.isStarted();
     }
 }
