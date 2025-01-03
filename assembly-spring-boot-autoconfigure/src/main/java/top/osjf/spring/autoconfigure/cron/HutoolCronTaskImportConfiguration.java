@@ -40,6 +40,6 @@ public class HutoolCronTaskImportConfiguration {
 
     @Bean
     public SuperiorProperties hutoolProperties(CronProperties cronProperties) {
-        return SuperiorProperties.of(cronProperties.getHutool().toMetadata());
+        return cronProperties.getHutool().toProperties();
     }
 }

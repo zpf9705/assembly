@@ -17,11 +17,11 @@
 package top.osjf.spring.autoconfigure.cron;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -86,15 +86,15 @@ public class CronProperties {
         CRON4J
     }
 
-    public interface MetadataConvert {
+    public interface PropertiesConvert {
 
-        Map<String, Object> toMetadata();
+        SuperiorProperties toProperties();
     }
 
     /**
      * Hutool client properties.
      */
-    public static class Hutool implements MetadataConvert {
+    public static class Hutool implements PropertiesConvert {
 
         /**
          * Set whether to support second matching.
@@ -142,12 +142,12 @@ public class CronProperties {
         }
 
         @Override
-        public Map<String, Object> toMetadata() {
-            Map<String, Object> metadata = new LinkedHashMap<>();
-            metadata.put(HutoolCronTaskRepository.PROPERTY_NAME_OF_MATCH_SECOND, isMatchSecond);
-            metadata.put(HutoolCronTaskRepository.PROPERTY_NAME_OF_DAEMON, isDaemon);
-            metadata.put(HutoolCronTaskRepository.PROPERTY_NAME_OF_TIMEZONE, timezone);
-            return metadata;
+        public SuperiorProperties toProperties() {
+            SuperiorProperties properties = SuperiorProperties.of();
+            properties.addProperty(HutoolCronTaskRepository.PROPERTY_NAME_OF_MATCH_SECOND, isMatchSecond);
+            properties.addProperty(HutoolCronTaskRepository.PROPERTY_NAME_OF_DAEMON, isDaemon);
+            properties.addProperty(HutoolCronTaskRepository.PROPERTY_NAME_OF_TIMEZONE, timezone);
+            return properties;
         }
     }
 
@@ -169,7 +169,7 @@ public class CronProperties {
     /**
      * Cron4j client properties.
      */
-    public static class Cron4j implements MetadataConvert {
+    public static class Cron4j implements PropertiesConvert {
 
         /**
          * The daemon flag. If true the scheduler and its spawned threads acts like
@@ -199,11 +199,11 @@ public class CronProperties {
         }
 
         @Override
-        public Map<String, Object> toMetadata() {
-            Map<String, Object> metadata = new LinkedHashMap<>();
-            metadata.put(Cron4jCronTaskRepository.PROPERTY_NAME_OF_TIMEZONE, timezone);
-            metadata.put(Cron4jCronTaskRepository.PROPERTY_NAME_OF_DAEMON, daemon);
-            return metadata;
+        public SuperiorProperties toProperties() {
+            SuperiorProperties properties = SuperiorProperties.of();
+            properties.addProperty(Cron4jCronTaskRepository.PROPERTY_NAME_OF_TIMEZONE, timezone);
+            properties.addProperty(Cron4jCronTaskRepository.PROPERTY_NAME_OF_DAEMON, daemon);
+            return properties;
         }
     }
 }

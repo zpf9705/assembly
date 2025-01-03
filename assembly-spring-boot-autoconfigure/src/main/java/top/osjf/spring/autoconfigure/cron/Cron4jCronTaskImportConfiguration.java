@@ -21,8 +21,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import top.osjf.cron.core.lifestyle.StartupProperties;
-import top.osjf.cron.cron4j.lifestyle.Cron4jCronLifeStyle;
+import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
 import top.osjf.cron.spring.CronTaskConfiguration;
 import top.osjf.cron.spring.cron4j.Cron4jCronTaskConfiguration;
@@ -35,12 +34,12 @@ import top.osjf.cron.spring.cron4j.Cron4jCronTaskConfiguration;
  */
 @Configuration(proxyBeanMethods = false)
 @Import({Cron4jCronTaskConfiguration.class, CronTaskConfiguration.class})
-@ConditionalOnClass({Cron4jCronLifeStyle.class, Cron4jCronTaskRepository.class})
+@ConditionalOnClass({Cron4jCronTaskRepository.class})
 @ConditionalOnProperty(name = "spring.schedule.cron.client-type", havingValue = "cron4j", matchIfMissing = true)
 public class Cron4jCronTaskImportConfiguration {
 
     @Bean
-    public StartupProperties cron4jStartupProperties(CronProperties cronProperties) {
-        return StartupProperties.of(cronProperties.getCron4j().toMetadata());
+    public SuperiorProperties cron4jProperties(CronProperties cronProperties) {
+        return cronProperties.getCron4j().toProperties();
     }
 }
