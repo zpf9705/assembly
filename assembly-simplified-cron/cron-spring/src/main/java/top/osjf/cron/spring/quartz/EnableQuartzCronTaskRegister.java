@@ -17,6 +17,7 @@
 package top.osjf.cron.spring.quartz;
 
 import org.springframework.context.annotation.Import;
+import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
 import top.osjf.cron.spring.CronAnnotationPostProcessor;
 import top.osjf.cron.spring.CronTaskConfiguration;
 import top.osjf.cron.spring.annotation.Cron;
@@ -24,13 +25,32 @@ import top.osjf.cron.spring.annotation.Cron;
 import java.lang.annotation.*;
 
 /**
- * Enable the scheduled task registration annotation based on Quartz cron,
- * which will register the lifecycle beans of Quartz cron and the registration
- * beans at runtime for scheduled task registration of methods carrying
- * {@link Cron} in {@link CronAnnotationPostProcessor}.
+ * Enable Quartz scheduled task registration annotation.
+ *
+ * <p>This annotation aims to enable Quartz scheduled tasks in the Spring framework,
+ * allowing developers to define and manage scheduled tasks through simple annotations.
+ * By importing Quartz related configuration classes and registering corresponding beans
+ * at runtime, timed task registration and scheduling of methods with Cron expression
+ * annotations can be achieved.
+ *
+ * <p>When this annotation is marked on the Spring configuration class or startup class,
+ * the Spring container will automatically configure the environment required for Quartz
+ * scheduled tasks, including loading the core configuration of Quartz and registering
+ * the scheduled task processor.
+ *
+ * <p>This annotation will import two configurations, {@link QuartzCronTaskConfiguration}
+ * and {@link CronTaskConfiguration}, respectively configuring the core repository of
+ * {@link QuartzCronTaskRepository} and the post processor of {@link CronAnnotationPostProcessor}
+ * that scans the relevant beans wearing the annotation {@link Cron} and registers the task.
+ *
+ * <p>The registered attribute entries are all {@link org.quartz.Scheduler} core open
+ * attributes of the configuration scheduler.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
+ * @see QuartzCronTaskRepository
+ * @see Cron
+ * @see CronAnnotationPostProcessor
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
