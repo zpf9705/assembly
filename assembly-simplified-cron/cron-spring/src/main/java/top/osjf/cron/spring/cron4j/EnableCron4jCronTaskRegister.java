@@ -17,19 +17,40 @@
 package top.osjf.cron.spring.cron4j;
 
 import org.springframework.context.annotation.Import;
+import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
+import top.osjf.cron.spring.CronAnnotationPostProcessor;
 import top.osjf.cron.spring.CronTaskConfiguration;
 import top.osjf.cron.spring.annotation.Cron;
 
 import java.lang.annotation.*;
 
 /**
- * Enable the scheduled task registration annotation based on Cron4j cron,
- * which will register the lifecycle beans of Cron4j cron and the registration
- * beans at runtime for scheduled task registration of methods carrying
- * {@link Cron} in {@link top.osjf.cron.spring.CronAnnotationPostProcessor}.
+ * Enable Cron4j scheduled task registration annotation.
+ *
+ * <p>This annotation aims to enable Cron4j scheduled tasks in the Spring framework,
+ * allowing developers to define and manage scheduled tasks through simple annotations.
+ * By importing Cron4j related configuration classes and registering corresponding beans
+ * at runtime, timed task registration and scheduling of methods with Cron expression
+ * annotations can be achieved.
+ *
+ * <p>When this annotation is marked on the Spring configuration class or startup class,
+ * the Spring container will automatically configure the environment required for Cron4j
+ * scheduled tasks, including loading the core configuration of Cron4j and registering
+ * the scheduled task processor.
+ *
+ * <p>This annotation will import two configurations, {@link Cron4jCronTaskConfiguration}
+ * and {@link CronTaskConfiguration}, respectively configuring the core repository of
+ * {@link Cron4jCronTaskRepository} and the post processor of {@link CronAnnotationPostProcessor}
+ * that scans the relevant beans wearing the annotation {@link Cron} and registers the task.
+ *
+ * <p>The registered attribute entries are all {@link it.sauronsoftware.cron4j.Scheduler}
+ * core open attributes of the configuration scheduler.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
+ * @see Cron4jCronTaskRepository
+ * @see Cron
+ * @see CronAnnotationPostProcessor
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
@@ -55,5 +76,5 @@ public @interface EnableCron4jCronTaskRegister {
      * @return a zone id accepted by {@link java.util.TimeZone#getTimeZone(String)},
      * or an empty String to indicate the server's default time zone
      */
-    String zone() default "";
+    String timeZone() default "";
 }
