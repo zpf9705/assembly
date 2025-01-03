@@ -39,6 +39,10 @@ import java.util.TimeZone;
  */
 public class Cron4jCronTaskRepository implements CronTaskRepository {
 
+    public static final String PROPERTY_NAME_OF_DAEMON = "isDaemon";
+    private static final boolean DEFAULT_VALUE_OF_DAEMON = false;
+    public static final String PROPERTY_NAME_OF_TIMEZONE = "timezone";
+    private static final TimeZone DEFAULT_VALUE_OF_TIMEZONE = TimeZone.getDefault();
     /**
      * The daemon flag. If true the scheduler and its spawned threads acts like
      * daemons.
@@ -48,7 +52,7 @@ public class Cron4jCronTaskRepository implements CronTaskRepository {
     /**
      * The time zone applied by the scheduler.
      */
-    private TimeZone timezone = TimeZone.getDefault();
+    private TimeZone timezone = DEFAULT_VALUE_OF_TIMEZONE;
 
     private Scheduler scheduler;
 
@@ -63,6 +67,7 @@ public class Cron4jCronTaskRepository implements CronTaskRepository {
 
     /**
      * Creates a {@code Cron4jCronTaskRepository} by given {@code Scheduler} instance.
+     *
      * @param scheduler the given {@code Scheduler} instance after initialize.
      * @since 1.0.3
      */
@@ -111,7 +116,7 @@ public class Cron4jCronTaskRepository implements CronTaskRepository {
      *
      * @param timezone The time zone applied by the scheduler.
      */
-    public void setTimezone(TimeZone timezone) {
+    public void setTimeZone(TimeZone timezone) {
         this.timezone = timezone;
         setTimeZone = true;
     }
@@ -130,9 +135,19 @@ public class Cron4jCronTaskRepository implements CronTaskRepository {
     public void setProperties(SuperiorProperties superiorProperties) {
         if (superiorProperties != null) {
             if (!setDaemon)
-                setDaemon(superiorProperties.getProperty("daemon", false));
-            if (!setTimeZone)
-                setTimezone(superiorProperties.getProperty("timeZone", TimeZone.getDefault()));
+                setDaemon(superiorProperties.getProperty(PROPERTY_NAME_OF_DAEMON, DEFAULT_VALUE_OF_DAEMON));
+            if (!setTimeZone) {
+                Object zone = superiorProperties.getProperty(PROPERTY_NAME_OF_TIMEZONE);
+                if (zone instanceof TimeZone) {
+                    setTimeZone((TimeZone) zone);
+                } else {
+                    TimeZone timeZone = DEFAULT_VALUE_OF_TIMEZONE;
+                    if (zone != null) {
+                        timeZone = TimeZone.getTimeZone(zone.toString());
+                    }
+                    setTimeZone(timeZone);
+                }
+            }
         }
     }
 
