@@ -34,6 +34,13 @@
 
         <dependency>
             <groupId>top.osjf.cron</groupId>
+            <artifactId>cron-spring-scheduler</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>top.osjf.cron</groupId>
             <artifactId>cron-hutool</artifactId>
             <version>${project.version}</version>
             <optional>true</optional>
