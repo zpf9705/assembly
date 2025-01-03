@@ -21,8 +21,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import top.osjf.cron.core.lifestyle.StartupProperties;
-import top.osjf.cron.hutool.lifestyle.HutoolCronLifeStyle;
+import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
 import top.osjf.cron.spring.CronTaskConfiguration;
 import top.osjf.cron.spring.hutool.HutoolCronTaskConfiguration;
@@ -35,12 +34,12 @@ import top.osjf.cron.spring.hutool.HutoolCronTaskConfiguration;
  */
 @Configuration(proxyBeanMethods = false)
 @Import({HutoolCronTaskConfiguration.class, CronTaskConfiguration.class})
-@ConditionalOnClass({HutoolCronLifeStyle.class, HutoolCronTaskRepository.class})
+@ConditionalOnClass({HutoolCronTaskRepository.class})
 @ConditionalOnProperty(name = "spring.schedule.cron.client-type", havingValue = "hutool", matchIfMissing = true)
 public class HutoolCronTaskImportConfiguration {
 
     @Bean
-    public StartupProperties hutoolStartupProperties(CronProperties cronProperties) {
-        return StartupProperties.of(cronProperties.getHutool().toMetadata());
+    public SuperiorProperties hutoolProperties(CronProperties cronProperties) {
+        return SuperiorProperties.of(cronProperties.getHutool().toMetadata());
     }
 }
