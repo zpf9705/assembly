@@ -39,8 +39,14 @@ import java.util.TimeZone;
  */
 public class Cron4jCronTaskRepository implements CronTaskRepository {
 
+    /**
+     * The {@link #daemon} property name of cron4j.
+     */
     public static final String PROPERTY_NAME_OF_DAEMON = "isDaemon";
     private static final boolean DEFAULT_VALUE_OF_DAEMON = false;
+    /**
+     * The {@link #timezone} property name of cron4j.
+     */
     public static final String PROPERTY_NAME_OF_TIMEZONE = "timezone";
     private static final TimeZone DEFAULT_VALUE_OF_TIMEZONE = TimeZone.getDefault();
     /**

@@ -41,9 +41,25 @@ import java.util.concurrent.ExecutorService;
  */
 public class HutoolCronTaskRepository implements CronTaskRepository {
 
+    /**
+     * The {@link #daemon} property name of hutool.
+     */
+    public static final String PROPERTY_NAME_OF_DAEMON = "isDaemon";
+    private static final boolean DEFAULT_VALUE_OF_DAEMON = false;
+    /**
+     * The {@link #timeZone} property name of hutool.
+     */
+    public static final String PROPERTY_NAME_OF_TIMEZONE = "timezone";
+    private static final TimeZone DEFAULT_VALUE_OF_TIMEZONE = TimeZone.getDefault();
+    /**
+     * The {@link #isMatchSecond} property name of hutool.
+     */
+    public static final String PROPERTY_NAME_OF_MATCH_SECOND = "isMatchSecond";
+    private static final boolean DEFAULT_VALUE_OF_MATCH_SECOND = true;
+
     private ExecutorService executorService;
 
-    private boolean isMatchSecond = true;
+    private boolean isMatchSecond = DEFAULT_VALUE_OF_MATCH_SECOND;
 
     private boolean daemon;
 
@@ -100,11 +116,21 @@ public class HutoolCronTaskRepository implements CronTaskRepository {
     public void setProperties(SuperiorProperties superiorProperties) {
         if (superiorProperties != null) {
             if (!setDaemon)
-                setDaemon(superiorProperties.getProperty("daemon", false));
+                setDaemon(superiorProperties.getProperty(PROPERTY_NAME_OF_DAEMON, DEFAULT_VALUE_OF_DAEMON));
             if (!setMatchSecond)
-                setMatchSecond(superiorProperties.getProperty("isMatchSecond", true));
-            if (!setTimeZone)
-                setTimeZone(superiorProperties.getProperty("timeZone", TimeZone.getDefault()));
+                setMatchSecond(superiorProperties.getProperty(PROPERTY_NAME_OF_MATCH_SECOND, DEFAULT_VALUE_OF_MATCH_SECOND));
+            if (!setTimeZone) {
+                Object zone = superiorProperties.getProperty(PROPERTY_NAME_OF_TIMEZONE);
+                if (zone instanceof TimeZone) {
+                    setTimeZone((TimeZone) zone);
+                } else {
+                    TimeZone timeZone = DEFAULT_VALUE_OF_TIMEZONE;
+                    if (zone != null) {
+                        timeZone = TimeZone.getTimeZone(zone.toString());
+                    }
+                    setTimeZone(timeZone);
+                }
+            }
         }
     }
 
