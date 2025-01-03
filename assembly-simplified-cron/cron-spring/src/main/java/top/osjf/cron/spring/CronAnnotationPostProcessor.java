@@ -82,7 +82,6 @@ import java.util.concurrent.ScheduledExecutorService;
  * the collection process), automatically register and start.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
  * @see Cron
  * @see Crones
  * @see EnableHutoolCronTaskRegister
@@ -92,6 +91,7 @@ import java.util.concurrent.ScheduledExecutorService;
  * @see CronListener
  * @see top.osjf.cron.core.listener.ListenerContext
  * @see top.osjf.cron.core.lifecycle.Lifecycle
+ * @since 1.0.0
  */
 public class CronAnnotationPostProcessor implements ImportAware, ApplicationContextAware, EnvironmentAware,
         ApplicationListener<ContextRefreshedEvent>, MergedBeanDefinitionPostProcessor {
@@ -255,6 +255,11 @@ public class CronAnnotationPostProcessor implements ImportAware, ApplicationCont
             cronTaskRepository.addListener(listener);
         }
         cronTaskRepository.start();
+
+        // Registration quantity result log input.
+        logger.info("The total number of timed tasks successfully registered by the post processor " +
+                "{} during this startup is <{}>.", getClass().getName(), cronTasks.size());
+        // clare registered task instances.
         cronTasks.clear();
     }
 
