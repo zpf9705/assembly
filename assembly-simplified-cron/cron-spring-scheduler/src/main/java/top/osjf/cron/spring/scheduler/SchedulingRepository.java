@@ -16,7 +16,11 @@
 
 package top.osjf.cron.spring.scheduler;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.scheduling.config.ScheduledTask;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.util.IdGenerator;
@@ -70,7 +74,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public class SchedulingRepository extends ManageableTaskSupport implements CronTaskRepository, EnhanceTaskConvertFactory {
+public class SchedulingRepository extends ManageableTaskSupport implements CronTaskRepository, EnhanceTaskConvertFactory,
+        ApplicationListener<ContextRefreshedEvent> {
+
+    private static final Logger logger = LoggerFactory.getLogger(SchedulingRepository.class);
 
     private final Map<String, ScheduledTask> scheduledTaskCache = new ConcurrentHashMap<>();
 
@@ -106,6 +113,13 @@ public class SchedulingRepository extends ManageableTaskSupport implements CronT
      */
     protected void registerScheduledTask(String id, ScheduledTask scheduledTask) {
         scheduledTaskCache.putIfAbsent(id, scheduledTask);
+    }
+
+    @Override
+    public void onApplicationEvent(@NotNull ContextRefreshedEvent event) {
+        // Registration quantity result log input.
+        logger.info("The total number of timed tasks successfully registered by the post processor " +
+                "{} during this startup is <{}>.", getClass().getName(), scheduledTaskCache.size());
     }
 
     @Override

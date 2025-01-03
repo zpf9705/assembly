@@ -21,6 +21,7 @@
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jsr305>3.0.2</jsr305>
+        <slf4j>1.7.32</slf4j>
     </properties>
 
     <dependencies>
@@ -29,6 +30,12 @@
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
             <version>${jsr305}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j}</version>
         </dependency>
     </dependencies>
 
