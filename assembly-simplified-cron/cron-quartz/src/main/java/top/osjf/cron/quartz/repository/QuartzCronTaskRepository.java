@@ -20,7 +20,7 @@ import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.simpl.SimpleThreadPool;
 import top.osjf.cron.core.lang.NotNull;
-import top.osjf.cron.core.lifestyle.StartupProperties;
+import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.repository.CronTask;
 import top.osjf.cron.core.repository.CronTaskRepository;
@@ -34,6 +34,7 @@ import top.osjf.cron.quartz.MethodLevelJobFactory;
 import top.osjf.cron.quartz.listener.QuartzCronListener;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.Properties;
@@ -41,7 +42,10 @@ import java.util.UUID;
 import java.util.concurrent.Executor;
 
 /**
- * The Quartz cron task repository {@link CronTaskRepository}.
+ * The {@link CronTaskRepository} implementation class of quartz.
+ *
+ * <p>This implementation class includes the construction and lifecycle management
+ * of the quartz build scheduler, as well as operations related to tasks and listeners.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
@@ -80,8 +84,11 @@ public class QuartzCronTaskRepository implements CronTaskRepository {
      */
     private ListenerManager listenerManager;
 
+    private boolean waitForJobsToCompleteWhenStop;
+
     private boolean setSchedulerName;
     private boolean setSchedulerFactoryClass;
+    private boolean setWaitForJobsToCompleteWhenStop;
 
     /**
      * @since 1.0.3
@@ -92,7 +99,7 @@ public class QuartzCronTaskRepository implements CronTaskRepository {
     /**
      * Creates a new {@code QuartzCronTaskRepository} using given {@code Scheduler}.
      *
-     * @param scheduler quartz task scheduler instance.
+     * @param scheduler quartz task scheduler instance after initialize.
      * @since 1.0.3
      */
     public QuartzCronTaskRepository(Scheduler scheduler) {
@@ -102,7 +109,8 @@ public class QuartzCronTaskRepository implements CronTaskRepository {
     /**
      * Creates a new {@code QuartzCronTaskRepository} using given {@code SchedulerFactory}.
      *
-     * @param schedulerFactory quartz {@code Scheduler} product factory instance.
+     * @param schedulerFactory quartz {@code Scheduler} product factory instance after
+     *                         initialize.
      * @since 1.0.3
      */
     public QuartzCronTaskRepository(SchedulerFactory schedulerFactory) {
@@ -140,21 +148,25 @@ public class QuartzCronTaskRepository implements CronTaskRepository {
     }
 
     /**
-     * Set the parameter {@link StartupProperties} object for building the quartz task
+     * Set the parameter {@link SuperiorProperties} object for building the quartz task
      * factory, compatible with the Cron framework startup parameter series.
      *
      * <p>The configuration file cannot overwrite the value set by the external active
      * call to the set method.
      *
-     * @param startupProperties {@link StartupProperties} object for building the quartz
-     *                          task factory.
+     * @param superiorProperties {@link SuperiorProperties} object for building the quartz
+     *                           task factory.
      * @since 1.0.3
      */
-    public void setQuartzProperties(StartupProperties startupProperties) {
+    public void setProperties(SuperiorProperties superiorProperties) {
         if (quartzProperties != null) {
-            this.quartzProperties = startupProperties.asProperties();
+            this.quartzProperties = superiorProperties.asProperties();
             if (!setSchedulerFactoryClass)
-                startupProperties.getProperty("schedulerFactoryClass", StdSchedulerFactory.class);
+                setSchedulerFactoryClass(superiorProperties.getProperty("schedulerFactoryClass",
+                        StdSchedulerFactory.class));
+            if (!setWaitForJobsToCompleteWhenStop)
+                setWaitForJobsToCompleteWhenStop(superiorProperties
+                        .getProperty("waitForJobsToCompleteWhenStop", false));
         }
     }
 
@@ -181,6 +193,18 @@ public class QuartzCronTaskRepository implements CronTaskRepository {
         if (jobFactory != null) {
             this.jobFactory = jobFactory;
         }
+    }
+
+    /**
+     * Set whether to wait for all tasks to complete when closing the scheduler.
+     *
+     * @param waitForJobsToCompleteWhenStop if set to true, wait for all tasks to complete
+     *                                      before closing the executor, otherwise it will
+     *                                      not.
+     */
+    public void setWaitForJobsToCompleteWhenStop(boolean waitForJobsToCompleteWhenStop) {
+        this.waitForJobsToCompleteWhenStop = waitForJobsToCompleteWhenStop;
+        setWaitForJobsToCompleteWhenStop = true;
     }
 
     /**
@@ -231,16 +255,6 @@ public class QuartzCronTaskRepository implements CronTaskRepository {
         }
         listenerManager = scheduler.getListenerManager();
     }
-
-    /**
-     * Return a quartz {@code Scheduler} after initialize.
-     *
-     * @return a quartz {@code Scheduler} after initialize.
-     */
-    public Scheduler getScheduler() {
-        return scheduler;
-    }
-
 
     @Override
     @NotNull
@@ -321,5 +335,33 @@ public class QuartzCronTaskRepository implements CronTaskRepository {
     @Override
     public void removeListener(@NotNull CronListener listener) {
         listenerManager.removeJobListener(listener.unwrap(QuartzCronListener.class).getName());
+    }
+
+    @Override
+    public void start() {
+        try {
+            scheduler.start();
+        } catch (SchedulerException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    @Override
+    @PreDestroy
+    public void stop() {
+        try {
+            scheduler.shutdown(waitForJobsToCompleteWhenStop);
+        } catch (SchedulerException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    @Override
+    public boolean isStarted() {
+        try {
+            return scheduler.isStarted();
+        } catch (SchedulerException e) {
+            return false;
+        }
     }
 }
