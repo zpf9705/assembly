@@ -24,8 +24,7 @@ import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.spring.scheduler.EnableScheduling;
 
 /**
- * {@link Import Import Configuration}
- * for enhance {@link org.springframework.scheduling.annotation.EnableScheduling}.
+ * {@link Import Import Configuration} for enhance {@link EnableScheduling}.
  *
  * <p>There is no default selection for {@code CronTaskRepository} during import
  * assembly.
