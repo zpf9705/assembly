@@ -65,6 +65,7 @@ public interface SuperiorProperties {
      *                     property name defined in the object.
      * @param <T>          generic type, representing the type of attribute value and the type
      *                     of default value.
+     * @param def          the default value when the attribute does not exist.
      * @return Returns the value of the specified property, and if the property does not exist,
      * returns the default value passed in.
      * @throws NullPointerException if input propertyName is null.
