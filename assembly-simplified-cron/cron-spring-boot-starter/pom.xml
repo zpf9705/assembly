@@ -34,7 +34,7 @@
 
         <dependency>
             <groupId>top.osjf.cron</groupId>
-            <artifactId>cron-hutool</artifactId>
+            <artifactId>cron-spring-scheduler</artifactId>
         </dependency>
 
         <dependency>
