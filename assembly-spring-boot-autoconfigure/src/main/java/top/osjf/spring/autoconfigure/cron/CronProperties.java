@@ -117,6 +117,7 @@ public class CronProperties {
 
         /**
          * The time zone applied by the scheduler.
+         * @since 1.0.3
          */
         private TimeZone timezone = TimeZone.getDefault();
 
