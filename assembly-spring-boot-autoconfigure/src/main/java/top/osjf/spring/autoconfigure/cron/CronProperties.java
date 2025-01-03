@@ -86,6 +86,9 @@ public class CronProperties {
         CRON4J
     }
 
+    /**
+     * @since 1.0.3
+     */
     public interface PropertiesConvert {
 
         SuperiorProperties toProperties();
