@@ -233,7 +233,8 @@ import java.util.concurrent.Executor;
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Import(SchedulingConfiguration.class)
+@Import({SchedulingConfiguration.class,
+        SchedulingRepositoryConfiguration.class})
 @Documented
 public @interface EnableScheduling {
 }
