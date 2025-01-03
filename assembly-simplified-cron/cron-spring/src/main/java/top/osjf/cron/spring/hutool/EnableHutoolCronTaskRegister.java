@@ -85,6 +85,7 @@ public @interface EnableHutoolCronTaskRegister {
      *
      * @return a zone id accepted by {@link java.util.TimeZone#getTimeZone(String)},
      * or an empty String to indicate the server's default time zone.
+     * @since 1.0.3
      */
     String timeZone() default "";
 }
