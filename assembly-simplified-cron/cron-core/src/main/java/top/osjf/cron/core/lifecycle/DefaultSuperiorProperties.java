@@ -17,6 +17,8 @@
 
 package top.osjf.cron.core.lifecycle;
 
+import top.osjf.cron.core.lang.Nullable;
+
 import java.util.Map;
 import java.util.Properties;
 
@@ -58,9 +60,15 @@ class DefaultSuperiorProperties implements SuperiorProperties {
     }
 
     @Override
+    @Nullable
+    public Object getProperty(String propertyName) {
+        return properties.get(propertyName);
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T getProperty(String propertyName, T def) {
-        Object o = properties.get(propertyName);
+        Object o = getProperty(propertyName);
         if (o == null) {
             return def;
         }
