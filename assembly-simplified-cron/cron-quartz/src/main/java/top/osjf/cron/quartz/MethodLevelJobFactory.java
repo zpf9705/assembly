@@ -17,14 +17,17 @@
 
 package top.osjf.cron.quartz;
 
-import org.quartz.*;
+import org.quartz.Job;
+import org.quartz.JobDetail;
+import org.quartz.JobKey;
+import org.quartz.Scheduler;
 import org.quartz.spi.JobFactory;
 import org.quartz.spi.TriggerFiredBundle;
 import top.osjf.cron.core.util.ReflectUtils;
 
 import java.lang.reflect.Method;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Method identity record {@link JobDetail#getKey()} level {@link Job} instance
@@ -53,7 +56,7 @@ public class MethodLevelJobFactory implements JobFactory {
      * <p>Key is <strong>declaringClassName + @ + methodName</strong>
      * <p>value is {@code Job} instance.
      */
-    private final Map<String, Job> JOB_CACHE = new ConcurrentHashMap<>(64);
+    private final ConcurrentMap<String, Job> JOB_CACHE = new ConcurrentHashMap<>(64);
 
     @Override
     public final Job newJob(TriggerFiredBundle bundle, Scheduler scheduler) {
