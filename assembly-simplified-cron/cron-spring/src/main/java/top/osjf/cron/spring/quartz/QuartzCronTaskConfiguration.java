@@ -23,12 +23,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
+import top.osjf.cron.core.repository.CronExecutorServiceSupplier;
 import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
 import top.osjf.cron.spring.CronAnnotationPostProcessor;
 import top.osjf.cron.spring.ObjectProviderUtils;
 import top.osjf.cron.spring.annotation.Cron;
-
-import java.util.concurrent.Executor;
 
 /**
  * {@code @Configuration} class that registers a {@link CronAnnotationPostProcessor}
@@ -55,7 +54,7 @@ public class QuartzCronTaskConfiguration {
     public QuartzCronTaskRepository quartzCronTaskRepository(ObjectProvider<Scheduler> schedulerProvider,
                                                              ObjectProvider<SchedulerFactory> schedulerFactoryProvider,
                                                              ObjectProvider<SuperiorProperties> propertiesProvider,
-                                                             ObjectProvider<Executor> executorProvider,
+                                                             ObjectProvider<CronExecutorServiceSupplier> executorProvider,
                                                              QuartzJobFactory quartzJobFactory) {
         Scheduler scheduler = ObjectProviderUtils.getPriority(schedulerProvider);
         if (scheduler != null) {
@@ -73,8 +72,10 @@ public class QuartzCronTaskConfiguration {
         repository.setJobFactory(quartzJobFactory);
         SuperiorProperties properties = ObjectProviderUtils.getPriority(propertiesProvider);
         repository.setProperties(properties);
-        Executor taskExecutor = ObjectProviderUtils.getPriority(executorProvider);
-        repository.setTaskExecutor(taskExecutor);
+        CronExecutorServiceSupplier executorServiceSupplier = ObjectProviderUtils.getPriority(executorProvider);
+        if (executorServiceSupplier != null){
+            repository.setTaskExecutor(executorServiceSupplier.get());
+        }
         return repository;
     }
 }
