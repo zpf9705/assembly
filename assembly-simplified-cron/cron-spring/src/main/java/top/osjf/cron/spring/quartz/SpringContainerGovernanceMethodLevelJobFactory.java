@@ -17,8 +17,6 @@
 package top.osjf.cron.spring.quartz;
 
 import org.quartz.Job;
-import org.quartz.JobDetail;
-import org.quartz.spi.JobFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -36,19 +34,21 @@ import top.osjf.cron.quartz.MethodLevelJobFactory;
 import java.lang.reflect.Method;
 
 /**
- * Custom Quartz {@link JobFactory} retrieves objects from Spring's
- * context container based on the filled {@link Job} type, ensuring
- * unique reuse of the objects.
+ * {@code SpringContainerGovernanceMethodLevelJobFactory} is an extension about
+ * {@link MethodLevelJob} that inherits the Spring framework and uses the Spring
+ * container to manage and execute tasks.
  *
- * <p>Convert Quartz's scheduled tasks for class structure to method level,
- * use the registered {@link JobDetail} to obtain the specific method for
- * executing the bean, and dynamically create a bean to execute the scheduled
- * task. The structure can be viewed from {@link MethodLevelJob}.
+ * <p>Its callback method follows the {@link #newJob} convention, defining the
+ * class as a bean in the container by default, and dynamically creating a
+ * {@link MethodLevelJob} bean to be managed by Spring. Each time it retrieves a
+ * singleton of the {@link MethodLevelJob} bean from the container, it achieves the
+ * goal of globally unique use.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 1.0.3
  */
-public class QuartzJobFactory extends MethodLevelJobFactory implements ApplicationContextAware, BeanClassLoaderAware {
+public class SpringContainerGovernanceMethodLevelJobFactory extends MethodLevelJobFactory implements ApplicationContextAware,
+        BeanClassLoaderAware {
 
     private ApplicationContext applicationContext;
 
