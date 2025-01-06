@@ -31,6 +31,7 @@ import top.osjf.cron.core.util.StringUtils;
 import top.osjf.cron.quartz.IDJSONConversion;
 import top.osjf.cron.quartz.MethodLevelJob;
 import top.osjf.cron.quartz.MethodLevelJobFactory;
+import top.osjf.cron.quartz.QuartzUtils;
 import top.osjf.cron.quartz.listener.QuartzCronListener;
 
 import javax.annotation.PostConstruct;
@@ -260,8 +261,9 @@ public class QuartzCronTaskRepository implements CronTaskRepository {
     @NotNull
     public String register(@NotNull String expression, @NotNull TaskBody body) {
         JobDetail jobDetail = body.unwrap(JobDetailTaskBody.class).getJobDetail();
+        QuartzUtils.checkJobClassRules(jobDetail.getJobClass());
         JobKey key = jobDetail.getKey();
-        checkJobKeyRules(key);
+        QuartzUtils.checkJobKeyRules(key);
         return RepositoryUtils.doRegister(() -> {
             TriggerBuilder<CronTrigger> triggerBuilder = TriggerBuilder.newTrigger()
                     .withIdentity(key.getName(), key.getGroup())
@@ -270,36 +272,6 @@ public class QuartzCronTaskRepository implements CronTaskRepository {
             scheduler.scheduleJob(jobDetail, triggerBuilder.build());
             return IDJSONConversion.convertJobKeyAsJSONID(key);
         }, ParseException.class);
-    }
-
-    private void checkJobKeyRules(JobKey key) {
-        String declaringClassName = key.getGroup();
-        if (StringUtils.isBlank(declaringClassName)) {
-            throw new IllegalArgumentException
-                    ("The attribute <org.quartz.JobKey#group> of <org.quartz.JobKey> is required and is" +
-                            " a fully qualified name for the existing class.");
-        }
-        String methodName = key.getName();
-        if (StringUtils.isBlank(methodName)) {
-            throw new IllegalArgumentException
-                    ("The attribute <org.quartz.JobKey#name> of <org.quartz.JobKey> is required and is" +
-                            " the executable method in class <" + declaringClassName + ">.");
-        }
-        Class<?> declaringClass;
-        try {
-            declaringClass = ReflectUtils.forName(declaringClassName);
-        } catch (Exception e) {
-            throw new IllegalStateException
-                    ("The input requirement for the <org.quartz.JobKey#group> attribute of " +
-                            "<org.quartz.JobKey> is the fully qualified name of the executing class.");
-        }
-        try {
-            ReflectUtils.getMethod(declaringClass, methodName);
-        } catch (Exception e) {
-            throw new IllegalStateException
-                    ("The input requirement for the <org.quartz.JobKey#name> attribute of " +
-                            "<org.quartz.JobKey> is the executable method in class <" + declaringClassName + ">.");
-        }
     }
 
     @Override
