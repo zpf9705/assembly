@@ -18,6 +18,7 @@
 package top.osjf.cron.quartz;
 
 import org.quartz.*;
+import org.quartz.impl.JobExecutionContextImpl;
 import org.quartz.spi.JobFactory;
 import org.quartz.spi.TriggerFiredBundle;
 import top.osjf.cron.core.util.ReflectUtils;
@@ -56,11 +57,27 @@ public class MethodLevelJobFactory implements JobFactory {
     private final ConcurrentMap<String, Job> JOB_CACHE = new ConcurrentHashMap<>(64);
 
     @Override
-    public final Job newJob(TriggerFiredBundle bundle, Scheduler scheduler) {
+    public final Job newJob(TriggerFiredBundle bundle, Scheduler scheduler) throws SchedulerException {
         JobDetail jobDetail = bundle.getJobDetail();
-        // MethodJob assignable is method level scheduled task
-        //Dynamically create beans and execute them
-        QuartzUtils.checkJobClassRules(jobDetail.getJobClass());
+        //Verify again whether the returned job type meets the
+        // specification requirements.
+        try {
+            QuartzUtils.checkJobClassRules(jobDetail.getJobClass());
+        } catch (IllegalArgumentException e) {
+            //After not meeting the requirements, create execution context information.
+            // If the job is not successfully instantiated multiple times, return the
+            // job as null. Wrap the rule exception with JobExecutionException and return it.
+
+            //A new notification exception has been added to JobListener, but the job instance
+            // has not been successfully instantiated.
+            JobExecutionContext context = new JobExecutionContextImpl(scheduler, bundle, null);
+            for (JobListener jobListener : scheduler.getListenerManager().getJobListeners()) {
+                jobListener.jobWasExecuted(context, new JobExecutionException(e));
+            }
+
+            //This exception is still thrown to the execution exception listener.
+            throw e;
+        }
         JobKey key = jobDetail.getKey();
         //JobKey.name is method name.
         String methodName = key.getName();
