@@ -29,7 +29,6 @@ import top.osjf.cron.core.repository.TaskBody;
 import top.osjf.cron.core.util.ReflectUtils;
 import top.osjf.cron.core.util.StringUtils;
 import top.osjf.cron.quartz.IDJSONConversion;
-import top.osjf.cron.quartz.MethodLevelJob;
 import top.osjf.cron.quartz.MethodLevelJobFactory;
 import top.osjf.cron.quartz.QuartzUtils;
 import top.osjf.cron.quartz.listener.QuartzCronListener;
@@ -278,8 +277,8 @@ public class QuartzCronTaskRepository implements CronTaskRepository {
     @NotNull
     public String register(@NotNull CronTask task) {
         Method method = task.getRunnable().getMethod();
-        return register(task.getExpression(), new JobDetailTaskBody(JobBuilder.newJob(MethodLevelJob.class)
-                .withIdentity(method.getName(), method.getDeclaringClass().getName()).build()));
+        return register(task.getExpression(), new JobDetailTaskBody(
+                QuartzUtils.buildStandardJobDetail(method.getName(),method.getDeclaringClass().getName())));
     }
 
     @Override
