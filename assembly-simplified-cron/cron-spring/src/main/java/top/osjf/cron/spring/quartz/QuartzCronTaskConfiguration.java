@@ -45,8 +45,8 @@ import top.osjf.cron.spring.annotation.Cron;
 public class QuartzCronTaskConfiguration {
 
     @Bean
-    public QuartzJobFactory quartzJobFactory() {
-        return new QuartzJobFactory();
+    public SpringContainerGovernanceMethodLevelJobFactory springContainerGovernanceMethodLevelJobFactory() {
+        return new SpringContainerGovernanceMethodLevelJobFactory();
     }
 
     @Bean
@@ -55,21 +55,21 @@ public class QuartzCronTaskConfiguration {
                                                              ObjectProvider<SchedulerFactory> schedulerFactoryProvider,
                                                              ObjectProvider<SuperiorProperties> propertiesProvider,
                                                              ObjectProvider<CronExecutorServiceSupplier> executorProvider,
-                                                             QuartzJobFactory quartzJobFactory) {
+                                                             SpringContainerGovernanceMethodLevelJobFactory jobFactory) {
         Scheduler scheduler = ObjectProviderUtils.getPriority(schedulerProvider);
         if (scheduler != null) {
             QuartzCronTaskRepository repository = new QuartzCronTaskRepository(scheduler);
-            repository.setJobFactory(quartzJobFactory);
+            repository.setJobFactory(jobFactory);
             return repository;
         }
         SchedulerFactory schedulerFactory = ObjectProviderUtils.getPriority(schedulerFactoryProvider);
         if (schedulerFactory != null) {
             QuartzCronTaskRepository repository = new QuartzCronTaskRepository(schedulerFactory);
-            repository.setJobFactory(quartzJobFactory);
+            repository.setJobFactory(jobFactory);
             return repository;
         }
         QuartzCronTaskRepository repository = new QuartzCronTaskRepository();
-        repository.setJobFactory(quartzJobFactory);
+        repository.setJobFactory(jobFactory);
         SuperiorProperties properties = ObjectProviderUtils.getPriority(propertiesProvider);
         repository.setProperties(properties);
         CronExecutorServiceSupplier executorServiceSupplier = ObjectProviderUtils.getPriority(executorProvider);
