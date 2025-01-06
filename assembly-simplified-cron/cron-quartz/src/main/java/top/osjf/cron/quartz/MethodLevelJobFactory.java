@@ -60,10 +60,7 @@ public class MethodLevelJobFactory implements JobFactory {
         JobDetail jobDetail = bundle.getJobDetail();
         // MethodJob assignable is method level scheduled task
         //Dynamically create beans and execute them
-        if (!MethodLevelJob.class.isAssignableFrom(jobDetail.getJobClass())) {
-            throw new UnsupportedOperationException("Only supports task execution of " +
-                    "<top.osjf.cron.quartz.MethodLevelJob> type.");
-        }
+        QuartzUtils.checkJobClassRules(jobDetail.getJobClass());
         JobKey key = jobDetail.getKey();
         //JobKey.name is method name.
         String methodName = key.getName();
