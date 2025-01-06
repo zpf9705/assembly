@@ -21,12 +21,11 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
+import top.osjf.cron.core.repository.CronExecutorServiceSupplier;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
 import top.osjf.cron.spring.CronAnnotationPostProcessor;
 import top.osjf.cron.spring.ObjectProviderUtils;
 import top.osjf.cron.spring.annotation.Cron;
-
-import java.util.concurrent.ExecutorService;
 
 /**
  * {@code @Configuration} class that registers a {@link CronAnnotationPostProcessor}
@@ -46,7 +45,7 @@ public class HutoolCronTaskConfiguration {
     @Bean
     public HutoolCronTaskRepository hutoolCronTaskRepository(ObjectProvider<Scheduler> schedulerProvider,
                                                              ObjectProvider<SuperiorProperties> propertiesProvider,
-                                                             ObjectProvider<ExecutorService> executorServiceProvider) {
+                                                             ObjectProvider<CronExecutorServiceSupplier> executorServiceProvider) {
         Scheduler scheduler = ObjectProviderUtils.getPriority(schedulerProvider);
         if (scheduler != null) {
             return new HutoolCronTaskRepository(scheduler);
@@ -54,8 +53,10 @@ public class HutoolCronTaskConfiguration {
         HutoolCronTaskRepository repository = new HutoolCronTaskRepository();
         SuperiorProperties properties = ObjectProviderUtils.getPriority(propertiesProvider);
         repository.setProperties(properties);
-        ExecutorService executorService = ObjectProviderUtils.getPriority(executorServiceProvider);
-        repository.setThreadExecutor(executorService);
+        CronExecutorServiceSupplier executorServiceSupplier = ObjectProviderUtils.getPriority(executorServiceProvider);
+        if (executorServiceSupplier != null) {
+            repository.setThreadExecutor(executorServiceSupplier.get());
+        }
         return repository;
     }
 }
