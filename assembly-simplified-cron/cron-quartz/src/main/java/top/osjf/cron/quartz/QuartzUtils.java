@@ -18,6 +18,7 @@
 package top.osjf.cron.quartz;
 
 import org.quartz.Job;
+import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import top.osjf.cron.core.util.ReflectUtils;
@@ -99,5 +100,17 @@ public abstract class QuartzUtils {
                     ("The input requirement for the <org.quartz.JobKey#name> attribute of " +
                             "<org.quartz.JobKey> is the executable method in class <" + declaringClassName + ">.");
         }
+    }
+
+    /**
+     * Using the rules of this framework, create a standard {@link JobDetail} instance that meets the
+     * requirements of methods {@link #checkJobClassRules} and {@link #checkJobKeyRules} mentioned above.
+     *
+     * @param methodName         the method name.
+     * @param declaringClassName the declare class name.
+     * @return {@link JobDetail} instance after standard build.
+     */
+    public static JobDetail buildStandardJobDetail(String methodName, String declaringClassName) {
+        return JobBuilder.newJob(MethodLevelJob.class).withIdentity(methodName, declaringClassName).build();
     }
 }
