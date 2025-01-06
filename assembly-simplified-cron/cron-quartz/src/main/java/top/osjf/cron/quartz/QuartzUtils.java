@@ -46,7 +46,9 @@ public abstract class QuartzUtils {
      */
     public static void checkJobClassRules(Class<? extends Job> jobClass) {
         if (!MethodLevelJob.class.isAssignableFrom(jobClass)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException
+                    ("The attribute <org.quartz.JobDetail#getJobClass> must be " +
+                            "<top.osjf.cron.quartz.MethodLevelJob> or its subclass.");
         }
     }
 
