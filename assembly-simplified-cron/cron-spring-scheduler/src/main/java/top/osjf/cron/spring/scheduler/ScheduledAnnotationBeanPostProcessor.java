@@ -88,7 +88,6 @@ import java.util.concurrent.TimeUnit;
  * @author Victor Brown
  * @author Sam Brannen
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 3.0
  * @see Scheduled
  * @see Cron
  * @see org.springframework.scheduling.annotation.EnableScheduling
@@ -97,6 +96,7 @@ import java.util.concurrent.TimeUnit;
  * @see ScheduledTaskRegistrar
  * @see EnhanceScheduledTaskRegistrar
  * @see AsyncAnnotationBeanPostProcessor
+ * @since 3.0
  */
 public class ScheduledAnnotationBeanPostProcessor
         implements ScheduledTaskHolder, MergedBeanDefinitionPostProcessor, DestructionAwareBeanPostProcessor,
@@ -223,7 +223,7 @@ public class ScheduledAnnotationBeanPostProcessor
 
         if (this.applicationContext == null) {
             // Not running in an ApplicationContext -> register tasks early...
-            finishRegistration(null);
+            finishRegistration(null); // Not running in an ApplicationContext -> no Registrar bean...
         }
     }
 
@@ -233,10 +233,20 @@ public class ScheduledAnnotationBeanPostProcessor
             // Running in an ApplicationContext -> register tasks this late...
             // giving other ContextRefreshedEvent listeners a chance to perform
             // their work at the same time (e.g. Spring Batch's job registration).
-            finishRegistration(getRegistrarBean());
+            finishRegistration(getRegistrarBean()); // Get highest priority registrar bean after refreshed.
         }
     }
 
+    /**
+     * When the container is refreshed and a notification {@link ContextRefreshedEvent}
+     * is issued, the definition of {@link ScheduledTaskRegistrar} is first retrieved
+     * from the container, and {@code this.ScheduledTaskRegistrar} that has already collected
+     * tasks is copied later.
+     *
+     * <p>If multiple are found, take the one with the highest priority.
+     *
+     * @return Use {@link ScheduledTaskRegistrar} beans pre-defined by developers.
+     */
     @Nullable
     private ScheduledTaskRegistrar getRegistrarBean() {
         Assert.state(applicationContext != null, "Not running in an ApplicationContext");
@@ -250,6 +260,15 @@ public class ScheduledAnnotationBeanPostProcessor
         return null;
     }
 
+    /**
+     * Copy the {@code this.ScheduledTaskRegistrar} task information collected in advance to the
+     * {@link ScheduledTaskRegistrar} bean with the highest priority currently found, and keep it
+     * for future registration.
+     *
+     * @param registrarBean The highest priority {@link ScheduledTaskRegistrar} in the container.
+     * @return The container with the highest priority after copying the relevant properties of
+     * {@link ScheduledTaskRegistrar}.
+     */
     private ScheduledTaskRegistrar copyThisRegistrarAvailableDataToBean(ScheduledTaskRegistrar registrarBean) {
         TaskScheduler taskScheduler = this.registrar.getScheduler();
         if (taskScheduler != null) {
@@ -262,7 +281,8 @@ public class ScheduledAnnotationBeanPostProcessor
         return registrarBean;
     }
 
-    private void finishRegistration(ScheduledTaskRegistrar registrar) {
+    private void finishRegistration(@Nullable ScheduledTaskRegistrar registrar) {
+        //Determine the final registration class based on whether registration beans are provided.
         final ScheduledTaskRegistrar finalRegistrar = registrar != null ? registrar : this.registrar;
         if (this.scheduler != null) {
             finalRegistrar.setScheduler(this.scheduler);
