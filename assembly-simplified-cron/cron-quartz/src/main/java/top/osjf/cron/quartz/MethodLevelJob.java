@@ -18,7 +18,6 @@ package top.osjf.cron.quartz;
 
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 import top.osjf.cron.core.repository.CronMethodRunnable;
 
 import java.lang.reflect.Method;
@@ -39,7 +38,7 @@ public class MethodLevelJob implements Job {
     }
 
     @Override
-    public void execute(JobExecutionContext context) throws JobExecutionException {
+    public void execute(JobExecutionContext context) {
         cronMethodRunnable.run();
     }
 }
