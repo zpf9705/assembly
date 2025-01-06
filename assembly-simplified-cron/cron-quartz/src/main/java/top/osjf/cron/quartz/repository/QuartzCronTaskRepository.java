@@ -40,6 +40,7 @@ import java.text.ParseException;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.Executor;
+import java.util.function.Supplier;
 
 /**
  * The {@link CronTaskRepository} implementation class of quartz.
@@ -50,7 +51,7 @@ import java.util.concurrent.Executor;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class QuartzCronTaskRepository implements CronTaskRepository {
+public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<ListenerManager> {
 
     /**
      * The thread count property.
@@ -278,7 +279,7 @@ public class QuartzCronTaskRepository implements CronTaskRepository {
     public String register(@NotNull CronTask task) {
         Method method = task.getRunnable().getMethod();
         return register(task.getExpression(), new JobDetailTaskBody(
-                QuartzUtils.buildStandardJobDetail(method.getName(),method.getDeclaringClass().getName())));
+                QuartzUtils.buildStandardJobDetail(method.getName(), method.getDeclaringClass().getName())));
     }
 
     @Override
@@ -306,6 +307,25 @@ public class QuartzCronTaskRepository implements CronTaskRepository {
     @Override
     public void removeListener(@NotNull CronListener listener) {
         listenerManager.removeJobListener(listener.unwrap(QuartzCronListener.class).getName());
+    }
+
+    /**
+     * Return the listener management instance {@link ListenerManager} of this
+     * quartz task repository.
+     *
+     * <p>This repository only supports dynamic addition of {@link JobListener}
+     * listeners, that is, {@link QuartzCronListener} instances. If developers want
+     * to extend and add other listeners, such as {@link SchedulerListener},
+     * {@link TriggerListener}, etc., they can call this method to obtain
+     * {@link ListenerManager} instances and add and process them themselves.
+     *
+     * @return the listener management instance {@link ListenerManager} of this
+     * quartz task repository.
+     */
+    @Override
+    @NotNull
+    public ListenerManager get() {
+        return listenerManager;
     }
 
     @Override
