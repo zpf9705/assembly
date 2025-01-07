@@ -88,7 +88,6 @@ import java.util.concurrent.TimeUnit;
  * @author Victor Brown
  * @author Sam Brannen
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 3.0
  * @see Scheduled
  * @see Cron
  * @see org.springframework.scheduling.annotation.EnableScheduling
@@ -97,6 +96,7 @@ import java.util.concurrent.TimeUnit;
  * @see ScheduledTaskRegistrar
  * @see EnhanceScheduledTaskRegistrar
  * @see AsyncAnnotationBeanPostProcessor
+ * @since 3.0
  */
 public class ScheduledAnnotationBeanPostProcessor
         implements ScheduledTaskHolder, MergedBeanDefinitionPostProcessor, DestructionAwareBeanPostProcessor,
@@ -444,6 +444,14 @@ public class ScheduledAnnotationBeanPostProcessor
         }
     }
 
+    /**
+     * Process the given {@code @Cron} method declaration on the given bean.
+     *
+     * @param cron   the {@code @Cron} annotation
+     * @param method the method that the annotation has been declared on
+     * @param bean   the target bean instance
+     * @see #createRunnable(Object, Method)
+     */
     protected void processScheduled(Cron cron, Method method, Object bean) {
         String[] profiles = cron.profiles();
         if (activeProfiles != null && !ArrayUtils.isEmpty(profiles)
