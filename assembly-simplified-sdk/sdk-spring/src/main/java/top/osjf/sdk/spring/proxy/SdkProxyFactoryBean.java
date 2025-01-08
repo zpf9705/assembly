@@ -267,14 +267,24 @@ public class SdkProxyFactoryBean<T> extends ComprehensiveDelegationCallback impl
         }
     }
 
-    /**
-     * Return the proxy information.
-     *
-     * @return the proxy information.
-     */
     @Override
     public String toString() {
         return String.format("Proxy info ( target type [%s] | proxy type [%s] | host [%s] | proxy model [%s] )",
                 type.getName(), getClass().getName(), getHost(), proxyModel.name());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, getHost(), proxyModel);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SdkProxyFactoryBean<?> that = (SdkProxyFactoryBean<?>) o;
+        return Objects.equals(type, that.type)
+                && Objects.equals(getHost(), that.getHost())
+                && proxyModel == that.proxyModel;
     }
 }
