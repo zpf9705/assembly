@@ -174,7 +174,6 @@ public class ComprehensiveDelegationCallback implements RequestAttributes,
         switch (method.getName()){
             case "toString": return toString();
             case "hashCode": return hashCode();
-            case "equals": return equals(args[0]);
         }
         Pair<Request<?>, List<Callback>> pair = SdkSupport.createRequest(method, args);
         Request<?> request = pair.getFirst();
