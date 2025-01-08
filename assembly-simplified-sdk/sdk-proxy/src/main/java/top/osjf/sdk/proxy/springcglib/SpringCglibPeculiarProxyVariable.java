@@ -20,8 +20,6 @@ package top.osjf.sdk.proxy.springcglib;
 import org.springframework.cglib.proxy.MethodProxy;
 import top.osjf.sdk.proxy.DelegationCallback;
 
-import java.util.Objects;
-
 /**
  * The {@code SpringCglibPeculiarProxyVariable} class used to provide
  * additional information related to a specific proxy instance and
@@ -51,10 +49,5 @@ public class SpringCglibPeculiarProxyVariable implements DelegationCallback.Pecu
 
     public MethodProxy getMethodProxy() {
         return methodProxy;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(obj, methodProxy);
     }
 }
