@@ -171,8 +171,9 @@ public class ComprehensiveDelegationCallback implements RequestAttributes,
      */
     @Override
     public Object callback(Method method, Object[] args, PeculiarProxyVariable variable) throws Throwable {
-        if ("toString".equals(method.getName())) {
-            return toString();
+        switch (method.getName()){
+            case "toString": return toString();
+            case "hashCode": return hashCode();
         }
         Pair<Request<?>, List<Callback>> pair = SdkSupport.createRequest(method, args);
         Request<?> request = pair.getFirst();
@@ -195,14 +196,5 @@ public class ComprehensiveDelegationCallback implements RequestAttributes,
             }
         }
         return result;
-    }
-
-    @Override
-    public String toString() {
-        return "ComprehensiveDelegationCallback{" +
-                "host='" + host + '\'' +
-                ", postProcessors=" + postProcessors +
-                ", requestCaller=" + requestCaller +
-                '}';
     }
 }
