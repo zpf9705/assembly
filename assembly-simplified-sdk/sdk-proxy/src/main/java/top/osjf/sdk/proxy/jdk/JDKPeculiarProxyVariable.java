@@ -19,6 +19,8 @@ package top.osjf.sdk.proxy.jdk;
 
 import top.osjf.sdk.proxy.DelegationCallback;
 
+import java.util.Objects;
+
 /**
  * The {@code JDKPeculiarProxyVariable} class used to provide
  * additional information related to a specific proxy instance
@@ -39,5 +41,10 @@ public class JDKPeculiarProxyVariable implements DelegationCallback.PeculiarProx
 
     public Object getProxy() {
         return proxy;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(proxy);
     }
 }

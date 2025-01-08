@@ -20,6 +20,8 @@ package top.osjf.sdk.proxy.cglib;
 import net.sf.cglib.proxy.MethodProxy;
 import top.osjf.sdk.proxy.DelegationCallback;
 
+import java.util.Objects;
+
 /**
  * The {@code CglibPeculiarProxyVariable} class used to provide
  * additional information related to a specific proxy instance
@@ -50,5 +52,10 @@ public class CglibPeculiarProxyVariable implements DelegationCallback.PeculiarPr
 
     public MethodProxy getMethodProxy() {
         return methodProxy;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(obj, methodProxy);
     }
 }
