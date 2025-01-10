@@ -33,8 +33,8 @@ import java.util.concurrent.Executor;
  * of the same annotation attribute applied to the class containing the method.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @see RequestCaller
  * @since 1.0.2
+ * @see RequestCaller
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
