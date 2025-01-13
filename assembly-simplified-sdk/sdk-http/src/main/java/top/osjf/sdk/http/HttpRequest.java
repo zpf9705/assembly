@@ -74,7 +74,12 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
      * </pre>
      * So the final result is: <strong>https://example.com?accessToken=123456</strong>
      *
+     * <p>If you want to make the use of this method more convenient, you can inherit
+     * {@link UrlQueryHttpRequest} and customize the URL query parameters and request
+     * body parameters.
+     *
      * @return post concatenation of URL in string format.
+     * @see UrlQueryHttpRequest
      */
     @Nullable
     String urlJoin();
