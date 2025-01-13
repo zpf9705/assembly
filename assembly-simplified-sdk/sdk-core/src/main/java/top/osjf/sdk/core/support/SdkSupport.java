@@ -106,6 +106,7 @@ public abstract class SdkSupport {
         /**
          * The relevant attribute instance object about {@link CallOptions} obtained from parameter
          * parsing, the existence basis of this class, and the existence of annotation {@link CallOptions}.
+         * @since 1.0.2
          */
         static class ParameterResolveOptionsMetadata implements OptionsMetadata {
             @Nullable List<Callback> callbacks;
@@ -132,6 +133,7 @@ public abstract class SdkSupport {
 
     /**
      * A simple implementation class for encapsulating and obtaining {@link AsyncPubSubExecutorProvider}.
+     * @since 1.0.2
      */
     private static class AsyncPubSubExecutorProviderImpl implements AsyncPubSubExecutorProvider {
         @Nullable Executor subscriptionExecutor;
