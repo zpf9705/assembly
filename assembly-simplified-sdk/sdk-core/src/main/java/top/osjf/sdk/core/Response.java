@@ -67,4 +67,20 @@ public interface Response extends ErrorResponse, IsInstanceWrapper, Serializable
      * @return information carried by the end of the return request.
      */
     String getMessage();
+
+    /**
+     * Return default response information.
+     *
+     * <p>This method is applicable to the default custom response
+     * information when the requester returns empty response information.
+     * This response information may be fixed or dynamic, and developers
+     * can rewrite it according to their own needs, which is equivalent
+     * to {@link #getMessage()} by default.
+     *
+     * @return The default response information.
+     * @since 1.0.2
+     */
+    default String getDefaultMessage() {
+        return getMessage();
+    }
 }
