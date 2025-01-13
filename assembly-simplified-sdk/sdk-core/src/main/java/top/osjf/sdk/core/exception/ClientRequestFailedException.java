@@ -24,7 +24,7 @@ import top.osjf.sdk.core.client.Client;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class ClientRequestFailedException extends RuntimeException {
+public class ClientRequestFailedException extends SdkException {
 
     private static final long serialVersionUID = 4730988924158862453L;
 
