@@ -86,13 +86,11 @@ public abstract class SdkSupport {
                                                       @NotNull Method method,
                                                       @Nullable List<Callback> callbacks,
                                                       @Nullable ThrowablePredicate throwablePredicate,
-                                                      @Nullable Executor subscriptionExecutor,
-                                                      @Nullable Executor observeExecutor     ) {
+                                                      @Nullable AsyncPubSubExecutorProvider executorProvider     ) {
             this.request = request;
             this.method = method;
             if ( this.method.isAnnotationPresent(CallOptions.class) ){
-                optionsMetadata = new ParameterResolveOptionsMetadata(callbacks, throwablePredicate,
-                        subscriptionExecutor, observeExecutor);
+                optionsMetadata = new ParameterResolveOptionsMetadata(callbacks, throwablePredicate, executorProvider);
             }
         }
 
@@ -120,16 +118,13 @@ public abstract class SdkSupport {
         static class ParameterResolveOptionsMetadata implements OptionsMetadata {
             @Nullable List<Callback> callbacks;
             @Nullable ThrowablePredicate throwablePredicate;
-            @Nullable Executor subscriptionExecutor;
-            @Nullable Executor observeExecutor;
+            @Nullable AsyncPubSubExecutorProvider executorProvider;
             ParameterResolveOptionsMetadata(       @Nullable List<Callback> callbacks,
                                                    @Nullable ThrowablePredicate throwablePredicate,
-                                                   @Nullable Executor subscriptionExecutor,
-                                                   @Nullable Executor observeExecutor       ) {
+                                                   @Nullable AsyncPubSubExecutorProvider executorProvider ) {
                 this.callbacks = callbacks;
                 this.throwablePredicate = throwablePredicate;
-                this.subscriptionExecutor = subscriptionExecutor;
-                this.observeExecutor = observeExecutor;
+                this.executorProvider = executorProvider;
             }
 
             @Override
@@ -142,17 +137,33 @@ public abstract class SdkSupport {
             public ThrowablePredicate getThrowablePredicate() {
                 return throwablePredicate;
             }
-            @Override
-            @Nullable
-            public Executor getSubscriptionExecutor() {
-                return subscriptionExecutor;
-            }
 
-            @Override
             @Nullable
-            public Executor getObserveExecutor() {
-                return observeExecutor;
+            @Override
+            public AsyncPubSubExecutorProvider getSubscriptionExecutorProvider() {
+                return executorProvider;
             }
+        }
+    }
+
+    private static class AsyncPubSubExecutorProviderImpl implements AsyncPubSubExecutorProvider {
+        @Nullable Executor subscriptionExecutor;
+        @Nullable Executor observeExecutor;
+
+        AsyncPubSubExecutorProviderImpl(@Nullable Executor subscriptionExecutor,
+                                        @Nullable Executor observeExecutor) {
+            this.subscriptionExecutor = subscriptionExecutor;
+            this.observeExecutor = observeExecutor;
+        }
+
+        @Override
+        public Executor getCustomSubscriptionExecutor() {
+            return subscriptionExecutor;
+        }
+
+        @Override
+        public Executor getCustomObserveExecutor() {
+            return observeExecutor;
         }
     }
 
@@ -208,6 +219,7 @@ public abstract class SdkSupport {
         Request<?> request = null; //create request.
         List<Callback> callbacks = new ArrayList<>(); //parameter callbacks.
         ThrowablePredicate throwablePredicate = null;
+        AsyncPubSubExecutorProvider executorProvider = null;
         Executor subscriptionExecutor = null;
         Executor observeExecutor = null;
         Map<String, Pair<Boolean, Object>> setterMetadata = new HashMap<>(); //support setter data.
@@ -310,9 +322,7 @@ public abstract class SdkSupport {
                  */
                 if (subscriptionExecutor == null || observeExecutor == null){
                     if (arg instanceof AsyncPubSubExecutorProvider) {
-                        AsyncPubSubExecutorProvider executorProvider = (AsyncPubSubExecutorProvider) arg;
-                        subscriptionExecutor = executorProvider.getCustomSubscriptionExecutor();
-                        observeExecutor = executorProvider.getCustomObserveExecutor();
+                        executorProvider = (AsyncPubSubExecutorProvider) arg;
                     } else if (arg instanceof Executor) {
                         if (parameter.isAnnotationPresent(Subscription.class)) {
                             subscriptionExecutor = (Executor) arg;
@@ -353,8 +363,10 @@ public abstract class SdkSupport {
                 }
             }
         }
-        return new ParameterResolveRequestExecuteMetadata(request, method, callbacks, throwablePredicate
-                , subscriptionExecutor, observeExecutor);
+        return new ParameterResolveRequestExecuteMetadata(request, method, callbacks, throwablePredicate,
+                executorProvider != null ? executorProvider :
+                        (subscriptionExecutor != null || observeExecutor != null) ?
+                                new AsyncPubSubExecutorProviderImpl(subscriptionExecutor, observeExecutor) : null);
     }
 
     /**
