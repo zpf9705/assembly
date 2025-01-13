@@ -17,8 +17,6 @@
 
 package top.osjf.sdk.core.caller;
 
-import com.google.common.annotations.Beta;
-
 import java.lang.annotation.*;
 
 /**
@@ -38,6 +36,5 @@ import java.lang.annotation.*;
 @Target({ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Beta
 public @interface Subscription {
 }
