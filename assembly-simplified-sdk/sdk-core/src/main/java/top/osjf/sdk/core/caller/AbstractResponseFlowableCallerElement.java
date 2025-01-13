@@ -53,7 +53,7 @@ public abstract class AbstractResponseFlowableCallerElement<R extends Response> 
     private final boolean whenResponseNonSuccessRetry;
 
     /*** When the response retry is still unsuccessful, whether to throw an exception
-     * {@link top.osjf.sdk.core.exception.SdkResponseNonSuccessException} flag. */
+     * {@link SdkResponseNonSuccessException} flag. */
     private final boolean whenResponseNonSuccessFinalThrow;
 
     /*** Custom retry exception predicate used to determine which exception types should trigger
