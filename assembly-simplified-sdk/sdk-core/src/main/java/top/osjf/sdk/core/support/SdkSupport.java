@@ -79,13 +79,9 @@ public abstract class SdkSupport {
      * @since 1.0.2
      */
     private static class ParameterResolveRequestExecuteMetadata implements RequestExecuteMetadata {
-        @NotNull
-        Request<?> request;
-        @NotNull
-        Method method;
-        @Nullable
-        OptionsMetadata optionsMetadata;
-
+        @NotNull Request<?> request;
+        @NotNull Method method;
+        @Nullable OptionsMetadata optionsMetadata;
         ParameterResolveRequestExecuteMetadata(@NotNull Request<?> request,
                                                @NotNull Method method,
                                                @Nullable List<Callback> callbacks,
@@ -93,23 +89,20 @@ public abstract class SdkSupport {
                                                @Nullable AsyncPubSubExecutorProvider executorProvider) {
             this.request = request;
             this.method = method;
-            if (this.method.isAnnotationPresent(CallOptions.class)) {
+            if (RequestCaller.condition(method)) {
                 optionsMetadata = new ParameterResolveOptionsMetadata(callbacks, throwablePredicate, executorProvider);
             }
         }
-
         @Override
         @NotNull
         public Request<?> getRequest() {
             return request;
         }
-
         @Override
         @NotNull
         public Method getMethod() {
             return method;
         }
-
         @Nullable
         @Override
         public OptionsMetadata getOptionsMetadata() {
@@ -121,12 +114,9 @@ public abstract class SdkSupport {
          * parsing, the existence basis of this class, and the existence of annotation {@link CallOptions}.
          */
         static class ParameterResolveOptionsMetadata implements OptionsMetadata {
-            @Nullable
-            List<Callback> callbacks;
-            @Nullable
-            ThrowablePredicate throwablePredicate;
-            @Nullable
-            AsyncPubSubExecutorProvider executorProvider;
+            @Nullable List<Callback> callbacks;
+            @Nullable ThrowablePredicate throwablePredicate;
+            @Nullable AsyncPubSubExecutorProvider executorProvider;
 
             ParameterResolveOptionsMetadata(@Nullable List<Callback> callbacks,
                                             @Nullable ThrowablePredicate throwablePredicate,
@@ -135,19 +125,16 @@ public abstract class SdkSupport {
                 this.throwablePredicate = throwablePredicate;
                 this.executorProvider = executorProvider;
             }
-
             @Override
             @Nullable
             public List<Callback> getCallbacks() {
                 return callbacks;
             }
-
             @Override
             @Nullable
             public ThrowablePredicate getThrowablePredicate() {
                 return throwablePredicate;
             }
-
             @Nullable
             @Override
             public AsyncPubSubExecutorProvider getSubscriptionExecutorProvider() {
