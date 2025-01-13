@@ -93,19 +93,13 @@ public abstract class SdkSupport {
                 optionsMetadata = new ParameterResolveOptionsMetadata(callbacks, throwablePredicate, executorProvider);
             }
         }
-        @Override
-        @NotNull
-        public Request<?> getRequest() {
+        @Override @NotNull public Request<?> getRequest() {
             return request;
         }
-        @Override
-        @NotNull
-        public Method getMethod() {
+        @Override @NotNull public Method getMethod() {
             return method;
         }
-        @Nullable
-        @Override
-        public OptionsMetadata getOptionsMetadata() {
+        @Nullable @Override public OptionsMetadata getOptionsMetadata() {
             return optionsMetadata;
         }
 
@@ -117,7 +111,6 @@ public abstract class SdkSupport {
             @Nullable List<Callback> callbacks;
             @Nullable ThrowablePredicate throwablePredicate;
             @Nullable AsyncPubSubExecutorProvider executorProvider;
-
             ParameterResolveOptionsMetadata(@Nullable List<Callback> callbacks,
                                             @Nullable ThrowablePredicate throwablePredicate,
                                             @Nullable AsyncPubSubExecutorProvider executorProvider) {
@@ -125,19 +118,13 @@ public abstract class SdkSupport {
                 this.throwablePredicate = throwablePredicate;
                 this.executorProvider = executorProvider;
             }
-            @Override
-            @Nullable
-            public List<Callback> getCallbacks() {
+            @Override @Nullable public List<Callback> getCallbacks() {
                 return callbacks;
             }
-            @Override
-            @Nullable
-            public ThrowablePredicate getThrowablePredicate() {
+            @Override @Nullable public ThrowablePredicate getThrowablePredicate() {
                 return throwablePredicate;
             }
-            @Nullable
-            @Override
-            public AsyncPubSubExecutorProvider getSubscriptionExecutorProvider() {
+            @Nullable @Override public AsyncPubSubExecutorProvider getSubscriptionExecutorProvider() {
                 return executorProvider;
             }
         }
@@ -147,24 +134,17 @@ public abstract class SdkSupport {
      * A simple implementation class for encapsulating and obtaining {@link AsyncPubSubExecutorProvider}.
      */
     private static class AsyncPubSubExecutorProviderImpl implements AsyncPubSubExecutorProvider {
-        @Nullable
-        Executor subscriptionExecutor;
-        @Nullable
-        Executor observeExecutor;
-
+        @Nullable Executor subscriptionExecutor;
+        @Nullable Executor observeExecutor;
         AsyncPubSubExecutorProviderImpl(@Nullable Executor subscriptionExecutor,
                                         @Nullable Executor observeExecutor) {
             this.subscriptionExecutor = subscriptionExecutor;
             this.observeExecutor = observeExecutor;
         }
-
-        @Override
-        public Executor getCustomSubscriptionExecutor() {
+        @Override public Executor getCustomSubscriptionExecutor() {
             return subscriptionExecutor;
         }
-
-        @Override
-        public Executor getCustomObserveExecutor() {
+        @Override public Executor getCustomObserveExecutor() {
             return observeExecutor;
         }
     }
