@@ -16,15 +16,17 @@
 
 package top.osjf.sdk.spring.annotation;
 
+import top.osjf.sdk.core.exception.SdkIllegalArgumentException;
+
 /**
- * The {@code IncorrectHostException} class defines a custom runtime exception indicating
- * that the provided host address is invalid.
+ * The {@code IncorrectHostException} class defines a custom {@code SdkIllegalArgumentException}
+ * indicating that the provided host address is invalid.
  * <p>
- * During network communication or data requests, it is often necessary to validate the
- * host address. If the passed-in host address does not meet the expected format or is
- * unreachable, this exception is thrown. This class inherits from {@code RuntimeException}
- * in the Java standard library, indicating that it is an unchecked exception, meaning the
- * compiler does not enforce the capturing or declaration of throwing this exception.
+ * During network communication or data requests, it is often necessary to validate the host
+ * address. If the passed-in host address does not meet the expected format or is unreachable,
+ * this exception is thrown. This class inherits from {@code SdkIllegalArgumentException} in the
+ * Java standard library, indicating that it is an unchecked exception, meaning the compiler does
+ * not enforce the capturing or declaration of throwing this exception.
  * <p>
  * The constructor receives a string parameter {@code host}, representing the problematic
  * host address that was passed in, and appends this address to the exception message,
@@ -36,7 +38,7 @@ package top.osjf.sdk.spring.annotation;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class IncorrectHostException extends RuntimeException {
+public class IncorrectHostException extends SdkIllegalArgumentException {
 
     private static final long serialVersionUID = -1221839322641243165L;
 
