@@ -80,16 +80,19 @@ public abstract class SdkSupport {
      */
     private static class ParameterResolveRequestExecuteMetadata implements RequestExecuteMetadata {
         @NotNull Request<?> request;
+        @NotNull Method method;
         @Nullable List<Callback> callbacks;
         @Nullable ThrowablePredicate throwablePredicate;
         @Nullable Executor subscriptionExecutor;
         @Nullable Executor observeExecutor;
-         ParameterResolveRequestExecuteMetadata(@NotNull Request<?> request,
+         ParameterResolveRequestExecuteMetadata(      @NotNull Request<?> request,
+                                                      @NotNull Method method,
                                                       @Nullable List<Callback> callbacks,
                                                       @Nullable ThrowablePredicate throwablePredicate,
                                                       @Nullable Executor subscriptionExecutor,
                                                       @Nullable Executor observeExecutor) {
             this.request = request;
+            this.method = method;
             this.callbacks = callbacks;
             this.throwablePredicate = throwablePredicate;
             this.subscriptionExecutor = subscriptionExecutor;
@@ -100,6 +103,11 @@ public abstract class SdkSupport {
         @NotNull
         public Request<?> getRequest() {
             return request;
+        }
+        @Override
+        @NotNull
+        public Method getMethod() {
+            return method;
         }
         @Override
         @Nullable
@@ -321,7 +329,7 @@ public abstract class SdkSupport {
                 }
             }
         }
-        return new ParameterResolveRequestExecuteMetadata(request, callbacks, throwablePredicate
+        return new ParameterResolveRequestExecuteMetadata(request, method, callbacks, throwablePredicate
                 , subscriptionExecutor, observeExecutor);
     }
 
