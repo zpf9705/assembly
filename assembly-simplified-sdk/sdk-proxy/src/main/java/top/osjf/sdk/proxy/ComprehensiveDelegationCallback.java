@@ -19,7 +19,7 @@ package top.osjf.sdk.proxy;
 
 import top.osjf.sdk.core.Request;
 import top.osjf.sdk.core.RequestAttributes;
-import top.osjf.sdk.core.RequestExecuteMetadata;
+import top.osjf.sdk.core.caller.RequestExecuteMetadata;
 import top.osjf.sdk.core.Response;
 import top.osjf.sdk.core.caller.RequestCaller;
 import top.osjf.sdk.core.support.Nullable;
