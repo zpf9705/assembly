@@ -93,7 +93,6 @@ public abstract class SdkSupport {
                 optionsMetadata = new ParameterResolveOptionsMetadata(callbacks, throwablePredicate, executorProvider);
             }
         }
-
         @Override
         @NotNull
         public Request<?> getRequest() {
@@ -104,7 +103,6 @@ public abstract class SdkSupport {
         public Method getMethod() {
             return method;
         }
-
         @Nullable
         @Override
         public OptionsMetadata getOptionsMetadata() {
@@ -126,7 +124,6 @@ public abstract class SdkSupport {
                 this.throwablePredicate = throwablePredicate;
                 this.executorProvider = executorProvider;
             }
-
             @Override
             @Nullable
             public List<Callback> getCallbacks() {
@@ -137,7 +134,6 @@ public abstract class SdkSupport {
             public ThrowablePredicate getThrowablePredicate() {
                 return throwablePredicate;
             }
-
             @Nullable
             @Override
             public AsyncPubSubExecutorProvider getSubscriptionExecutorProvider() {
@@ -152,18 +148,15 @@ public abstract class SdkSupport {
     private static class AsyncPubSubExecutorProviderImpl implements AsyncPubSubExecutorProvider {
         @Nullable Executor subscriptionExecutor;
         @Nullable Executor observeExecutor;
-
         AsyncPubSubExecutorProviderImpl(@Nullable Executor subscriptionExecutor,
                                         @Nullable Executor observeExecutor) {
             this.subscriptionExecutor = subscriptionExecutor;
             this.observeExecutor = observeExecutor;
         }
-
         @Override
         public Executor getCustomSubscriptionExecutor() {
             return subscriptionExecutor;
         }
-
         @Override
         public Executor getCustomObserveExecutor() {
             return observeExecutor;
