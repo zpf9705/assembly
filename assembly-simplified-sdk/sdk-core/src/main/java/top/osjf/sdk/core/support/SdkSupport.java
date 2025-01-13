@@ -81,10 +81,7 @@ public abstract class SdkSupport {
     private static class ParameterResolveRequestExecuteMetadata implements RequestExecuteMetadata {
         @NotNull Request<?> request;
         @NotNull Method method;
-        @Nullable List<Callback> callbacks;
-        @Nullable ThrowablePredicate throwablePredicate;
-        @Nullable Executor subscriptionExecutor;
-        @Nullable Executor observeExecutor;
+        @Nullable OptionsMetadata optionsMetadata;
         ParameterResolveRequestExecuteMetadata(      @NotNull Request<?> request,
                                                       @NotNull Method method,
                                                       @Nullable List<Callback> callbacks,
@@ -93,10 +90,10 @@ public abstract class SdkSupport {
                                                       @Nullable Executor observeExecutor     ) {
             this.request = request;
             this.method = method;
-            this.callbacks = callbacks;
-            this.throwablePredicate = throwablePredicate;
-            this.subscriptionExecutor = subscriptionExecutor;
-            this.observeExecutor = observeExecutor;
+            if ( this.method.isAnnotationPresent(CallOptions.class) ){
+                optionsMetadata = new ParameterResolveOptionsMetadata(callbacks, throwablePredicate,
+                        subscriptionExecutor, observeExecutor);
+            }
         }
 
         @Override
@@ -109,26 +106,53 @@ public abstract class SdkSupport {
         public Method getMethod() {
             return method;
         }
-        @Override
+
         @Nullable
-        public List<Callback> getCallbacks() {
-            return callbacks;
-        }
         @Override
-        @Nullable
-        public ThrowablePredicate getThrowablePredicate() {
-            return throwablePredicate;
-        }
-        @Override
-        @Nullable
-        public Executor getSubscriptionExecutor() {
-            return subscriptionExecutor;
+        public OptionsMetadata getOptionsMetadata() {
+            return null;
         }
 
-        @Override
-        @Nullable
-        public Executor getObserveExecutor() {
-            return observeExecutor;
+        /**
+         * The relevant attribute instance object about {@link CallOptions} obtained from parameter
+         * parsing, the existence basis of this class, and the existence of annotation {@link CallOptions}.
+         */
+        static class ParameterResolveOptionsMetadata implements OptionsMetadata {
+            @Nullable List<Callback> callbacks;
+            @Nullable ThrowablePredicate throwablePredicate;
+            @Nullable Executor subscriptionExecutor;
+            @Nullable Executor observeExecutor;
+            ParameterResolveOptionsMetadata(       @Nullable List<Callback> callbacks,
+                                                   @Nullable ThrowablePredicate throwablePredicate,
+                                                   @Nullable Executor subscriptionExecutor,
+                                                   @Nullable Executor observeExecutor       ) {
+                this.callbacks = callbacks;
+                this.throwablePredicate = throwablePredicate;
+                this.subscriptionExecutor = subscriptionExecutor;
+                this.observeExecutor = observeExecutor;
+            }
+
+            @Override
+            @Nullable
+            public List<Callback> getCallbacks() {
+                return callbacks;
+            }
+            @Override
+            @Nullable
+            public ThrowablePredicate getThrowablePredicate() {
+                return throwablePredicate;
+            }
+            @Override
+            @Nullable
+            public Executor getSubscriptionExecutor() {
+                return subscriptionExecutor;
+            }
+
+            @Override
+            @Nullable
+            public Executor getObserveExecutor() {
+                return observeExecutor;
+            }
         }
     }
 
