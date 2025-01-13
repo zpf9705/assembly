@@ -17,6 +17,7 @@
 package top.osjf.sdk.core.caller;
 
 import top.osjf.sdk.core.Request;
+import top.osjf.sdk.core.RequestExecuteMetadata;
 import top.osjf.sdk.core.Response;
 import top.osjf.sdk.core.support.LoadOrder;
 import top.osjf.sdk.core.support.NotNull;
@@ -42,14 +43,18 @@ import java.util.function.Supplier;
  * instantiation function (to instantiate objects via reflection) and a constructor with a
  * {@code Function<Class<?>, Object>} parameter that allows users to customize instantiation logic.
  *
- * <p>The core method in this class is {@link #resolveRequestExecuteWithOptions(Supplier, Request,
- * CallOptions, List)},which accepts a request object (provided through a {@code Supplier}) and
- * sdk {@code String} name and a {@code CallOptions} annotation and provider {@code Callback} list
- * as parameters and final call method {@link #resolveRequestExecuteWithOptions(Supplier, int, long,
- * ThrowablePredicate, boolean, boolean, Request, List, AsyncPubSubExecutorProvider)} (this method
- * is not elaborated here as a commonly used combination method in this package tool).
- * It executes the request according to the execution options configured in the annotation and returns
- * the {@code Response} object.
+ * <p>The core method in this class is {@link #resolveRequestExecuteWithOptions(Request, String,
+ * Method, List, ThrowablePredicate, AsyncPubSubExecutorProvider)},this method measures subsequent
+ * calls based on whether the method has annotations {@link CallOptions}, which is compatible with
+ * the execution of most methods.
+ * <p>
+ * <strong>Note:</strong>
+ * <p>If the annotation exists, its configuration will be obtained, where
+ * {@link CallOptions#callbackClass()} is fused with the {@link CallOptions#onlyUseProvidedCallback()}
+ * provided by the tag and method,  and the acquisition of {@link CallOptions#retryThrowablePredicateClass()}
+ * and {@link CallOptions#pubSubExecutorProviderClass()} is used when the relevant instance object
+ * provided by the method is empty.
+ * <p>
  * If a {@code Callback} class (callbackClass) is specified in the {@code CallOptions} annotation,
  * the acquisition of the response and exception handling will be completed within the callback class,
  * and the method will return null at this time; otherwise, the method will directly return the
@@ -69,6 +74,36 @@ public class RequestCaller {
     private static final Map<String, Object> OBJECT_CACHE = new SynchronizedWeakHashMap<>();
 
     /**
+     * Execute the request without {@code CallOptions} and through the given {@code Request} instance
+     * object and {@code host} address.
+     *
+     * @param request input {@code Request} obj.
+     * @param host    the real server hostname.
+     * @return The {@code Response} object obtained from the response.
+     * @throws NullPointerException if input request is {@literal null}.
+     */
+    public Response executeRequestWithoutOptions(@NotNull Request<?> request, @Nullable String host) {
+        return noCallOptionsToExecute(request, host, null);
+    }
+
+    /**
+     * Resolves the {@code Request} and executes it, configuring the call options based
+     * on the {@code CallOptions} annotation on the method or class.
+     *
+     * @param request input {@code Request} obj.
+     * @param host    the real server hostname.
+     * @param method  the method object to be executed.
+     * @return The {@code Response} object obtained from the response
+     * returns empty when {@link CallOptions#callbackClass()} exists.
+     * @throws NullPointerException if input request or {@code CallOptions} is {@literal null}.
+     */
+    @Nullable
+    public Response resolveRequestExecuteWithOptions(@NotNull Request<?> request, @Nullable String host,
+                                                     @NotNull Method method) {
+        return resolveRequestExecuteWithOptions(request, host, method, null);
+    }
+
+    /**
      * Resolves the {@code Request} and executes it, configuring the call options based
      * on the {@code CallOptions} annotation on the method or class.
      *
@@ -81,35 +116,112 @@ public class RequestCaller {
      * @throws NullPointerException if input request or {@code CallOptions} is {@literal null}.
      */
     @Nullable
-    public Response resolveRequestExecuteWithOptions(@NotNull Request<?> request, String host,
+    public Response resolveRequestExecuteWithOptions(@NotNull Request<?> request, @Nullable String host,
                                                      @NotNull Method method,
                                                      @Nullable List<Callback> providerCallbacks) {
+        return resolveRequestExecuteWithOptions(request, host, method, providerCallbacks, null);
+    }
+
+    /**
+     * Resolves the {@code Request} and executes it, configuring the call options based
+     * on the {@code CallOptions} annotation on the method or class.
+     *
+     * @param request                    input {@code Request} obj.
+     * @param host                       the real server hostname.
+     * @param method                     the method object to be executed.
+     * @param providerCallbacks          the provider {@code Callback} instances.
+     * @param providerThrowablePredicate the provider {@code ThrowablePredicate} instance.
+     * @return The {@code Response} object obtained from the response
+     * returns empty when {@link CallOptions#callbackClass()} exists.
+     * @throws NullPointerException if input request or {@code CallOptions} is {@literal null}.
+     */
+    @Nullable
+    public Response resolveRequestExecuteWithOptions(@NotNull Request<?> request, @Nullable String host,
+                                                     @NotNull Method method,
+                                                     @Nullable List<Callback> providerCallbacks,
+                                                     @Nullable ThrowablePredicate providerThrowablePredicate) {
+        return resolveRequestExecuteWithOptions(request, host, method, providerCallbacks, providerThrowablePredicate,
+                null);
+    }
+
+    /**
+     * Resolves the {@code Request} by given {@link RequestExecuteMetadata} and executes it,
+     * configuring the call options based on the {@code CallOptions} annotation on the method
+     * or class.
+     *
+     * @param metadata the metadata instance object related to the request execution.
+     * @param host     the real server hostname.
+     * @return The {@code Response} object obtained from the response
+     * returns empty when {@link CallOptions#callbackClass()} exists.
+     * @throws NullPointerException if input {@code RequestExecuteMetadata} is {@literal null}.
+     */
+    @Nullable
+    public Response resolveRequestExecuteWithOptions(@NotNull RequestExecuteMetadata metadata, @Nullable String host) {
+        RequestExecuteMetadata.OptionsMetadata optionsMetadata = metadata.getOptionsMetadata();
+        List<Callback> providerCallbacks = null;
+        ThrowablePredicate providerThrowablePredicate = null;
+        AsyncPubSubExecutorProvider providerExecutorProvider = null;
+        if (optionsMetadata != null) {
+            providerCallbacks = optionsMetadata.getCallbacks();
+            providerThrowablePredicate = optionsMetadata.getThrowablePredicate();
+            providerExecutorProvider = optionsMetadata.getSubscriptionExecutorProvider();
+        }
+        return resolveRequestExecuteWithOptions(metadata.getRequest(), host, metadata.getMethod(),
+                providerCallbacks, providerThrowablePredicate, providerExecutorProvider);
+    }
+
+    /**
+     * Resolves the {@code Request} and executes it, configuring the call options based
+     * on the {@code CallOptions} annotation on the method or class.
+     *
+     * @param request                    input {@code Request} obj.
+     * @param host                       the real server hostname.
+     * @param method                     the method object to be executed.
+     * @param providerCallbacks          the provider {@code Callback} instances.
+     * @param providerThrowablePredicate the provider {@code ThrowablePredicate} instance.
+     * @param providerExecutorProvider   the provider {@code AsyncPubSubExecutorProvider} instance.
+     * @return The {@code Response} object obtained from the response
+     * returns empty when {@link CallOptions#callbackClass()} exists.
+     * @throws NullPointerException if input request or {@code CallOptions} is {@literal null}.
+     */
+    @Nullable
+    public Response resolveRequestExecuteWithOptions(@NotNull Request<?> request, @Nullable String host,
+                                                     @NotNull Method method,
+                                                     @Nullable List<Callback> providerCallbacks,
+                                                     @Nullable ThrowablePredicate providerThrowablePredicate,
+                                                     @Nullable AsyncPubSubExecutorProvider providerExecutorProvider) {
         CallOptions callOptions = resolveMethodCallOptions(method);
         if (callOptions == null) {
             return noCallOptionsToExecute(request, host, providerCallbacks);
         }
-        return resolveRequestExecuteWithOptions(request, host, callOptions, providerCallbacks);
+        return resolveRequestExecuteWithOptions(request, host, callOptions, providerCallbacks,
+                providerThrowablePredicate, providerExecutorProvider);
     }
 
     /**
      * Please refer to {@code resolveRequestExecuteWithOptions(Supplier, CallOptions)}
      * for the execution logic.
      *
-     * @param request           input {@code Request} obj.
-     * @param host              the real server hostname.
-     * @param callOptions       {@code CallOptions} annotation.
-     * @param providerCallbacks the provider {@code Callback} instances.
+     * @param request                    input {@code Request} obj.
+     * @param host                       the real server hostname.
+     * @param callOptions                {@code CallOptions} annotation.
+     * @param providerCallbacks          the provider {@code Callback} instances.
+     * @param providerThrowablePredicate the provider {@code ThrowablePredicate} instance.
+     * @param providerExecutorProvider   the provider {@code AsyncPubSubExecutorProvider} instance.
      * @return The {@code Response} object obtained from the response
      * returns empty when {@link CallOptions#callbackClass()} exists.
      * @throws NullPointerException if input request or {@code CallOptions} is {@literal null}.
      */
     @Nullable
-    public Response resolveRequestExecuteWithOptions(@NotNull Request<?> request, String host,
+    public Response resolveRequestExecuteWithOptions(@NotNull Request<?> request, @Nullable String host,
                                                      @NotNull CallOptions callOptions,
-                                                     @Nullable List<Callback> providerCallbacks) {
+                                                     @Nullable List<Callback> providerCallbacks,
+                                                     @Nullable ThrowablePredicate providerThrowablePredicate,
+                                                     @Nullable AsyncPubSubExecutorProvider providerExecutorProvider) {
 
         return resolveRequestExecuteWithOptions
-                (() -> request.execute(host), request, callOptions, providerCallbacks);
+                (() -> request.execute(host), request, callOptions, providerCallbacks, providerThrowablePredicate,
+                        providerExecutorProvider);
     }
 
     /**
@@ -120,10 +232,12 @@ public class RequestCaller {
      * (Supplier, int, long, ThrowablePredicate, boolean, boolean, Callback)} for the
      * execution logic.
      *
-     * @param supplier          the provider function of the {@code Response} object.
-     * @param request           input {@code Request} obj.
-     * @param callOptions       {@code CallOptions} annotation.
-     * @param providerCallbacks the provider {@code Callback} instances.
+     * @param supplier                   the provider function of the {@code Response} object.
+     * @param request                    input {@code Request} obj.
+     * @param callOptions                {@code CallOptions} annotation.
+     * @param providerCallbacks          the provider {@code Callback} instances.
+     * @param providerThrowablePredicate the provider {@code ThrowablePredicate} instance.
+     * @param providerExecutorProvider   the provider {@code AsyncPubSubExecutorProvider} instance.
      * @return The {@code Response} object obtained from the response
      * returns empty when {@link CallOptions#callbackClass()} exists.
      * @throws NullPointerException if input request or {@code CallOptions} is {@literal null}.
@@ -132,19 +246,30 @@ public class RequestCaller {
     public Response resolveRequestExecuteWithOptions(@NotNull Supplier<Response> supplier,
                                                      @NotNull Request<?> request,
                                                      @NotNull CallOptions callOptions,
-                                                     @Nullable List<Callback> providerCallbacks) {
+                                                     @Nullable List<Callback> providerCallbacks,
+                                                     @Nullable ThrowablePredicate providerThrowablePredicate,
+                                                     @Nullable AsyncPubSubExecutorProvider providerExecutorProvider) {
         int retryTimes = getRetryTimesByOptions(callOptions);
         long retryIntervalMilliseconds = getRetryIntervalMillisecondsByOptions(callOptions);
         String name = request.matchSdkEnum().name();
-        ThrowablePredicate throwablePredicate = getThrowablePredicateByOptions(name, callOptions);
+        ThrowablePredicate throwablePredicate = ifProviderOrGetting(providerThrowablePredicate,
+                () -> getThrowablePredicateByOptions(name, callOptions));
         boolean whenResponseNonSuccessRetry = getWhenResponseNonSuccessRetryOptions(callOptions);
         boolean whenResponseNonSuccessFinalThrow = getWhenResponseNonSuccessFinalThrowByOptions(callOptions);
         Callback callback = getCallbackByOptions(name, callOptions);
-        AsyncPubSubExecutorProvider pubSubExecutorProvider = getAsyncPubSubExecutorProviderByOptions(name, callOptions);
+        AsyncPubSubExecutorProvider pubSubExecutorProvider = ifProviderOrGetting(providerExecutorProvider,
+                () -> getAsyncPubSubExecutorProviderByOptions(name, callOptions));
         return resolveRequestExecuteWithOptions(supplier, retryTimes, retryIntervalMilliseconds,
                 throwablePredicate, whenResponseNonSuccessRetry, whenResponseNonSuccessFinalThrow, request,
                 fusionOrProviderCallbacks(callback, providerCallbacks, getOnlyUseProvidedCallback(callOptions)),
                 pubSubExecutorProvider);
+    }
+
+    private static <T> T ifProviderOrGetting(T providerInstance, Supplier<T> instanceSupplier) {
+        if (providerInstance != null) {
+            return providerInstance;
+        }
+        return instanceSupplier.get();
     }
 
     /**
@@ -193,7 +318,7 @@ public class RequestCaller {
         if (pubSubExecutorProvider != null) {
             builder = AsyncFlowableCallerBuilder.newBuilder()
                     .customSubscriptionExecutor(pubSubExecutorProvider.getCustomSubscriptionExecutor())
-                    .customObserveExecutor(hasCallbacks ? pubSubExecutorProvider.getCustomSubscriptionExecutor()
+                    .customObserveExecutor(hasCallbacks ? pubSubExecutorProvider.getCustomObserveExecutor()
                             : null);
         } else {
             builder = FlowableCallerBuilder.newBuilder();
