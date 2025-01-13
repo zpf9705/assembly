@@ -16,7 +16,7 @@
 
 package top.osjf.sdk.core.support;
 
-import top.osjf.sdk.core.exception.SdkException;
+import top.osjf.sdk.core.exception.SdkIllegalArgumentException;
 import top.osjf.sdk.core.util.CollectionUtils;
 import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.core.util.StringUtils;
@@ -30,7 +30,7 @@ import java.util.Objects;
  * of static methods to check the input arguments before method or
  * function execution.
  * These methods ensure that the parameters meet specific conditions;
- * if not, a custom {@code SdkException} is thrown.
+ * if not, a custom {@code SdkIllegalArgumentException} is thrown.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
@@ -48,7 +48,7 @@ public abstract class SdkArgs {
      */
     public static void isTrue(final boolean expression, final String message) {
         if (!expression) {
-            throw new SdkException(message);
+            throw new SdkIllegalArgumentException(message);
         }
     }
 
@@ -63,7 +63,7 @@ public abstract class SdkArgs {
      */
     public static void notNull(final Object obj, final String message) {
         if (Objects.isNull(obj)) {
-            throw new SdkException(message);
+            throw new SdkIllegalArgumentException(message);
         }
     }
 
@@ -78,7 +78,7 @@ public abstract class SdkArgs {
      */
     public static void notNegative(final int n, final String message) {
         if (n < 0) {
-            throw new SdkException(message);
+            throw new SdkIllegalArgumentException(message);
         }
     }
 
@@ -95,7 +95,7 @@ public abstract class SdkArgs {
      */
     public static void hasText(final String s, final String message) {
         if (StringUtils.isBlank(s)) {
-            throw new SdkException(message);
+            throw new SdkIllegalArgumentException(message);
         }
     }
 
@@ -112,7 +112,7 @@ public abstract class SdkArgs {
      */
     public static void notEmpty(final Collection<?> collection, final String message) {
         if (CollectionUtils.isEmpty(collection)) {
-            throw new SdkException(message);
+            throw new SdkIllegalArgumentException(message);
         }
     }
 
@@ -129,7 +129,7 @@ public abstract class SdkArgs {
      */
     public static void notEmpty(final Map<?, ?> map, final String message) {
         if (MapUtils.isEmpty(map)) {
-            throw new SdkException(message);
+            throw new SdkIllegalArgumentException(message);
         }
     }
 }
