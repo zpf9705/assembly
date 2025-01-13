@@ -14,23 +14,25 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.core.exception;
+package top.osjf.sdk.core.caller;
+
+import top.osjf.sdk.core.exception.SdkException;
 
 /**
- * When the request response indicates unsuccessful, an error is thrown.
+ * Sdk caller exception.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-public class SdkResponseNonSuccessException extends SdkCallerException {
+public class SdkCallerException extends SdkException {
 
     private static final long serialVersionUID = -8031736713390106538L;
 
-    public SdkResponseNonSuccessException() {
+    public SdkCallerException() {
         super();
     }
 
-    public SdkResponseNonSuccessException(String s) {
+    public SdkCallerException(String s) {
         super(s);
     }
 }
