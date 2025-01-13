@@ -366,6 +366,25 @@ public class RequestCaller {
     }
 
     /**
+     * Return a {@code Boolean} type indicating whether the passed {@code Method} object
+     * meets any of the following annotation requirements:
+     * <ul>
+     * <li>{@link Method#isAnnotationPresent} is {@code true}</li>
+     * <li>{@link Method#getDeclaringClass()} + {@link Class#getDeclaringClass()} is {@code true}</li>
+     * </ul>
+     * <p>Used to determine whether a more advanced calling method is suitable for use.
+     * @param method the input method.
+     * @return Return {@code true} to satisfy high-end caller calls, otherwise it will be
+     * called under normal circumstances.
+     * @throws NullPointerException if input {@code Method} is null.
+     * @see #resolveMethodCallOptions
+     */
+    public static boolean condition(Method method){
+        return method.isAnnotationPresent(CallOptions.class)
+                || method.getDeclaringClass().isAnnotationPresent(CallOptions.class);
+    }
+
+    /**
      * The proxy method did not find the execution method for annotation {@code CallOptions}.
      *
      * @param request   input {@code Request} obj.
