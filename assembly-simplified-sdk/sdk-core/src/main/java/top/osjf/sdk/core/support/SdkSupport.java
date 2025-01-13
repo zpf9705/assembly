@@ -17,13 +17,14 @@
 package top.osjf.sdk.core.support;
 
 import top.osjf.sdk.core.*;
-import top.osjf.sdk.core.caller.Callback;
+import top.osjf.sdk.core.caller.*;
 import top.osjf.sdk.core.exception.UnknownRequestParameterException;
 import top.osjf.sdk.core.exception.UnknownResponseParameterException;
 import top.osjf.sdk.core.util.*;
 
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 /**
@@ -72,6 +73,58 @@ public abstract class SdkSupport {
     protected static final String RIGHT_ANGLE_BRACKET = ">";
 
     /**
+     * The parsing requires the use of parameters to create a record interface {@link RequestExecuteMetadata}
+     * for various metadata of the SDK request class.
+     *
+     * @since 1.0.2
+     */
+    private static class ParameterResolveRequestExecuteMetadata implements RequestExecuteMetadata {
+        @NotNull Request<?> request;
+        @Nullable List<Callback> callbacks;
+        @Nullable ThrowablePredicate throwablePredicate;
+        @Nullable Executor subscriptionExecutor;
+        @Nullable Executor observeExecutor;
+         ParameterResolveRequestExecuteMetadata(@NotNull Request<?> request,
+                                                      @Nullable List<Callback> callbacks,
+                                                      @Nullable ThrowablePredicate throwablePredicate,
+                                                      @Nullable Executor subscriptionExecutor,
+                                                      @Nullable Executor observeExecutor) {
+            this.request = request;
+            this.callbacks = callbacks;
+            this.throwablePredicate = throwablePredicate;
+            this.subscriptionExecutor = subscriptionExecutor;
+            this.observeExecutor = observeExecutor;
+        }
+
+        @Override
+        @NotNull
+        public Request<?> getRequest() {
+            return request;
+        }
+        @Override
+        @Nullable
+        public List<Callback> getCallbacks() {
+            return callbacks;
+        }
+        @Override
+        @Nullable
+        public ThrowablePredicate getThrowablePredicate() {
+            return throwablePredicate;
+        }
+        @Override
+        @Nullable
+        public Executor getSubscriptionExecutor() {
+            return subscriptionExecutor;
+        }
+
+        @Override
+        @Nullable
+        public Executor getObserveExecutor() {
+            return observeExecutor;
+        }
+    }
+
+    /**
      * When passing parameters that are not directly displayed as {@code Request},
      * perform dynamic creation of {@code Request} based on specific annotations
      * {@link RequestType} and related interfaces {@link RequestTypeSupplier}.
@@ -115,10 +168,16 @@ public abstract class SdkSupport {
      * @see RequestTypeSupplier
      * @see RequestSetter
      * @see RequestConstructor
+     * @see AsyncPubSubExecutorProvider
+     * @see Subscription
+     * @see Observe
      */
-    public static Pair<Request<?>, List<Callback>> createRequest(@NotNull Method method, @Nullable Object[] args) {
+    public static RequestExecuteMetadata createRequest(@NotNull Method method, @Nullable Object[] args) {
         Request<?> request = null; //create request.
         List<Callback> callbacks = new ArrayList<>(); //parameter callbacks.
+        ThrowablePredicate throwablePredicate = null;
+        Executor subscriptionExecutor = null;
+        Executor observeExecutor = null;
         Map<String, Pair<Boolean, Object>> setterMetadata = new HashMap<>(); //support setter data.
         /*
          *  When the parameter does not provide the type of Request,
@@ -204,6 +263,32 @@ public abstract class SdkSupport {
                     if (StringUtils.isBlank(name)) name = parameter.getName();
                     setterMetadata.put(name, Pair.create(requestSetter.useReflect(), arg));
                 }
+                /*
+                 * Support type 5:Support parsing the first {@code ThrowablePredicate} instance
+                 * object from parameters.
+                 */
+                if (throwablePredicate == null && arg instanceof ThrowablePredicate){
+                    throwablePredicate = (ThrowablePredicate) arg;
+                }
+                /*
+                 * Support type 6:Support parsing the first {@code AsyncPubSubExecutorProvider} instance
+                 * object from the parameters, or the subscriber {@code Executor} instance object marked
+                 * with annotation {@code Subscription}, or the observer {@code Executor} instance object
+                 * marked with annotation {@code Observe}.
+                 */
+                if (subscriptionExecutor == null || observeExecutor == null){
+                    if (arg instanceof AsyncPubSubExecutorProvider) {
+                        AsyncPubSubExecutorProvider executorProvider = (AsyncPubSubExecutorProvider) arg;
+                        subscriptionExecutor = executorProvider.getCustomSubscriptionExecutor();
+                        observeExecutor = executorProvider.getCustomObserveExecutor();
+                    } else if (arg instanceof Executor) {
+                        if (parameter.isAnnotationPresent(Subscription.class)) {
+                            subscriptionExecutor = (Executor) arg;
+                        } else if (parameter.isAnnotationPresent(Observe.class)){
+                            observeExecutor = (Executor) arg;
+                        }
+                    }
+                }
             }
             //After the loop ends, initialize using the type based on whether
             // the request instance exists.
@@ -236,7 +321,8 @@ public abstract class SdkSupport {
                 }
             }
         }
-        return Pair.create(request, callbacks);
+        return new ParameterResolveRequestExecuteMetadata(request, callbacks, throwablePredicate
+                , subscriptionExecutor, observeExecutor);
     }
 
     /**
