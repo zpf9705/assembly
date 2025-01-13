@@ -113,7 +113,7 @@ public abstract class SdkSupport {
         @Nullable
         @Override
         public OptionsMetadata getOptionsMetadata() {
-            return null;
+            return optionsMetadata;
         }
 
         /**
