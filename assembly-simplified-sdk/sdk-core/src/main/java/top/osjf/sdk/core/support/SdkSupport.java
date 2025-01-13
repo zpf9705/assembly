@@ -146,6 +146,9 @@ public abstract class SdkSupport {
         }
     }
 
+    /**
+     * A simple implementation class for encapsulating and obtaining {@link AsyncPubSubExecutorProvider}.
+     */
     private static class AsyncPubSubExecutorProviderImpl implements AsyncPubSubExecutorProvider {
         @Nullable Executor subscriptionExecutor;
         @Nullable Executor observeExecutor;
