@@ -85,12 +85,12 @@ public abstract class SdkSupport {
         @Nullable ThrowablePredicate throwablePredicate;
         @Nullable Executor subscriptionExecutor;
         @Nullable Executor observeExecutor;
-         ParameterResolveRequestExecuteMetadata(      @NotNull Request<?> request,
+        ParameterResolveRequestExecuteMetadata(      @NotNull Request<?> request,
                                                       @NotNull Method method,
                                                       @Nullable List<Callback> callbacks,
                                                       @Nullable ThrowablePredicate throwablePredicate,
                                                       @Nullable Executor subscriptionExecutor,
-                                                      @Nullable Executor observeExecutor) {
+                                                      @Nullable Executor observeExecutor     ) {
             this.request = request;
             this.method = method;
             this.callbacks = callbacks;
