@@ -16,15 +16,15 @@
 
 package top.osjf.sdk.core.exception;
 
-import top.osjf.sdk.core.DefaultErrorResponse;
-
 /**
- * {@link DefaultErrorResponse} of abnormal conversion of response data.
+ * Throwing indicates that the SDK method parameter or
+ * return value conversion failed and an illegal or
+ * inappropriate type was passed.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class DataConvertException extends RuntimeException {
+public class DataConvertException extends SdkIllegalArgumentException {
     private static final long serialVersionUID = 2144997773083517532L;
 
     public DataConvertException(String message) {
