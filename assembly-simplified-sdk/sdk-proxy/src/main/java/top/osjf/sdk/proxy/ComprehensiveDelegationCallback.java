@@ -19,13 +19,12 @@ package top.osjf.sdk.proxy;
 
 import top.osjf.sdk.core.Request;
 import top.osjf.sdk.core.RequestAttributes;
+import top.osjf.sdk.core.RequestExecuteMetadata;
 import top.osjf.sdk.core.Response;
-import top.osjf.sdk.core.caller.Callback;
 import top.osjf.sdk.core.caller.RequestCaller;
 import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.support.SdkSupport;
 import top.osjf.sdk.core.util.CollectionUtils;
-import top.osjf.sdk.core.util.Pair;
 import top.osjf.sdk.proxy.cglib.CglibDelegationCallback;
 import top.osjf.sdk.proxy.jdk.JDKDelegationCallback;
 import top.osjf.sdk.proxy.springcglib.SpringCglibDelegationCallback;
@@ -176,19 +175,18 @@ public class ComprehensiveDelegationCallback implements RequestAttributes,
             case "hashCode": return hashCode();
             case "equals": return equals(args[0]);
         }
-        Pair<Request<?>, List<Callback>> pair = SdkSupport.createRequest(method, args);
-        Request<?> request = pair.getFirst();
+        RequestExecuteMetadata metadata = SdkSupport.createRequest(method, args);
+        Request<?> request = metadata.getRequest();
         if (CollectionUtils.isNotEmpty(postProcessors)) {
             for (HandlerPostProcessor postProcessor : postProcessors) {
                 request = postProcessor.postProcessRequestBeforeHandle(request, method, args, variable);
             }
         }
-        List<Callback> callbacks = pair.getSecond();
         Response response;
         if (requestCaller == null) {
             response = request.execute(host);
         } else {
-            response = requestCaller.resolveRequestExecuteWithOptions(request, host, method, callbacks);
+            response = requestCaller.resolveRequestExecuteWithOptions(metadata, host);
         }
         Object result = SdkSupport.resolveResponse(method, response);
         if (CollectionUtils.isNotEmpty(postProcessors)) {
