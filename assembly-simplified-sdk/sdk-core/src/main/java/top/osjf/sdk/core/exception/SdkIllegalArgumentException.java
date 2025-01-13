@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
+
 package top.osjf.sdk.core.exception;
 
-import top.osjf.sdk.core.RequestTypeSupplier;
-
 /**
- * Create throw types for request class parameter exceptions based on
- * {@link top.osjf.sdk.core.RequestType} and {@link RequestTypeSupplier}.
+ * Thrown to indicate that a sdk method has been passed an illegal or
+ * inappropriate argument.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 1.0.2
  */
-public class RequestCreateException extends SdkException {
+public class SdkIllegalArgumentException extends SdkException {
+    private static final long serialVersionUID = -4968799327875430801L;
 
-    private static final long serialVersionUID = -7492000953956318499L;
+    public SdkIllegalArgumentException(String s) {
+        super(s);
+    }
 
-    public RequestCreateException(Throwable cause) {
-        super("Request class parameter creation failed.", cause);
+    public SdkIllegalArgumentException(Throwable cause) {
+        super(cause);
     }
 }
