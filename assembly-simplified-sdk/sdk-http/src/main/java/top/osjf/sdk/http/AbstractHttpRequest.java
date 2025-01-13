@@ -16,9 +16,9 @@
 
 package top.osjf.sdk.http;
 
-import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.core.AbstractRequest;
 import top.osjf.sdk.core.URL;
+import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.util.MapUtils;
@@ -63,6 +63,8 @@ public abstract class AbstractHttpRequest<R extends AbstractHttpResponse> extend
 
     private static final long serialVersionUID = 7487068349280012103L;
 
+    private static final String CONTENT_TYPE_HEADER_NAME = "Content-Type";
+
     /**
      * {@inheritDoc}
      *
@@ -91,12 +93,21 @@ public abstract class AbstractHttpRequest<R extends AbstractHttpResponse> extend
     /**
      * {@inheritDoc}
      *
-     * <p>This method defaults to determining the type of the current parameter
-     * based on {@link #getRequestParam()}, and retrieves {@code "Content-Type"}
-     * from the request header according to the type.
+     * <p>This method can be rewritten to automatically recognize and add the request
+     * header attribute using a non-null {@link #getRequestParam()} parameter when the
+     * {@link #CONTENT_TYPE_HEADER_NAME} request header is not set. It supports the
+     * following types of recognition:
+     * <ul>
+     * <li>{@code application/json}</li>
+     * <li>{@code application/xml}</li>
+     * <li>{@code application/x-www-form-urlencoded}</li>
+     * <li>The recognition logic of the above types can be viewed as follows
+     * {@link HttpSdkSupport#getContentTypeWithBody}</li>
+     * </ul>
      *
-     * <p>By default, this method is used. Can override method {@link #additionalHeaders()}
-     * to add custom request headers.
+     * <p>If you do need automatic validation for this method, the provision of other
+     * request headers can be found in {@link #additionalHeaders()}, and this method
+     * will support merge processing.
      *
      * @return {@inheritDoc}
      */
@@ -108,7 +119,7 @@ public abstract class AbstractHttpRequest<R extends AbstractHttpResponse> extend
             String contentType = HttpSdkSupport.getContentTypeWithBody(requestParam, getCharset());
             if (StringUtils.isNotBlank(contentType)) {
                 headers = new LinkedHashMap<>();
-                headers.put("Content-Type", contentType);
+                headers.put(CONTENT_TYPE_HEADER_NAME, contentType);
             }
         }
         headers = resolveAdditionalHeaders(headers);
