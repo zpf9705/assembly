@@ -17,7 +17,6 @@
 package top.osjf.sdk.core.caller;
 
 import top.osjf.sdk.core.Request;
-import top.osjf.sdk.core.RequestExecuteMetadata;
 import top.osjf.sdk.core.Response;
 import top.osjf.sdk.core.support.LoadOrder;
 import top.osjf.sdk.core.support.NotNull;
