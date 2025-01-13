@@ -52,7 +52,7 @@ public abstract class AbstractFlowableCaller<R extends Response> extends Abstrac
 
     /*** The default response unsuccessful retry predicate is used to determine whether an exception
      *  is caused by a response unsuccessful and trigger a retry.When the exception is an instance of
-     *  {@code SdkResponseNonSuccessException}, it is considered necessary to retry. */
+     *  {@code RetryDelegationException}, it is considered necessary to retry. */
     private static final Predicate<Throwable> RESPONSE_NON_SUCCESS_RETRY_PREDICATE
             = (e) -> e instanceof RetryDelegationException;
 
@@ -205,7 +205,9 @@ public abstract class AbstractFlowableCaller<R extends Response> extends Abstrac
          */
         void finalResolve(R response) {
             if (isWhenResponseNonSuccessFinalThrow()) {
-                throw new SdkResponseNonSuccessException(response.getMessage());
+                String message = response.getMessage();
+                String finalMessage = StringUtils.isNotBlank(message) ? message : response.getDefaultMessage();
+                throw new SdkResponseNonSuccessException(finalMessage);
             }
         }
     }
