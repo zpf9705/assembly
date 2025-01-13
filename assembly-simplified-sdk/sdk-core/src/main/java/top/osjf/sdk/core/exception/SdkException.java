@@ -17,13 +17,14 @@
 package top.osjf.sdk.core.exception;
 
 /**
- * The exception thrown by the body parameter verification of SDK is usually
- * the judgment of business logic parameters, which is thrown during the request.
+ * The top-level runtime exception class of the SDK framework,
+ * differentiated into multiple word class exceptions based on
+ * the scenario, can be thrown in specific scenarios.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class SdkException extends IllegalArgumentException {
+public class SdkException extends RuntimeException {
 
     private static final long serialVersionUID = -7204419580156052252L;
 
