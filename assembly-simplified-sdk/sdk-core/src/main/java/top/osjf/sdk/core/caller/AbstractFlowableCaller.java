@@ -54,7 +54,7 @@ public abstract class AbstractFlowableCaller<R extends Response> extends Abstrac
      *  is caused by a response unsuccessful and trigger a retry.When the exception is an instance of
      *  {@code SdkResponseNonSuccessException}, it is considered necessary to retry. */
     private static final Predicate<Throwable> RESPONSE_NON_SUCCESS_RETRY_PREDICATE
-            = (e) -> e instanceof SdkResponseNonSuccessException;
+            = (e) -> e instanceof RetryDelegationException;
 
     /*** Flowable object, representing an observable data flow, can asynchronously emit zero or
      *  more data items. */
@@ -156,6 +156,19 @@ public abstract class AbstractFlowableCaller<R extends Response> extends Abstrac
         return flowable;
     }
 
+    /**
+     * When {@code isWhenResponseNonSuccessRetry() == true } is satisfied, a fixed exception
+     * type is thrown, globally unique, using {@link RetryDelegationException#INSTANCE} instances.
+     */
+    static final class RetryDelegationException extends SdkResponseNonSuccessException {
+        private static final long serialVersionUID = 5015084585497571913L;
+        static final RetryDelegationException INSTANCE = new RetryDelegationException();
+
+        RetryDelegationException() {
+            super("Attempt to retry the proxy exception object thrown.");
+        }
+    }
+
     /*** The function of this class is to determine the success or failure of the response result,
      *  as well as to calculate the number of times exceptions are thrown when failures are allowed
      *  (exceptions are only thrown for retry).*/
@@ -173,8 +186,8 @@ public abstract class AbstractFlowableCaller<R extends Response> extends Abstrac
                 if (isWhenResponseNonSuccessRetry()) {
                     if (retryTimes > 0) {
                         retryTimes--;
-                        //Is throwing an exception here for exception retry.
-                        throw new SdkResponseNonSuccessException();
+                        //Is throwing a delegate exception here for exception retry.
+                        throw RetryDelegationException.INSTANCE;
                     } else {
                         finalResolve(response);
                     }
