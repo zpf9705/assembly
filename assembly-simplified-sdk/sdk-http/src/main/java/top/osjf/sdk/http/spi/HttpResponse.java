@@ -17,6 +17,8 @@
 
 package top.osjf.sdk.http.spi;
 
+import top.osjf.sdk.core.support.Nullable;
+
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.Map;
@@ -86,4 +88,24 @@ public interface HttpResponse extends Serializable {
      * @return The body content of the HTTP response.
      */
     String getBody();
+
+    /**
+     * Return the HTTP protocol version instance object, and return a generalized
+     * object according to different docking frameworks, which can be converted
+     * as needed.
+     * <p>
+     * <strong>The following are the object types of the relevant definition
+     * protocol versions that support the framework, which can be compared
+     * according to the selection.</strong>
+     * <ul>
+     * <li>Apache http <strong>{@code org.apache.http.ProtocolVersion}</strong></li>
+     * <li>Apache hc5 <strong>{@code org.apache.hc.core5.http.ProtocolVersion}</strong></li>
+     * <li>Google http not provided yet.</li>
+     * <li>Jaxrs2 http not provided yet.</li>
+     * <li>OK http <strong>{@code okhttp3.Protocol}</strong></li>
+     * </ul>
+     * @return The HTTP protocol version instance.
+     */
+    @Nullable
+    Object getProtocolVersion();
 }

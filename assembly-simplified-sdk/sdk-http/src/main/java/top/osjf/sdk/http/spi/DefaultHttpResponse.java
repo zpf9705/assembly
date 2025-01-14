@@ -17,6 +17,8 @@
 
 package top.osjf.sdk.http.spi;
 
+import top.osjf.sdk.core.support.Nullable;
+
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Map;
@@ -35,6 +37,7 @@ public class DefaultHttpResponse implements HttpResponse {
     private final Map<String, Object> headerMap;
     private final Charset charset;
     private final String body;
+    private final Object protocolVersion;
     /**
      * Creates a new {@code DefaultHttpRequest} by given original http request
      * and access url and a {@code HttpRequestOptions}.
@@ -49,12 +52,14 @@ public class DefaultHttpResponse implements HttpResponse {
                                String statusMessage,
                                Map<String, Object> headerMap,
                                Charset charset,
-                               String body) {
+                               String body,
+                               Object protocolVersion) {
         this.statusCode = statusCode;
         this.statusMessage = statusMessage;
         this.headerMap = Collections.unmodifiableMap(headerMap);
         this.charset = charset;
         this.body = body;
+        this.protocolVersion = protocolVersion;
     }
     @Override public int getStatusCode() {
         return statusCode;
@@ -70,5 +75,8 @@ public class DefaultHttpResponse implements HttpResponse {
     }
     @Override public String getBody() {
         return body;
+    }
+    @Nullable @Override public Object getProtocolVersion() {
+        return protocolVersion;
     }
 }
