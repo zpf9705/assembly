@@ -18,14 +18,14 @@ package top.osjf.sdk.http.spi;
 
 /**
  * The {@code HttpRequestExecutor} interface serves as a functional interface that
- * defines the contract for executing HTTP requests {@code HttpRequest} and obtaining
- * responses {@code HttpResponse}. This interface is designed to act as an adapter
+ * defines the contract for executing HTTP requests {@code HttpSpiRequest} and obtaining
+ * responses {@code HttpSpiResponse}. This interface is designed to act as an adapter
  * layer between different HTTP libraries, allowing users to send HTTP requests and
  * handle responses in a unified manner.
- *
- * <p>The provided method transforms a given {@code HttpRequest} object into an
- * {@code HttpResponse} object, where the {@code HttpRequest} object encapsulates all
- * request parameters and configurations, while the {@code HttpResponse} object packages
+ *HttpSpiRequest
+ * <p>The provided method transforms a given {@code HttpSpiRequest} object into an
+ * {@code HttpSpiResponse} object, where the {@code HttpSpiRequest} object encapsulates all
+ * request parameters and configurations, while the {@code HttpSpiResponse} object packages
  * all information returned from the server.
  *
  * <p>By utilizing this interface, developers can seamlessly integrate with various
@@ -51,5 +51,5 @@ public interface HttpRequestExecutor {
      * @throws Exception Throws an exception if any error occurs during execution, such as
      *                   network issues, timeouts, or protocol errors.
      */
-    HttpResponse execute(HttpRequest httpRequest) throws Exception;
+    HttpSpiResponse execute(HttpSpiRequest httpRequest) throws Exception;
 }
