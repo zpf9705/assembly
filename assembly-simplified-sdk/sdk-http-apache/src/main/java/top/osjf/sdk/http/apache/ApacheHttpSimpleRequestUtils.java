@@ -278,8 +278,7 @@ public abstract class ApacheHttpSimpleRequestUtils {
      * @param headers     Optional HTTP header information used to control the behavior of requests.
      * @param body        Optional request body.
      * @param charset     Encoding character set.
-     * @return Returns a string representation of the server response body.
-     * The specific content depends on the server's response.
+     * @return Returns a string representation of the server response {@link HttpResponse}.
      * @throws Exception This method may throw various exceptions, including but not limited
      *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
      *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
