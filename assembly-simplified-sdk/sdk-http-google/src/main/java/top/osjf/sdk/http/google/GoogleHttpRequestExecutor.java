@@ -18,8 +18,10 @@ package top.osjf.sdk.http.google;
 
 import top.osjf.sdk.core.support.LoadOrder;
 import top.osjf.sdk.core.support.Nullable;
-import top.osjf.sdk.http.executor.AbstractMultiHttpMethodExecutor;
-import top.osjf.sdk.http.executor.HttpRequestExecutor;
+import top.osjf.sdk.http.spi.AbstractMultiHttpMethodExecutor;
+import top.osjf.sdk.http.spi.DefaultHttpResponse;
+import top.osjf.sdk.http.spi.HttpRequestExecutor;
+import top.osjf.sdk.http.spi.HttpResponse;
 
 import java.nio.charset.Charset;
 import java.util.Map;
@@ -33,45 +35,39 @@ import java.util.Map;
  */
 @LoadOrder(Integer.MIN_VALUE + 16)
 public class GoogleHttpRequestExecutor extends AbstractMultiHttpMethodExecutor {
-
-
-    @Override
-    public String get(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
-        return GoogleHttpSimpleRequestUtils.get(url, headers, body, charset);
+    @Override public HttpResponse get(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return getGoogleResponseAsSpiResponse("GET", url, headers, body, charset);
     }
-
-    @Override
-    public String post(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
-        return GoogleHttpSimpleRequestUtils.post(url, headers, body, charset);
+    @Override public HttpResponse post(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return getGoogleResponseAsSpiResponse("POST", url, headers, body, charset);
     }
-
-    @Override
-    public String put(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
-        return GoogleHttpSimpleRequestUtils.put(url, headers, body, charset);
+    @Override public HttpResponse put(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return getGoogleResponseAsSpiResponse("PUT", url, headers, body, charset);
     }
-
-    @Override
-    public String delete(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
-        return GoogleHttpSimpleRequestUtils.delete(url, headers, body, charset);
+    @Override public HttpResponse delete(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return getGoogleResponseAsSpiResponse("DELETE", url, headers, body, charset);
     }
-
-    @Override
-    public String trace(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
-        return GoogleHttpSimpleRequestUtils.trace(url, headers, body, charset);
+    @Override public HttpResponse trace(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return getGoogleResponseAsSpiResponse("TRACE", url, headers, body, charset);
     }
-
-    @Override
-    public String options(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
-        return GoogleHttpSimpleRequestUtils.options(url, headers, body, charset);
+    @Override public HttpResponse options(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return getGoogleResponseAsSpiResponse("OPTIONS", url, headers, body, charset);
     }
-
-    @Override
-    public String head(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
-        return GoogleHttpSimpleRequestUtils.head(url, headers, body, charset);
+    @Override public HttpResponse head(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return getGoogleResponseAsSpiResponse("HEAD", url, headers, body, charset);
     }
-
-    @Override
-    public String patch(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
-        return GoogleHttpSimpleRequestUtils.patch(url, headers, body, charset);
+    @Override public HttpResponse patch(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return getGoogleResponseAsSpiResponse("PATCH", url, headers, body, charset);
+    }
+    private static HttpResponse getGoogleResponseAsSpiResponse(String methodName, String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        com.google.api.client.http.HttpResponse response = GoogleHttpSimpleRequestUtils.getResponse(null, methodName, url, headers, body, charset);
+        int statusCode = response.getStatusCode();
+        String statusMessage = response.getStatusMessage();
+        Charset responseCharset = GoogleHttpSimpleRequestUtils.getCharsetByResponse(response);
+        return new DefaultHttpResponse(statusCode,
+                statusMessage,
+                response.getHeaders(),
+                responseCharset,
+                response.parseAsString());
     }
 }

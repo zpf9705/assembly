@@ -25,6 +25,7 @@ import top.osjf.sdk.http.support.HttpSdkSupport;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 /**
@@ -250,6 +251,31 @@ public abstract class GoogleHttpSimpleRequestUtils {
                                    @Nullable Map<String, String> headers,
                                    @Nullable Object body,
                                    @Nullable Charset charset) throws Exception {
+        return getResponse(requestFactory, methodName, url, headers, body, charset).parseAsString();
+    }
+
+    /**
+     * The Google request sending method includes the entire lifecycle of HTTP requests.
+     *
+     * @param requestFactory Google's HTTP request client.
+     * @param methodName     HTTP request method name .
+     * @param url            The target URL of the request.
+     * @param headers        Optional HTTP header information used to control the behavior of requests.
+     * @param body           Optional request body.
+     * @param charset        Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
+     */
+    public static HttpResponse getResponse(@Nullable HttpRequestFactory requestFactory,
+                                           String methodName,
+                                           String url,
+                                           @Nullable Map<String, String> headers,
+                                           @Nullable Object body,
+                                           @Nullable Charset charset) throws Exception {
         if (requestFactory == null) {
             requestFactory = DEFAULT;
         }
@@ -257,7 +283,7 @@ public abstract class GoogleHttpSimpleRequestUtils {
         if (body != null) {
             String contentType = null;
             if (MapUtils.isNotEmpty(headers)) {
-                contentType = headers.get("Content-Type");
+                contentType = headers.get(HttpSdkSupport.CONTENT_TYPE_NAME);
             }
             if (StringUtils.isBlank(contentType)) {
                 contentType = HttpSdkSupport.getContentTypeWithBody(body, charset);
@@ -275,7 +301,36 @@ public abstract class GoogleHttpSimpleRequestUtils {
             }
             request.setHeaders(httpHeaders);
         }
-        HttpResponse response = request.execute();
-        return response.parseAsString();
+        return request.execute();
+    }
+
+    /**
+     * Returns the encoded character set based on the returned response body
+     * , default to {@link StandardCharsets#UTF_8}.
+     *
+     * @param response the input google http response.
+     * @return response charset encoding.
+     * @throws NullPointerException if input response is {@literal null}.
+     */
+    public static Charset getCharsetByResponse(HttpResponse response) {
+        String contentEncoding = response.getContentEncoding();
+        if (StringUtils.isBlank(contentEncoding)) {
+            for (Map.Entry<String, Object> entry : response.getHeaders().entrySet()) {
+                if (entry.getKey().equalsIgnoreCase(HttpSdkSupport.CONTENT_TYPE_NAME)) {
+                    String value = String.valueOf(entry.getValue());
+                    String[] contentTypeSplitParams = value.split(";");
+                    if (contentTypeSplitParams.length > 1) {
+                        String[] charsetParts = contentTypeSplitParams[1].split("=");
+                        if (charsetParts.length == 2 && "charset".equalsIgnoreCase(charsetParts[0].trim())) {
+                            String charsetString = charsetParts[1].replaceAll("\"", "");
+                            return Charset.forName(charsetString);
+                        }
+                    }
+                }
+            }
+        } else {
+            return Charset.forName(contentEncoding);
+        }
+        return StandardCharsets.UTF_8;
     }
 }
