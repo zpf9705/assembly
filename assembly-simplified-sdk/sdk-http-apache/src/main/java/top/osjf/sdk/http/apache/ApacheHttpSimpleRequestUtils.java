@@ -251,9 +251,6 @@ public abstract class ApacheHttpSimpleRequestUtils {
                                    @Nullable Map<String, String> headers,
                                    @Nullable Object body,
                                    @Nullable Charset charset) throws Exception {
-        if (client == null) {
-            client = DEFAULT;
-        }
         HttpResponse response = null;
         String result;
         try {
