@@ -68,15 +68,13 @@ public class OkHttpRequestExecutor extends AbstractMultiHttpMethodExecutor {
         try {
             Request.Builder builder = OkHttpSimpleRequestUtils.getRequestBuilder(url, body, charset, headers, methodName);
             response = OkHttpSimpleRequestUtils.getResponse(null, builder, headers);
-            int statusCode = response.code();
-            String message = response.message();
             Map<String, Object> responseHeaders = new HashMap<>();
             for (String name : response.headers().names()) {
                 responseHeaders.put(name, response.headers(name));
             }
             Pair<String, Charset> pair = OkHttpSimpleRequestUtils.getCharsetByResponse(response);
-            return new DefaultHttpResponse(statusCode,
-                    message,
+            return new DefaultHttpResponse(response.code(),
+                    response.message(),
                     responseHeaders,
                     pair.getSecond(),
                     pair.getFirst());
