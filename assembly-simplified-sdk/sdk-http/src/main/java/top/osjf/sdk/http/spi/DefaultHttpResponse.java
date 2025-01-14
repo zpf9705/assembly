@@ -22,7 +22,8 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * Default impl for {@link HttpResponse}.
+ * The default implementation encapsulation class for {@link HttpResponse} interface
+ * description information provides support for obtaining it.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
@@ -34,6 +35,15 @@ public class DefaultHttpResponse implements HttpResponse {
     private final Map<String, Object> headerMap;
     private final Charset charset;
     private final String body;
+    /**
+     * Creates a new {@code DefaultHttpRequest} by given original http request
+     * and access url and a {@code HttpRequestOptions}.
+     *
+     * @param rawHttpRequest input original http request instance.
+     * @param url            the access url address of this {@code HttpRequest}.
+     * @param requestOptions the request options for this {@code HttpRequest}.
+     * @throws NullPointerException if input {@code HttpRequest} or {@code url} is {@literal null}.
+     */
     public DefaultHttpResponse(int statusCode,
                                String statusMessage,
                                Map<String, Object> headerMap,

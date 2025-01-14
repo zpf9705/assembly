@@ -32,7 +32,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Default impl for {@link HttpRequest}.
+ * The default implementation encapsulation class for {@link HttpRequest} interface
+ * description information provides support for obtaining it.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
