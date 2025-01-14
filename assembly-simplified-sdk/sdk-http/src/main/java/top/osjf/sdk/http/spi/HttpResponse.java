@@ -98,11 +98,12 @@ public interface HttpResponse extends Serializable {
      * protocol versions that support the framework, which can be compared
      * according to the selection.</strong>
      * <ul>
+     * <li>Open-feign http <strong>{@code feign.Request.ProtocolVersion}</strong></li>
      * <li>Apache http <strong>{@code org.apache.http.ProtocolVersion}</strong></li>
      * <li>Apache hc5 <strong>{@code org.apache.hc.core5.http.ProtocolVersion}</strong></li>
+     * <li>OK http <strong>{@code okhttp3.Protocol}</strong></li>
      * <li>Google http not provided yet.</li>
      * <li>Jaxrs2 http not provided yet.</li>
-     * <li>OK http <strong>{@code okhttp3.Protocol}</strong></li>
      * </ul>
      * @return The HTTP protocol version instance.
      */
