@@ -198,18 +198,39 @@ public abstract class JAXRSHttpSimpleRequestUtils {
                                    String methodName,
                                    @Nullable Map<String, String> headers,
                                    @Nullable Object body, @Nullable Charset charset) {
+        String result;
+        try (Response response = getResponse(client, url, methodName, headers, body, charset)) {
+            result = response.readEntity(String.class);
+        }
+        return result;
+    }
+
+    /**
+     * The HTTP request sending method includes the entire lifecycle of HTTP requests.
+     *
+     * @param client     JAXRS's HTTP request client,can be {@literal null}.
+     * @param methodName HTTP request method name .
+     * @param url        The target URL of the request.
+     * @param headers    Optional HTTP header information used to control the behavior of requests.
+     * @param body       Optional request body.
+     * @param charset    Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     */
+    public static Response getResponse(@Nullable Client client,
+                                       String url,
+                                       String methodName,
+                                       @Nullable Map<String, String> headers,
+                                       @Nullable Object body, @Nullable Charset charset) {
         if (client == null) {
             client = DEFAULT;
         }
         Invocation.Builder builder = client.target(UriBuilder.fromUri(url))
                 .request();
         if (headers != null) builder.headers(new MultivaluedHashMap<>(headers));
-        String result;
-        try (Response response = builder.method(methodName, toEntity(body, charset, headers))) {
-            result = response.readEntity(String.class);
-        }
-        return result;
+        return builder.method(methodName, toEntity(body, charset, headers));
     }
+
 
     @Nullable
     private static Entity<Object> toEntity(@Nullable Object body, @Nullable Charset charset,
@@ -220,7 +241,7 @@ public abstract class JAXRSHttpSimpleRequestUtils {
         String charsetName = charset != null ? charset.name() : null;
         String contentType = null;
         if (MapUtils.isNotEmpty(headers)) {
-            contentType = headers.get("Content-type");
+            contentType = headers.get(HttpSdkSupport.CONTENT_TYPE_NAME);
         }
         if (StringUtils.isBlank(contentType)) {
             contentType = HttpSdkSupport.getContentTypeWithBody(body, charset);
@@ -235,5 +256,19 @@ public abstract class JAXRSHttpSimpleRequestUtils {
         }
         MediaType mediaType = new MediaType(type, subtype, charsetName);
         return Entity.entity(body, mediaType);
+    }
+
+    /**
+     * Returns the encoded character set based on the returned response body.
+     *
+     * @param response the input apache JAXRS http response.
+     * @return response charset encoding.
+     * @throws NullPointerException     if input response is {@literal null}.
+     * @throws IllegalArgumentException if null charset name.
+     */
+    public static Charset getCharsetByResponse(Response response) {
+        MediaType mediaType = response.getMediaType();
+        mediaType = mediaType == null ? MediaType.APPLICATION_OCTET_STREAM_TYPE : mediaType;
+        return Charset.forName(mediaType.getParameters().get(MediaType.CHARSET_PARAMETER));
     }
 }
