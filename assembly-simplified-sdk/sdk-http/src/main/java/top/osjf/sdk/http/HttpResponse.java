@@ -40,7 +40,7 @@ import top.osjf.sdk.core.Response;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public interface HttpResponse extends Response {
+public interface HttpResponse extends Response, top.osjf.sdk.http.spi.HttpResponse {
 
     //update for 2.1.2
     //.......
@@ -331,4 +331,14 @@ public interface HttpResponse extends Response {
      * @return status code that defines the status of an HTTP request.
      */
     Object getCode();
+
+    /**
+     * {@inheritDoc}
+     * <p>If the available message does not return any information, use the status
+     * information of the response.
+     */
+    @Override
+    default String getDefaultMessage() {
+        return getStatusMessage();
+    }
 }
