@@ -258,10 +258,8 @@ public abstract class ApacheHttpSimpleRequestUtils {
             HttpEntity entity = response.getEntity();
             result = EntityUtils.toString(entity, getCharsetByResponse(response));
         } finally {
-            if (response != null) {
-                if (response instanceof CloseableHttpResponse) {
-                    ((CloseableHttpResponse) response).close();
-                }
+            if (response instanceof CloseableHttpResponse) {
+                ((CloseableHttpResponse) response).close();
             }
         }
         return result;
