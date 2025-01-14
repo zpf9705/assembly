@@ -19,8 +19,6 @@ package top.osjf.sdk.http.hc5;
 import org.apache.hc.client5.http.classic.methods.*;
 import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.Header;
-import org.apache.hc.core5.http.HttpEntity;
-import org.apache.hc.core5.http.io.entity.EntityUtils;
 import top.osjf.sdk.core.support.LoadOrder;
 import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.http.spi.AbstractMultiHttpMethodExecutor;
@@ -66,22 +64,16 @@ public class Hc5HttpRequestExecutor extends AbstractMultiHttpMethodExecutor {
         return getApacheResponseAsSpiResponse(new HttpPatch(url), headers, body, charset);
     }
     private static HttpResponse getApacheResponseAsSpiResponse(HttpUriRequestBase requestBase, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
-        try (ClassicHttpResponse response = ApacheHc5SimpleRequestUtils.getResponse(null, requestBase, headers, body, charset)) {
-            int statusCode = response.getCode();
-            String reason = response.getReasonPhrase();
-            Map<String, Object> responseHeaders = new HashMap<>();
-            for (Header header : response.getHeaders()) {
-                String name = header.getName();
-                String value = header.getValue();
-                responseHeaders.put(name, value);
-            }
-            HttpEntity entity = response.getEntity();
-            Charset responseCharset = ApacheHc5SimpleRequestUtils.getCharsetByResponse(response);
-            return new DefaultHttpResponse(statusCode,
-                    reason,
-                    responseHeaders,
-                    responseCharset,
-                    EntityUtils.toString(entity, responseCharset));
+        Hc5ClosedResponse response = ApacheHc5SimpleRequestUtils.getResponse(null, requestBase, headers, body, charset);
+        ClassicHttpResponse rawResponse = response.getRawResponse();
+        Map<String, Object> responseHeaders = new HashMap<>();
+        for (Header header : rawResponse.getHeaders()) {
+            responseHeaders.put(header.getName(), header.getValue());
         }
+        return new DefaultHttpResponse(rawResponse.getCode(),
+                    rawResponse.getReasonPhrase(),
+                    responseHeaders,
+                    response.getCharset(),
+                    response.getResult());
     }
 }

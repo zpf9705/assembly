@@ -20,7 +20,10 @@ import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.*;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
-import org.apache.hc.core5.http.*;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.io.entity.ByteArrayEntity;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
@@ -247,17 +250,7 @@ public abstract class ApacheHc5SimpleRequestUtils {
                                    @Nullable Object body,
                                    @Nullable Charset charset) throws Exception {
 
-        ClassicHttpResponse response = null;
-        String result;
-        try {
-            response = getResponse(client, requestBase, headers, body, charset);
-            result = EntityUtils.toString(response.getEntity(), getCharsetByResponse(response));
-        } finally {
-            if (response != null) {
-                response.close();
-            }
-        }
-        return result;
+        return getResponse(client, requestBase, headers, body, charset).getResult();
     }
 
     /**
@@ -268,24 +261,28 @@ public abstract class ApacheHc5SimpleRequestUtils {
      * @param headers     Optional HTTP header information used to control the behavior of requests.
      * @param body        Optional request body.
      * @param charset     Encoding character set.
-     * @return Returns a string representation of the server response body.
+     * @return Returns a {@link Hc5ClosedResponse} representation of the server response body.
      * The specific content depends on the server's response.
      * @throws Exception This method may throw various exceptions, including but not limited
      *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
      *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
      *                   The caller needs to capture and handle these exceptions appropriately.
      */
-    public static ClassicHttpResponse getResponse(@Nullable HttpClient client,
-                                           HttpUriRequestBase requestBase,
-                                           @Nullable Map<String, String> headers,
-                                           @Nullable Object body,
-                                           @Nullable Charset charset) throws Exception {
+    public static Hc5ClosedResponse getResponse(@Nullable HttpClient client,
+                                                HttpUriRequestBase requestBase,
+                                                @Nullable Map<String, String> headers,
+                                                @Nullable Object body,
+                                                @Nullable Charset charset) throws Exception {
         if (client == null) {
             client = DEFAULT;
         }
         addHeaders(headers, requestBase);
         setEntity(body, requestBase, headers, charset);
-        return client.execute(requestBase, r -> r);
+        return client.execute(requestBase, response -> {
+            Charset charset1 = getCharsetByResponse(response);
+            return new Hc5ClosedResponse
+                    (response, EntityUtils.toString(response.getEntity(), charset1), charset1);
+        });
     }
 
     /**
@@ -299,7 +296,7 @@ public abstract class ApacheHc5SimpleRequestUtils {
     public static Charset getCharsetByResponse(ClassicHttpResponse response) {
         HttpEntity entity = response.getEntity();
         String contentEncoding = entity.getContentEncoding();
-        if (StringUtils.isNotBlank(contentEncoding)){
+        if (StringUtils.isNotBlank(contentEncoding)) {
             return Charset.forName(contentEncoding);
         }
         ContentType contentType = ContentType.parse(entity.getContentType());
