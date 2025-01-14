@@ -26,6 +26,7 @@ import top.osjf.sdk.http.spi.HttpRequest;
 import top.osjf.sdk.http.spi.HttpResponse;
 import top.osjf.sdk.http.util.IOUtils;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Collections;
@@ -92,13 +93,12 @@ public abstract class AbstractFeignClientHttpRequestExecutor implements FeignCli
 
         //Automatically close the resource information that responds.
         try (Response response = execute(feignRequest, feignOptions)) {
-            byte[] bytes = IOUtils.readAllBytes(response.body().asInputStream());
             return new DefaultHttpResponse
                     (response.status(),
                             response.reason(),
                             toValueObjHeaderMap(response.headers()),
                             response.charset(),
-                            charset != null ? new String(bytes, charset) : new String(bytes));
+                            toStringBody(response));
         }
     }
 
@@ -107,5 +107,11 @@ public abstract class AbstractFeignClientHttpRequestExecutor implements FeignCli
             return Collections.emptyMap();
         }
         return Collections.unmodifiableMap(new HashMap<>(feignHeaders));
+    }
+
+    private static String toStringBody(Response response) throws IOException {
+        byte[] bytes = IOUtils.readAllBytes(response.body().asInputStream());
+        Charset charset = response.charset();
+        return charset != null ? new String(bytes, charset) : new String(bytes);
     }
 }
