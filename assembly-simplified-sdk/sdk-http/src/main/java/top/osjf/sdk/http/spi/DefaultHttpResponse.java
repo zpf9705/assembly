@@ -28,13 +28,11 @@ import java.util.Map;
  */
 public class DefaultHttpResponse implements HttpResponse {
     private static final long serialVersionUID = -1000743667370052276L;
-
     private final int statusCode;
     private final String statusMessage;
     private final Map<String, Object> headerMap;
     private final Charset charset;
     private final String body;
-
     public DefaultHttpResponse(int statusCode,
                                String statusMessage,
                                Map<String, Object> headerMap,
@@ -46,29 +44,19 @@ public class DefaultHttpResponse implements HttpResponse {
         this.charset = charset;
         this.body = body;
     }
-
-    @Override
-    public int getStatusCode() {
+    @Override public int getStatusCode() {
         return statusCode;
     }
-
-    @Override
-    public String getStatusMessage() {
+    @Override public String getStatusMessage() {
         return statusMessage;
     }
-
-    @Override
-    public Map<String, Object> getHeadMap() {
+    @Override public Map<String, Object> getHeadMap() {
         return headerMap;
     }
-
-    @Override
-    public Charset getCharset() {
+    @Override public Charset getCharset() {
         return charset;
     }
-
-    @Override
-    public String getBody() {
+    @Override public String getBody() {
         return body;
     }
 }
