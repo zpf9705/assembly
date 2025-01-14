@@ -18,10 +18,14 @@ package top.osjf.sdk.http.jaxrs2;
 
 import top.osjf.sdk.core.support.LoadOrder;
 import top.osjf.sdk.core.support.Nullable;
-import top.osjf.sdk.http.executor.AbstractMultiHttpMethodExecutor;
-import top.osjf.sdk.http.executor.HttpRequestExecutor;
+import top.osjf.sdk.http.spi.AbstractMultiHttpMethodExecutor;
+import top.osjf.sdk.http.spi.DefaultHttpResponse;
+import top.osjf.sdk.http.spi.HttpRequestExecutor;
+import top.osjf.sdk.http.spi.HttpResponse;
 
+import javax.ws.rs.core.Response;
 import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -33,44 +37,41 @@ import java.util.Map;
  */
 @LoadOrder(Integer.MIN_VALUE + 20)
 public class JAXRSHttpRequestExecutor extends AbstractMultiHttpMethodExecutor {
-
-    @Override
-    public String get(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) {
-        return JAXRSHttpSimpleRequestUtils.get(url, headers, body, charset);
+    @Override public HttpResponse get(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return getJAXRSResponseAsSpiResponse("GET", url, headers, body, charset);
     }
-
-    @Override
-    public String post(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) {
-        return JAXRSHttpSimpleRequestUtils.post(url, headers, body, charset);
+    @Override public HttpResponse post(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return getJAXRSResponseAsSpiResponse("POST", url, headers, body, charset);
     }
-
-    @Override
-    public String put(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) {
-        return JAXRSHttpSimpleRequestUtils.put(url, headers, body, charset);
+    @Override public HttpResponse put(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return getJAXRSResponseAsSpiResponse("PUT", url, headers, body, charset);
     }
-
-    @Override
-    public String delete(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) {
-        return JAXRSHttpSimpleRequestUtils.delete(url, headers, body, charset);
+    @Override public HttpResponse delete(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return getJAXRSResponseAsSpiResponse("DELETE", url, headers, body, charset);
     }
-
-    @Override
-    public String trace(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) {
-        return JAXRSHttpSimpleRequestUtils.trace(url, headers, body, charset);
+    @Override public HttpResponse trace(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return getJAXRSResponseAsSpiResponse("TRACE", url, headers, body, charset);
     }
-
-    @Override
-    public String options(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) {
-        return JAXRSHttpSimpleRequestUtils.options(url, headers, body, charset);
+    @Override public HttpResponse options(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return getJAXRSResponseAsSpiResponse("OPTIONS", url, headers, body, charset);
     }
-
-    @Override
-    public String head(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) {
-        return JAXRSHttpSimpleRequestUtils.head(url, headers, body, charset);
+    @Override public HttpResponse head(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return getJAXRSResponseAsSpiResponse("HEAD", url, headers, body, charset);
     }
-
-    @Override
-    public String patch(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) {
-        return JAXRSHttpSimpleRequestUtils.patch(url, headers, body, charset);
+    @Override public HttpResponse patch(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return getJAXRSResponseAsSpiResponse("PATCH", url, headers, body, charset);
+    }
+    private static HttpResponse getJAXRSResponseAsSpiResponse(String methodName, String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        try (Response response = JAXRSHttpSimpleRequestUtils.getResponse(null, url, methodName, headers, body, charset)) {
+            Response.StatusType statusInfo = response.getStatusInfo();
+            int statusCode = statusInfo.getStatusCode();
+            String message = statusInfo.getReasonPhrase();
+            Charset responseCharset = JAXRSHttpSimpleRequestUtils.getCharsetByResponse(response);
+            return new DefaultHttpResponse(statusCode,
+                    message,
+                    new HashMap<>(response.getHeaders()),
+                    responseCharset,
+                    response.readEntity(String.class));
+        }
     }
 }
