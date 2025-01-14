@@ -18,6 +18,7 @@
 package top.osjf.sdk.http.spi;
 
 import java.nio.charset.Charset;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -40,7 +41,7 @@ public class DefaultHttpResponse implements HttpResponse {
                                String body) {
         this.statusCode = statusCode;
         this.statusMessage = statusMessage;
-        this.headerMap = headerMap;
+        this.headerMap = Collections.unmodifiableMap(headerMap);
         this.charset = charset;
         this.body = body;
     }
