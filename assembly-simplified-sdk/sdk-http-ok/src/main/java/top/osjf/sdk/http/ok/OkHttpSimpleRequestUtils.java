@@ -17,15 +17,21 @@
 package top.osjf.sdk.http.ok;
 
 import okhttp3.*;
+import okhttp3.internal.Util;
+import okio.BufferedSource;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.util.MapUtils;
+import top.osjf.sdk.core.util.Pair;
 import top.osjf.sdk.core.util.StringUtils;
 import top.osjf.sdk.http.exception.ResponseFailedException;
 import top.osjf.sdk.http.support.HttpSdkSupport;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Map;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * A simple HTTP calling utility class encapsulated with Square's OK HTTP packages.
@@ -239,14 +245,10 @@ public abstract class OkHttpSimpleRequestUtils {
     public static String doRequest(@Nullable okhttp3.OkHttpClient client,
                                    Request.Builder builder,
                                    @Nullable Map<String, String> headers) throws Exception {
-        if (client == null) {
-            client = DEFAULT;
-        }
         Response response = null;
         String result;
         try {
-            addHeaders(headers, builder);
-            response = client.newCall(builder.build()).execute();
+            response = getResponse(client, builder, headers);
             if (response.isSuccessful()) {
                 //no call Callback#onResponse no NullPointerException
                 result = response.body().string();
@@ -257,6 +259,29 @@ public abstract class OkHttpSimpleRequestUtils {
             if (response != null) response.close();
         }
         return result;
+    }
+
+    /**
+     * The HTTP request sending method includes the entire lifecycle of HTTP requests.
+     *
+     * @param client  Square's HTTP request client,can be {@literal null}.
+     * @param builder HTTP Public Request Class {@link Request.Builder}.
+     * @param headers Optional HTTP header information used to control the behavior of requests.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
+     */
+    public static Response getResponse(@Nullable okhttp3.OkHttpClient client,
+                                       Request.Builder builder,
+                                       @Nullable Map<String, String> headers) throws Exception {
+        if (client == null) {
+            client = DEFAULT;
+        }
+        addHeaders(headers, builder);
+        return client.newCall(builder.build()).execute();
     }
 
     /**
@@ -296,7 +321,7 @@ public abstract class OkHttpSimpleRequestUtils {
         MediaType mediaType = null;
         String contentType = null;
         if (MapUtils.isNotEmpty(headers)) {
-            contentType = headers.get("Content-type");
+            contentType = headers.get(HttpSdkSupport.CONTENT_TYPE_NAME);
         }
         if (StringUtils.isBlank(contentType)) {
             contentType = HttpSdkSupport.getContentTypeWithBody(body, charset);
@@ -332,5 +357,18 @@ public abstract class OkHttpSimpleRequestUtils {
                 requestBuild = requestBuild.patch(requestBody);
         }
         return requestBuild;
+    }
+
+    public static Pair<String, Charset> getCharsetByResponse(Response response) throws IOException {
+        ResponseBody body = response.body();
+        if (body == null) {
+            return Pair.create("", null);
+        }
+        MediaType contentType = body.contentType();
+        Charset contentCharset = contentType != null ? contentType.charset(UTF_8) : UTF_8;
+        try (BufferedSource source = body.source()) {
+            Charset charset = Util.bomAwareCharset(source, contentCharset);
+            return Pair.create(source.readString(charset), charset);
+        }
     }
 }
