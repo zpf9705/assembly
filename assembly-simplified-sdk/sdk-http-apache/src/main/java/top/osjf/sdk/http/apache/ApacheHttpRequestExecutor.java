@@ -41,46 +41,30 @@ import java.util.Map;
  */
 @LoadOrder(Integer.MIN_VALUE + 11)
 public class ApacheHttpRequestExecutor extends AbstractMultiHttpMethodExecutor {
-    @Override
-    public HttpResponse get(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+    @Override public HttpResponse get(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
         return getApacheResponseAsSpiResponse(new HttpGet(url), headers, body, charset);
     }
-
-    @Override
-    public HttpResponse post(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+    @Override public HttpResponse post(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
         return getApacheResponseAsSpiResponse(new HttpPost(url), headers, body, charset);
     }
-
-    @Override
-    public HttpResponse put(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+    @Override public HttpResponse put(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
         return getApacheResponseAsSpiResponse(new HttpPut(url), headers, body, charset);
     }
-
-    @Override
-    public HttpResponse delete(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+    @Override public HttpResponse delete(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
         return getApacheResponseAsSpiResponse(new HttpDelete(url), headers, body, charset);
     }
-
-    @Override
-    public HttpResponse trace(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+    @Override public HttpResponse trace(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
         return getApacheResponseAsSpiResponse(new HttpTrace(url), headers, body, charset);
     }
-
-    @Override
-    public HttpResponse options(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+    @Override public HttpResponse options(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
         return getApacheResponseAsSpiResponse(new HttpOptions(url), headers, body, charset);
     }
-
-    @Override
-    public HttpResponse head(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+    @Override public HttpResponse head(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
         return getApacheResponseAsSpiResponse(new HttpHead(url), headers, body, charset);
     }
-
-    @Override
-    public HttpResponse patch(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+    @Override public HttpResponse patch(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
         return getApacheResponseAsSpiResponse(new HttpPatch(url), headers, body, charset);
     }
-
     private static HttpResponse getApacheResponseAsSpiResponse(HttpRequestBase requestBase, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
         org.apache.http.HttpResponse response = null;
         try {
