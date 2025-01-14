@@ -29,6 +29,12 @@ import java.util.Map;
 import java.util.function.Function;
 
 /**
+ * {@code HttpRequest} is an encapsulated information provider interface that
+ * interfaces with HTTP execution frameworks, with most of its information
+ * coming from SDK request {@link top.osjf.sdk.http.HttpRequest}information.
+ *
+ * <p>To distinguish, this interface is only used to execute HTTP requests.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
