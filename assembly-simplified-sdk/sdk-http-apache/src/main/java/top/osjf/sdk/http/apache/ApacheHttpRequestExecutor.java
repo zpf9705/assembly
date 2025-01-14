@@ -16,12 +16,20 @@
 
 package top.osjf.sdk.http.apache;
 
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.StatusLine;
+import org.apache.http.client.methods.*;
+import org.apache.http.util.EntityUtils;
 import top.osjf.sdk.core.support.LoadOrder;
 import top.osjf.sdk.core.support.Nullable;
-import top.osjf.sdk.http.executor.AbstractMultiHttpMethodExecutor;
-import top.osjf.sdk.http.executor.HttpRequestExecutor;
+import top.osjf.sdk.http.spi.AbstractMultiHttpMethodExecutor;
+import top.osjf.sdk.http.spi.DefaultHttpResponse;
+import top.osjf.sdk.http.spi.HttpRequestExecutor;
+import top.osjf.sdk.http.spi.HttpResponse;
 
 import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -34,42 +42,69 @@ import java.util.Map;
 @LoadOrder(Integer.MIN_VALUE + 11)
 public class ApacheHttpRequestExecutor extends AbstractMultiHttpMethodExecutor {
     @Override
-    public String get(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
-        return ApacheHttpSimpleRequestUtils.get(url, headers, body, charset);
+    public HttpResponse get(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return getApacheResponseAsSpiResponse(new HttpGet(url), headers, body, charset);
     }
 
     @Override
-    public String post(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
-        return ApacheHttpSimpleRequestUtils.post(url, headers, body, charset);
+    public HttpResponse post(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return getApacheResponseAsSpiResponse(new HttpPost(url), headers, body, charset);
     }
 
     @Override
-    public String put(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
-        return ApacheHttpSimpleRequestUtils.put(url, headers, body, charset);
+    public HttpResponse put(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return getApacheResponseAsSpiResponse(new HttpPut(url), headers, body, charset);
     }
 
     @Override
-    public String delete(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
-        return ApacheHttpSimpleRequestUtils.delete(url, headers, body, charset);
+    public HttpResponse delete(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return getApacheResponseAsSpiResponse(new HttpDelete(url), headers, body, charset);
     }
 
     @Override
-    public String trace(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
-        return ApacheHttpSimpleRequestUtils.trace(url, headers, body, charset);
+    public HttpResponse trace(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return getApacheResponseAsSpiResponse(new HttpTrace(url), headers, body, charset);
     }
 
     @Override
-    public String options(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
-        return ApacheHttpSimpleRequestUtils.options(url, headers, body, charset);
+    public HttpResponse options(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return getApacheResponseAsSpiResponse(new HttpOptions(url), headers, body, charset);
     }
 
     @Override
-    public String head(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
-        return ApacheHttpSimpleRequestUtils.head(url, headers, body, charset);
+    public HttpResponse head(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return getApacheResponseAsSpiResponse(new HttpHead(url), headers, body, charset);
     }
 
     @Override
-    public String patch(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
-        return ApacheHttpSimpleRequestUtils.patch(url, headers, body, charset);
+    public HttpResponse patch(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return getApacheResponseAsSpiResponse(new HttpPatch(url), headers, body, charset);
+    }
+
+    private static HttpResponse getApacheResponseAsSpiResponse(HttpRequestBase requestBase, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        org.apache.http.HttpResponse response = null;
+        try {
+            response = ApacheHttpSimpleRequestUtils.getResponse(null, requestBase, headers, body, charset);
+            StatusLine statusLine = response.getStatusLine();
+            int statusCode = statusLine.getStatusCode();
+            String reason = statusLine.getReasonPhrase();
+            Map<String, Object> responseHeaders = new HashMap<>();
+            for (Header header : response.getAllHeaders()) {
+                String name = header.getName();
+                String value = header.getValue();
+                responseHeaders.put(name, value);
+            }
+            HttpEntity entity = response.getEntity();
+            Charset responseCharset = ApacheHttpSimpleRequestUtils.getCharsetByResponse(response);
+            return new DefaultHttpResponse(statusCode,
+                    reason,
+                    responseHeaders,
+                    responseCharset,
+                    EntityUtils.toString(entity, responseCharset));
+        } finally {
+            if (response instanceof CloseableHttpResponse) {
+                ((CloseableHttpResponse) response).close();
+            }
+        }
     }
 }

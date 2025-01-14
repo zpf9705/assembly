@@ -16,6 +16,7 @@
 
 package top.osjf.sdk.http.apache;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -256,11 +257,9 @@ public abstract class ApacheHttpSimpleRequestUtils {
         HttpResponse response = null;
         String result;
         try {
-            addHeaders(headers, requestBase);
-            setEntity(body, requestBase, headers, charset);
-            response = client.execute(requestBase);
+            response = getResponse(client, requestBase, headers, body, charset);
             HttpEntity entity = response.getEntity();
-            result = EntityUtils.toString(entity, StandardCharsets.UTF_8);
+            result = EntityUtils.toString(entity, getCharsetByResponse(response));
         } finally {
             if (response != null) {
                 if (response instanceof CloseableHttpResponse) {
@@ -269,6 +268,68 @@ public abstract class ApacheHttpSimpleRequestUtils {
             }
         }
         return result;
+    }
+
+    /**
+     * The HTTP request sending method includes the entire lifecycle of HTTP requests.
+     *
+     * @param client      Apache's HTTP request client.
+     * @param requestBase HTTP Public Request Class {@link HttpRequestBase}
+     * @param headers     Optional HTTP header information used to control the behavior of requests.
+     * @param body        Optional request body.
+     * @param charset     Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
+     */
+    public static HttpResponse getResponse(@Nullable HttpClient client,
+                                           HttpRequestBase requestBase,
+                                           @Nullable Map<String, String> headers,
+                                           @Nullable Object body,
+                                           @Nullable Charset charset) throws Exception {
+        if (client == null) {
+            client = DEFAULT;
+        }
+        addHeaders(headers, requestBase);
+        setEntity(body, requestBase, headers, charset);
+        return client.execute(requestBase);
+    }
+
+    /**
+     * Returns the encoded character set based on the returned response body
+     * , default to {@link StandardCharsets#UTF_8}.
+     *
+     * @param response the input apache http response.
+     * @return charset encoding.
+     */
+    public static Charset getCharsetByResponse(HttpResponse response) {
+        Charset charset;
+        HttpEntity entity = response.getEntity();
+        ContentType contentType = ContentType.get(entity);
+        if (contentType != null) {
+            charset = contentType.getCharset();
+            if (charset != null) {
+                return charset;
+            }
+        } else {
+            for (Header header : response.getAllHeaders()) {
+                if (header.getName().equalsIgnoreCase(HttpSdkSupport.CONTENT_TYPE_NAME)) {
+                    String value = header.getValue();
+                    String[] contentTypeSplitParams = value.split(";");
+                    if (contentTypeSplitParams.length > 1) {
+                        String[] charsetParts = contentTypeSplitParams[1].split("=");
+                        if (charsetParts.length == 2 && "charset".equalsIgnoreCase(charsetParts[0].trim())) {
+                            String charsetString = charsetParts[1].replaceAll("\"", "");
+                            return Charset.forName(charsetString);
+                        }
+                    }
+                }
+            }
+        }
+        return StandardCharsets.UTF_8;
     }
 
     /**
@@ -290,7 +351,7 @@ public abstract class ApacheHttpSimpleRequestUtils {
         } else {
             String contentType = null;
             if (MapUtils.isNotEmpty(headers)) {
-                contentType = headers.get("Content-type");
+                contentType = headers.get(HttpSdkSupport.CONTENT_TYPE_NAME);
             }
             if (StringUtils.isBlank(contentType)) {
                 contentType = HttpSdkSupport.getContentTypeWithBody(body, charset);
