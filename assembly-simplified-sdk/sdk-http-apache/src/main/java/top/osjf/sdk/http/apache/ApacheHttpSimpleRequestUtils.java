@@ -303,6 +303,10 @@ public abstract class ApacheHttpSimpleRequestUtils {
     public static Charset getCharsetByResponse(HttpResponse response) {
         Charset charset;
         HttpEntity entity = response.getEntity();
+        Header contentEncodingHeader = entity.getContentEncoding();
+        if (contentEncodingHeader != null){
+            return Charset.forName(contentEncodingHeader.getName());
+        }
         ContentType contentType = ContentType.get(entity);
         if (contentType != null) {
             charset = contentType.getCharset();
