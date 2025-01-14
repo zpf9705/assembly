@@ -250,7 +250,7 @@ public abstract class ApacheHc5SimpleRequestUtils {
                                    @Nullable Object body,
                                    @Nullable Charset charset) throws Exception {
 
-        return getResponse(client, requestBase, headers, body, charset).getResult();
+        return getResponse(client, requestBase, headers, body, charset).getBody();
     }
 
     /**
