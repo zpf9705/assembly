@@ -39,10 +39,11 @@ public class DefaultHttpResponse implements HttpResponse {
      * Creates a new {@code DefaultHttpRequest} by given original http request
      * and access url and a {@code HttpRequestOptions}.
      *
-     * @param rawHttpRequest input original http request instance.
-     * @param url            the access url address of this {@code HttpRequest}.
-     * @param requestOptions the request options for this {@code HttpRequest}.
-     * @throws NullPointerException if input {@code HttpRequest} or {@code url} is {@literal null}.
+     * @param statusCode        the status code of the HTTP response.
+     * @param statusMessage     the status message of the HTTP response.
+     * @param headerMap         the header information of the HTTP response.
+     * @param charset           the {@code Charset} set of the HTTP response.
+     * @param body              the body content of the HTTP response.
      */
     public DefaultHttpResponse(int statusCode,
                                String statusMessage,
