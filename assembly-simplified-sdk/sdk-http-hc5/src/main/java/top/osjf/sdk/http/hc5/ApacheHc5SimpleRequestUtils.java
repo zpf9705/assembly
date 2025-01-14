@@ -279,9 +279,9 @@ public abstract class ApacheHc5SimpleRequestUtils {
         addHeaders(headers, requestBase);
         setEntity(body, requestBase, headers, charset);
         return client.execute(requestBase, response -> {
-            Charset charset1 = getCharsetByResponse(response);
+            Charset responseCharset = getCharsetByResponse(response);
             return new Hc5ClosedResponse
-                    (response, EntityUtils.toString(response.getEntity(), charset1), charset1);
+                    (response, EntityUtils.toString(response.getEntity(), responseCharset), responseCharset);
         });
     }
 

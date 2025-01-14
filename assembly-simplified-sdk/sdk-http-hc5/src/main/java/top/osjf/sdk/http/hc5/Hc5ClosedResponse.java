@@ -18,33 +18,32 @@
 package top.osjf.sdk.http.hc5;
 
 import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.Header;
+import top.osjf.sdk.http.spi.DefaultHttpResponse;
 
 import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
+ * HC5 response result processing encapsulates the {@link top.osjf.sdk.http.spi.HttpResponse} subclass.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-public class Hc5ClosedResponse {
-    private final ClassicHttpResponse rawResponse;
-    private final String result;
-    private final Charset charset;
+public class Hc5ClosedResponse extends DefaultHttpResponse {
+    private static final long serialVersionUID = -470351131493467831L;
 
     public Hc5ClosedResponse(ClassicHttpResponse rawResponse, String result, Charset charset) {
-        this.rawResponse = rawResponse;
-        this.result = result;
-        this.charset = charset;
+        super(rawResponse.getCode(), rawResponse.getReasonPhrase(),
+                toHeaderMap(rawResponse.getHeaders()), charset, result);
     }
 
-    public ClassicHttpResponse getRawResponse() {
-        return rawResponse;
-    }
-
-    public String getResult() {
-        return result;
-    }
-
-    public Charset getCharset() {
-        return charset;
+    private static Map<String, Object> toHeaderMap(Header[] headers) {
+        Map<String, Object> responseHeaders = new HashMap<>();
+        for (Header header : headers) {
+            responseHeaders.put(header.getName(), header.getValue());
+        }
+        return responseHeaders;
     }
 }
