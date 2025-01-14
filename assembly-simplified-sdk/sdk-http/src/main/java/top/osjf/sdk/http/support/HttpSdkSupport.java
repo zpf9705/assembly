@@ -61,6 +61,8 @@ public abstract class HttpSdkSupport extends SdkSupport {
      * */
     protected static DocumentBuilder builder;
 
+    public static final String CONTENT_TYPE_NAME = "Content-Type";
+
     static {
         /* init documentBuilder cache */
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -76,7 +78,7 @@ public abstract class HttpSdkSupport extends SdkSupport {
     }
 
     /**
-     * Retrieve {@code "Content-type"} based on the content of the request body,
+     * Retrieve {@link #CONTENT_TYPE_NAME} based on the content of the request body,
      * supporting the judgment of following types:
      * <ul>
      *     <li>{@code "application/json"}</li>
