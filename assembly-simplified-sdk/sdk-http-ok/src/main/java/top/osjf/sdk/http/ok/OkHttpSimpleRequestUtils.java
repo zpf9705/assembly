@@ -359,6 +359,13 @@ public abstract class OkHttpSimpleRequestUtils {
         return requestBuild;
     }
 
+    /**
+     * Returns the encoded character set based on the returned response body.
+     *
+     * @param response the input apache ok http response.
+     * @return response charset encoding.
+     * @throws NullPointerException     if input response is {@literal null}.
+     */
     public static Pair<String, Charset> getCharsetByResponse(Response response) throws IOException {
         ResponseBody body = response.body();
         if (body == null) {
