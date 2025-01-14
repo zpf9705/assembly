@@ -17,7 +17,6 @@
 package top.osjf.sdk.http.client;
 
 import top.osjf.sdk.core.client.Client;
-import top.osjf.sdk.http.HttpRequest;
 import top.osjf.sdk.http.HttpResponse;
 
 /**
@@ -41,22 +40,6 @@ import top.osjf.sdk.http.HttpResponse;
  * @since 1.0.0
  */
 public interface HttpClient<R extends HttpResponse> extends Client<R>, HttpResultSolver {
-
-    /**
-     * Execute an HTTP request and return a string representation of the response.
-     * <p>
-     * This method accepts an HTTP request object, sends the request to the server,
-     * and returns the server's response content (usually a string).
-     * <p>
-     * During execution, this method may throw exceptions if encountering network issues,
-     * request timeouts, or server error status codes.
-     *
-     * @param request The HTTP request object to be executed for request.
-     * @return The string representation of the response from the server.
-     * @throws Exception If any exception occurs during the execution of the request,
-     *                   throw this exception.
-     */
-    String execute(HttpRequest<R> request) throws Exception;
 
     /**
      * Return a Controls the per-request settings currently required to be
