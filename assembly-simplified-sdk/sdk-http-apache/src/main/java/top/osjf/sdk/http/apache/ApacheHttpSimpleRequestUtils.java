@@ -303,6 +303,7 @@ public abstract class ApacheHttpSimpleRequestUtils {
      *
      * @param response the input apache http response.
      * @return charset encoding.
+     * @throws NullPointerException if input response is {@literal null}.
      */
     public static Charset getCharsetByResponse(HttpResponse response) {
         Charset charset;
