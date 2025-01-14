@@ -29,7 +29,8 @@ import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.support.ServiceLoadManager;
 import top.osjf.sdk.core.util.ArrayUtils;
 import top.osjf.sdk.core.util.ExceptionUtils;
-import top.osjf.sdk.http.executor.HttpRequestExecutor;
+import top.osjf.sdk.http.spi.DefaultHttpRequest;
+import top.osjf.sdk.http.spi.HttpRequestExecutor;
 import top.osjf.sdk.http.HttpRequest;
 import top.osjf.sdk.http.HttpResponse;
 
@@ -59,8 +60,6 @@ import java.util.concurrent.TimeUnit;
  * methods are placed.
  *
  * <p>If this type is inherited, it can be rewritten.
- *
- * <p>Of course, you can define your request based on the {@link #execute} method.
  *
  * @param <R> Implement a unified response class data type.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
@@ -172,9 +171,9 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
     }
 
     /**
-     * Return a not null {@code HttpRequestExecutor}.
+     * Return an available {@code HttpRequestExecutor}.
      *
-     * @return a not null {@code HttpRequestExecutor}.
+     * @return an available {@code HttpRequestExecutor}.
      * @throws IllegalStateException if no available {@code HttpRequestExecutor}.
      */
     @NotNull
@@ -185,7 +184,7 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
             requestExecutor = ServiceLoadManager.loadHighPriority(HttpRequestExecutor.class);
             if (requestExecutor == null) {
                 throw new IllegalStateException
-                        ("There is no available `top.osjf.sdk.http.executor.HttpRequestExecutor`, " +
+                        ("There is no available `top.osjf.sdk.http.spi.HttpRequestExecutor`, " +
                                 "please refer to `top.osjf.sdk.http.client.AbstractHttpClient#HttpRequestExecutor` " +
                                 "for usage plan.");
             } else {
@@ -267,13 +266,19 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
             request.validate();
 
             //Execute this request, route according to the request type, and handle the parameters.
-            responseStr = execute(request);
+            top.osjf.sdk.http.spi.HttpResponse spiResponse =
+                    getRequestExecutor().execute(new DefaultHttpRequest(request, getUrl(), getOptions()));
+
+            responseStr = spiResponse.getBody();
 
             //Preprocessing operation for request results.
             responseStr = preResponseStrHandler(request, responseStr);
 
             //The result conversion operation of the request result.
             response = convertToResponse(request, responseStr);
+
+            //Set a spi response to sdk response.
+            setSpiResponse(response);
 
         } catch (SdkException e) {
 
@@ -306,9 +311,8 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
         return response;
     }
 
-    @Override
-    public String execute(HttpRequest<R> request) throws Exception {
-        return getRequestExecutor().execute(asRequestToExecutable(request, getUrl()));
+    private void setSpiResponse(R response) {
+
     }
 
     @Override
