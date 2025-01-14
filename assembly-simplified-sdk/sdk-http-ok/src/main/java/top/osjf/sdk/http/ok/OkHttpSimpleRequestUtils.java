@@ -364,7 +364,8 @@ public abstract class OkHttpSimpleRequestUtils {
      *
      * @param response the input apache ok http response.
      * @return response charset encoding.
-     * @throws NullPointerException     if input response is {@literal null}.
+     * @throws NullPointerException if input response is {@literal null}.
+     * @throws IOException          If method {@link Util#bomAwareCharset} executes incorrectly.
      */
     public static Pair<String, Charset> getCharsetByResponse(Response response) throws IOException {
         ResponseBody body = response.body();
