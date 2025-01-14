@@ -17,17 +17,13 @@
 package top.osjf.sdk.http.hc5;
 
 import org.apache.hc.client5.http.classic.methods.*;
-import org.apache.hc.core5.http.ClassicHttpResponse;
-import org.apache.hc.core5.http.Header;
 import top.osjf.sdk.core.support.LoadOrder;
 import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.http.spi.AbstractMultiHttpMethodExecutor;
-import top.osjf.sdk.http.spi.DefaultHttpResponse;
 import top.osjf.sdk.http.spi.HttpRequestExecutor;
 import top.osjf.sdk.http.spi.HttpResponse;
 
 import java.nio.charset.Charset;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -64,16 +60,6 @@ public class Hc5HttpRequestExecutor extends AbstractMultiHttpMethodExecutor {
         return getApacheResponseAsSpiResponse(new HttpPatch(url), headers, body, charset);
     }
     private static HttpResponse getApacheResponseAsSpiResponse(HttpUriRequestBase requestBase, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
-        Hc5ClosedResponse response = ApacheHc5SimpleRequestUtils.getResponse(null, requestBase, headers, body, charset);
-        ClassicHttpResponse rawResponse = response.getRawResponse();
-        Map<String, Object> responseHeaders = new HashMap<>();
-        for (Header header : rawResponse.getHeaders()) {
-            responseHeaders.put(header.getName(), header.getValue());
-        }
-        return new DefaultHttpResponse(rawResponse.getCode(),
-                    rawResponse.getReasonPhrase(),
-                    responseHeaders,
-                    response.getCharset(),
-                    response.getResult());
+        return ApacheHc5SimpleRequestUtils.getResponse(null, requestBase, headers, body, charset);
     }
 }
