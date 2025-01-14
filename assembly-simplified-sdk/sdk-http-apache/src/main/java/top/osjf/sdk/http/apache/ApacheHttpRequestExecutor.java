@@ -70,8 +70,6 @@ public class ApacheHttpRequestExecutor extends AbstractMultiHttpMethodExecutor {
         try {
             response = ApacheHttpSimpleRequestUtils.getResponse(null, requestBase, headers, body, charset);
             StatusLine statusLine = response.getStatusLine();
-            int statusCode = statusLine.getStatusCode();
-            String reason = statusLine.getReasonPhrase();
             Map<String, Object> responseHeaders = new HashMap<>();
             for (Header header : response.getAllHeaders()) {
                 String name = header.getName();
@@ -80,8 +78,8 @@ public class ApacheHttpRequestExecutor extends AbstractMultiHttpMethodExecutor {
             }
             HttpEntity entity = response.getEntity();
             Charset responseCharset = ApacheHttpSimpleRequestUtils.getCharsetByResponse(response);
-            return new DefaultHttpResponse(statusCode,
-                    reason,
+            return new DefaultHttpResponse(statusLine.getStatusCode(),
+                    statusLine.getReasonPhrase(),
                     responseHeaders,
                     responseCharset,
                     EntityUtils.toString(entity, responseCharset));
