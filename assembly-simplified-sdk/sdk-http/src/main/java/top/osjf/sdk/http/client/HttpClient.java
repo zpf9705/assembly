@@ -17,7 +17,6 @@
 package top.osjf.sdk.http.client;
 
 import top.osjf.sdk.core.client.Client;
-import top.osjf.sdk.http.executor.HttpRequestExecutor;
 import top.osjf.sdk.http.HttpRequest;
 import top.osjf.sdk.http.HttpResponse;
 
@@ -60,33 +59,16 @@ public interface HttpClient<R extends HttpResponse> extends Client<R>, HttpResul
     String execute(HttpRequest<R> request) throws Exception;
 
     /**
-     * Return an executable {@link HttpRequest} as {@code HttpRequestExecutor.ExecutableHttpRequest}.
-     * <p>
-     * The default is {@code HttpRequestExecutor.Default}, and this parameter can be
-     * customized as needed.
-     *
-     * @param request An object encapsulating HTTP request information.
-     * @param url     The URL address of the request.
-     * @return The executable {@code HttpRequest} after initialization is completed.
-     */
-    default HttpRequestExecutor.ExecutableHttpRequest asRequestToExecutable(HttpRequest<R> request,
-                                                                            String url) {
-        return new HttpRequestExecutor.Default(request, url, getOptions());
-    }
-
-    /**
      * Return a Controls the per-request settings currently required to be
      * implemented by all {@link Client}.
-     * <p>Currently only takes effect when
-     * <pre>{@code HttpRequestExecutor#useCustomize == false}</pre>.
-     * <p>By default, this method returns
-     * {@link HttpRequestExecutor.RequestOptions#DEFAULT_OPTIONS}.
+     * <p>Currently only takes effect when <pre>{@code HttpRequestExecutor#useCustomize == false}</pre>.
+     * <p>By default, this method returns {@link HttpRequestOptions#DEFAULT_OPTIONS}.
      *
      * @return Controls the per-request settings currently required to be
      * implemented by all {@link Client clients}
      * @since 1.0.2
      */
-    default HttpRequestExecutor.RequestOptions getOptions() {
-        return HttpRequestExecutor.RequestOptions.DEFAULT_OPTIONS;
+    default HttpRequestOptions getOptions() {
+        return HttpRequestOptions.DEFAULT_OPTIONS;
     }
 }
