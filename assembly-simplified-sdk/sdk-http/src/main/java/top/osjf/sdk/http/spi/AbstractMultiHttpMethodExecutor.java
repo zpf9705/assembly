@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http.executor;
+package top.osjf.sdk.http.spi;
 
 import top.osjf.sdk.core.support.NotNull;
 
@@ -33,13 +33,13 @@ import java.util.Map;
 public abstract class AbstractMultiHttpMethodExecutor implements MultiHttpMethodExecutor {
 
     @Override
-    public final String execute(@NotNull ExecutableHttpRequest httpRequest) throws Exception {
-        return getClass().getMethod(httpRequest.getMethodName().toLowerCase(),
+    public final HttpResponse execute(@NotNull HttpRequest httpRequest) throws Exception {
+        return (HttpResponse) getClass().getMethod(httpRequest.getMethodName().toLowerCase(),
                 String.class,
                 Map.class,
                 Object.class,
                 Charset.class).invoke(this, httpRequest.getUrl(),
                 httpRequest.getHeaders(),
-                httpRequest.getBody(), httpRequest.getCharset()).toString();
+                httpRequest.getBody(), httpRequest.getCharset());
     }
 }
