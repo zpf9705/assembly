@@ -19,6 +19,8 @@ package top.osjf.sdk.http;
 import top.osjf.sdk.core.AbstractResponse;
 import top.osjf.sdk.core.DefaultErrorResponse;
 
+import java.nio.charset.Charset;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -61,6 +63,17 @@ public abstract class AbstractHttpResponse extends AbstractResponse implements H
 
     public static final String FAILED_MESSAGE = "Internal system error";
 
+    private top.osjf.sdk.http.spi.HttpResponse httpResponse;
+
+    /**
+     * Set a spi {@code HttpResponse} for support to query important information
+     * returned by the requesting server.
+     *
+     * @param httpResponse a spi {@code HttpResponse}.
+     */
+    public void setHttpResponse(top.osjf.sdk.http.spi.HttpResponse httpResponse) {
+        this.httpResponse = httpResponse;
+    }
 
     /**
      * {@code isSuccess} and {@code  getMessage} define http success situation.
@@ -90,5 +103,55 @@ public abstract class AbstractHttpResponse extends AbstractResponse implements H
     @Override
     public Object getCode() {
         return SC_INTERNAL_SERVER_ERROR;
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Provided by {@link top.osjf.sdk.http.spi.HttpResponse}.
+     */
+    @Override
+    public int getStatusCode() {
+        return httpResponse.getStatusCode();
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Provided by {@link top.osjf.sdk.http.spi.HttpResponse}.
+     */
+    @Override
+    public String getStatusMessage() {
+        return httpResponse.getStatusMessage();
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Provided by {@link top.osjf.sdk.http.spi.HttpResponse}.
+     */
+    @Override
+    public Map<String, Object> getHeadMap() {
+        return httpResponse.getHeadMap();
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Provided by {@link top.osjf.sdk.http.spi.HttpResponse}.
+     */
+    @Override
+    public Charset getCharset() {
+        return httpResponse.getCharset();
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Provided by {@link top.osjf.sdk.http.spi.HttpResponse}.
+     */
+    @Override
+    public String getBody() {
+        return httpResponse.getBody();
     }
 }
