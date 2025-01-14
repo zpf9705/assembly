@@ -98,7 +98,8 @@ public abstract class AbstractFeignClientHttpRequestExecutor implements FeignCli
                             response.reason(),
                             toValueObjHeaderMap(response.headers()),
                             response.charset(),
-                            toStringBody(response));
+                            toStringBody(response),
+                            response.protocolVersion());
         }
     }
 

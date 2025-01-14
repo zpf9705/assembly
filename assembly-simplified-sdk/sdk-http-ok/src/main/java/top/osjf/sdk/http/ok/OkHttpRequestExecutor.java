@@ -77,7 +77,8 @@ public class OkHttpRequestExecutor extends AbstractMultiHttpMethodExecutor {
                     response.message(),
                     responseHeaders,
                     pair.getSecond(),
-                    pair.getFirst());
+                    pair.getFirst(),
+                    response.protocol());
         } finally {
             if (response != null) {
                 response.close();

@@ -36,7 +36,7 @@ public class Hc5ClosedResponse extends DefaultHttpResponse {
 
     public Hc5ClosedResponse(ClassicHttpResponse rawResponse, String result, Charset charset) {
         super(rawResponse.getCode(), rawResponse.getReasonPhrase(),
-                toHeaderMap(rawResponse.getHeaders()), charset, result);
+                toHeaderMap(rawResponse.getHeaders()), charset, result, rawResponse.getVersion());
     }
 
     private static Map<String, Object> toHeaderMap(Header[] headers) {

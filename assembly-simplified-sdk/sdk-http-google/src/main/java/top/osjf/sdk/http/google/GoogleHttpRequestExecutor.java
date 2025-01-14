@@ -65,6 +65,7 @@ public class GoogleHttpRequestExecutor extends AbstractMultiHttpMethodExecutor {
                 response.getStatusMessage(),
                 response.getHeaders(),
                 response.getContentCharset(),
-                response.parseAsString());
+                response.parseAsString(),
+                null);
     }
 }

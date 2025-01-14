@@ -83,7 +83,8 @@ public class ApacheHttpRequestExecutor extends AbstractMultiHttpMethodExecutor {
                     statusLine.getReasonPhrase(),
                     responseHeaders,
                     responseCharset,
-                    responseBodyString);
+                    responseBodyString,
+                    response.getProtocolVersion());
         } finally {
             if (response instanceof CloseableHttpResponse) {
                 ((CloseableHttpResponse) response).close();

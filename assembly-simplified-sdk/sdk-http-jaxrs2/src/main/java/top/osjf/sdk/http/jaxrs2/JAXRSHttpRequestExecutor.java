@@ -70,7 +70,7 @@ public class JAXRSHttpRequestExecutor extends AbstractMultiHttpMethodExecutor {
                     statusInfo.getReasonPhrase(),
                     new HashMap<>(response.getHeaders()),
                     responseCharset,
-                    responseBodyString);
+                    responseBodyString,null);
         }
     }
 }
