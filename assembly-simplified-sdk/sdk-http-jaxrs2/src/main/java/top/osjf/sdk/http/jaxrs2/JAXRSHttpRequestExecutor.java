@@ -65,11 +65,12 @@ public class JAXRSHttpRequestExecutor extends AbstractMultiHttpMethodExecutor {
         try (Response response = JAXRSHttpSimpleRequestUtils.getResponse(null, url, methodName, headers, body, charset)) {
             Response.StatusType statusInfo = response.getStatusInfo();
             Charset responseCharset = JAXRSHttpSimpleRequestUtils.getCharsetByResponse(response);
+            String responseBodyString = response.readEntity(String.class);
             return new DefaultHttpResponse(statusInfo.getStatusCode(),
                     statusInfo.getReasonPhrase(),
                     new HashMap<>(response.getHeaders()),
                     responseCharset,
-                    response.readEntity(String.class));
+                    responseBodyString);
         }
     }
 }
