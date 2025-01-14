@@ -64,11 +64,9 @@ public class JAXRSHttpRequestExecutor extends AbstractMultiHttpMethodExecutor {
     private static HttpResponse getJAXRSResponseAsSpiResponse(String methodName, String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
         try (Response response = JAXRSHttpSimpleRequestUtils.getResponse(null, url, methodName, headers, body, charset)) {
             Response.StatusType statusInfo = response.getStatusInfo();
-            int statusCode = statusInfo.getStatusCode();
-            String message = statusInfo.getReasonPhrase();
             Charset responseCharset = JAXRSHttpSimpleRequestUtils.getCharsetByResponse(response);
-            return new DefaultHttpResponse(statusCode,
-                    message,
+            return new DefaultHttpResponse(statusInfo.getStatusCode(),
+                    statusInfo.getReasonPhrase(),
                     new HashMap<>(response.getHeaders()),
                     responseCharset,
                     response.readEntity(String.class));
