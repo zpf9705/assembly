@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.http.executor;
+package top.osjf.sdk.http.spi;
 
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
@@ -58,7 +58,7 @@ public interface MultiHttpMethodExecutor extends HttpRequestExecutor {
      *                              (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
      *                              The caller needs to capture and handle these exceptions appropriately.
      */
-    String get(@NotNull String url, @Nullable Map<String, String> headers, @Nullable Object body,
+    HttpResponse get(@NotNull String url, @Nullable Map<String, String> headers, @Nullable Object body,
                @Nullable Charset charset)
             throws Exception;
 
@@ -78,7 +78,7 @@ public interface MultiHttpMethodExecutor extends HttpRequestExecutor {
      *                              (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
      *                              The caller needs to capture and handle these exceptions appropriately.
      */
-    String post(@NotNull String url, @Nullable Map<String, String> headers, @Nullable Object body,
+    HttpResponse post(@NotNull String url, @Nullable Map<String, String> headers, @Nullable Object body,
                 @Nullable Charset charset)
             throws Exception;
 
@@ -98,7 +98,7 @@ public interface MultiHttpMethodExecutor extends HttpRequestExecutor {
      *                              (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
      *                              The caller needs to capture and handle these exceptions appropriately.
      */
-    String put(@NotNull String url, @Nullable Map<String, String> headers, @Nullable Object body,
+    HttpResponse put(@NotNull String url, @Nullable Map<String, String> headers, @Nullable Object body,
                @Nullable Charset charset)
             throws Exception;
 
@@ -118,7 +118,7 @@ public interface MultiHttpMethodExecutor extends HttpRequestExecutor {
      *                              (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
      *                              The caller needs to capture and handle these exceptions appropriately.
      */
-    String delete(@NotNull String url, @Nullable Map<String, String> headers, @Nullable Object body,
+    HttpResponse delete(@NotNull String url, @Nullable Map<String, String> headers, @Nullable Object body,
                   @Nullable Charset charset)
             throws Exception;
 
@@ -138,7 +138,7 @@ public interface MultiHttpMethodExecutor extends HttpRequestExecutor {
      *                              (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
      *                              The caller needs to capture and handle these exceptions appropriately.
      */
-    String trace(@NotNull String url, @Nullable Map<String, String> headers, @Nullable Object body,
+    HttpResponse trace(@NotNull String url, @Nullable Map<String, String> headers, @Nullable Object body,
                  @Nullable Charset charset)
             throws Exception;
 
@@ -158,7 +158,7 @@ public interface MultiHttpMethodExecutor extends HttpRequestExecutor {
      *                              (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
      *                              The caller needs to capture and handle these exceptions appropriately.
      */
-    String options(@NotNull String url, @Nullable Map<String, String> headers, @Nullable Object body,
+    HttpResponse options(@NotNull String url, @Nullable Map<String, String> headers, @Nullable Object body,
                    @Nullable Charset charset)
             throws Exception;
 
@@ -178,7 +178,7 @@ public interface MultiHttpMethodExecutor extends HttpRequestExecutor {
      *                              (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
      *                              The caller needs to capture and handle these exceptions appropriately.
      */
-    String head(@NotNull String url, @Nullable Map<String, String> headers, @Nullable Object body,
+    HttpResponse head(@NotNull String url, @Nullable Map<String, String> headers, @Nullable Object body,
                 @Nullable Charset charset)
             throws Exception;
 
@@ -198,7 +198,7 @@ public interface MultiHttpMethodExecutor extends HttpRequestExecutor {
      *                              (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
      *                              The caller needs to capture and handle these exceptions appropriately.
      */
-    String patch(@NotNull String url, @Nullable Map<String, String> headers, @Nullable Object body,
+    HttpResponse patch(@NotNull String url, @Nullable Map<String, String> headers, @Nullable Object body,
                  @Nullable Charset charset)
             throws Exception;
 }
