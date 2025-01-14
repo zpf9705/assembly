@@ -17,23 +17,27 @@
 package top.osjf.sdk.http.client;
 
 import com.google.common.base.Stopwatch;
+import top.osjf.sdk.core.DefaultErrorResponse;
 import top.osjf.sdk.core.ErrorResponse;
+import top.osjf.sdk.core.Request;
+import top.osjf.sdk.core.URL;
 import top.osjf.sdk.core.client.AbstractClient;
 import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.core.exception.SdkException;
-import top.osjf.sdk.core.DefaultErrorResponse;
-import top.osjf.sdk.core.Request;
-import top.osjf.sdk.core.URL;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.support.ServiceLoadManager;
 import top.osjf.sdk.core.util.ArrayUtils;
 import top.osjf.sdk.core.util.ExceptionUtils;
-import top.osjf.sdk.http.spi.DefaultHttpRequest;
-import top.osjf.sdk.http.spi.HttpRequestExecutor;
+import top.osjf.sdk.core.util.ReflectUtil;
+import top.osjf.sdk.http.AbstractHttpResponse;
 import top.osjf.sdk.http.HttpRequest;
 import top.osjf.sdk.http.HttpResponse;
+import top.osjf.sdk.http.spi.DefaultHttpRequest;
+import top.osjf.sdk.http.spi.HttpRequestExecutor;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -56,10 +60,12 @@ import java.util.concurrent.TimeUnit;
  * handling {@link SdkException} exceptions and {@link Exception} unknown
  * exceptions.
  *
- * <p>Of course, there are also handling of the final results, and common
- * methods are placed.
- *
- * <p>If this type is inherited, it can be rewritten.
+ * <p>The execution of HTTP requests is based on {@link HttpRequestExecutor}.
+ * Before calling, please first call {@link #setRequestExecutor} to set a
+ * {@code HttpRequestExecutor} instance that is reasonable for the request.
+ * If it is not set, a corresponding {@code HttpRequestExecutor} instance will
+ * be imported according to the SPI mechanism. The architecture details can
+ * be seen in the introduction of property {@code #requestExecutor}.
  *
  * @param <R> Implement a unified response class data type.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
@@ -278,7 +284,7 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
             response = convertToResponse(request, responseStr);
 
             //Set a spi response to sdk response.
-            setSpiResponse(response);
+            setSpiResponse(response, spiResponse);
 
         } catch (SdkException e) {
 
@@ -311,8 +317,29 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
         return response;
     }
 
-    private void setSpiResponse(R response) {
-
+    /**
+     * Set a {@link top.osjf.sdk.http.spi.HttpResponse spiResponse} for sdk response
+     * {@link HttpResponse} to support queries important information returned by the
+     * requesting server.
+     *
+     * @param response    the input sdk response.
+     * @param spiResponse the input spi response.
+     */
+    private void setSpiResponse(R response, top.osjf.sdk.http.spi.HttpResponse spiResponse) {
+        if (response instanceof AbstractHttpResponse) {
+            ((AbstractHttpResponse) response).setHttpResponse(spiResponse);
+        } else {
+            for (Method method : ReflectUtil.getAllDeclaredMethods(response.getClass())) {
+                Parameter[] parameters = method.getParameters();
+                if (parameters.length == 1) {
+                    Parameter parameter = parameters[0];
+                    if (top.osjf.sdk.http.spi.HttpResponse.class.isAssignableFrom(parameter.getType())) {
+                        ReflectUtil.invokeMethod(response, method, spiResponse);
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     @Override
