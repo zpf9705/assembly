@@ -47,6 +47,7 @@ public class DefaultHttpResponse implements HttpResponse {
      * @param headerMap         the header information of the HTTP response.
      * @param charset           the {@code Charset} set of the HTTP response.
      * @param body              the body content of the HTTP response.
+     * @param protocolVersion   the http protocol version instance.
      */
     public DefaultHttpResponse(int statusCode,
                                String statusMessage,
