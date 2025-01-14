@@ -16,12 +16,20 @@
 
 package top.osjf.sdk.http.hc5;
 
+import org.apache.hc.client5.http.classic.methods.*;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
 import top.osjf.sdk.core.support.LoadOrder;
 import top.osjf.sdk.core.support.Nullable;
-import top.osjf.sdk.http.executor.AbstractMultiHttpMethodExecutor;
-import top.osjf.sdk.http.executor.HttpRequestExecutor;
+import top.osjf.sdk.http.spi.AbstractMultiHttpMethodExecutor;
+import top.osjf.sdk.http.spi.DefaultHttpResponse;
+import top.osjf.sdk.http.spi.HttpRequestExecutor;
+import top.osjf.sdk.http.spi.HttpResponse;
 
 import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -33,43 +41,47 @@ import java.util.Map;
  */
 @LoadOrder(Integer.MIN_VALUE + 18)
 public class Hc5HttpRequestExecutor extends AbstractMultiHttpMethodExecutor {
-    @Override
-    public String get(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
-        return ApacheHc5SimpleRequestUtils.get(url, headers, body, charset);
+    @Override public HttpResponse get(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return getApacheResponseAsSpiResponse(new HttpGet(url), headers, body, charset);
     }
-
-    @Override
-    public String post(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
-        return ApacheHc5SimpleRequestUtils.post(url, headers, body, charset);
+    @Override public HttpResponse post(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return getApacheResponseAsSpiResponse(new HttpPost(url), headers, body, charset);
     }
-
-    @Override
-    public String put(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
-        return ApacheHc5SimpleRequestUtils.put(url, headers, body, charset);
+    @Override public HttpResponse put(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return getApacheResponseAsSpiResponse(new HttpPut(url), headers, body, charset);
     }
-
-    @Override
-    public String delete(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
-        return ApacheHc5SimpleRequestUtils.delete(url, headers, body, charset);
+    @Override public HttpResponse delete(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return getApacheResponseAsSpiResponse(new HttpDelete(url), headers, body, charset);
     }
-
-    @Override
-    public String trace(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
-        return ApacheHc5SimpleRequestUtils.trace(url, headers, body, charset);
+    @Override public HttpResponse trace(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return getApacheResponseAsSpiResponse(new HttpTrace(url), headers, body, charset);
     }
-
-    @Override
-    public String options(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
-        return ApacheHc5SimpleRequestUtils.options(url, headers, body, charset);
+    @Override public HttpResponse options(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return getApacheResponseAsSpiResponse(new HttpOptions(url), headers, body, charset);
     }
-
-    @Override
-    public String head(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
-        return ApacheHc5SimpleRequestUtils.head(url, headers, body, charset);
+    @Override public HttpResponse head(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return getApacheResponseAsSpiResponse(new HttpHead(url), headers, body, charset);
     }
-
-    @Override
-    public String patch(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
-        return ApacheHc5SimpleRequestUtils.patch(url, headers, body, charset);
+    @Override public HttpResponse patch(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        return getApacheResponseAsSpiResponse(new HttpPatch(url), headers, body, charset);
+    }
+    private static HttpResponse getApacheResponseAsSpiResponse(HttpUriRequestBase requestBase, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
+        try (ClassicHttpResponse response = ApacheHc5SimpleRequestUtils.getResponse(null, requestBase, headers, body, charset)) {
+            int statusCode = response.getCode();
+            String reason = response.getReasonPhrase();
+            Map<String, Object> responseHeaders = new HashMap<>();
+            for (Header header : response.getHeaders()) {
+                String name = header.getName();
+                String value = header.getValue();
+                responseHeaders.put(name, value);
+            }
+            HttpEntity entity = response.getEntity();
+            Charset responseCharset = ApacheHc5SimpleRequestUtils.getCharsetByResponse(response);
+            return new DefaultHttpResponse(statusCode,
+                    reason,
+                    responseHeaders,
+                    responseCharset,
+                    EntityUtils.toString(entity, responseCharset));
+        }
     }
 }

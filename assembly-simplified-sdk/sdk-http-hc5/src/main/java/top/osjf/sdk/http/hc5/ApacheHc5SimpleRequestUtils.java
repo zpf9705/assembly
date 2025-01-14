@@ -20,9 +20,7 @@ import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.*;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
-import org.apache.hc.core5.http.ClassicHttpResponse;
-import org.apache.hc.core5.http.ContentType;
-import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.*;
 import org.apache.hc.core5.http.io.entity.ByteArrayEntity;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
@@ -248,22 +246,80 @@ public abstract class ApacheHc5SimpleRequestUtils {
                                    @Nullable Map<String, String> headers,
                                    @Nullable Object body,
                                    @Nullable Charset charset) throws Exception {
-        if (client == null) {
-            client = DEFAULT;
-        }
+
         ClassicHttpResponse response = null;
         String result;
         try {
-            addHeaders(headers, requestBase);
-            setEntity(body, requestBase, headers, charset);
-            response = client.execute(requestBase, r -> r);
-            result = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
+            response = getResponse(client, requestBase, headers, body, charset);
+            result = EntityUtils.toString(response.getEntity(), getCharsetByResponse(response));
         } finally {
             if (response != null) {
                 response.close();
             }
         }
         return result;
+    }
+
+    /**
+     * The HTTP5 request sending method includes the entire lifecycle of HTTP requests.
+     *
+     * @param client      Apache's HTTP request client.
+     * @param requestBase HTTP Public Request Class {@link HttpUriRequestBase}.
+     * @param headers     Optional HTTP header information used to control the behavior of requests.
+     * @param body        Optional request body.
+     * @param charset     Encoding character set.
+     * @return Returns a string representation of the server response body.
+     * The specific content depends on the server's response.
+     * @throws Exception This method may throw various exceptions, including but not limited
+     *                   to network exceptions (such as SocketTimeoutException, IOException)URL format error
+     *                   (MalformedURLException), server error response (such as HTTP 4xx or 5xx errors), etc.
+     *                   The caller needs to capture and handle these exceptions appropriately.
+     */
+    public static ClassicHttpResponse getResponse(@Nullable HttpClient client,
+                                           HttpUriRequestBase requestBase,
+                                           @Nullable Map<String, String> headers,
+                                           @Nullable Object body,
+                                           @Nullable Charset charset) throws Exception {
+        if (client == null) {
+            client = DEFAULT;
+        }
+        addHeaders(headers, requestBase);
+        setEntity(body, requestBase, headers, charset);
+        return client.execute(requestBase, r -> r);
+    }
+
+    /**
+     * Returns the encoded character set based on the returned response body
+     * , default to {@link StandardCharsets#UTF_8}.
+     *
+     * @param response the input apache hc5 http response.
+     * @return response charset encoding.
+     * @throws NullPointerException if input response is {@literal null}.
+     */
+    public static Charset getCharsetByResponse(ClassicHttpResponse response) {
+        HttpEntity entity = response.getEntity();
+        String contentEncoding = entity.getContentEncoding();
+        if (StringUtils.isNotBlank(contentEncoding)){
+            return Charset.forName(contentEncoding);
+        }
+        ContentType contentType = ContentType.parse(entity.getContentType());
+        if (contentType != null && contentType.getCharset() != null) {
+            return contentType.getCharset();
+        }
+        for (Header header : response.getHeaders()) {
+            if (header.getName().equalsIgnoreCase(HttpSdkSupport.CONTENT_TYPE_NAME)) {
+                String value = header.getValue();
+                String[] contentTypeSplitParams = value.split(";");
+                if (contentTypeSplitParams.length > 1) {
+                    String[] charsetParts = contentTypeSplitParams[1].split("=");
+                    if (charsetParts.length == 2 && "charset".equalsIgnoreCase(charsetParts[0].trim())) {
+                        String charsetString = charsetParts[1].replaceAll("\"", "");
+                        return Charset.forName(charsetString);
+                    }
+                }
+            }
+        }
+        return StandardCharsets.UTF_8;
     }
 
     /**
@@ -284,7 +340,7 @@ public abstract class ApacheHc5SimpleRequestUtils {
         } else {
             String contentType = null;
             if (MapUtils.isNotEmpty(headers)) {
-                contentType = headers.get("Content-type");
+                contentType = headers.get(HttpSdkSupport.CONTENT_TYPE_NAME);
             }
             if (StringUtils.isBlank(contentType)) {
                 contentType = HttpSdkSupport.getContentTypeWithBody(body, charset);
