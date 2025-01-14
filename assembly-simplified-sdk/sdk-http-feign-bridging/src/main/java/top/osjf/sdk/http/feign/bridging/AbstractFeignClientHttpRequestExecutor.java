@@ -19,15 +19,28 @@ package top.osjf.sdk.http.feign.bridging;
 import feign.Request;
 import feign.Response;
 import top.osjf.sdk.core.support.NotNull;
-import top.osjf.sdk.http.executor.HttpRequestExecutor;
+import top.osjf.sdk.core.util.MapUtils;
+import top.osjf.sdk.http.client.HttpRequestOptions;
+import top.osjf.sdk.http.spi.DefaultHttpResponse;
+import top.osjf.sdk.http.spi.HttpRequest;
+import top.osjf.sdk.http.spi.HttpResponse;
 import top.osjf.sdk.http.util.IOUtils;
 
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * The abstract implementation of the {@link #execute} method for converting parameter
- * {@link HttpRequestExecutor.ExecutableHttpRequest} to {@link Request}.
+ * The abstract {@code FeignClientHttpRequestExecutor} class undergoes the following
+ * instance conversion process:
+ * <ul>
+ * <li>Convert the {@link HttpRequest} instance to the {@link Request} object required
+ * for integrating the HTTP framework with feign.</li>
+ * <li>Converting the {@link Response} object requested by the feign framework into a
+ * {@link HttpResponse} object meets the requirements of the SDK framework.</li>
+ * </ul>
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
@@ -35,7 +48,7 @@ import java.util.*;
 public abstract class AbstractFeignClientHttpRequestExecutor implements FeignClientHttpRequestExecutor {
 
     @Override
-    public String execute(@NotNull ExecutableHttpRequest httpRequest) throws Exception {
+    public final HttpResponse execute(@NotNull HttpRequest httpRequest) throws Exception {
         //Create a request body for feign.
         feign.Request.Body feignBody;
         String requestBody = httpRequest.getBody(String.class, Object::toString);
@@ -66,7 +79,7 @@ public abstract class AbstractFeignClientHttpRequestExecutor implements FeignCli
                         null);/* We won't set up using third-party HTTP here.  */
 
         //Get the required configuration for the current thread.
-        RequestOptions options = httpRequest.getOptions().getMethodOptions(methodName);
+        HttpRequestOptions options = httpRequest.getOptions().getMethodOptions(methodName);
         //Set the HTTP execution option for feign.
         Request.Options feignOptions =
                 new Request.Options(options.connectTimeout(), options.connectTimeoutUnit(),
@@ -80,7 +93,19 @@ public abstract class AbstractFeignClientHttpRequestExecutor implements FeignCli
         //Automatically close the resource information that responds.
         try (Response response = execute(feignRequest, feignOptions)) {
             byte[] bytes = IOUtils.readAllBytes(response.body().asInputStream());
-            return charset != null ? new String(bytes, charset) : new String(bytes);
+            return new DefaultHttpResponse
+                    (response.status(),
+                            response.reason(),
+                            toValueObjHeaderMap(response.headers()),
+                            response.charset(),
+                            charset != null ? new String(bytes, charset) : new String(bytes));
         }
+    }
+
+    private static Map<String, Object> toValueObjHeaderMap(Map<String, Collection<String>> feignHeaders) {
+        if (MapUtils.isEmpty(feignHeaders)) {
+            return Collections.emptyMap();
+        }
+        return Collections.unmodifiableMap(new HashMap<>(feignHeaders));
     }
 }
