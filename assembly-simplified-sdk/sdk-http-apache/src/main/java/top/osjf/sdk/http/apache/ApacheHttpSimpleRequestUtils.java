@@ -301,29 +301,24 @@ public abstract class ApacheHttpSimpleRequestUtils {
      * @throws NullPointerException if input response is {@literal null}.
      */
     public static Charset getCharsetByResponse(HttpResponse response) {
-        Charset charset;
         HttpEntity entity = response.getEntity();
         Header contentEncodingHeader = entity.getContentEncoding();
         if (contentEncodingHeader != null){
             return Charset.forName(contentEncodingHeader.getName());
         }
         ContentType contentType = ContentType.get(entity);
-        if (contentType != null) {
-            charset = contentType.getCharset();
-            if (charset != null) {
-                return charset;
-            }
-        } else {
-            for (Header header : response.getAllHeaders()) {
-                if (header.getName().equalsIgnoreCase(HttpSdkSupport.CONTENT_TYPE_NAME)) {
-                    String value = header.getValue();
-                    String[] contentTypeSplitParams = value.split(";");
-                    if (contentTypeSplitParams.length > 1) {
-                        String[] charsetParts = contentTypeSplitParams[1].split("=");
-                        if (charsetParts.length == 2 && "charset".equalsIgnoreCase(charsetParts[0].trim())) {
-                            String charsetString = charsetParts[1].replaceAll("\"", "");
-                            return Charset.forName(charsetString);
-                        }
+        if (contentType != null && contentType.getCharset() != null) {
+            return contentType.getCharset();
+        }
+        for (Header header : response.getAllHeaders()) {
+            if (header.getName().equalsIgnoreCase(HttpSdkSupport.CONTENT_TYPE_NAME)) {
+                String value = header.getValue();
+                String[] contentTypeSplitParams = value.split(";");
+                if (contentTypeSplitParams.length > 1) {
+                    String[] charsetParts = contentTypeSplitParams[1].split("=");
+                    if (charsetParts.length == 2 && "charset".equalsIgnoreCase(charsetParts[0].trim())) {
+                        String charsetString = charsetParts[1].replaceAll("\"", "");
+                        return Charset.forName(charsetString);
                     }
                 }
             }
