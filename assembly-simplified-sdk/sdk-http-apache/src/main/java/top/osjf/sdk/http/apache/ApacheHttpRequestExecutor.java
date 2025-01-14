@@ -78,11 +78,12 @@ public class ApacheHttpRequestExecutor extends AbstractMultiHttpMethodExecutor {
             }
             HttpEntity entity = response.getEntity();
             Charset responseCharset = ApacheHttpSimpleRequestUtils.getCharsetByResponse(response);
+            String responseBodyString = EntityUtils.toString(entity, responseCharset);
             return new DefaultHttpResponse(statusLine.getStatusCode(),
                     statusLine.getReasonPhrase(),
                     responseHeaders,
                     responseCharset,
-                    EntityUtils.toString(entity, responseCharset));
+                    responseBodyString);
         } finally {
             if (response instanceof CloseableHttpResponse) {
                 ((CloseableHttpResponse) response).close();
