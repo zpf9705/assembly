@@ -18,6 +18,7 @@ package top.osjf.sdk.http;
 
 import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.util.JSONUtil;
+import top.osjf.sdk.http.support.HttpSdkSupport;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -82,7 +83,7 @@ public abstract class JsonSerialHttpRequest<R extends AbstractHttpResponse> exte
         Map<String, Object> jsonHeaders = null;
         if (getParam() != null) {
             jsonHeaders = new LinkedHashMap<>();
-            jsonHeaders.put("Content-Type", "application/json");
+            jsonHeaders.put(HttpSdkSupport.CONTENT_TYPE_NAME, "application/json");
         }
         return resolveAdditionalHeaders(jsonHeaders);
     }
