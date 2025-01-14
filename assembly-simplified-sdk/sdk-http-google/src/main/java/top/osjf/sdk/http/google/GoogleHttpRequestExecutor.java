@@ -63,11 +63,10 @@ public class GoogleHttpRequestExecutor extends AbstractMultiHttpMethodExecutor {
         com.google.api.client.http.HttpResponse response = GoogleHttpSimpleRequestUtils.getResponse(null, methodName, url, headers, body, charset);
         int statusCode = response.getStatusCode();
         String statusMessage = response.getStatusMessage();
-        Charset responseCharset = GoogleHttpSimpleRequestUtils.getCharsetByResponse(response);
         return new DefaultHttpResponse(statusCode,
                 statusMessage,
                 response.getHeaders(),
-                responseCharset,
+                response.getContentCharset(),
                 response.parseAsString());
     }
 }
