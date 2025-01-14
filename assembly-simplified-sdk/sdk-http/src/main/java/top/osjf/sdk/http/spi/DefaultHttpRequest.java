@@ -42,7 +42,6 @@ public class DefaultHttpRequest implements HttpRequest {
     private final String url;
     private final top.osjf.sdk.http.HttpRequest<?> rawHttpRequest;
     private final HttpRequestOptions requestOptions;
-
     /**
      * Creates a new {@code DefaultHttpRequest} by given original http request
      * and access url and a {@code HttpRequestOptions}.
@@ -58,56 +57,32 @@ public class DefaultHttpRequest implements HttpRequest {
         this.url = url;
         this.requestOptions = requestOptions != null ? requestOptions : HttpRequestOptions.DEFAULT_OPTIONS;
     }
-
-    @Override
-    @NotNull
-    public String getUrl() {
+    @Override @NotNull public String getUrl() {
         return url;
     }
-
-    @Override
-    @NotNull
-    public String getMethodName() {
+    @Override @NotNull public String getMethodName() {
         return rawHttpRequest.matchSdkEnum().getRequestMethod().name();
     }
-
-    @Override
-    @Nullable
-    public Object getBody() {
+    @Override @Nullable public Object getBody() {
         return rawHttpRequest.getRequestParam();
     }
-
-    @Override
-    @Nullable
-    public <T> T getBody(Class<T> requiredType) {
+    @Override @Nullable public <T> T getBody(Class<T> requiredType) {
         return getBody(requiredType, null);
     }
-
-    @Override
-    @Nullable
-    public <T> T getBody(Class<T> requiredType, Function<Object, T> customConversionAfterFailed)
+    @Override @Nullable public <T> T getBody(Class<T> requiredType, Function<Object, T> customConversionAfterFailed)
             throws ClassCastException {
         return convertValueToRequired(getBody(), requiredType, customConversionAfterFailed);
     }
-
-    @Override
-    @Nullable
-    public Charset getCharset() {
+    @Override @Nullable public Charset getCharset() {
         return rawHttpRequest.getCharset();
     }
-
-    @Override
-    public Map<String, Object> getHeaders() {
+    @Override public Map<String, Object> getHeaders() {
         return rawHttpRequest.getHeadMap();
     }
-
-    @Override
-    public <T> Map<String, T> getHeaders(Class<T> requiredType) {
+    @Override public <T> Map<String, T> getHeaders(Class<T> requiredType) {
         return getHeaders(requiredType, null);
     }
-
-    @Override
-    public <T> Map<String, T> getHeaders(Class<T> requiredType, Function<Object, T> customConversionAfterFailed)
+    @Override public <T> Map<String, T> getHeaders(Class<T> requiredType, Function<Object, T> customConversionAfterFailed)
             throws ClassCastException {
         Map<String, Object> headMap = rawHttpRequest.getHeadMap();
         if (headMap == null) {
@@ -119,9 +94,7 @@ public class DefaultHttpRequest implements HttpRequest {
                         entry -> convertValueToRequired(headMap.get(entry.getKey()),
                                 requiredType, customConversionAfterFailed)));
     }
-
-    @Override
-    public <T> Map<String, Collection<T>> getCollectionValueHeaders(Class<T> requiredType,
+    @Override public <T> Map<String, Collection<T>> getCollectionValueHeaders(Class<T> requiredType,
                                                                     Function<Object, T> customConversionAfterFailed)
             throws ClassCastException {
         Map<String, Object> headMap = rawHttpRequest.getHeadMap();
@@ -143,22 +116,13 @@ public class DefaultHttpRequest implements HttpRequest {
                             customConversionAfterFailed));
                 }));
     }
-
-    @Override
-    @Nullable
-    public String getHeader(String key) {
+    @Override @Nullable public String getHeader(String key) {
         return getHeader(key, String.class);
     }
-
-    @Override
-    @Nullable
-    public <T> T getHeader(String key, Class<T> requiredType) {
+    @Override @Nullable public <T> T getHeader(String key, Class<T> requiredType) {
         return getHeader(key, requiredType, null);
     }
-
-    @Override
-    @Nullable
-    public <T> T getHeader(String key, Class<T> requiredType,
+    @Override @Nullable public <T> T getHeader(String key, Class<T> requiredType,
                            Function<Object, T> customConversionAfterFailed)
             throws ClassCastException {
         Map<String, Object> headMap = rawHttpRequest.getHeadMap();
@@ -167,13 +131,9 @@ public class DefaultHttpRequest implements HttpRequest {
         }
         return convertValueToRequired(headMap.get(key), requiredType, customConversionAfterFailed);
     }
-
-    @Override
-    @NotNull
-    public HttpRequestOptions getOptions() {
+    @Override @NotNull public HttpRequestOptions getOptions() {
         return requestOptions;
     }
-
     private <T> T convertValueToRequired(Object value,
                                          Class<T> requiredType,
                                          Function<Object, T> customConversionAfterFailed)
