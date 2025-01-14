@@ -21,7 +21,7 @@ import java.nio.charset.Charset;
 import java.util.Map;
 
 /**
- * Default impl for {@link HttpRequest}.
+ * Default impl for {@link HttpResponse}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
@@ -34,20 +34,17 @@ public class DefaultHttpResponse implements HttpResponse {
     private final Map<String, Object> headerMap;
     private final Charset charset;
     private final String body;
-    private final HttpRequest httpRequest;
 
     public DefaultHttpResponse(int statusCode,
                                String statusMessage,
                                Map<String, Object> headerMap,
                                Charset charset,
-                               String body,
-                               HttpRequest httpRequest) {
+                               String body) {
         this.statusCode = statusCode;
         this.statusMessage = statusMessage;
         this.headerMap = headerMap;
         this.charset = charset;
         this.body = body;
-        this.httpRequest = httpRequest;
     }
 
     @Override
@@ -73,10 +70,5 @@ public class DefaultHttpResponse implements HttpResponse {
     @Override
     public String getBody() {
         return body;
-    }
-
-    @Override
-    public HttpRequest getHttpRequest() {
-        return httpRequest;
     }
 }
