@@ -61,10 +61,8 @@ public class GoogleHttpRequestExecutor extends AbstractMultiHttpMethodExecutor {
     }
     private static HttpResponse getGoogleResponseAsSpiResponse(String methodName, String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
         com.google.api.client.http.HttpResponse response = GoogleHttpSimpleRequestUtils.getResponse(null, methodName, url, headers, body, charset);
-        int statusCode = response.getStatusCode();
-        String statusMessage = response.getStatusMessage();
-        return new DefaultHttpResponse(statusCode,
-                statusMessage,
+        return new DefaultHttpResponse(response.getStatusCode(),
+                response.getStatusMessage(),
                 response.getHeaders(),
                 response.getContentCharset(),
                 response.parseAsString());
