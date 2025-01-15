@@ -16,7 +16,6 @@
 
 package top.osjf.sdk.core;
 
-import top.osjf.sdk.core.exception.DataConvertException;
 import top.osjf.sdk.core.util.ExceptionUtils;
 import top.osjf.sdk.core.util.JSONUtil;
 
@@ -35,8 +34,6 @@ public final class DefaultErrorResponse extends AbstractResponse {
     private static final long serialVersionUID = -6303939513087992265L;
 
     public static final Integer SDK_ERROR_CODE = 871287;
-
-    public static final Integer DATA_ERROR_CODE = 600558;
 
     public static final Integer UNKNOWN_ERROR_CODE = 500358;
 
@@ -71,7 +68,7 @@ public final class DefaultErrorResponse extends AbstractResponse {
         this.message = message;
     }
 
-    public String asJson() {
+    private String asJson() {
         return JSONUtil.toJSONString(this);
     }
 
@@ -99,40 +96,16 @@ public final class DefaultErrorResponse extends AbstractResponse {
     }
 
     /**
-     * Build a default error response {@code DefaultErrorResponse} using
-     * {@link #DATA_ERROR_CODE} based on the provided information {@code message}.
-     *
-     * @param message Provide information accordingly.
-     * @return a default error response {@code DefaultErrorResponse}.
-     */
-    public static DefaultErrorResponse buildDataErrorResponse(String message) {
-        return new DefaultErrorResponse(DATA_ERROR_CODE, String
-                .format("Happen data_error exception,message=[%s]", message));
-    }
-
-    /**
-     * Convert the specified response {@link Response} to the specified error
-     * type based on {@code error} and {@code type} and {@code request}.
-     *
-     * @param error   Specific error information.
-     * @param type    Wrong enumeration type.
-     * @param request Request parameters.
-     * @param <R>     The type of response class.
-     * @return Response error parameters.
-     */
-    public static <R extends Response> R parseErrorResponse(String error, ErrorType type, Request<R> request) {
-        return parseErrorResponse(new DataConvertException(error), type, request);
-    }
-
-    /**
      * Convert the specified response {@link Response} to the specified error
      * type based on {@link Throwable} and {@link ErrorType} and {@link Request}.
      *
-     * @param error   Specific error information.
-     * @param type    Wrong enumeration type.
-     * @param request Request parameters.
-     * @param <R>     The type of response class.
-     * @return Response error parameters.
+     * @param error   the exception instance.
+     * @param type    the wrong enumeration type.
+     * @param request the request instance.
+     * @param <R>     the type of response.
+     * @return The building response {@code R} error instance.
+     * @throws NullPointerException if input {@code Throwable} or {@code ErrorType}
+     *                              or {@code Request} is null.
      */
     public static <R extends Response> R parseErrorResponse(Throwable error, ErrorType type, Request<R> request) {
         DefaultErrorResponse response = type.convertToDefaultErrorResponse(error);
@@ -142,9 +115,27 @@ public final class DefaultErrorResponse extends AbstractResponse {
         return r;
     }
 
-    /*** Build a universal interface for {@link DefaultErrorResponse} based on exceptions.*/
+    /**
+     * Convert the specified response {@link Response} to the specified error
+     * type based on {@code DefaultErrorResponse} and {@code request}.
+     *
+     * @param errorResponse the typed {@code DefaultErrorResponse} instance.
+     * @param request       the request instance.
+     * @param <R>           the type of response.
+     * @return The building response {@code R} error instance.
+     * @throws NullPointerException if input {@code DefaultErrorResponse} or
+     *                              {@code Request} is null.
+     */
+    public static <R extends Response> R parseErrorResponse(DefaultErrorResponse errorResponse, Request<R> request) {
+        R response = JSONUtil.parseObject(errorResponse.asJson(), request.getResponseType());
+        response.setErrorCode(errorResponse.getCode());
+        response.setErrorMessage(errorResponse.getMessage());
+        return response;
+    }
+
+    /** Build a universal interface for {@link DefaultErrorResponse} based on exceptions.*/
+    @FunctionalInterface
     private interface ErrorResponseConvert {
-        /* Get the type and build different default error responses. */
         DefaultErrorResponse convertToDefaultErrorResponse(Throwable error);
     }
 
@@ -162,14 +153,8 @@ public final class DefaultErrorResponse extends AbstractResponse {
             public DefaultErrorResponse convertToDefaultErrorResponse(Throwable error) {
                 return buildUnknownResponse(getMessage(error));
             }
-        }, DATA {
-            @Override
-            public DefaultErrorResponse convertToDefaultErrorResponse(Throwable error) {
-                return buildDataErrorResponse(getMessage(error));
-            }
         };
-
-        public String getMessage(Throwable error) {
+        protected String getMessage(Throwable error) {
             return ExceptionUtils.getMessage(error);
         }
     }
