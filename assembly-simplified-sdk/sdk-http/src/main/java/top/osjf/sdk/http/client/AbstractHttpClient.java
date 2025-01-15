@@ -254,27 +254,24 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
     @NotNull
     public R request() {
 
-        //Get the request parameters for the current thread.
+        //Get the binding parameters for HTTP requests.
         HttpRequest<R> request = getBindRequest().unwrap(HttpRequest.class);
 
-        //Define the required parameters for this request.
         R response;
         String responseStr = null;
         Throwable throwable = null;
 
         //Create a request timer.
         Stopwatch stopwatch = Stopwatch.createStarted();
-
-        //Key operation steps: try the package.
         try {
-
-            //Custom validation of request parameters.
+            //Validation of custom parameters.
             request.validate();
 
-            //Execute this request, route according to the request type, and handle the parameters.
+            //Execute HTTP components based on encapsulation parameters.
             top.osjf.sdk.http.spi.HttpResponse spiResponse =
                     getRequestExecutor().execute(new DefaultHttpRequest(request, getUrl(), getOptions()));
 
+            //Get request body string parameters
             responseStr = spiResponse.getBody();
 
             //Preprocessing operation for request results.
