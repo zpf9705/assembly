@@ -49,8 +49,6 @@ public interface ErrorResponse {
      * <dl>
      *     <dt>{@link DefaultErrorResponse#SDK_ERROR_CODE}Sent {@link SdkException}
      *     when SDK is abnormal.</dt>
-     *     <dt>{@link DefaultErrorResponse#DATA_ERROR_CODE}Unknown, inherited from {@link Exception}
-     *     when an exception is sent, rather than a known exception.</dt>
      *     <dt>{@link DefaultErrorResponse#UNKNOWN_ERROR_CODE}When there are exceptions during data conversion,
      *     you can focus on the
      *     {@link PreProcessingResponseHandler#preResponseStrHandler(Request, String)}
