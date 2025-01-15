@@ -65,11 +65,19 @@ public abstract class AbstractResponse implements Response {
         return DEFAULT_MESSAGE;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setErrorCode(Object code) {
+        //default noting...
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setErrorMessage(String message) {
+        //default noting...
     }
 }
