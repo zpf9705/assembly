@@ -19,6 +19,7 @@ package top.osjf.sdk.core.client;
 import top.osjf.sdk.core.DefaultErrorResponse;
 import top.osjf.sdk.core.Request;
 import top.osjf.sdk.core.Response;
+import top.osjf.sdk.core.exception.DataConvertException;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.util.CollectionUtils;
 import top.osjf.sdk.core.util.JSONUtil;
@@ -86,7 +87,9 @@ public interface JSONResponseConvert<R extends Response> extends ResponseConvert
             }
         } else {
             response = DefaultErrorResponse
-                    .parseErrorResponse(responseStr, DefaultErrorResponse.ErrorType.DATA, request);
+                    .parseErrorResponse(new DataConvertException
+                            ("JSON", "The [ " + responseStr + " ] not a valid json string"),
+                            DefaultErrorResponse.ErrorType.SDK, request);
         }
         return response;
     }
