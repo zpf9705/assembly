@@ -28,18 +28,38 @@ public class SdkException extends RuntimeException {
 
     private static final long serialVersionUID = -7204419580156052252L;
 
+    /**
+     * Creates a {@code SdkException} without args.
+     */
     public SdkException() {
         super();
     }
 
+    /**
+     * Creates a {@code SdkException} by given message.
+     *
+     * @param s the detail error message.
+     */
     public SdkException(String s) {
         super(s);
     }
 
+    /**
+     * Creates a {@code DataConvertException} by given message and
+     * the cause {@code Throwable}.
+     *
+     * @param message the error message.
+     * @param cause   the cause {@code Throwable}.
+     */
     public SdkException(String message, Throwable cause) {
         super(message, cause);
     }
 
+    /**
+     * Creates a {@code DataConvertException} by given cause {@code Throwable}.
+     *
+     * @param cause the cause {@code Throwable}.
+     */
     public SdkException(Throwable cause) {
         super(cause);
     }
