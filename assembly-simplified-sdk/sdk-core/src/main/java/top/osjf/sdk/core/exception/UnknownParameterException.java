@@ -26,10 +26,20 @@ public abstract class UnknownParameterException extends SdkException {
 
     private static final long serialVersionUID = -7867163222873978334L;
 
+    /**
+     * Creates a {@code UnknownParameterException} by given parameter name.
+     *
+     * @param name the parameter name.
+     */
     public UnknownParameterException(String name) {
         super("Can't find or have multiple " + name + " parameters, how can I find the appropriate parameters?");
     }
 
+    /**
+     * Creates a {@code UnknownParameterException} by given cause {@code Throwable}.
+     *
+     * @param cause the cause {@code Throwable}.
+     */
     public UnknownParameterException(Throwable cause) {
         super(cause);
     }
