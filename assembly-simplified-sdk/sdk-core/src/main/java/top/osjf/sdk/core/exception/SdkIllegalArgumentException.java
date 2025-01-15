@@ -27,11 +27,12 @@ package top.osjf.sdk.core.exception;
 public class SdkIllegalArgumentException extends SdkException {
     private static final long serialVersionUID = -4968799327875430801L;
 
+    /**
+     * Creates a {@code SdkIllegalArgumentException} by given message.
+     *
+     * @param s the detail error message.
+     */
     public SdkIllegalArgumentException(String s) {
         super(s);
-    }
-
-    public SdkIllegalArgumentException(Throwable cause) {
-        super(cause);
     }
 }
