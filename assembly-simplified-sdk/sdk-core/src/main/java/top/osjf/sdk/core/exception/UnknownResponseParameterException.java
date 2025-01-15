@@ -26,10 +26,18 @@ public class UnknownResponseParameterException extends UnknownParameterException
 
     private static final long serialVersionUID = -7867163222873978334L;
 
+    /**
+     * Creates a {@code UnknownResponseParameterException} by "response" name.
+     */
     public UnknownResponseParameterException() {
         super("response");
     }
 
+    /**
+     * Creates a {@code UnknownResponseParameterException} by given cause {@code Throwable}.
+     *
+     * @param cause the cause {@code Throwable}.
+     */
     public UnknownResponseParameterException(Throwable cause) {
         super(cause);
     }

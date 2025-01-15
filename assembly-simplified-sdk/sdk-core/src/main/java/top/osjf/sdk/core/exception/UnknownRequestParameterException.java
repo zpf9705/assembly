@@ -26,6 +26,9 @@ public class UnknownRequestParameterException extends UnknownParameterException 
 
     private static final long serialVersionUID = -7867163222873978334L;
 
+    /**
+     * Creates a {@code UnknownRequestParameterException} by "request" name.
+     */
     public UnknownRequestParameterException() {
         super("request");
     }
