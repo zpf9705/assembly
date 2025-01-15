@@ -28,6 +28,10 @@ public class ClientRequestFailedException extends SdkException {
 
     private static final long serialVersionUID = 4730988924158862453L;
 
+    /**
+     * Creates a {@code ClientRequestFailedException} by given case {@code Throwable}.
+     * @param cause the case {@code Throwable} of take client failed.
+     */
     public ClientRequestFailedException(Throwable cause) {
         super(cause);
     }
