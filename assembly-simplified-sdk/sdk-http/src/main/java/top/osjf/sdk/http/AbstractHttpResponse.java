@@ -25,10 +25,25 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Http response abstract node class, used to define common states,
- * unknown error messages, success plans, etc.
+ * The abstract node class {@code AbstractHttpResponse} for implementing HTTP requests
+ * includes the default HTTP request indication scheme, which defines the {@code code}
+ * code, but the specific type is not determined.
  *
- * <p>You can check the example code:
+ * <p>Due to differences in encapsulation interfaces, public fields are not provided here.
+ * If you need to default, please refer to {@link DefaultErrorResponse}.
+ * <dl>
+ *     <dt>{@link DefaultErrorResponse#buildSdkExceptionResponse(String)}</dt>
+ *     <dt>{@link DefaultErrorResponse#buildUnknownResponse(String)}</dt>
+ * </dl>
+ *
+ * <p>The prerequisite for use is to check if the field name is consistent
+ * with yours, otherwise the default information in {@link AbstractResponse}
+ * will be obtained.
+ *
+ * <p>The compilation of sub abstract classes greatly simplifies the difficulty
+ * of SDK inheritance. By simply inheriting this class, one can freely define the
+ * success or failure of the agreed response type and related information. Below
+ * is a simple code example:
  * <pre>
  * {@code
  * public class ExampleHttpResponse extends AbstractHttpResponse {
@@ -36,22 +51,24 @@ import java.util.Objects;
  *     private Boolean success;
  *     private Integer code;
  *     private String message;
- *     private Object errors;
  *     private List<Object> data;
+ *
+ *     public boolean isSuccess() {
+ *          return Objects.equals(code,200) && success;
+ *     }
+ *     public boolean getMessage() {
+ *          return message;
+ *     }
  * }}
+ * }
  * </pre>
  *
- * <p>Due to differences in encapsulation interfaces, public fields are not provided here.
- * If you need to default, please refer to {@link DefaultErrorResponse}.
- * <dl>
- *     <dt>{@link DefaultErrorResponse#buildSdkExceptionResponse(String)}</dt>
- *     <dt>{@link DefaultErrorResponse#buildUnknownResponse(String)}</dt>
- *     <dt>{@link DefaultErrorResponse#buildDataErrorResponse(String)}</dt>
- * </dl>
- *
- * <p>The prerequisite for use is to check if the field name is consistent
- * with yours, otherwise the default information in {@link AbstractResponse}
- * will be obtained.
+ * <p>In order to provide a more intuitive description of the relevant definitions of
+ * HTTP, {@link top.osjf.sdk.http.spi.HttpResponse} was introduced in version 1.0.2,
+ * which allows developers to obtain header information, encoding character sets, protocol
+ * versions, and other information about the original server's response transmission.
+ * It is suitable for scenarios that focus on response results and better configure
+ * development requirements.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
