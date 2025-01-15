@@ -27,7 +27,14 @@ package top.osjf.sdk.core.exception;
 public class DataConvertException extends SdkIllegalArgumentException {
     private static final long serialVersionUID = 2144997773083517532L;
 
-    public DataConvertException(String message) {
-        super(message);
+    /**
+     * Creates a {@code DataConvertException} by given need convent type
+     * and the error message description.
+     *
+     * @param conventType the need convent type,such as "Json".
+     * @param message     the convert error message.
+     */
+    public DataConvertException(String conventType, String message) {
+        super(conventType + " : " + message);
     }
 }
