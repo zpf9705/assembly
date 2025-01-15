@@ -45,7 +45,7 @@ public class SdkException extends RuntimeException {
     }
 
     /**
-     * Creates a {@code DataConvertException} by given message and
+     * Creates a {@code SdkException} by given message and
      * the cause {@code Throwable}.
      *
      * @param message the error message.
@@ -56,7 +56,7 @@ public class SdkException extends RuntimeException {
     }
 
     /**
-     * Creates a {@code DataConvertException} by given cause {@code Throwable}.
+     * Creates a {@code SdkException} by given cause {@code Throwable}.
      *
      * @param cause the cause {@code Throwable}.
      */
