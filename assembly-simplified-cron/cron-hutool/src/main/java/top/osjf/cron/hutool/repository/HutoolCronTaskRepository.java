@@ -20,6 +20,7 @@ import cn.hutool.cron.CronException;
 import cn.hutool.cron.Scheduler;
 import cn.hutool.cron.pattern.CronPattern;
 import top.osjf.cron.core.lang.NotNull;
+import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.repository.*;
@@ -206,6 +207,13 @@ public class HutoolCronTaskRepository implements CronTaskRepository {
     @NotNull
     public String register(@NotNull CronTask task) {
         return register(task.getExpression(), new RunnableTaskBody(task.getRunnable()));
+    }
+
+    @Nullable
+    @Override
+    public String getExpression(String id) {
+        CronPattern pattern = scheduler.getPattern(id);
+        return pattern != null ? pattern.toString() : null;
     }
 
     @Override

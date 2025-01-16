@@ -18,7 +18,9 @@ package top.osjf.cron.cron4j.repository;
 
 import it.sauronsoftware.cron4j.InvalidPatternException;
 import it.sauronsoftware.cron4j.Scheduler;
+import it.sauronsoftware.cron4j.SchedulingPattern;
 import top.osjf.cron.core.lang.NotNull;
+import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.repository.*;
@@ -190,6 +192,13 @@ public class Cron4jCronTaskRepository implements CronTaskRepository {
     @NotNull
     public String register(@NotNull CronTask task) {
         return register(task.getExpression(), new RunnableTaskBody(task.getRunnable()));
+    }
+
+    @Nullable
+    @Override
+    public String getExpression(String id) {
+        SchedulingPattern schedulingPattern = scheduler.getSchedulingPattern(id);
+        return schedulingPattern != null ? schedulingPattern.toString() : null;
     }
 
     /**
