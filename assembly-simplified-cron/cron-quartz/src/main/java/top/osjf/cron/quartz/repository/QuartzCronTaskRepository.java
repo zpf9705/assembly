@@ -296,6 +296,7 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
             }
         }
         catch (Exception ignored) {
+            //Any exception returns null...
         }
         return null;
     }
