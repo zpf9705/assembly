@@ -18,6 +18,7 @@ package top.osjf.cron.core.repository;
 
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.lang.NotNull;
+import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.listener.CronListener;
 
 /**
@@ -88,6 +89,22 @@ public interface CronTaskRepository extends LifecycleRepository {
      */
     @NotNull
     String register(@NotNull CronTask task) throws CronInternalException;
+
+    /**
+     * Retrieves the Cron expression for a registered scheduled task based on its unique ID.
+     *
+     * <p>This method is used to retrieve the Cron expression of a registered scheduled task by
+     * providing the task's ID and the Cron expression for the task if the task exists and
+     * {@code null} if the task does not exist.
+     *
+     * <p>So,ensure that the provided ID is valid and corresponds to a registered task ID before
+     * calling this method.
+     *
+     * @param id the unique ID identifier of the registered scheduled task.
+     * @return The Cron expression for the task with this ID; null if the task does not exist.
+     */
+    @Nullable
+    String getExpression(String id);
 
     /**
      * Update the cron expression for registered scheduled tasks.
