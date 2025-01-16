@@ -20,6 +20,7 @@ import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.simpl.SimpleThreadPool;
 import top.osjf.cron.core.lang.NotNull;
+import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.repository.CronTask;
@@ -269,7 +270,7 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
             TriggerBuilder<CronTrigger> triggerBuilder = TriggerBuilder.newTrigger()
                     .withIdentity(triggerKey)
                     .startNow()
-                    .withSchedule(CronScheduleBuilder.cronSchedule(expression));
+                    .withSchedule(VisibleCronScheduleBuilder.cronSchedule(expression));
             scheduler.scheduleJob(jobDetail, triggerBuilder.build());
             return IDJSONConversion.convertJobKeyAsJSONID(key);
         }, ParseException.class);
@@ -283,6 +284,22 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
                 QuartzUtils.buildStandardJobDetail(method.getName(), method.getDeclaringClass().getName())));
     }
 
+    @Nullable
+    @Override
+    public String getExpression(String id) {
+        JobKey jobKey = IDJSONConversion.convertJSONIDAsJobKey(id);
+        try {
+            Trigger trigger = scheduler.getTrigger(new TriggerKey(jobKey.getName(), jobKey.getGroup()));
+            ScheduleBuilder<? extends Trigger> scheduleBuilder = trigger.getScheduleBuilder();
+            if (scheduleBuilder instanceof VisibleCronScheduleBuilder) {
+                return ((VisibleCronScheduleBuilder) scheduleBuilder).getCronExpression().getCronExpression();
+            }
+        }
+        catch (SchedulerException ignored) {
+        }
+        return null;
+    }
+
     @Override
     public void update(@NotNull String id, @NotNull String newExpression) {
         JobKey jobKey = IDJSONConversion.convertJSONIDAsJobKey(id);
@@ -290,7 +307,7 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
         RepositoryUtils.doVoidInvoke(() -> scheduler.rescheduleJob(triggerKey, TriggerBuilder.newTrigger()
                 .withIdentity(triggerKey)
                 .startNow()
-                .withSchedule(CronScheduleBuilder.cronSchedule(newExpression))
+                .withSchedule(VisibleCronScheduleBuilder.cronSchedule(newExpression))
                 .build()), ParseException.class);
     }
 
@@ -343,7 +360,6 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
     public void stop() {
         try {
             scheduler.shutdown(waitForJobsToCompleteWhenStop);
-            scheduler.getTrigger()
         } catch (SchedulerException e) {
             throw new IllegalStateException(e);
         }
