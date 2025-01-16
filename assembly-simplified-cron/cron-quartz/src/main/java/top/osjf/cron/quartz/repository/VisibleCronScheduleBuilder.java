@@ -52,7 +52,7 @@ public class VisibleCronScheduleBuilder extends CronScheduleBuilder {
      * RuntimeException will be thrown if it is not).
      *
      * @param cronExpression the cron expression string to base the schedule on.
-     * @return the new CronScheduleBuilder
+     * @return the new VisibleCronScheduleBuilder.
      * @throws RuntimeException wrapping a ParseException if the expression is invalid
      * @see CronExpression
      */
