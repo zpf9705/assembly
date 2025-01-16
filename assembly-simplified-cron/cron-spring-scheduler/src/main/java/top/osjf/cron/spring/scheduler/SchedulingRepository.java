@@ -134,6 +134,17 @@ public class SchedulingRepository extends ManageableTaskSupport implements CronT
         return register(task.getExpression(), new RunnableTaskBody(task.getRunnable()));
     }
 
+    @Nullable
+    @Override
+    public String getExpression(String id) {
+        ScheduledTask scheduledTask = scheduledTaskCache.get(id);
+        if (scheduledTask == null || !(scheduledTask.getTask()
+                instanceof org.springframework.scheduling.config.CronTask)){
+            return null;
+        }
+        return ((org.springframework.scheduling.config.CronTask) scheduledTask.getTask()).getExpression();
+    }
+
     @Override
     public void update(@NotNull String id, @NotNull String newExpression) {
         Runnable raw = scheduledTaskCache.get(id).getTask().getRunnable();
