@@ -265,8 +265,9 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
         JobKey key = jobDetail.getKey();
         QuartzUtils.checkJobKeyRules(key);
         return RepositoryUtils.doRegister(() -> {
+            TriggerKey triggerKey = new TriggerKey(key.getName(), key.getGroup());
             TriggerBuilder<CronTrigger> triggerBuilder = TriggerBuilder.newTrigger()
-                    .withIdentity(key.getName(), key.getGroup())
+                    .withIdentity(triggerKey)
                     .startNow()
                     .withSchedule(CronScheduleBuilder.cronSchedule(expression));
             scheduler.scheduleJob(jobDetail, triggerBuilder.build());
@@ -285,9 +286,9 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
     @Override
     public void update(@NotNull String id, @NotNull String newExpression) {
         JobKey jobKey = IDJSONConversion.convertJSONIDAsJobKey(id);
-        String name = jobKey.getName();
-        RepositoryUtils.doVoidInvoke(() -> scheduler.rescheduleJob(new TriggerKey(name), TriggerBuilder.newTrigger()
-                .withIdentity(name)
+        TriggerKey triggerKey = new TriggerKey(jobKey.getName(), jobKey.getGroup());
+        RepositoryUtils.doVoidInvoke(() -> scheduler.rescheduleJob(triggerKey, TriggerBuilder.newTrigger()
+                .withIdentity(triggerKey)
                 .startNow()
                 .withSchedule(CronScheduleBuilder.cronSchedule(newExpression))
                 .build()), ParseException.class);
@@ -342,6 +343,7 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
     public void stop() {
         try {
             scheduler.shutdown(waitForJobsToCompleteWhenStop);
+            scheduler.getTrigger()
         } catch (SchedulerException e) {
             throw new IllegalStateException(e);
         }
