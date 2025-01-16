@@ -295,7 +295,7 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
                 return ((VisibleCronScheduleBuilder) scheduleBuilder).getCronExpression().getCronExpression();
             }
         }
-        catch (SchedulerException ignored) {
+        catch (Exception ignored) {
         }
         return null;
     }
