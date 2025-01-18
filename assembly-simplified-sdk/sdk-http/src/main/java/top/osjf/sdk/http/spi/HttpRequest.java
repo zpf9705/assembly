@@ -47,8 +47,7 @@ public interface HttpRequest extends Serializable {
      *
      * @return The URL address of the request.
      */
-    @NotNull
-    String getUrl();
+    @NotNull String getUrl();
 
     /**
      * Get the name of the HTTP request method, such as GET, POST, etc.
@@ -57,8 +56,7 @@ public interface HttpRequest extends Serializable {
      *
      * @return The name of the request method.
      */
-    @NotNull
-    String getMethodName();
+    @NotNull String getMethodName();
 
     /**
      * Get the body content of the HTTP request, usually used in POST and
@@ -68,8 +66,7 @@ public interface HttpRequest extends Serializable {
      *
      * @return The body content of the request.
      */
-    @Nullable
-    Object getBody();
+    @Nullable Object getBody();
 
     /**
      * Get the body content of the HTTP request and attempt to convert it to
@@ -81,8 +78,7 @@ public interface HttpRequest extends Serializable {
      * @return The converted body content of the request.
      * @throws ClassCastException Throws this exception if the conversion fails.
      */
-    @Nullable
-    <T> T getBody(Class<T> requiredType) throws ClassCastException;
+    @Nullable <T> T getBody(Class<T> requiredType) throws ClassCastException;
 
     /**
      * Get the body content of the HTTP request and attempt to convert it to
@@ -99,8 +95,7 @@ public interface HttpRequest extends Serializable {
      *                            When {@code customConversionAfterFailed} is not provided,
      *                            this error is still thrown.
      */
-    @Nullable
-    <T> T getBody(Class<T> requiredType, Function<Object, T> customConversionAfterFailed)
+    @Nullable <T> T getBody(Class<T> requiredType, Function<Object, T> customConversionAfterFailed)
             throws ClassCastException;
 
     /**
@@ -110,8 +105,7 @@ public interface HttpRequest extends Serializable {
      *
      * @return The character set encoding used for the request.
      */
-    @Nullable
-    Charset getCharset();
+    @Nullable Charset getCharset();
 
     /**
      * Get all header information for the HTTP request, returned as a key-value
@@ -191,8 +185,7 @@ public interface HttpRequest extends Serializable {
      * @param key The key name to retrieve.
      * @return The corresponding header information value, or null if it does not exist.
      */
-    @Nullable
-    String getHeader(String key);
+    @Nullable String getHeader(String key);
 
     /**
      * Get a single value from the HTTP request headers based on the specified
@@ -205,8 +198,7 @@ public interface HttpRequest extends Serializable {
      * @return The converted header information value, or null if it does not exist.
      * @throws ClassCastException Throws this exception if the conversion fails.
      */
-    @Nullable
-    <T> T getHeader(String key, Class<T> requiredType) throws ClassCastException;
+    @Nullable <T> T getHeader(String key, Class<T> requiredType) throws ClassCastException;
 
     /**
      * Get a single value from the HTTP request headers based on the specified
@@ -224,8 +216,7 @@ public interface HttpRequest extends Serializable {
      *                            When {@code customConversionAfterFailed} is not provided,
      *                            this error is still thrown.
      */
-    @Nullable
-    <T> T getHeader(String key, Class<T> requiredType, Function<Object, T> customConversionAfterFailed)
+    @Nullable <T> T getHeader(String key, Class<T> requiredType, Function<Object, T> customConversionAfterFailed)
             throws ClassCastException;
 
     /**
@@ -235,6 +226,5 @@ public interface HttpRequest extends Serializable {
      *
      * @return The configuration options for the request.
      */
-    @NotNull
-    HttpRequestOptions getOptions();
+    @NotNull HttpRequestOptions getOptions();
 }
