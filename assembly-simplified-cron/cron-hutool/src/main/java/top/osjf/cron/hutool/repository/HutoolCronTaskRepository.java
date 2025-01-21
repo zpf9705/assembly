@@ -57,12 +57,24 @@ public class HutoolCronTaskRepository implements CronTaskRepository {
      */
     public static final String PROPERTY_NAME_OF_MATCH_SECOND = "isMatchSecond";
     private static final boolean DEFAULT_VALUE_OF_MATCH_SECOND = true;
+    /**
+     * The {@link #isMatchSecond} property name of hutool.
+     */
+    public static final String PROPERTY_NAME_OF_IF_STOP_CLEAR_TASK = "isIfStopClearTasks";
+    private static final boolean DEFAULT_VALUE_OF_IF_STOP_CLEAR_TASK = true;
 
     private ExecutorService executorService;
 
     private boolean isMatchSecond = DEFAULT_VALUE_OF_MATCH_SECOND;
 
     private boolean daemon;
+
+    /**
+     * This flag indicates whether to clear the related task list when closing the scheduler.
+     * If {@code #daemon == true}, this value does not need to be set, otherwise it needs to
+     * be monitored.
+     */
+    private boolean ifStopClearTasks;
 
     private TimeZone timeZone = TimeZone.getDefault();
 
@@ -71,6 +83,7 @@ public class HutoolCronTaskRepository implements CronTaskRepository {
     private boolean setMatchSecond;
     private boolean setDaemon;
     private boolean setTimeZone;
+    private boolean setIfStopClearTasks;
 
     /**
      * @since 1.0.3
@@ -132,6 +145,10 @@ public class HutoolCronTaskRepository implements CronTaskRepository {
                     setTimeZone(timeZone);
                 }
             }
+            if (!setIfStopClearTasks) {
+                setIfStopClearTasks(superiorProperties.getProperty(PROPERTY_NAME_OF_IF_STOP_CLEAR_TASK,
+                        DEFAULT_VALUE_OF_IF_STOP_CLEAR_TASK));
+            }
         }
     }
 
@@ -177,6 +194,17 @@ public class HutoolCronTaskRepository implements CronTaskRepository {
     public void setTimeZone(TimeZone timeZone) {
         this.timeZone = timeZone;
         setTimeZone = true;
+    }
+
+    /**
+     * Set a boolean flag to control whether to clear tasks when closing the scheduler.
+     *
+     * @param ifStopClearTasks the boolean flag of when stop clear tasks.
+     * @since 1.0.3
+     */
+    public void setIfStopClearTasks(boolean ifStopClearTasks) {
+        this.ifStopClearTasks = ifStopClearTasks;
+        setIfStopClearTasks = true;
     }
 
     /**
@@ -252,7 +280,7 @@ public class HutoolCronTaskRepository implements CronTaskRepository {
         if (!isStarted()) {
             throw new IllegalStateException("Scheduler not started !");
         }
-        scheduler.stop();
+        scheduler.stop(ifStopClearTasks);
     }
 
     @Override
