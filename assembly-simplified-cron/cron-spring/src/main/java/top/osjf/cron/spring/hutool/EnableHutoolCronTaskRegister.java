@@ -47,10 +47,10 @@ import java.lang.annotation.*;
  * attributes of the configuration scheduler.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
+ * @since 1.0.0
  * @see HutoolCronTaskRepository
  * @see Cron
  * @see CronAnnotationPostProcessor
- * @since 1.0.0
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
