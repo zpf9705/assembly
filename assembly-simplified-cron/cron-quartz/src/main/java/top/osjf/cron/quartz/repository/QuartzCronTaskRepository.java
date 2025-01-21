@@ -57,12 +57,12 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
     /**
      * The thread count property name.
      */
-    public static final String PROP_THREAD_COUNT = "org.quartz.threadPool.threadCount";
+    private static final String PROP_THREAD_COUNT = "org.quartz.threadPool.threadCount";
 
     /**
      * The default thread count.
      */
-    public static final int DEFAULT_THREAD_COUNT = 10;
+    private static final int DEFAULT_THREAD_COUNT = 10;
 
     /**
      * The factory class property name.

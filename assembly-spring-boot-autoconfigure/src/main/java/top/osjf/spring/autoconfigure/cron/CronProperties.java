@@ -181,6 +181,11 @@ public class CronProperties {
 
         /**
          * Additional Quartz Scheduler properties.
+         *
+         * @see org.quartz.impl.StdSchedulerFactory
+         * @see org.quartz.impl.DirectSchedulerFactory
+         * @see top.osjf.cron.quartz.repository.QuartzCronTaskRepository#PROP_NAME_OF_FACTORY_CLASS
+         * @see top.osjf.cron.quartz.repository.QuartzCronTaskRepository#PROP_NAME_OF_IF_STOP_WAIT_JOB_COMPLETE
          */
         private final Map<String, String> properties = new HashMap<>();
 
