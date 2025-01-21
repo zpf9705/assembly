@@ -47,10 +47,10 @@ import java.lang.annotation.*;
  * attributes of the configuration scheduler.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
  * @see HutoolCronTaskRepository
  * @see Cron
  * @see CronAnnotationPostProcessor
+ * @since 1.0.0
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
@@ -88,4 +88,22 @@ public @interface EnableHutoolCronTaskRegister {
      * @since 1.0.3
      */
     String timeZone() default "";
+
+    /**
+     * Indicate whether to clear all tasks when stopping the scheduler.
+     *
+     * <p>This attribute is a Boolean value used to control whether to clear
+     * related tasks when performing a specific operation. If set to {@code true},
+     * the task will be cleared when the operation is executed; If set to {@code false},
+     * the task will not be cleared. By default, this attribute is set to {@code true}.
+     *
+     * <p>It should be noted that the setting of its value will become invalid when
+     * {@link #isDaemon()} is set to true, because when setting the daemon thread,
+     * the settings of its related tasks will be automatically cleared after the
+     * main thread is closed.
+     *
+     * @return The boolean flag indicate whether to clear all tasks when stopping the scheduler.
+     * @since 1.0.3
+     */
+    boolean isIfStopClearTasks() default true;
 }
