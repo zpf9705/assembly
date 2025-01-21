@@ -55,7 +55,7 @@ import java.util.function.Supplier;
 public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<ListenerManager> {
 
     /**
-     * The thread count property.
+     * The thread count property name.
      */
     public static final String PROP_THREAD_COUNT = "org.quartz.threadPool.threadCount";
 
@@ -63,6 +63,21 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
      * The default thread count.
      */
     public static final int DEFAULT_THREAD_COUNT = 10;
+
+    /**
+     * The factory class property name.
+     */
+    public static final String PROP_NAME_OF_FACTORY_CLASS = "quartz.customize.schedulerFactoryClass";
+
+    /**
+     * The  property name of when the scheduler is closed, wait for the task to complete execution.
+     */
+    public static final String PROP_NAME_OF_IF_STOP_WAIT_JOB_COMPLETE = "quartz.customize.waitForJobsToCompleteWhenStop";
+
+    /**
+     * The default value of when the scheduler is closed, wait for the task to complete execution.
+     */
+    public static final boolean DEFAULT_IF_STOP_WAIT_JOB_COMPLETE_VALUE = false;
 
     private String schedulerName = Scheduler.class.getName() + UUID.randomUUID();
 
@@ -164,11 +179,11 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
         if (quartzProperties != null) {
             this.quartzProperties = superiorProperties.asProperties();
             if (!setSchedulerFactoryClass)
-                setSchedulerFactoryClass(superiorProperties.getProperty("schedulerFactoryClass",
-                        StdSchedulerFactory.class));
+                setSchedulerFactoryClass(superiorProperties
+                        .getProperty(PROP_NAME_OF_FACTORY_CLASS, StdSchedulerFactory.class));
             if (!setWaitForJobsToCompleteWhenStop)
                 setWaitForJobsToCompleteWhenStop(superiorProperties
-                        .getProperty("waitForJobsToCompleteWhenStop", false));
+                        .getProperty(PROP_NAME_OF_IF_STOP_WAIT_JOB_COMPLETE, DEFAULT_IF_STOP_WAIT_JOB_COMPLETE_VALUE));
         }
     }
 
