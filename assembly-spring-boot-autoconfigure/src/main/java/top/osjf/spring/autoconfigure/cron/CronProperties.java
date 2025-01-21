@@ -117,9 +117,19 @@ public class CronProperties {
 
         /**
          * The time zone applied by the scheduler.
+         *
          * @since 1.0.3
          */
         private TimeZone timezone = TimeZone.getDefault();
+
+        /**
+         * The boolean flag of when stop clear tasks.
+         * <p>When {@link #isDaemon} is set to true, this tag setting is invalid, otherwise
+         * it can be set as needed.
+         *
+         * @since 1.0.3
+         */
+        private boolean ifStopClearTasks = true;
 
         public boolean isMatchSecond() {
             return isMatchSecond;
@@ -145,12 +155,21 @@ public class CronProperties {
             this.timezone = timezone;
         }
 
+        public boolean isIfStopClearTasks() {
+            return ifStopClearTasks;
+        }
+
+        public void setIfStopClearTasks(boolean ifStopClearTasks) {
+            this.ifStopClearTasks = ifStopClearTasks;
+        }
+
         @Override
         public SuperiorProperties toProperties() {
             SuperiorProperties properties = SuperiorProperties.of();
             properties.addProperty(HutoolCronTaskRepository.PROPERTY_NAME_OF_MATCH_SECOND, isMatchSecond);
             properties.addProperty(HutoolCronTaskRepository.PROPERTY_NAME_OF_DAEMON, isDaemon);
             properties.addProperty(HutoolCronTaskRepository.PROPERTY_NAME_OF_TIMEZONE, timezone);
+            properties.addProperty(HutoolCronTaskRepository.PROPERTY_NAME_OF_IF_STOP_CLEAR_TASK, ifStopClearTasks);
             return properties;
         }
     }
@@ -171,6 +190,7 @@ public class CronProperties {
 
         /**
          * Non Java doc.
+         *
          * @since 1.0.3
          */
         @Override
