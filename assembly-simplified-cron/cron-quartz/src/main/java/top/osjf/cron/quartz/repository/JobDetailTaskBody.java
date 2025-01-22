@@ -30,6 +30,10 @@ public class JobDetailTaskBody implements TaskBody {
 
     private final JobDetail jobDetail;
 
+    /**
+     * Creates a new {@code JobDetailTaskBody} by given {@link JobDetail}.
+     * @param jobDetail a quartz execution information {@code JobDetail} instance.
+     */
     public JobDetailTaskBody(JobDetail jobDetail) {
         this.jobDetail = jobDetail;
     }
