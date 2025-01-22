@@ -28,6 +28,11 @@ public class RunnableTaskBody implements TaskBody {
 
     private final Runnable runnable;
 
+    /**
+     * Creates a new {@code RunnableTaskBody} by given {@link Runnable}.
+     *
+     * @param runnable the executable {@code Runnable}.
+     */
     public RunnableTaskBody(Runnable runnable) {
         this.runnable = runnable;
     }
