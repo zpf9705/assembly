@@ -30,6 +30,8 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * The {@link CronTaskRepository} implementation class of hutool.
@@ -89,6 +91,10 @@ public class HutoolCronTaskRepository implements CronTaskRepository {
      * @since 1.0.3
      */
     private final TaskListenerImpl taskListener = new TaskListenerImpl();
+    /**
+     * @since 1.0.3
+     */
+    private final Lock lock = new ReentrantLock();
 
     /**
      * @since 1.0.3
@@ -292,5 +298,16 @@ public class HutoolCronTaskRepository implements CronTaskRepository {
     @Override
     public boolean isStarted() {
         return scheduler.isStarted();
+    }
+
+    @Override
+    public void reStart() {
+        lock.lock();
+        try {
+            stop();
+        } finally {
+            lock.unlock();
+        }
+        start();
     }
 }
