@@ -16,6 +16,8 @@
 
 package top.osjf.cron.spring.scheduler;
 
+import top.osjf.cron.core.listener.CronListener;
+
 import java.util.List;
 
 /**
@@ -67,5 +69,5 @@ public interface SchedulingContext {
      * @return The list of listeners that need to be notified during the execution
      * of the current scheduled task.
      */
-    List<SchedulingListener> getRawListeners();
+    List<CronListener> getRawListeners();
 }
