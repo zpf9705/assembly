@@ -91,8 +91,8 @@ public class SchedulingRunnable implements Runnable, SchedulingContextSupplier {
 
     @Override
     public void run() {
-        onStart();
         try {
+            onStart();
             runnable.run();
             onSucceeded();
         } catch (Throwable e) {
