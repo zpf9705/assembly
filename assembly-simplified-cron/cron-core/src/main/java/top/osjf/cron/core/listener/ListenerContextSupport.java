@@ -63,11 +63,13 @@ public abstract class ListenerContextSupport {
 
         ListenerContext listenerContext;
         try {
-            Constructor<? extends ListenerContext> constructor
-                    = listenerContextClass.getConstructor(sourceContext.getClass());
-            listenerContext = constructor.newInstance(sourceContext);
-
-            CONSTRUCTOR_CACHE.putIfAbsent(listenerContextClass.getName(), constructor);
+            Constructor<?> constructor = CONSTRUCTOR_CACHE.get(listenerContextClass.getName());
+            if (constructor == null){
+                constructor
+                        = listenerContextClass.getConstructor(sourceContext.getClass());
+                CONSTRUCTOR_CACHE.putIfAbsent(listenerContextClass.getName(), constructor);
+            }
+            listenerContext = (ListenerContext) constructor.newInstance(sourceContext);
         }
         catch (Exception ex) {
             if (ex instanceof NoSuchMethodException) {
