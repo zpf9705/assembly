@@ -24,7 +24,7 @@ import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.repository.*;
-import top.osjf.cron.cron4j.listener.Cron4jSchedulerListener;
+import top.osjf.cron.cron4j.listener.SchedulerListenerImpl;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -70,7 +70,7 @@ public class Cron4jCronTaskRepository implements CronTaskRepository {
     /**
      * @since 1.0.3
      */
-    private final Cron4jSchedulerListener schedulerListener = new Cron4jSchedulerListener();
+    private final SchedulerListenerImpl schedulerListener = new SchedulerListenerImpl();
 
     /**
      * @since 1.0.3

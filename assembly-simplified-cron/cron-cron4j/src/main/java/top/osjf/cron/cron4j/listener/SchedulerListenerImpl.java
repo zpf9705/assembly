@@ -30,7 +30,7 @@ import top.osjf.cron.core.listener.ListenerContextTypeProvider;
  * @since 1.0.3
  */
 @ListenerContextTypeProvider(Cron4jListenerContent.class)
-public class Cron4jSchedulerListener extends CronListenerCollector implements SchedulerListener {
+public class SchedulerListenerImpl extends CronListenerCollector implements SchedulerListener {
 
     @Override
     public void taskLaunching(TaskExecutor executor) {
