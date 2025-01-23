@@ -119,7 +119,7 @@ public abstract class CronListenerCollector {
      *
      * @return the list of {@code CronListener} instances.
      */
-    protected List<CronListener> getCronListeners() {
+    public List<CronListener> getCronListeners() {
         return Collections.unmodifiableList(cronListeners);
     }
 }
