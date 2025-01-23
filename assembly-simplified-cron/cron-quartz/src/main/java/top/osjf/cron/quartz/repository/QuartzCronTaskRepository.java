@@ -395,4 +395,9 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
             return false;
         }
     }
+
+    @Override
+    public void reStart() {
+        throw new UnsupportedOperationException();
+    }
 }
