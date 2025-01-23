@@ -18,10 +18,12 @@
 package top.osjf.cron.quartz.listener;
 
 import org.quartz.JobExecutionContext;
+import org.quartz.JobKey;
 import top.osjf.cron.core.listener.ListenerContext;
+import top.osjf.cron.quartz.IDJSONConversion;
 
 /**
- * The listening context object of {@code Quart}.
+ * The listening context object of {@code Quartz}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
@@ -31,8 +33,13 @@ public class QuartzListenerContent implements ListenerContext {
     private final String id;
     private final JobExecutionContext context;
 
-    public QuartzListenerContent(String id, JobExecutionContext context) {
-        this.id = id;
+    /**
+     * Creates a {@code QuartzListenerContent} by given {@code TaskExecutor}.
+     * @param context the Quartz scheduler listener obj.
+     */
+    public QuartzListenerContent(JobExecutionContext context) {
+        JobKey key = context.getJobDetail().getKey();
+        this.id = IDJSONConversion.convertJobKeyAsJSONID(key);
         this.context = context;
     }
 
