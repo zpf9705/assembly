@@ -38,6 +38,8 @@ public class SchedulingRunnable implements Runnable, SchedulingContextSupplier {
 
     private final List<CronListener> cronListeners;
 
+    private final SchedulingListenerContext listenerContext;
+
     /**
      * Is {@link #cronListeners} empty.
      */
@@ -54,6 +56,7 @@ public class SchedulingRunnable implements Runnable, SchedulingContextSupplier {
                               @Nullable List<CronListener> cronListeners) {
         this.runnable = runnable;
         this.context = new DefaultSchedulingContext(id, runnable, cronListeners);
+        this.listenerContext = new SchedulingListenerContext(context.getId(), context);
         this.cronListeners = cronListeners;
         this.hasSchedulingListener = CollectionUtils.isNotEmpty(cronListeners);
     }
@@ -63,7 +66,7 @@ public class SchedulingRunnable implements Runnable, SchedulingContextSupplier {
      */
     void onStart() {
         if (hasSchedulingListener) {
-            cronListeners.forEach(c -> c.start(newSchedulingListenerContext()));
+            cronListeners.forEach(c -> c.start(listenerContext));
         }
     }
 
@@ -72,7 +75,7 @@ public class SchedulingRunnable implements Runnable, SchedulingContextSupplier {
      */
     void onSucceeded() {
         if (hasSchedulingListener) {
-            cronListeners.forEach(c -> c.success(newSchedulingListenerContext()));
+            cronListeners.forEach(c -> c.success(listenerContext));
         }
     }
 
@@ -81,12 +84,8 @@ public class SchedulingRunnable implements Runnable, SchedulingContextSupplier {
      */
     void onFailed(Throwable e) {
         if (hasSchedulingListener) {
-            cronListeners.forEach(c -> c.failed(newSchedulingListenerContext(), e));
+            cronListeners.forEach(c -> c.failed(listenerContext, e));
         }
-    }
-
-    private SchedulingListenerContext newSchedulingListenerContext() {
-        return new SchedulingListenerContext(context.getId(), context);
     }
 
     @Override
