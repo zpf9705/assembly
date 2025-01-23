@@ -22,6 +22,9 @@ import top.osjf.cron.core.lang.NotNull;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
+ * The {@code CronListenerCollector} abstract class is used to manage a set of {@code CronListener}
+ * listeners and provide callback methods for startup, success, and failure.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
