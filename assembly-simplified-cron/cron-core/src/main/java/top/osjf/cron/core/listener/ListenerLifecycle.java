@@ -19,30 +19,52 @@ package top.osjf.cron.core.listener;
 
 import top.osjf.cron.core.lang.Nullable;
 
-import java.util.List;
-
 /**
+ * The enumeration class is used to describe the execution lifecycle of {@code CronListener},
+ * where each cycle has its own consumption function {@link Consumer}, and the methods of this
+ * declaration cycle stage are executed based on the given parameters.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
 public enum ListenerLifecycle {
 
+    /**
+     * When the {@link CronListener#start} stage is executed.
+     */
     START((cronListener, listenerContext, e) -> cronListener.start(listenerContext)),
 
+    /**
+     * When the {@link CronListener#success} stage is executed.
+     */
     SUCCESS((cronListener, listenerContext, e) -> cronListener.success(listenerContext)),
 
+    /**
+     * When the {@link CronListener#failed} stage is executed.
+     */
     FAILED(CronListener::failed);
 
     final Consumer consumer;
 
+    /**
+     * At the beginning stage, a {@link ListenerContext} instance will be generated based
+     * on the provided {@code ListenerContext} type and related parameters. This instance
+     * will be retained in {@link ThreadLocal} and deleted after the {@link #SUCCESS} or
+     * {@link #FAILED} stage.
+     */
     private static final ThreadLocal<ListenerContext> CONTEXT_LOCAL = new ThreadLocal<>();
 
     ListenerLifecycle(Consumer consumer) {
         this.consumer = consumer;
     }
 
-    void consumerListeners(List<CronListener> cronListeners, Object sourceContext, @Nullable Throwable e,
-                           CronListenerCollector collector) {
+    /**
+     * @param sourceContext     the original context object provided by the framework used
+     *                          for executing scheduled tasks.
+     * @param e                 error type object thrown during task execution only when failed.
+     * @param collector         manage instance objects for listeners.
+     */
+    void consumerListeners(Object sourceContext, @Nullable Throwable e, CronListenerCollector collector) {
         if (START == this) {
             ListenerContext listenerContext = ListenerContextSupport.createListenerContext(collector, sourceContext);
             CONTEXT_LOCAL.set(listenerContext);
@@ -50,11 +72,10 @@ public enum ListenerLifecycle {
         ListenerContext listenerContext = CONTEXT_LOCAL.get();
         if (listenerContext != null) {
             try {
-                for (CronListener cronListener : cronListeners) {
+                for (CronListener cronListener : collector.getCronListeners()) {
                     consumer.accept(cronListener, listenerContext, e);
                 }
-            }
-            finally {
+            } finally {
                 if (SUCCESS == this || FAILED == this) {
                     CONTEXT_LOCAL.remove();
                 }
@@ -62,6 +83,11 @@ public enum ListenerLifecycle {
         }
     }
 
+    /**
+     * Provide {@link CronListener} consumption related parameters to execute the function interface
+     * during the listening cycle phase.
+     */
+    @FunctionalInterface
     interface Consumer {
         void accept(CronListener cronListener, ListenerContext listenerContext, Throwable e);
     }
