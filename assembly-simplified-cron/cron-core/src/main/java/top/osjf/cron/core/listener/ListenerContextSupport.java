@@ -37,6 +37,11 @@ public abstract class ListenerContextSupport {
      * @param sourceContext the original context object provided by the framework used
      *                      for executing scheduled tasks.
      * @return The {@code ListenerContext} instances created using a specific type.
+     * @throws NullPointerException         if input {@code CronListenerCollector} or {@code sourceContext}
+     *                                      is {@literal null}.
+     * @throws RuntimeException             create a runtime exception for {@code ListenerContext} using reflection.
+     * @throws UndeclaredThrowableException create a {@code ListenerContext} object of the inspected abnormal
+     *                                      package using reflection.
      */
     public static ListenerContext createListenerContext(CronListenerCollector collector, Object sourceContext) {
         Class<? extends ListenerContext> listenerContextClass = collector.getListenerContextClass();
