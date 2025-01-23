@@ -21,6 +21,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
+import top.osjf.cron.core.listener.CronListener;
 
 import java.lang.annotation.*;
 import java.util.concurrent.Executor;
@@ -193,7 +194,7 @@ import java.util.concurrent.Executor;
  * <p>
  * <strong>--------------------------------------------------</strong>
  *
- * <p>This annotation adds a timed task execution lifecycle listener {@link SchedulingListener}
+ * <p>This annotation adds a timed task execution lifecycle listener {@link CronListener}
  * while ensuring all the functionality of {@link org.springframework.scheduling.annotation.EnableScheduling},
  * and provides a simplified dynamic registration operation class {@link SchedulingRepository}.
  *
@@ -204,7 +205,7 @@ import java.util.concurrent.Executor;
  *     {@code
  * Component
  * EnableScheduling
- * public class SpringListener implements SchedulingListener {
+ * public class SpringListener implements CronListener {
  *
  *     Autowired
  *     private SchedulingRepository schedulingRepository;
