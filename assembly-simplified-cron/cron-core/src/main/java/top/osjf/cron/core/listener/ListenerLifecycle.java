@@ -59,6 +59,12 @@ public enum ListenerLifecycle {
     }
 
     /**
+     * Perform phased execution on the provided {@link Consumer} based on the current enumerated
+     * {@link CronListener} behavior.
+     *
+     * <p>{@link ListenerContext} will only be created when the state is {@link #START}, and then
+     * retained until {@link #SUCCESS} or {@link #FAILED} is used up before being deleted.
+     *
      * @param sourceContext     the original context object provided by the framework used
      *                          for executing scheduled tasks.
      * @param e                 error type object thrown during task execution only when failed.
@@ -75,7 +81,8 @@ public enum ListenerLifecycle {
                 for (CronListener cronListener : collector.getCronListeners()) {
                     consumer.accept(cronListener, listenerContext, e);
                 }
-            } finally {
+            }
+            finally {
                 if (SUCCESS == this || FAILED == this) {
                     CONTEXT_LOCAL.remove();
                 }
