@@ -68,7 +68,7 @@ public abstract class CronListenerCollector {
      *     public CronListenerCollectorImpl extends CronListenerCollector {
      *
      *          &#064;Override
-     *          protected Class<? extends ListenerContext> getListenerContextClass() {
+     *          protected Class&lt;? extends ListenerContext&gt; getListenerContextClass() {
      *               return ExampleListenerContext.class;
      *          }
      *     }
