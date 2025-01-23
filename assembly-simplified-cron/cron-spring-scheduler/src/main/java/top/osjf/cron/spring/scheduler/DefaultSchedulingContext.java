@@ -16,6 +16,8 @@
 
 package top.osjf.cron.spring.scheduler;
 
+import top.osjf.cron.core.listener.CronListener;
+
 import java.util.List;
 
 /**
@@ -30,14 +32,14 @@ public class DefaultSchedulingContext implements SchedulingContext {
 
     private final Runnable rawRunnable;
 
-    private final List<SchedulingListener> rawSchedulingListeners;
+    private final List<CronListener> rawCronListeners;
 
     public DefaultSchedulingContext(String id,
                                     Runnable rawRunnable,
-                                    List<SchedulingListener> rawSchedulingListeners) {
+                                    List<CronListener> rawCronListeners) {
         this.id = id;
         this.rawRunnable = rawRunnable;
-        this.rawSchedulingListeners = rawSchedulingListeners;
+        this.rawCronListeners = rawCronListeners;
     }
 
     @Override
@@ -51,7 +53,7 @@ public class DefaultSchedulingContext implements SchedulingContext {
     }
 
     @Override
-    public List<SchedulingListener> getRawListeners() {
-        return rawSchedulingListeners;
+    public List<CronListener> getRawListeners() {
+        return rawCronListeners;
     }
 }
