@@ -24,7 +24,7 @@ import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.repository.*;
-import top.osjf.cron.hutool.listener.HutoolCronListener;
+import top.osjf.cron.hutool.listener.TaskListenerImpl;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -84,6 +84,11 @@ public class HutoolCronTaskRepository implements CronTaskRepository {
     private boolean setDaemon;
     private boolean setTimeZone;
     private boolean setIfStopClearTasks;
+
+    /**
+     * @since 1.0.3
+     */
+    private final TaskListenerImpl taskListener = new TaskListenerImpl();
 
     /**
      * @since 1.0.3
@@ -258,12 +263,12 @@ public class HutoolCronTaskRepository implements CronTaskRepository {
 
     @Override
     public void addListener(@NotNull CronListener listener) {
-        scheduler.addListener(listener.unwrap(HutoolCronListener.class));
+        taskListener.addCronListener(listener);
     }
 
     @Override
     public void removeListener(@NotNull CronListener listener) {
-        scheduler.removeListener(listener.unwrap(HutoolCronListener.class));
+        taskListener.removeCronListener(listener);
     }
 
     @Override
