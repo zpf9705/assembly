@@ -226,6 +226,7 @@ public class HutoolCronTaskRepository implements CronTaskRepository {
             scheduler.setTimeZone(timeZone);
             scheduler.setThreadExecutor(executorService);
         }
+        scheduler.addListener(taskListener);
     }
 
     @Override
