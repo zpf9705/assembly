@@ -48,4 +48,32 @@ public @interface ListenerContextTypeProvider {
      * @return Implemented the Class object of the {@code ListenerContext} interface's class.
      */
     Class<? extends ListenerContext> value();
+
+    /**
+     * Return the context object of the original task to participate in the enumeration model
+     * {@link BuildMode} constructed by the listening context object {@link ListenerContext}
+     * specified by {@link #value()}.
+     *
+     * @return The build model of the original context object participates in listening context
+     * construction.
+     */
+    BuildMode sourceContextBuildMode() default BuildMode.CONSTRUCTOR;
+
+
+    /**
+     * This enumeration describes the way in which the context information object of the
+     * original task participates in the construction of the listening context object.
+     */
+    enum BuildMode {
+
+        /**
+         * Participate in the form of constructing method parameters.
+         */
+        CONSTRUCTOR,
+
+        /**
+         * Participate in the form of set method settings.
+         */
+        SET
+    }
 }
