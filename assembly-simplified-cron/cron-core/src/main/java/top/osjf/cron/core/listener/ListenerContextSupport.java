@@ -41,10 +41,31 @@ public abstract class ListenerContextSupport {
             = Collections.synchronizedMap(new WeakHashMap<>());
 
     /**
-     * By collecting the {@code ListenerContext} type provided by the given listener
-     * class, creating a {@code ListenerContext} instance object using {@code sourceContext},
-     * the provided {@code ListenerContext} type needs to satisfy the construction method of
-     * having a {@code sourceContext} type.
+     * Create a specific type of {@code ListenerContext} instance.
+     *
+     * <p>This method creates using reflection or direct instantiation based on the provided
+     * {@code CronListenerCollector} and {@code sourceContext} parameters
+     * A {@code ListenerContext} object. The creation process depends on the annotations
+     * and configuration of { code CronListenerCollector}.
+     *
+     * <p>Firstly, the method attempts to retrieve a function from the cache that can directly
+     * convert {@code sourceContext} to {@code ListenerContext}.
+     * If such a function exists in the cache, apply it directly and return the result.
+     *
+     * <p>If the corresponding function is not found in the cache, the method will check if
+     * {@code CronListenerCollector} specifies it The class of {@code ListenerContext} (set
+     * directly or annotated). If not specified and there is a {@code ListenerContextTypeProvider}
+     * annotation,Then use the class specified in the annotation. If neither the class is
+     * directly specified nor the annotation provides class information, throw {@code IllegalStateException}
+     * exception.
+     *
+     * <p>After determining the class of {@code ListenerContext}, the method will the use of the
+     * constructor is determined by the {@code sourceContextBuildMode} property (if any) in the
+     * {@code ListenerContextTypeProvider} annotation
+     * Still use setter methods to create and initialize {@code ListenerContext} objects.
+     *
+     * <p>If the build mode is not specified in the annotation or there is no annotation, the
+     * constructor method is used by default to create the object.
      *
      * @param collector     the collection instance of the listener.
      * @param sourceContext the original context object provided by the framework used
@@ -56,6 +77,7 @@ public abstract class ListenerContextSupport {
      * @throws UndeclaredThrowableException create a {@code ListenerContext} object of the inspected abnormal
      *                                      package using reflection.
      * @throws IllegalStateException        if no available {@code ListenerContext} type provided.
+     * @throws IllegalArgumentException     if there are errors in the execution parameters.
      */
     public static ListenerContext createListenerContext(CronListenerCollector collector, Object sourceContext) {
         Function<Object, ListenerContext> func = LISTENER_CONTEXT_BUILD_FUC_CACHE.get(collector.getClass().getName());
@@ -159,10 +181,11 @@ public abstract class ListenerContextSupport {
                         }
                     }
                 }
+                if (constructor == null) {
+                    throw new IllegalStateException("There is no available constructor.");
+                }
             }
-            if (constructor == null) {
-                throw new IllegalStateException("There is no available constructor.");
-            }
+
             return constructor;
         }
 
@@ -170,20 +193,10 @@ public abstract class ListenerContextSupport {
         public ListenerContext apply(Object o) {
             try {
                 return getConstructor(o).newInstance(o);
-            } catch (IllegalArgumentException e) {
-                throw e;
-            } catch (InvocationTargetException e) {
-                Throwable targetException = e.getTargetException();
-                if (targetException instanceof RuntimeException) {
-                    throw (RuntimeException) targetException;
-                }
-                throw new UndeclaredThrowableException(targetException);
             } catch (Exception e) {
-                if (e instanceof RuntimeException) {
-                    throw (RuntimeException) e;
-                }
-                throw new UndeclaredThrowableException(e);
+                resolveException(e);
             }
+            return null; // If we don't reach this point, the above capture will be thrown.
         }
     }
 
@@ -238,10 +251,11 @@ public abstract class ListenerContextSupport {
                         setMethod = method;
                     }
                 }
+                if (setMethod == null) {
+                    throw new IllegalStateException("There is no available method.");
+                }
             }
-            if (setMethod == null) {
-                throw new IllegalStateException("There is no available method.");
-            }
+
             return setMethod;
         }
 
@@ -253,12 +267,16 @@ public abstract class ListenerContextSupport {
             } catch (Exception e) {
                 resolveException(e);
             }
+            return null; // If we don't reach this point, the above capture will be thrown.
         }
     }
 
     static void resolveException(Exception e) {
         if (e instanceof IllegalArgumentException) {
             throw (IllegalArgumentException) e;
+        }
+        if (e instanceof IllegalStateException) {
+            throw (IllegalStateException) e;
         }
         if (e instanceof RuntimeException) {
             throw (RuntimeException) e;
