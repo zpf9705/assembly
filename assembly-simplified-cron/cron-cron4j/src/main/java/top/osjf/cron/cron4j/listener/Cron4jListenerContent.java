@@ -31,8 +31,12 @@ public class Cron4jListenerContent implements ListenerContext {
     private final String id;
     private final TaskExecutor taskExecutor;
 
-    public Cron4jListenerContent(String id, TaskExecutor taskExecutor) {
-        this.id = id;
+    /**
+     * Creates a {@code Cron4jListenerContent} by given {@code TaskExecutor}.
+     * @param taskExecutor the cron4j scheduler listener obj.
+     */
+    public Cron4jListenerContent(TaskExecutor taskExecutor) {
+        this.id = String.valueOf(taskExecutor.getTask().getId());
         this.taskExecutor = taskExecutor;
     }
 
