@@ -24,7 +24,7 @@ import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.repository.*;
-import top.osjf.cron.cron4j.listener.Cron4jCronListener;
+import top.osjf.cron.cron4j.listener.Cron4jSchedulerListener;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -66,6 +66,11 @@ public class Cron4jCronTaskRepository implements CronTaskRepository {
 
     private boolean setDaemon;
     private boolean setTimeZone;
+
+    /**
+     * @since 1.0.3
+     */
+    private final Cron4jSchedulerListener schedulerListener = new Cron4jSchedulerListener();
 
     /**
      * @since 1.0.3
@@ -166,6 +171,7 @@ public class Cron4jCronTaskRepository implements CronTaskRepository {
             scheduler.setDaemon(daemon);
             scheduler.setTimeZone(timezone);
         }
+        scheduler.addSchedulerListener(schedulerListener);
     }
 
     /**
@@ -226,12 +232,12 @@ public class Cron4jCronTaskRepository implements CronTaskRepository {
 
     @Override
     public void addListener(@NotNull CronListener listener) {
-        scheduler.addSchedulerListener(listener.unwrap(Cron4jCronListener.class));
+        schedulerListener.addCronListener(listener);
     }
 
     @Override
     public void removeListener(@NotNull CronListener listener) {
-        scheduler.removeSchedulerListener(listener.unwrap(Cron4jCronListener.class));
+        schedulerListener.removeCronListener(listener);
     }
 
     @Override
