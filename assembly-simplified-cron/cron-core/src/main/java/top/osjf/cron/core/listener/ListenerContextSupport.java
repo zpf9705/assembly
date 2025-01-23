@@ -17,6 +17,7 @@
 
 package top.osjf.cron.core.listener;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.UndeclaredThrowableException;
 
 /**
@@ -61,6 +62,18 @@ public abstract class ListenerContextSupport {
                     .getConstructor(sourceContext.getClass()).newInstance(sourceContext);
         }
         catch (Exception ex) {
+            if (ex instanceof NoSuchMethodException) {
+                for (Constructor<?> constructor : listenerContextClass.getConstructors()) {
+                    if (constructor.getParameterTypes().length == 1 &&
+                            constructor.getParameterTypes()[0].isAssignableFrom(sourceContext.getClass())) {
+                        try {
+                            return (ListenerContext) constructor.newInstance(sourceContext);
+                        } catch (Exception e) {
+                            throw new UndeclaredThrowableException(ex);
+                        }
+                    }
+                }
+            }
             if (ex instanceof RuntimeException) {
                 throw (RuntimeException) ex;
             }
