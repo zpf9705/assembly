@@ -56,9 +56,24 @@ public abstract class CronListenerCollector {
      * Return the type of {@code ListenerContext}, usually an instantiated subclass
      * of {@code ListenerContext}.
      *
-     * <p>The type of {@code ListenerContext} is greater than the type that must be
-     * informed. If this method does not provide it, the annotation {@link ListenerContextTypeProvider}
-     * can be used to inform.
+     * <p>This method can be used in conjunction with annotation {@link ListenerContextTypeProvider}.
+     * The non-empty types returned by this method are used first, and the original context can be
+     * specified in annotation {@link ListenerContextTypeProvider} to participate in the construction
+     * of listening context objects {@link ListenerContextTypeProvider#sourceContextBuildMode()}.
+     * <p>
+     * The code case can be seen as follows:
+     * <pre>
+     *
+     *     &#064;ListenerContextTypeProvider(sourceContextBuildMode = ListenerContextTypeProvider.BuildMode.SET)
+     *     public CronListenerCollectorImpl extends CronListenerCollector {
+     *
+     *          &#064;Override
+     *          protected Class<? extends ListenerContext> getListenerContextClass() {
+     *               return ExampleListenerContext.class;
+     *          }
+     *     }
+     *
+     * </pre>
      *
      * @return The type of {@code ListenerContext}
      * @see ListenerContextSupport#createListenerContext
