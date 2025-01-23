@@ -19,6 +19,9 @@ package top.osjf.cron.core.listener;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.util.Collections;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * Provide some methodological support for {@link ListenerContext}.
@@ -27,6 +30,8 @@ import java.lang.reflect.UndeclaredThrowableException;
  * @since 1.0.3
  */
 public abstract class ListenerContextSupport {
+
+    private static final Map<String, Constructor<?>> CONSTRUCTOR_CACHE = Collections.synchronizedMap(new WeakHashMap<>());
 
     /**
      * By collecting the {@code ListenerContext} type provided by the given listener
@@ -58,8 +63,11 @@ public abstract class ListenerContextSupport {
 
         ListenerContext listenerContext;
         try {
-            listenerContext = listenerContextClass
-                    .getConstructor(sourceContext.getClass()).newInstance(sourceContext);
+            Constructor<? extends ListenerContext> constructor
+                    = listenerContextClass.getConstructor(sourceContext.getClass());
+            listenerContext = constructor.newInstance(sourceContext);
+
+            CONSTRUCTOR_CACHE.putIfAbsent(listenerContextClass.getName(), constructor);
         }
         catch (Exception ex) {
             if (ex instanceof NoSuchMethodException) {
@@ -67,8 +75,11 @@ public abstract class ListenerContextSupport {
                     if (constructor.getParameterTypes().length == 1 &&
                             constructor.getParameterTypes()[0].isAssignableFrom(sourceContext.getClass())) {
                         try {
-                            return (ListenerContext) constructor.newInstance(sourceContext);
-                        } catch (Exception e) {
+                            listenerContext = (ListenerContext) constructor.newInstance(sourceContext);
+                            CONSTRUCTOR_CACHE.putIfAbsent(listenerContextClass.getName(), constructor);
+                            return listenerContext;
+                        }
+                        catch (Exception e) {
                             throw new UndeclaredThrowableException(ex);
                         }
                     }
