@@ -18,35 +18,31 @@
 package top.osjf.cron.hutool.listener;
 
 import cn.hutool.cron.TaskExecutor;
-import top.osjf.cron.core.listener.ListenerContext;
+import cn.hutool.cron.listener.TaskListener;
+import top.osjf.cron.core.listener.CronListenerCollector;
+import top.osjf.cron.core.listener.ListenerContextTypeProvider;
 
 /**
- * The listening context object of {@code Hutool}.
+ * The default Hutool task listener implementation class extends {@link CronListenerCollector}
+ * to implement broadcast mode for {@link top.osjf.cron.core.listener.CronListener}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public class HutoolListenerContent implements ListenerContext {
-
-    private final String id;
-    private final TaskExecutor taskExecutor;
-
-    /**
-     * Creates a {@code HutoolListenerContent} by given {@code TaskExecutor}.
-     * @param taskExecutor the Hutool scheduler listener obj.
-     */
-    public HutoolListenerContent(TaskExecutor taskExecutor) {
-        this.id = String.valueOf(taskExecutor.getCronTask().getId());
-        this.taskExecutor = taskExecutor;
+@ListenerContextTypeProvider(HutoolListenerContent.class)
+public class TaskListenerImpl extends CronListenerCollector implements TaskListener {
+    @Override
+    public void onStart(TaskExecutor executor) {
+        doStartListener(executor);
     }
 
     @Override
-    public String getID() {
-        return id;
+    public void onSucceeded(TaskExecutor executor) {
+        doSuccessListener(executor);
     }
 
     @Override
-    public Object getSourceContext() {
-        return taskExecutor;
+    public void onFailed(TaskExecutor executor, Throwable exception) {
+        doFailedListener(executor, exception);
     }
 }
