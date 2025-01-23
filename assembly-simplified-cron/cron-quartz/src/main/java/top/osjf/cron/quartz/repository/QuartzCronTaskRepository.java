@@ -32,7 +32,7 @@ import top.osjf.cron.core.util.StringUtils;
 import top.osjf.cron.quartz.IDJSONConversion;
 import top.osjf.cron.quartz.MethodLevelJobFactory;
 import top.osjf.cron.quartz.QuartzUtils;
-import top.osjf.cron.quartz.listener.QuartzCronListener;
+import top.osjf.cron.quartz.listener.JobListenerImpl;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -106,6 +106,11 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
     private boolean setSchedulerName;
     private boolean setSchedulerFactoryClass;
     private boolean setWaitForJobsToCompleteWhenStop;
+
+    /**
+     * @since 1.0.3
+     */
+    private final JobListenerImpl jobListener = new JobListenerImpl();
 
     /**
      * @since 1.0.3
@@ -271,6 +276,7 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
             scheduler.setJobFactory(jobFactory);
         }
         listenerManager = scheduler.getListenerManager();
+        listenerManager.addJobListener(jobListener);
     }
 
     @Override
@@ -335,12 +341,12 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
 
     @Override
     public void addListener(@NotNull CronListener listener) {
-        listenerManager.addJobListener(listener.unwrap(QuartzCronListener.class));
+        jobListener.addCronListener(listener);
     }
 
     @Override
     public void removeListener(@NotNull CronListener listener) {
-        listenerManager.removeJobListener(listener.unwrap(QuartzCronListener.class).getName());
+        jobListener.removeCronListener(listener);
     }
 
     /**
@@ -348,7 +354,7 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
      * quartz task repository.
      *
      * <p>This repository only supports dynamic addition of {@link JobListener}
-     * listeners, that is, {@link QuartzCronListener} instances. If developers want
+     * listeners, that is, {@link JobListenerImpl} instances. If developers want
      * to extend and add other listeners, such as {@link SchedulerListener},
      * {@link TriggerListener}, etc., they can call this method to obtain
      * {@link ListenerManager} instances and add and process them themselves.
