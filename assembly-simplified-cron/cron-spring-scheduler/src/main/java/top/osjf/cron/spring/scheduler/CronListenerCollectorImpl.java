@@ -20,6 +20,9 @@ package top.osjf.cron.spring.scheduler;
 import top.osjf.cron.core.listener.CronListenerCollector;
 
 /**
+ * Extend from {@link CronListenerCollector} to facilitate the addition and removal of
+ * {@link top.osjf.cron.core.listener.CronListener}.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
