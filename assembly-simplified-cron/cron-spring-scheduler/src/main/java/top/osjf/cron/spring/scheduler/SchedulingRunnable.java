@@ -18,6 +18,7 @@ package top.osjf.cron.spring.scheduler;
 
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.util.CollectionUtils;
 
 import java.util.List;
@@ -35,26 +36,26 @@ public class SchedulingRunnable implements Runnable, SchedulingContextSupplier {
 
     private final Runnable runnable;
 
-    private final List<SchedulingListener> schedulingListeners;
+    private final List<CronListener> cronListeners;
 
     /**
-     * Is {@link #schedulingListeners} empty.
+     * Is {@link #cronListeners} empty.
      */
     private final boolean hasSchedulingListener;
 
     /**
      * Create a new {@code SchedulingRunnable} within any task info.
      *
-     * @param id                  the unique ID of the task.
-     * @param runnable            the executor of the task.
-     * @param schedulingListeners the collection of listeners for the task.
+     * @param id            the unique ID of the task.
+     * @param runnable      the executor of the task.
+     * @param cronListeners the collection of listeners for the task.
      */
     public SchedulingRunnable(@NonNull String id, @NonNull Runnable runnable,
-                              @Nullable List<SchedulingListener> schedulingListeners) {
+                              @Nullable List<CronListener> cronListeners) {
         this.runnable = runnable;
-        this.context = new DefaultSchedulingContext(id, runnable, schedulingListeners);
-        this.schedulingListeners = schedulingListeners;
-        this.hasSchedulingListener = CollectionUtils.isNotEmpty(schedulingListeners);
+        this.context = new DefaultSchedulingContext(id, runnable, cronListeners);
+        this.cronListeners = cronListeners;
+        this.hasSchedulingListener = CollectionUtils.isNotEmpty(cronListeners);
     }
 
     /**
@@ -62,7 +63,7 @@ public class SchedulingRunnable implements Runnable, SchedulingContextSupplier {
      */
     void onStart() {
         if (hasSchedulingListener) {
-            schedulingListeners.forEach(c -> c.start(newSchedulingListenerContext()));
+            cronListeners.forEach(c -> c.start(newSchedulingListenerContext()));
         }
     }
 
@@ -71,7 +72,7 @@ public class SchedulingRunnable implements Runnable, SchedulingContextSupplier {
      */
     void onSucceeded() {
         if (hasSchedulingListener) {
-            schedulingListeners.forEach(c -> c.success(newSchedulingListenerContext()));
+            cronListeners.forEach(c -> c.success(newSchedulingListenerContext()));
         }
     }
 
@@ -80,7 +81,7 @@ public class SchedulingRunnable implements Runnable, SchedulingContextSupplier {
      */
     void onFailed(Throwable e) {
         if (hasSchedulingListener) {
-            schedulingListeners.forEach(c -> c.failed(newSchedulingListenerContext(), e));
+            cronListeners.forEach(c -> c.failed(newSchedulingListenerContext(), e));
         }
     }
 

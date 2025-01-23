@@ -28,12 +28,12 @@ import org.springframework.util.SimpleIdGenerator;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.listener.CronListener;
+import top.osjf.cron.core.listener.CronListenerCollector;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.core.repository.RunnableTaskBody;
 import top.osjf.cron.core.repository.TaskBody;
 import top.osjf.cron.spring.scheduler.task.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -49,7 +49,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * supports defining the execution time of tasks through Cron expressions.
  *
  * <p> This class maintains a {@link ScheduledTask} to store registered scheduled tasks.
- * It also maintains a list of Scheduling Listeners {@link #schedulingListeners}, used to
+ * It also maintains a list of Cron Listeners {@link #cronListenerCollector}, used to
  * monitor changes in scheduled tasks. The {@code ScheduledTaskRegistrar} instance is used
  * to interact with Spring's scheduled task scheduler, the {@code IdGenerator} instance is
  * used to generate unique task identifiers.
@@ -81,27 +81,28 @@ public class SchedulingRepository extends ManageableTaskSupport implements CronT
 
     private final Map<String, ScheduledTask> scheduledTaskCache = new ConcurrentHashMap<>();
 
-    private final List<SchedulingListener> schedulingListeners = new ArrayList<>();
+    private final CronListenerCollector cronListenerCollector = new CronListenerCollectorImpl();
 
     private final ScheduledTaskRegistrar scheduledTaskRegistrar = new EnhanceScheduledTaskRegistrar(this);
 
     private final IdGenerator idGenerator = new SimpleIdGenerator();
 
     /**
-     * Set all {@link SchedulingListener} beans in the container to the
-     * current bean.
+     * Set all {@link CronListener} beans in the container to the current bean.
      *
      * <p><strong>Note:</strong></p>
      * If a bean depends on this bean {@code SchedulingRepository} and implements
-     * {@code SchedulingListener}, it is also a {@code SchedulingListener} bean, which
+     * {@code CronListener}, it is also a {@code CronListener} bean, which
      * will result in circular dependencies and program errors. It is recommended to
      * separate the logic extraction and processing.
      *
-     * @param schedulingListeners all {@link SchedulingListener} beans in the container.
+     * @param cronListeners all {@link CronListener} beans in the container.
      */
     @Autowired(required = false)
-    public void setSchedulingListeners(List<SchedulingListener> schedulingListeners) {
-        this.schedulingListeners.addAll(schedulingListeners);
+    public void setSchedulingListeners(List<CronListener> cronListeners) {
+        for (CronListener cronListener : cronListeners) {
+            cronListenerCollector.addCronListener(cronListener);
+        }
     }
 
     /**
@@ -139,7 +140,7 @@ public class SchedulingRepository extends ManageableTaskSupport implements CronT
     public String getExpression(String id) {
         ScheduledTask scheduledTask = scheduledTaskCache.get(id);
         if (scheduledTask == null || !(scheduledTask.getTask()
-                instanceof org.springframework.scheduling.config.CronTask)){
+                instanceof org.springframework.scheduling.config.CronTask)) {
             return null;
         }
         return ((org.springframework.scheduling.config.CronTask) scheduledTask.getTask()).getExpression();
@@ -182,12 +183,12 @@ public class SchedulingRepository extends ManageableTaskSupport implements CronT
 
     @Override
     public void addListener(@NotNull CronListener listener) {
-        schedulingListeners.add(listener.unwrap(SchedulingListener.class));
+        cronListenerCollector.addCronListener(listener);
     }
 
     @Override
     public void removeListener(@NotNull CronListener listener) {
-        schedulingListeners.remove(listener.unwrap(SchedulingListener.class));
+        cronListenerCollector.removeCronListener(listener);
     }
 
     @Override
@@ -216,7 +217,7 @@ public class SchedulingRepository extends ManageableTaskSupport implements CronT
         if (id == null) {
             id = idGenerator.generateId().toString();
         }
-        return new SchedulingRunnable(id, runnable, schedulingListeners);
+        return new SchedulingRunnable(id, runnable, cronListenerCollector.getCronListeners());
     }
 
     @Override
