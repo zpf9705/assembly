@@ -19,6 +19,8 @@ package top.osjf.cron.core.listener;
 
 import top.osjf.cron.core.lang.NotNull;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -108,6 +110,16 @@ public abstract class CronListenerCollector {
      * @param e                 error type object thrown during task execution only when failed.
      */
     private void doListeners(ListenerLifecycle listenerLifecycle, Object sourceContext, Throwable e) {
-        listenerLifecycle.consumerListeners(cronListeners, sourceContext, e, this);
+        listenerLifecycle.consumerListeners(sourceContext, e, this);
+    }
+
+    /**
+     * Return the unmodifiable list of {@code CronListener} instances saved by this collection
+     * management instance.
+     *
+     * @return the list of {@code CronListener} instances.
+     */
+    protected List<CronListener> getCronListeners() {
+        return Collections.unmodifiableList(cronListeners);
     }
 }
