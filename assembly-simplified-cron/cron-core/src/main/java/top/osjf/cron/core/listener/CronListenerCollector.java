@@ -1,0 +1,110 @@
+/*
+ * Copyright 2024-? the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+package top.osjf.cron.core.listener;
+
+import top.osjf.cron.core.lang.NotNull;
+
+import java.util.concurrent.CopyOnWriteArrayList;
+
+/**
+ * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
+ * @since 1.0.3
+ */
+public abstract class CronListenerCollector {
+
+    private final CopyOnWriteArrayList<CronListener> cronListeners = new CopyOnWriteArrayList<>();
+
+    /**
+     * Add a {@code CronListener} to the listener list if it does not already exist.
+     *
+     * @param cronListener The {@code CronListener}  instance to be added.
+     */
+    public void addCronListener(@NotNull CronListener cronListener) {
+        cronListeners.addIfAbsent(cronListener);
+    }
+
+    /**
+     * Remove the specified {@code CronListener} from the listener list.
+     *
+     * @param cronListener {@code CronListener} instance to be removed.
+     */
+    public void removeCronListener(@NotNull CronListener cronListener) {
+        cronListeners.remove(cronListener);
+    }
+
+    /**
+     * Return the type of {@code ListenerContext}, usually an instantiated subclass
+     * of {@code ListenerContext}.
+     *
+     * <p>The type of {@code ListenerContext} is greater than the type that must be
+     * informed. If this method does not provide it, the annotation {@link ListenerContextTypeProvider}
+     * can be used to inform.
+     *
+     * @return The type of {@code ListenerContext}
+     * @see ListenerContextSupport#createListenerContext
+     */
+    protected Class<? extends ListenerContext> getListenerContextClass() {
+        return null;
+    }
+
+    /**
+     * The listening cycle at the beginning of task execution, providing an original
+     * context object.
+     *
+     * @param sourceContext the original context object provided by the framework used
+     *                      for executing scheduled tasks.
+     */
+    protected void doStartListener(Object sourceContext) {
+        doListeners(ListenerLifecycle.START, sourceContext, null);
+    }
+
+    /**
+     * The listening period when the task is successfully executed, providing an original
+     * context object.
+     *
+     * @param sourceContext the original context object provided by the framework used
+     *                      for executing scheduled tasks.
+     */
+    protected void doSuccessListener(Object sourceContext) {
+        doListeners(ListenerLifecycle.SUCCESS, sourceContext, null);
+    }
+
+    /**
+     * The listening period when the task fails, providing an original context object.
+     *
+     * @param sourceContext the original context object provided by the framework used
+     *                      for executing scheduled tasks.
+     * @param e             error type object thrown during task execution.
+     */
+    protected void doFailedListener(Object sourceContext, Throwable e) {
+        doListeners(ListenerLifecycle.FAILED, sourceContext, e);
+    }
+
+    /**
+     * Based on the provided execution cycle, enumerate the classes and execute the
+     * corresponding listening methods.
+     *
+     * @param listenerLifecycle the lifecycle enumeration class for task execution.
+     * @param sourceContext     the original context object provided by the framework used
+     *                          for executing scheduled tasks.
+     * @param e                 error type object thrown during task execution only when failed.
+     */
+    private void doListeners(ListenerLifecycle listenerLifecycle, Object sourceContext, Throwable e) {
+        listenerLifecycle.consumerListeners(cronListeners, sourceContext, e, this);
+    }
+}
