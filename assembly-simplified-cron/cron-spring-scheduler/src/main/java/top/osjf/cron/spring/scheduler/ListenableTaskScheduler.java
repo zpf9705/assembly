@@ -28,6 +28,20 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.function.Function;
 
 /**
+ * {@code ListenerTaskScheduler} is a custom proxy implementation of an interface
+ * {@link TaskScheduler} from the Spring framework. The execution of its core API
+ * requires a real {@link TaskScheduler} object, which adds listening functionality
+ * to the {@link ScheduledFuture} interface of the method's return result.
+ *
+ * <p>The execution task instance of the core API will be converted by method
+ * {@link #wrapperRunnableToListenable} into a listener executable {@link ListenableRunnable}
+ * object, and its return value will be converted into a listener attached
+ * {@link ListenableScheduledFuture} instance object.
+ *
+ * <p>All registered task information will be retained in {@link #listenableScheduledFutures}
+ * and can be managed later. For example, in {@link SchedulingRepositoryElse}, the retained
+ * task information can be updated and stopped through a unique ID.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
