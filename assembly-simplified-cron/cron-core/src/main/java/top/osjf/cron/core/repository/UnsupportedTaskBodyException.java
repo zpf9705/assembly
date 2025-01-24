@@ -27,7 +27,7 @@ public class UnsupportedTaskBodyException extends UnsupportedOperationException 
 
     private static final long serialVersionUID = 8161867261983060710L;
 
-    private Class<? extends TaskBody> bodyClass;
+    private final Class<? extends TaskBody> bodyClass;
 
     /**
      * Constructs an {@code UnsupportedOperationException} with the specified
@@ -37,6 +37,7 @@ public class UnsupportedTaskBodyException extends UnsupportedOperationException 
      */
     public UnsupportedTaskBodyException(Class<? extends TaskBody> bodyClass) {
         super("Unsupported parsing TaskBody type " + bodyClass);
+        this.bodyClass = bodyClass;
     }
 
     /**
