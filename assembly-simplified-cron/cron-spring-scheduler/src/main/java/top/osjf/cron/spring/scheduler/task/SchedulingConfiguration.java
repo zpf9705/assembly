@@ -34,7 +34,7 @@ import org.springframework.scheduling.config.TaskManagementConfigUtils;
  * {@code @EnableScheduling}'s javadoc for complete usage details.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 2025.01.24
+ * @since 1.0.3
  * @see EnableScheduling
  * @see ScheduledAnnotationBeanPostProcessor
  */
