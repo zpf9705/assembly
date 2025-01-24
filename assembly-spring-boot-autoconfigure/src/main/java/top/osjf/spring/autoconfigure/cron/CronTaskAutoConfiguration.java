@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Import;
 
 /**
  * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration}
- * for Cron Task , include Hutool ,Quartz ,Cron4j ,enhance Scheduling .
+ * for Cron Task , include Hutool ,Quartz ,Cron4j ,spring scheduler .
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.1
@@ -32,6 +32,6 @@ import org.springframework.context.annotation.Import;
 @Import({HutoolCronTaskImportConfiguration.class,
         QuartzCronTaskImportConfiguration.class,
         Cron4jCronTaskImportConfiguration.class,
-        SchedulingImportConfiguration.class})
+        SpringSchedulerImportConfiguration.class})
 public class CronTaskAutoConfiguration {
 }
