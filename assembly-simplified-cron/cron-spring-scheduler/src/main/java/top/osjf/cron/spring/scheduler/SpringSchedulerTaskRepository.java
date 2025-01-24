@@ -117,7 +117,7 @@ public class SpringSchedulerTaskRepository extends ListenableTaskScheduler imple
 
     @Override
     public void update(@NotNull String id, @NotNull String newExpression) {
-        ListenableScheduledFuture listenableScheduledFuture = getListenableScheduledFutures().get(id);
+        ListenableScheduledFuture listenableScheduledFuture = getListenableScheduledFutures().remove(id);
         if (listenableScheduledFuture == null) {
             throw new CronInternalException("ID " + id + " did not find the corresponding task information.");
         }
@@ -127,7 +127,7 @@ public class SpringSchedulerTaskRepository extends ListenableTaskScheduler imple
 
     @Override
     public void remove(@NotNull String id) {
-        ListenableScheduledFuture listenableScheduledFuture = getListenableScheduledFutures().get(id);
+        ListenableScheduledFuture listenableScheduledFuture = getListenableScheduledFutures().remove(id);
         if (listenableScheduledFuture != null) {
             listenableScheduledFuture.cancel(true);
         }
