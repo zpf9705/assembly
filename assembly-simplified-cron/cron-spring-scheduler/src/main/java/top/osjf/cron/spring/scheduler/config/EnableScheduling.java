@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.cron.spring.scheduler.task;
+package top.osjf.cron.spring.scheduler.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;

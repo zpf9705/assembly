@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.cron.spring.scheduler.task;
+package top.osjf.cron.spring.scheduler.config;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
