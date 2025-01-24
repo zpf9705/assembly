@@ -59,13 +59,13 @@ import java.util.stream.Collectors;
  * methods in a multi-thread environment is thread safe.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
+ * @since 1.0.3
  * @see CronTaskRepository
  * @see TaskScheduler
  * @see ListenableTaskScheduler
  * @see CronTrigger
  * @see ListenableRunnable
  * @see CronListener
- * @since 1.0.3
  */
 public class SpringSchedulerTaskRepository extends ListenableTaskScheduler implements CronTaskRepository {
 
