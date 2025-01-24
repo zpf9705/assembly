@@ -32,6 +32,8 @@ import top.osjf.cron.core.listener.CronListenerCollector;
 import top.osjf.cron.core.repository.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
@@ -42,6 +44,8 @@ public class SpringSchedulerTaskRepository extends ListenableTaskScheduler imple
     private final CronListenerCollector cronListenerCollector = new CronListenerCollectorImpl();
 
     private final IdGenerator idGenerator = new SimpleIdGenerator();
+
+    private final AtomicBoolean started = new AtomicBoolean(true);
 
     /**
      * Creates a new {@code SpringSchedulerTaskRepository} with default {@link DefaultManagedTaskScheduler}.
@@ -158,14 +162,28 @@ public class SpringSchedulerTaskRepository extends ListenableTaskScheduler imple
 
     @Override
     public void start() {
+        if (started.compareAndSet(false, true)) {
+            throw new IllegalStateException("Scheduling has not stopped.");
+        }
     }
 
     @Override
     public void stop() {
+        if (!started.compareAndSet(true, false)) {
+            throw new IllegalStateException("Scheduling has not started yet.");
+        }
+        Map<String, ListenableScheduledFuture> listenableScheduledFutures = getListenableScheduledFutures();
+        for (Map.Entry<String, ListenableScheduledFuture> entry : listenableScheduledFutures.entrySet()) {
+            ListenableScheduledFuture scheduledFuture = listenableScheduledFutures.get(entry.getKey());
+            if (!scheduledFuture.isCancelled()) {
+                scheduledFuture.cancel(true);
+            }
+        }
+        listenableScheduledFutures.clear();
     }
 
     @Override
     public boolean isStarted() {
-        return false;
+        return started.get();
     }
 }
