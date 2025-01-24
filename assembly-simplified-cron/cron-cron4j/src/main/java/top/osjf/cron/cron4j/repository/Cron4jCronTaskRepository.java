@@ -262,9 +262,8 @@ public class Cron4jCronTaskRepository implements CronTaskRepository {
             return fileID;
         } else if (body instanceof RunnableTaskBody) {
             return register(expression, (RunnableTaskBody) body);
-        } else {
-            throw new UnsupportedTaskBodyException(body.getClass());
         }
+        throw new UnsupportedTaskBodyException(body.getClass());
     }
 
     /**
