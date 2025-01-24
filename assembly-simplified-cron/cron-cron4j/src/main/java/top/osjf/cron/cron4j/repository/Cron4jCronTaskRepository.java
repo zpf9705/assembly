@@ -260,14 +260,15 @@ public class Cron4jCronTaskRepository implements CronTaskRepository {
     @Override
     @NotNull
     public String register(@NotNull String expression, @NotNull TaskBody body) {
-        if (body instanceof FileTaskBody) {
-            File file = ((FileTaskBody) body).getFile();
+        if (body.isWrapperFor(FileTaskBody.class)) {
+            FileTaskBody fileTaskBody = body.unwrap(FileTaskBody.class);
+            File file = fileTaskBody.getFile();
             scheduler.scheduleFile(file);
             String fileID = FILE_ID_PREFIX + UUID.randomUUID();
             fileIdMap.putIfAbsent(fileID, file);
             return fileID;
-        } else if (body instanceof RunnableTaskBody) {
-            return register(expression, (RunnableTaskBody) body);
+        } else if (body.isWrapperFor(RunnableTaskBody.class)) {
+            return register(expression, body.unwrap(RunnableTaskBody.class));
         }
         throw new UnsupportedTaskBodyException(body.getClass());
     }
