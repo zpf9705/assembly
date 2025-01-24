@@ -31,8 +31,11 @@ import top.osjf.cron.hutool.listener.TaskListenerImpl;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.util.List;
+import java.util.Objects;
 import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
+import java.util.stream.Collectors;
 
 /**
  * The {@link CronTaskRepository} implementation class of hutool.
@@ -284,6 +287,21 @@ public class HutoolCronTaskRepository implements CronTaskRepository {
     public String getExpression(String id) {
         CronPattern pattern = scheduler.getPattern(id);
         return pattern != null ? pattern.toString() : null;
+    }
+
+    @Override
+    @Nullable
+    public CronTaskInfo getCronTaskInfo(String id) {
+        return CronTaskInfoBuildUtils.buildCronTaskInfo(id, scheduler);
+    }
+
+    @Override
+    public List<CronTaskInfo> getAllCronTaskInfo() {
+        return scheduler.getTaskTable()
+                .getIds()
+                .stream()
+                .map(this::getCronTaskInfo)
+                .filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     @Override
