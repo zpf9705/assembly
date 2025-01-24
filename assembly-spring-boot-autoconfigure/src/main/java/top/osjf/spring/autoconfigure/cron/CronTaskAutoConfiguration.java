@@ -16,13 +16,14 @@
 
 package top.osjf.spring.autoconfigure.cron;
 
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import top.osjf.cron.core.repository.CronTaskRepository;
 
 /**
- * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration}
- * for Cron Task , include Hutool ,Quartz ,Cron4j ,spring scheduler .
+ * {@link EnableAutoConfiguration Auto-configuration} for {@link CronTaskRepository}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.1
