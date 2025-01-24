@@ -36,13 +36,13 @@ import java.util.List;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public class SchedulingRepositoryElse extends ListenableTaskScheduler implements CronTaskRepository {
+public class SpringSchedulerTaskRepository extends ListenableTaskScheduler implements CronTaskRepository {
 
     private final CronListenerCollector cronListenerCollector = new CronListenerCollectorImpl();
 
     private final IdGenerator idGenerator = new SimpleIdGenerator();
 
-    public SchedulingRepositoryElse(@NotNull TaskScheduler taskScheduler) {
+    public SpringSchedulerTaskRepository(@NotNull TaskScheduler taskScheduler) {
         super(taskScheduler);
     }
 

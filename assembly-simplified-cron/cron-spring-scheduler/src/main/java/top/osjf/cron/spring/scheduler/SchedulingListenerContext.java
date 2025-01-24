@@ -28,11 +28,11 @@ import top.osjf.cron.core.listener.ListenerContext;
 public class SchedulingListenerContext implements ListenerContext {
 
     private final String id;
-    private final SchedulingContext schedulingContext;
+    private final ListenableRunnable listenableRunnable;
 
-    public SchedulingListenerContext(String id, SchedulingContext schedulingContext) {
+    public SchedulingListenerContext(String id, ListenableRunnable listenableRunnable) {
         this.id = id;
-        this.schedulingContext = schedulingContext;
+        this.listenableRunnable = listenableRunnable;
     }
 
     @Override
@@ -42,6 +42,6 @@ public class SchedulingListenerContext implements ListenerContext {
 
     @Override
     public Object getSourceContext() {
-        return schedulingContext;
+        return listenableRunnable;
     }
 }

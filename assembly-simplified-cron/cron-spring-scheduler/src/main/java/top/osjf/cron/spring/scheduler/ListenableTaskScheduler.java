@@ -39,7 +39,7 @@ import java.util.function.Function;
  * {@link ListenableScheduledFuture} instance object.
  *
  * <p>All registered task information will be retained in {@link #listenableScheduledFutures}
- * and can be managed later. For example, in {@link SchedulingRepositoryElse}, the retained
+ * and can be managed later. For example, in {@link SchedulingRepository}, the retained
  * task information can be updated and stopped through a unique ID.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>

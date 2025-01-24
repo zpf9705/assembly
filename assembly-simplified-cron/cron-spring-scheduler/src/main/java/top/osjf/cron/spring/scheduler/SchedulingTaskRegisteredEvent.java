@@ -14,16 +14,19 @@
 // * limitations under the License.
 // */
 //
+//
 //package top.osjf.cron.spring.scheduler;
 //
-//import java.util.function.Supplier;
+//import org.springframework.context.ApplicationEvent;
 //
 ///**
-// * Extend the functional interface {@link Supplier} to provide an
-// * instance of {@link SchedulingContext}.
-// *
 // * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
 // * @since 1.0.3
 // */
-//public interface SchedulingContextSupplier extends Supplier<SchedulingContext> {
+//public class SchedulingTaskRegisteredEvent extends ApplicationEvent {
+//    private static final long serialVersionUID = -6513843436378977798L;
+//
+//    public SchedulingTaskRegisteredEvent(Object source) {
+//        super(source);
+//    }
 //}
