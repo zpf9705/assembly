@@ -31,7 +31,7 @@ import top.osjf.cron.spring.cron4j.Cron4jCronTaskConfiguration;
  * {@link EnableAutoConfiguration Auto-configuration} for {@link Cron4jCronTaskRepository}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.1
+ * @since 1.0.3
  */
 @Configuration(proxyBeanMethods = false)
 @Import({Cron4jCronTaskConfiguration.class, CronTaskConfiguration.class})
@@ -41,6 +41,6 @@ public class Cron4jCronTaskAutoConfiguration {
 
     @Bean
     public SuperiorProperties cron4jProperties(CronProperties cronProperties) {
-        return cronProperties.getCron4j().toProperties();
+        return cronProperties.getCron4j().get();
     }
 }

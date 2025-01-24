@@ -31,7 +31,7 @@ import top.osjf.cron.spring.hutool.HutoolCronTaskConfiguration;
  * {@link EnableAutoConfiguration Auto-configuration} for {@link HutoolCronTaskRepository}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.1
+ * @since 1.0.3
  */
 @Configuration(proxyBeanMethods = false)
 @Import({HutoolCronTaskConfiguration.class, CronTaskConfiguration.class})
@@ -41,6 +41,6 @@ public class HutoolCronTaskAutoConfiguration {
 
     @Bean
     public SuperiorProperties hutoolProperties(CronProperties cronProperties) {
-        return cronProperties.getHutool().toProperties();
+        return cronProperties.getHutool().get();
     }
 }

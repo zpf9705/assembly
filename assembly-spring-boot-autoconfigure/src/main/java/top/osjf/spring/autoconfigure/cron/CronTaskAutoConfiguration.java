@@ -26,7 +26,7 @@ import top.osjf.cron.core.repository.CronTaskRepository;
  * {@link EnableAutoConfiguration Auto-configuration} for {@link CronTaskRepository}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.1
+ * @since 1.0.3
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(CronProperties.class)

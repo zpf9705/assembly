@@ -34,7 +34,7 @@ import java.util.List;
  * {@link EnableAutoConfiguration Auto-configuration} for {@link QuartzCronTaskRepository}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.1
+ * @since 1.0.3
  */
 @Configuration(proxyBeanMethods = false)
 @Import({QuartzCronTaskConfiguration.class, CronTaskConfiguration.class})
@@ -45,7 +45,7 @@ public class QuartzCronTaskAutoConfiguration {
     @Bean
     public SuperiorProperties quartzProperties(ObjectProvider<List<QuartzPropertiesCustomizer>> provider,
                                                CronProperties cronProperties) {
-        SuperiorProperties properties = cronProperties.getQuartz().toProperties();
+        SuperiorProperties properties = cronProperties.getQuartz().get();
         provider.orderedStream()
                 .forEach(customizers -> customizers.forEach(c -> c.customize(properties)));
         return properties;

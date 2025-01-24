@@ -24,6 +24,7 @@ import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.function.Supplier;
 
 /**
  * Cron schedule properties.
@@ -87,17 +88,9 @@ public class CronProperties {
     }
 
     /**
-     * @since 1.0.3
-     */
-    public interface PropertiesConvert {
-
-        SuperiorProperties toProperties();
-    }
-
-    /**
      * Hutool client properties.
      */
-    public static class Hutool implements PropertiesConvert {
+    public static class Hutool implements Supplier<SuperiorProperties> {
 
         /**
          * Set whether to support second matching.
@@ -164,7 +157,7 @@ public class CronProperties {
         }
 
         @Override
-        public SuperiorProperties toProperties() {
+        public SuperiorProperties get() {
             SuperiorProperties properties = SuperiorProperties.of();
             properties.addProperty(HutoolCronTaskRepository.PROPERTY_NAME_OF_MATCH_SECOND, isMatchSecond);
             properties.addProperty(HutoolCronTaskRepository.PROPERTY_NAME_OF_DAEMON, isDaemon);
@@ -177,7 +170,7 @@ public class CronProperties {
     /**
      * Quartz client properties.
      */
-    public static class Quartz implements PropertiesConvert {
+    public static class Quartz implements Supplier<SuperiorProperties> {
 
         /**
          * Additional Quartz Scheduler properties.
@@ -199,7 +192,7 @@ public class CronProperties {
          * @since 1.0.3
          */
         @Override
-        public SuperiorProperties toProperties() {
+        public SuperiorProperties get() {
             SuperiorProperties superiorProperties = SuperiorProperties.of();
             for (Map.Entry<String, String> entry : properties.entrySet()) {
                 superiorProperties.addProperty(entry.getKey(), entry.getValue());
@@ -211,7 +204,7 @@ public class CronProperties {
     /**
      * Cron4j client properties.
      */
-    public static class Cron4j implements PropertiesConvert {
+    public static class Cron4j implements Supplier<SuperiorProperties> {
 
         /**
          * The daemon flag. If true the scheduler and its spawned threads acts like
@@ -241,7 +234,7 @@ public class CronProperties {
         }
 
         @Override
-        public SuperiorProperties toProperties() {
+        public SuperiorProperties get() {
             SuperiorProperties properties = SuperiorProperties.of();
             properties.addProperty(Cron4jCronTaskRepository.PROPERTY_NAME_OF_TIMEZONE, timezone);
             properties.addProperty(Cron4jCronTaskRepository.PROPERTY_NAME_OF_DAEMON, daemon);
