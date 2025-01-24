@@ -19,6 +19,7 @@ package top.osjf.cron.spring.scheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
+import org.springframework.scheduling.concurrent.DefaultManagedTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.util.IdGenerator;
 import org.springframework.util.SimpleIdGenerator;
@@ -41,6 +42,10 @@ public class SpringSchedulerTaskRepository extends ListenableTaskScheduler imple
     private final CronListenerCollector cronListenerCollector = new CronListenerCollectorImpl();
 
     private final IdGenerator idGenerator = new SimpleIdGenerator();
+
+    public SpringSchedulerTaskRepository() {
+        super(new DefaultManagedTaskScheduler());
+    }
 
     public SpringSchedulerTaskRepository(@NotNull TaskScheduler taskScheduler) {
         super(taskScheduler);
