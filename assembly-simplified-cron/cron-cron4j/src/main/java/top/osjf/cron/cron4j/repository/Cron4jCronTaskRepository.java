@@ -85,6 +85,11 @@ public class Cron4jCronTaskRepository implements CronTaskRepository {
      */
     private static final String FILE_ID_PREFIX = "file:";
 
+    /**
+     * Develop a map corresponding to the cached file and ID for the given file registration task.
+     *
+     * @since 1.0.3
+     */
     private final Map<String, File> fileIdMap = new ConcurrentHashMap<>(16);
 
     /**
