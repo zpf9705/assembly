@@ -17,6 +17,7 @@
 package top.osjf.spring.autoconfigure.cron;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -29,11 +30,12 @@ import org.springframework.boot.task.TaskSchedulerBuilder;
 import org.springframework.boot.task.TaskSchedulerCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.config.TaskManagementConfigUtils;
 import top.osjf.cron.spring.scheduler.SpringSchedulerTaskRepository;
-import top.osjf.cron.spring.scheduler.task.EnableScheduling;
+import top.osjf.cron.spring.scheduler.config.EnableScheduling;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link SpringSchedulerTaskRepository}.
@@ -45,7 +47,6 @@ import top.osjf.cron.spring.scheduler.task.EnableScheduling;
 @ConditionalOnClass({SpringSchedulerTaskRepository.class})
 @AutoConfigureBefore(TaskSchedulingAutoConfiguration.class)
 @EnableConfigurationProperties(TaskSchedulingProperties.class)
-@Import(SpringSchedulerImportConfiguration.SpringSchedulerExtendsConfiguration.class)
 public class SpringSchedulerImportConfiguration {
 
     @Bean
@@ -62,16 +63,29 @@ public class SpringSchedulerImportConfiguration {
         return builder;
     }
 
-    @Bean(ScheduledAnnotationBeanPostProcessor.DEFAULT_TASK_SCHEDULER_BEAN_NAME)
-    @ConditionalOnBean(name = TaskManagementConfigUtils.SCHEDULED_ANNOTATION_PROCESSOR_BEAN_NAME)
-    public SpringSchedulerTaskRepository springSchedulerTaskRepository(TaskSchedulerBuilder taskSchedulerBuilder) {
-        return new SpringSchedulerTaskRepository(taskSchedulerBuilder.build());
+    @Bean(ScheduledAnnotationBeanPostProcessor.DEFAULT_TASK_SCHEDULER_BEAN_NAME + "-USE")
+    public ThreadPoolTaskScheduler taskScheduler(TaskSchedulerBuilder builder) {
+        return builder.build();
     }
 
     @Configuration(proxyBeanMethods = false)
-    @ConditionalOnMissingBean(name = TaskManagementConfigUtils.SCHEDULED_ANNOTATION_PROCESSOR_BEAN_NAME)
+    @ConditionalOnMissingBean(value = ScheduledAnnotationBeanPostProcessor.class,
+            name = TaskManagementConfigUtils.SCHEDULED_ANNOTATION_PROCESSOR_BEAN_NAME)
     @EnableScheduling
-    public static class SpringSchedulerExtendsConfiguration {
+    public static class SpringSchedulerConfirmNoLoadingEnableSchedulingUseOSJFConfiguration {
+    }
 
+    @Configuration(proxyBeanMethods = false)
+    @ConditionalOnBean(value = ScheduledAnnotationBeanPostProcessor.class,
+            name = TaskManagementConfigUtils.SCHEDULED_ANNOTATION_PROCESSOR_BEAN_NAME)
+    @ConditionalOnMissingBean(SpringSchedulerTaskRepository.class)
+    public static class SpringSchedulerConfirmLoadingSpringEnableSchedulingConfiguration {
+
+        @Bean(ScheduledAnnotationBeanPostProcessor.DEFAULT_TASK_SCHEDULER_BEAN_NAME)
+        public SpringSchedulerTaskRepository springSchedulerTaskRepository(
+                @Qualifier(ScheduledAnnotationBeanPostProcessor.DEFAULT_TASK_SCHEDULER_BEAN_NAME + "-USE")
+                TaskScheduler taskScheduler) {
+            return new SpringSchedulerTaskRepository(taskScheduler);
+        }
     }
 }
