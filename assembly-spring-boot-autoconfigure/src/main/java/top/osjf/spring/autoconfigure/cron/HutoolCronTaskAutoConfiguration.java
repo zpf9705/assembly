@@ -16,30 +16,31 @@
 
 package top.osjf.spring.autoconfigure.cron;
 
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
-import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
+import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
 import top.osjf.cron.spring.CronTaskConfiguration;
-import top.osjf.cron.spring.cron4j.Cron4jCronTaskConfiguration;
+import top.osjf.cron.spring.hutool.HutoolCronTaskConfiguration;
 
 /**
- * {@link Import Import Configuration}  for Cron4j Cron Task.
+ * {@link EnableAutoConfiguration Auto-configuration} for {@link HutoolCronTaskRepository}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.1
  */
 @Configuration(proxyBeanMethods = false)
-@Import({Cron4jCronTaskConfiguration.class, CronTaskConfiguration.class})
-@ConditionalOnClass({Cron4jCronTaskRepository.class})
-@ConditionalOnProperty(name = "spring.schedule.cron.client-type", havingValue = "cron4j", matchIfMissing = true)
-public class Cron4jCronTaskImportConfiguration {
+@Import({HutoolCronTaskConfiguration.class, CronTaskConfiguration.class})
+@ConditionalOnClass({HutoolCronTaskRepository.class})
+@ConditionalOnProperty(name = "spring.schedule.cron.client-type", havingValue = "hutool", matchIfMissing = true)
+public class HutoolCronTaskAutoConfiguration {
 
     @Bean
-    public SuperiorProperties cron4jProperties(CronProperties cronProperties) {
-        return cronProperties.getCron4j().toProperties();
+    public SuperiorProperties hutoolProperties(CronProperties cronProperties) {
+        return cronProperties.getHutool().toProperties();
     }
 }

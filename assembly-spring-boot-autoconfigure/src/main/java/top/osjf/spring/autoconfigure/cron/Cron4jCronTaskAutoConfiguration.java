@@ -16,37 +16,31 @@
 
 package top.osjf.spring.autoconfigure.cron;
 
-import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
-import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
+import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
 import top.osjf.cron.spring.CronTaskConfiguration;
-import top.osjf.cron.spring.quartz.QuartzCronTaskConfiguration;
-
-import java.util.List;
+import top.osjf.cron.spring.cron4j.Cron4jCronTaskConfiguration;
 
 /**
- * {@link Import Import Configuration} for Quartz Cron Task.
+ * {@link EnableAutoConfiguration Auto-configuration} for {@link Cron4jCronTaskRepository}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.1
  */
 @Configuration(proxyBeanMethods = false)
-@Import({QuartzCronTaskConfiguration.class, CronTaskConfiguration.class})
-@ConditionalOnClass({QuartzCronTaskRepository.class})
-@ConditionalOnProperty(name = "spring.schedule.cron.client-type", havingValue = "quartz", matchIfMissing = true)
-public class QuartzCronTaskImportConfiguration {
+@Import({Cron4jCronTaskConfiguration.class, CronTaskConfiguration.class})
+@ConditionalOnClass({Cron4jCronTaskRepository.class})
+@ConditionalOnProperty(name = "spring.schedule.cron.client-type", havingValue = "cron4j", matchIfMissing = true)
+public class Cron4jCronTaskAutoConfiguration {
 
     @Bean
-    public SuperiorProperties quartzProperties(ObjectProvider<List<QuartzPropertiesCustomizer>> provider,
-                                               CronProperties cronProperties) {
-        SuperiorProperties properties = cronProperties.getQuartz().toProperties();
-        provider.orderedStream()
-                .forEach(customizers -> customizers.forEach(c -> c.customize(properties)));
-        return properties;
+    public SuperiorProperties cron4jProperties(CronProperties cronProperties) {
+        return cronProperties.getCron4j().toProperties();
     }
 }

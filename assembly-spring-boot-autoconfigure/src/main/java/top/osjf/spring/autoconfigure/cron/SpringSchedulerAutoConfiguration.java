@@ -47,7 +47,7 @@ import top.osjf.cron.spring.scheduler.config.EnableScheduling;
 @ConditionalOnClass({SpringSchedulerTaskRepository.class})
 @AutoConfigureBefore(TaskSchedulingAutoConfiguration.class)
 @EnableConfigurationProperties(TaskSchedulingProperties.class)
-public class SpringSchedulerImportConfiguration {
+public class SpringSchedulerAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean

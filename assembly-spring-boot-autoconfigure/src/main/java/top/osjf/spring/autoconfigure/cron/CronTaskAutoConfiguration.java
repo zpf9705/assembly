@@ -29,9 +29,9 @@ import org.springframework.context.annotation.Import;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(CronProperties.class)
-@Import({HutoolCronTaskImportConfiguration.class,
-        QuartzCronTaskImportConfiguration.class,
-        Cron4jCronTaskImportConfiguration.class,
-        SpringSchedulerImportConfiguration.class})
+@Import({HutoolCronTaskAutoConfiguration.class,
+        QuartzCronTaskAutoConfiguration.class,
+        Cron4jCronTaskAutoConfiguration.class,
+        SpringSchedulerAutoConfiguration.class})
 public class CronTaskAutoConfiguration {
 }
