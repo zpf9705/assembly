@@ -18,7 +18,6 @@
 package top.osjf.cron.spring;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.core.Ordered;
 import top.osjf.cron.core.lang.Nullable;
 
 /**
@@ -27,7 +26,7 @@ import top.osjf.cron.core.lang.Nullable;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public abstract class ObjectProviderUtils implements Ordered {
+public abstract class ObjectProviderUtils {
 
     /**
      * Retrieve the highest priority element from the given {@code ObjectProvider}.
