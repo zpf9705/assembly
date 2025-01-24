@@ -20,18 +20,22 @@ package top.osjf.cron.spring.scheduler;
 import top.osjf.cron.core.listener.ListenerContext;
 
 /**
- * The listening context object of spring scheduling.
+ * The listening context object of spring scheduler.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public class SchedulingListenerContext implements ListenerContext {
+public class ListenerContextImpl implements ListenerContext {
 
     private final String id;
     private final ListenableRunnable listenableRunnable;
 
-    public SchedulingListenerContext(String id, ListenableRunnable listenableRunnable) {
-        this.id = id;
+    /**
+     * Creates a {@code ListenerContextImpl} by given {@code ListenableRunnable}.
+     * @param listenableRunnable the scheduler listener {@code ListenableRunnable} obj.
+     */
+    public ListenerContextImpl(ListenableRunnable listenableRunnable) {
+        this.id = listenableRunnable.getId();
         this.listenableRunnable = listenableRunnable;
     }
 
