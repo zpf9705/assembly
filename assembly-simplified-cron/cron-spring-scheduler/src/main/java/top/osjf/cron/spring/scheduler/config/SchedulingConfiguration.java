@@ -17,14 +17,17 @@
 
 package top.osjf.cron.spring.scheduler.config;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.config.TaskManagementConfigUtils;
+import top.osjf.cron.spring.scheduler.SpringSchedulerTaskRepository;
 
 /**
- /**
+ * /**
  * {@code @Configuration} class that registers a {@link ScheduledAnnotationBeanPostProcessor}
  * bean capable of processing Spring's @{@link org.springframework.scheduling.annotation.Scheduled}
  * and cron framework {@link top.osjf.cron.spring.annotation.Cron} annotation.
@@ -37,6 +40,7 @@ import org.springframework.scheduling.config.TaskManagementConfigUtils;
  * @since 1.0.3
  * @see EnableScheduling
  * @see ScheduledAnnotationBeanPostProcessor
+ * @see SpringSchedulerTaskRepository
  */
 @Configuration(proxyBeanMethods = false)
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
@@ -46,5 +50,15 @@ public class SchedulingConfiguration {
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     public ScheduledAnnotationBeanPostProcessor scheduledAnnotationProcessor() {
         return new ScheduledAnnotationBeanPostProcessor();
+    }
+
+    @Bean(org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor
+            .DEFAULT_TASK_SCHEDULER_BEAN_NAME)
+    public SpringSchedulerTaskRepository springSchedulerTaskRepository(ObjectProvider<TaskScheduler> provider) {
+        TaskScheduler taskScheduler = provider.orderedStream().findFirst().orElse(null);
+        if (taskScheduler != null) {
+            return new SpringSchedulerTaskRepository(taskScheduler);
+        }
+        return new SpringSchedulerTaskRepository();
     }
 }
