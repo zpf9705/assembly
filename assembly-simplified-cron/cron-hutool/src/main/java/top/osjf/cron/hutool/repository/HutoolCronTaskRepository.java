@@ -21,6 +21,7 @@ import cn.hutool.cron.Scheduler;
 import cn.hutool.cron.pattern.CronPattern;
 import cn.hutool.cron.task.Task;
 import top.osjf.cron.core.exception.CronInternalException;
+import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
