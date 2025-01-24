@@ -171,6 +171,7 @@ public class ScheduledAnnotationBeanPostProcessor
      * a {@link ScheduledExecutorService} bean. If neither of the two is resolvable,
      * a local single-threaded default scheduler will be created within the registrar.
      *
+     * @param scheduler the {@link TaskScheduler} instance.
      * @see #DEFAULT_TASK_SCHEDULER_BEAN_NAME
      */
     public void setScheduler(Object scheduler) {
@@ -562,6 +563,7 @@ public class ScheduledAnnotationBeanPostProcessor
      * @param target the target bean instance
      * @param method the scheduled method to call
      * @see ScheduledMethodRunnable#ScheduledMethodRunnable(Object, Method)
+     * @return a {@link Runnable} for the given bean instance.
      * @since 5.1
      */
     protected Runnable createRunnable(Object target, Method method) {
