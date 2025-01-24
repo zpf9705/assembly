@@ -258,16 +258,17 @@ public class HutoolCronTaskRepository implements CronTaskRepository {
     @Override
     @NotNull
     public String register(@NotNull String expression, @NotNull TaskBody body) {
-        if (body instanceof DefineIDRunnableTaskBody) {
-            String id = ((DefineIDRunnableTaskBody) body).getId();
+        if (body.isWrapperFor(DefineIDRunnableTaskBody.class)) {
+            DefineIDRunnableTaskBody defineIDRunnableTaskBody = body.unwrap(DefineIDRunnableTaskBody.class);
+            String id = defineIDRunnableTaskBody.getId();
             Task task = scheduler.getTask(id);
             if (task != null) {
                 throw new CronInternalException("The task corresponding to id " + id + "already exists!");
             }
-            scheduler.schedule(id, expression, ((DefineIDRunnableTaskBody) body).getRunnable());
+            scheduler.schedule(id, expression, defineIDRunnableTaskBody.getRunnable());
             return id;
-        } else if (body instanceof RunnableTaskBody) {
-            return register(expression, ((RunnableTaskBody) body).getRunnable());
+        } else if (body.isWrapperFor(RunnableTaskBody.class)) {
+            return register(expression, body.unwrap(RunnableTaskBody.class));
         }
         throw new UnsupportedTaskBodyException(body.getClass());
     }
