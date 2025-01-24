@@ -41,6 +41,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.annotation.*;
 import org.springframework.scheduling.config.*;
 import org.springframework.scheduling.support.CronTrigger;
@@ -63,20 +64,34 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Bean post-processor that registers methods annotated with
- * {@link Scheduled @Scheduled} to be invoked by a
+ * {@link Scheduled @Scheduled} and {@link Cron @Cron} to be invoked by a
  * {@link org.springframework.scheduling.TaskScheduler} according to the
  * "fixedRate", "fixedDelay", or "cron" expression provided via the annotation.
- * <p>
- * Retained core functionality and added support for annotations {@link Cron}
- * and Cannot use {@link EnableScheduling} for such registration.
  *
- * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
+ * <p>This post-processor is automatically registered by Spring's
+ * {@code <task:annotation-driven>} XML element, and also by the
+ * {@link EnableScheduling @EnableScheduling} annotation.
+ *
+ * <p>Autodetects any {@link SchedulingConfigurer} instances in the container,
+ * allowing for customization of the scheduler to be used or for fine-grained
+ * control over task registration (e.g. registration of {@link Trigger} tasks).
+ * See the {@link EnableScheduling @EnableScheduling} javadocs for complete usage
+ * details.
+ *
+ * @author Mark Fisher
+ * @author Juergen Hoeller
+ * @author Chris Beams
+ * @author Elizabeth Chatman
+ * @author Victor Brown
+ * @author Sam Brannen
  * @since 3.0
  * @see Scheduled
  * @see Cron
+ * @see EnableScheduling
  * @see SchedulingConfigurer
- * @see TaskScheduler
- * @see ScheduledTaskRegistrar
+ * @see org.springframework.scheduling.TaskScheduler
+ * @see org.springframework.scheduling.config.ScheduledTaskRegistrar
+ * @see AsyncAnnotationBeanPostProcessor
  */
 public class ScheduledAnnotationBeanPostProcessor
         implements ScheduledTaskHolder, MergedBeanDefinitionPostProcessor, DestructionAwareBeanPostProcessor,
