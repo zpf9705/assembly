@@ -75,8 +75,7 @@ public class DefaultListenableRunnable implements ListenableRunnable {
         if (CollectionUtils.isNotEmpty(cronListeners)) {
             this.cronListeners.addAll(cronListeners);
         }
-        SchedulingContext schedulingContext = new DefaultSchedulingContext(id, runnable, cronListeners);
-        this.listenerContext = new SchedulingListenerContext(id, schedulingContext);
+        this.listenerContext = new SchedulingListenerContext(id, this);
     }
 
     @Override
