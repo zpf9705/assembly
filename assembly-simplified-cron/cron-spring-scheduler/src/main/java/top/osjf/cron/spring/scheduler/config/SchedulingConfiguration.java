@@ -24,6 +24,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.config.TaskManagementConfigUtils;
+import top.osjf.cron.spring.ObjectProviderUtils;
 import top.osjf.cron.spring.scheduler.SpringSchedulerTaskRepository;
 
 /**
@@ -55,7 +56,7 @@ public class SchedulingConfiguration {
     @Bean(org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor
             .DEFAULT_TASK_SCHEDULER_BEAN_NAME)
     public SpringSchedulerTaskRepository springSchedulerTaskRepository(ObjectProvider<TaskScheduler> provider) {
-        TaskScheduler taskScheduler = provider.orderedStream().findFirst().orElse(null);
+        TaskScheduler taskScheduler = ObjectProviderUtils.getPriority(provider);
         if (taskScheduler != null) {
             return new SpringSchedulerTaskRepository(taskScheduler);
         }
