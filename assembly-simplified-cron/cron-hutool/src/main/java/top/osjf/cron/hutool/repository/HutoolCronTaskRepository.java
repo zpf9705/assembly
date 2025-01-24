@@ -19,6 +19,8 @@ package top.osjf.cron.hutool.repository;
 import cn.hutool.cron.CronException;
 import cn.hutool.cron.Scheduler;
 import cn.hutool.cron.pattern.CronPattern;
+import cn.hutool.cron.task.Task;
+import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
@@ -230,11 +232,43 @@ public class HutoolCronTaskRepository implements CronTaskRepository {
     }
 
     @Override
-    @NotNull
-    public String register(@NotNull String cronExpression, @NotNull TaskBody body) {
+    public String register(@NotNull String expression, @NotNull Runnable runnable) throws CronInternalException {
         return RepositoryUtils.doRegister(() ->
-                scheduler.schedule(cronExpression, body.unwrap(RunnableTaskBody.class)
-                        .getRunnable()), CronException.class);
+                scheduler.schedule(expression, runnable), CronException.class);
+    }
+
+    @Override
+    public String register(@NotNull String expression, @NotNull CronMethodRunnable runnable) throws CronInternalException {
+        return register(expression, (Runnable) runnable);
+    }
+
+    @Override
+    public String register(@NotNull String expression, @NotNull RunnableTaskBody body) throws CronInternalException {
+        return register(expression, body.getRunnable());
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param expression {@inheritDoc}
+     * @param body       {@link RunnableTaskBody} or {@link DefineIDRunnableTaskBody}
+     * @return {@inheritDoc}
+     */
+    @Override
+    @NotNull
+    public String register(@NotNull String expression, @NotNull TaskBody body) {
+        if (body instanceof DefineIDRunnableTaskBody) {
+            String id = ((DefineIDRunnableTaskBody) body).getId();
+            Task task = scheduler.getTask(id);
+            if (task != null) {
+                throw new CronInternalException("The task corresponding to id " + id + "already exists!");
+            }
+            scheduler.schedule(id, expression, ((DefineIDRunnableTaskBody) body).getRunnable());
+            return id;
+        } else if (body instanceof RunnableTaskBody) {
+            return register(expression, ((RunnableTaskBody) body).getRunnable());
+        }
+        throw new UnsupportedTaskBodyException(body.getClass());
     }
 
     @Override
