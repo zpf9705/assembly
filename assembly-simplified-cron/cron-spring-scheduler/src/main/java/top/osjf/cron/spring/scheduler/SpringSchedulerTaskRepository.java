@@ -43,10 +43,18 @@ public class SpringSchedulerTaskRepository extends ListenableTaskScheduler imple
 
     private final IdGenerator idGenerator = new SimpleIdGenerator();
 
+    /**
+     * Creates a new {@code SpringSchedulerTaskRepository} with default {@link DefaultManagedTaskScheduler}.
+     */
     public SpringSchedulerTaskRepository() {
         super(new DefaultManagedTaskScheduler());
     }
 
+    /**
+     * Creates a new {@code SpringSchedulerTaskRepository} with given {@code TaskScheduler}.
+     *
+     * @param taskScheduler the given {@code TaskScheduler}.
+     */
     public SpringSchedulerTaskRepository(@NotNull TaskScheduler taskScheduler) {
         super(taskScheduler);
     }
