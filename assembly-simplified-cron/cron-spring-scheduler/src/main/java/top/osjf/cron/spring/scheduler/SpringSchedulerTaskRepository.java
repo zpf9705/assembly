@@ -21,6 +21,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.concurrent.DefaultManagedTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
+import org.springframework.scheduling.support.PeriodicTrigger;
 import org.springframework.util.IdGenerator;
 import org.springframework.util.SimpleIdGenerator;
 import top.osjf.cron.core.exception.CronInternalException;
@@ -31,9 +32,12 @@ import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.listener.CronListenerCollector;
 import top.osjf.cron.core.repository.*;
 
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 /**
  * The {@code SpringSchedulerTaskRepository} class is a scheduled task repository that
@@ -55,13 +59,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * methods in a multi-thread environment is thread safe.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.3
  * @see CronTaskRepository
  * @see TaskScheduler
  * @see ListenableTaskScheduler
  * @see CronTrigger
  * @see ListenableRunnable
  * @see CronListener
+ * @since 1.0.3
  */
 public class SpringSchedulerTaskRepository extends ListenableTaskScheduler implements CronTaskRepository {
 
@@ -154,6 +158,67 @@ public class SpringSchedulerTaskRepository extends ListenableTaskScheduler imple
             }
         }
         return null;
+    }
+
+    @Override
+    public CronTaskInfo getCronTaskInfo(String id) {
+        return buildCronTaskInfo(id);
+    }
+
+    @Override
+    public List<CronTaskInfo> getAllCronTaskInfo() {
+        return getListenableScheduledFutures().keySet()
+                .stream()
+                .map(this::buildCronTaskInfo)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Build a new {@code CronTaskInfo} by given id.
+     *
+     * @param id the given id.
+     * @return a new {@code CronTaskInfo}.
+     */
+    @Nullable
+    private CronTaskInfo buildCronTaskInfo(String id) {
+        ListenableScheduledFuture listenableScheduledFuture = getListenableScheduledFutures().get(id);
+        if (listenableScheduledFuture == null) {
+            return null;
+        }
+        ListenableRunnable listenableRunnable = listenableScheduledFuture.getListenableRunnable();
+        Trigger trigger = listenableRunnable.getTrigger();
+        String expression = null;
+        if (trigger instanceof CronTrigger) {
+            expression = ((CronTrigger) trigger).getExpression();
+        } else if (trigger instanceof PeriodicTrigger) {
+            PeriodicTrigger periodicTrigger = (PeriodicTrigger) trigger;
+            expression = toPeriodicTriggerExpression(periodicTrigger);
+        }
+        Runnable runnable = listenableRunnable.getRunnable();
+        Object target = null;
+        Method method = null;
+        if (runnable instanceof CronMethodRunnable) {
+            CronMethodRunnable cronMethodRunnable = (CronMethodRunnable) runnable;
+            target = cronMethodRunnable.getTarget();
+            method = cronMethodRunnable.getMethod();
+        }
+        return new CronTaskInfo(id, expression, runnable, target, method);
+    }
+
+    /**
+     * Concatenate the properties of the {@link PeriodicTrigger} instance into a JSON
+     * string as its expression.
+     *
+     * @param periodicTrigger the {@link PeriodicTrigger} instance.
+     * @return the {@link PeriodicTrigger} json string.
+     */
+    private String toPeriodicTriggerExpression(PeriodicTrigger periodicTrigger) {
+        return "{\"period\":" + periodicTrigger.getPeriod() +
+                ",\"timeUnit\":\"" + periodicTrigger.getTimeUnit() +
+                "\",\"initialDelay\":" + periodicTrigger.getInitialDelay() +
+                ",\"fixedRate\":" + periodicTrigger.isFixedRate() +
+                "}";
     }
 
     @Override
