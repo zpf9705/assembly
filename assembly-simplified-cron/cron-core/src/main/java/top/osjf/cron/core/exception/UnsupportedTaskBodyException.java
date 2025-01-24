@@ -15,7 +15,9 @@
  */
 
 
-package top.osjf.cron.core.repository;
+package top.osjf.cron.core.exception;
+
+import top.osjf.cron.core.repository.TaskBody;
 
 /**
  * Thrown to indicate that the {@link TaskBody} type is not supported.
