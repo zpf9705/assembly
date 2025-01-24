@@ -19,6 +19,7 @@ package top.osjf.cron.hutool.repository;
 import cn.hutool.cron.CronException;
 import cn.hutool.cron.Scheduler;
 import cn.hutool.cron.pattern.CronPattern;
+import cn.hutool.cron.task.InvokeTask;
 import cn.hutool.cron.task.Task;
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
@@ -255,7 +256,7 @@ public class HutoolCronTaskRepository implements CronTaskRepository {
      * {@inheritDoc}
      *
      * @param expression {@inheritDoc}
-     * @param body       {@link RunnableTaskBody} or {@link DefineIDRunnableTaskBody}
+     * @param body       {@link RunnableTaskBody} or {@link DefineIDRunnableTaskBody} or {@link InvokeTaskBody}
      * @return {@inheritDoc}
      */
     @Override
@@ -268,8 +269,13 @@ public class HutoolCronTaskRepository implements CronTaskRepository {
             if (task != null) {
                 throw new CronInternalException("The task corresponding to id " + id + "already exists!");
             }
-            scheduler.schedule(id, expression, defineIDRunnableTaskBody.getRunnable());
-            return id;
+            return RepositoryUtils.doRegister(() -> {
+                scheduler.schedule(id, expression, defineIDRunnableTaskBody.getRunnable());
+                return id;
+            }, CronException.class);
+        } else if (body.isWrapperFor(InvokeTaskBody.class)) {
+            InvokeTask invokeTask = body.unwrap(InvokeTaskBody.class).getInvokeTask();
+            return RepositoryUtils.doRegister(() -> scheduler.schedule(expression, invokeTask), CronException.class);
         } else if (body.isWrapperFor(RunnableTaskBody.class)) {
             return register(expression, body.unwrap(RunnableTaskBody.class));
         }
