@@ -29,9 +29,11 @@ import org.springframework.boot.task.TaskSchedulerBuilder;
 import org.springframework.boot.task.TaskSchedulerCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor;
 import org.springframework.scheduling.config.TaskManagementConfigUtils;
 import top.osjf.cron.spring.scheduler.SpringSchedulerTaskRepository;
+import top.osjf.cron.spring.scheduler.task.EnableScheduling;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link SpringSchedulerTaskRepository}.
@@ -43,6 +45,7 @@ import top.osjf.cron.spring.scheduler.SpringSchedulerTaskRepository;
 @ConditionalOnClass({SpringSchedulerTaskRepository.class})
 @AutoConfigureBefore(TaskSchedulingAutoConfiguration.class)
 @EnableConfigurationProperties(TaskSchedulingProperties.class)
+@Import(SpringSchedulerImportConfiguration.SpringSchedulerExtendsConfiguration.class)
 public class SpringSchedulerImportConfiguration {
 
     @Bean
@@ -63,5 +66,12 @@ public class SpringSchedulerImportConfiguration {
     @ConditionalOnBean(name = TaskManagementConfigUtils.SCHEDULED_ANNOTATION_PROCESSOR_BEAN_NAME)
     public SpringSchedulerTaskRepository springSchedulerTaskRepository(TaskSchedulerBuilder taskSchedulerBuilder) {
         return new SpringSchedulerTaskRepository(taskSchedulerBuilder.build());
+    }
+
+    @Configuration(proxyBeanMethods = false)
+    @ConditionalOnMissingBean(name = TaskManagementConfigUtils.SCHEDULED_ANNOTATION_PROCESSOR_BEAN_NAME)
+    @EnableScheduling
+    public static class SpringSchedulerExtendsConfiguration {
+
     }
 }
