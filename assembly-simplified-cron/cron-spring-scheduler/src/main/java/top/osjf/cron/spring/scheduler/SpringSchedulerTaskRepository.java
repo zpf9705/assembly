@@ -36,8 +36,32 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
+ * The {@code SpringSchedulerTaskRepository} class is a scheduled task repository that
+ * implements the {@code CronTaskRepository} interface, utilizing Spring's {@link TaskScheduler}
+ * to manage and schedule scheduled tasks.
+ *
+ * <p>This class provides the function of registering, updating, and removing scheduled tasks,
+ * and supports defining the execution cycle of tasks through Cron expressions. It also supports
+ * adding and removing task listeners to execute specific logic before and after task execution.
+ *
+ * <p>This class inherits from {@code ListenableTaskScheduler} and extends the related functions of
+ * task registration provided by its {@link TaskScheduler}, ensuring that tasks registered using
+ * this class can be listened to, and its lifecycle stages can add additional enhanced logic on
+ * various methods of {@link CronListener}.
+ *
+ * <p>The {@link TaskScheduler} used in this class does not provide examples of declaration cycles.
+ * Here, {@link AtomicBoolean} is used to control the start and stop states of tasks, ensuring that
+ * the modification of task states using the {@link top.osjf.cron.core.lifecycle.Lifecycle} supported
+ * methods in a multi-thread environment is thread safe.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
+ * @see CronTaskRepository
+ * @see TaskScheduler
+ * @see ListenableTaskScheduler
+ * @see CronTrigger
+ * @see ListenableRunnable
+ * @see CronListener
  */
 public class SpringSchedulerTaskRepository extends ListenableTaskScheduler implements CronTaskRepository {
 
