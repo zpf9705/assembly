@@ -49,6 +49,9 @@ import top.osjf.cron.spring.scheduler.config.EnableScheduling;
 @EnableConfigurationProperties(TaskSchedulingProperties.class)
 public class SpringSchedulerAutoConfiguration {
 
+    private static final String TASK_SCHEDULER_INTERNAL_USED_SUFFIX
+            = "org.springframework.scheduling.concurrent.internalThreadPoolTaskScheduler";
+
     @Bean
     @ConditionalOnMissingBean
     public TaskSchedulerBuilder taskSchedulerBuilder(TaskSchedulingProperties properties,
@@ -63,7 +66,7 @@ public class SpringSchedulerAutoConfiguration {
         return builder;
     }
 
-    @Bean(ScheduledAnnotationBeanPostProcessor.DEFAULT_TASK_SCHEDULER_BEAN_NAME + "-USE")
+    @Bean(TASK_SCHEDULER_INTERNAL_USED_SUFFIX)
     public ThreadPoolTaskScheduler taskScheduler(TaskSchedulerBuilder builder) {
         return builder.build();
     }
@@ -83,8 +86,7 @@ public class SpringSchedulerAutoConfiguration {
 
         @Bean(ScheduledAnnotationBeanPostProcessor.DEFAULT_TASK_SCHEDULER_BEAN_NAME)
         public SpringSchedulerTaskRepository springSchedulerTaskRepository(
-                @Qualifier(ScheduledAnnotationBeanPostProcessor.DEFAULT_TASK_SCHEDULER_BEAN_NAME + "-USE")
-                TaskScheduler taskScheduler) {
+                @Qualifier(TASK_SCHEDULER_INTERNAL_USED_SUFFIX) TaskScheduler taskScheduler) {
             return new SpringSchedulerTaskRepository(taskScheduler);
         }
     }
