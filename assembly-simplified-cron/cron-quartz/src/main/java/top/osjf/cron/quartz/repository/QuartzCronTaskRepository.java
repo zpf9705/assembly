@@ -19,14 +19,13 @@ package top.osjf.cron.quartz.repository;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.simpl.SimpleThreadPool;
+import top.osjf.cron.core.exception.CronInternalException;
+import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.core.listener.CronListener;
-import top.osjf.cron.core.repository.CronTask;
-import top.osjf.cron.core.repository.CronTaskRepository;
-import top.osjf.cron.core.repository.RepositoryUtils;
-import top.osjf.cron.core.repository.TaskBody;
+import top.osjf.cron.core.repository.*;
 import top.osjf.cron.core.util.ReflectUtils;
 import top.osjf.cron.core.util.StringUtils;
 import top.osjf.cron.quartz.IDJSONConversion;
@@ -280,12 +279,50 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
     }
 
     @Override
+    public String register(@NotNull String expression, @NotNull Runnable runnable) throws CronInternalException {
+        Method method = null;
+        if (runnable instanceof CronMethodRunnable) {
+            CronMethodRunnable cronMethodRunnable = (CronMethodRunnable) runnable;
+            method = cronMethodRunnable.getMethod();
+        } else if (runnable instanceof MethodProviderRunnable) {
+            method = ((MethodProviderRunnable) runnable).getMethod();
+        }
+        if (method == null) {
+            throw new CronInternalException("Only supported resolve " + runnable.getClass());
+        }
+        String name = method.getName();
+        String group = method.getDeclaringClass().getName();
+        JobKey jobKey = new JobKey(name, group);
+        JobDetail jobDetail = QuartzUtils.buildStandardJobDetail(name, group);
+        return doRegister(expression, jobKey, jobDetail);
+    }
+
+    @Override
+    public String register(@NotNull String expression, @NotNull CronMethodRunnable runnable) throws CronInternalException {
+        return register(expression, (Runnable) runnable);
+    }
+
+    @Override
+    public String register(@NotNull String expression, @NotNull RunnableTaskBody body) throws CronInternalException {
+        return register(expression, body.getRunnable());
+    }
+
+    @Override
     @NotNull
     public String register(@NotNull String expression, @NotNull TaskBody body) {
-        JobDetail jobDetail = body.unwrap(JobDetailTaskBody.class).getJobDetail();
+        JobDetail jobDetail;
+        if (body.isWrapperFor(JobDetailTaskBody.class)) {
+            jobDetail = body.unwrap(JobDetailTaskBody.class).getJobDetail();
+        } else {
+            throw new UnsupportedTaskBodyException(body.getClass());
+        }
         QuartzUtils.checkJobClassRules(jobDetail.getJobClass());
         JobKey key = jobDetail.getKey();
         QuartzUtils.checkJobKeyRules(key);
+        return doRegister(expression, key, jobDetail);
+    }
+
+    private String doRegister(String expression, JobKey key, JobDetail jobDetail) {
         return RepositoryUtils.doRegister(() -> {
             TriggerKey triggerKey = new TriggerKey(key.getName(), key.getGroup());
             TriggerBuilder<CronTrigger> triggerBuilder = TriggerBuilder.newTrigger()
@@ -315,8 +352,7 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
             if (scheduleBuilder instanceof VisibleCronScheduleBuilder) {
                 return ((VisibleCronScheduleBuilder) scheduleBuilder).getCronExpression().getCronExpression();
             }
-        }
-        catch (Exception ignored) {
+        } catch (Exception ignored) {
             //Any exception returns null...
         }
         return null;
