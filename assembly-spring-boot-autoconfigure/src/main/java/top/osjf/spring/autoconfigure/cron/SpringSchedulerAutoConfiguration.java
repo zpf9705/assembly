@@ -31,6 +31,7 @@ import org.springframework.boot.task.TaskSchedulerCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.config.TaskManagementConfigUtils;
@@ -48,6 +49,11 @@ import top.osjf.cron.spring.scheduler.config.EnableScheduling;
 @AutoConfigureBefore(TaskSchedulingAutoConfiguration.class)
 @EnableConfigurationProperties(TaskSchedulingProperties.class)
 public class SpringSchedulerAutoConfiguration {
+
+
+    ////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////// Essential Configuration //////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
     private static final String TASK_SCHEDULER_INTERNAL_USED_SUFFIX
             = "org.springframework.scheduling.concurrent.internalThreadPoolTaskScheduler";
@@ -71,6 +77,17 @@ public class SpringSchedulerAutoConfiguration {
         return builder.build();
     }
 
+    ////////////////////////////////////////////////////////////////////////////////
+    //////////////// Configuration based on different situations ///////////////////
+    ////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Automatically configure the {@link EnableScheduling} of the OSJF framework without
+     * using Spring's {@link org.springframework.scheduling.annotation.EnableScheduling}.
+     *
+     * <p>Annotations {@link top.osjf.cron.spring.annotation.Cron @Cron} and {@link Scheduled @Scheduled}
+     * are both supported.
+     */
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnMissingBean(value = ScheduledAnnotationBeanPostProcessor.class,
             name = TaskManagementConfigUtils.SCHEDULED_ANNOTATION_PROCESSOR_BEAN_NAME)
@@ -78,6 +95,11 @@ public class SpringSchedulerAutoConfiguration {
     public static class SpringSchedulerConfirmNoLoadingEnableSchedulingUseOSJFConfiguration {
     }
 
+    /**
+     * When using Spring's {@link org.springframework.scheduling.annotation.EnableScheduling},
+     * automatically configuring a listenable {@link SpringSchedulerTaskRepository TaskScheduler}
+     * annotation {@link top.osjf.cron.spring.annotation.Cron @Cron} is no longer supported.
+     */
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnBean(value = ScheduledAnnotationBeanPostProcessor.class,
             name = TaskManagementConfigUtils.SCHEDULED_ANNOTATION_PROCESSOR_BEAN_NAME)
