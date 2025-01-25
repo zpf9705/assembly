@@ -133,7 +133,6 @@ public class SpringSchedulerTaskRepository extends ListenableTaskScheduler imple
     }
 
     @Override
-    @NotNull
     public String register(@NotNull String expression, @NotNull TaskBody body) {
         if (body.isWrapperFor(RunnableTaskBody.class)) {
             return register(expression, body.unwrap(RunnableTaskBody.class));
@@ -142,7 +141,6 @@ public class SpringSchedulerTaskRepository extends ListenableTaskScheduler imple
     }
 
     @Override
-    @NotNull
     public String register(@NotNull top.osjf.cron.core.repository.CronTask task) {
         return register(task.getExpression(), task.getRunnable());
     }
