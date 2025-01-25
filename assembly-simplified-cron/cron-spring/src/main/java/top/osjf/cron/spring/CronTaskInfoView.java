@@ -24,7 +24,7 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 
 /**
- * The return value of the web access view for {@link CronTaskInfo}.
+ * The return obj of the web access view for {@link CronTaskInfo}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
