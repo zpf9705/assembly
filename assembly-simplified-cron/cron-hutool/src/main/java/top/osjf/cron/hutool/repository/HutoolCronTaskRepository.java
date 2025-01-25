@@ -257,10 +257,10 @@ public class HutoolCronTaskRepository implements CronTaskRepository {
      *
      * @param expression {@inheritDoc}
      * @param body       {@link RunnableTaskBody} or {@link DefineIDRunnableTaskBody} or {@link InvokeTaskBody}
+     *                   or {@link SettingTaskBody}.
      * @return {@inheritDoc}
      */
     @Override
-    @NotNull
     public String register(@NotNull String expression, @NotNull TaskBody body) {
         if (body.isWrapperFor(DefineIDRunnableTaskBody.class)) {
             DefineIDRunnableTaskBody defineIDRunnableTaskBody = body.unwrap(DefineIDRunnableTaskBody.class);
@@ -278,12 +278,20 @@ public class HutoolCronTaskRepository implements CronTaskRepository {
             return RepositoryUtils.doRegister(() -> scheduler.schedule(expression, invokeTask), CronException.class);
         } else if (body.isWrapperFor(RunnableTaskBody.class)) {
             return register(expression, body.unwrap(RunnableTaskBody.class));
+        } else if (body.isWrapperFor(SettingTaskBody.class)) {
+            return RepositoryUtils.doRegister(() -> {
+                SettingTaskBody settingTaskBody = body.unwrap(SettingTaskBody.class);
+                scheduler.schedule(settingTaskBody.getSetting());
+                /* the IDs in the order of configuration. */
+                return scheduler.getTaskTable().getIds().stream()
+                        .filter(id -> id.startsWith("id_"))
+                        .collect(Collectors.joining(","));
+            }, CronException.class);
         }
         throw new UnsupportedTaskBodyException(body.getClass());
     }
 
     @Override
-    @NotNull
     public String register(@NotNull CronTask task) {
         return register(task.getExpression(), new RunnableTaskBody(task.getRunnable()));
     }
