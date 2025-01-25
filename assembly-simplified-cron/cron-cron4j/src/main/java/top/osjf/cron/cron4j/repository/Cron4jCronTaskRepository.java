@@ -19,6 +19,7 @@ package top.osjf.cron.cron4j.repository;
 import it.sauronsoftware.cron4j.InvalidPatternException;
 import it.sauronsoftware.cron4j.Scheduler;
 import it.sauronsoftware.cron4j.SchedulingPattern;
+import it.sauronsoftware.cron4j.Task;
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 import top.osjf.cron.core.lang.NotNull;
@@ -31,10 +32,10 @@ import top.osjf.cron.cron4j.listener.SchedulerListenerImpl;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.File;
-import java.util.Map;
-import java.util.TimeZone;
-import java.util.UUID;
+import java.lang.reflect.Method;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * The {@link CronTaskRepository} implementation class of cron4j.
@@ -258,7 +259,6 @@ public class Cron4jCronTaskRepository implements CronTaskRepository {
      * @return {@inheritDoc} , the ID of the timed file starts with {@link #FILE_ID_PREFIX}.
      */
     @Override
-    @NotNull
     public String register(@NotNull String expression, @NotNull TaskBody body) {
         if (body.isWrapperFor(FileTaskBody.class)) {
             FileTaskBody fileTaskBody = body.unwrap(FileTaskBody.class);
@@ -285,7 +285,6 @@ public class Cron4jCronTaskRepository implements CronTaskRepository {
      * @return {@inheritDoc}
      */
     @Override
-    @NotNull
     public String register(@NotNull CronTask task) {
         return register(task.getExpression(), new RunnableTaskBody(task.getRunnable()));
     }
@@ -295,6 +294,36 @@ public class Cron4jCronTaskRepository implements CronTaskRepository {
     public String getExpression(String id) {
         SchedulingPattern schedulingPattern = scheduler.getSchedulingPattern(id);
         return schedulingPattern != null ? schedulingPattern.toString() : null;
+    }
+
+    @Override
+    public CronTaskInfo getCronTaskInfo(String id) {
+        return buildCronTaskInfo(id);
+    }
+
+    @Override
+    public List<CronTaskInfo> getAllCronTaskInfo() {
+        return Arrays.stream(scheduler.getExecutingTasks())
+                .map(taskExecutor -> buildCronTaskInfo(taskExecutor.getGuid()))
+                .filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
+    @Nullable
+    private CronTaskInfo buildCronTaskInfo(String id) {
+        Task task = scheduler.getTask(id);
+        SchedulingPattern schedulingPattern = scheduler.getSchedulingPattern(id);
+        if (task == null || schedulingPattern == null) {
+            return null;
+        }
+        Runnable runnable = scheduler.getTaskRunnable(id);
+        Object target = null;
+        Method method = null;
+        if (runnable instanceof CronMethodRunnable) {
+            CronMethodRunnable cronMethodRunnable = (CronMethodRunnable) runnable;
+            target = cronMethodRunnable.getTarget();
+            method = cronMethodRunnable.getMethod();
+        }
+        return new CronTaskInfo(id, schedulingPattern.toString(), runnable, target, method);
     }
 
     /**
