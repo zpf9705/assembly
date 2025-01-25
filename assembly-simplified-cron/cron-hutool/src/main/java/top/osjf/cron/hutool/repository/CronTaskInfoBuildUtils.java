@@ -31,6 +31,8 @@ import top.osjf.cron.core.repository.CronTaskInfo;
 import java.lang.reflect.Method;
 
 /**
+ * The building util of hutool {@link CronTaskInfo}.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
