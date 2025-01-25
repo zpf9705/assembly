@@ -32,7 +32,7 @@ import top.osjf.cron.spring.annotation.Cron;
  */
 @Configuration(proxyBeanMethods = false)
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-public class CronTaskConfiguration {
+public class CronTaskConfiguration extends CronTaskInfoReadableConfiguration {
 
     /**
      * The bean name of the internally managed cron annotation processor.
