@@ -22,6 +22,8 @@ import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.listener.CronListener;
 
+import java.util.List;
+
 /**
  * {@code CronTaskRepository} Interface is a dedicated repository for managing scheduled
  * tasks based on Cron expressions.
@@ -129,7 +131,6 @@ public interface CronTaskRepository extends LifecycleRepository {
      * @throws NullPointerException         if input expression or body is {@literal null}.
      * @throws UnsupportedTaskBodyException if input {@code TaskBody} is not supported.
      */
-    @NotNull
     String register(@NotNull String expression, @NotNull TaskBody body) throws CronInternalException;
 
     /**
@@ -150,7 +151,6 @@ public interface CronTaskRepository extends LifecycleRepository {
      * @throws IllegalArgumentException if input {@link CronTask#getExpression()} is invalid.
      * @throws NullPointerException     if input {@code CronTask} or body is {@literal null}.
      */
-    @NotNull
     String register(@NotNull CronTask task) throws CronInternalException;
 
     /**
@@ -169,6 +169,31 @@ public interface CronTaskRepository extends LifecycleRepository {
      */
     @Nullable
     String getExpression(String id);
+
+    /**
+     * Retrieves cron task information based on a given unique identifier.
+     *
+     * <p>This method is used to query the information of a registered cron task that matches
+     * the specified ID. If a cron task with this ID exists in the system,it returns the task's
+     * information; otherwise, it returns null.
+     *
+     * @param id the unique identifier of the registered cron task.
+     * @return The cron task information object that matches the given ID (if exists); otherwise,
+     * returns null.
+     */
+    @Nullable
+    CronTaskInfo getCronTaskInfo(String id);
+
+    /**
+     * Retrieves information for all registered cron tasks.
+     *
+     * <p>This method returns a list of information for all registered cron tasks in the system.
+     * If no cron tasks are registered in the system,it returns an empty list.
+     *
+     * @return A list containing information for all registered cron tasks. If the list is empty,
+     * it indicates that no cron tasks are registered.
+     */
+    List<CronTaskInfo> getAllCronTaskInfo();
 
     /**
      * Update the cron expression for registered scheduled tasks.
