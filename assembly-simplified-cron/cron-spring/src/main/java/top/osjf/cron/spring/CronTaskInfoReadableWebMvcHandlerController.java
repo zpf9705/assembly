@@ -35,34 +35,78 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
+ * Cron Task Information Readable Web MVC Handler Controller.
+ *
+ * <p>This controller is responsible for handling HTTP GET requests related to Cron
+ * task information.It retrieves Cron task information from CronTaskRepository and
+ * converts it into a list of {@code CronTaskInfoView} objects for return.
+ *
+ * <p>By implementing the InitializingBean interface, this class automatically invokes
+ * the {@link #afterPropertiesSet} method after the Spring container is initialized.
+ * In this method, it registers the current controller and its get method to the
+ * {@code RequestMappingHandlerMapping}, so that the Spring MVC framework can recognize
+ * and handle the corresponding HTTP requests.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
 public class CronTaskInfoReadableWebMvcHandlerController
         implements InitializingBean, Supplier<ResponseEntity<List<CronTaskInfoView>>> {
+    /**
+     * Retrieve the web mapping path for all registered task information.
+     */
+    public static final String REQUEST_MAPPING_PATH_OF_GET_CRON_TASK_LIST = "/cronTask/list";
+    /**
+     * Query all registered task information for {@link RequestMappingInfo} objects.
+     */
+    private final RequestMappingInfo requestMappingInfoOfGetCronTaskList
+            = RequestMappingInfo.paths(REQUEST_MAPPING_PATH_OF_GET_CRON_TASK_LIST).methods(RequestMethod.GET).build();
+    /**
+     * View processing method for querying all registered task information.
+     */
+    private final Method getCronTaskListHandlerMethod = ReflectUtils.getMethod(this.getClass(), "get");
 
-    public static final String REQUEST_MAPPING_PATH = "/cronTask/list";
-
+    /**
+     * The repository used to access and manipulate the storage of Cron task information.
+     */
     private final CronTaskRepository cronTaskRepository;
 
+    /**
+     * The Spring MVC component used to register and handle HTTP request mappings.
+     */
     private final RequestMappingHandlerMapping requestMappingHandlerMapping;
 
-    private final RequestMappingInfo requestMappingInfo
-            = RequestMappingInfo.paths(REQUEST_MAPPING_PATH).methods(RequestMethod.GET).build();
-
-    private final Method method = ReflectUtils.getMethod(this.getClass(), "get");
-
+    /**
+     * Constructor initializes {@code CronTaskInfoReadableWebMvcHandlerController}, setting the
+     * {@code CronTaskRepository} and {@code RequestMappingHandlerMapping}.
+     *
+     * @param cronTaskRepository           the cron task repository instance.
+     * @param requestMappingHandlerMapping the web mvc request mapping handler instance.
+     */
     public CronTaskInfoReadableWebMvcHandlerController(CronTaskRepository cronTaskRepository,
                                                        RequestMappingHandlerMapping requestMappingHandlerMapping) {
         this.cronTaskRepository = cronTaskRepository;
         this.requestMappingHandlerMapping = requestMappingHandlerMapping;
     }
 
+    /**
+     * This method adds the path mapping for registering open web access to Spring MVC support.
+     */
     @Override
     public void afterPropertiesSet() {
-        requestMappingHandlerMapping.registerMapping(requestMappingInfo, this, method);
+        requestMappingHandlerMapping
+                .registerMapping(requestMappingInfoOfGetCronTaskList, this, getCronTaskListHandlerMethod);
     }
 
+    /**
+     * Get the list of Cron task information.
+     *
+     * <p>Handles HTTP GET requests, retrieves the list of Cron task information from the
+     * {@code CronTaskRepository}, converts it into a list of {@code CronTaskInfoView} objects, and
+     * returns it to the client.
+     *
+     * @return A response entity containing the list of Cron task information views
+     */
     @Override
     @ResponseBody
     public ResponseEntity<List<CronTaskInfoView>> get() {
