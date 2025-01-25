@@ -17,6 +17,7 @@
 
 package top.osjf.cron.hutool.repository;
 
+import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.cron.Scheduler;
 import cn.hutool.cron.pattern.CronPattern;
 import cn.hutool.cron.task.CronTask;
@@ -54,34 +55,28 @@ public abstract class CronTaskInfoBuildUtils {
         Method method = null;
         try {
             if (task instanceof RunnableTask) {
-                RunnableTask runnableTask = (RunnableTask) task;
-                runnable = (Runnable) runnableTask.getClass().getField("runnable").get(runnableTask);
+                runnable = (Runnable) ReflectUtil.getFieldValue(task, "runnable");
                 if (runnable instanceof CronMethodRunnable) {
                     CronMethodRunnable cronMethodRunnable = (CronMethodRunnable) runnable;
                     target = cronMethodRunnable.getTarget();
                     method = cronMethodRunnable.getMethod();
                 }
             } else if (task instanceof InvokeTask) {
-                InvokeTask invokeTask = (InvokeTask) task;
-                target = invokeTask.getClass().getField("obj").get(invokeTask);
-                method = (Method) invokeTask.getClass().getField("method").get(invokeTask);
-                runnable = invokeTask::execute;
+                target = ReflectUtil.getFieldValue(task, "obj");
+                method = (Method) ReflectUtil.getFieldValue(task, "method");
             } else if (task instanceof CronTask) {
                 CronTask cronTask = (CronTask) task;
                 Task raw = cronTask.getRaw();
                 if (raw instanceof RunnableTask) {
-                    RunnableTask runnableTask = (RunnableTask) raw;
-                    runnable = (Runnable) runnableTask.getClass().getField("runnable").get(runnableTask);
+                    runnable = (Runnable) ReflectUtil.getFieldValue(task, "runnable");
                     if (runnable instanceof CronMethodRunnable) {
                         CronMethodRunnable cronMethodRunnable = (CronMethodRunnable) runnable;
                         target = cronMethodRunnable.getTarget();
                         method = cronMethodRunnable.getMethod();
                     }
                 } else if (raw instanceof InvokeTask) {
-                    InvokeTask invokeTask = (InvokeTask) raw;
-                    target = invokeTask.getClass().getField("obj").get(invokeTask);
-                    method = (Method) invokeTask.getClass().getField("method").get(invokeTask);
-                    runnable = invokeTask::execute;
+                    target = ReflectUtil.getFieldValue(task, "obj");
+                    method = (Method) ReflectUtil.getFieldValue(task, "method");
                 }
             }
         } catch (Exception e) {
