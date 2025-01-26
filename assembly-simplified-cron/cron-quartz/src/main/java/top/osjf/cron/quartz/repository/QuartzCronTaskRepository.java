@@ -105,6 +105,7 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
     private boolean setSchedulerName;
     private boolean setSchedulerFactoryClass;
     private boolean setWaitForJobsToCompleteWhenStop;
+    private boolean jobFactorySet;
 
     /**
      * @since 1.0.3
@@ -273,6 +274,7 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
         }
         if (scheduler instanceof StdScheduler) {
             scheduler.setJobFactory(jobFactory);
+            jobFactorySet = true;
         }
         listenerManager = scheduler.getListenerManager();
         listenerManager.addJobListener(jobListener);
@@ -321,6 +323,13 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
         return doRegister(expression, key, jobDetail);
     }
 
+    @Override
+    public String register(@NotNull CronTask task) {
+        Method method = task.getRunnable().getMethod();
+        return register(task.getExpression(), new JobDetailTaskBody(
+                QuartzUtils.buildStandardJobDetail(method.getName(), method.getDeclaringClass().getName())));
+    }
+
     private String doRegister(String expression, JobKey key, JobDetail jobDetail) {
         return RepositoryUtils.doRegister(() -> {
             TriggerKey triggerKey = new TriggerKey(key.getName(), key.getGroup());
@@ -329,15 +338,11 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
                     .startNow()
                     .withSchedule(CronScheduleBuilder.cronSchedule(expression));
             scheduler.scheduleJob(jobDetail, triggerBuilder.build());
+            if (jobFactorySet){
+                jobFactory.prepareJob(jobDetail);
+            }
             return QuartzUtils.getIdBySerializeJobKey(key);
         }, ParseException.class);
-    }
-
-    @Override
-    public String register(@NotNull CronTask task) {
-        Method method = task.getRunnable().getMethod();
-        return register(task.getExpression(), new JobDetailTaskBody(
-                QuartzUtils.buildStandardJobDetail(method.getName(), method.getDeclaringClass().getName())));
     }
 
     @Override
