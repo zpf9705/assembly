@@ -20,7 +20,7 @@ package top.osjf.cron.quartz.listener;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobKey;
 import top.osjf.cron.core.listener.ListenerContext;
-import top.osjf.cron.quartz.IDJSONConversion;
+import top.osjf.cron.quartz.QuartzUtils;
 
 /**
  * The listening context object of {@code Quartz}.
@@ -39,7 +39,7 @@ public class QuartzListenerContent implements ListenerContext {
      */
     public QuartzListenerContent(JobExecutionContext context) {
         JobKey key = context.getJobDetail().getKey();
-        this.id = IDJSONConversion.convertJobKeyAsJSONID(key);
+        this.id = QuartzUtils.getIdBySerializeJobKey(key);
         this.context = context;
     }
 
