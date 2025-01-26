@@ -104,7 +104,7 @@ public class MethodLevelJobFactory implements JobFactory {
         CronMethodRunnable cronMethodRunnable = job.getCronMethodRunnable();
         JobDataMap dataMap = jobDetail.getJobDataMap();
         synchronized (dataMap) {
-            if (!dataMap.containsKey(jobIdentity)) {
+            if (dataMap.containsKey(jobIdentity)) {
                 return;
             }
             dataMap.put(QuartzUtils.getJobIdentity(jobDetail.getKey()), cronMethodRunnable);
