@@ -64,6 +64,7 @@ public class MethodLevelJobFactory implements JobFactory {
      * obtained.
      *
      * @param jobKey the resolve {@code JobKey}.
+     * @return A singleton {@link Job} queried by {@link JobKey}.
      */
     public MethodLevelJob getJob(JobKey jobKey) {
         return getJob(jobKey.getGroup(), jobKey.getName(), QuartzUtils.getJobIdentity(jobKey));
