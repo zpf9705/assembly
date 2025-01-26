@@ -16,7 +16,6 @@
 
 package top.osjf.cron.spring.quartz;
 
-import org.quartz.Job;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -69,14 +68,14 @@ public class SpringContainerGovernanceMethodLevelJobFactory extends MethodLevelJ
 
     /**
      * {@inheritDoc}
-     * <p>{@code Job} instance object is searched from the Spring container.
+     * <p>{@code MethodLevelJob} instance object is searched from the Spring container.
      *
      * @param declaringClassName {@inheritDoc}
      * @param methodName         {@inheritDoc}
-     * @return a {@code Job} instance gets from {@link #applicationContext}.
+     * @return a {@code MethodLevelJob} instance gets from {@link #applicationContext}.
      */
     @Override
-    protected Job getJob(String declaringClassName, String methodName) {
+    protected MethodLevelJob getJob(String declaringClassName, String methodName) {
         final String beanName = methodName + "@" + declaringClassName;
         if (applicationContext.containsBean(beanName)) {
             return applicationContext.getBean(beanName, MethodLevelJob.class);
