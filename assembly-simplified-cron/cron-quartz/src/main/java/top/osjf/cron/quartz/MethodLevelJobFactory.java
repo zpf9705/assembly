@@ -21,6 +21,7 @@ import org.quartz.*;
 import org.quartz.impl.JobExecutionContextImpl;
 import org.quartz.spi.JobFactory;
 import org.quartz.spi.TriggerFiredBundle;
+import top.osjf.cron.core.repository.CronMethodRunnable;
 import top.osjf.cron.core.util.ReflectUtils;
 
 import java.lang.reflect.Method;
@@ -54,7 +55,7 @@ public class MethodLevelJobFactory implements JobFactory {
      * <p>Key is <strong>declaringClassName + @ + methodName</strong>
      * <p>value is {@code Job} instance.
      */
-    private final ConcurrentMap<String, Job> JOB_CACHE = new ConcurrentHashMap<>(64);
+    private final ConcurrentMap<String, MethodLevelJob> JOB_CACHE = new ConcurrentHashMap<>(64);
 
     @Override
     public final Job newJob(TriggerFiredBundle bundle, Scheduler scheduler) throws SchedulerException {
@@ -83,11 +84,37 @@ public class MethodLevelJobFactory implements JobFactory {
         String methodName = key.getName();
         //JobKey.group is declaring class name.
         String declaringClassName = key.getGroup();
-        return getJob(declaringClassName, methodName);
+        //get job instance and set any data if ever not set.
+        String jobIdentity = QuartzUtils.getJobIdentity(key);
+        MethodLevelJob job = getJob(declaringClassName, methodName, jobIdentity);
+        setJobData(job, jobDetail, jobIdentity, declaringClassName);
+        return job;
     }
 
     /**
-     * Gets a {@code Job} instance by given {@code declaringClassName}
+     * The execution target instance and target method obtained are cached in
+     * {@link JobDetail#getJobDataMap()}, only once.
+     *
+     * @param job                the got {@link MethodLevelJob}.
+     * @param jobDetail          the given {@code JobDetail}.
+     * @param jobIdentity        the job identity create by {@code JobKey}.
+     * @param declaringClassName execute the fully qualified name of the target class.
+     */
+    private void setJobData(MethodLevelJob job, JobDetail jobDetail, String jobIdentity, String declaringClassName) {
+        CronMethodRunnable cronMethodRunnable = job.getCronMethodRunnable();
+        JobDataMap dataMap = jobDetail.getJobDataMap();
+        synchronized (dataMap) {
+            if (!dataMap.containsKey(jobIdentity)) {
+                return;
+            }
+            dataMap.put(QuartzUtils.getJobIdentity(jobDetail.getKey()), cronMethodRunnable);
+            dataMap.put(declaringClassName, cronMethodRunnable.getTarget());
+            dataMap.put(jobIdentity, cronMethodRunnable.getMethod());
+        }
+    }
+
+    /**
+     * Gets a {@code MethodLevelJob} instance by given {@code declaringClassName}
      * and {@code methodName}.
      *
      * <p>Loading condition: Calculate and create only when <strong>declaringClassName + @ + methodName</strong>
@@ -95,11 +122,12 @@ public class MethodLevelJobFactory implements JobFactory {
      *
      * @param declaringClassName the declaring class name.
      * @param methodName         the method name.
-     * @return a {@code Job} instance gets from {@link #JOB_CACHE}.
+     * @param hopeJobIdentity    as the unique key cached in {@link #JOB_CACHE} after
+     *                           creating {@link MethodLevelJob} singleton.
+     * @return a {@code MethodLevelJob} instance gets from {@link #JOB_CACHE}.
      */
-    protected Job getJob(String declaringClassName, String methodName) {
-        final String cacheKey = methodName + "@" + declaringClassName;
-        return JOB_CACHE.computeIfAbsent(cacheKey, s -> {
+    protected MethodLevelJob getJob(String declaringClassName, String methodName, String hopeJobIdentity) {
+        return JOB_CACHE.computeIfAbsent(hopeJobIdentity, s -> {
             Class<?> declaringClass = ReflectUtils.forName(declaringClassName);
             Object target = ReflectUtils.newInstance(declaringClass);
             Method method = ReflectUtils.getMethod(declaringClass, methodName);
