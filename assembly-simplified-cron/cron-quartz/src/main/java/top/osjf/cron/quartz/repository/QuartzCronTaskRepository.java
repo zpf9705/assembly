@@ -17,7 +17,9 @@
 package top.osjf.cron.quartz.repository;
 
 import org.quartz.*;
+import org.quartz.impl.StdScheduler;
 import org.quartz.impl.StdSchedulerFactory;
+import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.simpl.SimpleThreadPool;
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
@@ -28,19 +30,17 @@ import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.repository.*;
 import top.osjf.cron.core.util.ReflectUtils;
 import top.osjf.cron.core.util.StringUtils;
-import top.osjf.cron.quartz.IDJSONConversion;
-import top.osjf.cron.quartz.MethodLevelJobFactory;
-import top.osjf.cron.quartz.QuartzUtils;
+import top.osjf.cron.quartz.*;
 import top.osjf.cron.quartz.listener.JobListenerImpl;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.lang.reflect.Method;
 import java.text.ParseException;
-import java.util.Properties;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * The {@link CronTaskRepository} implementation class of quartz.
@@ -268,10 +268,10 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
                     ((StdSchedulerFactory) schedulerFactory).initialize(quartzProperties);
                     schedulerFactory.getScheduler();
                     scheduler = schedulerFactory.getScheduler(schedulerName);
-                    scheduler.setJobFactory(jobFactory);
                 }
             }
-        } else {
+        }
+        if (scheduler instanceof StdScheduler) {
             scheduler.setJobFactory(jobFactory);
         }
         listenerManager = scheduler.getListenerManager();
@@ -308,7 +308,6 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
     }
 
     @Override
-    @NotNull
     public String register(@NotNull String expression, @NotNull TaskBody body) {
         JobDetail jobDetail;
         if (body.isWrapperFor(JobDetailTaskBody.class)) {
@@ -335,7 +334,6 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
     }
 
     @Override
-    @NotNull
     public String register(@NotNull CronTask task) {
         Method method = task.getRunnable().getMethod();
         return register(task.getExpression(), new JobDetailTaskBody(
@@ -352,11 +350,69 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
             if (scheduleBuilder instanceof VisibleCronScheduleBuilder) {
                 return ((VisibleCronScheduleBuilder) scheduleBuilder).getCronExpression().getCronExpression();
             }
-        }
-        catch (Exception ignored) {
+        } catch (Exception ignored) {
             //Any exception returns null...
         }
         return null;
+    }
+
+    @Override
+    @Nullable
+    public CronTaskInfo getCronTaskInfo(String id) {
+        return buildCronTaskInfo(id);
+    }
+
+    @Override
+    public List<CronTaskInfo> getAllCronTaskInfo() {
+        try {
+            return scheduler.getJobKeys(GroupMatcher.anyGroup())
+                    .stream()
+                    .map(this::buildCronTaskInfo)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        } catch (SchedulerException e) {
+            return Collections.emptyList();
+        }
+    }
+
+    /**
+     * Build a {@link CronTaskInfo} by given id.
+     *
+     * @param id the given id.
+     * @return new {@link CronTaskInfo} by given id.
+     */
+    @Nullable
+    private CronTaskInfo buildCronTaskInfo(String id) {
+        JobKey jobKey = IDJSONConversion.convertJSONIDAsJobKey(id);
+        return buildCronTaskInfo(jobKey);
+    }
+
+    /**
+     * Build a {@link CronTaskInfo} by given {@code JobKey}.
+     *
+     * @param jobKey the given {@code JobKey}.
+     * @return new {@link CronTaskInfo} by given {@code JobKey}.
+     */
+    @Nullable
+    private CronTaskInfo buildCronTaskInfo(JobKey jobKey) {
+        String group = jobKey.getGroup();
+        try {
+            Set<JobKey> jobKeys = scheduler.getJobKeys(GroupMatcher.groupEquals(group));
+            Trigger trigger = scheduler.getTrigger(new TriggerKey(jobKey.getName(), jobKey.getGroup()));
+            if (!jobKeys.contains(jobKey)
+                    || trigger == null
+                    || !(trigger.getScheduleBuilder() instanceof VisibleCronScheduleBuilder)) {
+                return null;
+            }
+            String expression = ((VisibleCronScheduleBuilder) trigger
+                    .getScheduleBuilder()).getCronExpression().getCronExpression();
+            JobDetail jobDetail = scheduler.getJobDetail(jobKey);
+            return new CronTaskInfo(IDJSONConversion.convertJobKeyAsJSONID(jobKey),
+                    expression, QuartzUtils.getRunnable(jobDetail),
+                    QuartzUtils.getTarget(jobDetail), QuartzUtils.getMethod(jobDetail));
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Override
