@@ -33,11 +33,24 @@ import java.lang.reflect.Method;
 public class MethodLevelJob implements Job {
     private final CronMethodRunnable cronMethodRunnable;
 
+    /**
+     * Creates a {@code MethodLevelJob} by given target object and
+     * {@code Method} instance.
+     *
+     * @param target the given target object.
+     * @param method the given {@code Method} instance.
+     */
     public MethodLevelJob(Object target, Method method) {
         this.cronMethodRunnable = new CronMethodRunnable(target, method);
     }
 
-    public CronMethodRunnable getCronMethodRunnable(){
+    /**
+     * Return a {@code CronMethodRunnable} building by target
+     * object and {@code Method} instance.
+     *
+     * @return a {@code CronMethodRunnable} instance.
+     */
+    public CronMethodRunnable getCronMethodRunnable() {
         return cronMethodRunnable;
     }
 
