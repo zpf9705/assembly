@@ -72,13 +72,14 @@ public class SpringContainerGovernanceMethodLevelJobFactory extends MethodLevelJ
      *
      * @param declaringClassName {@inheritDoc}
      * @param methodName         {@inheritDoc}
+     * @param hopeJobIdentity    as the unique name for creating {@link MethodLevelJob}
+     *                           in the container.
      * @return a {@code MethodLevelJob} instance gets from {@link #applicationContext}.
      */
     @Override
-    protected MethodLevelJob getJob(String declaringClassName, String methodName) {
-        final String beanName = methodName + "@" + declaringClassName;
-        if (applicationContext.containsBean(beanName)) {
-            return applicationContext.getBean(beanName, MethodLevelJob.class);
+    protected MethodLevelJob getJob(String declaringClassName, String methodName, String hopeJobIdentity) {
+        if (applicationContext.containsBean(hopeJobIdentity)) {
+            return applicationContext.getBean(hopeJobIdentity, MethodLevelJob.class);
         }
         Class<?> beanClassName = ClassUtils.resolveClassName(declaringClassName, classLoader);
         Object targetBean = applicationContext.getBean(beanClassName);
@@ -88,8 +89,8 @@ public class SpringContainerGovernanceMethodLevelJobFactory extends MethodLevelJ
                 .addConstructorArgValue(targetBean)
                 .addConstructorArgValue(method);
         BeanDefinitionReaderUtils
-                .registerBeanDefinition(new BeanDefinitionHolder(builder.getBeanDefinition(), beanName),
+                .registerBeanDefinition(new BeanDefinitionHolder(builder.getBeanDefinition(), hopeJobIdentity),
                         beanDefinitionRegistry);
-        return applicationContext.getBean(beanName, MethodLevelJob.class);
+        return applicationContext.getBean(hopeJobIdentity, MethodLevelJob.class);
     }
 }
