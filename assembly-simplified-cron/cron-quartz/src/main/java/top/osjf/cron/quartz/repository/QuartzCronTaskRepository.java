@@ -329,7 +329,7 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
                     .startNow()
                     .withSchedule(VisibleCronScheduleBuilder.cronSchedule(expression));
             scheduler.scheduleJob(jobDetail, triggerBuilder.build());
-            return IDJSONConversion.convertJobKeyAsJSONID(key);
+            return QuartzUtils.getIdBySerializeJobKey(key);
         }, ParseException.class);
     }
 
@@ -343,7 +343,7 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
     @Nullable
     @Override
     public String getExpression(String id) {
-        JobKey jobKey = IDJSONConversion.convertJSONIDAsJobKey(id);
+        JobKey jobKey = QuartzUtils.getJobKeyByDeSerializeId(id);
         try {
             Trigger trigger = scheduler.getTrigger(new TriggerKey(jobKey.getName(), jobKey.getGroup()));
             ScheduleBuilder<? extends Trigger> scheduleBuilder = trigger.getScheduleBuilder();
@@ -383,7 +383,7 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
      */
     @Nullable
     private CronTaskInfo buildCronTaskInfo(String id) {
-        JobKey jobKey = IDJSONConversion.convertJSONIDAsJobKey(id);
+        JobKey jobKey = QuartzUtils.getJobKeyByDeSerializeId(id);
         return buildCronTaskInfo(jobKey);
     }
 
@@ -403,7 +403,7 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
                 return null;
             }
             JobDetail jobDetail = scheduler.getJobDetail(jobKey);
-            return new CronTaskInfo(IDJSONConversion.convertJobKeyAsJSONID(jobKey),
+            return new CronTaskInfo(QuartzUtils.getIdBySerializeJobKey(jobKey),
                     QuartzUtils.getTriggerExpression(trigger), QuartzUtils.getRunnable(jobDetail),
                     QuartzUtils.getTarget(jobDetail), QuartzUtils.getMethod(jobDetail));
         } catch (Exception e) {
@@ -413,7 +413,7 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
 
     @Override
     public void update(@NotNull String id, @NotNull String newExpression) {
-        JobKey jobKey = IDJSONConversion.convertJSONIDAsJobKey(id);
+        JobKey jobKey = QuartzUtils.getJobKeyByDeSerializeId(id);
         TriggerKey triggerKey = new TriggerKey(jobKey.getName(), jobKey.getGroup());
         RepositoryUtils.doVoidInvoke(() -> scheduler.rescheduleJob(triggerKey, TriggerBuilder.newTrigger()
                 .withIdentity(triggerKey)
@@ -425,7 +425,7 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
     @Override
     public void remove(@NotNull String id) {
         RepositoryUtils.doVoidInvoke(() ->
-                scheduler.deleteJob(IDJSONConversion.convertJSONIDAsJobKey(id)), null);
+                scheduler.deleteJob(QuartzUtils.getJobKeyByDeSerializeId(id)), null);
     }
 
     @Override
