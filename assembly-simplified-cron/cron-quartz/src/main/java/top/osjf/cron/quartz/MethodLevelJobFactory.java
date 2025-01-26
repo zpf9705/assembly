@@ -21,7 +21,6 @@ import org.quartz.*;
 import org.quartz.impl.JobExecutionContextImpl;
 import org.quartz.spi.JobFactory;
 import org.quartz.spi.TriggerFiredBundle;
-import top.osjf.cron.core.repository.CronMethodRunnable;
 import top.osjf.cron.core.util.ReflectUtils;
 
 import java.lang.reflect.Method;
@@ -58,14 +57,16 @@ public class MethodLevelJobFactory implements JobFactory {
     private final ConcurrentMap<String, MethodLevelJob> JOB_CACHE = new ConcurrentHashMap<>(64);
 
     /**
-     * After completing the registration task, prepare the necessary {@code MethodLevelJob}
-     * objects for {@code Job} to execute in advance, saving waiting time for subsequent
-     * task execution.
+     * Get a {@code MethodLevelJob} by the given {@link JobKey}.
      *
-     * @param jobDetail the resolve {@code JobDetail}.
+     * <p>This factory implements classes that obtain executable {@code Job} as
+     * singleton objects. The first call to this method will be initialized and
+     * obtained.
+     *
+     * @param jobKey the resolve {@code JobKey}.
      */
-    public void prepareJob(JobDetail jobDetail) {
-        newJobInternal(jobDetail, true);
+    public MethodLevelJob getJob(JobKey jobKey) {
+        return getJob(jobKey.getGroup(), jobKey.getName(), QuartzUtils.getJobIdentity(jobKey));
     }
 
     @Override
@@ -90,20 +91,6 @@ public class MethodLevelJobFactory implements JobFactory {
             //This exception is still thrown to the execution exception listener.
             throw e;
         }
-        return newJobInternal(jobDetail, false);
-    }
-
-    /**
-     * Internal method for {@link #newJob}.
-     *
-     * @param jobDetail the resolve {@code JobDetail}.
-     * @param prepare   Is it a pre parameter preparation for {@code Job}.
-     * @return the singleton instantiated Job.
-     */
-    private Job newJobInternal(JobDetail jobDetail, boolean prepare) {
-        //Verify again whether the returned job type meets the
-        // specification requirements.
-        QuartzUtils.checkJobClassRules(jobDetail.getJobClass());
         JobKey key = jobDetail.getKey();
         //JobKey.name is method name.
         String methodName = key.getName();
@@ -111,33 +98,7 @@ public class MethodLevelJobFactory implements JobFactory {
         String declaringClassName = key.getGroup();
         //get job instance and set any data if ever not set.
         String jobIdentity = QuartzUtils.getJobIdentity(key);
-        MethodLevelJob job = getJob(declaringClassName, methodName, jobIdentity);
-        if (prepare) {
-            setJobData(job, jobDetail, jobIdentity, declaringClassName);
-        }
-        return job;
-    }
-
-    /**
-     * The execution target instance and target method obtained are cached in
-     * {@link JobDetail#getJobDataMap()}, only once.
-     *
-     * @param job                the got {@link MethodLevelJob}.
-     * @param jobDetail          the given {@code JobDetail}.
-     * @param jobIdentity        the job identity create by {@code JobKey}.
-     * @param declaringClassName execute the fully qualified name of the target class.
-     */
-    private void setJobData(MethodLevelJob job, JobDetail jobDetail, String jobIdentity, String declaringClassName) {
-        CronMethodRunnable cronMethodRunnable = job.getCronMethodRunnable();
-        JobDataMap dataMap = jobDetail.getJobDataMap();
-        synchronized (dataMap) {
-            if (dataMap.containsKey(jobIdentity)) {
-                return;
-            }
-            dataMap.put(QuartzUtils.getJobRunnableIdentity(jobDetail.getKey()), cronMethodRunnable);
-            dataMap.put(declaringClassName, cronMethodRunnable.getTarget());
-            dataMap.put(jobIdentity, cronMethodRunnable.getMethod());
-        }
+        return getJob(declaringClassName, methodName, jobIdentity);
     }
 
     /**
