@@ -21,6 +21,7 @@ import org.quartz.Job;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
+import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.util.ReflectUtils;
 import top.osjf.cron.core.util.StringUtils;
 
@@ -112,5 +113,46 @@ public abstract class QuartzUtils {
      */
     public static JobDetail buildStandardJobDetail(String methodName, String declaringClassName) {
         return JobBuilder.newJob(MethodLevelJob.class).withIdentity(methodName, declaringClassName).build();
+    }
+
+    /**
+     * Retrieve the target object stored in {@link JobDetail#getJobDataMap()} based on the
+     * value of {@link JobKey#getGroup()}.
+     *
+     * @param jobDetail the input resolve {@link JobDetail}.
+     * @return The actual target instance for executing the scheduled task.
+     * @throws NullPointerException if input {@code JobDetail} is {@literal null}.
+     */
+    @Nullable
+    public static Object getTarget(JobDetail jobDetail) {
+        JobKey key = jobDetail.getKey();
+        return jobDetail.getJobDataMap().get(key.getGroup());
+    }
+
+    /**
+     * Retrieve the method object stored in {@link JobDetail#getJobDataMap()} based on the
+     * value of {@link #getJobIdentity}.
+     *
+     * @param jobDetail the input resolve {@link JobDetail}.
+     * @return The actual method instance for executing the scheduled task.
+     * @throws NullPointerException if input {@code JobDetail} is {@literal null}.
+     * @throws ClassCastException   if {@code JobDataMap} got obj is not a {@code Method}.
+     */
+    @Nullable
+    public static Method getMethod(JobDetail jobDetail) {
+        String jobIdentity = getJobIdentity(jobDetail.getKey());
+        Object o = jobDetail.getJobDataMap().get(jobIdentity);
+        return o != null ? (Method) o : null;
+    }
+
+    /**
+     * Returns a unique identity string formatted according to {@link JobKey}.
+     *
+     * @param jobKey the input resolve {@link JobKey}.
+     * @return Tag {@link Job} as a unique identity string.
+     * @throws NullPointerException if input {@code JobKey} is {@literal null}.
+     */
+    public static String getJobIdentity(JobKey jobKey) {
+        return jobKey.getName() + "@" + jobKey.getGroup();
     }
 }
