@@ -327,7 +327,7 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
             TriggerBuilder<CronTrigger> triggerBuilder = TriggerBuilder.newTrigger()
                     .withIdentity(triggerKey)
                     .startNow()
-                    .withSchedule(VisibleCronScheduleBuilder.cronSchedule(expression));
+                    .withSchedule(CronScheduleBuilder.cronSchedule(expression));
             scheduler.scheduleJob(jobDetail, triggerBuilder.build());
             return QuartzUtils.getIdBySerializeJobKey(key);
         }, ParseException.class);
@@ -338,22 +338,6 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
         Method method = task.getRunnable().getMethod();
         return register(task.getExpression(), new JobDetailTaskBody(
                 QuartzUtils.buildStandardJobDetail(method.getName(), method.getDeclaringClass().getName())));
-    }
-
-    @Nullable
-    @Override
-    public String getExpression(String id) {
-        JobKey jobKey = QuartzUtils.getJobKeyByDeSerializeId(id);
-        try {
-            Trigger trigger = scheduler.getTrigger(new TriggerKey(jobKey.getName(), jobKey.getGroup()));
-            ScheduleBuilder<? extends Trigger> scheduleBuilder = trigger.getScheduleBuilder();
-            if (scheduleBuilder instanceof VisibleCronScheduleBuilder) {
-                return ((VisibleCronScheduleBuilder) scheduleBuilder).getCronExpression().getCronExpression();
-            }
-        } catch (Exception ignored) {
-            //Any exception returns null...
-        }
-        return null;
     }
 
     @Override
@@ -418,7 +402,7 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
         RepositoryUtils.doVoidInvoke(() -> scheduler.rescheduleJob(triggerKey, TriggerBuilder.newTrigger()
                 .withIdentity(triggerKey)
                 .startNow()
-                .withSchedule(VisibleCronScheduleBuilder.cronSchedule(newExpression))
+                .withSchedule(CronScheduleBuilder.cronSchedule(newExpression))
                 .build()), ParseException.class);
     }
 
