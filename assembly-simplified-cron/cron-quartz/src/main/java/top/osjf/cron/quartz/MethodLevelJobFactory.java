@@ -57,6 +57,17 @@ public class MethodLevelJobFactory implements JobFactory {
      */
     private final ConcurrentMap<String, MethodLevelJob> JOB_CACHE = new ConcurrentHashMap<>(64);
 
+    /**
+     * After completing the registration task, prepare the necessary {@code MethodLevelJob}
+     * objects for {@code Job} to execute in advance, saving waiting time for subsequent
+     * task execution.
+     *
+     * @param jobDetail the resolve {@code JobDetail}.
+     */
+    public void prepareJob(JobDetail jobDetail) {
+        newJobInternal(jobDetail, true);
+    }
+
     @Override
     public final Job newJob(TriggerFiredBundle bundle, Scheduler scheduler) throws SchedulerException {
         JobDetail jobDetail = bundle.getJobDetail();
@@ -79,6 +90,20 @@ public class MethodLevelJobFactory implements JobFactory {
             //This exception is still thrown to the execution exception listener.
             throw e;
         }
+        return newJobInternal(jobDetail, false);
+    }
+
+    /**
+     * Internal method for {@link #newJob}.
+     *
+     * @param jobDetail the resolve {@code JobDetail}.
+     * @param prepare   Is it a pre parameter preparation for {@code Job}.
+     * @return the singleton instantiated Job.
+     */
+    private Job newJobInternal(JobDetail jobDetail, boolean prepare) {
+        //Verify again whether the returned job type meets the
+        // specification requirements.
+        QuartzUtils.checkJobClassRules(jobDetail.getJobClass());
         JobKey key = jobDetail.getKey();
         //JobKey.name is method name.
         String methodName = key.getName();
@@ -87,7 +112,9 @@ public class MethodLevelJobFactory implements JobFactory {
         //get job instance and set any data if ever not set.
         String jobIdentity = QuartzUtils.getJobIdentity(key);
         MethodLevelJob job = getJob(declaringClassName, methodName, jobIdentity);
-        setJobData(job, jobDetail, jobIdentity, declaringClassName);
+        if (prepare) {
+            setJobData(job, jobDetail, jobIdentity, declaringClassName);
+        }
         return job;
     }
 
