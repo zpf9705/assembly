@@ -17,11 +17,10 @@
 
 package top.osjf.cron.quartz;
 
-import org.quartz.Job;
-import org.quartz.JobBuilder;
-import org.quartz.JobDetail;
-import org.quartz.JobKey;
+import org.quartz.*;
+import org.quartz.impl.triggers.CronTriggerImpl;
 import top.osjf.cron.core.lang.Nullable;
+import top.osjf.cron.core.util.GsonUtils;
 import top.osjf.cron.core.util.ReflectUtils;
 import top.osjf.cron.core.util.StringUtils;
 
@@ -185,5 +184,42 @@ public abstract class QuartzUtils {
      */
     public static String getJobIdentity(JobKey jobKey) {
         return jobKey.getName() + "@" + jobKey.getGroup();
+    }
+
+    /**
+     * Return an ID through serialization {@link JobKey}.
+     *
+     * @param jobKey the input resolve {@link JobKey}.
+     * @return Serialize the ID of {@link JobKey} json.
+     */
+    public static String getIdBySerializeJobKey(JobKey jobKey) {
+        return GsonUtils.toJson(jobKey);
+    }
+
+    /**
+     * Return a {@link JobKey} ID through deserialization.
+     *
+     * @param id the input resolve id.
+     * @return Deserialize the {@link JobKey} of id.
+     */
+    public static JobKey getJobKeyByDeSerializeId(String id) {
+        return GsonUtils.fromJson(id, JobKey.class);
+    }
+
+    /**
+     * Return different expressions based on the type of {@link Trigger}.
+     *
+     * @param trigger the input resolve {@link Trigger}.
+     * @return If it is {@link Trigger}, return a cron expression,
+     * and the rest return JSON data.
+     */
+    public static String getTriggerExpression(Trigger trigger) {
+        String expression;
+        if (trigger instanceof CronTriggerImpl) {
+            expression = ((CronTriggerImpl) trigger).getCronExpression();
+        } else {
+            expression = GsonUtils.toJson(trigger);
+        }
+        return expression;
     }
 }
