@@ -37,7 +37,7 @@ public class MethodLevelJob implements Job {
         this.cronMethodRunnable = new CronMethodRunnable(target, method);
     }
 
-    protected CronMethodRunnable getCronMethodRunnable(){
+    public CronMethodRunnable getCronMethodRunnable(){
         return cronMethodRunnable;
     }
 
