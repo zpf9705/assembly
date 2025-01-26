@@ -338,9 +338,6 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
                     .startNow()
                     .withSchedule(CronScheduleBuilder.cronSchedule(expression));
             scheduler.scheduleJob(jobDetail, triggerBuilder.build());
-            if (jobFactorySet){
-                jobFactory.prepareJob(jobDetail);
-            }
             return QuartzUtils.getIdBySerializeJobKey(key);
         }, ParseException.class);
     }
@@ -391,10 +388,19 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
             if (!jobKeys.contains(jobKey)) {
                 return null;
             }
-            JobDetail jobDetail = scheduler.getJobDetail(jobKey);
+            String expression = QuartzUtils.getTriggerExpression(trigger);
+            Runnable runnable = null;
+            Object target = null;
+            Method method = null;
+            if (jobFactorySet) {
+                MethodLevelJob job = jobFactory.getJob(jobKey);
+                CronMethodRunnable cronMethodRunnable = job.getCronMethodRunnable();
+                runnable = cronMethodRunnable;
+                target = cronMethodRunnable.getTarget();
+                method = cronMethodRunnable.getMethod();
+            }
             return new CronTaskInfo(QuartzUtils.getIdBySerializeJobKey(jobKey),
-                    QuartzUtils.getTriggerExpression(trigger), QuartzUtils.getRunnable(jobDetail),
-                    QuartzUtils.getTarget(jobDetail), QuartzUtils.getMethod(jobDetail));
+                    expression, runnable, target, method);
         } catch (Exception e) {
             return null;
         }
