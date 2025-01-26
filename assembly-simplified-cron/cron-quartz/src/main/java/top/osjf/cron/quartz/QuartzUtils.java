@@ -117,7 +117,36 @@ public abstract class QuartzUtils {
 
     /**
      * Retrieve the target object stored in {@link JobDetail#getJobDataMap()} based on the
+     * value of {@link #getJobRunnableIdentity}.
+     * <p>
+     * Retrieve the basis for viewing {@code MethodLevelJobFactory#setJobData}.
+     *
+     * @param jobDetail the input resolve {@link JobDetail}.
+     * @return The actual {@link Runnable} body for executing the scheduled task.
+     * @throws NullPointerException if input {@code JobDetail} is {@literal null}.
+     */
+    public static Runnable getRunnable(JobDetail jobDetail) {
+        JobKey key = jobDetail.getKey();
+        String jobRunnableIdentity = getJobRunnableIdentity(key);
+        return (Runnable) jobDetail.getJobDataMap().get(jobRunnableIdentity);
+    }
+
+    /**
+     * Returns a unique identity string formatted according to {@link Job} runnable body.
+     *
+     * @param jobKey the input resolve {@link JobKey}.
+     * @return Tag {@link Job} runnable body as a unique identity string.
+     * @throws NullPointerException if input {@code JobKey} is {@literal null}.
+     */
+    public static String getJobRunnableIdentity(JobKey jobKey) {
+        return QuartzUtils.getJobIdentity(jobKey) + "_runnable";
+    }
+
+    /**
+     * Retrieve the target object stored in {@link JobDetail#getJobDataMap()} based on the
      * value of {@link JobKey#getGroup()}.
+     * <p>
+     * Retrieve the basis for viewing {@code MethodLevelJobFactory#setJobData}.
      *
      * @param jobDetail the input resolve {@link JobDetail}.
      * @return The actual target instance for executing the scheduled task.
@@ -132,6 +161,8 @@ public abstract class QuartzUtils {
     /**
      * Retrieve the method object stored in {@link JobDetail#getJobDataMap()} based on the
      * value of {@link #getJobIdentity}.
+     * <p>
+     * Retrieve the basis for viewing {@code MethodLevelJobFactory#setJobData}.
      *
      * @param jobDetail the input resolve {@link JobDetail}.
      * @return The actual method instance for executing the scheduled task.
