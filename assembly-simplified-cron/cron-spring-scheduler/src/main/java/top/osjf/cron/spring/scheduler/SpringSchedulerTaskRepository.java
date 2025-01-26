@@ -31,6 +31,7 @@ import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.listener.CronListenerCollector;
 import top.osjf.cron.core.repository.*;
+import top.osjf.cron.core.util.GsonUtils;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -145,19 +146,6 @@ public class SpringSchedulerTaskRepository extends ListenableTaskScheduler imple
         return register(task.getExpression(), task.getRunnable());
     }
 
-    @Nullable
-    @Override
-    public String getExpression(String id) {
-        ListenableScheduledFuture listenableScheduledFuture = getListenableScheduledFutures().get(id);
-        if (listenableScheduledFuture != null) {
-            Trigger trigger = listenableScheduledFuture.getListenableRunnable().getTrigger();
-            if (trigger instanceof CronTrigger) {
-                return ((CronTrigger) trigger).getExpression();
-            }
-        }
-        return null;
-    }
-
     @Override
     public CronTaskInfo getCronTaskInfo(String id) {
         return buildCronTaskInfo(id);
@@ -212,11 +200,7 @@ public class SpringSchedulerTaskRepository extends ListenableTaskScheduler imple
      * @return the {@link PeriodicTrigger} json string.
      */
     private String toPeriodicTriggerExpression(PeriodicTrigger periodicTrigger) {
-        return "{\"period\":" + periodicTrigger.getPeriod() +
-                ",\"timeUnit\":\"" + periodicTrigger.getTimeUnit() +
-                "\",\"initialDelay\":" + periodicTrigger.getInitialDelay() +
-                ",\"fixedRate\":" + periodicTrigger.isFixedRate() +
-                "}";
+        return GsonUtils.toJson(periodicTrigger);
     }
 
     @Override

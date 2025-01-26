@@ -154,23 +154,6 @@ public interface CronTaskRepository extends LifecycleRepository {
     String register(@NotNull CronTask task) throws CronInternalException;
 
     /**
-     * Retrieves the Cron expression for a registered scheduled task based on its unique ID.
-     *
-     * <p>This method is used to retrieve the Cron expression of a registered scheduled task by
-     * providing the task's ID and the Cron expression for the task if the task exists and
-     * {@code null} if the task does not exist.
-     *
-     * <p>So,ensure that the provided ID is valid and corresponds to a registered task ID before
-     * calling this method.
-     *
-     * @param id the unique ID identifier of the registered scheduled task.
-     * @return The Cron expression for the task with this ID; null if the task does not exist.
-     * @since 1.0.3
-     */
-    @Nullable
-    String getExpression(String id);
-
-    /**
      * Retrieves cron task information based on a given unique identifier.
      *
      * <p>This method is used to query the information of a registered cron task that matches
@@ -179,7 +162,8 @@ public interface CronTaskRepository extends LifecycleRepository {
      *
      * @param id the unique identifier of the registered cron task.
      * @return The cron task information object that matches the given ID (if exists); otherwise,
-     * returns null.
+     * returns {@literal null}.
+     * @since 1.0.3
      */
     @Nullable
     CronTaskInfo getCronTaskInfo(String id);
@@ -192,6 +176,7 @@ public interface CronTaskRepository extends LifecycleRepository {
      *
      * @return A list containing information for all registered cron tasks. If the list is empty,
      * it indicates that no cron tasks are registered.
+     * @since 1.0.3
      */
     List<CronTaskInfo> getAllCronTaskInfo();
 

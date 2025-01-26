@@ -289,13 +289,6 @@ public class Cron4jCronTaskRepository implements CronTaskRepository {
         return register(task.getExpression(), new RunnableTaskBody(task.getRunnable()));
     }
 
-    @Nullable
-    @Override
-    public String getExpression(String id) {
-        SchedulingPattern schedulingPattern = scheduler.getSchedulingPattern(id);
-        return schedulingPattern != null ? schedulingPattern.toString() : null;
-    }
-
     @Override
     public CronTaskInfo getCronTaskInfo(String id) {
         return buildCronTaskInfo(id);

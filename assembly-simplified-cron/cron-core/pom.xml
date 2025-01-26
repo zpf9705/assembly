@@ -22,6 +22,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jsr305>3.0.2</jsr305>
         <slf4j>1.7.32</slf4j>
+        <gson>2.9.0</gson>
     </properties>
 
     <dependencies>
@@ -37,6 +38,13 @@
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${gson}</version>
+        </dependency>
+
     </dependencies>
 
 </project>

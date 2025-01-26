@@ -21,7 +21,6 @@
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <quartz>2.3.2</quartz>
-        <gson>2.9.0</gson>
     </properties>
 
     <dependencies>
@@ -35,12 +34,6 @@
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
             <version>${quartz}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>${gson}</version>
         </dependency>
     </dependencies>
 

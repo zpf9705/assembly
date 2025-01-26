@@ -296,13 +296,6 @@ public class HutoolCronTaskRepository implements CronTaskRepository {
         return register(task.getExpression(), new RunnableTaskBody(task.getRunnable()));
     }
 
-    @Nullable
-    @Override
-    public String getExpression(String id) {
-        CronPattern pattern = scheduler.getPattern(id);
-        return pattern != null ? pattern.toString() : null;
-    }
-
     @Override
     @Nullable
     public CronTaskInfo getCronTaskInfo(String id) {
