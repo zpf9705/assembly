@@ -399,16 +399,12 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
         try {
             Set<JobKey> jobKeys = scheduler.getJobKeys(GroupMatcher.groupEquals(group));
             Trigger trigger = scheduler.getTrigger(new TriggerKey(jobKey.getName(), jobKey.getGroup()));
-            if (!jobKeys.contains(jobKey)
-                    || trigger == null
-                    || !(trigger.getScheduleBuilder() instanceof VisibleCronScheduleBuilder)) {
+            if (!jobKeys.contains(jobKey)) {
                 return null;
             }
-            String expression = ((VisibleCronScheduleBuilder) trigger
-                    .getScheduleBuilder()).getCronExpression().getCronExpression();
             JobDetail jobDetail = scheduler.getJobDetail(jobKey);
             return new CronTaskInfo(IDJSONConversion.convertJobKeyAsJSONID(jobKey),
-                    expression, QuartzUtils.getRunnable(jobDetail),
+                    QuartzUtils.getTriggerExpression(trigger), QuartzUtils.getRunnable(jobDetail),
                     QuartzUtils.getTarget(jobDetail), QuartzUtils.getMethod(jobDetail));
         } catch (Exception e) {
             return null;
