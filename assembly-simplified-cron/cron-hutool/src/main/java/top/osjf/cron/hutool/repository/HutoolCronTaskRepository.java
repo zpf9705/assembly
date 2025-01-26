@@ -298,7 +298,7 @@ public class HutoolCronTaskRepository implements CronTaskRepository {
 
     @Override
     @Nullable
-    public CronTaskInfo getCronTaskInfo(String id) {
+    public CronTaskInfo getCronTaskInfo(@NotNull String id) {
         return CronTaskInfoBuildUtils.buildCronTaskInfo(id, scheduler);
     }
 

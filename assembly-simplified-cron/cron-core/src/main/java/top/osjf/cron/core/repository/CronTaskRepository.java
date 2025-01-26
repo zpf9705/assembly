@@ -163,10 +163,11 @@ public interface CronTaskRepository extends LifecycleRepository {
      * @param id the unique identifier of the registered cron task.
      * @return The cron task information object that matches the given ID (if exists); otherwise,
      * returns {@literal null}.
+     * @throws NullPointerException if input id is {@literal null}.
      * @since 1.0.3
      */
     @Nullable
-    CronTaskInfo getCronTaskInfo(String id);
+    CronTaskInfo getCronTaskInfo(@NotNull String id);
 
     /**
      * Retrieves information for all registered cron tasks.

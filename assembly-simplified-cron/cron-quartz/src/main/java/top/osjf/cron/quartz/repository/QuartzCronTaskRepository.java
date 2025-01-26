@@ -342,7 +342,7 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
 
     @Override
     @Nullable
-    public CronTaskInfo getCronTaskInfo(String id) {
+    public CronTaskInfo getCronTaskInfo(@NotNull String id) {
         return buildCronTaskInfo(id);
     }
 

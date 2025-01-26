@@ -147,7 +147,7 @@ public class SpringSchedulerTaskRepository extends ListenableTaskScheduler imple
     }
 
     @Override
-    public CronTaskInfo getCronTaskInfo(String id) {
+    public CronTaskInfo getCronTaskInfo(@NotNull String id) {
         return buildCronTaskInfo(id);
     }
 

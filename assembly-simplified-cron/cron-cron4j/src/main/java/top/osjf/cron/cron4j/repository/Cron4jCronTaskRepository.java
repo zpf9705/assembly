@@ -290,7 +290,7 @@ public class Cron4jCronTaskRepository implements CronTaskRepository {
     }
 
     @Override
-    public CronTaskInfo getCronTaskInfo(String id) {
+    public CronTaskInfo getCronTaskInfo(@NotNull String id) {
         return buildCronTaskInfo(id);
     }
 
