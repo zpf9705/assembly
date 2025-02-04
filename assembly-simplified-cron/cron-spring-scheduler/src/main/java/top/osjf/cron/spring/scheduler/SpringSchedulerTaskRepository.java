@@ -118,6 +118,7 @@ public class SpringSchedulerTaskRepository extends ListenableTaskScheduler imple
 
     @Override
     public String register(@NotNull String expression, @NotNull Runnable runnable) throws CronInternalException {
+        assertSchedulerStarted();
         return RepositoryUtils.doRegister(() ->
                         schedule(runnable, new CronTrigger(expression)).getListenableRunnable().getId(),
                 IllegalArgumentException.class);
@@ -205,6 +206,7 @@ public class SpringSchedulerTaskRepository extends ListenableTaskScheduler imple
 
     @Override
     public void update(@NotNull String id, @NotNull String newExpression) {
+        assertSchedulerStarted();
         ListenableScheduledFuture listenableScheduledFuture = getListenableScheduledFutures().remove(id);
         if (listenableScheduledFuture == null) {
             throw new CronInternalException("ID " + id + " did not find the corresponding task information.");
@@ -215,6 +217,7 @@ public class SpringSchedulerTaskRepository extends ListenableTaskScheduler imple
 
     @Override
     public void remove(@NotNull String id) {
+        assertSchedulerStarted();
         ListenableScheduledFuture listenableScheduledFuture = getListenableScheduledFutures().remove(id);
         if (listenableScheduledFuture != null) {
             listenableScheduledFuture.cancel(true);
@@ -223,12 +226,26 @@ public class SpringSchedulerTaskRepository extends ListenableTaskScheduler imple
 
     @Override
     public void addListener(@NotNull CronListener listener) {
+        assertSchedulerStarted();
         cronListenerCollector.addCronListener(listener);
     }
 
     @Override
     public void removeListener(@NotNull CronListener listener) {
+        assertSchedulerStarted();
         cronListenerCollector.removeCronListener(listener);
+    }
+
+    /**
+     * Asserts that the scheduler has been started.
+     *
+     * <p>This method checks whether the scheduler has been started. If the scheduler
+     * has not been started,it throws an {@link IllegalStateException}.
+     */
+    protected void assertSchedulerStarted() {
+        if (!isStarted()) {
+            throw new IllegalStateException("Scheduling has not started yet.");
+        }
     }
 
     @Override
