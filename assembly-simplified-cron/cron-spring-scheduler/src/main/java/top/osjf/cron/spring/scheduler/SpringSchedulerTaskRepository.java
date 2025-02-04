@@ -233,7 +233,7 @@ public class SpringSchedulerTaskRepository extends ListenableTaskScheduler imple
 
     @Override
     public void start() {
-        if (started.compareAndSet(false, true)) {
+        if (!started.compareAndSet(false, true)) {
             throw new IllegalStateException("Scheduling has not stopped.");
         }
     }
