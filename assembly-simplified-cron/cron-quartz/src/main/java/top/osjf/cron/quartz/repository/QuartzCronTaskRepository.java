@@ -22,7 +22,6 @@ import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.simpl.SimpleThreadPool;
 import top.osjf.cron.core.exception.CronInternalException;
-import top.osjf.cron.core.exception.UnsupportedLifecycleException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lang.Nullable;
@@ -485,6 +484,6 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
 
     @Override
     public void reStart() {
-        throw new UnsupportedLifecycleException("reStart");
+        throw new ReStartedUnsupportedException();
     }
 }
