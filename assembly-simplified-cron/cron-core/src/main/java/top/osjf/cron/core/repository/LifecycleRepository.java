@@ -68,7 +68,11 @@ public interface LifecycleRepository extends Lifecycle {
      * <p>The default method is to determine whether to restart based on different
      * scenarios. If the implementation framework has a special restart plan, please
      * override this method. If restart is not supported, you can override this method
-     * to throw a {@link UnsupportedOperationException} exception.
+     * to throw a {@link top.osjf.cron.core.exception.UnsupportedLifecycleException}
+     * exception.
+     *
+     * @throws top.osjf.cron.core.exception.UnsupportedLifecycleException if this method
+     *                                                                    cannot be supported.
      */
     default void reStart() {
         if (isStarted()) {
