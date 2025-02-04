@@ -39,7 +39,7 @@ import top.osjf.cron.core.repository.CronTaskRepository;
 public class CronTaskAutoConfiguration {
 
     @Bean
-    public LazyInitializationExcludeFilter cronBeanLazyInitializationExcludeFilter() {
+    public static LazyInitializationExcludeFilter cronBeanLazyInitializationExcludeFilter() {
         return new CronBeanLazyInitializationExcludeFilter();
     }
 }
