@@ -18,7 +18,6 @@ package top.osjf.spring.autoconfigure.cron;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.LazyInitializationExcludeFilter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -77,11 +76,6 @@ public class SpringSchedulerAutoConfiguration {
     @Bean(TASK_SCHEDULER_INTERNAL_BEAN_NAME)
     public ThreadPoolTaskScheduler taskScheduler(TaskSchedulerBuilder builder) {
         return builder.build();
-    }
-
-    @Bean
-    public LazyInitializationExcludeFilter cronBeanLazyInitializationExcludeFilter() {
-        return new CronBeanLazyInitializationExcludeFilter();
     }
 
     ////////////////////////////////////////////////////////////////////////////////

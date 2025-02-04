@@ -16,8 +16,10 @@
 
 package top.osjf.spring.autoconfigure.cron;
 
+import org.springframework.boot.LazyInitializationExcludeFilter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import top.osjf.cron.core.repository.CronTaskRepository;
@@ -35,4 +37,9 @@ import top.osjf.cron.core.repository.CronTaskRepository;
         Cron4jCronTaskAutoConfiguration.class,
         SpringSchedulerAutoConfiguration.class})
 public class CronTaskAutoConfiguration {
+
+    @Bean
+    public LazyInitializationExcludeFilter cronBeanLazyInitializationExcludeFilter() {
+        return new CronBeanLazyInitializationExcludeFilter();
+    }
 }
