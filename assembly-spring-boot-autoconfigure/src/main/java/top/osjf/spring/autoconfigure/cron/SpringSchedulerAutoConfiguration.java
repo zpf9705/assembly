@@ -104,11 +104,11 @@ public class SpringSchedulerAutoConfiguration {
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnBean(value = ScheduledAnnotationBeanPostProcessor.class,
             name = TaskManagementConfigUtils.SCHEDULED_ANNOTATION_PROCESSOR_BEAN_NAME)
-    @ConditionalOnMissingBean(SpringSchedulerTaskRepository.class)
     public static class SpringSchedulerConfirmLoadingSpringEnableSchedulingConfiguration
             extends CronTaskInfoReadableConfiguration {
 
         @Bean(ScheduledAnnotationBeanPostProcessor.DEFAULT_TASK_SCHEDULER_BEAN_NAME)
+        @ConditionalOnMissingBean(SpringSchedulerTaskRepository.class)
         public SpringSchedulerTaskRepository springSchedulerTaskRepository(
                 @Qualifier(TASK_SCHEDULER_INTERNAL_BEAN_NAME) TaskScheduler taskScheduler) {
             return new SpringSchedulerTaskRepository(taskScheduler);
