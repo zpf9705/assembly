@@ -52,6 +52,8 @@ class CronBeanLazyInitializationExcludeFilter implements LazyInitializationExclu
         this.nonAnnotatedClasses.add(AopInfrastructureBean.class);
         this.nonAnnotatedClasses.add(TaskScheduler.class);
         this.nonAnnotatedClasses.add(ScheduledExecutorService.class);
+
+        // Ignore CronTaskRepository
         this.nonAnnotatedClasses.add(CronTaskRepository.class);
     }
 
