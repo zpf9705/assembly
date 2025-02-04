@@ -18,12 +18,12 @@
 package top.osjf.cron.core.listener;
 
 /**
- * An abstract class for convenient stage selection of ID callbacks.
+ * An abstract simple class of {@link CronListener} for convenient stage selection of ID callbacks.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public class AbstractCronListener implements CronListener {
+public abstract class SimpleCronListener implements CronListener {
     @Override
     public void startWithId(String id) {
         //do noting...
