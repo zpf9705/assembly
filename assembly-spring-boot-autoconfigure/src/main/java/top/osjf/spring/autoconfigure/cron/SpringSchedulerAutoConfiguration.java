@@ -56,7 +56,7 @@ public class SpringSchedulerAutoConfiguration {
     ///////////////////////////// Essential Configuration //////////////////////////
     ////////////////////////////////////////////////////////////////////////////////
 
-    private static final String TASK_SCHEDULER_INTERNAL_USED_SUFFIX
+    private static final String TASK_SCHEDULER_INTERNAL_BEAN_NAME
             = "org.springframework.scheduling.concurrent.internalThreadPoolTaskScheduler";
 
     @Bean
@@ -73,7 +73,7 @@ public class SpringSchedulerAutoConfiguration {
         return builder;
     }
 
-    @Bean(TASK_SCHEDULER_INTERNAL_USED_SUFFIX)
+    @Bean(TASK_SCHEDULER_INTERNAL_BEAN_NAME)
     public ThreadPoolTaskScheduler taskScheduler(TaskSchedulerBuilder builder) {
         return builder.build();
     }
@@ -110,7 +110,7 @@ public class SpringSchedulerAutoConfiguration {
 
         @Bean(ScheduledAnnotationBeanPostProcessor.DEFAULT_TASK_SCHEDULER_BEAN_NAME)
         public SpringSchedulerTaskRepository springSchedulerTaskRepository(
-                @Qualifier(TASK_SCHEDULER_INTERNAL_USED_SUFFIX) TaskScheduler taskScheduler) {
+                @Qualifier(TASK_SCHEDULER_INTERNAL_BEAN_NAME) TaskScheduler taskScheduler) {
             return new SpringSchedulerTaskRepository(taskScheduler);
         }
     }
