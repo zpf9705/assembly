@@ -71,8 +71,7 @@ public interface LifecycleRepository extends Lifecycle {
      * to throw a {@link top.osjf.cron.core.exception.UnsupportedLifecycleException}
      * exception.
      *
-     * @throws top.osjf.cron.core.exception.UnsupportedLifecycleException if this method
-     *                                                                    cannot be supported.
+     * @throws ReStartedUnsupportedException if reStart operation cannot be supported.
      */
     default void reStart() {
         if (isStarted()) {
