@@ -23,6 +23,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import top.osjf.cron.core.repository.CronTaskRepository;
+import top.osjf.cron.spring.annotation.Cron;
+import top.osjf.cron.spring.annotation.Crones;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link CronTaskRepository}.
@@ -38,6 +40,13 @@ import top.osjf.cron.core.repository.CronTaskRepository;
         SpringSchedulerAutoConfiguration.class})
 public class CronTaskAutoConfiguration {
 
+    /**
+     * If {@link org.springframework.boot.SpringApplication#setLazyInitialization} is set
+     * to {@code true}, then this {@link LazyInitializationExcludeFilter} will filter out
+     * tasks, annotations {@link Cron} and {@link Crones}, and beans without lazy loading.
+     * @return {@code LazyInitializationExcludeFilter} for annotations {@link Cron} and
+     * {@link Crones}.
+     */
     @Bean
     public static LazyInitializationExcludeFilter cronBeanLazyInitializationExcludeFilter() {
         return new CronBeanLazyInitializationExcludeFilter();
