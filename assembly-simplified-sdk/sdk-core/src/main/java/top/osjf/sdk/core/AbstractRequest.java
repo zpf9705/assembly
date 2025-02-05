@@ -199,7 +199,7 @@ public abstract class AbstractRequest<R extends AbstractResponse> implements Req
      */
     @Nullable
     public Type defResponseType() {
-        return null;
+        return DefaultErrorResponse.class;
     }
 
     /**
