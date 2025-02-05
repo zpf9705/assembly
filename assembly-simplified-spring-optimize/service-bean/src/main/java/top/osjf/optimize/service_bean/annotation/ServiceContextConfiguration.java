@@ -52,8 +52,8 @@ public class ServiceContextConfiguration {
     /**
      * The name of the internal bean {@code ServiceScope}.
      */
-    protected static final String INTERNAL_SERVICE_SCOPE
-            = "top.osjf.optimize.service_bean.context.ServiceScope.internal";
+    protected static final String INTERNAL_SERVICE_SCOPE_BEAN_NAME
+            = "top.osjf.optimize.service_bean.context.internalServiceScope";
 
     @Bean
     public ServiceContext recordServiceContext() {
@@ -66,7 +66,7 @@ public class ServiceContextConfiguration {
         return new ServiceContextAwareBeanPostProcessor();
     }
 
-    @Bean(INTERNAL_SERVICE_SCOPE)
+    @Bean(INTERNAL_SERVICE_SCOPE_BEAN_NAME)
     public ServiceScope serviceScope() {
         return new ServiceScope();
     }

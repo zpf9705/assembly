@@ -51,7 +51,7 @@ public class ServiceScopeBeanPostProcessorRegistrar implements ImportBeanDefinit
                                         @NonNull BeanNameGenerator importBeanNameGenerator) {
         BeanDefinitionBuilder builder
                 = BeanDefinitionBuilder.genericBeanDefinition(ServiceScopeBeanPostProcessor.class);
-        builder.addPropertyReference(SERVICE_SCOPE_FILE_NAME, ServiceContextConfiguration.INTERNAL_SERVICE_SCOPE);
+        builder.addPropertyReference(SERVICE_SCOPE_FILE_NAME, ServiceContextConfiguration.INTERNAL_SERVICE_SCOPE_BEAN_NAME);
         BeanDefinition beanDefinition = builder.getBeanDefinition();
         registry.registerBeanDefinition(importBeanNameGenerator.generateBeanName(beanDefinition, registry),
                 beanDefinition);
