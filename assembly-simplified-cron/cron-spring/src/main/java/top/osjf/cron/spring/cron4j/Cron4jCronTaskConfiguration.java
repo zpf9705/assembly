@@ -21,11 +21,16 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
 import top.osjf.cron.spring.CronAnnotationPostProcessor;
+import top.osjf.cron.spring.ImportAnnotationMetadataExtractor;
 import top.osjf.cron.spring.ObjectProviderUtils;
+import top.osjf.cron.spring.SuperiorPropertiesUtils;
 import top.osjf.cron.spring.annotation.Cron;
+
+import java.lang.annotation.Annotation;
 
 /**
  * {@code @Configuration} class that registers a {@link CronAnnotationPostProcessor}
@@ -40,19 +45,26 @@ import top.osjf.cron.spring.annotation.Cron;
  * @see EnableCron4jCronTaskRegister
  */
 @Configuration(proxyBeanMethods = false)
-public class Cron4jCronTaskConfiguration {
+public class Cron4jCronTaskConfiguration extends ImportAnnotationMetadataExtractor {
 
     @Bean
     @Order
     public Cron4jCronTaskRepository cron4jCronTaskRepository(ObjectProvider<Scheduler> schedulerProvider,
                                                              ObjectProvider<SuperiorProperties> propertiesProvider) {
         Scheduler scheduler = ObjectProviderUtils.getPriority(schedulerProvider);
-        if (scheduler != null){
+        if (scheduler != null) {
             return new Cron4jCronTaskRepository(scheduler);
         }
         Cron4jCronTaskRepository repository = new Cron4jCronTaskRepository();
-        SuperiorProperties properties = ObjectProviderUtils.getPriority(propertiesProvider);
-        repository.setProperties(properties);
+        repository.setProperties(SuperiorPropertiesUtils.compositeSuperiorProperties
+                (getImportAnnotationSuperiorProperties(),
+                        ObjectProviderUtils.getPriority(propertiesProvider)));
         return repository;
+    }
+
+    @NotNull
+    @Override
+    protected Class<? extends Annotation> enableImportAnnotationType() {
+        return EnableCron4jCronTaskRegister.class;
     }
 }

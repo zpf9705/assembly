@@ -20,12 +20,17 @@ import cn.hutool.cron.Scheduler;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.core.repository.CronExecutorServiceSupplier;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
 import top.osjf.cron.spring.CronAnnotationPostProcessor;
+import top.osjf.cron.spring.ImportAnnotationMetadataExtractor;
 import top.osjf.cron.spring.ObjectProviderUtils;
+import top.osjf.cron.spring.SuperiorPropertiesUtils;
 import top.osjf.cron.spring.annotation.Cron;
+
+import java.lang.annotation.Annotation;
 
 /**
  * {@code @Configuration} class that registers a {@link CronAnnotationPostProcessor}
@@ -40,7 +45,7 @@ import top.osjf.cron.spring.annotation.Cron;
  * @see EnableHutoolCronTaskRegister
  */
 @Configuration(proxyBeanMethods = false)
-public class HutoolCronTaskConfiguration {
+public class HutoolCronTaskConfiguration extends ImportAnnotationMetadataExtractor {
 
     @Bean
     public HutoolCronTaskRepository hutoolCronTaskRepository(ObjectProvider<Scheduler> schedulerProvider,
@@ -51,12 +56,19 @@ public class HutoolCronTaskConfiguration {
             return new HutoolCronTaskRepository(scheduler);
         }
         HutoolCronTaskRepository repository = new HutoolCronTaskRepository();
-        SuperiorProperties properties = ObjectProviderUtils.getPriority(propertiesProvider);
-        repository.setProperties(properties);
+        repository.setProperties(SuperiorPropertiesUtils.compositeSuperiorProperties
+                (getImportAnnotationSuperiorProperties(),
+                        ObjectProviderUtils.getPriority(propertiesProvider)));
         CronExecutorServiceSupplier executorServiceSupplier = ObjectProviderUtils.getPriority(executorServiceProvider);
         if (executorServiceSupplier != null) {
             repository.setThreadExecutor(executorServiceSupplier.get());
         }
         return repository;
+    }
+
+    @NotNull
+    @Override
+    protected Class<? extends Annotation> enableImportAnnotationType() {
+        return EnableHutoolCronTaskRegister.class;
     }
 }
