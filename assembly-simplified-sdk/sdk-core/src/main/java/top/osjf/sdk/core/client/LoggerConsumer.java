@@ -39,10 +39,10 @@ public interface LoggerConsumer {
      * This method returns a {@code BiConsumer<String, Object[]>} that allows logging
      * in the form of a message template and an array of arguments.
      *
-     * <p>It is similar to the `Logger#info(String, Object...)` method in SLF4J but
+     * <p>It is similar to the {@code Logger#info(String, Object...)} method in SLF4J but
      * encapsulated in a functional programming style using `BiConsumer`.
      *
-     * @return A `BiConsumer` that accepts a log message template and an array of
+     * @return A {@code BiConsumer} that accepts a log message template and an array of
      * arguments for recording normal logs.
      */
     @NotNull
@@ -55,10 +55,11 @@ public interface LoggerConsumer {
      * <p>This method also returns a {@code BiConsumer<String, Object[]>} that allows
      * logging SDK-related exception logs in the form of an error message template
      * and an array of arguments.
-     * It is similar to the `Logger#error(String, Object...)` method in SLF4J but
+     *
+     * <p>It is similar to the {@code Logger#error(String, Object...)} method in SLF4J but
      * focused on SDK exception logging.
      *
-     * @return A `BiConsumer` that accepts an error message template and an array
+     * @return A {@code BiConsumer} that accepts an error message template and an array
      * of arguments for recording SDK exception logs.
      */
     @NotNull
@@ -70,10 +71,11 @@ public interface LoggerConsumer {
      *
      * <p>This method returns a {@code BiConsumer<String, Object[]>} that allows logging unknown
      * exception logs in the form of an error message template and an array of arguments.
-     * It is similar to the `Logger#error(String, Object...)` method in SLF4J but focused
+     *
+     * <p>It is similar to the {@code Logger#error(String, Object...)} method in SLF4J but focused
      * on non-SDK exception logging.
      *
-     * @return A `BiConsumer` that accepts an error message template and an array of
+     * @return A {@code BiConsumer}  that accepts an error message template and an array of
      * arguments for recording unknown exception logs.
      */
     @NotNull
