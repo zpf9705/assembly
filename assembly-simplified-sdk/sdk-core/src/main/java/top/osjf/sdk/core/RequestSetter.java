@@ -69,9 +69,9 @@ import java.lang.annotation.*;
  * </pre>
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
+ * @since 1.0.2
  * @see RequestConstructor
  * @see top.osjf.sdk.core.support.SdkSupport#createRequest
- * @since 1.0.2
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)

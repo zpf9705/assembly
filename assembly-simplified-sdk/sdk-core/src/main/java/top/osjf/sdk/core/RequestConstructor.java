@@ -60,9 +60,9 @@ import java.lang.annotation.*;
  * </pre>
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @see SdkSupport#createRequest
- * @see RequestSetter
  * @since 1.0.2
+ * @see RequestSetter
+ * @see SdkSupport#createRequest
  */
 
 @Target(ElementType.PARAMETER)
