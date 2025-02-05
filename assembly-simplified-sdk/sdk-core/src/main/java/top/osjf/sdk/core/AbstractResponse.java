@@ -23,18 +23,18 @@ package top.osjf.sdk.core;
  *
  * <p>It defines the following properties and methods:
  * <ul>
- * <li>{@link #serialVersionUID}: A unique identifier for serialization version, ensuring
- * compatibility during serialization and deserialization.</li>
  * <li>{@link #isSuccess}: Returns a boolean indicating whether the operation was successful,
- * defaulting to {@code DEFAULT_IS_SUCCESS}.</li>
- * <li>{@link #getMessage}: Returns the response message content, defaulting to `DEFAULT_MESSAGE`.</li>
+ * defaulting to {@code false}.</li>
+ * <li>{@link #getMessage}: Returns the response message content, defaulting to {@literal
+ * UNKNOWN MESSAGE}.</li>
  * <li>{@link #setErrorCode}: A method to set the error code, with an empty implementation.
  * Specific subclasses should override as needed.</li>
  * <li>{@link #setErrorMessage}: A method to set the error message, with an empty implementation.
  * Specific subclasses should override as needed.</li>
  * </ul>
  * <p>Subclasses should inherit from this class and override relevant methods, especially
- * `isSuccess`,`setErrorCode`, and `setErrorMessage`, to provide specific response logic.
+ * {@link #isSuccess},{@link #setErrorCode}, and {@link #setErrorMessage}, to provide specific
+ * response logic.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
@@ -53,7 +53,7 @@ public abstract class AbstractResponse implements Response {
 
     /**
      * {@inheritDoc}
-     * <p>Returns the response message content, defaulting to `"UNKNOWN MESSAGE"`.
+     * <p>Returns the response message content, defaulting to "UNKNOWN MESSAGE".
      */
     @Override
     public String getMessage() {
