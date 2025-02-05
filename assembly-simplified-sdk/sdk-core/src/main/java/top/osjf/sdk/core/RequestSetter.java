@@ -17,6 +17,8 @@
 
 package top.osjf.sdk.core;
 
+import top.osjf.sdk.core.support.SdkSupport;
+
 import java.lang.annotation.*;
 
 /**
@@ -71,7 +73,7 @@ import java.lang.annotation.*;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  * @see RequestConstructor
- * @see top.osjf.sdk.core.support.SdkSupport#createRequest
+ * @see SdkSupport#createRequest
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)

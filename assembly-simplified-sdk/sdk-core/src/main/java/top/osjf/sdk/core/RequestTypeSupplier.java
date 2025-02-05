@@ -42,10 +42,10 @@ import top.osjf.sdk.core.support.SdkSupport;
  * Starting from version 1.0.2, when searching for the {@link Request} type, its priority
  * level will be lower than the annotation {@link RequestType}.
  *
- * @see SdkSupport#createRequest
- * @see RequestType
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
+ * @see RequestType
+ * @see SdkSupport#createRequest
  */
 public interface RequestTypeSupplier {
 
