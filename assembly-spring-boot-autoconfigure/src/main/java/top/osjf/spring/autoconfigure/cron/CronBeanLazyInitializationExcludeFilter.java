@@ -40,6 +40,8 @@ import java.util.concurrent.ScheduledExecutorService;
 /**
  * A {@link LazyInitializationExcludeFilter} that detects bean methods annotated with
  * {@link Cron} or {@link Crones}.
+ * <p>
+ * Imitation comes from {@code org.springframework.boot.autoconfigure.task.ScheduledBeanLazyInitializationExcludeFilter}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
