@@ -16,47 +16,80 @@
 
 package top.osjf.sdk.core;
 
+import top.osjf.sdk.core.exception.SdkException;
 import top.osjf.sdk.core.util.ExceptionUtils;
 import top.osjf.sdk.core.util.JSONUtil;
 
 import java.util.Objects;
 
 /**
- * Default response impl for {@link ErrorResponse}.
- * <p>Not directly used for response purposes, mainly used
- * for handling exception conversions in error situations.
+ * {@code DefaultErrorResponse} is a default {@link Response Response} implementation
+ * class that has type conversion handling in case of success or error.
+ *
+ * <p>The partial introduction is as follows:
+ * <ul>
+ * <li>Conventional default handling:
+ * Provides a combination of status code {@link #setCode(Object)} and status information
+ * {@link #setMessage(String)} to support successful judgment of server response. If it
+ * meets your response requirements, it can be used by default.
+ * </li>
+ * <li>Indicate the handling method for errors:
+ *  Custom status codes {@link #SDK_ERROR_CODE} and {@link #UNKNOWN_ERROR_CODE} are used
+ *  to define the boundaries of exceptions during requests. For {@link SdkException} or
+ *  other exceptions, default status codes are provided when there is no response class
+ *  accepted by default. The response information is the specific reason for the exception
+ *  object {@link Throwable#getMessage()}.
+ * </li>
+ * </ul>
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
 public final class DefaultErrorResponse extends AbstractResponse {
-
     private static final long serialVersionUID = -6303939513087992265L;
 
-    public static final Integer SDK_ERROR_CODE = 871287;
+    //////////////////////////////////// Conventional default handling. ////////////////////////
 
-    public static final Integer UNKNOWN_ERROR_CODE = 500358;
-
+    /**
+     * The response status code can be defined for any type.
+     */
     private Object code;
 
+    /**
+     * Response status information and the reason for the request server's return.
+     */
     private String message;
 
+    /**
+     * Creates a {@code DefaultErrorResponse} by given case {@code code} and {@code message}.
+     *
+     * @param code    #this.code.
+     * @param message #this.message.
+     */
     public DefaultErrorResponse(Object code, String message) {
         this.code = code;
         this.message = message;
-    }
-
-    public Object getCode() {
-        return code;
     }
 
     public void setCode(Object code) {
         this.code = code;
     }
 
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The agreement for successful communication is to use a 200 status code.
+     */
     @Override
     public boolean isSuccess() {
-        return code != null && Objects.equals(200, code);
+        if (code != null) {
+            return Objects.equals(code.toString(), "200");
+        }
+        return super.isSuccess();
     }
 
     @Override
@@ -64,12 +97,40 @@ public final class DefaultErrorResponse extends AbstractResponse {
         return message;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public Object getCode() {
+        return code;
     }
 
-    private String asJson() {
-        return JSONUtil.toJSONString(this);
+    //////////////////////////////////// Indicate the handling method for errors. ////////////////////////
+
+    /**
+     * This code is used to describe the default state when {@link SdkException SdkException} occurs.
+     */
+    public static final Integer SDK_ERROR_CODE = 871287;
+
+    /**
+     * This code is used to describe the default state outside of {@link SdkException SdkException}.
+     */
+    public static final Integer UNKNOWN_ERROR_CODE = 500358;
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0.3
+     */
+    @Override
+    public void setErrorCode(Object code) {
+        this.setCode(code);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.0.3
+     */
+    @Override
+    public void setErrorMessage(String message) {
+        this.setMessage(message);
     }
 
     /**
@@ -133,7 +194,13 @@ public final class DefaultErrorResponse extends AbstractResponse {
         return response;
     }
 
-    /** Build a universal interface for {@link DefaultErrorResponse} based on exceptions.*/
+    private String asJson() {
+        return JSONUtil.toJSONString(this);
+    }
+
+    /**
+     * Build a universal interface for {@link DefaultErrorResponse} based on exceptions.
+     */
     @FunctionalInterface
     private interface ErrorResponseConvert {
         DefaultErrorResponse convertToDefaultErrorResponse(Throwable error);
@@ -154,6 +221,7 @@ public final class DefaultErrorResponse extends AbstractResponse {
                 return buildUnknownResponse(getMessage(error));
             }
         };
+
         protected String getMessage(Throwable error) {
             return ExceptionUtils.getMessage(error);
         }
