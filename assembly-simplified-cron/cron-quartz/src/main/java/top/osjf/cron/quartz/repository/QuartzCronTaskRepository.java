@@ -183,7 +183,7 @@ public class QuartzCronTaskRepository implements CronTaskRepository, Supplier<Li
      * @since 1.0.3
      */
     public void setProperties(SuperiorProperties superiorProperties) {
-        if (quartzProperties != null) {
+        if (quartzProperties != null && !superiorProperties.isEmpty()) {
             this.quartzProperties = superiorProperties.asProperties();
             if (!setSchedulerFactoryClass)
                 setSchedulerFactoryClass(superiorProperties
