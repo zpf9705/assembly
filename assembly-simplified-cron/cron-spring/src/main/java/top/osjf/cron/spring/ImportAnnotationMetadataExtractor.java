@@ -20,6 +20,7 @@ package top.osjf.cron.spring;
 import org.springframework.context.annotation.ImportAware;
 import org.springframework.core.type.AnnotationMetadata;
 import top.osjf.cron.core.lang.NotNull;
+import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
 
 import java.lang.annotation.Annotation;
@@ -37,6 +38,7 @@ public abstract class ImportAnnotationMetadataExtractor implements ImportAware {
      * Store the relevant attributes extracted from {@link AnnotationMetadata} that
      * provide annotation types.
      */
+    @Nullable
     private SuperiorProperties superiorProperties;
 
     @Override
@@ -55,6 +57,7 @@ public abstract class ImportAnnotationMetadataExtractor implements ImportAware {
      * @return The {@code SuperiorProperties} object contains properties extracted from
      * annotations.
      */
+    @Nullable
     protected SuperiorProperties getSuperiorProperties() {
         return superiorProperties;
     }
