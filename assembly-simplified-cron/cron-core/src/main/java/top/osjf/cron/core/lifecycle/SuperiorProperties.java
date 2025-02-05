@@ -134,6 +134,13 @@ public interface SuperiorProperties {
     void addProperties(SuperiorProperties superiorProperties);
 
     /**
+     * Returns <tt>true</tt> if this {@code SuperiorProperties} contains no key-value mappings.
+     *
+     * @return <tt>true</tt> if this {@code SuperiorProperties} contains no key-value mappings.
+     */
+    boolean isEmpty();
+
+    /**
      * Convert all properties in the current {@code SuperiorProperties} into a
      * {@code Properties} object.
      *
