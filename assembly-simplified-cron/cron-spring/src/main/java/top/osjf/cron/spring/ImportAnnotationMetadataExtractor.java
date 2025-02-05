@@ -22,8 +22,10 @@ import org.springframework.core.type.AnnotationMetadata;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
+import top.osjf.cron.core.util.MapUtils;
 
 import java.lang.annotation.Annotation;
+import java.util.Map;
 
 /**
  * {@code ImportAnnotationMetadataExtractor} extends the self interface {@link ImportAware}
@@ -38,15 +40,17 @@ public abstract class ImportAnnotationMetadataExtractor implements ImportAware {
      * Store the relevant attributes extracted from {@link AnnotationMetadata} that
      * provide annotation types.
      */
-    @Nullable
-    private SuperiorProperties superiorProperties;
+    private final SuperiorProperties superiorProperties = SuperiorProperties.of();
 
     @Override
     public void setImportMetadata(AnnotationMetadata importMetadata) {
         Class<? extends Annotation> annotationType = enableImportAnnotationType();
         if (importMetadata.hasMetaAnnotation(annotationType.getName())) {
-            superiorProperties = SuperiorProperties.of(importMetadata.getAnnotationAttributes
-                    (annotationType.getCanonicalName()));
+            Map<String, Object> annotationAttributes = importMetadata.getAnnotationAttributes
+                    (annotationType.getCanonicalName());
+            if (MapUtils.isNotEmpty(annotationAttributes)) {
+                superiorProperties.addProperties(annotationAttributes);
+            }
         }
     }
 
@@ -54,11 +58,15 @@ public abstract class ImportAnnotationMetadataExtractor implements ImportAware {
      * Return a {@link SuperiorProperties} object compiled from the specified annotation
      * attributes extracted from {@code AnnotationMetadata}.
      *
+     * @param fusionProperties If there is any extra configuration information, it can be
+     *                         passed in and will be fused.
      * @return The {@code SuperiorProperties} object contains properties extracted from
      * annotations.
      */
-    @Nullable
-    protected SuperiorProperties getSuperiorProperties() {
+    protected SuperiorProperties getSuperiorProperties(@Nullable SuperiorProperties fusionProperties) {
+        if (fusionProperties != null) {
+            superiorProperties.addProperties(fusionProperties);
+        }
         return superiorProperties;
     }
 
