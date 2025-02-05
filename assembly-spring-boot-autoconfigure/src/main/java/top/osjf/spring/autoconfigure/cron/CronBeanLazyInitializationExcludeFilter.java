@@ -46,10 +46,10 @@ import java.util.concurrent.ScheduledExecutorService;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-class CronBeanLazyInitializationExcludeFilter implements LazyInitializationExcludeFilter {
+public class CronBeanLazyInitializationExcludeFilter implements LazyInitializationExcludeFilter {
     private final Set<Class<?>> nonAnnotatedClasses = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
 
-    CronBeanLazyInitializationExcludeFilter() {
+    public CronBeanLazyInitializationExcludeFilter() {
         // Ignore AOP infrastructure such as scoped proxies.
         this.nonAnnotatedClasses.add(AopInfrastructureBean.class);
         this.nonAnnotatedClasses.add(TaskScheduler.class);
