@@ -45,12 +45,15 @@ import java.util.Map;
  * <p>This interface is mainly used to build and execute service requests for specific services,
  * and to process metadata for requests and responses.
  *
- * @param <R> Subclass generic type of {@code Response}.
+ * @param <R> Subclass generic type of {@code Response},the existence of this generic type is to
+ *            enable developers to define the response entity type for each SDK, in order to clearly
+ *            describe the content of the response class.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
 @SuppressWarnings("rawtypes")
 public interface Request<R extends Response> extends RequestParamCapable<Object>,
+        ResponseMetadataAccessor, //Obtaining response metadata
         IsInstanceWrapper, //same type convert able
         Executable<R>,  // execute direct able
         Serializable // serial able
