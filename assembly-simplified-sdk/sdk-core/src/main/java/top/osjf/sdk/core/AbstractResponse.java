@@ -40,12 +40,7 @@ package top.osjf.sdk.core;
  * @since 1.0.0
  */
 public abstract class AbstractResponse implements Response {
-
     private static final long serialVersionUID = 4294123081630652115L;
-    // The default success status, initialized to false
-    private static final boolean DEFAULT_IS_SUCCESS = false;
-    // The default message content, initialized to "UNKNOWN"
-    private static final String DEFAULT_MESSAGE = "UNKNOWN";
 
     /**
      * {@inheritDoc}
@@ -53,16 +48,16 @@ public abstract class AbstractResponse implements Response {
      */
     @Override
     public boolean isSuccess() {
-        return DEFAULT_IS_SUCCESS;
+        return false;
     }
 
     /**
      * {@inheritDoc}
-     * <p>Returns the response message content, defaulting to `"UNKNOWN"`.
+     * <p>Returns the response message content, defaulting to `"UNKNOWN MESSAGE"`.
      */
     @Override
     public String getMessage() {
-        return DEFAULT_MESSAGE;
+        return "UNKNOWN MESSAGE";
     }
 
     /**
