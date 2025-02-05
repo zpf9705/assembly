@@ -140,7 +140,7 @@ public class HutoolCronTaskRepository implements CronTaskRepository {
      * @since 1.0.3
      */
     public void setProperties(SuperiorProperties superiorProperties) {
-        if (superiorProperties != null) {
+        if (superiorProperties != null && !superiorProperties.isEmpty()) {
             if (!setDaemon)
                 setDaemon(superiorProperties.getProperty(PROPERTY_NAME_OF_DAEMON, DEFAULT_VALUE_OF_DAEMON));
             if (!setMatchSecond)
