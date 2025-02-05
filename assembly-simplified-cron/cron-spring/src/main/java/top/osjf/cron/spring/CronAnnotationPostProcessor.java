@@ -28,21 +28,17 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.EnvironmentAware;
-import org.springframework.context.annotation.ImportAware;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.MethodIntrospector;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.env.Environment;
-import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import top.osjf.cron.core.lifecycle.Lifecycle;
-import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.repository.CronMethodRunnable;
 import top.osjf.cron.core.repository.CronTask;
@@ -56,7 +52,6 @@ import top.osjf.cron.spring.cron4j.EnableCron4jCronTaskRegister;
 import top.osjf.cron.spring.hutool.EnableHutoolCronTaskRegister;
 import top.osjf.cron.spring.quartz.EnableQuartzCronTaskRegister;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -93,8 +88,8 @@ import java.util.concurrent.ScheduledExecutorService;
  * @see top.osjf.cron.core.listener.ListenerContext
  * @see top.osjf.cron.core.lifecycle.Lifecycle
  */
-public class CronAnnotationPostProcessor implements ImportAware, ApplicationContextAware, EnvironmentAware,
-        ApplicationListener<ContextRefreshedEvent>, MergedBeanDefinitionPostProcessor {
+public class CronAnnotationPostProcessor implements ApplicationContextAware,
+        EnvironmentAware, ApplicationListener<ContextRefreshedEvent>, MergedBeanDefinitionPostProcessor {
 
     private static final Logger logger = LoggerFactory.getLogger(CronAnnotationPostProcessor.class);
 
@@ -102,32 +97,15 @@ public class CronAnnotationPostProcessor implements ImportAware, ApplicationCont
 
     private List<String> activeProfiles;
 
-    private final SuperiorProperties startupProperties = SuperiorProperties.of();
-
     private final Set<Class<?>> nonAnnotatedClasses = Collections.newSetFromMap(new ConcurrentHashMap<>(16));
 
     private final Set<CronTask> cronTasks = Collections.newSetFromMap(new ConcurrentHashMap<>(16));
-
-    private final List<Class<?>> annotationClasses = Arrays.asList(EnableHutoolCronTaskRegister.class,
-            EnableCron4jCronTaskRegister.class,
-            EnableQuartzCronTaskRegister.class);
 
     private static final boolean isCron4j;
 
     static {
         isCron4j = ClassUtils.isPresent("top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository",
                 CronAnnotationPostProcessor.class.getClassLoader());
-    }
-
-    @Override
-    public void setImportMetadata(@NonNull AnnotationMetadata annotationMetadata) {
-        for (MergedAnnotation<Annotation> annotation : annotationMetadata.getAnnotations()) {
-            Class<Annotation> type = annotation.getType();
-            if (annotationClasses.contains(type)) {
-                startupProperties.addProperties(annotationMetadata.getAnnotationAttributes
-                        (annotation.getType().getCanonicalName()));
-            }
-        }
     }
 
     @Override
