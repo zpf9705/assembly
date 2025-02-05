@@ -106,6 +106,11 @@ class DefaultSuperiorProperties implements SuperiorProperties {
     }
 
     @Override
+    public boolean isEmpty() {
+        return properties.isEmpty();
+    }
+
+    @Override
     public Properties asProperties() {
         return properties;
     }
