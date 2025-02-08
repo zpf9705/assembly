@@ -21,8 +21,10 @@ import top.osjf.sdk.core.DefaultErrorResponse;
 import top.osjf.sdk.core.support.Nullable;
 
 import java.nio.charset.Charset;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * The abstract node class {@code AbstractHttpResponse} for implementing HTTP requests
@@ -81,6 +83,12 @@ public abstract class AbstractHttpResponse extends AbstractResponse implements H
 
     public static final String FAILED_MESSAGE = "Internal system error";
 
+    /**
+     * In version 1.0.3, this response may not necessarily be non-null, for example,
+     * if the response encounters an error such as a connection timeout before the
+     * request is made.
+     */
+    @Nullable
     private top.osjf.sdk.http.spi.HttpResponse httpResponse;
 
     /**
@@ -89,7 +97,7 @@ public abstract class AbstractHttpResponse extends AbstractResponse implements H
      *
      * @param httpResponse a spi {@code HttpResponse}.
      */
-    public void setHttpResponse(top.osjf.sdk.http.spi.HttpResponse httpResponse) {
+    public void setHttpResponse(@Nullable top.osjf.sdk.http.spi.HttpResponse httpResponse) {
         this.httpResponse = httpResponse;
     }
 
@@ -130,7 +138,7 @@ public abstract class AbstractHttpResponse extends AbstractResponse implements H
      */
     @Override
     public int getStatusCode() {
-        return httpResponse.getStatusCode();
+        return ifSpiResponseNotNullApply(top.osjf.sdk.http.spi.HttpResponse::getStatusCode, SC_INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -140,7 +148,7 @@ public abstract class AbstractHttpResponse extends AbstractResponse implements H
      */
     @Override
     public String getStatusMessage() {
-        return httpResponse.getStatusMessage();
+        return ifSpiResponseNotNullApply(top.osjf.sdk.http.spi.HttpResponse::getStatusMessage, super.getMessage());
     }
 
     /**
@@ -150,7 +158,7 @@ public abstract class AbstractHttpResponse extends AbstractResponse implements H
      */
     @Override
     public Map<String, Object> getHeadMap() {
-        return httpResponse.getHeadMap();
+        return ifSpiResponseNotNullApply(top.osjf.sdk.http.spi.HttpResponse::getHeadMap, Collections.emptyMap());
     }
 
     /**
@@ -159,8 +167,9 @@ public abstract class AbstractHttpResponse extends AbstractResponse implements H
      * Provided by {@link top.osjf.sdk.http.spi.HttpResponse}.
      */
     @Override
+    @Nullable
     public Charset getCharset() {
-        return httpResponse.getCharset();
+        return ifSpiResponseNotNullApply(top.osjf.sdk.http.spi.HttpResponse::getCharset, null);
     }
 
     /**
@@ -169,8 +178,9 @@ public abstract class AbstractHttpResponse extends AbstractResponse implements H
      * Provided by {@link top.osjf.sdk.http.spi.HttpResponse}.
      */
     @Override
+    @Nullable
     public String getBody() {
-        return httpResponse.getBody();
+        return ifSpiResponseNotNullApply(top.osjf.sdk.http.spi.HttpResponse::getBody, null);
     }
 
     /**
@@ -181,6 +191,13 @@ public abstract class AbstractHttpResponse extends AbstractResponse implements H
     @Nullable
     @Override
     public Object getProtocolVersion() {
-        return httpResponse.getProtocolVersion();
+        return ifSpiResponseNotNullApply(top.osjf.sdk.http.spi.HttpResponse::getProtocolVersion, null);
+    }
+
+    private <T> T ifSpiResponseNotNullApply(Function<top.osjf.sdk.http.spi.HttpResponse, T> func, T def) {
+        if (httpResponse != null) {
+            return func.apply(httpResponse);
+        }
+        return def;
     }
 }

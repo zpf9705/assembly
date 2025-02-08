@@ -283,14 +283,16 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
             //Set a spi response to sdk response.
             setSpiResponse(response, spiResponse);
 
-        } catch (SdkException e) {
+        }
+        catch (SdkException e) {
 
             //Capture anomalies in SDK and provide a conversion reminder.
             handlerSdkError(request, e);
             throwable = e;
             response = DefaultErrorResponse.parseErrorResponse(throwable, DefaultErrorResponse.ErrorType.SDK, request);
 
-        } catch (Throwable e) {
+        }
+        catch (Throwable e) {
 
             //Capture unknown exceptions and provide a transition reminder.
             handlerUnKnowError(request, e);
@@ -298,7 +300,8 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
             response = DefaultErrorResponse.parseErrorResponse(throwable, DefaultErrorResponse.ErrorType.UN_KNOWN,
                     request);
 
-        } finally {
+        }
+        finally {
 
             //Stop timing.
             stopwatch.stop();
