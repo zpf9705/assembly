@@ -326,7 +326,7 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
      * @param spiResponse the input spi response.
      * @since 1.0.2
      */
-    private void setSpiResponse(R response, top.osjf.sdk.http.spi.HttpResponse spiResponse) {
+    protected void setSpiResponse(R response, top.osjf.sdk.http.spi.HttpResponse spiResponse) {
         if (response instanceof AbstractHttpResponse) {
             ((AbstractHttpResponse) response).setHttpResponse(spiResponse);
         } else {
