@@ -148,7 +148,9 @@ public abstract class AbstractHttpResponse extends AbstractResponse implements H
      */
     @Override
     public String getStatusMessage() {
-        return ifSpiResponseNotNullApply(top.osjf.sdk.http.spi.HttpResponse::getStatusMessage, super.getMessage());
+        return ifSpiResponseNotNullApply(top.osjf.sdk.http.spi.HttpResponse::getStatusMessage,
+                "SPI response object not set, estimated to have encountered an error while establishing a " +
+                        "connection with the target server.");
     }
 
     /**
