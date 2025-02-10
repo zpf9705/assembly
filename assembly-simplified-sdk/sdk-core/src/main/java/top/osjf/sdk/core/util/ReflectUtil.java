@@ -74,16 +74,16 @@ public abstract class ReflectUtil {
      *                    {@literal null}, will automatically select an
      *                    available {@code ClassLoader}.
      * @return The {@code Class} object of the loaded and initialized class.
-     * @throws NullPointerException     If the input className is {@literal null}.
-     * @throws IllegalArgumentException If the specified class cannot be found,
-     *                                  throw this exception in its {@code #cause}.
+     * @throws NullPointerException         If the input className is {@literal null}.
+     * @throws UndeclaredThrowableException If the specified class cannot be found,
+     *                                      throw this exception in its {@code #cause}.
      */
     public static Class<?> getClass(@NotNull String className, @Nullable ClassLoader classLoader) {
         classLoader = getAvailableClassLoader(classLoader);
         try {
             return Class.forName(className, true, classLoader);
         } catch (ClassNotFoundException e) {
-            throw new IllegalArgumentException(" Not found class " + className, e);
+            throw new UndeclaredThrowableException(e, " Not found class " + className);
         }
     }
 
@@ -97,16 +97,16 @@ public abstract class ReflectUtil {
      *                    {@literal null}, will automatically select an
      *                    available {@code ClassLoader}.
      * @return The {@code Class} object of the loaded and initialized class.
-     * @throws NullPointerException     If the input className is {@literal null}.
-     * @throws IllegalArgumentException If the specified class cannot be found,
-     *                                  throw this exception in its {@code #cause}.
+     * @throws NullPointerException         If the input className is {@literal null}.
+     * @throws UndeclaredThrowableException If the specified class cannot be found,
+     *                                      throw this exception in its {@code #cause}.
      */
     public static Class<?> loadClass(@NotNull String className, @Nullable ClassLoader classLoader) {
         classLoader = getAvailableClassLoader(classLoader);
         try {
             return classLoader.loadClass(className);
         } catch (ClassNotFoundException e) {
-            throw new IllegalArgumentException(" Not found class " + className, e);
+            throw new UndeclaredThrowableException(e, " Not found class " + className);
         }
     }
 
@@ -115,10 +115,10 @@ public abstract class ReflectUtil {
      *
      * @param classLoader The class loader provided by the user.
      * @return An effective class loader.
-     * @throws IllegalArgumentException If both the provided class loader
-     *                                  and thread context class loader are empty,
-     *                                  and the system class loader cannot be used,
-     *                                  this exception will be thrown.
+     * @throws IllegalStateException If both the provided class loader
+     *                               and thread context class loader are empty,
+     *                               and the system class loader cannot be used,
+     *                               this exception will be thrown.
      */
     public static ClassLoader getAvailableClassLoader(@Nullable ClassLoader classLoader) {
         if (classLoader == null) {
@@ -126,7 +126,7 @@ public abstract class ReflectUtil {
             if (classLoader == null) {
                 classLoader = ClassLoader.getSystemClassLoader();
                 if (classLoader == null) {
-                    throw new IllegalArgumentException("No available classLoader");
+                    throw new IllegalStateException("No available classLoader");
                 }
             }
         }
@@ -142,10 +142,10 @@ public abstract class ReflectUtil {
      *             to instantiate.
      * @param args The argument array to pass to the constructor.
      * @return An instance of the specified type.
-     * @throws NullPointerException     If the input type is {@literal null}.
-     * @throws IllegalArgumentException If there is an error in object instantiation,
-     *                                  please refer to {@link IllegalArgumentException#getCause()}
-     *                                  for details.
+     * @throws NullPointerException         If the input type is {@literal null}.
+     * @throws UndeclaredThrowableException If there is an error in object instantiation,
+     *                                      please refer to {@link UndeclaredThrowableException#getCause()}
+     *                                      for details.
      */
     public static <T> T instantiates(@NotNull Class<T> type, Object... args) {
         List<Class<?>> parameterTypes = new LinkedList<>();
@@ -168,12 +168,12 @@ public abstract class ReflectUtil {
         try {
             return instanceSupplier.get();
         } catch (NoSuchMethodException e) {
-            throw new IllegalArgumentException("Method not found : " + e.getMessage(), e);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e1) {
-            throw new IllegalArgumentException("Construction method instantiation execution failed : "
-                    + e1.getMessage(), e1);
+            throw new UndeclaredThrowableException(e, "Method not found : " + e.getMessage());
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new UndeclaredThrowableException(e, "Construction method instantiation execution failed : "
+                    + e.getMessage());
         } catch (Throwable e) {
-            throw new IllegalArgumentException(e);
+            throw new UndeclaredThrowableException(e);
         }
     }
 
@@ -361,20 +361,20 @@ public abstract class ReflectUtil {
      * @param type input getting {@code Type}.
      * @return Return an array of generic type information for the input type.
      * @throws NullPointerException     If the input type is {@literal null}.
-     * @throws IllegalArgumentException If the generic type information of the
+     * @throws IllegalStateException    If the generic type information of the
      *                                  {@code type} is empty or the index is out of range.
-     * @throws IllegalStateException    If the {@code type} is not a {@code java.lang.reflect
+     * @throws IllegalArgumentException If the {@code type} is not a {@code java.lang.reflect
      *                                  .ParameterizedType} type (i.e. there is no generic information).
      */
     public static Type[] getActualGenericTypes(@NotNull Type type) {
         if (type instanceof ParameterizedType) {
             Type[] actualTypeArguments = ((ParameterizedType) type).getActualTypeArguments();
             if (ArrayUtils.isEmpty(actualTypeArguments)) {
-                throw new IllegalArgumentException(type + " generic type is empty");
+                throw new IllegalStateException(type + " generic type is empty");
             }
             return actualTypeArguments;
         }
-        throw new IllegalStateException(type + " is not java.lang.reflect.ParameterizedType");
+        throw new IllegalArgumentException(type + " is not java.lang.reflect.ParameterizedType");
     }
 
     /**
@@ -423,8 +423,8 @@ public abstract class ReflectUtil {
      * @param target    operate the target object.
      * @param fieldName operate the target field name.
      * @param arg       the assigned value.
-     * @throws IllegalStateException    if invoke method failed to find cause.
-     * @throws IllegalArgumentException by field set throw.
+     * @throws UndeclaredThrowableException if invoke method failed to find cause.
+     * @throws IllegalArgumentException     by field set throw.
      */
     public static void setFieldValue(Object target, String fieldName, Object arg) {
         try {
@@ -434,7 +434,7 @@ public abstract class ReflectUtil {
         } catch (IllegalArgumentException e) {
             throw e;
         } catch (Exception e) {
-            throw new IllegalStateException("set field failed ", e);
+            throw new UndeclaredThrowableException(e, "set field failed ");
         }
     }
 
@@ -444,8 +444,8 @@ public abstract class ReflectUtil {
      * @param target operate the target object.
      * @param field  operate the target field.
      * @param arg    the assigned value.
-     * @throws IllegalStateException    if invoke method failed to find cause.
-     * @throws IllegalArgumentException by field set throw.
+     * @throws UndeclaredThrowableException if invoke method failed to find cause.
+     * @throws IllegalArgumentException     by field set throw.
      */
     public static void setFieldValue(Object target, Field field, Object arg) {
         try {
@@ -454,7 +454,7 @@ public abstract class ReflectUtil {
         } catch (IllegalArgumentException e) {
             throw e;
         } catch (Exception e) {
-            throw new IllegalStateException("set field failed ", e);
+            throw new UndeclaredThrowableException(e, "set field failed ");
         }
     }
 
@@ -465,8 +465,8 @@ public abstract class ReflectUtil {
      * @param method operate the target method.
      * @param args   the execution parameters of the target operation method.
      * @return The return value after executing the target method.
-     * @throws IllegalStateException    if invoke method failed to find cause.
-     * @throws IllegalArgumentException by method invoke throw.
+     * @throws UndeclaredThrowableException if invoke method failed to find cause.
+     * @throws IllegalArgumentException     by method invoke throw.
      */
     @Nullable
     public static Object invokeMethod(Object target, Method method, Object... args) {
@@ -476,7 +476,7 @@ public abstract class ReflectUtil {
         } catch (IllegalArgumentException e) {
             throw e;
         } catch (Exception e) {
-            throw new IllegalStateException("invoke method failed ", e);
+            throw new UndeclaredThrowableException(e, "invoke method failed ");
         }
     }
 
@@ -485,6 +485,7 @@ public abstract class ReflectUtil {
      * if necessary. The {@code setAccessible(true)} method is only called
      * when actually necessary, to avoid unnecessary conflicts with a JVM
      * SecurityManager (if active).
+     *
      * @param ctor the constructor to make accessible
      */
     public static void makeAccessible(Constructor<?> ctor) {
