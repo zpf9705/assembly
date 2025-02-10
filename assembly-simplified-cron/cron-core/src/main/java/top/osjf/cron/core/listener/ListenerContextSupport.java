@@ -258,7 +258,7 @@ public abstract class ListenerContextSupport {
         @Override
         public ListenerContext apply(Object o) {
             ListenerContext listenerContext = ReflectUtils.newInstance(listenerContextClass);
-            Object result = ReflectUtils.invokeMethod(listenerContext, getSetMethod(o));
+            Object result = ReflectUtils.invokeMethod(listenerContext, getSetMethod(o), o);
             if (!(result instanceof ListenerContext) || result == listenerContext) {
                 return listenerContext;
             }
