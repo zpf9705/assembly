@@ -246,7 +246,8 @@ public abstract class ListenerContextSupport {
             }
             if (setMethod == null) {
                 for (Method method : listenerContextClass.getDeclaredMethods()) {
-                    if (method.getParameterTypes().length == 1
+                    if (method.getName().startsWith("set")
+                            && method.getParameterTypes().length == 1
                             && method.getParameterTypes()[0].isAssignableFrom(sourceContextClass)) {
                         setMethod = method;
                     }
@@ -261,13 +262,18 @@ public abstract class ListenerContextSupport {
 
         @Override
         public ListenerContext apply(Object o) {
+            ListenerContext listenerContext = null;
+            Object result = null;
             try {
-                ListenerContext listenerContext = listenerContextClass.newInstance();
-                return (ListenerContext) getSetMethod(o).invoke(listenerContext, o);
+                listenerContext = listenerContextClass.newInstance();
+                result = getSetMethod(o).invoke(listenerContext, o);
             } catch (Exception e) {
                 resolveException(e);
             }
-            return null; // If we don't reach this point, the above capture will be thrown.
+            if (!(result instanceof ListenerContext) || result == listenerContext) {
+                return listenerContext;
+            }
+            return (ListenerContext) result;
         }
     }
 
