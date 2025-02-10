@@ -18,9 +18,9 @@
 package top.osjf.cron.core.listener;
 
 import top.osjf.cron.core.lang.NotNull;
+import top.osjf.cron.core.util.ReflectUtils;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Collections;
@@ -191,12 +191,7 @@ public abstract class ListenerContextSupport {
 
         @Override
         public ListenerContext apply(Object o) {
-            try {
-                return getConstructor(o).newInstance(o);
-            } catch (Exception e) {
-                resolveException(e);
-            }
-            return null; // If we don't reach this point, the above capture will be thrown.
+            return ReflectUtils.newInstance(getConstructor(o), o);
         }
     }
 
@@ -262,37 +257,12 @@ public abstract class ListenerContextSupport {
 
         @Override
         public ListenerContext apply(Object o) {
-            ListenerContext listenerContext = null;
-            Object result = null;
-            try {
-                listenerContext = listenerContextClass.newInstance();
-                result = getSetMethod(o).invoke(listenerContext, o);
-            } catch (Exception e) {
-                resolveException(e);
-            }
+            ListenerContext listenerContext = ReflectUtils.newInstance(listenerContextClass);
+            Object result = ReflectUtils.invokeMethod(listenerContext, getSetMethod(o));
             if (!(result instanceof ListenerContext) || result == listenerContext) {
                 return listenerContext;
             }
             return (ListenerContext) result;
         }
-    }
-
-    static void resolveException(Exception e) {
-        if (e instanceof IllegalArgumentException) {
-            throw (IllegalArgumentException) e;
-        }
-        if (e instanceof IllegalStateException) {
-            throw (IllegalStateException) e;
-        }
-        if (e instanceof RuntimeException) {
-            throw (RuntimeException) e;
-        }
-        if (e instanceof InvocationTargetException) {
-            Throwable targetException = ((InvocationTargetException) e).getTargetException();
-            if (targetException instanceof RuntimeException) {
-                throw (RuntimeException) targetException;
-            }
-        }
-        throw new UndeclaredThrowableException(e);
     }
 }
