@@ -173,6 +173,8 @@ public abstract class ReflectUtils {
      *
      * @param constructor given {@code Constructor}.
      * @param <T>         given generic type.
+     * @param initArgs    array of objects to be passed as arguments to
+     *                    the constructor call.
      * @return new {@code T} object by given {@code Constructor<T>}.
      */
     public static <T> T newInstance(Constructor<T> constructor, Object... initArgs) {
