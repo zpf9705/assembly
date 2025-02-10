@@ -19,10 +19,7 @@ package top.osjf.cron.core.util;
 
 import top.osjf.cron.core.lang.Nullable;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.UndeclaredThrowableException;
+import java.lang.reflect.*;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -63,7 +60,7 @@ public abstract class ReflectUtils {
      * @param method the method to invoke
      * @param target the target object to invoke the method on
      * @param args   the invocation arguments (may be {@code null})
-     * @return the invocation result, if any
+     * @return the invocation result, if any.
      */
     @Nullable
     public static Object invokeMethod(Object target, Method method, Object... args) {
@@ -167,6 +164,31 @@ public abstract class ReflectUtils {
             throw new IllegalArgumentException(e);
         } catch (IllegalAccessException e) {
             throw new UndeclaredThrowableException(e);
+        }
+    }
+
+    /**
+     * Create a new {@code T} object by given {@code Constructor<T>} according to
+     * {@link Constructor#newInstance(Object[])}.
+     *
+     * @param constructor given {@code Constructor}.
+     * @param <T>         given generic type.
+     * @return new {@code T} object by given {@code Constructor<T>}.
+     */
+    public static <T> T newInstance(Constructor<T> constructor, Object... initArgs) {
+        try {
+            return constructor.newInstance(initArgs);
+        } catch (InvocationTargetException ex) {
+            Throwable targetException = ex.getTargetException();
+            if (targetException instanceof RuntimeException) {
+                throw (RuntimeException) targetException;
+            }
+            if (targetException instanceof Error) {
+                throw (Error) targetException;
+            }
+            throw new UndeclaredThrowableException(targetException);
+        } catch (IllegalAccessException | InstantiationException ex) {
+            throw new UndeclaredThrowableException(ex);
         }
     }
 
