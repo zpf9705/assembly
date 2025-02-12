@@ -496,14 +496,10 @@ public abstract class SdkSupport {
                 clazz = pair.getSecond();
             }
         }
-        if (resultType == null) {
-            if (def == null) {
-                throw new IllegalStateException("No available generic type were found.");
-            }
-            GENERIC_CACHE.put(inletClass, def);
-        } else {
-            GENERIC_CACHE.putIfAbsent(inletClass, resultType);
+        if (resultType == null && def == null) {
+            throw new IllegalStateException("No available generic type were found.");
         }
+        GENERIC_CACHE.putIfAbsent(inletClass, resultType != null ? resultType : def);
         return GENERIC_CACHE.get(inletClass);
     }
 
