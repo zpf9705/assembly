@@ -138,7 +138,7 @@ public class DefaultServiceContext extends AbstractServiceContext {
         //Because beans that can be recognized by the Spring container will already be automatically
         // added to the collection column, dynamic service scope bean creation is required here.
         BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(serviceType)
-                .setScope(ConfigurableServiceContext.SUPPORT_SCOPE);
+                .setScope(ServiceContext.SUPPORT_SCOPE);
         BeanDefinitionReaderUtils.registerBeanDefinition
                 (new BeanDefinitionHolder(builder.getBeanDefinition(), beanName,
                         alisaNames.toArray(new String[]{})), unwrapApplicationContext(BeanDefinitionRegistry.class));
