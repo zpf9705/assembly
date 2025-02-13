@@ -16,6 +16,7 @@
 
 package top.osjf.optimize.service_bean.annotation;
 
+import top.osjf.optimize.service_bean.context.ConfigurableServiceContext;
 import top.osjf.optimize.service_bean.context.ServiceContext;
 
 import java.lang.annotation.*;
@@ -36,12 +37,12 @@ import java.lang.annotation.*;
  * converted in the context object {@link ServiceContext}.
  *
  * <p>If the service class you want to add is not known to Spring, you can use
- * method {@link ServiceContext#addService} to manually add it, provided that
+ * method {@link ConfigurableServiceContext#addService} to manually add it, provided that
  * the parent class and interface have this annotation tag.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
- * @see top.osjf.optimize.service_bean.context.ServiceCore#getTargetServiceTypes
+ * @see top.osjf.optimize.service_bean.context.ServiceDefinitionUtils#getTargetServiceTypes
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
