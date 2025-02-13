@@ -68,7 +68,7 @@ public class DefaultServiceContext extends AbstractServiceContext {
     @SuppressWarnings("unchecked")
     public <S> S getService(String name) throws NoAvailableServiceException {
         ApplicationContext applicationContext = getContext();
-        if (!ServiceCore.isEnhancementServiceName(name)
+        if (!ServiceDefinitionUtils.isEnhancementServiceName(name)
                 || !applicationContext.containsBean(name)) {
             throw new NoAvailableServiceException(name);
         }
@@ -90,7 +90,7 @@ public class DefaultServiceContext extends AbstractServiceContext {
     public <S> S getService(String name, Class<S> requiredType) throws NoAvailableServiceException {
         ApplicationContext applicationContext = getContext();
         S service = null;
-        String enhancementName = ServiceCore.getEnhancementName(name, requiredType);
+        String enhancementName = ServiceDefinitionUtils.getEnhancementName(name, requiredType, isRecordType(requiredType));
         if (applicationContext.containsBean(enhancementName)) {
             service = applicationContext.getBean(enhancementName, requiredType);
         }
@@ -114,7 +114,7 @@ public class DefaultServiceContext extends AbstractServiceContext {
 
         Objects.requireNonNull(serviceType, "ServiceType no be null");
 
-        List<Class<?>> targetServiceTypes = ServiceCore.getTargetServiceTypes(serviceType);
+        List<Class<?>> targetServiceTypes = ServiceDefinitionUtils.getTargetServiceTypes(serviceType);
 
         if (CollectionUtils.isEmpty(targetServiceTypes)) {
             if (logger.isWarnEnabled()) {
@@ -128,11 +128,11 @@ public class DefaultServiceContext extends AbstractServiceContext {
         // the first lowercase of the abbreviation according to JavaBean specifications.
         name = StringUtils.isNotBlank(name) ? name : Introspector.decapitalize(serviceType.getSimpleName());
 
-        String beanName = ServiceCore.enhancementBeanName(serviceType, name);
+        String beanName = ServiceDefinitionUtils.enhancementBeanName(serviceType, name);
 
         List<String> alisaNames = new ArrayList<>();
         for (Class<?> targetServiceType : targetServiceTypes) {
-            alisaNames.add(ServiceCore.enhancementAlisaName(targetServiceType, beanName));
+            alisaNames.add(ServiceDefinitionUtils.enhancementAlisaName(targetServiceType, beanName));
         }
 
         //Because beans that can be recognized by the Spring container will already be automatically
@@ -154,12 +154,12 @@ public class DefaultServiceContext extends AbstractServiceContext {
 
     @Override
     public boolean containsService(String name) {
-        return ServiceCore.isEnhancementServiceName(name) && getContext().containsBean(name);
+        return ServiceDefinitionUtils.isEnhancementServiceName(name) && getContext().containsBean(name);
     }
 
     @Override
     public <S> boolean containsService(String name, Class<S> requiredType) {
-        String enhancementName = ServiceCore.getEnhancementName(name, requiredType);
+        String enhancementName = ServiceDefinitionUtils.getEnhancementName(name, requiredType, isRecordType(requiredType));
         return getContext().containsBean(enhancementName);
     }
 
@@ -173,7 +173,7 @@ public class DefaultServiceContext extends AbstractServiceContext {
      */
     @Override
     public boolean removeService(String serviceName) {
-        if (!ServiceCore.isEnhancementBeanServiceName(serviceName)
+        if (!ServiceDefinitionUtils.isEnhancementBeanServiceName(serviceName)
                 || !getContext().containsBean(serviceName)) {
             return false;
         }
@@ -195,7 +195,8 @@ public class DefaultServiceContext extends AbstractServiceContext {
      */
     @Override
     public <S> boolean removeService(String serviceName, Class<S> requiredType) {
-        String enhancementBeanName = ServiceCore.getEnhancementBeanName(serviceName, requiredType);
+        String enhancementBeanName = ServiceDefinitionUtils.getEnhancementBeanName(serviceName, requiredType,
+                isRecordType(requiredType));
         if (StringUtils.isBlank(enhancementBeanName) || !getContext().containsBean(enhancementBeanName)) {
             return false;
         }
