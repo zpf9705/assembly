@@ -30,15 +30,20 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
- * The core name of this service framework is the static method class,
- * which includes various operations such as secondary encoding and
- * parsing of bean names, aiming to solve the problem of equal naming
- * for different types.
+ * Method and tool classes related to service definitions,
+ * including names and definition conditions for various changes.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public abstract class ServiceCore {
+public abstract class ServiceDefinitionUtils {
+
+    /**
+     * The bean name for internal registration {@code ServiceContextBeanNameGenerator}.
+     */
+    protected static final String INTERNAL_BEAN_NAME_GENERATOR_BEAN_NAME =
+            "top.osjf.optimize.service_bean.context.internalServiceContextBeanNameGenerator";
+
     /**
      * Determine whether there are annotations {@code ServiceCollection} on the class.
      */
@@ -83,7 +88,7 @@ public abstract class ServiceCore {
      * @param serviceName  the original service  name to be enhancement is usually the
      *                     name.
      * @param requiredType type the bean must match; can be an interface or superclass.
-     * @param isRecordType Is it recorded in {@link ServiceContextBeanNameGenerator}.
+     * @param isRecordType is it recorded in {@link ServiceContextBeanNameGenerator}.
      * @return enhanced and optimized service name.
      */
     @Nullable
@@ -104,7 +109,7 @@ public abstract class ServiceCore {
      * @param serviceName  the original service  name to be enhancement is usually the
      *                     name.
      * @param requiredType type the bean must match; can be an interface or superclass.
-     * @param isRecordType Is it recorded in {@link ServiceContextBeanNameGenerator}.
+     * @param isRecordType is it recorded in {@link ServiceContextBeanNameGenerator}.
      * @return enhanced and optimized service name.
      */
     public static String getEnhancementName(String serviceName, Class<?> requiredType, boolean isRecordType) {
