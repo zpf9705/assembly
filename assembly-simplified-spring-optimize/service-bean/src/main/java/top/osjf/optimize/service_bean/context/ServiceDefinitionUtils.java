@@ -41,8 +41,14 @@ public abstract class ServiceDefinitionUtils {
     /**
      * The bean name for internal registration {@code ServiceContextBeanNameGenerator}.
      */
-    protected static final String INTERNAL_BEAN_NAME_GENERATOR_BEAN_NAME =
+    public static final String INTERNAL_BEAN_NAME_GENERATOR_BEAN_NAME =
             "top.osjf.optimize.service_bean.context.internalServiceContextBeanNameGenerator";
+
+    /**
+     * The name of the internal bean {@code ServiceScope}.
+     */
+    public static final String INTERNAL_SERVICE_SCOPE_BEAN_NAME
+            = "top.osjf.optimize.service_bean.context.internalServiceScope";
 
     /**
      * Determine whether there are annotations {@code ServiceCollection} on the class.
