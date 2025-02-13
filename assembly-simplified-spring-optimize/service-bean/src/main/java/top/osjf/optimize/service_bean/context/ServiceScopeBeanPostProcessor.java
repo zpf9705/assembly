@@ -57,17 +57,29 @@ public class ServiceScopeBeanPostProcessor implements BeanDefinitionRegistryPost
 
     private ServiceScope serviceScope;
 
+    private ServiceContextBeanNameGenerator serviceContextBeanNameGenerator;
+
     /**
      * Set a new nonNull {@code ServiceScope}.
+     *
      * @param serviceScope service {@link Scope} instance.
      */
     public void setServiceScope(ServiceScope serviceScope) {
         this.serviceScope = serviceScope;
     }
 
+    /**
+     * Set a new nonNull {@code ServiceContextBeanNameGenerator}.
+     *
+     * @param serviceContextBeanNameGenerator an internal {@link ServiceContextBeanNameGenerator} instance.
+     */
+    public void setServiceContextBeanNameGenerator(ServiceContextBeanNameGenerator serviceContextBeanNameGenerator) {
+        this.serviceContextBeanNameGenerator = serviceContextBeanNameGenerator;
+    }
+
     @Override
     public void postProcessBeanDefinitionRegistry(@NonNull BeanDefinitionRegistry registry) throws BeansException {
-        for (String recordBeanName : ServiceContextBeanNameGenerator.getRecordBeanNames()) {
+        for (String recordBeanName : serviceContextBeanNameGenerator.getRecordBeanNames()) {
             BeanDefinition beanDefinition = registry.getBeanDefinition(recordBeanName);
             beanDefinition.setScope(ServiceContext.SUPPORT_SCOPE);
         }
