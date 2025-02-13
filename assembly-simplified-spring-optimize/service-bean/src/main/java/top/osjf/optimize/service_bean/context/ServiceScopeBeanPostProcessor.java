@@ -71,6 +71,9 @@ public class ServiceScopeBeanPostProcessor implements BeanDefinitionRegistryPost
     /**
      * Set a new nonNull {@code ServiceContextBeanNameGenerator}.
      *
+     * <p>Retrieve the bean name that matches the record and make a scope
+     * change at {@link #postProcessBeanDefinitionRegistry}.
+     *
      * @param serviceContextBeanNameGenerator an internal {@link ServiceContextBeanNameGenerator} instance.
      */
     public void setServiceContextBeanNameGenerator(ServiceContextBeanNameGenerator serviceContextBeanNameGenerator) {
