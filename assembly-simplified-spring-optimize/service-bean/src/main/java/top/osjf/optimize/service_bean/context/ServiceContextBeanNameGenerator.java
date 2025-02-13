@@ -32,8 +32,8 @@ import top.osjf.optimize.service_bean.annotation.ServiceCollection;
 import java.io.Closeable;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -66,46 +66,33 @@ import java.util.stream.Stream;
  * generator {@link ServiceContextBeanNameGenerator}, which means it only applies
  * to internal beans.Beans imported using {@link Bean} annotation in the configuration
  * class cannot participate in this {@link ServiceContextBeanNameGenerator}, so they
- * cannot be collected in {@link #recordBeanNames} or {@link #recordBeanTypes} and
- * cannot participate in renaming encoding.
+ * cannot be collected in {@link #recordServiceBeanMap} and cannot participate in
+ * renaming encoding.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
 public class ServiceContextBeanNameGenerator extends AnnotationBeanNameGenerator implements Closeable {
+
     /**
-     * Record the main name collection of beans named by this custom naming
-     * {@code BeanNameGenerator}.
+     * A map that records the mapping information of the name and type of the service bean.
      */
-    private final Set<String> recordBeanNames = new CopyOnWriteArraySet<>();
-    /**
-     * Record the main name collection of beans type by this custom naming
-     * {@code BeanNameGenerator}.
-     */
-    private final Set<Class<?>> recordBeanTypes = new CopyOnWriteArraySet<>();
+    private final Map<String, Class<?>> recordServiceBeanMap = new ConcurrentHashMap<>();
 
     /**
      * The scope name required for beans that accept custom naming.
      */
-    private final List<String> supportScopes = Stream.of(BeanDefinition.SCOPE_SINGLETON,
-            BeanDefinition.SCOPE_PROTOTYPE, AbstractBeanDefinition.SCOPE_DEFAULT).collect(Collectors.toList());
+    private final List<String> supportScopes =
+            Stream.of(BeanDefinition.SCOPE_SINGLETON, AbstractBeanDefinition.SCOPE_DEFAULT).collect(Collectors.toList());
 
     /**
-     * Return un modifiable set of record bean name.
+     * Return a map that records the mapping information of the name and type of the service bean.
      *
-     * @return un modifiable set of record bean name.
+     * @return an unmodifiable map that records the mapping information of the name and type of
+     * the service bean.
      */
-    protected Set<String> getRecordBeanNames() {
-        return Collections.unmodifiableSet(recordBeanNames);
-    }
-
-    /**
-     * Return un modifiable set of record bean type.
-     *
-     * @return un modifiable set of record bean type.
-     */
-    protected Set<Class<?>> getRecordBeanTypes() {
-        return Collections.unmodifiableSet(recordBeanTypes);
+    public Map<String, Class<?>> getRecordServiceBeanMap() {
+        return Collections.unmodifiableMap(recordServiceBeanMap);
     }
 
     @Override
@@ -153,11 +140,7 @@ public class ServiceContextBeanNameGenerator extends AnnotationBeanNameGenerator
 
                     //enhancement name for self clazz
                     beanName = ServiceDefinitionUtils.enhancementBeanName(clazz, definitionBeanName);
-
-                    //cache the name of the main bean.
-                    recordBeanNames.add(beanName);
-                    //cache the type of the main bean.
-                    recordBeanTypes.add(clazz);
+                    recordServiceBeanMap.putIfAbsent(beanName, clazz);
 
                     //enhancement alisa name for target clazz to this bean.
                     for (Class<?> targetServiceType : targetServiceTypes) {
@@ -175,7 +158,6 @@ public class ServiceContextBeanNameGenerator extends AnnotationBeanNameGenerator
      */
     @Override
     public void close() {
-        recordBeanNames.clear();
-        recordBeanTypes.clear();
+        recordServiceBeanMap.clear();
     }
 }
