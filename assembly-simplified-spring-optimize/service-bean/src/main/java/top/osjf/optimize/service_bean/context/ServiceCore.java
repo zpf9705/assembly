@@ -83,14 +83,15 @@ public abstract class ServiceCore {
      * @param serviceName  the original service  name to be enhancement is usually the
      *                     name.
      * @param requiredType type the bean must match; can be an interface or superclass.
+     * @param isRecordType Is it recorded in {@link ServiceContextBeanNameGenerator}.
      * @return enhanced and optimized service name.
      */
     @Nullable
-    public static String getEnhancementBeanName(String serviceName, Class<?> requiredType) {
+    public static String getEnhancementBeanName(String serviceName, Class<?> requiredType, boolean isRecordType) {
         Objects.requireNonNull(serviceName, "serviceName = null");
         Objects.requireNonNull(requiredType, "requiredType = null");
 
-        if (ServiceContextBeanNameGenerator.getRecordBeanTypes().contains(requiredType)) {
+        if (isRecordType) {
             return enhancementBeanName(requiredType, serviceName);
         }
         return null;
@@ -103,13 +104,14 @@ public abstract class ServiceCore {
      * @param serviceName  the original service  name to be enhancement is usually the
      *                     name.
      * @param requiredType type the bean must match; can be an interface or superclass.
+     * @param isRecordType Is it recorded in {@link ServiceContextBeanNameGenerator}.
      * @return enhanced and optimized service name.
      */
-    public static String getEnhancementName(String serviceName, Class<?> requiredType) {
+    public static String getEnhancementName(String serviceName, Class<?> requiredType, boolean isRecordType) {
         Objects.requireNonNull(serviceName, "serviceName = null");
         Objects.requireNonNull(requiredType, "requiredType = null");
 
-        if (ServiceContextBeanNameGenerator.getRecordBeanTypes().contains(requiredType)) {
+        if (isRecordType) {
             return enhancementBeanName(requiredType, serviceName);
         }
         return enhancementAlisaName(requiredType, serviceName);
