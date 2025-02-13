@@ -29,6 +29,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.util.CollectionUtils;
 import top.osjf.optimize.service_bean.annotation.ServiceCollection;
 
+import java.io.Closeable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -65,23 +66,23 @@ import java.util.stream.Stream;
  * generator {@link ServiceContextBeanNameGenerator}, which means it only applies
  * to internal beans.Beans imported using {@link Bean} annotation in the configuration
  * class cannot participate in this {@link ServiceContextBeanNameGenerator}, so they
- * cannot be collected in {@link #RECORD_BEAN_NAMES} or {@link #RECORD_BEAN_TYPES} and
+ * cannot be collected in {@link #recordBeanNames} or {@link #recordBeanTypes} and
  * cannot participate in renaming encoding.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public class ServiceContextBeanNameGenerator extends AnnotationBeanNameGenerator {
+public class ServiceContextBeanNameGenerator extends AnnotationBeanNameGenerator implements Closeable {
     /**
      * Record the main name collection of beans named by this custom naming
      * {@code BeanNameGenerator}.
      */
-    private static final Set<String> RECORD_BEAN_NAMES = new CopyOnWriteArraySet<>();
+    private final Set<String> recordBeanNames = new CopyOnWriteArraySet<>();
     /**
      * Record the main name collection of beans type by this custom naming
      * {@code BeanNameGenerator}.
      */
-    private static final Set<Class<?>> RECORD_BEAN_TYPES = new CopyOnWriteArraySet<>();
+    private final Set<Class<?>> recordBeanTypes = new CopyOnWriteArraySet<>();
 
     /**
      * The scope name required for beans that accept custom naming.
@@ -94,8 +95,8 @@ public class ServiceContextBeanNameGenerator extends AnnotationBeanNameGenerator
      *
      * @return un modifiable set of record bean name.
      */
-    protected static Set<String> getRecordBeanNames() {
-        return Collections.unmodifiableSet(RECORD_BEAN_NAMES);
+    protected Set<String> getRecordBeanNames() {
+        return Collections.unmodifiableSet(recordBeanNames);
     }
 
     /**
@@ -103,15 +104,8 @@ public class ServiceContextBeanNameGenerator extends AnnotationBeanNameGenerator
      *
      * @return un modifiable set of record bean type.
      */
-    protected static Set<Class<?>> getRecordBeanTypes() {
-        return Collections.unmodifiableSet(RECORD_BEAN_TYPES);
-    }
-
-    /**
-     * Clear record bean names.
-     */
-    protected static void clear() {
-        RECORD_BEAN_NAMES.clear();
+    protected Set<Class<?>> getRecordBeanTypes() {
+        return Collections.unmodifiableSet(recordBeanTypes);
     }
 
     @Override
@@ -129,7 +123,7 @@ public class ServiceContextBeanNameGenerator extends AnnotationBeanNameGenerator
 
             //search for the class object based on the class name.
             String beanClassName = definition.getBeanClassName();
-            Class<?> clazz = ServiceCore.getSafeClass(beanClassName);
+            Class<?> clazz = ServiceDefinitionUtils.getSafeClass(beanClassName);
 
             //Unknown class object, not processed.
             if (clazz == null) {
@@ -138,7 +132,7 @@ public class ServiceContextBeanNameGenerator extends AnnotationBeanNameGenerator
             } else {
 
                 //single instance beans perform service collection operations.
-                List<Class<?>> targetServiceTypes = ServiceCore.getTargetServiceTypes(clazz);
+                List<Class<?>> targetServiceTypes = ServiceDefinitionUtils.getTargetServiceTypes(clazz);
 
                 //if no collection flag is found, the default bean name definition rule will be used.
                 if (CollectionUtils.isEmpty(targetServiceTypes)) {
@@ -158,21 +152,30 @@ public class ServiceContextBeanNameGenerator extends AnnotationBeanNameGenerator
                     }
 
                     //enhancement name for self clazz
-                    beanName = ServiceCore.enhancementBeanName(clazz, definitionBeanName);
+                    beanName = ServiceDefinitionUtils.enhancementBeanName(clazz, definitionBeanName);
 
                     //cache the name of the main bean.
-                    RECORD_BEAN_NAMES.add(beanName);
+                    recordBeanNames.add(beanName);
                     //cache the type of the main bean.
-                    RECORD_BEAN_TYPES.add(clazz);
+                    recordBeanTypes.add(clazz);
 
                     //enhancement alisa name for target clazz to this bean.
                     for (Class<?> targetServiceType : targetServiceTypes) {
-                        String alisaName = ServiceCore.enhancementAlisaName(targetServiceType, definitionBeanName);
+                        String alisaName = ServiceDefinitionUtils.enhancementAlisaName(targetServiceType, definitionBeanName);
                         registry.registerAlias(beanName, alisaName);
                     }
                 }
             }
         }
         return beanName;
+    }
+
+    /**
+     * If it is closed, clear the relevant information that has already been recorded.
+     */
+    @Override
+    public void close() {
+        recordBeanNames.clear();
+        recordBeanTypes.clear();
     }
 }
