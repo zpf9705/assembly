@@ -16,7 +16,6 @@
 
 package top.osjf.optimize.service_bean.context;
 
-import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
@@ -57,19 +56,6 @@ import top.osjf.optimize.service_bean.annotation.ServiceCollection;
  * @since 1.0.0
  */
 public interface ServiceContext {
-
-    /**
-     * Define a constant to represent a custom scope name {@code service} for a
-     * Bean in the Spring framework.
-     *
-     * <p>This constant means that it represents a custom scope named {@code service}
-     * , and in Spring configuration, the behavior of this scope can be defined through
-     * a specific class {@link ServiceScope}.
-     *
-     * @see org.springframework.beans.factory.config.Scope
-     * @see org.springframework.context.annotation.AnnotationScopeMetadataResolver
-     */
-    String SUPPORT_SCOPE = "service";
 
     /**
      * Returns a service instance with a specified name, which can be shared or independent.
@@ -186,59 +172,4 @@ public interface ServiceContext {
      * @since 1.0.2
      */
     <S> boolean containsService(String name, Class<S> requiredType);
-
-    /**
-     * Return a boolean tag representing the result of deleting the corresponding
-     * service instance using the provided name.
-     *
-     * <p>The removed service will be destroyed in the Spring container at the
-     * same time as it is removed in the context of this service, with a callback
-     * {@link DisposableBean}.
-     *
-     * <p>Only applicable for deleting service classes that have specific scope
-     * {@link org.springframework.beans.factory.config.Scope} storage, such as
-     * the currently supported {@link ServiceScope}, developers can push this type.
-     *
-     * <p>
-     * <strong>Note:</strong>
-     * <p>The transmission of this service name requires the use of the original core
-     * processing class {@link ServiceDefinitionUtils} method {@code ServiceCore#enhancement}
-     * and it must be a service name ending with {@code ServiceCore#BEAN_NAME_CLOSE_TAG}
-     * , which has been specially processed.
-     *
-     * @param serviceName the name of the service to remove.
-     * @return If {@code true} is returned, the service has been successfully removed,
-     * otherwise it does not exist or not end with {@code ServiceCore#BEAN_NAME_CLOSE_TAG}.
-     * @throws NullPointerException if input serviceName is {@literal null}.
-     */
-    boolean removeService(String serviceName);
-
-    /**
-     * Return a boolean type result representing the result of service removal,
-     * based on the re encoding of the provided service name and type.
-     *
-     * <p>The removed service will be destroyed in the Spring container at the
-     * same time as it is removed in the context of this service, with a callback
-     * {@link DisposableBean}.
-     *
-     * <p>Only applicable for deleting service classes that have specific scope
-     * {@link org.springframework.beans.factory.config.Scope} storage, such as
-     * the currently supported {@link ServiceScope}, developers can push this type.
-     *
-     * <p>
-     * <strong>Note:</strong>
-     * <p>Due to the limitations of the Spring framework for removing beans from
-     * specific scopes, the {@code requiredType} of this method must be the native
-     * type of the service class used to construct the name of the bean for removing
-     * beans from specific scopes.
-     *
-     * @param serviceName  the name of the service to remove.
-     * @param requiredType type the bean must match; can be an interface or superclass.
-     * @param <S>          the type of service to remove.
-     * @return If {@code true} is returned, the service has been successfully removed,
-     * otherwise it does not exist or not end with {@code ServiceCore#BEAN_NAME_CLOSE_TAG}.
-     * @throws NullPointerException if input serviceName or requiredType is {@literal null}.
-     * @since 1.0.2
-     */
-    <S> boolean removeService(String serviceName, Class<S> requiredType);
 }

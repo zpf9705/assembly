@@ -39,14 +39,14 @@ import org.springframework.lang.NonNull;
  * In the {@code postProcessBeanDefinitionRegistry} method, this class traverses a predefined
  * list of Bean names (provided by {@code ServiceContextBeanNameGenerator#RECORD_BEAN_NAME}),
  * and for each Bean name in the list, it will retrieve the corresponding {@link BeanDefinition}
- * from the {@link BeanDefinitionRegistry} and set its scope to {@link ServiceContext#SUPPORT_SCOPE}.
+ * from the {@link BeanDefinitionRegistry} and set its scope to {@link ConfigurableServiceContext#SUPPORT_SCOPE}.
  * </li>
  * <li><strong>Register custom scope:</strong>
  * <p>
  * In the {@code postProcessBeanFactory} method, this class registers a  {@link Scope} scope
  * implementation class with BeanFactory and {@link ServiceScope} comes from the configuration
  * definition, named {@link ServiceScope}, which defines how to create, destroy, and manage the
- * lifecycle of beans under the {@link ServiceContext#SUPPORT_SCOPE} scope.
+ * lifecycle of beans under the {@link ConfigurableServiceContext#SUPPORT_SCOPE} scope.
  * </li>
  * </ul>
  *
@@ -84,12 +84,12 @@ public class ServiceScopeBeanPostProcessor implements BeanDefinitionRegistryPost
     public void postProcessBeanDefinitionRegistry(@NonNull BeanDefinitionRegistry registry) throws BeansException {
         for (String recordBeanName : serviceContextBeanNameGenerator.getRecordBeanNames()) {
             BeanDefinition beanDefinition = registry.getBeanDefinition(recordBeanName);
-            beanDefinition.setScope(ServiceContext.SUPPORT_SCOPE);
+            beanDefinition.setScope(ConfigurableServiceContext.SUPPORT_SCOPE);
         }
     }
 
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-        beanFactory.registerScope(ServiceContext.SUPPORT_SCOPE, serviceScope);
+        beanFactory.registerScope(ConfigurableServiceContext.SUPPORT_SCOPE, serviceScope);
     }
 }
