@@ -60,7 +60,7 @@ import java.io.Closeable;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public interface ServiceContext extends Closeable {
+public interface ServiceContext {
 
     /**
      * Define a constant to represent a custom scope name {@code service} for a
@@ -116,8 +116,8 @@ public interface ServiceContext extends Closeable {
      * @param requiredType type the bean must match,can be an interface or superclass.
      * @param <S>          the type of service to retrieve.
      * @return The service instance obtained by parsing the name and type.
-     * @throws NoAvailableServiceException    if there is no available service.
-     * @throws NullPointerException           if input serviceName or requiredType is {@literal null}.
+     * @throws NoAvailableServiceException if there is no available service.
+     * @throws NullPointerException        if input serviceName or requiredType is {@literal null}.
      */
     <S> S getService(String name, Class<S> requiredType) throws NoAvailableServiceException;
 
@@ -149,7 +149,7 @@ public interface ServiceContext extends Closeable {
      * @param <S>         the type of service to add.
      * @return If {@code true} is returned, it indicates successful addition; otherwise,
      * it indicates failed addition.
-     * @throws NullPointerException         if input serviceType is {@literal null}.
+     * @throws NullPointerException if input serviceType is {@literal null}.
      * @since 1.0.2
      */
     <S> boolean addService(@Nullable String name, Class<S> serviceType);
@@ -213,7 +213,7 @@ public interface ServiceContext extends Closeable {
      * @param serviceName the name of the service to remove.
      * @return If {@code true} is returned, the service has been successfully removed,
      * otherwise it does not exist or not end with {@code ServiceCore#BEAN_NAME_CLOSE_TAG}.
-     * @throws NullPointerException     if input serviceName is {@literal null}.
+     * @throws NullPointerException if input serviceName is {@literal null}.
      */
     boolean removeService(String serviceName);
 
@@ -241,7 +241,7 @@ public interface ServiceContext extends Closeable {
      * @param <S>          the type of service to remove.
      * @return If {@code true} is returned, the service has been successfully removed,
      * otherwise it does not exist or not end with {@code ServiceCore#BEAN_NAME_CLOSE_TAG}.
-     * @throws NullPointerException     if input serviceName or requiredType is {@literal null}.
+     * @throws NullPointerException if input serviceName or requiredType is {@literal null}.
      * @since 1.0.2
      */
     <S> boolean removeService(String serviceName, Class<S> requiredType);
