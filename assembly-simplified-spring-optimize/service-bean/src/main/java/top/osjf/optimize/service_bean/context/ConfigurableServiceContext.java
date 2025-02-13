@@ -26,7 +26,7 @@ import java.io.Closeable;
 import java.io.IOException;
 
 /**
- * {@code ConfigurableServiceContext} extends from the {@code ServiceContext}
+ * {@code ConfigurableServiceContext} extends from the {@code ListableServiceContext}
  * interface and adds options for adding and deleting service classes based
  * on the parent class interface, making its management more flexible.
  *
@@ -45,7 +45,7 @@ import java.io.IOException;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public interface ConfigurableServiceContext extends ServiceContext, Closeable {
+public interface ConfigurableServiceContext extends ListableServiceContext, Closeable {
 
     /**
      * Add a service instance based on the provided name and type, where the service
