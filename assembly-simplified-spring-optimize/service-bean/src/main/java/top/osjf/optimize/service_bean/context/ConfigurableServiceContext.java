@@ -18,28 +18,67 @@
 package top.osjf.optimize.service_bean.context;
 
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Component;
+import top.osjf.optimize.service_bean.annotation.ServiceCollection;
 
 import java.io.Closeable;
 import java.io.IOException;
 
 /**
+ * {@code ConfigurableServiceContext} extends from the {@code ServiceContext}
+ * interface and adds options for adding and deleting service classes based
+ * on the parent class interface, making its management more flexible.
+ *
+ * <p>The constant {@link #SUPPORT_SCOPE} in the interface defines a custom scope
+ * called {@code service}, which is used to specify the lifecycle and visibility
+ * of specific beans in Spring configuration. By implementing the custom scope
+ * {@link ServiceScope}, the behavior of this scope is further defined.
+ *
+ * <p>The configurable {@code ServiceContext} indicates the writable nature of
+ * the service class, and this interface allows for custom registration and
+ * deletion of service classes; And the {} interface has been implemented to
+ * clear the names and types of related beans that have already been recorded
+ * when necessary, so that necessary operations can be performed when the Spring
+ * container restarts.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
 public interface ConfigurableServiceContext extends ServiceContext, Closeable {
 
     /**
-     * Define a constant to represent a custom scope name {@code service} for a
-     * Bean in the Spring framework.
+     * Add a service instance based on the provided name and type, where the service
+     * name is not required to be provided and defaults to the encoded qualified name of the
+     * type.
      *
-     * <p>This constant means that it represents a custom scope named {@code service}
-     * , and in Spring configuration, the behavior of this scope can be defined through
-     * a specific class {@link ServiceScope}.
+     * <p>The setting of the name is passed like the value provided by the annotation
+     * {@link Component#value()}, which is dynamically passed here. The initialization of the
+     * instance is carried out by the implementation to ensure that the type has the necessary
+     * elements such as public construction methods.
      *
-     * @see org.springframework.beans.factory.config.Scope
-     * @see org.springframework.context.annotation.AnnotationScopeMetadataResolver
+     * <p>Only beans that have not been marked by Spring to be added to the container are supported,
+     * which means only dynamic bean registration is supported. Container objects that have been
+     * recognized by Spring will be automatically added to the current context, so this must be
+     * noted.
+     *
+     * <p>Service classes that meet the scanning conditions of the Spring framework will be
+     * executed, while other service classes that have not been scanned can be dynamically
+     * registered using this method. This method will dynamically create Spring beans and
+     * participate in renaming operations based on the parent class or interface of annotation
+     * {@link ServiceCollection} marked on this bean.
+     *
+     * @param name        the name of the service to add,can be empty, when empty,
+     *                    use a type qualified name instead.
+     * @param serviceType the type of service class added must be instantiated and the
+     *                    parent class or interface must meet the annotation {@link ServiceCollection}.
+     * @param <S>         the type of service to add.
+     * @return If {@code true} is returned, it indicates successful addition; otherwise,
+     * it indicates failed addition.
+     * @throws NullPointerException if input serviceType is {@literal null}.
+     * @since 1.0.2
      */
-    String SUPPORT_SCOPE = "service";
+    <S> boolean addService(@Nullable String name, Class<S> serviceType);
 
     /**
      * Return a boolean tag representing the result of deleting the corresponding
@@ -96,6 +135,10 @@ public interface ConfigurableServiceContext extends ServiceContext, Closeable {
      */
     <S> boolean removeService(String serviceName, Class<S> requiredType);
 
+
+    /**
+     * Close this service context, releasing all record service resources.
+     */
     @Override
     void close() throws IOException;
 }
