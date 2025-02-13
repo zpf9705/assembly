@@ -24,9 +24,7 @@ import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.lang.NonNull;
-import top.osjf.optimize.service_bean.context.ServiceContext;
-import top.osjf.optimize.service_bean.context.ServiceScope;
-import top.osjf.optimize.service_bean.context.ServiceScopeBeanPostProcessor;
+import top.osjf.optimize.service_bean.context.*;
 
 import java.lang.reflect.Field;
 
@@ -49,26 +47,44 @@ public class ServiceScopeBeanPostProcessorRegistrar implements ImportBeanDefinit
     public void registerBeanDefinitions(@NonNull AnnotationMetadata importingClassMetadata,
                                         @NonNull BeanDefinitionRegistry registry,
                                         @NonNull BeanNameGenerator importBeanNameGenerator) {
+        //register a bean of ServiceScope
+        BeanDefinitionBuilder serviceScopeBuilder = BeanDefinitionBuilder.genericBeanDefinition(ServiceScope.class);
+        registry.registerBeanDefinition(ServiceDefinitionUtils.INTERNAL_SERVICE_SCOPE_BEAN_NAME,
+                serviceScopeBuilder.getBeanDefinition());
+        //register a bean of ServiceScopeBeanPostProcessor
         BeanDefinitionBuilder builder
                 = BeanDefinitionBuilder.genericBeanDefinition(ServiceScopeBeanPostProcessor.class);
-        builder.addPropertyReference(SERVICE_SCOPE_FILE_NAME, ServiceContextConfiguration.INTERNAL_SERVICE_SCOPE_BEAN_NAME);
+        builder.addPropertyReference(SERVICE_SCOPE_FILE_NAME, ServiceDefinitionUtils.INTERNAL_SERVICE_SCOPE_BEAN_NAME);
+        builder.addPropertyReference(BEAN_NAME_GENERATOR_FILE_NAME,
+                ServiceDefinitionUtils.INTERNAL_BEAN_NAME_GENERATOR_BEAN_NAME);
         BeanDefinition beanDefinition = builder.getBeanDefinition();
         registry.registerBeanDefinition(importBeanNameGenerator.generateBeanName(beanDefinition, registry),
                 beanDefinition);
     }
 
     /*
-    *
-    * get the ServiceScope class field name in ServiceScopeBeanPostProcessor class
-    *
-    * */
+     *
+     * get the ServiceScope class field name in ServiceScopeBeanPostProcessor class
+     *
+     * */
 
     static String SERVICE_SCOPE_FILE_NAME;
+
+    /*
+     *
+     * get the ServiceContextBeanNameGenerator class field name in ServiceScopeBeanPostProcessor class
+     *
+     * */
+
+    static String BEAN_NAME_GENERATOR_FILE_NAME;
 
     static {
         for (Field declaredField : ServiceScopeBeanPostProcessor.class.getDeclaredFields()) {
             if (ServiceScope.class.isAssignableFrom(declaredField.getType())) {
                 SERVICE_SCOPE_FILE_NAME = declaredField.getName();
+            }
+            if (ServiceContextBeanNameGenerator.class.isAssignableFrom(declaredField.getType())) {
+                BEAN_NAME_GENERATOR_FILE_NAME = declaredField.getName();
             }
         }
     }
