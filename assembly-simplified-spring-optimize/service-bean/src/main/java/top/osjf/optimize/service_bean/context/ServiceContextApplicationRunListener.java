@@ -119,7 +119,10 @@ public class ServiceContextApplicationRunListener implements SpringApplicationRu
         Method method = ReflectionUtils
                 .findMethod(contextClass, "setBeanNameGenerator", BeanNameGenerator.class);
         if (method != null) {
-            ReflectionUtils.invokeMethod(method, context, new ServiceContextBeanNameGenerator());
+            ServiceContextBeanNameGenerator beanNameGenerator = new ServiceContextBeanNameGenerator();
+            context.getBeanFactory().registerSingleton(ServiceDefinitionUtils.INTERNAL_BEAN_NAME_GENERATOR_BEAN_NAME,
+                    beanNameGenerator);
+            ReflectionUtils.invokeMethod(method, context, beanNameGenerator);
         }
     }
 }
