@@ -74,16 +74,31 @@ public abstract class AbstractServiceContext implements ConfigurableServiceConte
         this.recordServiceBeanMap = serviceContextBeanNameGenerator.getRecordServiceBeanMap();
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Get serviceBean count by {@link #serviceContextBeanNameGenerator}.
+     */
     @Override
     public int getServiceBeanCount() {
         return recordServiceBeanMap.size();
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Get serviceBean names by {@link #serviceContextBeanNameGenerator}.
+     */
     @Override
     public String[] getServiceBeanNames() {
         return StringUtils.toStringArray(recordServiceBeanMap.keySet());
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Get serviceBean names for type by {@link #serviceContextBeanNameGenerator}.
+     */
     @Override
     public String[] getServiceBeanNamesForType(Class<?> type) throws NoAvailableServiceException {
         if (!isRecordType(type)) {
@@ -96,6 +111,11 @@ public abstract class AbstractServiceContext implements ConfigurableServiceConte
         return StringUtils.toStringArray(names);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Get type for serviceBean name by {@link #serviceContextBeanNameGenerator}.
+     */
     @Override
     public Class<?> getTypeForServiceBeanName(String serviceName) throws NoAvailableServiceException {
         if (!ServiceDefinitionUtils.isEnhancementServiceName(serviceName)
