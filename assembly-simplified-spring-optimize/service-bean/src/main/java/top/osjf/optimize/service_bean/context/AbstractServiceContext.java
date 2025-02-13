@@ -17,12 +17,13 @@
 package top.osjf.optimize.service_bean.context;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.lang.NonNull;
+
+import java.util.Set;
 
 /**
  * The abstract {@link ServiceContext} service class mainly adapts to
@@ -41,10 +42,13 @@ import org.springframework.lang.NonNull;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public abstract class AbstractServiceContext implements ServiceContext, ApplicationContextAware,
-        ApplicationListener<ContextRefreshedEvent> {
+public abstract class AbstractServiceContext implements ConfigurableServiceContext, ApplicationContextAware {
 
     private ApplicationContext context;
+
+    private ServiceContextBeanNameGenerator serviceContextBeanNameGenerator;
+
+    private Set<Class<?>> unmodifiableRecordTypes;
 
     @Override
     public void setApplicationContext(@NonNull ApplicationContext context) throws BeansException {
@@ -52,17 +56,19 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
     }
 
     /**
-     * {@inheritDoc}
-     * <p>
-     * After the container is refreshed, clear the collection of bean names marked
-     * in the cache.
+     * Inject {@code ServiceContextBeanNameGenerator} beans for internal use.
      *
-     * @param event event raised when an {@code ApplicationContext} gets
-     *              initialized or refreshed.
+     * <p>Retrieve the cached record type and use it as a subsequent API to verify
+     * whether it is a bean type supported by the record.
+     *
+     * @param serviceContextBeanNameGenerator an internal {@link ServiceContextBeanNameGenerator} instance.
      */
-    @Override
-    public void onApplicationEvent(@NonNull ContextRefreshedEvent event) {
-        ServiceContextBeanNameGenerator.clear();
+    @Autowired
+    public void setServiceContextBeanNameGenerator(
+            @Qualifier(ServiceDefinitionUtils.INTERNAL_BEAN_NAME_GENERATOR_BEAN_NAME)
+            ServiceContextBeanNameGenerator serviceContextBeanNameGenerator) {
+        this.serviceContextBeanNameGenerator = serviceContextBeanNameGenerator;
+        this.unmodifiableRecordTypes = serviceContextBeanNameGenerator.getRecordBeanTypes();
     }
 
     /**
@@ -75,9 +81,18 @@ public abstract class AbstractServiceContext implements ServiceContext, Applicat
      */
     @Override
     public void close() {
-        if (context instanceof ConfigurableApplicationContext) {
-            ((ConfigurableApplicationContext) context).close();
-        }
+        serviceContextBeanNameGenerator.close();
+    }
+
+    /**
+     * Return a {@code Boolean} type indicating whether the input type is a record type.
+     *
+     * @param type the given type.
+     * @return If {@code true} is returned, it represents the type of record, otherwise
+     * it is not.
+     */
+    protected boolean isRecordType(Class<?> type) {
+        return unmodifiableRecordTypes.contains(type);
     }
 
     /**
