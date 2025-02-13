@@ -22,8 +22,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import top.osjf.optimize.service_bean.annotation.ServiceCollection;
 
-import java.io.Closeable;
-
 /**
  * The {@code ServiceContext} interface defines the interaction specifications
  * with service beans in the Spring framework, including the retrieval, addition,
@@ -31,9 +29,7 @@ import java.io.Closeable;
  *
  * <p>It provides a mechanism that allows fine-grained management of service beans
  * outside the Spring container or within a specific scope, thereby enhancing the
- * flexibility and scalability of the Spring framework and extend Java's {@link Closeable}
- * interface to elegantly close Spring's {@link ApplicationContext} by calling the
- * {@link #close()} method of this interface.
+ * flexibility and scalability of the Spring framework.
  *
  * <p>The constant {@link #SUPPORT_SCOPE} in the interface defines a custom scope
  * called {@code service}, which is used to specify the lifecycle and visibility
@@ -89,8 +85,8 @@ public interface ServiceContext {
      * <p>
      * <strong>Note:</strong>
      * <p>The transmission of this name requires the use of the original core processing
-     * class {@link ServiceCore} method {@code ServiceCore#enhancement}, which has been specially
-     * processed.
+     * class {@link ServiceDefinitionUtils} method {@code ServiceCore#enhancement}, which has been
+     * specially processed.
      *
      * @param name the name of the service to retrieve.
      * @param <S>  the type of service to retrieve.
@@ -164,8 +160,8 @@ public interface ServiceContext {
      * <p>
      * <strong>Note:</strong>
      * <p>The transmission of this name requires the use of the original core processing
-     * class {@link ServiceCore} method {@code ServiceCore#enhancement}, which has been specially
-     * processed.
+     * class {@link ServiceDefinitionUtils} method {@code ServiceCore#enhancement}, which has
+     * been specially processed.
      *
      * @param name the name of the service to contains.
      * @return If {@code true} is returned, this service exists, otherwise it does not exist.
@@ -206,7 +202,7 @@ public interface ServiceContext {
      * <p>
      * <strong>Note:</strong>
      * <p>The transmission of this service name requires the use of the original core
-     * processing class {@link ServiceCore} method {@code ServiceCore#enhancement}
+     * processing class {@link ServiceDefinitionUtils} method {@code ServiceCore#enhancement}
      * and it must be a service name ending with {@code ServiceCore#BEAN_NAME_CLOSE_TAG}
      * , which has been specially processed.
      *
