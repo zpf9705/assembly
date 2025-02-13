@@ -22,8 +22,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.lang.NonNull;
+import org.springframework.util.StringUtils;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The abstract {@link ServiceContext} service class mainly adapts to
@@ -48,7 +51,7 @@ public abstract class AbstractServiceContext implements ConfigurableServiceConte
 
     private ServiceContextBeanNameGenerator serviceContextBeanNameGenerator;
 
-    private Set<Class<?>> unmodifiableRecordTypes;
+    private Map<String, Class<?>> recordServiceBeanMap;
 
     @Override
     public void setApplicationContext(@NonNull ApplicationContext context) throws BeansException {
@@ -68,7 +71,38 @@ public abstract class AbstractServiceContext implements ConfigurableServiceConte
             @Qualifier(ServiceDefinitionUtils.INTERNAL_BEAN_NAME_GENERATOR_BEAN_NAME)
             ServiceContextBeanNameGenerator serviceContextBeanNameGenerator) {
         this.serviceContextBeanNameGenerator = serviceContextBeanNameGenerator;
-        this.unmodifiableRecordTypes = serviceContextBeanNameGenerator.getRecordBeanTypes();
+        this.recordServiceBeanMap = serviceContextBeanNameGenerator.getRecordServiceBeanMap();
+    }
+
+    @Override
+    public int getServiceBeanCount() {
+        return recordServiceBeanMap.size();
+    }
+
+    @Override
+    public String[] getServiceBeanNames() {
+        return StringUtils.toStringArray(recordServiceBeanMap.keySet());
+    }
+
+    @Override
+    public String[] getServiceBeanNamesForType(Class<?> type) throws NoAvailableServiceException {
+        if (!isRecordType(type)) {
+            throw new NoAvailableServiceException(type);
+        }
+        List<String> names = new ArrayList<>();
+        recordServiceBeanMap.forEach((n, c) -> {
+            if (c == type) names.add(n);
+        });
+        return StringUtils.toStringArray(names);
+    }
+
+    @Override
+    public Class<?> getTypeForServiceBeanName(String serviceName) throws NoAvailableServiceException {
+        if (!ServiceDefinitionUtils.isEnhancementServiceName(serviceName)
+                || !recordServiceBeanMap.containsKey(serviceName)) {
+            throw new NoAvailableServiceException(serviceName);
+        }
+        return recordServiceBeanMap.get(serviceName);
     }
 
     /**
@@ -92,7 +126,7 @@ public abstract class AbstractServiceContext implements ConfigurableServiceConte
      * it is not.
      */
     protected boolean isRecordType(Class<?> type) {
-        return unmodifiableRecordTypes.contains(type);
+        return recordServiceBeanMap.containsValue(type);
     }
 
     /**
