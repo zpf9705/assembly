@@ -82,7 +82,7 @@ public class ServiceScopeBeanPostProcessor implements BeanDefinitionRegistryPost
 
     @Override
     public void postProcessBeanDefinitionRegistry(@NonNull BeanDefinitionRegistry registry) throws BeansException {
-        for (String recordBeanName : serviceContextBeanNameGenerator.getRecordBeanNames()) {
+        for (String recordBeanName : serviceContextBeanNameGenerator.getRecordServiceBeanMap().keySet()) {
             BeanDefinition beanDefinition = registry.getBeanDefinition(recordBeanName);
             beanDefinition.setScope(ServiceContext.SUPPORT_SCOPE);
         }
