@@ -37,6 +37,15 @@ public class NoAvailableServiceException extends IllegalStateException {
     }
 
     /**
+     * Creates a new {@code NoAvailableServiceException} by given requiredType.
+     *
+     * @param requiredType the given requiredType.
+     */
+    public NoAvailableServiceException(Class<?> requiredType) {
+        super("No available service typed " + requiredType + ".");
+    }
+
+    /**
      * Creates a new {@code NoAvailableServiceException} by given serviceName
      * and given requiredType.
      *
