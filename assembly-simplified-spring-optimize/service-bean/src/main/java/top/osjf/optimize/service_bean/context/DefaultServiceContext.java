@@ -25,7 +25,6 @@ import org.springframework.beans.factory.BeanNotOfRequiredTypeException;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.lang.Nullable;
@@ -51,7 +50,7 @@ import java.util.Objects;
  */
 public class DefaultServiceContext extends AbstractServiceContext {
 
-    private static final Logger logger = LoggerFactory.getLogger(ServiceContext.class);
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * {@inheritDoc}
@@ -67,7 +66,7 @@ public class DefaultServiceContext extends AbstractServiceContext {
     @Override
     @SuppressWarnings("unchecked")
     public <S> S getService(String name) throws NoAvailableServiceException {
-        ApplicationContext applicationContext = getContext();
+        ApplicationContext applicationContext = unwrapContext().getApplicationContext();
         if (!ServiceDefinitionUtils.isEnhancementServiceName(name)
                 || !applicationContext.containsBean(name)) {
             throw new NoAvailableServiceException(name);
@@ -88,7 +87,7 @@ public class DefaultServiceContext extends AbstractServiceContext {
      */
     @Override
     public <S> S getService(String name, Class<S> requiredType) throws NoAvailableServiceException {
-        ApplicationContext applicationContext = getContext();
+        ApplicationContext applicationContext = unwrapContext().getApplicationContext();
         S service = null;
         String enhancementName = ServiceDefinitionUtils.getEnhancementName(name, requiredType, isRecordType(requiredType));
         if (applicationContext.containsBean(enhancementName)) {
@@ -141,10 +140,10 @@ public class DefaultServiceContext extends AbstractServiceContext {
                 .setScope(ServiceContext.SUPPORT_SCOPE);
         BeanDefinitionReaderUtils.registerBeanDefinition
                 (new BeanDefinitionHolder(builder.getBeanDefinition(), beanName,
-                        alisaNames.toArray(new String[]{})), unwrapApplicationContext(BeanDefinitionRegistry.class));
+                        alisaNames.toArray(new String[]{})), unwrapContext().getBeanDefinitionRegistry());
 
         //After registration, activate the bean and initialize it.
-        getContext().getBean(beanName, serviceType);
+        unwrapContext().getApplicationContext().getBean(beanName, serviceType);
 
         if (logger.isInfoEnabled()) {
             logger.info("Created a dynamic bean for name {} and type {}.", beanName, serviceType.getName());
@@ -154,13 +153,14 @@ public class DefaultServiceContext extends AbstractServiceContext {
 
     @Override
     public boolean containsService(String name) {
-        return ServiceDefinitionUtils.isEnhancementServiceName(name) && getContext().containsBean(name);
+        return ServiceDefinitionUtils.isEnhancementServiceName(name) &&
+                unwrapContext().getApplicationContext().containsBean(name);
     }
 
     @Override
     public <S> boolean containsService(String name, Class<S> requiredType) {
         String enhancementName = ServiceDefinitionUtils.getEnhancementName(name, requiredType, isRecordType(requiredType));
-        return getContext().containsBean(enhancementName);
+        return unwrapContext().getApplicationContext().containsBean(enhancementName);
     }
 
     /**
@@ -173,11 +173,12 @@ public class DefaultServiceContext extends AbstractServiceContext {
      */
     @Override
     public boolean removeService(String serviceName) {
+        ConfigurableApplicationContext applicationContext = unwrapContext().getConfigurableApplicationContext();
         if (!ServiceDefinitionUtils.isEnhancementBeanServiceName(serviceName)
-                || !getContext().containsBean(serviceName)) {
+                || !applicationContext.containsBean(serviceName)) {
             return false;
         }
-        unwrapApplicationContext(ConfigurableApplicationContext.class)
+        applicationContext
                 .getBeanFactory()
                 .destroyScopedBean(serviceName);
         return true;
@@ -197,10 +198,11 @@ public class DefaultServiceContext extends AbstractServiceContext {
     public <S> boolean removeService(String serviceName, Class<S> requiredType) {
         String enhancementBeanName = ServiceDefinitionUtils.getEnhancementBeanName(serviceName, requiredType,
                 isRecordType(requiredType));
-        if (StringUtils.isBlank(enhancementBeanName) || !getContext().containsBean(enhancementBeanName)) {
+        ConfigurableApplicationContext applicationContext = unwrapContext().getConfigurableApplicationContext();
+        if (StringUtils.isBlank(enhancementBeanName) || !applicationContext.containsBean(enhancementBeanName)) {
             return false;
         }
-        unwrapApplicationContext(ConfigurableApplicationContext.class)
+        applicationContext
                 .getBeanFactory()
                 .destroyScopedBean(enhancementBeanName);
         return true;
