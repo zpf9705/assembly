@@ -132,19 +132,25 @@ public class ServiceContextBeanNameGenerator extends AnnotationBeanNameGenerator
 
     private ServiceTypeRegistry getServiceTypeRegistry(BeanDefinitionRegistry registry) {
         if (registry instanceof SingletonBeanRegistry) {
-            ServiceTypeRegistry serviceTypeRegistry = new ServiceTypeRegistry();
-            ((SingletonBeanRegistry) registry)
-                    .registerSingleton(ServiceDefinitionUtils.INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME, serviceTypeRegistry);
-            return serviceTypeRegistry;
+            SingletonBeanRegistry singletonBeanRegistry = (SingletonBeanRegistry) registry;
+            if (!singletonBeanRegistry
+                    .containsSingleton(ServiceDefinitionUtils.INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME)) {
+                singletonBeanRegistry
+                        .registerSingleton(ServiceDefinitionUtils.INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME,
+                                new ServiceTypeRegistry());
+
+            }
+            return (ServiceTypeRegistry) singletonBeanRegistry
+                    .getSingleton(ServiceDefinitionUtils.INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME);
         } else if (registry instanceof BeanFactory) {
             BeanFactory beanFactory = (BeanFactory) registry;
             if (!beanFactory.containsBean(ServiceDefinitionUtils.INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME)) {
                 registry.registerBeanDefinition(ServiceDefinitionUtils.INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME,
                         BeanDefinitionBuilder.genericBeanDefinition(ServiceTypeRegistry.class).getBeanDefinition());
             }
-            return beanFactory.getBean(ServiceDefinitionUtils.INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME,
-                    ServiceTypeRegistry.class);
+            return beanFactory
+                    .getBean(ServiceDefinitionUtils.INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME, ServiceTypeRegistry.class);
         }
-        throw new IllegalStateException(registry.getClass() + " not a BeanFactory instance");
+        throw new IllegalStateException(registry.getClass() + " not a SingletonBeanRegistry or BeanFactory");
     }
 }
