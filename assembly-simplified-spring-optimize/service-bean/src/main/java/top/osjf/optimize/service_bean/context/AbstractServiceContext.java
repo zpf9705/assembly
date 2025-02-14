@@ -63,6 +63,8 @@ public abstract class AbstractServiceContext implements ConfigurableServiceConte
     /**
      * Inject {@code ServiceTypeRegistry} beans for internal use.
      *
+     * <p>Inject this instance to dynamically manage the records of injected service types.
+     *
      * @param serviceTypeRegistry an internal {@link ServiceTypeRegistry} instance.
      */
     @Autowired
