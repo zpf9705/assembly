@@ -17,6 +17,8 @@
 
 package top.osjf.optimize.service_bean.context;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.boot.SpringApplication;
@@ -47,6 +49,8 @@ import java.util.Objects;
  * @since 1.0.3
  */
 public class ServiceContextApplicationRunListener implements SpringApplicationRunListener {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceContextApplicationRunListener.class);
 
     /**
      * The main class for launching the Spring framework.
@@ -120,6 +124,13 @@ public class ServiceContextApplicationRunListener implements SpringApplicationRu
                 .findMethod(contextClass, "setBeanNameGenerator", BeanNameGenerator.class);
         if (method != null) {
             ReflectionUtils.invokeMethod(method, context, new ServiceContextBeanNameGenerator());
+        } else {
+            if (LOGGER.isWarnEnabled()) {
+                LOGGER.warn("The {} method was not found in the context object {}, which means that the " +
+                                "custom service name generator setting failed, resulting in the automatic collection" +
+                                " of this service framework not taking effect. Please pay attention.",
+                        "setBeanNameGenerator", context.getClass());
+            }
         }
     }
 }
