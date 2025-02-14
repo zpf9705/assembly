@@ -37,7 +37,7 @@ public class ServiceTypeRegistry implements Closeable {
     /**
      * This is a thread-safe map that stores mappings of service names to their types.
      */
-    private final Map<String, Class<?>> serviceTypeMap = new ConcurrentHashMap<>();
+    private final Map<String, Class<?>> serviceTypeMap = new ConcurrentHashMap<>(64);
 
     /**
      * Registers the specified service name and type in the service type map.
