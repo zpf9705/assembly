@@ -46,7 +46,7 @@ public class ServiceTypeRegistry implements Closeable {
      * @param serviceName the name of the service
      * @param type        the type of the service
      */
-    protected void registerServiceType(String serviceName, Class<?> type) {
+    public void registerServiceType(String serviceName, Class<?> type) {
         serviceTypeMap.putIfAbsent(serviceName, type);
     }
 
@@ -59,7 +59,7 @@ public class ServiceTypeRegistry implements Closeable {
      * @return the removed service type, or {@code null} if the service name does not exist.
      */
     @Nullable
-    protected Class<?> removeServiceType(String serviceName) {
+    public Class<?> removeServiceType(String serviceName) {
         return serviceTypeMap.remove(serviceName);
     }
 
@@ -69,7 +69,7 @@ public class ServiceTypeRegistry implements Closeable {
      *
      * @return an unmodifiable view of the service type map.
      */
-    protected Map<String, Class<?>> getServiceTypeMap() {
+    public Map<String, Class<?>> getServiceTypeMap() {
         return Collections.unmodifiableMap(serviceTypeMap);
     }
 
