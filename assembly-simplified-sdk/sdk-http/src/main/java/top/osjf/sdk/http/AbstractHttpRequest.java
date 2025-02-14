@@ -27,6 +27,8 @@ import top.osjf.sdk.http.client.DefaultHttpClient;
 import top.osjf.sdk.http.support.HttpSdkSupport;
 
 import java.lang.reflect.Type;
+import java.nio.charset.Charset;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -119,7 +121,7 @@ public abstract class AbstractHttpRequest<R extends AbstractHttpResponse> extend
             String contentType = HttpSdkSupport.getContentTypeWithBody(requestParam, getCharset());
             if (StringUtils.isNotBlank(contentType)) {
                 headers = new LinkedHashMap<>();
-                headers.put(CONTENT_TYPE_HEADER_NAME, contentType);
+                headers.put(CONTENT_TYPE_HEADER_NAME, appendCharsetToContentType(contentType));
             }
         }
         headers = resolveAdditionalHeaders(headers);
@@ -155,6 +157,22 @@ public abstract class AbstractHttpRequest<R extends AbstractHttpResponse> extend
     @Override
     public boolean isAssignableRequest(Class<?> clazz) {
         return HttpRequest.class.isAssignableFrom(clazz);
+    }
+
+    /**
+     * Appends the character set to the given content type if a character set is available.
+     *
+     * @param contentType the original content type header value
+     * @return the content type header value with the character set appended, or the original
+     * value if no character set is available
+     * @since 1.0.3
+     */
+    protected String appendCharsetToContentType(String contentType) {
+        Charset charset = getCharset();
+        if (charset != null) {
+            return contentType + ";charset=" + charset;
+        }
+        return contentType;
     }
 
     /**
@@ -207,6 +225,6 @@ public abstract class AbstractHttpRequest<R extends AbstractHttpResponse> extend
      * @since 1.0.2
      */
     protected Map<String, Object> additionalHeaders() {
-        return null;
+        return Collections.emptyMap();
     }
 }

@@ -83,7 +83,7 @@ public abstract class JsonSerialHttpRequest<R extends AbstractHttpResponse> exte
         Map<String, Object> jsonHeaders = null;
         if (getParam() != null) {
             jsonHeaders = new LinkedHashMap<>();
-            jsonHeaders.put(HttpSdkSupport.CONTENT_TYPE_NAME, "application/json");
+            jsonHeaders.put(HttpSdkSupport.CONTENT_TYPE_NAME, appendCharsetToContentType("application/json"));
         }
         return resolveAdditionalHeaders(jsonHeaders);
     }
