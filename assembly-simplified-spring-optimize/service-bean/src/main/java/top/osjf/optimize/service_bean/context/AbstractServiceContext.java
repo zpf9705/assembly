@@ -51,9 +51,9 @@ public abstract class AbstractServiceContext implements ConfigurableServiceConte
 
     private UnwrapApplicationContext unwrapApplicationContext;
 
-    private ServiceContextBeanNameGenerator serviceContextBeanNameGenerator;
+    private ServiceTypeRegistry serviceTypeRegistry;
 
-    private Map<String, Class<?>> recordServiceBeanMap;
+    private Map<String, Class<?>> serviceTypeMap;
 
     @Override
     public void setApplicationContext(@NonNull ApplicationContext context) throws BeansException {
@@ -61,47 +61,47 @@ public abstract class AbstractServiceContext implements ConfigurableServiceConte
     }
 
     /**
-     * Inject {@code ServiceContextBeanNameGenerator} beans for internal use.
+     * Inject {@code ServiceTypeRegistry} beans for internal use.
      *
-     * <p>Retrieve the cached record type and use it as a subsequent API to verify
-     * whether it is a bean type supported by the record.
-     *
-     * @param serviceContextBeanNameGenerator an internal {@link ServiceContextBeanNameGenerator} instance.
+     * @param serviceTypeRegistry an internal {@link ServiceTypeRegistry} instance.
      */
     @Autowired
-    public void setServiceContextBeanNameGenerator(
-            @Qualifier(ServiceDefinitionUtils.INTERNAL_BEAN_NAME_GENERATOR_BEAN_NAME)
-            ServiceContextBeanNameGenerator serviceContextBeanNameGenerator) {
-        this.serviceContextBeanNameGenerator = serviceContextBeanNameGenerator;
-        this.recordServiceBeanMap = serviceContextBeanNameGenerator.getRecordServiceBeanMap();
+    public void setServiceTypeRegistry(
+            @Qualifier(ServiceDefinitionUtils.INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME)
+            ServiceTypeRegistry serviceTypeRegistry) {
+        this.serviceTypeRegistry = serviceTypeRegistry;
+        this.serviceTypeMap = serviceTypeRegistry.getServiceTypeMap();
     }
 
     /**
      * {@inheritDoc}
      * <p>
-     * Get serviceBean count by {@link #serviceContextBeanNameGenerator}.
+     * Get serviceBean count by {@link #serviceTypeRegistry}.
+     *
      * @since 1.0.3
      */
     @Override
     public int getServiceBeanCount() {
-        return recordServiceBeanMap.size();
+        return serviceTypeMap.size();
     }
 
     /**
      * {@inheritDoc}
      * <p>
-     * Get serviceBean names by {@link #serviceContextBeanNameGenerator}.
+     * Get serviceBean names by {@link #serviceTypeRegistry}.
+     *
      * @since 1.0.3
      */
     @Override
     public String[] getServiceBeanNames() {
-        return StringUtils.toStringArray(recordServiceBeanMap.keySet());
+        return StringUtils.toStringArray(serviceTypeMap.keySet());
     }
 
     /**
      * {@inheritDoc}
      * <p>
-     * Get serviceBean names for type by {@link #serviceContextBeanNameGenerator}.
+     * Get serviceBean names for type by {@link #serviceTypeRegistry}.
+     *
      * @since 1.0.3
      */
     @Override
@@ -110,7 +110,7 @@ public abstract class AbstractServiceContext implements ConfigurableServiceConte
             throw new NoAvailableServiceException(type);
         }
         List<String> names = new ArrayList<>();
-        recordServiceBeanMap.forEach((n, c) -> {
+        serviceTypeMap.forEach((n, c) -> {
             if (c == type) names.add(n);
         });
         return StringUtils.toStringArray(names);
@@ -119,16 +119,17 @@ public abstract class AbstractServiceContext implements ConfigurableServiceConte
     /**
      * {@inheritDoc}
      * <p>
-     * Get type for serviceBean name by {@link #serviceContextBeanNameGenerator}.
+     * Get type for serviceBean name by {@link #serviceTypeRegistry}.
+     *
      * @since 1.0.3
      */
     @Override
     public Class<?> getTypeForServiceBeanName(String serviceName) throws NoAvailableServiceException {
         if (!ServiceDefinitionUtils.isEnhancementServiceName(serviceName)
-                || !recordServiceBeanMap.containsKey(serviceName)) {
+                || !serviceTypeMap.containsKey(serviceName)) {
             throw new NoAvailableServiceException(serviceName);
         }
-        return recordServiceBeanMap.get(serviceName);
+        return serviceTypeMap.get(serviceName);
     }
 
     @Override
@@ -140,11 +141,18 @@ public abstract class AbstractServiceContext implements ConfigurableServiceConte
      * {@inheritDoc}
      * <p>
      * Clear the relevant service class information that has already been loaded
-     * in {@link #serviceContextBeanNameGenerator}.
+     * in {@link #serviceTypeRegistry}.
      */
     @Override
     public void close() {
-        serviceContextBeanNameGenerator.close();
+        serviceTypeRegistry.close();
+    }
+
+    /**
+     * @return A service type registry class that stores and manages.
+     */
+    protected ServiceTypeRegistry getServiceTypeRegistry() {
+        return serviceTypeRegistry;
     }
 
     /**
@@ -162,6 +170,6 @@ public abstract class AbstractServiceContext implements ConfigurableServiceConte
      * it is not.
      */
     protected boolean isRecordType(Class<?> type) {
-        return recordServiceBeanMap.containsValue(type);
+        return serviceTypeMap.containsValue(type);
     }
 }
