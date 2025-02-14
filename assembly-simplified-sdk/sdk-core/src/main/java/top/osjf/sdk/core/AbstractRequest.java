@@ -198,7 +198,7 @@ public abstract class AbstractRequest<R extends AbstractResponse> implements Req
      * @return the default conversion response type.
      */
     @Nullable
-    public Type defResponseType() {
+    protected Type defResponseType() {
         return DefaultErrorResponse.class;
     }
 

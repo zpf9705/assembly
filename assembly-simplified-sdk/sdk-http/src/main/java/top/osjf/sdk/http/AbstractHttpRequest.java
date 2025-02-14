@@ -131,7 +131,7 @@ public abstract class AbstractHttpRequest<R extends AbstractHttpResponse> extend
 
     @Nullable
     @Override
-    public Type defResponseType() {
+    protected Type defResponseType() {
         return HttpResultResponse.class;
     }
 
