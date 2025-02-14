@@ -27,10 +27,11 @@ import top.osjf.sdk.http.client.DefaultHttpClient;
 import top.osjf.sdk.http.support.HttpSdkSupport;
 
 import java.lang.reflect.Type;
-import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import static top.osjf.sdk.http.support.HttpSdkSupport.CONTENT_TYPE_NAME;
 
 /**
  * The {@code AbstractHttpRequest} class is an abstract class that extends
@@ -65,8 +66,6 @@ public abstract class AbstractHttpRequest<R extends AbstractHttpResponse> extend
 
     private static final long serialVersionUID = 7487068349280012103L;
 
-    private static final String CONTENT_TYPE_HEADER_NAME = "Content-Type";
-
     /**
      * {@inheritDoc}
      *
@@ -97,7 +96,7 @@ public abstract class AbstractHttpRequest<R extends AbstractHttpResponse> extend
      *
      * <p>This method can be rewritten to automatically recognize and add the request
      * header attribute using a non-null {@link #getRequestParam()} parameter when the
-     * {@link #CONTENT_TYPE_HEADER_NAME} request header is not set. It supports the
+     * {@link HttpSdkSupport#CONTENT_TYPE_NAME} request header is not set. It supports the
      * following types of recognition:
      * <ul>
      * <li>{@code application/json}</li>
@@ -116,17 +115,19 @@ public abstract class AbstractHttpRequest<R extends AbstractHttpResponse> extend
     @Override
     public Map<String, Object> getHeadMap() {
         Object requestParam = getRequestParam();
-        Map<String, Object> headers = null;
+        Map<String, Object> headers = new LinkedHashMap<>();
         if (requestParam != null) {
             String contentType = HttpSdkSupport.getContentTypeWithBody(requestParam, getCharset());
             if (StringUtils.isNotBlank(contentType)) {
-                headers = new LinkedHashMap<>();
-                headers.put(CONTENT_TYPE_HEADER_NAME, appendCharsetToContentType(contentType));
+                headers.put(CONTENT_TYPE_NAME,
+                        HttpSdkSupport.appendCharsetToContentType(contentType, getCharset()));
             }
         }
-        headers = resolveAdditionalHeaders(headers);
-        if (MapUtils.isNotEmpty(headers)) return headers;
-        return super.getHeadMap();
+        Map<String, Object> additionalHeaders = additionalHeaders();
+        if (MapUtils.isNotEmpty(additionalHeaders)){
+            headers.putAll(additionalHeaders);
+        }
+        return headers;
     }
 
     @Nullable
@@ -160,22 +161,6 @@ public abstract class AbstractHttpRequest<R extends AbstractHttpResponse> extend
     }
 
     /**
-     * Appends the character set to the given content type if a character set is available.
-     *
-     * @param contentType the original content type header value
-     * @return the content type header value with the character set appended, or the original
-     * value if no character set is available
-     * @since 1.0.3
-     */
-    protected String appendCharsetToContentType(String contentType) {
-        Charset charset = getCharset();
-        if (charset != null) {
-            return contentType + ";charset=" + charset;
-        }
-        return contentType;
-    }
-
-    /**
      * Format the actual request address of the SDK and concatenate subsequent URLs.
      *
      * <p>Here, the splicing parameters of the {@link #urlJoin()} method will be
@@ -194,24 +179,6 @@ public abstract class AbstractHttpRequest<R extends AbstractHttpResponse> extend
         if (protocol != null) url = protocol.formatUrl(url);
         String uj = urlJoin();
         return url + (StringUtils.isNotBlank(uj) ? uj : "");
-    }
-
-    /**
-     * Given a request header map, process adding additional user-defined
-     * request headers. When the provided request header is empty, provide
-     * a new {@code LinkedHashMap} and add the custom request header.
-     *
-     * @param headers given header map.
-     * @return resolve result header map.
-     * @since 1.0.2
-     */
-    protected final Map<String, Object> resolveAdditionalHeaders(Map<String, Object> headers) {
-        Map<String, Object> additionalHeads = additionalHeaders();
-        if (MapUtils.isNotEmpty(additionalHeads)) {
-            if (MapUtils.isEmpty(headers)) headers = new LinkedHashMap<>();
-            headers.putAll(additionalHeads);
-        }
-        return headers;
     }
 
     /**

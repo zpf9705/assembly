@@ -18,6 +18,7 @@ package top.osjf.sdk.http;
 
 import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.util.JSONUtil;
+import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.http.support.HttpSdkSupport;
 
 import java.util.LinkedHashMap;
@@ -80,12 +81,16 @@ public abstract class JsonSerialHttpRequest<R extends AbstractHttpResponse> exte
      */
     @Override
     public final Map<String, Object> getHeadMap() {
-        Map<String, Object> jsonHeaders = null;
+        Map<String, Object> jhs = new LinkedHashMap<>();
         if (getParam() != null) {
-            jsonHeaders = new LinkedHashMap<>();
-            jsonHeaders.put(HttpSdkSupport.CONTENT_TYPE_NAME, appendCharsetToContentType("application/json"));
+            jhs.put(HttpSdkSupport.CONTENT_TYPE_NAME,
+                    HttpSdkSupport.appendCharsetToContentType("application/json", getCharset()));
         }
-        return resolveAdditionalHeaders(jsonHeaders);
+        Map<String, Object> additionalHeaders = additionalHeaders();
+        if (MapUtils.isNotEmpty(additionalHeaders)){
+            jhs.putAll(additionalHeaders);
+        }
+        return jhs;
     }
 
     /**

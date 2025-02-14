@@ -161,6 +161,22 @@ public abstract class HttpSdkSupport extends SdkSupport {
     }
 
     /**
+     * Appends the character set to the given content type if a character set is available.
+     *
+     * @param contentType the original content type header value
+     * @return the content type header value with the character set appended, or the original
+     * value if no character set is available
+     * @throws NullPointerException if input contentType is {@literal null}.
+     * @since 1.0.3
+     */
+    public static String appendCharsetToContentType(String contentType, @Nullable Charset charset) {
+        if (charset != null) {
+            return contentType + ";charset=" + charset;
+        }
+        return contentType;
+    }
+
+    /**
      * Converts an object to a Map format suitable for URL concatenation.
      *
      * <p>The conversion logic is as follows:</p>
