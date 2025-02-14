@@ -164,6 +164,7 @@ public abstract class HttpSdkSupport extends SdkSupport {
      * Appends the character set to the given content type if a character set is available.
      *
      * @param contentType the original content type header value
+     * @param charset     the character set to append
      * @return the content type header value with the character set appended, or the original
      * value if no character set is available
      * @throws NullPointerException if input contentType is {@literal null}.
