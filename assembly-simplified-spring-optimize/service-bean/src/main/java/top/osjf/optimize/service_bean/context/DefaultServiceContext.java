@@ -145,8 +145,11 @@ public class DefaultServiceContext extends AbstractServiceContext {
         //After registration, activate the bean and initialize it.
         unwrapContext().getApplicationContext().getBean(beanName, serviceType);
 
-        if (logger.isInfoEnabled()) {
-            logger.info("Created a dynamic bean for name {} and type {}.", beanName, serviceType.getName());
+        //Registration service type related information.
+        getServiceTypeRegistry().registerServiceType(beanName, serviceType);
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Dynamic Created a service bean for name {} and type {}.", beanName, serviceType.getName());
         }
         return true;
     }
