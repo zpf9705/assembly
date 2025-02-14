@@ -131,7 +131,7 @@ public class DefaultServiceContext extends AbstractServiceContext {
 
         List<String> alisaNames = new ArrayList<>();
         for (Class<?> targetServiceType : targetServiceTypes) {
-            alisaNames.add(ServiceDefinitionUtils.enhancementAlisaName(targetServiceType, beanName));
+            alisaNames.add(ServiceDefinitionUtils.enhancementAlisaName(targetServiceType, name));
         }
 
         //Because beans that can be recognized by the Spring container will already be automatically

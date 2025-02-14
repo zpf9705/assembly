@@ -69,7 +69,8 @@ public interface ConfigurableServiceContext extends ListableServiceContext, Clos
      * {@link ServiceCollection} marked on this bean.
      *
      * @param name        the name of the service to add,can be empty, when empty,
-     *                    use a type qualified name instead.
+     *                    use a type qualified name instead,such as "Example",if empty,
+     *                    default use "example".
      * @param serviceType the type of service class added must be instantiated and the
      *                    parent class or interface must meet the annotation {@link ServiceCollection}.
      * @param <S>         the type of service to add.
