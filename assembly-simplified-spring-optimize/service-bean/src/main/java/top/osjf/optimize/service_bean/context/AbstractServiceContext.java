@@ -78,6 +78,7 @@ public abstract class AbstractServiceContext implements ConfigurableServiceConte
      * {@inheritDoc}
      * <p>
      * Get serviceBean count by {@link #serviceContextBeanNameGenerator}.
+     * @since 1.0.3
      */
     @Override
     public int getServiceBeanCount() {
@@ -88,6 +89,7 @@ public abstract class AbstractServiceContext implements ConfigurableServiceConte
      * {@inheritDoc}
      * <p>
      * Get serviceBean names by {@link #serviceContextBeanNameGenerator}.
+     * @since 1.0.3
      */
     @Override
     public String[] getServiceBeanNames() {
@@ -98,6 +100,7 @@ public abstract class AbstractServiceContext implements ConfigurableServiceConte
      * {@inheritDoc}
      * <p>
      * Get serviceBean names for type by {@link #serviceContextBeanNameGenerator}.
+     * @since 1.0.3
      */
     @Override
     public String[] getServiceBeanNamesForType(Class<?> type) throws NoAvailableServiceException {
@@ -115,6 +118,7 @@ public abstract class AbstractServiceContext implements ConfigurableServiceConte
      * {@inheritDoc}
      * <p>
      * Get type for serviceBean name by {@link #serviceContextBeanNameGenerator}.
+     * @since 1.0.3
      */
     @Override
     public Class<?> getTypeForServiceBeanName(String serviceName) throws NoAvailableServiceException {
@@ -128,10 +132,8 @@ public abstract class AbstractServiceContext implements ConfigurableServiceConte
     /**
      * {@inheritDoc}
      * <p>
-     * Close the current Spring configurable context object.
-     * <p>
-     * If the context instance is an instance of {@code ConfigurableApplicationContext},
-     * call its close method to close the context.
+     * Clear the relevant service class information that has already been loaded
+     * in {@link #serviceContextBeanNameGenerator}.
      */
     @Override
     public void close() {
