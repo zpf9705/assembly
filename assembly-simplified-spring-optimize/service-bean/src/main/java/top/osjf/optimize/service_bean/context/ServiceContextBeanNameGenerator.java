@@ -18,9 +18,11 @@
 package top.osjf.optimize.service_bean.context;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.context.annotation.AnnotationBeanNameGenerator;
@@ -29,13 +31,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.util.CollectionUtils;
 import top.osjf.optimize.service_bean.annotation.ServiceCollection;
 
-import java.io.Closeable;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * The purpose of this class is to solve the problem of duplicate names
@@ -66,34 +62,13 @@ import java.util.stream.Stream;
  * generator {@link ServiceContextBeanNameGenerator}, which means it only applies
  * to internal beans.Beans imported using {@link Bean} annotation in the configuration
  * class cannot participate in this {@link ServiceContextBeanNameGenerator}, so they
- * cannot be collected in {@link #recordServiceBeanMap} and cannot participate in
+ * cannot be collected in {@link ServiceTypeRegistry} and cannot participate in
  * renaming encoding.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public class ServiceContextBeanNameGenerator extends AnnotationBeanNameGenerator implements Closeable {
-
-    /**
-     * A map that records the mapping information of the name and type of the service bean.
-     */
-    private final Map<String, Class<?>> recordServiceBeanMap = new ConcurrentHashMap<>();
-
-    /**
-     * The scope name required for beans that accept custom naming.
-     */
-    private final List<String> supportScopes =
-            Stream.of(BeanDefinition.SCOPE_SINGLETON, AbstractBeanDefinition.SCOPE_DEFAULT).collect(Collectors.toList());
-
-    /**
-     * Return a map that records the mapping information of the name and type of the service bean.
-     *
-     * @return an unmodifiable map that records the mapping information of the name and type of
-     * the service bean.
-     */
-    protected Map<String, Class<?>> getRecordServiceBeanMap() {
-        return Collections.unmodifiableMap(recordServiceBeanMap);
-    }
+public class ServiceContextBeanNameGenerator extends AnnotationBeanNameGenerator {
 
     @Override
     @NonNull
@@ -101,9 +76,9 @@ public class ServiceContextBeanNameGenerator extends AnnotationBeanNameGenerator
 
         String beanName;
 
-        //Service collection only accepts default singletons
+        //Service collection only accepts default or singletons
         String scope = definition.getScope();
-        if (!supportScopes.contains(scope)) {
+        if (!BeanDefinition.SCOPE_SINGLETON.equals(scope) && !AbstractBeanDefinition.SCOPE_DEFAULT.equals(scope)) {
             beanName = super.generateBeanName(definition, registry);
 
         } else {
@@ -140,7 +115,7 @@ public class ServiceContextBeanNameGenerator extends AnnotationBeanNameGenerator
 
                     //enhancement name for self clazz
                     beanName = ServiceDefinitionUtils.enhancementBeanName(clazz, definitionBeanName);
-                    recordServiceBeanMap.putIfAbsent(beanName, clazz);
+                    getServiceTypeRegistry(registry).registerServiceType(beanName, clazz);
 
                     //enhancement alisa name for target clazz to this bean.
                     for (Class<?> targetServiceType : targetServiceTypes) {
@@ -153,11 +128,17 @@ public class ServiceContextBeanNameGenerator extends AnnotationBeanNameGenerator
         return beanName;
     }
 
-    /**
-     * If it is closed, clear the relevant information that has already been recorded.
-     */
-    @Override
-    public void close() {
-        recordServiceBeanMap.clear();
+    private ServiceTypeRegistry getServiceTypeRegistry(BeanDefinitionRegistry registry) {
+        if (registry instanceof BeanFactory) {
+            BeanFactory beanFactory = (BeanFactory) registry;
+            if (!beanFactory.containsBean(ServiceDefinitionUtils.INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME)) {
+                registry.registerBeanDefinition(ServiceDefinitionUtils.INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME,
+                        BeanDefinitionBuilder.genericBeanDefinition(ServiceTypeRegistry.class).getBeanDefinition());
+            }
+            return beanFactory.getBean(ServiceDefinitionUtils.INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME,
+                    ServiceTypeRegistry.class);
+        } else {
+            throw new IllegalStateException(registry.getClass() + " not a BeanFactory instance");
+        }
     }
 }
