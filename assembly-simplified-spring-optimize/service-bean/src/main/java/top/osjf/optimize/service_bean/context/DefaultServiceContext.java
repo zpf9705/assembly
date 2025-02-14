@@ -181,6 +181,7 @@ public class DefaultServiceContext extends AbstractServiceContext {
         applicationContext
                 .getBeanFactory()
                 .destroyScopedBean(serviceName);
+        getServiceTypeRegistry().removeServiceType(serviceName);
         return true;
     }
 
@@ -205,6 +206,7 @@ public class DefaultServiceContext extends AbstractServiceContext {
         applicationContext
                 .getBeanFactory()
                 .destroyScopedBean(enhancementBeanName);
+        getServiceTypeRegistry().removeServiceType(enhancementBeanName);
         return true;
     }
 }
