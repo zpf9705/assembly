@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.SingletonBeanRegistry;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -130,7 +131,12 @@ public class ServiceContextBeanNameGenerator extends AnnotationBeanNameGenerator
     }
 
     private ServiceTypeRegistry getServiceTypeRegistry(BeanDefinitionRegistry registry) {
-        if (registry instanceof BeanFactory) {
+        if (registry instanceof SingletonBeanRegistry) {
+            ServiceTypeRegistry serviceTypeRegistry = new ServiceTypeRegistry();
+            ((SingletonBeanRegistry) registry)
+                    .registerSingleton(ServiceDefinitionUtils.INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME, serviceTypeRegistry);
+            return serviceTypeRegistry;
+        } else if (registry instanceof BeanFactory) {
             BeanFactory beanFactory = (BeanFactory) registry;
             if (!beanFactory.containsBean(ServiceDefinitionUtils.INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME)) {
                 registry.registerBeanDefinition(ServiceDefinitionUtils.INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME,
@@ -138,8 +144,7 @@ public class ServiceContextBeanNameGenerator extends AnnotationBeanNameGenerator
             }
             return beanFactory.getBean(ServiceDefinitionUtils.INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME,
                     ServiceTypeRegistry.class);
-        } else {
-            throw new IllegalStateException(registry.getClass() + " not a BeanFactory instance");
         }
+        throw new IllegalStateException(registry.getClass() + " not a BeanFactory instance");
     }
 }
