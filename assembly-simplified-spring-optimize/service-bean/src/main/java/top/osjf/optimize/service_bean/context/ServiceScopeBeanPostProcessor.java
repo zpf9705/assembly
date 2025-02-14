@@ -39,14 +39,14 @@ import org.springframework.lang.NonNull;
  * In the {@code postProcessBeanDefinitionRegistry} method, this class traverses a predefined
  * list of Bean names (provided by {@code ServiceContextBeanNameGenerator#RECORD_BEAN_NAME}),
  * and for each Bean name in the list, it will retrieve the corresponding {@link BeanDefinition}
- * from the {@link BeanDefinitionRegistry} and set its scope to {@link ConfigurableServiceContext#SUPPORT_SCOPE}.
+ * from the {@link BeanDefinitionRegistry} and set its scope to {@link ServiceContext#SUPPORT_SCOPE}.
  * </li>
  * <li><strong>Register custom scope:</strong>
  * <p>
  * In the {@code postProcessBeanFactory} method, this class registers a  {@link Scope} scope
  * implementation class with BeanFactory and {@link ServiceScope} comes from the configuration
  * definition, named {@link ServiceScope}, which defines how to create, destroy, and manage the
- * lifecycle of beans under the {@link ConfigurableServiceContext#SUPPORT_SCOPE} scope.
+ * lifecycle of beans under the {@link ServiceContext#SUPPORT_SCOPE} scope.
  * </li>
  * </ul>
  *
@@ -57,32 +57,31 @@ public class ServiceScopeBeanPostProcessor implements BeanDefinitionRegistryPost
 
     private ServiceScope serviceScope;
 
-    private ServiceContextBeanNameGenerator serviceContextBeanNameGenerator;
+    private ServiceTypeRegistry serviceTypeRegistry;
 
     /**
-     * Set a new nonNull {@code ServiceScope}.
+     * Set an internal {@code ServiceScope} named
+     * {@link ServiceDefinitionUtils#INTERNAL_SERVICE_SCOPE_BEAN_NAME}
      *
-     * @param serviceScope service {@link Scope} instance.
+     * @param serviceScope internal {@link Scope} instance.
      */
     public void setServiceScope(ServiceScope serviceScope) {
         this.serviceScope = serviceScope;
     }
 
     /**
-     * Set a new nonNull {@code ServiceContextBeanNameGenerator}.
+     * Set an internal {@code ServiceTypeRegistry} named
+     * {@link ServiceDefinitionUtils#INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME}
      *
-     * <p>Retrieve the bean name that matches the record and make a scope
-     * change at {@link #postProcessBeanDefinitionRegistry}.
-     *
-     * @param serviceContextBeanNameGenerator an internal {@link ServiceContextBeanNameGenerator} instance.
+     * @param serviceTypeRegistry internal {@link ServiceTypeRegistry} instance.
      */
-    public void setServiceContextBeanNameGenerator(ServiceContextBeanNameGenerator serviceContextBeanNameGenerator) {
-        this.serviceContextBeanNameGenerator = serviceContextBeanNameGenerator;
+    public void setServiceTypeRegistry(ServiceTypeRegistry serviceTypeRegistry) {
+        this.serviceTypeRegistry = serviceTypeRegistry;
     }
 
     @Override
     public void postProcessBeanDefinitionRegistry(@NonNull BeanDefinitionRegistry registry) throws BeansException {
-        for (String recordBeanName : serviceContextBeanNameGenerator.getRecordServiceBeanMap().keySet()) {
+        for (String recordBeanName : serviceTypeRegistry.getServiceTypeMap().keySet()) {
             BeanDefinition beanDefinition = registry.getBeanDefinition(recordBeanName);
             beanDefinition.setScope(ServiceContext.SUPPORT_SCOPE);
         }

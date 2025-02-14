@@ -56,8 +56,8 @@ public class ServiceScopeBeanPostProcessorRegistrar implements ImportBeanDefinit
                 = BeanDefinitionBuilder.genericBeanDefinition(ServiceScopeBeanPostProcessor.class);
         builder.addPropertyReference(Holder.getServiceScopeFieldName(), ServiceDefinitionUtils
                 .INTERNAL_SERVICE_SCOPE_BEAN_NAME);
-        builder.addPropertyReference(Holder.getBeanNameGeneratorFieldName(), ServiceDefinitionUtils
-                .INTERNAL_BEAN_NAME_GENERATOR_BEAN_NAME);
+        builder.addPropertyReference(Holder.getServiceTypeRegisterFieldName(), ServiceDefinitionUtils
+                .INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME);
         BeanDefinition beanDefinition = builder.getBeanDefinition();
         registry.registerBeanDefinition(importBeanNameGenerator.generateBeanName(beanDefinition, registry),
                 beanDefinition);
@@ -76,15 +76,15 @@ public class ServiceScopeBeanPostProcessorRegistrar implements ImportBeanDefinit
          * get the ServiceContextBeanNameGenerator class field name in ServiceScopeBeanPostProcessor class
          *
          * */
-        private static String BEAN_NAME_GENERATOR_FIELD_NAME;
+        private static String SERVICE_TYPE_REGISTER_FIELD_NAME;
 
         static {
             for (Field declaredField : ServiceScopeBeanPostProcessor.class.getDeclaredFields()) {
                 if (ServiceScope.class.isAssignableFrom(declaredField.getType())) {
                     SERVICE_SCOPE_FIELD_NAME = declaredField.getName();
                 }
-                if (ServiceContextBeanNameGenerator.class.isAssignableFrom(declaredField.getType())) {
-                    BEAN_NAME_GENERATOR_FIELD_NAME = declaredField.getName();
+                if (ServiceTypeRegistry.class.isAssignableFrom(declaredField.getType())) {
+                    SERVICE_TYPE_REGISTER_FIELD_NAME = declaredField.getName();
                 }
             }
         }
@@ -93,8 +93,8 @@ public class ServiceScopeBeanPostProcessorRegistrar implements ImportBeanDefinit
             return SERVICE_SCOPE_FIELD_NAME;
         }
 
-        public static String getBeanNameGeneratorFieldName() {
-            return BEAN_NAME_GENERATOR_FIELD_NAME;
+        public static String getServiceTypeRegisterFieldName() {
+            return SERVICE_TYPE_REGISTER_FIELD_NAME;
         }
     }
 
