@@ -47,7 +47,7 @@ import java.util.Map;
  */
 public abstract class AbstractServiceContext implements ConfigurableServiceContext, ApplicationContextAware {
 
-    private ApplicationContext context;
+    private UnwrapApplicationContext unwrapApplicationContext;
 
     private ServiceContextBeanNameGenerator serviceContextBeanNameGenerator;
 
@@ -55,7 +55,7 @@ public abstract class AbstractServiceContext implements ConfigurableServiceConte
 
     @Override
     public void setApplicationContext(@NonNull ApplicationContext context) throws BeansException {
-        this.context = context;
+        this.unwrapApplicationContext = new UnwrapApplicationContext(context);
     }
 
     /**
@@ -141,6 +141,13 @@ public abstract class AbstractServiceContext implements ConfigurableServiceConte
     }
 
     /**
+     * @return The unwrap function object of spring context {@link ApplicationContext}.
+     */
+    protected UnwrapApplicationContext unwrapContext() {
+        return unwrapApplicationContext;
+    }
+
+    /**
      * Return a {@code Boolean} type indicating whether the input type is a record type.
      *
      * @param type the given type.
@@ -149,28 +156,5 @@ public abstract class AbstractServiceContext implements ConfigurableServiceConte
      */
     protected boolean isRecordType(Class<?> type) {
         return recordServiceBeanMap.containsValue(type);
-    }
-
-    /**
-     * Return the context object of Spring.
-     *
-     * @return the context object of Spring.
-     */
-    protected ApplicationContext getContext() {
-        return context;
-    }
-
-    /**
-     * Return the Spring context converted object based on the specified type.
-     *
-     * @param clazz the specified type.
-     * @param <T>   the specified generic.
-     * @return the Spring context converted object based on the specified type.
-     */
-    protected <T> T unwrapApplicationContext(Class<T> clazz) {
-        if (!clazz.isInstance(context)) {
-            throw new ClassCastException(context.getClass().getName() + " cannot be cast " + clazz.getName());
-        }
-        return clazz.cast(context);
     }
 }
