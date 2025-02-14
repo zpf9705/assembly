@@ -39,10 +39,10 @@ import java.util.function.Predicate;
 public abstract class ServiceDefinitionUtils {
 
     /**
-     * The bean name for internal registration {@code ServiceContextBeanNameGenerator}.
+     * The bean name for internal registration {@code ServiceTypeRegistry}.
      */
-    public static final String INTERNAL_BEAN_NAME_GENERATOR_BEAN_NAME =
-            "top.osjf.optimize.service_bean.context.internalServiceContextBeanNameGenerator";
+    public static final String INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME =
+            "top.osjf.optimize.service_bean.context.internalServiceTypeRegistry";
 
     /**
      * The name of the internal bean {@code ServiceScope}.
