@@ -91,7 +91,7 @@ public class ServiceContextBeanNameGenerator extends AnnotationBeanNameGenerator
      * @return an unmodifiable map that records the mapping information of the name and type of
      * the service bean.
      */
-    public Map<String, Class<?>> getRecordServiceBeanMap() {
+    protected Map<String, Class<?>> getRecordServiceBeanMap() {
         return Collections.unmodifiableMap(recordServiceBeanMap);
     }
 

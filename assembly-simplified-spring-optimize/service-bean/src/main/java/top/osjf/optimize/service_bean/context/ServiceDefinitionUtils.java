@@ -94,7 +94,7 @@ public abstract class ServiceDefinitionUtils {
      * @param serviceName  the original service  name to be enhancement is usually the
      *                     name.
      * @param requiredType type the bean must match; can be an interface or superclass.
-     * @param isRecordType is it recorded in {@link ServiceContextBeanNameGenerator}.
+     * @param isRecordType is it recorded in {@code ServiceContextBeanNameGenerator#recordServiceBeanMap}.
      * @return enhanced and optimized service name.
      */
     @Nullable
@@ -115,7 +115,7 @@ public abstract class ServiceDefinitionUtils {
      * @param serviceName  the original service  name to be enhancement is usually the
      *                     name.
      * @param requiredType type the bean must match; can be an interface or superclass.
-     * @param isRecordType is it recorded in {@link ServiceContextBeanNameGenerator}.
+     * @param isRecordType is it recorded in {@code ServiceContextBeanNameGenerator#recordServiceBeanMap}.
      * @return enhanced and optimized service name.
      */
     public static String getEnhancementName(String serviceName, Class<?> requiredType, boolean isRecordType) {
