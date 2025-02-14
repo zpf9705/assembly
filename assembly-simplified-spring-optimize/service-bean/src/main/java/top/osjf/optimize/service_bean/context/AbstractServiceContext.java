@@ -17,6 +17,7 @@
 package top.osjf.optimize.service_bean.context;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -45,7 +46,8 @@ import java.util.Map;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public abstract class AbstractServiceContext implements ConfigurableServiceContext, ApplicationContextAware {
+public abstract class AbstractServiceContext implements ConfigurableServiceContext,
+        ApplicationContextAware, DisposableBean {
 
     private UnwrapApplicationContext unwrapApplicationContext;
 
@@ -127,6 +129,11 @@ public abstract class AbstractServiceContext implements ConfigurableServiceConte
             throw new NoAvailableServiceException(serviceName);
         }
         return recordServiceBeanMap.get(serviceName);
+    }
+
+    @Override
+    public void destroy() {
+        close();
     }
 
     /**

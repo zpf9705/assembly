@@ -46,7 +46,7 @@ import top.osjf.optimize.service_bean.context.ServiceContextAwareBeanPostProcess
 public class ServiceContextConfiguration {
 
     @Bean
-    public ServiceContext recordServiceContext() {
+    public ServiceContext serviceContext() {
         return new DefaultServiceContext();
     }
 
