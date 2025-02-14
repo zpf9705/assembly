@@ -45,7 +45,8 @@ import java.util.List;
  * functionality when needed.
  *
  * <p>This class will search for {@link BeanDefinition} that matches
- * the scope definition of {@link #supportScopes} during the naming
+ * the scope definition of {@link BeanDefinition#SCOPE_SINGLETON} or
+ * {@link AbstractBeanDefinition#SCOPE_SINGLETON} during the naming
  * process, and obtain its {@link BeanDefinition#getBeanClassName()}
  * type. It will find {@link ServiceCollection} related tag annotations
  * from its parent class and interface, and use the relevant information
