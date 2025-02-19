@@ -395,7 +395,7 @@ public abstract class SdkSupport {
                     }
                 }
                 //On the contrary, directly return the data result.
-            } else responseData.getData();
+            } else data = responseData.getData();
         }
 
         //If the final data is not empty, then verify whether
