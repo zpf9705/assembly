@@ -24,6 +24,7 @@ import org.springframework.beans.factory.config.Scope;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.lang.NonNull;
+import top.osjf.optimize.service_bean.annotation.ServiceBeanManagementConfigUtils;
 
 /**
  * The {@code ServiceScopeBeanPostProcessor} class is a Spring custom component that
@@ -61,7 +62,7 @@ public class ServiceScopeBeanPostProcessor implements BeanDefinitionRegistryPost
 
     /**
      * Set an internal {@code ServiceScope} named
-     * {@link ServiceDefinitionUtils#INTERNAL_SERVICE_SCOPE_BEAN_NAME}
+     * {@link ServiceBeanManagementConfigUtils#INTERNAL_SERVICE_SCOPE_BEAN_NAME}
      *
      * @param serviceScope internal {@link Scope} instance.
      */
@@ -71,7 +72,7 @@ public class ServiceScopeBeanPostProcessor implements BeanDefinitionRegistryPost
 
     /**
      * Set an internal {@code ServiceTypeRegistry} named
-     * {@link ServiceDefinitionUtils#INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME}
+     * {@link ServiceBeanManagementConfigUtils#INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME}
      *
      * @param serviceTypeRegistry internal {@link ServiceTypeRegistry} instance.
      */
