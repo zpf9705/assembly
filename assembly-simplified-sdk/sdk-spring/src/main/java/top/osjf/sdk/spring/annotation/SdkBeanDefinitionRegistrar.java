@@ -20,10 +20,7 @@ package top.osjf.sdk.spring.annotation;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
-import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.BeanNameGenerator;
+import org.springframework.beans.factory.support.*;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
@@ -38,15 +35,19 @@ import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.lang.NonNull;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
+import top.osjf.sdk.core.util.ArrayUtils;
+import top.osjf.sdk.core.util.ReflectUtil;
 import top.osjf.sdk.core.util.StringUtils;
 import top.osjf.sdk.proxy.ProxyModel;
 import top.osjf.sdk.spring.beans.BeanPropertyUtils;
 import top.osjf.sdk.spring.proxy.SdkProxyBeanUtils;
 import top.osjf.sdk.spring.proxy.SdkProxyFactoryBean;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * A {@code SdkBeanDefinitionRegistrar} is an SDK bean definition registry
@@ -150,26 +151,78 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
                                         @NonNull BeanNameGenerator beanNameGenerator) {
         Map<String, Object> annotationAttributes = importingClassMetadata
                 .getAnnotationAttributes(EnableSdkProxyRegister.class.getCanonicalName());
-        AnnotationAttributes annotationAttributesObj = AnnotationAttributes.fromMap(annotationAttributes);
-        String[] scanningPackageNames;
-        if (annotationAttributesObj != null) {
-            scanningPackageNames = annotationAttributesObj.getStringArray("basePackages");
-        } else {
-            scanningPackageNames = new String[]{getPackageName(importingClassMetadata.getClassName())};
-        }
-        HelpProvider provider = new HelpProvider(environment, resourceLoader);
-        for (String packageName : scanningPackageNames) {
-            for (BeanDefinition beanDefinition : provider.findCandidateComponents(packageName)) {
+        AnnotationAttributes attr = AnnotationAttributes.fromMap(annotationAttributes);
+        String[] basePackages = getBasePackages(attr, importingClassMetadata);
+        HelpProvider provider = new HelpProvider(environment, resourceLoader, attr);
+        beanNameGenerator = getBeanNameGenerator(attr, beanNameGenerator);
+        for (String basePackage : basePackages) {
+            for (BeanDefinition beanDefinition : provider.findCandidateComponents(basePackage)) {
                 if (beanDefinition instanceof AnnotatedBeanDefinition) {
                     AnnotatedBeanDefinition annotatedBeanDefinition = (AnnotatedBeanDefinition) beanDefinition;
                     if (isSupportAnnotatedBeanDefinition(annotatedBeanDefinition)) {
-                        BeanDefinitionHolder holder = createBeanDefinitionHolder(annotatedBeanDefinition, registry);
+                        BeanDefinitionHolder holder = createBeanDefinitionHolder(annotatedBeanDefinition, registry,
+                                beanNameGenerator);
                         if (holder != null)
                             BeanDefinitionReaderUtils.registerBeanDefinition(holder, registry);
                     }
                 }
             }
         }
+    }
+
+    /**
+     * Return the scanned path array value and obtain the priority as follows:
+     * <ul>
+     * <li>{@link EnableSdkProxyRegister#basePackageClasses()}</li>
+     * <li>{@link EnableSdkProxyRegister#basePackages()}</li>
+     * <li>importingClassMetadata {@link AnnotationMetadata#getClassName()} package name</li>
+     * </ul>
+     *
+     * @param attr                   the {@code AnnotationAttributes} of enable annotation.
+     * @param importingClassMetadata enable annotation metadata of the importing class.
+     * @return the scan path array.
+     * @since 1.0.3
+     */
+    private String[] getBasePackages(@Nullable AnnotationAttributes attr, AnnotationMetadata importingClassMetadata) {
+        if (attr != null) {
+            Class<?>[] basePackageClasses = attr.getClassArray("basePackageClasses");
+            if (ArrayUtils.isNotEmpty(basePackageClasses)) {
+                return Arrays.stream(basePackageClasses)
+                        .map(c -> c.getPackage().getName())
+                        .collect(Collectors.toList())
+                        .toArray(new String[]{});
+            } else {
+                String[] basePackages = attr.getStringArray("basePackages");
+                if (ArrayUtils.isNotEmpty(basePackages)) {
+                    return basePackages;
+                }
+            }
+        }
+        return new String[]{getPackageName(importingClassMetadata.getClassName())};
+    }
+
+    /**
+     * Return the generator strategy that registers the SDK bean name in the container,
+     * and obtain the following priority:
+     * <ul>
+     * <li>{@link EnableSdkProxyRegister#nameGenerator()}</li>
+     * <li>the import system {@code BeanNameGenerator}</li>
+     * </ul>
+     *
+     * @param attr                    the {@code AnnotationAttributes} of enable annotation.
+     * @param systemBeanNameGenerator the system {@code BeanNameGenerator}.
+     * @return the bean name generator strategy for imported beans.
+     * @since 1.0.3
+     */
+    private BeanNameGenerator getBeanNameGenerator(@Nullable AnnotationAttributes attr,
+                                                   BeanNameGenerator systemBeanNameGenerator) {
+        if (attr != null) {
+            Class<? extends BeanNameGenerator> clazz = attr.getClass("nameGenerator");
+            if (clazz != BeanNameGenerator.class) {
+                return ReflectUtil.instantiates(clazz);
+            }
+        }
+        return systemBeanNameGenerator;
     }
 
     /**
@@ -223,10 +276,12 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
      * @param annotatedBeanDefinition {@code AnnotatedBeanDefinition} instances carrying
      *                                annotated metadata.
      * @param registry                the registry interface for beans.
+     * @param beanNameGenerator       the bean name generator strategy for imported beans.
      * @return The created {@code BeanDefinitionHolder} instance.
      */
     private BeanDefinitionHolder createBeanDefinitionHolder(AnnotatedBeanDefinition annotatedBeanDefinition,
-                                                            BeanDefinitionRegistry registry) {
+                                                            BeanDefinitionRegistry registry,
+                                                            BeanNameGenerator beanNameGenerator) {
         AnnotationMetadata markedAnnotationMetadata = annotatedBeanDefinition.getMetadata();
         AnnotationAttributes annotationAttributes = AnnotationAttributes
                 .fromMap(markedAnnotationMetadata.getAnnotationAttributes(Sdk.class.getCanonicalName()));
@@ -239,14 +294,18 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
                 getEnvHost(annotationAttributes.getString("hostProperty")));
         builder.addPropertyValue("proxyModel", model);
         builder.addConstructorArgValue(className);
-        builder.addPropertyReference(SpringCallerConfiguration.SPRING_REQUEST_CALLER_FIELD_NAME,
-                SpringCallerConfiguration.INTERNAL_SPRING_REQUEST_CALLER);
+        builder.addPropertyReference(SdkManagementConfigUtils.REQUEST_CALLER_FIELD_NAME,
+                        SdkManagementConfigUtils.INTERNAL_SPRING_REQUEST_CALLER_BEAN_NAME);
         AnnotationAttributes beanPropertyAttributes = annotationAttributes.getAnnotation("property");
         BeanDefinition beanDefinition =
                 BeanPropertyUtils.fullBeanDefinition(builder, markedAnnotationMetadata, beanPropertyAttributes);
         String[] names = beanPropertyAttributes.getStringArray("name");
         String beanName = BeanPropertyUtils.getBeanName(names);
-        if (StringUtils.isBlank(beanName)) beanName = className;
+        if (StringUtils.isBlank(beanName)) {
+            GenericBeanDefinition bmd = new GenericBeanDefinition();
+            bmd.setBeanClassName(className);
+            beanName = beanNameGenerator.generateBeanName(bmd, registry);
+        }
         String[] alisaNames = BeanPropertyUtils.getAlisaNames(names);
         return SdkProxyBeanUtils.createBeanDefinitionHolderDistinguishScope(beanDefinition, beanName, alisaNames,
                 registry);
@@ -346,13 +405,16 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
      * <p>The classes marked with {@code @Sdk} annotations need to be
      * independent and not annotated or enumerated.
      */
-    static class HelpProvider extends ClassPathScanningCandidateComponentProvider {
+    private static class HelpProvider extends ClassPathScanningCandidateComponentProvider {
 
         public HelpProvider(Environment environment,
-                            ResourceLoader resourceLoader) {
+                            ResourceLoader resourceLoader,
+                            AnnotationAttributes attr) {
             super(false, environment);
             setResourceLoader(resourceLoader);
             addIncludeFilter(new AnnotationTypeFilter(Sdk.class));
+            if (attr != null)
+                setResourcePattern(attr.getString("resourcePattern"));
         }
 
         @Override
