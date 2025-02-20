@@ -16,6 +16,7 @@
 
 package top.osjf.sdk.spring.annotation;
 
+import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AliasFor;
@@ -105,4 +106,45 @@ public @interface EnableSdkProxyRegister {
      */
     @AliasFor(annotation = ComponentScan.class)
     String[] basePackages() default {};
+
+    /**
+     * Type-safe alternative to {@link #basePackages} for specifying the packages
+     * to scan for annotated components. The package of each class specified will be scanned.
+     * <p>Consider creating a special no-op marker class or interface in each package
+     * that serves no purpose other than being referenced by this attribute.
+     *
+     * @return The classes of alternative to {@link #basePackages} for specifying the packages
+     * to scan for annotated components.
+     * @since 1.0.3
+     */
+    @AliasFor(annotation = ComponentScan.class)
+    Class<?>[] basePackageClasses() default {};
+
+    /**
+     * Controls the class files eligible for component detection.
+     * The default value is {@code ** / *.class}, meaning all {@code .class} files in all
+     * directories and subdirectories will be scanned. This attribute allows developers
+     * to customize the scan pattern to more precisely control which classes should be
+     * recognized as components by the Spring container. For instance, if only classes
+     * in specific sub-packages are desired, this pattern can be adjusted.
+     *
+     * @return The string resource pattern of controls the class files eligible for component
+     * detection.
+     * @see org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider
+     * @since 1.0.3
+     */
+    @AliasFor(annotation = ComponentScan.class)
+    String resourcePattern() default "**/*.class";
+
+    /**
+     * The {@link BeanNameGenerator} class to be used for naming detected components within
+     * the Spring container.
+     *
+     * @return the class of {@link BeanNameGenerator}
+     * @see org.springframework.context.annotation.AnnotationBeanNameGenerator
+     * @see org.springframework.context.annotation.FullyQualifiedAnnotationBeanNameGenerator
+     * @since 1.0.3
+     */
+    @AliasFor(annotation = ComponentScan.class)
+    Class<? extends BeanNameGenerator> nameGenerator() default BeanNameGenerator.class;
 }
