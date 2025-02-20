@@ -32,8 +32,34 @@ public abstract class SdkManagementConfigUtils {
             = "top.osjf.sdk.spring.internalSpringRequestCaller";
 
     /**
-     * the attribute name of {@code SpringRequestCaller} from the
+     * The attribute name of {@code SpringRequestCaller} from the
      * {@code SdkProxyFactoryBean} class.
      */
     public static final String REQUEST_CALLER_FIELD_NAME = "requestCaller";
+
+    /**
+     * Default regular expression for domain name validation.
+     * <p>
+     * This pattern is used to validate whether a domain name conforms to the following rules:
+     * <ul>
+     * <li>The domain name cannot start or end with a hyphen (-).</li>
+     * <li>The main part of the domain name (i.e., the part before the dot (.)) consists of 1 to 63 characters,
+     * which can be English letters (both uppercase and lowercase), digits, or hyphens.</li>
+     * <li>The top-level domain (i.e., the part after the last dot) consists of 2 or more English letters.</li>
+     * </ul>
+     */
+    public static final String DEFAULT_DOMAIN_PATTERN
+            = "^(?!-)[A-Za-z0-9-]{1,63}(?<!-)\\.(?!-)[A-Za-z0-9-]{1,63}(?<!-)\\.[A-Za-z]{2,}$";
+
+    /**
+     * Default regular expression for IP address validation.
+     * <p>
+     * This pattern is used to validate whether an IPv4 address conforms to the following default rules:
+     * <ul>
+     * <li>The IP address consists of four octets, each with a value between 0 and 255.</li>
+     * <li>The octets are separated by dots (.).</li>
+     * </ul>
+     */
+    public static final String DEFAULT_IP_PATTERN =
+            "((25[0-5])|(2[0-4]\\d)|(1\\d\\d)|([1-9]\\d)|\\d)(\\.((25[0-5])|(2[0-4]\\d)|(1\\d\\d)|([1-9]\\d)|\\d)){3}";
 }

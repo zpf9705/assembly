@@ -97,17 +97,16 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
     public static final String LOCAL_HTTP_BROWSER_HOST = "localhost";
 
     /**
-     * Regular expression for domain name validation.
+     * Default regular expression {@code Pattern} for domain name validation.
      */
-    private static final Pattern DOMAIN_PATTERN =
-            Pattern.compile("^(?!-)[A-Za-z0-9-]{1,63}(?<!-)\\.(?!-)[A-Za-z0-9-]{1,63}(?<!-)\\.[A-Za-z]{2,}$");
+    private static final Pattern DAFAULT_DOMAIN_PATTERN = Pattern.compile
+            (SdkManagementConfigUtils.DEFAULT_DOMAIN_PATTERN);
 
     /**
-     * Regular expression for IP address validation.
+     * Default Regular expression {@code Pattern} for IP address validation.
      */
-    private static final Pattern IP_PATTERN =
-            Pattern.compile(
-                    "((25[0-5])|(2[0-4]\\d)|(1\\d\\d)|([1-9]\\d)|\\d)(\\.((25[0-5])|(2[0-4]\\d)|(1\\d\\d)|([1-9]\\d)|\\d)){3}");
+    private static final Pattern DAFAULT_IP_PATTERN = Pattern.compile
+            (SdkManagementConfigUtils.DEFAULT_IP_PATTERN);
 
     /**
      * Spring Environment object.
@@ -154,14 +153,16 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
         AnnotationAttributes attr = AnnotationAttributes.fromMap(annotationAttributes);
         String[] basePackages = getBasePackages(attr, importingClassMetadata);
         HelpProvider provider = new HelpProvider(environment, resourceLoader, attr);
+        Pattern domainPattern = getDomainPattern(attr);
+        Pattern ipPattern = getIpPattern(attr);
         beanNameGenerator = getBeanNameGenerator(attr, beanNameGenerator);
         for (String basePackage : basePackages) {
             for (BeanDefinition beanDefinition : provider.findCandidateComponents(basePackage)) {
                 if (beanDefinition instanceof AnnotatedBeanDefinition) {
                     AnnotatedBeanDefinition annotatedBeanDefinition = (AnnotatedBeanDefinition) beanDefinition;
                     if (isSupportAnnotatedBeanDefinition(annotatedBeanDefinition)) {
-                        BeanDefinitionHolder holder = createBeanDefinitionHolder(annotatedBeanDefinition, registry,
-                                beanNameGenerator);
+                        BeanDefinitionHolder holder = createBeanDefinitionHolder
+                                (annotatedBeanDefinition, registry, beanNameGenerator, domainPattern, ipPattern);
                         if (holder != null)
                             BeanDefinitionReaderUtils.registerBeanDefinition(holder, registry);
                     }
@@ -244,6 +245,34 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
     }
 
     /**
+     * Return a {@code Pattern} of domain by resolve given {@code AnnotationAttributes}
+     * of enable annotation.
+     *
+     * @param attr the {@code AnnotationAttributes} of enable annotation.
+     * @return The {@code Pattern} of domain.
+     */
+    private Pattern getDomainPattern(@Nullable AnnotationAttributes attr) {
+        if (attr == null) {
+            return DAFAULT_DOMAIN_PATTERN;
+        }
+        return Pattern.compile(attr.getString("domainPattern"));
+    }
+
+    /**
+     * Return a {@code Pattern} of ip by resolve given {@code AnnotationAttributes}
+     * of enable annotation.
+     *
+     * @param attr the {@code AnnotationAttributes} of enable annotation.
+     * @return The {@code Pattern} of ip.
+     */
+    private Pattern getIpPattern(@Nullable AnnotationAttributes attr) {
+        if (attr == null) {
+            return DAFAULT_IP_PATTERN;
+        }
+        return Pattern.compile(attr.getString("ipPattern"));
+    }
+
+    /**
      * Determine whether the given {@code AnnotatedBeanDefinition}
      * metadata is of a specific underlying class.
      *
@@ -277,11 +306,15 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
      *                                annotated metadata.
      * @param registry                the registry interface for beans.
      * @param beanNameGenerator       the bean name generator strategy for imported beans.
+     * @param domainPattern           the {@code Pattern} of verify domain name.
+     * @param ipPattern               the {@code Pattern} of verify ip address.
      * @return The created {@code BeanDefinitionHolder} instance.
      */
     private BeanDefinitionHolder createBeanDefinitionHolder(AnnotatedBeanDefinition annotatedBeanDefinition,
                                                             BeanDefinitionRegistry registry,
-                                                            BeanNameGenerator beanNameGenerator) {
+                                                            BeanNameGenerator beanNameGenerator,
+                                                            Pattern domainPattern,
+                                                            Pattern ipPattern) {
         AnnotationMetadata markedAnnotationMetadata = annotatedBeanDefinition.getMetadata();
         AnnotationAttributes annotationAttributes = AnnotationAttributes
                 .fromMap(markedAnnotationMetadata.getAnnotationAttributes(Sdk.class.getCanonicalName()));
@@ -291,11 +324,11 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
         BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(
                 SdkProxyFactoryBean.class);
         builder.addPropertyValue("host",
-                getEnvHost(annotationAttributes.getString("hostProperty")));
+                getEnvHost(annotationAttributes.getString("hostProperty"), domainPattern, ipPattern));
         builder.addPropertyValue("proxyModel", model);
         builder.addConstructorArgValue(className);
         builder.addPropertyReference(SdkManagementConfigUtils.REQUEST_CALLER_FIELD_NAME,
-                        SdkManagementConfigUtils.INTERNAL_SPRING_REQUEST_CALLER_BEAN_NAME);
+                SdkManagementConfigUtils.INTERNAL_SPRING_REQUEST_CALLER_BEAN_NAME);
         AnnotationAttributes beanPropertyAttributes = annotationAttributes.getAnnotation("property");
         BeanDefinition beanDefinition =
                 BeanPropertyUtils.fullBeanDefinition(builder, markedAnnotationMetadata, beanPropertyAttributes);
@@ -317,11 +350,13 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
      *
      * <p>Supports regular attribute definitions and el expressions for Spring.
      *
-     * @param hostProperty the configuration attribute name of the host.
+     * @param hostProperty  the configuration attribute name of the host.
+     * @param domainPattern the {@code Pattern} of verify domain name.
+     * @param ipPattern     the {@code Pattern} of verify ip address.
      * @return The configuration attribute values of the host.
      */
     @Nullable
-    private String getEnvHost(String hostProperty) {
+    private String getEnvHost(String hostProperty, Pattern domainPattern, Pattern ipPattern) {
         if (StringUtils.isBlank(hostProperty)) return null;
         String host = null;
         if (environment.containsProperty(hostProperty)) {
@@ -332,7 +367,7 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
                 host = environment.resolvePlaceholders(hostProperty);
             }
         }
-        if (host != null && !validationHost(host)) {
+        if (host != null && !validationHost(host, domainPattern, ipPattern)) {
             throw new IncorrectHostException(host);
         }
         return host;
@@ -359,11 +394,13 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
     /**
      * Verify if the host name conforms to the expected format.
      *
-     * @param host host name.
+     * @param host          host name.
+     * @param domainPattern the {@code Pattern} of verify domain name.
+     * @param ipPattern     the {@code Pattern} of verify ip address.
      * @return If it is {@literal true}, the validation passes,
      * and it is a valid hostname, otherwise it is not.
      */
-    private boolean validationHost(String host) {
+    private boolean validationHost(String host, Pattern domainPattern, Pattern ipPattern) {
         //Firstly, check if the host name starts with the local HTTP browser
         // host localhost:, and if so, return true directly.
         if (host.startsWith(LOCAL_HTTP_BROWSER_HOST + ":")) {
@@ -386,14 +423,14 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
             } catch (NumberFormatException e) {
                 $suffixIsInt = false;
             }
-            result = (IP_PATTERN.matcher(hostAtt[0]).matches()
+            result = (ipPattern.matcher(hostAtt[0]).matches()
                     //Compatible with domain names and port numbers.
-                    || DOMAIN_PATTERN.matcher(hostAtt[0]).matches()
+                    || domainPattern.matcher(hostAtt[0]).matches()
             ) && $suffixIsInt;
         } else {
             //If the host name does not contain a value delimiter,
             // verify directly whether it matches the domain name pattern.
-            result = DOMAIN_PATTERN.matcher(host).matches();
+            result = domainPattern.matcher(host).matches();
         }
         return result;
     }

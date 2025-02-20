@@ -147,4 +147,24 @@ public @interface EnableSdkProxyRegister {
      */
     @AliasFor(annotation = ComponentScan.class)
     Class<? extends BeanNameGenerator> nameGenerator() default BeanNameGenerator.class;
+
+    /**
+     * Defines the regular expression pattern for domain names.
+     * <p>
+     * Verify the value obtained for {@link Sdk#hostProperty()}.
+     *
+     * @return A string representing the regular expression pattern for domain names.
+     * @since 1.0.3
+     */
+    String domainPattern() default SdkManagementConfigUtils.DEFAULT_DOMAIN_PATTERN;
+
+    /**
+     * Defines the regular expression pattern for IP addresses.
+     * <p>
+     * Verify the value obtained for {@link Sdk#hostProperty()}.
+     *
+     * @return A string representing the regular expression pattern for IP addresses.
+     * @since 1.0.3
+     */
+    String ipPattern() default SdkManagementConfigUtils.DEFAULT_IP_PATTERN;
 }
