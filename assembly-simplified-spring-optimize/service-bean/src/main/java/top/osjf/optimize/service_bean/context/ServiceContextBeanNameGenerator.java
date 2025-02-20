@@ -30,6 +30,7 @@ import org.springframework.context.annotation.AnnotationBeanNameGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.lang.NonNull;
 import org.springframework.util.CollectionUtils;
+import top.osjf.optimize.service_bean.annotation.ServiceBeanManagementConfigUtils;
 import top.osjf.optimize.service_bean.annotation.ServiceCollection;
 
 import java.util.List;
@@ -134,22 +135,22 @@ public class ServiceContextBeanNameGenerator extends AnnotationBeanNameGenerator
         if (registry instanceof SingletonBeanRegistry) {
             SingletonBeanRegistry singletonBeanRegistry = (SingletonBeanRegistry) registry;
             if (!singletonBeanRegistry
-                    .containsSingleton(ServiceDefinitionUtils.INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME)) {
+                    .containsSingleton(ServiceBeanManagementConfigUtils.INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME)) {
                 singletonBeanRegistry
-                        .registerSingleton(ServiceDefinitionUtils.INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME,
+                        .registerSingleton(ServiceBeanManagementConfigUtils.INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME,
                                 new ServiceTypeRegistry());
 
             }
             return (ServiceTypeRegistry) singletonBeanRegistry
-                    .getSingleton(ServiceDefinitionUtils.INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME);
+                    .getSingleton(ServiceBeanManagementConfigUtils.INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME);
         } else if (registry instanceof BeanFactory) {
             BeanFactory beanFactory = (BeanFactory) registry;
-            if (!beanFactory.containsBean(ServiceDefinitionUtils.INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME)) {
-                registry.registerBeanDefinition(ServiceDefinitionUtils.INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME,
+            if (!beanFactory.containsBean(ServiceBeanManagementConfigUtils.INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME)) {
+                registry.registerBeanDefinition(ServiceBeanManagementConfigUtils.INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME,
                         BeanDefinitionBuilder.genericBeanDefinition(ServiceTypeRegistry.class).getBeanDefinition());
             }
             return beanFactory
-                    .getBean(ServiceDefinitionUtils.INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME, ServiceTypeRegistry.class);
+                    .getBean(ServiceBeanManagementConfigUtils.INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME, ServiceTypeRegistry.class);
         }
         throw new IllegalStateException(registry.getClass() + " not a SingletonBeanRegistry or BeanFactory");
     }

@@ -24,6 +24,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
+import top.osjf.optimize.service_bean.annotation.ServiceBeanManagementConfigUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +70,7 @@ public abstract class AbstractServiceContext implements ConfigurableServiceConte
      */
     @Autowired
     public void setServiceTypeRegistry(
-            @Qualifier(ServiceDefinitionUtils.INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME)
+            @Qualifier(ServiceBeanManagementConfigUtils.INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME)
             ServiceTypeRegistry serviceTypeRegistry) {
         this.serviceTypeRegistry = serviceTypeRegistry;
         this.serviceTypeMap = serviceTypeRegistry.getServiceTypeMap();
