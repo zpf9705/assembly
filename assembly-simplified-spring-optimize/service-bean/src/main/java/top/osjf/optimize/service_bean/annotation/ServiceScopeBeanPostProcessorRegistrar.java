@@ -24,9 +24,9 @@ import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.lang.NonNull;
-import top.osjf.optimize.service_bean.context.*;
-
-import java.lang.reflect.Field;
+import top.osjf.optimize.service_bean.context.ServiceContext;
+import top.osjf.optimize.service_bean.context.ServiceScope;
+import top.osjf.optimize.service_bean.context.ServiceScopeBeanPostProcessor;
 
 /**
  * The {@code ServiceScopeBeanPostProcessorRegistrar} class is a Spring component
@@ -49,53 +49,17 @@ public class ServiceScopeBeanPostProcessorRegistrar implements ImportBeanDefinit
                                         @NonNull BeanNameGenerator importBeanNameGenerator) {
         //register a bean of ServiceScope
         BeanDefinitionBuilder serviceScopeBuilder = BeanDefinitionBuilder.genericBeanDefinition(ServiceScope.class);
-        registry.registerBeanDefinition(ServiceDefinitionUtils.INTERNAL_SERVICE_SCOPE_BEAN_NAME,
+        registry.registerBeanDefinition(ServiceBeanManagementConfigUtils.INTERNAL_SERVICE_SCOPE_BEAN_NAME,
                 serviceScopeBuilder.getBeanDefinition());
         //register a bean of ServiceScopeBeanPostProcessor
         BeanDefinitionBuilder builder
                 = BeanDefinitionBuilder.genericBeanDefinition(ServiceScopeBeanPostProcessor.class);
-        builder.addPropertyReference(Holder.getServiceScopeFieldName(), ServiceDefinitionUtils
-                .INTERNAL_SERVICE_SCOPE_BEAN_NAME);
-        builder.addPropertyReference(Holder.getServiceTypeRegisterFieldName(), ServiceDefinitionUtils
-                .INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME);
+        builder.addPropertyReference(ServiceBeanManagementConfigUtils.SERVICE_SCOPE_FIELD_NAME,
+                ServiceBeanManagementConfigUtils.INTERNAL_SERVICE_SCOPE_BEAN_NAME);
+        builder.addPropertyReference(ServiceBeanManagementConfigUtils.SERVICE_TYPE_REGISTER_FIELD_NAME,
+                ServiceBeanManagementConfigUtils.INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME);
         BeanDefinition beanDefinition = builder.getBeanDefinition();
         registry.registerBeanDefinition(importBeanNameGenerator.generateBeanName(beanDefinition, registry),
                 beanDefinition);
     }
-
-    protected static class Holder {
-        /*
-         *
-         * get the ServiceScope class field name in ServiceScopeBeanPostProcessor class
-         *
-         * */
-
-        private static String SERVICE_SCOPE_FIELD_NAME;
-        /*
-         *
-         * get the ServiceContextBeanNameGenerator class field name in ServiceScopeBeanPostProcessor class
-         *
-         * */
-        private static String SERVICE_TYPE_REGISTER_FIELD_NAME;
-
-        static {
-            for (Field declaredField : ServiceScopeBeanPostProcessor.class.getDeclaredFields()) {
-                if (ServiceScope.class.isAssignableFrom(declaredField.getType())) {
-                    SERVICE_SCOPE_FIELD_NAME = declaredField.getName();
-                }
-                if (ServiceTypeRegistry.class.isAssignableFrom(declaredField.getType())) {
-                    SERVICE_TYPE_REGISTER_FIELD_NAME = declaredField.getName();
-                }
-            }
-        }
-
-        public static String getServiceScopeFieldName() {
-            return SERVICE_SCOPE_FIELD_NAME;
-        }
-
-        public static String getServiceTypeRegisterFieldName() {
-            return SERVICE_TYPE_REGISTER_FIELD_NAME;
-        }
-    }
-
 }
