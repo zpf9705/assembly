@@ -68,18 +68,18 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-public class SdkProxyFactoryBean<T> extends ComprehensiveDelegationCallback implements FactoryBean<T>,
-        InitializingBean, DisposableBean {
+public class SdkProxyFactoryBean
+        extends ComprehensiveDelegationCallback implements FactoryBean<Object>, InitializingBean, DisposableBean {
 
     /**
      * The type of SDK proxy interface or abstract class.
      */
-    private final Class<T> type;
+    private final Class<?> type;
 
     /**
      * Specify the proxy object created by the proxy model {@code ProxyModel}.
      */
-    private T proxy;
+    private Object proxy;
 
     /**
      * Enumeration of selected proxy models.
@@ -103,7 +103,7 @@ public class SdkProxyFactoryBean<T> extends ComprehensiveDelegationCallback impl
      * @param type the target type of the proxy bean.
      * @throws NullPointerException if input type is null.
      */
-    public SdkProxyFactoryBean(@NotNull Class<T> type) {
+    public SdkProxyFactoryBean(@NotNull Class<?> type) {
         Objects.requireNonNull(type, "type == null");
         this.type = type;
     }
@@ -211,7 +211,7 @@ public class SdkProxyFactoryBean<T> extends ComprehensiveDelegationCallback impl
      */
     @Nullable
     @Override
-    public T getObject() throws Exception {
+    public Object getObject() throws Exception {
         if (proxy != null) {
             return proxy;
         }
@@ -282,7 +282,7 @@ public class SdkProxyFactoryBean<T> extends ComprehensiveDelegationCallback impl
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SdkProxyFactoryBean<?> that = (SdkProxyFactoryBean<?>) o;
+        SdkProxyFactoryBean that = (SdkProxyFactoryBean) o;
         return Objects.equals(type, that.type)
                 && Objects.equals(getHost(), that.getHost())
                 && proxyModel == that.proxyModel;
