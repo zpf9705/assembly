@@ -33,6 +33,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.lang.NonNull;
+import org.springframework.util.Assert;
 import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.Nullable;
 import top.osjf.sdk.core.util.ArrayUtils;
@@ -355,19 +356,17 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
      * @param ipPattern     the {@code Pattern} of verify ip address.
      * @return The configuration attribute values of the host.
      */
-    @Nullable
     private String getEnvHost(String hostProperty, Pattern domainPattern, Pattern ipPattern) {
-        if (StringUtils.isBlank(hostProperty)) return null;
-        String host = null;
-        if (environment.containsProperty(hostProperty)) {
-            host = environment.getProperty(hostProperty);
-        }
-        if (StringUtils.isBlank(host)) {
+        Assert.hasText(hostProperty, "Not set hostProperty");
+        String host = environment.getProperty(hostProperty);
+        if (host == null) {
             if (isResolveRequiredPlaceholdersProperty(hostProperty)) {
-                host = environment.resolvePlaceholders(hostProperty);
+                host = environment.resolveRequiredPlaceholders(hostProperty);
+            } else {
+                host = hostProperty;
             }
         }
-        if (host != null && !validationHost(host, domainPattern, ipPattern)) {
+        if (!validationHost(host, domainPattern, ipPattern)) {
             throw new IncorrectHostException(host);
         }
         return host;
