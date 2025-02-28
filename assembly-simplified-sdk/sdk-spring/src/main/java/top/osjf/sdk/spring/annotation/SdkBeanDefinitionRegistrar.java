@@ -157,13 +157,15 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
         Pattern domainPattern = getDomainPattern(attr);
         Pattern ipPattern = getIpPattern(attr);
         beanNameGenerator = getBeanNameGenerator(attr, beanNameGenerator);
+        Class<? extends SdkProxyFactoryBean> factoryBeanClass = getFactoryBeanClass(attr);
         for (String basePackage : basePackages) {
             for (BeanDefinition beanDefinition : provider.findCandidateComponents(basePackage)) {
                 if (beanDefinition instanceof AnnotatedBeanDefinition) {
                     AnnotatedBeanDefinition annotatedBeanDefinition = (AnnotatedBeanDefinition) beanDefinition;
                     if (isSupportAnnotatedBeanDefinition(annotatedBeanDefinition)) {
                         BeanDefinitionHolder holder = createBeanDefinitionHolder
-                                (annotatedBeanDefinition, registry, beanNameGenerator, domainPattern, ipPattern);
+                                (annotatedBeanDefinition, registry, beanNameGenerator, domainPattern, ipPattern,
+                                        factoryBeanClass);
                         if (holder != null)
                             BeanDefinitionReaderUtils.registerBeanDefinition(holder, registry);
                     }
@@ -251,6 +253,7 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
      *
      * @param attr the {@code AnnotationAttributes} of enable annotation.
      * @return The {@code Pattern} of domain.
+     * @since 1.0.3
      */
     private Pattern getDomainPattern(@Nullable AnnotationAttributes attr) {
         if (attr == null) {
@@ -265,12 +268,28 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
      *
      * @param attr the {@code AnnotationAttributes} of enable annotation.
      * @return The {@code Pattern} of ip.
+     * @since 1.0.3
      */
     private Pattern getIpPattern(@Nullable AnnotationAttributes attr) {
         if (attr == null) {
             return DAFAULT_IP_PATTERN;
         }
         return Pattern.compile(attr.getString("ipPattern"));
+    }
+
+    /**
+     * Return a class of {@code SdkProxyFactoryBean} by resolve given {@code AnnotationAttributes}
+     * of enable annotation.
+     *
+     * @param attr the {@code AnnotationAttributes} of enable annotation.
+     * @return the class of {@code SdkProxyFactoryBean}.
+     * @since 1.0.3
+     */
+    private Class<? extends SdkProxyFactoryBean> getFactoryBeanClass(@Nullable AnnotationAttributes attr) {
+        if (attr != null) {
+            return attr.getClass("factoryBean");
+        }
+        return SdkProxyFactoryBean.class;
     }
 
     /**
@@ -309,21 +328,22 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
      * @param beanNameGenerator       the bean name generator strategy for imported beans.
      * @param domainPattern           the {@code Pattern} of verify domain name.
      * @param ipPattern               the {@code Pattern} of verify ip address.
+     * @param factoryBeanClass        the custom {@code SdkProxyFactoryBean} class.
      * @return The created {@code BeanDefinitionHolder} instance.
      */
     private BeanDefinitionHolder createBeanDefinitionHolder(AnnotatedBeanDefinition annotatedBeanDefinition,
                                                             BeanDefinitionRegistry registry,
                                                             BeanNameGenerator beanNameGenerator,
                                                             Pattern domainPattern,
-                                                            Pattern ipPattern) {
+                                                            Pattern ipPattern,
+                                                            Class<? extends SdkProxyFactoryBean> factoryBeanClass) {
         AnnotationMetadata markedAnnotationMetadata = annotatedBeanDefinition.getMetadata();
         AnnotationAttributes annotationAttributes = AnnotationAttributes
                 .fromMap(markedAnnotationMetadata.getAnnotationAttributes(Sdk.class.getCanonicalName()));
         if (annotationAttributes == null) return null;
         String className = markedAnnotationMetadata.getClassName();
         ProxyModel model = annotationAttributes.getEnum("model");
-        BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(
-                SdkProxyFactoryBean.class);
+        BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(factoryBeanClass);
         builder.addPropertyValue("host",
                 getEnvHost(annotationAttributes.getString("hostProperty"), domainPattern, ipPattern));
         builder.addPropertyValue("proxyModel", model);

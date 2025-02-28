@@ -21,6 +21,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Component;
+import top.osjf.sdk.spring.proxy.SdkProxyFactoryBean;
 
 import java.lang.annotation.*;
 
@@ -147,6 +148,14 @@ public @interface EnableSdkProxyRegister {
      */
     @AliasFor(annotation = ComponentScan.class)
     Class<? extends BeanNameGenerator> nameGenerator() default BeanNameGenerator.class;
+
+    /**
+     * Specifies a custom {@code SdkProxyFactoryBean} to return a sdk proxy as spring bean.
+     *
+     * @return the class of {@code SdkProxyFactoryBean}.
+     * @since 1.0.3
+     */
+    Class<? extends SdkProxyFactoryBean> factoryBean() default SdkProxyFactoryBean.class;
 
     /**
      * Defines the regular expression pattern for domain names.
