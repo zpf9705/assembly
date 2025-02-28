@@ -193,7 +193,7 @@ public class SdkProxyFactoryBean<T> extends ComprehensiveDelegationCallback impl
      * @param <R>   the type of bean list.
      * @return bean list after filter and sort.
      */
-    private <R extends DeterminantType> R getDeterminantPriority(List<R> beans) {
+    protected <R extends DeterminantType> R getDeterminantPriority(List<R> beans) {
         beans = beans.stream().filter(b -> Objects.equals(b.getType(), type)).collect(Collectors.toList());
         AnnotationAwareOrderComparator.sort(beans);
         return !beans.isEmpty() ? beans.get(0) : null;
