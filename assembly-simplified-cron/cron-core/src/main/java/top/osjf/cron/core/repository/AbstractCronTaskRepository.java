@@ -196,14 +196,13 @@ public abstract class AbstractCronTaskRepository implements CronTaskRepository {
                 if (count == null) {
                     return null;
                 }
+                count.decrementAndGet();
                 if (count.get() <= 0) {
                     remove(id);
                     logger.info("Task {} has reached the specified number of runs and has been stopped!", id);
                     return null;
-                } else {
-                    count.decrementAndGet();
-                    return count;
                 }
+                return count;
             });
         }
     }
