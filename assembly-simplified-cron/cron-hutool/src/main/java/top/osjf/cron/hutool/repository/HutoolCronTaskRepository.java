@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class HutoolCronTaskRepository extends AbstractCronTaskRepository implements CronTaskRepository {
+public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
 
     /**
      * The {@link #daemon} property name of hutool.

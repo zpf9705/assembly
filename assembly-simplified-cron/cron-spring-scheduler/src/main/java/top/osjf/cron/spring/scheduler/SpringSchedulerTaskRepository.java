@@ -68,7 +68,7 @@ import java.util.stream.Collectors;
  * @see ListenableRunnable
  * @see CronListener
  */
-public class SpringSchedulerTaskRepository extends ListenableTaskScheduler implements CronTaskRepository {
+public class SpringSchedulerTaskRepository extends ListenableTaskScheduler {
 
     private final CronListenerCollector cronListenerCollector = new CronListenerCollectorImpl();
 
