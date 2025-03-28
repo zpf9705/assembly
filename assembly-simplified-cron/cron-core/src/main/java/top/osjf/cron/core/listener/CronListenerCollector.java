@@ -20,8 +20,10 @@ package top.osjf.cron.core.listener;
 import top.osjf.cron.core.lang.NotNull;
 
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * The {@code CronListenerCollector} abstract class is used to manage a set of {@code CronListener}
@@ -32,7 +34,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public abstract class CronListenerCollector {
 
-    private final CopyOnWriteArrayList<CronListener> cronListeners = new CopyOnWriteArrayList<>();
+    private final Lock lock = new ReentrantLock();
+
+    private final LinkedList<CronListener> cronListeners = new LinkedList<>();
 
     /**
      * Add a {@code CronListener} to the listener list if it does not already exist.
@@ -40,7 +44,48 @@ public abstract class CronListenerCollector {
      * @param cronListener The {@code CronListener}  instance to be added.
      */
     public void addCronListener(@NotNull CronListener cronListener) {
-        cronListeners.addIfAbsent(cronListener);
+        lock.lock();
+        try {
+            if (!cronListeners.contains(cronListener)) {
+                cronListeners.add(cronListener);
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * Add a {@code CronListener} instance to the beginning of the listener list
+     * if it does not already exist.
+     *
+     * @param cronListener The {@code CronListener}  instance to be added.
+     */
+    public void addFirstCronListener(@NotNull CronListener cronListener){
+        lock.lock();
+        try {
+            if (!cronListeners.contains(cronListener)) {
+                cronListeners.addFirst(cronListener);
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * Add a {@code CronListener} instance to the end of the listener list
+     * if it does not already exist.
+     *
+     * @param cronListener The {@code CronListener}  instance to be added.
+     */
+    public void addLastCronListener(@NotNull CronListener cronListener){
+        lock.lock();
+        try {
+            if (!cronListeners.contains(cronListener)) {
+                cronListeners.addLast(cronListener);
+            }
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
@@ -49,7 +94,27 @@ public abstract class CronListenerCollector {
      * @param cronListener {@code CronListener} instance to be removed.
      */
     public void removeCronListener(@NotNull CronListener cronListener) {
-        cronListeners.remove(cronListener);
+        lock.lock();
+        try {
+            cronListeners.remove(cronListener);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * Return the unmodifiable list of {@code CronListener} instances saved by this collection
+     * management instance.
+     *
+     * @return the list of {@code CronListener} instances.
+     */
+    public List<CronListener> getCronListeners() {
+        lock.lock();
+        try {
+            return Collections.unmodifiableList(cronListeners);
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
@@ -126,15 +191,5 @@ public abstract class CronListenerCollector {
      */
     private void doListeners(ListenerLifecycle listenerLifecycle, Object sourceContext, Throwable e) {
         listenerLifecycle.consumerListeners(sourceContext, e, this);
-    }
-
-    /**
-     * Return the unmodifiable list of {@code CronListener} instances saved by this collection
-     * management instance.
-     *
-     * @return the list of {@code CronListener} instances.
-     */
-    public List<CronListener> getCronListeners() {
-        return Collections.unmodifiableList(cronListeners);
     }
 }
