@@ -225,15 +225,8 @@ public class SpringSchedulerTaskRepository extends ListenableTaskScheduler imple
     }
 
     @Override
-    public void addListener(@NotNull CronListener listener) {
-        assertSchedulerStarted();
-        cronListenerCollector.addCronListener(listener);
-    }
-
-    @Override
-    public void removeListener(@NotNull CronListener listener) {
-        assertSchedulerStarted();
-        cronListenerCollector.removeCronListener(listener);
+    protected CronListenerCollector getCronListenerCollector() {
+        return cronListenerCollector;
     }
 
     /**

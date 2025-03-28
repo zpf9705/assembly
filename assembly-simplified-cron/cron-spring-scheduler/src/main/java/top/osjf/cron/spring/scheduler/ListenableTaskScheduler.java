@@ -20,6 +20,7 @@ package top.osjf.cron.spring.scheduler;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
 import top.osjf.cron.core.lang.NotNull;
+import top.osjf.cron.core.repository.AbstractCronTaskRepository;
 
 import java.util.Date;
 import java.util.Map;
@@ -45,7 +46,7 @@ import java.util.function.Function;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public abstract class ListenableTaskScheduler implements TaskScheduler {
+public abstract class ListenableTaskScheduler extends AbstractCronTaskRepository implements TaskScheduler {
 
     /**
      * The underlying Spring TaskScheduler that is being wrapped.

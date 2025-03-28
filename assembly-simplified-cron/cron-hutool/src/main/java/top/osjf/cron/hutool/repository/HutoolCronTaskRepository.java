@@ -26,7 +26,7 @@ import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
-import top.osjf.cron.core.listener.CronListener;
+import top.osjf.cron.core.listener.CronListenerCollector;
 import top.osjf.cron.core.repository.*;
 import top.osjf.cron.hutool.listener.TaskListenerImpl;
 
@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class HutoolCronTaskRepository implements CronTaskRepository {
+public class HutoolCronTaskRepository extends AbstractCronTaskRepository implements CronTaskRepository {
 
     /**
      * The {@link #daemon} property name of hutool.
@@ -324,13 +324,8 @@ public class HutoolCronTaskRepository implements CronTaskRepository {
     }
 
     @Override
-    public void addListener(@NotNull CronListener listener) {
-        taskListener.addCronListener(listener);
-    }
-
-    @Override
-    public void removeListener(@NotNull CronListener listener) {
-        taskListener.removeCronListener(listener);
+    protected CronListenerCollector getCronListenerCollector() {
+        return taskListener;
     }
 
     @Override
