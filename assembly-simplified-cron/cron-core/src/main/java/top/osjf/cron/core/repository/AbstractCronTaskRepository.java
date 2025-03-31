@@ -23,6 +23,7 @@ import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.listener.CronListenerCollector;
+import top.osjf.cron.core.listener.DefaultCronListenerCollector;
 import top.osjf.cron.core.listener.SimpleCronListener;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -59,6 +60,8 @@ public abstract class AbstractCronTaskRepository implements CronTaskRepository {
     private final RegisterTimesCheckedCronListener checkedCronListener = new RegisterTimesCheckedCronListener();
 
     private final AtomicBoolean addRegisterTimesCheckedCronListener = new AtomicBoolean(false);
+
+    private final CronListenerCollector listenerCollector = new DefaultCronListenerCollector();
 
     /**
      * Used to record tasks with specified running times.
@@ -155,7 +158,9 @@ public abstract class AbstractCronTaskRepository implements CronTaskRepository {
     /**
      * @return The listener collector for subclasses.
      */
-    protected abstract CronListenerCollector getCronListenerCollector();
+    protected CronListenerCollector getCronListenerCollector(){
+        return listenerCollector;
+    }
 
     /**
      * Assert specify run times > 0.
