@@ -29,7 +29,6 @@ import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.listener.CronListener;
-import top.osjf.cron.core.listener.CronListenerCollector;
 import top.osjf.cron.core.repository.*;
 import top.osjf.cron.core.util.GsonUtils;
 
@@ -70,8 +69,6 @@ import java.util.stream.Collectors;
  */
 public class SpringSchedulerTaskRepository extends ListenableTaskScheduler {
 
-    private final CronListenerCollector cronListenerCollector = new CronListenerCollectorImpl();
-
     private final IdGenerator idGenerator = new SimpleIdGenerator();
 
     private final AtomicBoolean started = new AtomicBoolean(true);
@@ -106,14 +103,14 @@ public class SpringSchedulerTaskRepository extends ListenableTaskScheduler {
     @Autowired(required = false)
     public void setSchedulingListeners(List<CronListener> cronListeners) {
         for (CronListener cronListener : cronListeners) {
-            cronListenerCollector.addCronListener(cronListener);
+            getCronListenerCollector().addCronListener(cronListener);
         }
     }
 
     @Override
     protected ListenableRunnable wrapperRunnableToListenable(Runnable runnable, Trigger trigger) {
         String id = idGenerator.generateId().toString();
-        return new DefaultListenableRunnable(id, runnable, trigger, cronListenerCollector.getCronListeners());
+        return new DefaultListenableRunnable(id, runnable, trigger, getCronListenerCollector().getCronListeners());
     }
 
     @Override
@@ -222,11 +219,6 @@ public class SpringSchedulerTaskRepository extends ListenableTaskScheduler {
         if (listenableScheduledFuture != null) {
             listenableScheduledFuture.cancel(true);
         }
-    }
-
-    @Override
-    protected CronListenerCollector getCronListenerCollector() {
-        return cronListenerCollector;
     }
 
     /**
