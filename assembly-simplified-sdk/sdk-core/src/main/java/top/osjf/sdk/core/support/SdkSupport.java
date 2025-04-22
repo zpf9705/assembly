@@ -21,6 +21,7 @@ import top.osjf.sdk.core.caller.*;
 import top.osjf.sdk.core.exception.UnknownRequestParameterException;
 import top.osjf.sdk.core.exception.UnknownResponseParameterException;
 import top.osjf.sdk.core.lang.NotNull;
+import top.osjf.sdk.core.lang.Nullable;
 import top.osjf.sdk.core.spi.SpiLoader;
 import top.osjf.sdk.core.util.*;
 
@@ -84,29 +85,27 @@ public abstract class SdkSupport {
      * @since 1.0.2
      */
     private static class ParameterResolveRequestExecuteMetadata implements RequestExecuteMetadata {
-        Request<?> request;
-        Method method;
-        OptionsMetadata optionsMetadata;
-        ParameterResolveRequestExecuteMetadata(Request<?> request,
-                                               Method method,
-                                               List<Callback> callbacks,
-                                               ThrowablePredicate throwablePredicate,
-                                               AsyncPubSubExecutorProvider executorProvider) {
+        @NotNull Request<?> request;
+        @NotNull Method method;
+        @Nullable OptionsMetadata optionsMetadata;
+        ParameterResolveRequestExecuteMetadata(@NotNull Request<?> request,
+                                               @NotNull Method method,
+                                               @Nullable List<Callback> callbacks,
+                                               @Nullable ThrowablePredicate throwablePredicate,
+                                               @Nullable AsyncPubSubExecutorProvider executorProvider) {
             this.request = request;
             this.method = method;
             if (RequestCaller.condition(method)) {
                 optionsMetadata = new ParameterResolveOptionsMetadata(callbacks, throwablePredicate, executorProvider);
             }
         }
-        @Override
-        public Request<?> getRequest() {
+        @Override @NotNull public Request<?> getRequest() {
             return request;
         }
-        @Override
-        public Method getMethod() {
+        @Override @NotNull public Method getMethod() {
             return method;
         }
-        @Override public OptionsMetadata getOptionsMetadata() {
+        @Nullable @Override public OptionsMetadata getOptionsMetadata() {
             return optionsMetadata;
         }
 
@@ -116,25 +115,23 @@ public abstract class SdkSupport {
          * @since 1.0.2
          */
         static class ParameterResolveOptionsMetadata implements OptionsMetadata {
-            List<Callback> callbacks;
-            ThrowablePredicate throwablePredicate;
-            AsyncPubSubExecutorProvider executorProvider;
-            ParameterResolveOptionsMetadata(List<Callback> callbacks,
-                                            ThrowablePredicate throwablePredicate,
-                                            AsyncPubSubExecutorProvider executorProvider) {
+            @Nullable List<Callback> callbacks;
+            @Nullable ThrowablePredicate throwablePredicate;
+            @Nullable AsyncPubSubExecutorProvider executorProvider;
+            ParameterResolveOptionsMetadata(@Nullable List<Callback> callbacks,
+                                            @Nullable ThrowablePredicate throwablePredicate,
+                                            @Nullable AsyncPubSubExecutorProvider executorProvider) {
                 this.callbacks = callbacks;
                 this.throwablePredicate = throwablePredicate;
                 this.executorProvider = executorProvider;
             }
-            @Override
-            public List<Callback> getCallbacks() {
+            @Override @Nullable public List<Callback> getCallbacks() {
                 return callbacks;
             }
-            @Override
-            public ThrowablePredicate getThrowablePredicate() {
+            @Override @Nullable public ThrowablePredicate getThrowablePredicate() {
                 return throwablePredicate;
             }
-            @Override public AsyncPubSubExecutorProvider getSubscriptionExecutorProvider() {
+            @Nullable @Override public AsyncPubSubExecutorProvider getSubscriptionExecutorProvider() {
                 return executorProvider;
             }
         }
@@ -145,10 +142,10 @@ public abstract class SdkSupport {
      * @since 1.0.2
      */
     private static class AsyncPubSubExecutorProviderImpl implements AsyncPubSubExecutorProvider {
-        Executor subscriptionExecutor;
-        Executor observeExecutor;
-        AsyncPubSubExecutorProviderImpl(Executor subscriptionExecutor,
-                                        Executor observeExecutor) {
+        @Nullable Executor subscriptionExecutor;
+        @Nullable Executor observeExecutor;
+        AsyncPubSubExecutorProviderImpl(@Nullable Executor subscriptionExecutor,
+                                        @Nullable Executor observeExecutor) {
             this.subscriptionExecutor = subscriptionExecutor;
             this.observeExecutor = observeExecutor;
         }
@@ -208,7 +205,7 @@ public abstract class SdkSupport {
      * @see Subscription
      * @see Observe
      */
-    public static RequestExecuteMetadata createRequest(Method method, Object[] args) {
+    public static RequestExecuteMetadata createRequest(@NotNull Method method, @Nullable Object[] args) {
         Request<?> request = null; //create request.
         List<Callback> callbacks = new ArrayList<>(); //parameter callbacks.
         ThrowablePredicate throwablePredicate = null;
@@ -379,7 +376,8 @@ public abstract class SdkSupport {
      * @see ResponseData
      * @see InspectionResponseData
      */
-    public static Object resolveResponse(Method method, Response response) {
+    @Nullable
+    public static Object resolveResponse(@NotNull Method method, @Nullable Response response) {
         if (response == null) return null;
         Class<?> returnType = method.getReturnType();
 
@@ -474,7 +472,7 @@ public abstract class SdkSupport {
      * @see Class#getGenericInterfaces()
      * @see Class#getGenericSuperclass()
      */
-    public static Type getResponseType(Request<?> request, Type def) {
+    public static Type getResponseType(@NotNull Request<?> request, @Nullable Type def) {
         final Class<?> inletClass = request.getClass();
         Type resultType = GENERIC_CACHE.get(inletClass);
         if (resultType != null) {
