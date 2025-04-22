@@ -18,6 +18,8 @@ package top.osjf.sdk.core;
 
 import top.osjf.sdk.core.client.ClientExecutors;
 import top.osjf.sdk.core.exception.SdkException;
+import top.osjf.sdk.core.lang.NotNull;
+import top.osjf.sdk.core.lang.Nullable;
 import top.osjf.sdk.core.support.SdkSupport;
 
 import java.lang.reflect.Type;
@@ -72,7 +74,8 @@ public abstract class AbstractRequest<R extends AbstractResponse> implements Req
      * and {@code unique}.
      * @since 1.0.2
      */
-    public URL getUrl(String host) {
+    @NotNull
+    public URL getUrl(@Nullable String host) {
         return URL.same(matchSdkEnum().getUrl(host));
     }
 
@@ -82,6 +85,7 @@ public abstract class AbstractRequest<R extends AbstractResponse> implements Req
      * @return the {@literal null}.
      * @since 1.0.2
      */
+    @Nullable
     @Override
     public Object getRequestParam() {
         return null;
@@ -93,6 +97,7 @@ public abstract class AbstractRequest<R extends AbstractResponse> implements Req
      * @return default {@code Charset} by {@link Charset#defaultCharset()}.
      * @since 1.0.2
      */
+    @Nullable
     @Override
     public Charset getCharset() {
         return Charset.defaultCharset();
@@ -178,6 +183,7 @@ public abstract class AbstractRequest<R extends AbstractResponse> implements Req
      * @since 1.0.2
      */
     @Override
+    @NotNull
     public Type getResponseType() {
         return SdkSupport.getResponseType(this, defResponseType());
     }
@@ -191,6 +197,7 @@ public abstract class AbstractRequest<R extends AbstractResponse> implements Req
      *
      * @return the default conversion response type.
      */
+    @Nullable
     protected Type defResponseType() {
         return DefaultErrorResponse.class;
     }
@@ -205,7 +212,7 @@ public abstract class AbstractRequest<R extends AbstractResponse> implements Req
      * @since 1.0.2
      */
     @Override
-    public R execute(String host) {
+    public R execute(@Nullable String host) {
         return ClientExecutors.executeRequestClient(host, this);
     }
 

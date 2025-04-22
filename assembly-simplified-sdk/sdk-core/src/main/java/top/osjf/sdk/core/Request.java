@@ -18,6 +18,8 @@ package top.osjf.sdk.core;
 
 import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.core.exception.SdkException;
+import top.osjf.sdk.core.lang.NotNull;
+import top.osjf.sdk.core.lang.Nullable;
 
 import java.io.Serializable;
 import java.lang.reflect.Type;
@@ -67,13 +69,15 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      * @return {@code URL} Object of packaging tags and URL addresses
      * and updated on version 1.0.2.
      */
-    URL getUrl(String host);
+    @NotNull
+    URL getUrl(@Nullable String host);
 
     /**
      * {@inheritDoc}
      *
      * @return Return based on usage, not mandatory.
      */
+    @Nullable
     @Override
     Object getRequestParam();
 
@@ -82,6 +86,7 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      *
      * @return Return based on usage, not mandatory.
      */
+    @Nullable
     @Override
     Charset getCharset();
 
@@ -96,6 +101,7 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      * @return The request header encapsulation type for {@code Map}
      * data format.
      */
+    @Nullable
     Map<String, Object> getHeadMap();
 
     /**
@@ -132,6 +138,7 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      *
      * @return An SDK enumeration instance that fits the current context.
      */
+    @NotNull
     SdkEnum matchSdkEnum();
 
     /**
@@ -143,6 +150,7 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      *
      * @return the {@code Class} object of the {@code Client}
      */
+    @NotNull
     Class<? extends Client> getClientType();
 
     /**
@@ -154,6 +162,7 @@ public interface Request<R extends Response> extends RequestParamCapable<Object>
      *
      * @return the {@code Type} type of the {@code Response} object.
      */
+    @NotNull
     Type getResponseType();
 
     /**

@@ -16,6 +16,8 @@
 
 package top.osjf.sdk.core;
 
+import top.osjf.sdk.core.lang.Nullable;
+
 /**
  * Define {@code Request} as an executable interface aimed at facilitating
  * SDK calls and returning specific response types.
@@ -44,5 +46,5 @@ public interface Executable<R extends Response> {
      * @param host the real server hostname.
      * @return Specific response.
      */
-    R execute(String host);
+    R execute(@Nullable String host);
 }

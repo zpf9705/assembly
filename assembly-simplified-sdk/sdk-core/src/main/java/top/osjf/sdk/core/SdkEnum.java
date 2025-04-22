@@ -16,6 +16,9 @@
 
 package top.osjf.sdk.core;
 
+import top.osjf.sdk.core.lang.NotNull;
+import top.osjf.sdk.core.lang.Nullable;
+
 /**
  * SDK related request metadata configuration interface.
  *
@@ -48,7 +51,8 @@ public interface SdkEnum {
      * @param host the real server hostname.
      * @return The request address for current SDK.
      */
-    String getUrl(String host);
+    @NotNull
+    String getUrl(@Nullable String host);
 
     /**
      * The name of the SDK request, which is a unique identifier name
