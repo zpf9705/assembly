@@ -24,9 +24,10 @@ import top.osjf.sdk.core.URL;
 import top.osjf.sdk.core.client.AbstractClient;
 import top.osjf.sdk.core.client.Client;
 import top.osjf.sdk.core.exception.SdkException;
-import top.osjf.sdk.core.support.NotNull;
-import top.osjf.sdk.core.support.Nullable;
-import top.osjf.sdk.core.support.ServiceLoadManager;
+import top.osjf.sdk.core.lang.NotNull;
+import top.osjf.sdk.core.lang.Nullable;
+import top.osjf.sdk.core.spi.SpiLoader;
+import top.osjf.sdk.core.spi.SpiLoaderException;
 import top.osjf.sdk.core.util.ArrayUtils;
 import top.osjf.sdk.core.util.ExceptionUtils;
 import top.osjf.sdk.core.util.ReflectUtil;
@@ -187,14 +188,12 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
         if (requestExecutor == null) {
             //When the HttpRequestExecutor is not directly set,
             // it is obtained through the loading mechanism.
-            requestExecutor = ServiceLoadManager.loadHighPriority(HttpRequestExecutor.class);
+            requestExecutor = SpiLoader.of(HttpRequestExecutor.class).loadHighestPriorityInstance();
             if (requestExecutor == null) {
-                throw new IllegalStateException
-                        ("There is no available `top.osjf.sdk.http.spi.HttpRequestExecutor`, " +
-                                "please refer to `top.osjf.sdk.http.client.AbstractHttpClient#HttpRequestExecutor` " +
-                                "for usage plan.");
+                throw new SpiLoaderException(HttpRequestExecutor.class.getName() +
+                        " Provider class not found, please check if it is in the SPI configuration file?");
             } else {
-                LOGGER.info("Http Client {} using HttpRequestExecutor {} by spi.",
+                getLogger().info("Http Client {} using HttpRequestExecutor {} by spi.",
                         getClass().getName(), requestExecutor.getClass().getName());
             }
         }
@@ -283,16 +282,14 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
             //Set a spi response to sdk response.
             setSpiResponse(response, spiResponse);
 
-        }
-        catch (SdkException e) {
+        } catch (SdkException e) {
 
             //Capture anomalies in SDK and provide a conversion reminder.
             handlerSdkError(request, e);
             throwable = e;
             response = DefaultErrorResponse.parseErrorResponse(throwable, DefaultErrorResponse.ErrorType.SDK, request);
 
-        }
-        catch (Throwable e) {
+        } catch (Throwable e) {
 
             //Capture unknown exceptions and provide a transition reminder.
             handlerUnKnowError(request, e);
@@ -300,8 +297,7 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
             response = DefaultErrorResponse.parseErrorResponse(throwable, DefaultErrorResponse.ErrorType.UN_KNOWN,
                     request);
 
-        }
-        finally {
+        } finally {
 
             //Stop timing.
             stopwatch.stop();
@@ -345,14 +341,21 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
 
     @Override
     public void handlerSdkError(HttpRequest<?> request, SdkException e) {
-        sdkError().accept("Client request fail, apiName={}, error=[{}]",
-                ArrayUtils.toArray(request.matchSdkEnum().name(), e.getMessage()));
+
+        // -- only info
+        getLogger().info("Client request fail case by {} , apiName={}, error=[{}]",
+                e.getClass().getName(), request.matchSdkEnum().name(), e.getMessage());
     }
 
     @Override
     public void handlerUnKnowError(HttpRequest<?> request, Throwable e) {
-        unKnowError().accept("Client request fail, apiName={}, error=[{}]",
-                ArrayUtils.toArray(request.matchSdkEnum().name(), ExceptionUtils.getMessage(e)));
+
+        //-- info
+        getLogger().info("Client request fail case by {}, apiName={}, error=[{}]",
+                e.getClass().getName(), request.matchSdkEnum().name(), ExceptionUtils.getMessage(e));
+
+        //-- error
+        getLogger().error(e.getMessage(), e);
     }
 
     @Override
@@ -365,11 +368,11 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
         long spendTotalTimeMillis = info.getSpendTotalTimeMillis();
         if (info.noHappenError().get()) {
             String msgFormat = "Request end, name={}, request={}, response={}, time={}ms";
-            normal().accept(msgFormat,
+            getLogger().info(msgFormat,
                     ArrayUtils.toArray(name, body, response, spendTotalTimeMillis));
         } else {
             String msgFormat = "Request fail, name={}, request={}, response={}, error={}, time={}ms";
-            normal().accept(msgFormat,
+            getLogger().info(msgFormat,
                     ArrayUtils.toArray(name, body, response, info.getErrorMessage(), spendTotalTimeMillis));
         }
     }
