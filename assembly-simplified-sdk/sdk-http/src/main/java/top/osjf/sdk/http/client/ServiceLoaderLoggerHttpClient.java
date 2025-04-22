@@ -16,18 +16,17 @@
 
 package top.osjf.sdk.http.client;
 
-import top.osjf.sdk.core.client.LoggerConsumer;
 import top.osjf.sdk.core.URL;
-import top.osjf.sdk.core.support.NotNull;
-import top.osjf.sdk.core.support.ServiceLoadManager;
+import top.osjf.sdk.core.lang.NotNull;
+import top.osjf.sdk.core.spi.SpiLoader;
+import top.osjf.sdk.core.spi.SpiLoaderException;
+import top.osjf.sdk.core.util.internal.logging.InternalLogger;
 import top.osjf.sdk.http.HttpResponse;
-
-import java.util.function.BiConsumer;
 
 /**
  * A {@code Client} implementation class that can utilize Java's
  * {@link java.util.ServiceLoader} mechanism to obtain the highest
- * priority {@code LoggerConsumer} for use.
+ * priority {@code InternalLogger} for use.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
@@ -36,7 +35,7 @@ public class ServiceLoaderLoggerHttpClient<R extends HttpResponse> extends Defau
 
     private static final long serialVersionUID = 4669129398883621311L;
 
-    private LoggerConsumer consumer;
+    private InternalLogger logger;
 
     /**
      * Constructing for {@code ServiceLoaderLoggerHttpClient} objects using access URLs.
@@ -47,38 +46,21 @@ public class ServiceLoaderLoggerHttpClient<R extends HttpResponse> extends Defau
      */
     public ServiceLoaderLoggerHttpClient(@NotNull URL url) {
         super(url);
-        loadHighPriorityLoggerConsumer();
+        loadHighPriorityLogger();
     }
 
     /**
-     * Load a {@code LoggerConsumer},if null use {@link ServiceLoadManager}
-     * load a high priority {@code LoggerConsumer} to use in this {@code Client}.
+     * Load a {@code InternalLogger},if null use {@link SpiLoader}
+     * load a high priority {@code InternalLogger} to use in this {@code Client}.
      *
-     * @throws IllegalStateException if not found available {@code LoggerConsumer}.
+     * @throws SpiLoaderException if spi configuration file not found ?
      */
-    private void loadHighPriorityLoggerConsumer() {
-        if (consumer == null) {
-            consumer = ServiceLoadManager.loadHighPriority(LoggerConsumer.class);
-            if (consumer == null)
-                throw new IllegalStateException("Not found available LoggerConsumer using java.util.ServiceLoader !");
+    private void loadHighPriorityLogger() {
+        if (logger == null) {
+            logger = SpiLoader.of(InternalLogger.class).loadHighestPriorityInstance();
+            if (logger == null)
+                throw new SpiLoaderException(InternalLogger.class.getName() +
+                        " Provider class not found, please check if it is in the SPI configuration file?");
         }
-    }
-
-    @Override
-    @NotNull
-    public BiConsumer<String, Object[]> normal() {
-        return consumer.normal();
-    }
-
-    @Override
-    @NotNull
-    public BiConsumer<String, Object[]> sdkError() {
-        return consumer.sdkError();
-    }
-
-    @Override
-    @NotNull
-    public BiConsumer<String, Object[]> unKnowError() {
-        return consumer.unKnowError();
     }
 }
