@@ -47,25 +47,46 @@ public @interface Spi {
 
     /**
      * Alias name of Provider class
+     *
+     * @return the alias name of the Provider class, which can be used to
+     * reference the provider in configuration or code.
+
      */
     String value() default "";
 
     /**
      * Whether create singleton instance
+     *
+     * @return {@code true} if the provider should be created as a singleton
+     * instance, false otherwise.
      */
     boolean isSingleton() default true;
 
     /**
      * Whether is the default Provider
+     *
+     * @return {@code true} if this provider is the default provider, false otherwise.
+
      */
     boolean isDefault() default false;
 
     /**
      * Order priority of Provider class
+     *
+     * @return the order priority of the Provider class, which can be used to determine the
+     * precedence of providers when multiple are available.
      */
     int order() default 0;
 
+    /**
+     * Useful constant for the highest precedence value.
+     * @see java.lang.Integer#MIN_VALUE
+     */
     int ORDER_HIGHEST = Integer.MIN_VALUE;
 
+    /**
+     * Useful constant for the lowest precedence value.
+     * @see java.lang.Integer#MAX_VALUE
+     */
     int ORDER_LOWEST = Integer.MAX_VALUE;
 }
