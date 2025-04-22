@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.sdk.core.support;
+package top.osjf.sdk.core.lang;
 
 import javax.annotation.Nonnull;
 import javax.annotation.meta.TypeQualifierNickname;
