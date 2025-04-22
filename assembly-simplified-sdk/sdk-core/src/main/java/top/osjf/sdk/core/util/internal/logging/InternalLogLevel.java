@@ -35,7 +35,7 @@ package top.osjf.sdk.core.util.internal.logging;
 
 /**
  * NOTE: This file has been copied from {io.netty.util.internal.logging}.
- *
+ * <p>
  * The log level that {@link InternalLogger} can log at.
  */
 public enum InternalLogLevel {

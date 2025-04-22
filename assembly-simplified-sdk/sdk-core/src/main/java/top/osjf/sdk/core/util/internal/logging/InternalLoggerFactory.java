@@ -37,7 +37,7 @@ import static java.util.Objects.requireNonNull;
 
 /**
  * NOTE: This file has been copied and simplified from {io.netty.util.internal.logging}.
- *
+ * <p>
  * Creates an {@link InternalLogger} or changes the default factory
  * implementation.  This factory allows you to choose what logging framework
  * Micrometer should use.  The default factory is {@link Slf4JLoggerFactory}.  If SLF4J

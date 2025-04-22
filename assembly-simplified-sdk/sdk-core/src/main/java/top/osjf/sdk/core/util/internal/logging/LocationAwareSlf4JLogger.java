@@ -39,7 +39,7 @@ import static org.slf4j.spi.LocationAwareLogger.ERROR_INT;
 
 /**
  * NOTE: This file has been copied from {io.netty.util.internal.logging}.
- *
+ * <p>
  * <a href="https://www.slf4j.org/">SLF4J</a> logger which is location aware and so will log the correct origin of the
  * logging event by filter out the wrapper itself.
  */

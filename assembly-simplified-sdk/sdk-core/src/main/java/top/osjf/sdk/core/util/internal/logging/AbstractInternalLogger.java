@@ -39,7 +39,7 @@ import static java.util.Objects.requireNonNull;
 
 /**
  * NOTE: This file has been copied and slightly modified from {io.netty.util.internal.logging}.
- *
+ * <p>
  * A skeletal implementation of {@link InternalLogger}.  This class implements
  * all methods that have a {@link InternalLogLevel} parameter by default to call
  * specific logger methods such as {@link #info(String)} or {@link #isInfoEnabled()}.

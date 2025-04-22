@@ -36,7 +36,7 @@ import java.util.logging.Logger;
 
 /**
  * NOTE: This file has been copied and slightly modified from {io.netty.util.internal.logging}.
- *
+ * <p>
  * Logger factory which creates a
  * <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/logging/">java.util.logging</a>
  * logger.

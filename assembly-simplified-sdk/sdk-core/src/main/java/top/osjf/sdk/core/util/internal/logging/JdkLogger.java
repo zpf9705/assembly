@@ -41,7 +41,7 @@ import java.util.logging.Logger;
 
 /**
  * NOTE: This file has been copied from {io.netty.util.internal.logging}.
- *
+ * <p>
  * <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/logging/index.html">java.util.logging</a>
  * logger.
  */
