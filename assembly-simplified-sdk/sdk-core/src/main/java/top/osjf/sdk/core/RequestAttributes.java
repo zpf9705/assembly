@@ -17,7 +17,6 @@
 package top.osjf.sdk.core;
 
 import top.osjf.sdk.core.caller.RequestCaller;
-import top.osjf.sdk.core.support.Nullable;
 
 /**
  * The {@code RequestAttributes} interface defines a set of auxiliary
@@ -49,7 +48,7 @@ public interface RequestAttributes {
      *
      * @param host The host name, which can be null.
      */
-    void setHost(@Nullable String host);
+    void setHost(String host);
 
 
     /**
@@ -61,7 +60,6 @@ public interface RequestAttributes {
      *
      * @return The host name, which may be null.
      */
-    @Nullable
     String getHost();
 
     /**
@@ -79,7 +77,7 @@ public interface RequestAttributes {
      * @param requestCaller The request caller, which can be null.
      * @since 1.0.2
      */
-    void setRequestCaller(@Nullable RequestCaller requestCaller);
+    void setRequestCaller(RequestCaller requestCaller);
 
     /**
      * Gets the request caller {@code RequestCaller}.
@@ -91,6 +89,5 @@ public interface RequestAttributes {
      * @return The request caller, which may be null.
      * @since 1.0.2
      */
-    @Nullable
     RequestCaller getRequestCaller();
 }

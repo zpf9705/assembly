@@ -16,7 +16,6 @@
 
 package top.osjf.sdk.core;
 
-import top.osjf.sdk.core.support.NotNull;
 import top.osjf.sdk.core.support.SdkSupport;
 
 /**
@@ -55,6 +54,5 @@ public interface RequestTypeSupplier {
      * @return type of the request parameter.
      */
     @SuppressWarnings("rawtypes")
-    @NotNull
     Class<? extends Request> getRequestType();
 }
