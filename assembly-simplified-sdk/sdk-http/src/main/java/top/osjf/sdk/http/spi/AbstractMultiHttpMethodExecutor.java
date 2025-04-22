@@ -16,7 +16,7 @@
 
 package top.osjf.sdk.http.spi;
 
-import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.lang.NotNull;
 
 import java.nio.charset.Charset;
 import java.util.Map;

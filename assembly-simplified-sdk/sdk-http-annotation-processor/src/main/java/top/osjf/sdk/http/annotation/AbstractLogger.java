@@ -17,7 +17,7 @@
 package top.osjf.sdk.http.annotation;
 
 import com.google.common.collect.ForwardingObject;
-import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.lang.NotNull;
 
 import javax.annotation.processing.Messager;
 import javax.tools.Diagnostic;

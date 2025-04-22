@@ -86,12 +86,12 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
      * If you haven't set {@code HttpRequestExecutor} through a method, you can
      * use a specific loading mechanism to automatically load it. You can customize
      * the {@code HttpRequestExecutor} implementation class and mark the
-     * {@link top.osjf.sdk.core.support.LoadOrder} annotation to specify the higher
+     * {@link top.osjf.sdk.core.spi.Spi} annotation to specify the higher
      * priority of the custom executor.
      * <p>
      * The extension already provides two implementations of {@code HttpRequestExecutor},
      * {@code Apache hc} and {@code Ok hc}, with the former taking precedence over the
-     * latter (when all are used, you can observe the order of {@link top.osjf.sdk.core.support.LoadOrder}
+     * latter (when all are used, you can observe the order of {@link top.osjf.sdk.core.spi.Spi}
      * annotations). To customize the extension implementation class, you can follow the example below:
      * <pre>
      *      {@code

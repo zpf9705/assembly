@@ -17,7 +17,7 @@
 
 package top.osjf.sdk.http.spi;
 
-import top.osjf.sdk.core.support.Nullable;
+import top.osjf.sdk.core.lang.Nullable;
 
 import java.io.Serializable;
 import java.nio.charset.Charset;

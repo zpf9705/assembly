@@ -19,7 +19,7 @@ package top.osjf.sdk.core.caller;
 import top.osjf.sdk.core.Request;
 import top.osjf.sdk.core.Response;
 import top.osjf.sdk.core.SdkEnum;
-import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.lang.NotNull;
 
 /**
  * Callback interface, used to handle the results of synchronous or asynchronous

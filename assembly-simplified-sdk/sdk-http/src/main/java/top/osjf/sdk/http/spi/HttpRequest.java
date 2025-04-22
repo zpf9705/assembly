@@ -17,8 +17,8 @@
 
 package top.osjf.sdk.http.spi;
 
-import top.osjf.sdk.core.support.NotNull;
-import top.osjf.sdk.core.support.Nullable;
+import top.osjf.sdk.core.lang.NotNull;
+import top.osjf.sdk.core.lang.Nullable;
 import top.osjf.sdk.http.client.HttpRequestOptions;
 
 import java.io.Serializable;

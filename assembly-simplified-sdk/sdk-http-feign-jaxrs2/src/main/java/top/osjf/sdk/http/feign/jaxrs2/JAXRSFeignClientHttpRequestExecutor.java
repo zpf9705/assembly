@@ -19,7 +19,7 @@ package top.osjf.sdk.http.feign.jaxrs2;
 import feign.Request;
 import feign.Response;
 import feign.jaxrs2.JAXRSClient;
-import top.osjf.sdk.core.support.LoadOrder;
+import top.osjf.sdk.core.spi.Spi;
 import top.osjf.sdk.http.feign.bridging.AbstractFeignClientHttpRequestExecutor;
 
 import javax.ws.rs.client.ClientBuilder;
@@ -32,7 +32,7 @@ import java.io.IOException;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-@LoadOrder(Integer.MIN_VALUE + 19)
+@Spi(order = Integer.MIN_VALUE + 19)
 public class JAXRSFeignClientHttpRequestExecutor extends AbstractFeignClientHttpRequestExecutor {
 
     /**

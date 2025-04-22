@@ -20,7 +20,7 @@ import feign.Request;
 import feign.Response;
 import feign.httpclient.ApacheHttpClient;
 import org.apache.http.client.HttpClient;
-import top.osjf.sdk.core.support.LoadOrder;
+import top.osjf.sdk.core.spi.Spi;
 import top.osjf.sdk.http.feign.bridging.AbstractFeignClientHttpRequestExecutor;
 
 import java.io.IOException;
@@ -32,7 +32,7 @@ import java.io.IOException;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-@LoadOrder(Integer.MIN_VALUE + 10)
+@Spi(order = Integer.MIN_VALUE + 10)
 public class ApacheFeignClientHttpRequestExecutor extends AbstractFeignClientHttpRequestExecutor {
 
     /**

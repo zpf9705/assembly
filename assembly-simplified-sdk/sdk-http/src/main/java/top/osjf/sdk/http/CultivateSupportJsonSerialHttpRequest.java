@@ -16,7 +16,7 @@
 
 package top.osjf.sdk.http;
 
-import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.lang.NotNull;
 
 import static top.osjf.sdk.http.CultivateSupportHttpRequest.InstanceHolder.getSdkEnumManager;
 

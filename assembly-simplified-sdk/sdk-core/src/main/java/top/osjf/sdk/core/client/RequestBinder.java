@@ -34,7 +34,7 @@ import javax.annotation.concurrent.ThreadSafe;
  * formats and be a truly accessible address.
  *
  * <p>This interface can be extended according to Java's SPI mechanism
- * {@link java.util.ServiceLoader}, with annotations {@link top.osjf.sdk.core.support.LoadOrder},
+ * {@link top.osjf.sdk.core.spi.SpiLoader}, with annotations {@link top.osjf.sdk.core.spi.Spi},
  * to achieve self defined extensions.
  *
  * @param <R> Implement a unified response class data type.

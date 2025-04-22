@@ -16,8 +16,8 @@
 
 package top.osjf.sdk.http.annotation;
 
-import top.osjf.sdk.core.support.NotNull;
-import top.osjf.sdk.core.support.Nullable;
+import top.osjf.sdk.core.lang.NotNull;
+import top.osjf.sdk.core.lang.Nullable;
 import top.osjf.sdk.core.util.StringUtils;
 import top.osjf.sdk.http.HttpProtocol;
 import top.osjf.sdk.http.HttpRequestMethod;

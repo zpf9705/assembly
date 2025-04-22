@@ -18,7 +18,7 @@ package top.osjf.sdk.http.google;
 
 import com.google.api.client.http.*;
 import com.google.api.client.http.javanet.NetHttpTransport;
-import top.osjf.sdk.core.support.Nullable;
+import top.osjf.sdk.core.lang.Nullable;
 import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.core.util.StringUtils;
 import top.osjf.sdk.http.support.HttpSdkSupport;

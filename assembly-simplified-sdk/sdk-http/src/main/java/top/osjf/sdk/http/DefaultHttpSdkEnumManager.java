@@ -16,7 +16,7 @@
 
 package top.osjf.sdk.http;
 
-import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.lang.NotNull;
 import top.osjf.sdk.core.util.org.hibernate.validator.internal.util.v6_2_0_final.ConcurrentReferenceHashMap;
 
 /**

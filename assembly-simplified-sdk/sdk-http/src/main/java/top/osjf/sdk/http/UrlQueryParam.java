@@ -1,6 +1,6 @@
 package top.osjf.sdk.http;
 
-import top.osjf.sdk.core.support.Nullable;
+import top.osjf.sdk.core.lang.Nullable;
 
 /**
  * URL Query Parameter Interface.

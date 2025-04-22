@@ -17,7 +17,7 @@
 
 package top.osjf.sdk.proxy;
 
-import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.lang.NotNull;
 import top.osjf.sdk.core.util.ReflectUtil;
 
 /**

@@ -18,7 +18,7 @@ package top.osjf.sdk.http.feign.bridging;
 
 import feign.Request;
 import feign.Response;
-import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.lang.NotNull;
 import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.http.client.HttpRequestOptions;
 import top.osjf.sdk.http.spi.DefaultHttpResponse;

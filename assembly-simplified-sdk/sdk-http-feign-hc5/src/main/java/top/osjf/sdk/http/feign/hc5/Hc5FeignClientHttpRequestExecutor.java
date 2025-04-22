@@ -20,7 +20,7 @@ import feign.Request;
 import feign.Response;
 import feign.hc5.ApacheHttp5Client;
 import org.apache.hc.client5.http.classic.HttpClient;
-import top.osjf.sdk.core.support.LoadOrder;
+import top.osjf.sdk.core.spi.Spi;
 import top.osjf.sdk.http.feign.bridging.AbstractFeignClientHttpRequestExecutor;
 
 import java.io.IOException;
@@ -32,7 +32,7 @@ import java.io.IOException;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-@LoadOrder(Integer.MIN_VALUE + 17)
+@Spi(order = Integer.MIN_VALUE + 17)
 public class Hc5FeignClientHttpRequestExecutor extends AbstractFeignClientHttpRequestExecutor {
 
     /**

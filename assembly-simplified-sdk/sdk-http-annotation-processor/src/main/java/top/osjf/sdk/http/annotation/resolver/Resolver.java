@@ -21,8 +21,8 @@ import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.tree.TreeMaker;
 import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.Names;
-import top.osjf.sdk.core.support.NotNull;
-import top.osjf.sdk.core.support.Nullable;
+import top.osjf.sdk.core.lang.NotNull;
+import top.osjf.sdk.core.lang.Nullable;
 import top.osjf.sdk.http.annotation.Logger;
 import top.osjf.sdk.http.annotation.StringFormatLogger;
 

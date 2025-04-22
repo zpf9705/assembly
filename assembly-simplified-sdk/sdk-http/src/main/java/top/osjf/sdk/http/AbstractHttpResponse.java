@@ -18,7 +18,7 @@ package top.osjf.sdk.http;
 
 import top.osjf.sdk.core.AbstractResponse;
 import top.osjf.sdk.core.DefaultErrorResponse;
-import top.osjf.sdk.core.support.Nullable;
+import top.osjf.sdk.core.lang.Nullable;
 
 import java.nio.charset.Charset;
 import java.util.Collections;

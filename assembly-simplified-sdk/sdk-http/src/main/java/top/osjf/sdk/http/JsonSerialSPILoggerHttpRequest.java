@@ -17,7 +17,7 @@
 package top.osjf.sdk.http;
 
 import top.osjf.sdk.core.client.Client;
-import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.lang.NotNull;
 import top.osjf.sdk.http.client.ServiceLoaderLoggerHttpClient;
 
 /**

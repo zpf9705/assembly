@@ -17,8 +17,8 @@
 package top.osjf.sdk.http.hc5;
 
 import org.apache.hc.client5.http.classic.methods.*;
-import top.osjf.sdk.core.support.LoadOrder;
-import top.osjf.sdk.core.support.Nullable;
+import top.osjf.sdk.core.lang.Nullable;
+import top.osjf.sdk.core.spi.Spi;
 import top.osjf.sdk.http.spi.AbstractMultiHttpMethodExecutor;
 import top.osjf.sdk.http.spi.HttpRequestExecutor;
 import top.osjf.sdk.http.spi.HttpResponse;
@@ -33,7 +33,7 @@ import java.util.Map;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-@LoadOrder(Integer.MIN_VALUE + 18)
+@Spi(order = Integer.MIN_VALUE + 18)
 public class Hc5HttpRequestExecutor extends AbstractMultiHttpMethodExecutor {
     @Override public HttpResponse get(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
         return getApacheResponseAsSpiResponse(new HttpGet(url), headers, body, charset);

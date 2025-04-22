@@ -16,8 +16,8 @@
 
 package top.osjf.sdk.http.jaxrs2;
 
-import top.osjf.sdk.core.support.LoadOrder;
-import top.osjf.sdk.core.support.Nullable;
+import top.osjf.sdk.core.lang.Nullable;
+import top.osjf.sdk.core.spi.Spi;
 import top.osjf.sdk.http.spi.AbstractMultiHttpMethodExecutor;
 import top.osjf.sdk.http.spi.DefaultHttpResponse;
 import top.osjf.sdk.http.spi.HttpRequestExecutor;
@@ -35,7 +35,7 @@ import java.util.Map;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-@LoadOrder(Integer.MIN_VALUE + 20)
+@Spi(order = Integer.MIN_VALUE + 20)
 public class JAXRSHttpRequestExecutor extends AbstractMultiHttpMethodExecutor {
     @Override public HttpResponse get(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
         return getJAXRSResponseAsSpiResponse("GET", url, headers, body, charset);

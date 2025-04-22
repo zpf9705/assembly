@@ -18,8 +18,8 @@ package top.osjf.sdk.http.support;
 
 import com.google.common.annotations.Beta;
 import com.palominolabs.http.url.UrlBuilder;
-import top.osjf.sdk.core.support.NotNull;
-import top.osjf.sdk.core.support.Nullable;
+import top.osjf.sdk.core.lang.NotNull;
+import top.osjf.sdk.core.lang.Nullable;
 import top.osjf.sdk.core.support.SdkSupport;
 import top.osjf.sdk.core.util.JSONUtil;
 import top.osjf.sdk.core.util.StringUtils;

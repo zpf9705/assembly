@@ -16,7 +16,7 @@
 
 package top.osjf.sdk.http.jaxrs2;
 
-import top.osjf.sdk.core.support.Nullable;
+import top.osjf.sdk.core.lang.Nullable;
 import top.osjf.sdk.core.util.MapUtils;
 import top.osjf.sdk.core.util.StringUtils;
 import top.osjf.sdk.http.support.HttpSdkSupport;

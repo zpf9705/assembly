@@ -18,8 +18,8 @@ package top.osjf.sdk.http.ok;
 
 import okhttp3.Request;
 import okhttp3.Response;
-import top.osjf.sdk.core.support.LoadOrder;
-import top.osjf.sdk.core.support.Nullable;
+import top.osjf.sdk.core.lang.Nullable;
+import top.osjf.sdk.core.spi.Spi;
 import top.osjf.sdk.core.util.Pair;
 import top.osjf.sdk.http.spi.AbstractMultiHttpMethodExecutor;
 import top.osjf.sdk.http.spi.DefaultHttpResponse;
@@ -37,7 +37,7 @@ import java.util.Map;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-@LoadOrder(Integer.MIN_VALUE + 14)
+@Spi(order = Integer.MIN_VALUE + 14)
 public class OkHttpRequestExecutor extends AbstractMultiHttpMethodExecutor {
     @Override public HttpResponse get(String url, @Nullable Map<String, String> headers, @Nullable Object body, @Nullable Charset charset) throws Exception {
         return getOkResponseAsSpiResponse("GET", url, headers, body, charset);
