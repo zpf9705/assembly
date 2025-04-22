@@ -17,11 +17,11 @@
 package top.osjf.sdk.http.client;
 
 import top.osjf.sdk.core.URL;
-import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.lang.NotNull;
 import top.osjf.sdk.http.HttpResponse;
 
 /**
- * Default impl for {@link top.osjf.sdk.core.client.Client}.
+ * The default implementation class for {@link HttpClient}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
