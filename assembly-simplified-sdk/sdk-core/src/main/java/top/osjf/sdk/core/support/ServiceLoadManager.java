@@ -36,8 +36,10 @@ import java.util.*;
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
+ * @deprecated Replace Class top.osjf.sdk.core.spi.SpiLoader
  */
 @SuppressWarnings("unchecked")
+@Deprecated
 public final class ServiceLoadManager {
 
     /*** Private constructor to prevent external instantiation.*/
@@ -77,7 +79,7 @@ public final class ServiceLoadManager {
      * @return A list containing all instances of the specified type.
      * @throws NullPointerException If the input type is {@literal null}.
      */
-    public static <T> List<T> loadAll(@NotNull Class<T> type) {
+    public static <T> List<T> loadAll(Class<T> type) {
         return (List<T>) loadAllCache.computeIfAbsent(type, type1 -> loadInstances(type1, false));
     }
 
@@ -93,8 +95,7 @@ public final class ServiceLoadManager {
      * @return The high-priority instance of the specified type, or null if no instance is found.
      * @throws NullPointerException If the input type is {@literal null}.
      */
-    @Nullable
-    public static <T> T loadHighPriority(@NotNull Class<T> type) {
+    public static <T> T loadHighPriority(Class<T> type) {
         return (T) loadHighPriorityCache.computeIfAbsent(type, type1 -> {
             List<?> instances = loadInstances(type1, true);
             return !instances.isEmpty() ? instances.get(0) : null;
@@ -113,8 +114,7 @@ public final class ServiceLoadManager {
      * @return The low-priority instance of the specified type, or null if no instance is found.
      * @throws NullPointerException If the input type is {@literal null}.
      */
-    @Nullable
-    public static <T> T loadLowerPriority(@NotNull Class<T> type) {
+    public static <T> T loadLowerPriority(Class<T> type) {
         return (T) loadLowerPriorityCache.computeIfAbsent(type, type1 -> {
             List<?> instances = loadInstances(type1, true);
             return !instances.isEmpty() ? instances.get(instances.size() - 1) : null;
