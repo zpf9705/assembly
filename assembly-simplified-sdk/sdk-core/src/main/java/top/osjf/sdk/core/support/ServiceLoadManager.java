@@ -36,7 +36,7 @@ import java.util.*;
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
- * @deprecated Replace Class top.osjf.sdk.core.spi.SpiLoader
+ * @deprecated 1.0.3 Replace Class top.osjf.sdk.core.spi.SpiLoader
  */
 @SuppressWarnings("unchecked")
 @Deprecated
