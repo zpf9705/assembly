@@ -16,17 +16,16 @@
 
 package top.osjf.sdk.core.client;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import top.osjf.sdk.core.Request;
 import top.osjf.sdk.core.Response;
 import top.osjf.sdk.core.URL;
-import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.lang.NotNull;
 import top.osjf.sdk.core.support.SdkSupport;
 import top.osjf.sdk.core.util.StringUtils;
+import top.osjf.sdk.core.util.internal.logging.InternalLogger;
+import top.osjf.sdk.core.util.internal.logging.InternalLoggerFactory;
 
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiConsumer;
 
 /**
  * The abstract auxiliary implementation class for {@link Client}
@@ -52,10 +51,11 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
 
     private static final long serialVersionUID = -6931093876869566743L;
 
-    /*** Default slf4j logger with current {@link Client} impl */
-    protected final Logger LOGGER = LoggerFactory.getLogger(getClass());
+    private final InternalLogger LOGGER = InternalLoggerFactory.getInstance(getClass());
 
-    /*** The unique cache tag for the current {@code Client}.*/
+    /**
+     * The unique cache tag for the current {@code Client}.
+     */
     private final String unique;
 
     /**
@@ -178,47 +178,21 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
     }
 
     /**
-     * {@inheritDoc}
-     * Default use {@link Logger#info}.
-     *
-     * @return {@inheritDoc}
-     */
-    @Override
-    @NotNull
-    public BiConsumer<String, Object[]> normal() {
-        return LOGGER::info;
-    }
-
-    /**
-     * {@inheritDoc}
-     * Default use {@link Logger#error}.
-     *
-     * @return {@inheritDoc}
-     */
-    @Override
-    @NotNull
-    public BiConsumer<String, Object[]> sdkError() {
-        return LOGGER::error;
-    }
-
-    /**
-     * {@inheritDoc}
-     * Default use {@link Logger#error}.
-     *
-     * @return {@inheritDoc}
-     */
-    @Override
-    @NotNull
-    public BiConsumer<String, Object[]> unKnowError() {
-        return LOGGER::error;
-    }
-
-    /**
      * Release the temporarily stored request parameter information.
      */
     @Override
     public void close() throws Exception {
         InstanceHolder.getRequestBinder().close();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return Implement internal {@code InternalLogger} instances of class metrics.
+     */
+    @Override
+    public InternalLogger getLogger() {
+        return LOGGER;
     }
 
     /**

@@ -20,7 +20,7 @@ import top.osjf.sdk.core.DefaultErrorResponse;
 import top.osjf.sdk.core.Request;
 import top.osjf.sdk.core.Response;
 import top.osjf.sdk.core.exception.DataConvertException;
-import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.lang.NotNull;
 import top.osjf.sdk.core.util.CollectionUtils;
 import top.osjf.sdk.core.util.JSONUtil;
 

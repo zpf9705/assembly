@@ -16,7 +16,7 @@
 
 package top.osjf.sdk.core.client;
 
-import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.lang.NotNull;
 
 import java.util.function.BiConsumer;
 
@@ -32,6 +32,7 @@ import java.util.function.BiConsumer;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
+@Deprecated
 public interface LoggerConsumer {
 
     /**

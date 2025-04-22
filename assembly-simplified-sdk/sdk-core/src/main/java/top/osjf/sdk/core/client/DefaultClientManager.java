@@ -17,7 +17,7 @@
 package top.osjf.sdk.core.client;
 
 import top.osjf.sdk.core.Response;
-import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.lang.NotNull;
 import top.osjf.sdk.core.util.org.hibernate.validator.internal.util.v6_2_0_final.ConcurrentReferenceHashMap;
 
 import java.util.function.Supplier;

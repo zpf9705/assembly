@@ -18,7 +18,8 @@ package top.osjf.sdk.core.client;
 
 import top.osjf.sdk.core.Request;
 import top.osjf.sdk.core.Response;
-import top.osjf.sdk.core.support.NotNull;
+import top.osjf.sdk.core.lang.NotNull;
+import top.osjf.sdk.core.util.internal.logging.InternalLogger;
 
 import java.io.Serializable;
 
@@ -47,8 +48,8 @@ import java.io.Serializable;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public interface Client<R extends Response> extends RequestCore<R>, PreProcessingResponseHandler<R>,
-        ResponseConvert<R>, LoggerConsumer, Serializable {
+public interface Client<R extends Response>
+        extends RequestCore<R>, PreProcessingResponseHandler<R>, ResponseConvert<R>, Serializable {
     /**
      * {@inheritDoc}
      * <p>
@@ -82,4 +83,25 @@ public interface Client<R extends Response> extends RequestCore<R>, PreProcessin
      */
     @Override
     void close() throws Exception;
+
+    /**
+     * Retrieves an instance of the {@code InternalLogger}.
+     *
+     * <p>This method is responsible for providing access to an {@code InternalLogger} instance,
+     * which is used for logging purposes within the application. The specific implementation
+     * of InternalLogger returned by this method may vary depending on the configuration
+     * or the runtime environment.</p>
+     *
+     * <p>In some cases, the InternalLogger instance may be obtained through a service loader
+     * mechanism, which allows for dynamic loading of implementations based on availability
+     * and priority. If no suitable implementation is found, this method may throw an
+     * IllegalStateException to indicate that logging functionality is not properly configured.</p>
+     *
+     * @return an instance of {@code InternalLogger} that can be used for logging within the application.
+     * @throws IllegalStateException if no InternalLogger implementation is available,
+     *         which may indicate a configuration issue or a missing logging provider.
+     *
+     * @see InternalLogger for details on the logging interface and its methods.
+     */
+    InternalLogger getLogger();
 }
