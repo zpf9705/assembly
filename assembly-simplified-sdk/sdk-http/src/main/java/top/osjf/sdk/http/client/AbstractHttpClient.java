@@ -31,6 +31,8 @@ import top.osjf.sdk.core.spi.SpiLoaderException;
 import top.osjf.sdk.core.util.ArrayUtils;
 import top.osjf.sdk.core.util.ExceptionUtils;
 import top.osjf.sdk.core.util.ReflectUtil;
+import top.osjf.sdk.core.util.internal.logging.InternalLogger;
+import top.osjf.sdk.core.util.internal.logging.InternalLoggerFactory;
 import top.osjf.sdk.http.AbstractHttpResponse;
 import top.osjf.sdk.http.HttpRequest;
 import top.osjf.sdk.http.HttpResponse;
@@ -76,6 +78,8 @@ import java.util.concurrent.TimeUnit;
 public abstract class AbstractHttpClient<R extends HttpResponse> extends AbstractClient<R> implements HttpClient<R> {
 
     private static final long serialVersionUID = -7793213059840466979L;
+
+    private final InternalLogger LOG = InternalLoggerFactory.getInstance(getClass());
 
     /**
      * Http request executor.
@@ -152,6 +156,13 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
     private String persistentUrl;
 
     /**
+     * When loading the SPI {@code InternalLogger} instance fails, use the tag
+     * variables of the own {@link #LOG} instance.
+     * @see #LOG
+     */
+    private boolean usingIdentifyLogger;
+
+    /**
      * Constructing for {@code AbstractHttpClient} objects using access URLs.
      *
      * @param url {@code URL} Object of packaging tags and URL addresses
@@ -160,8 +171,32 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
      */
     public AbstractHttpClient(@NotNull URL url) {
         super(url);
+        /*
+         * When the unique identifier matches the URL address, such as a fixed
+         *  URL in POST format that does not include mutable query parameters,
+         * set persistent access URL address values.
+         *
+         * For example, scenes that are not saved: https://example.api.com/query/one?id=xxx
+         * --------------------------------------------------------------------------------
+         * For example, saved scenes: https://example.api.com/save
+         */
         if (url.isSame()) {
             this.persistentUrl = url.getUrl();
+        }
+
+        initLogger();
+    }
+
+    /**
+     * Initialize the log instance and use the {@code InternalLogger} instance with its
+     * own identity {@link #LOG} when loading fails.
+     */
+    private void initLogger(){
+        try {
+            super.getLogger();
+        }
+        catch (IllegalStateException e){
+            usingIdentifyLogger = true;
         }
     }
 
@@ -337,6 +372,14 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
                 }
             }
         }
+    }
+
+    @Override
+    public InternalLogger getLogger() throws IllegalStateException {
+        if (usingIdentifyLogger){
+            return LOG;
+        }
+        return super.getLogger();
     }
 
     @Override

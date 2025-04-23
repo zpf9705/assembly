@@ -30,6 +30,7 @@ import top.osjf.sdk.http.HttpResponse;
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
+ * @deprecated {@link top.osjf.sdk.core.util.internal.logging.spi.InternalLoggerSpi}
  */
 public class ServiceLoaderLoggerHttpClient<R extends HttpResponse> extends DefaultHttpClient<R> {
 
@@ -62,5 +63,10 @@ public class ServiceLoaderLoggerHttpClient<R extends HttpResponse> extends Defau
                 throw new SpiLoaderException(InternalLogger.class.getName() +
                         " Provider class not found, please check if it is in the SPI configuration file?");
         }
+    }
+
+    @Override
+    public InternalLogger getLogger() {
+        return logger;
     }
 }
