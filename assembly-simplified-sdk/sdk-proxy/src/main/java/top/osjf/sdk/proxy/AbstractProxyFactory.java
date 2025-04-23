@@ -43,16 +43,18 @@ public abstract class AbstractProxyFactory<C> implements ProxyFactory {
      * @param <T>      {@inheritDoc}
      * @return {@inheritDoc}
      * @throws Throwable          {@inheritDoc}
-     * @throws ClassCastException if input {@code DelegationCallback} cannot
-     *                            be cast to generic type {@code T}.
      */
     @Override
+    @SuppressWarnings("unchecked")
     public final <T> T newProxy(Class<T> type, DelegationCallback callback) throws Throwable {
         Class<C> callbackType = getCallbackType();
-        if (!callback.isWrapperFor(callbackType)) {
-            throw new ClassCastException(callback.getClass().getName() + " cannot be cast to " + callbackType.getName());
+        //Directly call the internal method to create a
+        // proxy object corresponding to the type.
+        if (callback.isWrapperFor(callbackType)) {
+            return newProxyInternal(type, (C) callback);
         }
-        return newProxyInternal(type, callback.unwrap(callbackType));
+        //The callback types required by non-proxy factories are packaged using wrapper classes.
+        return newProxyInternal(type, (C) new DelegationCallbackWrapper(callback));
     }
 
     /**
@@ -64,7 +66,7 @@ public abstract class AbstractProxyFactory<C> implements ProxyFactory {
      * @return the actual type of {@code DelegationCallback}.
      */
     @NotNull
-    public Class<C> getCallbackType() {
+    private Class<C> getCallbackType() {
         return ReflectUtil.getSuperGenericClass(getClass(), 0);
     }
 
@@ -81,5 +83,5 @@ public abstract class AbstractProxyFactory<C> implements ProxyFactory {
      * @return specify {@code T} the type of proxy object.
      * @throws Throwable it can be any error that can be thrown.
      */
-    public abstract <T> T newProxyInternal(Class<T> type, C callback) throws Throwable;
+    protected abstract <T> T newProxyInternal(Class<T> type, C callback) throws Throwable;
 }
