@@ -27,6 +27,7 @@ import top.osjf.sdk.http.client.ServiceLoaderLoggerHttpClient;
  * @param <R> Subclass generic type of {@code AbstractHttpResponse}.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
+ * @deprecated {@link top.osjf.sdk.core.util.internal.logging.spi.InternalLoggerSpi}
  */
 @SuppressWarnings("rawtypes")
 public abstract class UrlQuerySPILoggerHttpRequest<R extends AbstractHttpResponse>
