@@ -18,7 +18,9 @@
 package top.osjf.sdk.proxy;
 
 
+import top.osjf.sdk.proxy.bytebuddy.ByteBuddyProxyFactory;
 import top.osjf.sdk.proxy.cglib.CglibProxyFactory;
+import top.osjf.sdk.proxy.javassist.JavassistProxyFactory;
 import top.osjf.sdk.proxy.jdk.JDKProxyFactory;
 import top.osjf.sdk.proxy.springcglib.SpringCglibProxyFactory;
 
@@ -45,7 +47,17 @@ public enum ProxyModel implements ProxyFactory {
     /**
      * A proxy model created using the Spring CGLIB proxy factory.
      */
-    SPRING_CGLIB(new SpringCglibProxyFactory());
+    SPRING_CGLIB(new SpringCglibProxyFactory()),
+
+    /**
+     * A proxy model created using the byteBuddy proxy factory.
+     */
+    BYTE_BUDDY(new ByteBuddyProxyFactory()),
+
+    /**
+     * A proxy model created using the javassist proxy factory.
+     */
+    JAVASSIST(new JavassistProxyFactory());
 
     final ProxyFactory proxyFactory;
 
