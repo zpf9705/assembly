@@ -20,6 +20,7 @@ import top.osjf.sdk.core.Request;
 import top.osjf.sdk.core.Response;
 import top.osjf.sdk.core.lang.NotNull;
 import top.osjf.sdk.core.util.internal.logging.InternalLogger;
+import top.osjf.sdk.core.util.internal.logging.InternalLoggerAccessor;
 
 import java.io.Serializable;
 
@@ -36,8 +37,6 @@ import java.io.Serializable;
  * <li>{@link RequestCore}: defines the core method for sending requests</li>
  * <li>{@link PreProcessingResponseHandler}: Allow preprocessing before response processing</li>
  * <li>{@link ResponseConvert}: defines a method for converting responses to specific types</li>
- * <li>{@link LoggerConsumer}: Allow interfaces to implement class consumption of log information
- * (i.e. logging)</li>
  * <li>{@link AutoCloseable}: Defined a method for automatically closing resources, typically used
  * to release network connections and other resources</li>
  * <li>{@link Serializable}: Allow interface implementation classes to be serialized for use during
@@ -48,8 +47,8 @@ import java.io.Serializable;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public interface Client<R extends Response>
-        extends RequestCore<R>, PreProcessingResponseHandler<R>, ResponseConvert<R>, Serializable {
+public interface Client<R extends Response> extends RequestCore<R>,
+        PreProcessingResponseHandler<R>, ResponseConvert<R>, InternalLoggerAccessor, Serializable {
     /**
      * {@inheritDoc}
      * <p>
@@ -85,23 +84,7 @@ public interface Client<R extends Response>
     void close() throws Exception;
 
     /**
-     * Retrieves an instance of the {@code InternalLogger}.
-     *
-     * <p>This method is responsible for providing access to an {@code InternalLogger} instance,
-     * which is used for logging purposes within the application. The specific implementation
-     * of InternalLogger returned by this method may vary depending on the configuration
-     * or the runtime environment.</p>
-     *
-     * <p>In some cases, the InternalLogger instance may be obtained through a service loader
-     * mechanism, which allows for dynamic loading of implementations based on availability
-     * and priority. If no suitable implementation is found, this method may throw an
-     * IllegalStateException to indicate that logging functionality is not properly configured.</p>
-     *
-     * @return an instance of {@code InternalLogger} that can be used for logging within the application.
-     * @throws IllegalStateException if no InternalLogger implementation is available,
-     *         which may indicate a configuration issue or a missing logging provider.
-     *
-     * @see InternalLogger for details on the logging interface and its methods.
+     * {@inheritDoc}
      */
-    InternalLogger getLogger();
+    InternalLogger getLogger() throws IllegalStateException;
 }
