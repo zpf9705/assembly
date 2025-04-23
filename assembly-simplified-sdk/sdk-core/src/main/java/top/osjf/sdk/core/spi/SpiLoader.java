@@ -436,17 +436,14 @@ public final class SpiLoader<S> {
         }
 
         sortedClassList.addAll(classList);
-        sortedClassList.sort(new Comparator<Class<? extends S>>() {
-            @Override
-            public int compare(Class<? extends S> o1, Class<? extends S> o2) {
-                Spi spi1 = o1.getAnnotation(Spi.class);
-                int order1 = spi1 == null ? 0 : spi1.order();
+        sortedClassList.sort((o1, o2) -> {
+            Spi spi1 = o1.getAnnotation(Spi.class);
+            int order1 = spi1 == null ? 0 : spi1.order();
 
-                Spi spi2 = o2.getAnnotation(Spi.class);
-                int order2 = spi2 == null ? 0 : spi2.order();
+            Spi spi2 = o2.getAnnotation(Spi.class);
+            int order2 = spi2 == null ? 0 : spi2.order();
 
-                return Integer.compare(order1, order2);
-            }
+            return Integer.compare(order1, order2);
         });
     }
 
