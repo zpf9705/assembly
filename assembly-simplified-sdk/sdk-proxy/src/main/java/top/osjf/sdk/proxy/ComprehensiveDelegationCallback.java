@@ -25,7 +25,9 @@ import top.osjf.sdk.core.caller.RequestCaller;
 import top.osjf.sdk.core.lang.Nullable;
 import top.osjf.sdk.core.support.SdkSupport;
 import top.osjf.sdk.core.util.CollectionUtils;
+import top.osjf.sdk.proxy.bytebuddy.InvocationHandlerAdapterDelegationCallback;
 import top.osjf.sdk.proxy.cglib.CglibDelegationCallback;
+import top.osjf.sdk.proxy.javassist.JavassistDelegationCallback;
 import top.osjf.sdk.proxy.jdk.JDKDelegationCallback;
 import top.osjf.sdk.proxy.springcglib.SpringCglibDelegationCallback;
 
@@ -50,8 +52,9 @@ import java.util.List;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-public class ComprehensiveDelegationCallback implements RequestAttributes,
-        JDKDelegationCallback, CglibDelegationCallback, SpringCglibDelegationCallback {
+public class ComprehensiveDelegationCallback
+        implements RequestAttributes, JDKDelegationCallback, CglibDelegationCallback, SpringCglibDelegationCallback,
+        InvocationHandlerAdapterDelegationCallback, JavassistDelegationCallback {
 
     /**
      * A {@code host} for sdk execute.
@@ -170,10 +173,13 @@ public class ComprehensiveDelegationCallback implements RequestAttributes,
      */
     @Override
     public Object callback(Method method, Object[] args, PeculiarProxyVariable variable) throws Throwable {
-        switch (method.getName()){
-            case "toString": return toString();
-            case "hashCode": return hashCode();
-            case "equals": return equals(args[0]);
+        switch (method.getName()) {
+            case "toString":
+                return toString();
+            case "hashCode":
+                return hashCode();
+            case "equals":
+                return equals(args[0]);
         }
         RequestExecuteMetadata metadata = SdkSupport.createRequest(method, args);
         Request<?> request = metadata.getRequest();
