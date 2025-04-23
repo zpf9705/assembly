@@ -17,6 +17,8 @@
 
 package top.osjf.sdk.core.util.internal.logging;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * {@code DelegationInternalLogger} is an implementation of an internal logger that delegates logging
  * operations to another InternalLogger instance.
@@ -46,6 +48,7 @@ public class DelegationInternalLogger extends AbstractInternalLogger {
 
     public DelegationInternalLogger(InternalLogger logger, String name) {
         super(name);
+        requireNonNull(logger, "logger");
         this.logger = logger;
     }
 
