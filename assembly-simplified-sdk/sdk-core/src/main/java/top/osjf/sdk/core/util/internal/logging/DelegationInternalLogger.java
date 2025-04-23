@@ -22,14 +22,12 @@ package top.osjf.sdk.core.util.internal.logging;
  * operations to another InternalLogger instance.
  * This class provides a complete set of logging methods by extending AbstractInternalLogger and delegates
  * the actual logging operations to the logger instance passed in the constructor.
- * <p>
  * <h2>Use Cases:</h2>
  * <ul>
  * <li>When dynamic replacement or extension of logging implementation is needed, this class can be used
  * to delegate logging operations.</li>
  * <li>Suitable for scenarios where flexible configuration of loggers is required at runtime.</li>
  * </ul>
- * <p>
  * <h2>Main Features:</h2>
  * <ul>
  * <li>Provides methods for various log levels (e.g., trace, debug, info, warn, error).</li>
