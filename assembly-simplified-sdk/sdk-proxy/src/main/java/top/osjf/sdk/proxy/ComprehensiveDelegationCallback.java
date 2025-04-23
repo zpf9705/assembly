@@ -19,17 +19,12 @@ package top.osjf.sdk.proxy;
 
 import top.osjf.sdk.core.Request;
 import top.osjf.sdk.core.RequestAttributes;
-import top.osjf.sdk.core.caller.RequestExecuteMetadata;
 import top.osjf.sdk.core.Response;
 import top.osjf.sdk.core.caller.RequestCaller;
+import top.osjf.sdk.core.caller.RequestExecuteMetadata;
 import top.osjf.sdk.core.lang.Nullable;
 import top.osjf.sdk.core.support.SdkSupport;
 import top.osjf.sdk.core.util.CollectionUtils;
-import top.osjf.sdk.proxy.bytebuddy.InvocationHandlerAdapterDelegationCallback;
-import top.osjf.sdk.proxy.cglib.CglibDelegationCallback;
-import top.osjf.sdk.proxy.javassist.JavassistDelegationCallback;
-import top.osjf.sdk.proxy.jdk.JDKDelegationCallback;
-import top.osjf.sdk.proxy.springcglib.SpringCglibDelegationCallback;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -52,9 +47,7 @@ import java.util.List;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
  */
-public class ComprehensiveDelegationCallback
-        implements RequestAttributes, JDKDelegationCallback, CglibDelegationCallback, SpringCglibDelegationCallback,
-        InvocationHandlerAdapterDelegationCallback, JavassistDelegationCallback {
+public class ComprehensiveDelegationCallback implements RequestAttributes, IntegratedDelegationCallback {
 
     /**
      * A {@code host} for sdk execute.
