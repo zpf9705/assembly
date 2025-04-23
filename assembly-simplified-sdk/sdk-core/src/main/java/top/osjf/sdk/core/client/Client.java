@@ -85,6 +85,14 @@ public interface Client<R extends Response> extends RequestCore<R>,
 
     /**
      * {@inheritDoc}
+     *
+     * @return Return a {@code InternalLogger} instance created through the SPI mechanism.
+     * When this instance does not exist, a {@code IllegalStateException} problem will
+     * be thrown. If such a configuration does not exist, you can rewrite this method
+     * to return a usable {@code InternalLogger} instance. If your rewrite also uses
+     * another dynamic retrieval mechanism, please throw a {@code IllegalStateException}
+     * related problem when retrieval fails.
+     * @throws IllegalStateException {@inheritDoc}
      */
     InternalLogger getLogger() throws IllegalStateException;
 }

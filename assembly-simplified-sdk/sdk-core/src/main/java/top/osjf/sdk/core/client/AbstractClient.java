@@ -23,35 +23,41 @@ import top.osjf.sdk.core.lang.NotNull;
 import top.osjf.sdk.core.support.SdkSupport;
 import top.osjf.sdk.core.util.StringUtils;
 import top.osjf.sdk.core.util.internal.logging.InternalLogger;
-import top.osjf.sdk.core.util.internal.logging.InternalLoggerFactory;
-
-import java.util.concurrent.ConcurrentHashMap;
+import top.osjf.sdk.core.util.internal.logging.spi.InternalLoggerSpi;
 
 /**
- * The abstract auxiliary implementation class for {@link Client}
- * holds public methods.
+ * The {@code AbstractClient} class is an abstract base class designed to provide a common
+ * framework for client implementations that interact with external services or APIs. This
+ * class extends {@code InternalLoggerSpi} and implements both {@code Client} and
+ * {@code JSONResponseConvert} interfaces, ensuring that subclasses adhere to a specific
+ * contract for request binding, execution, and response handling.
  *
- * <p>At the level of public method assistance, the main solution is to cache
- * single instances {@link Client} and periodic processing of parameters.
- * <p>Therefore, static {@link ConcurrentHashMap} and {@link ThreadLocal}
- * are introduced to achieve the above requirements, as well as some publicly
- * available methods for obtaining the above parameters, while ensuring thread
- * safety.
- * <p>You can directly inherit this class to achieve the above purpose.
+ * <p>This class introduces a caching mechanism for client instances, managed by an
+ * {@code InstanceHolder} inner class, which provides static access to client and request
+ * management components. The caching mechanism is based on a unique identifier associated
+ * with each client instance, ensuring that clients can be retrieved and managed efficiently.
  *
- * <p>If you do not need the above purpose, you can directly implement the
- * {@link Client} interface to rewrite the necessary methods.
+ * <p>Key functionalities include:</p>
+ * <ul>
+ *     <li>Binding requests and URLs to client instances.</li>
+ *     <li>Executing requests and retrieving responses.</li>
+ *     <li>Caching and managing client instances.</li>
+ *     <li>Logging through an internal logger instance.</li>
+ * </ul>
+ *
+ * <p>Subclasses of {@code AbstractClient} are expected to provide specific implementations
+ * for request execution and response handling, while leveraging the common infrastructure
+ * provided by this abstract class.</p>
  *
  * @param <R> Implement a unified response class data type.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public abstract class AbstractClient<R extends Response> implements Client<R>, JSONResponseConvert<R> {
+public abstract class AbstractClient<R extends Response>
+        extends InternalLoggerSpi implements Client<R>, JSONResponseConvert<R> {
 
     private static final long serialVersionUID = -6931093876869566743L;
-
-    private final InternalLogger LOGGER = InternalLoggerFactory.getInstance(getClass());
 
     /**
      * The unique cache tag for the current {@code Client}.
@@ -186,13 +192,12 @@ public abstract class AbstractClient<R extends Response> implements Client<R>, J
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * @return Implement internal {@code InternalLogger} instances of class metrics.
+     * @return {@inheritDoc}
+     * @throws IllegalStateException {@inheritDoc}
      */
     @Override
-    public InternalLogger getLogger() {
-        return LOGGER;
+    public InternalLogger getLogger() throws IllegalStateException {
+        return super.getLogger();
     }
 
     /**
