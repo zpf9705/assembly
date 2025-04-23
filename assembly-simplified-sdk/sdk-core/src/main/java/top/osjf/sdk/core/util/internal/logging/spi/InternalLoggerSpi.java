@@ -33,7 +33,7 @@ import top.osjf.sdk.core.util.internal.logging.InternalLoggerAccessor;
  * to an {@code InternalLogger} instance. The logger instance is dynamically loaded using
  * an SPI loader, which selects the highest priority implementation of {@code InternalLogger}
  * available at runtime. This design promotes extensibility, allowing different logging
- * implementations to be easily integrated into the application without modifying its core code.</p>
+ * implementations to be easily integrated into the application without modifying its core code.
  *
  * <p>Key Features:</p>
  * <ul>
