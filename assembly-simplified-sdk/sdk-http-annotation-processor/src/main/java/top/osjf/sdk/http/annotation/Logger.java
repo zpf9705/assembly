@@ -21,7 +21,7 @@ import javax.tools.Diagnostic;
 /**
  * Regarding the logger wrapper interface for {@link javax.annotation.processing.Messager},
  * including its input types for enumerating {@link Diagnostic.Kind}.
- * {@link org.slf4j.Logger}
+ * {@code org.slf4j.Logger}
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
