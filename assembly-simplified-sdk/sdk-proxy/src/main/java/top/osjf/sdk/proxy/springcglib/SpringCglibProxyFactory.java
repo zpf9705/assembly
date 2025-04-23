@@ -45,7 +45,7 @@ public class SpringCglibProxyFactory extends AbstractProxyFactory<SpringCglibDel
      * @return {@inheritDoc}
      */
     @Override
-    public <T> T newProxyInternal(Class<T> type, SpringCglibDelegationCallback callback) {
+    protected <T> T newProxyInternal(Class<T> type, SpringCglibDelegationCallback callback) {
         final Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(type);
         enhancer.setCallback(callback);
