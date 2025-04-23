@@ -48,7 +48,7 @@ public class JavassistProxyFactory extends AbstractProxyFactory<JavassistDelegat
      */
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T newProxyInternal(Class<T> type, JavassistDelegationCallback callback) throws Throwable {
+    protected <T> T newProxyInternal(Class<T> type, JavassistDelegationCallback callback) throws Throwable {
 
         Class<?> proxyClass = proxyCache.computeIfAbsent(type, input -> {
 

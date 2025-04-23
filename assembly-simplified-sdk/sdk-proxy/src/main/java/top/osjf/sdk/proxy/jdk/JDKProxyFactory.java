@@ -44,7 +44,7 @@ public class JDKProxyFactory extends AbstractProxyFactory<JDKDelegationCallback>
      * @throws IllegalArgumentException if input type is not an interface.
      */
     @Override
-    public <T> T newProxyInternal(Class<T> type, JDKDelegationCallback callback) {
+    protected <T> T newProxyInternal(Class<T> type, JDKDelegationCallback callback) {
         if (!type.isInterface()) {
             throw new IllegalArgumentException(type.getName() + " not an interface.");
         }

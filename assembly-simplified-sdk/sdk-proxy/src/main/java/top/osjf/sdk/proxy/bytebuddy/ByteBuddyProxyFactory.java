@@ -50,7 +50,7 @@ public class ByteBuddyProxyFactory extends AbstractProxyFactory<InvocationHandle
      */
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T newProxyInternal(Class<T> type, InvocationHandlerAdapterDelegationCallback callback)
+    protected <T> T newProxyInternal(Class<T> type, InvocationHandlerAdapterDelegationCallback callback)
             throws Throwable {
         Class<?> subclass;
         ByteBuddy byteBuddy = new ByteBuddy();
