@@ -64,9 +64,7 @@ import static java.util.Objects.requireNonNull;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public class DelegationCallbackWrapper
-        implements JDKDelegationCallback, CglibDelegationCallback, SpringCglibDelegationCallback,
-        JavassistDelegationCallback, InvocationHandlerAdapterDelegationCallback {
+public class DelegationCallbackWrapper implements IntegratedDelegationCallback {
 
     /**
      * The underlying {@code DelegationCallback} instance that this wrapper delegates to.
