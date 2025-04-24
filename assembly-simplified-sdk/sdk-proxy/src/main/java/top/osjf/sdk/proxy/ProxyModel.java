@@ -36,7 +36,6 @@ import top.osjf.sdk.proxy.springcglib.SpringCglibProxyFactory;
  * the {@link ProxyFactory} interface, thereby providing a unified API for proxy creation
  * across diverse proxy mechanisms.</p>
  *
- * <p>
  * <h2>The supported proxy models include:</h2>
  * <ul>
  *     <li>{@link #JDK}: Utilizes the JDK dynamic proxy mechanism, which is based on Java's
