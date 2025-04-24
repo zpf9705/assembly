@@ -21,11 +21,19 @@ import top.osjf.sdk.core.lang.NotNull;
 import top.osjf.sdk.core.util.ReflectUtil;
 
 /**
- * An abstract proxy factory class used to create proxy objects of
- * specified types.
+ * An abstract base class for proxy factories responsible for generating proxy instances
+ * of specified types. This class serves as a template and defines the core logic for
+ * proxy creation, delegating the specific implementation details to concrete subclasses.
  *
- * <p>This class serves as a template, and concrete subclasses need
- * to provide the logic for creating proxy objects.
+ * <p>The class employs a template method pattern, where the {@link #newProxy} method
+ * provides a standardized interface for proxy creation, while the actual proxy generation
+ * logic is deferred to the {@link #newProxyInternal} method, which must be implemented
+ * by subclasses.
+ *
+ * <p>Subclasses are required to provide the specific implementation for creating proxy
+ * instances, including handling the conversion of the {@link DelegationCallback} to the
+ * appropriate type expected by the subclass. This design promotes flexibility and reusability,
+ * allowing different proxy mechanisms to be integrated seamlessly.
  *
  * @param <C> Subclass needs to convert the type of {@code DelegationCallback}.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
@@ -36,13 +44,16 @@ public abstract class AbstractProxyFactory<C> implements ProxyFactory {
     /**
      * {@inheritDoc}
      * <p>
-     * Create a proxy object based on the specified type and callback.
+     * Creates a proxy instance of the specified type using the provided callback.
+     * This method acts as a facade, handling the conversion of the callback to
+     * the appropriate type and delegating the actual proxy creation to the
+     * subclass-specific implementation.
      *
      * @param type     {@inheritDoc}
      * @param callback {@inheritDoc}
      * @param <T>      {@inheritDoc}
      * @return {@inheritDoc}
-     * @throws Throwable          {@inheritDoc}
+     * @throws Throwable {@inheritDoc}
      */
     @Override
     @SuppressWarnings("unchecked")
@@ -58,10 +69,12 @@ public abstract class AbstractProxyFactory<C> implements ProxyFactory {
     }
 
     /**
-     * Get the actual type of {@code DelegationCallback}.
+     * Determines the actual type of the callback expected by the subclass.
      *
-     * <p>This method defaults to obtaining the first generic
-     * parameter type declared by the current class through reflection.
+     * <p>This method uses reflection to retrieve the first generic type parameter
+     * declared by the current class, which is assumed to be the type of the callback
+     * expected by the subclass. This approach ensures type safety and reduces the
+     * need for explicit type casting.
      *
      * @return the actual type of {@code DelegationCallback}.
      */
