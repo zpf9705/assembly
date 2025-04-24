@@ -144,6 +144,7 @@ public class SdkProxyFactoryBean
     @Override
     @Autowired(required = false)
     public void setPostProcessors(List<HandlerPostProcessor> postProcessors) {
+        AnnotationAwareOrderComparator.sort(postProcessors);
         super.setPostProcessors(postProcessors);
     }
 
