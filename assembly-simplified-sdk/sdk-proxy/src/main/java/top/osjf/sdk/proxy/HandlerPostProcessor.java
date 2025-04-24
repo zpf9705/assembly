@@ -16,7 +16,6 @@
 
 package top.osjf.sdk.proxy;
 
-import org.springframework.lang.NonNull;
 import top.osjf.sdk.core.Request;
 import top.osjf.sdk.core.Response;
 import top.osjf.sdk.core.ResponseData;
@@ -26,25 +25,55 @@ import top.osjf.sdk.core.lang.Nullable;
 import java.lang.reflect.Method;
 
 /**
- * When processing SDK proxy requests, at the method level, after creating {@link Request},
- * this interface method {@link #postProcessRequestBeforeHandle} can be used to customize
- * the above {@link Request} parameters and obtain the final request parameter result, which
- * cannot be empty by default and returns the original created request parameter.
+ * The {@code HandlerPostProcessor} interface provides extension points for customizing the handling
+ * of requests and responses during the SDK proxy request processing flow, allowing custom logic to
+ * be inserted at different stages of request execution.
+ * <p>
+ * <strong>When processing SDK proxy requests, the method-level processing flow is as follows:
+ * </strong>
+ * <p> After creating the {@link Request} object, the method {@link #postProcessRequestBeforeHandle}
+ * of this interface is called.
+ * <ul>
+ * <li>This method allows custom modifications or enhancements to the {@link Request} object before
+ * the target method is invoked.</li>
+ * <li>The default implementation returns the original request object without any modifications.</li>
+ * <li>The return value must not be null and typically returns the modified request object or the
+ * original request object.</li>
+ * </ul>
+ * <p>
+ * <strong>When processing SDK proxy responses, the method-level processing flow is as follows:</strong>
+ * <p>After obtaining the response result (i.e., the data returned by the target method, which may be
+ * of type {@link Response} or its subclasses like {@link ResponseData}), the method
+ * {@link #postProcessResultAfterHandle} of this interface is called.
+ * <ul>
+ * <li>This method allows custom modifications or enhancements to the response result after the
+ * target method is invoked and returns a result.</li>
+ * <li>The default implementation returns the original response result without any modifications.</li>
+ * <li>The return value can be the modified result object or the original result object.</li>
+ * </ul>
  *
- * <p>When processing SDK proxy response data, at the method level, after obtaining the
- * response result (specified data type for {@link Response} or {@link ResponseData}),
- * this interface method {@link #postProcessResultAfterHandle} can be used to customize
- * and modify the above response result parameters, and obtain the final request response
- * result. The default cannot be empty, and return the original processing to obtain the
- * request response output parameter.
- *
- * <p>Special customization can be applied to the result set based on the target type of
- * the proxy in the provided method and the method object of the proxy.
- *
- * <p>As mentioned above, there are some functions that are specified by the SDK itself,
- * but you can also adapt according to the situation, because this interface occurs during
- * the request runtime. You can use the relevant methods of this interface to add related
- * actions before and after the SDK request to enhance its functionality.
+ * <p>Custom logic can be implemented based on the target type of the proxy and the metadata of the
+ * proxy method (such as the method object and parameters).For example, request parameters or response
+ * results can be dynamically adjusted based on the method signature or parameter types.
+ * <p>
+ * <h2>Notes:</h2>
+ * <ul>
+ * <li>The methods of this interface are called during request runtime, so they can be used to add
+ * additional operations before and after SDK requests,thereby enhancing the functionality of the SDK.</li>
+ * <li>Some functionalities may be provided by the SDK itself, but you can adapt and extend them according
+ * to your actual needs.</li>
+ * </ul>
+ * <p>
+ * <strong>Typical use cases include:</strong>
+ * <ul>
+ * <li>Adding authentication information, logging, or modifying request parameters before sending the request
+ * .</li>
+ * <li>Parsing response data, handling errors, or transforming result formats after receiving the response.
+ * </li>
+ * </ul>
+ * <p>
+ * Multiple instances of {@code HandlerPostProcessor} are executed, the order of execution is determined
+ * by the developer and is not specified here.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
@@ -52,13 +81,11 @@ import java.lang.reflect.Method;
 public interface HandlerPostProcessor {
 
     /**
-     * Post-process the request before it is handled.
-     *
-     * <p>This method allows custom modifications or enhancements to the request
-     * object before the target method is invoked.
-     *
-     * <p>The default implementation directly returns the original request object
-     * without any modifications.
+     * Post-processes the request object before it is handled.
+     * <p>This method allows custom modifications or enhancements to the {@link Request} object
+     * before the target method is invoked.For example, additional request headers can be added,
+     * request parameters can be modified, or logs can be recorded.
+     * <p>The default implementation returns the original request object without any modifications.
      *
      * @param request     the original request object.
      * @param proxyMethod the method being proxied.
@@ -68,7 +95,7 @@ public interface HandlerPostProcessor {
      * @return The processed request object, which should typically be the modified
      * request object or the original request object.
      */
-    @NonNull
+    @NotNull
     default Request<?> postProcessRequestBeforeHandle(@NotNull Request<?> request, @NotNull Method proxyMethod,
                                                       @Nullable Object[] args,
                                                       @NotNull DelegationCallback.PeculiarProxyVariable variable) {
@@ -76,13 +103,11 @@ public interface HandlerPostProcessor {
     }
 
     /**
-     * Post-process the result after the request is handled.
-     *
-     * <p>This method allows custom modifications or enhancements to the result
-     * object after the target method is invoked and returns a result.
-     *
-     * <p>The default implementation directly returns the original result object
-     * without any modifications.
+     * Post-processes the response result after it is handled.
+     * <p>This method allows custom modifications or enhancements to the response result after
+     * the target method is invoked and returns a result.For example, response data can be parsed,
+     * exceptions can be handled, or result formats can be transformed.
+     * <p>The default implementation returns the original response result without any modifications.
      *
      * @param result      the result object returned by the target method
      *                    (Not necessarily {@code Response}, it is necessary to
