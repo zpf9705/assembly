@@ -67,6 +67,11 @@ public interface DelegationCallback extends IsInstanceWrapper {
      *
      * <p>The specific implementation of a subclass can contain any additional
      * information related to the proxy object or proxy logic.
+     *
+     * @see top.osjf.sdk.proxy.jdk.JDKPeculiarProxyVariable
+     * @see top.osjf.sdk.proxy.cglib.CglibPeculiarProxyVariable
+     * @see top.osjf.sdk.proxy.springcglib.SpringCglibPeculiarProxyVariable
+     * @see top.osjf.sdk.proxy.javassist.JavassistPeculiarProxyVariable
      */
     interface PeculiarProxyVariable extends IsInstanceWrapper {
     }
