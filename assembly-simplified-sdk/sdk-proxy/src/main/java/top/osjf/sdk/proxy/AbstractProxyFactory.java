@@ -17,7 +17,6 @@
 
 package top.osjf.sdk.proxy;
 
-import top.osjf.sdk.core.lang.NotNull;
 import top.osjf.sdk.core.util.ReflectUtil;
 
 /**
@@ -40,6 +39,8 @@ import top.osjf.sdk.core.util.ReflectUtil;
  * @since 1.0.2
  */
 public abstract class AbstractProxyFactory<C> implements ProxyFactory {
+
+    private Class<C> callbackType;
 
     /**
      * {@inheritDoc}
@@ -78,9 +79,11 @@ public abstract class AbstractProxyFactory<C> implements ProxyFactory {
      *
      * @return the actual type of {@code DelegationCallback}.
      */
-    @NotNull
     private Class<C> getCallbackType() {
-        return ReflectUtil.getSuperGenericClass(getClass(), 0);
+        if (callbackType == null) {
+            callbackType = ReflectUtil.getSuperGenericClass(getClass(), 0);
+        }
+        return callbackType;
     }
 
     /**
