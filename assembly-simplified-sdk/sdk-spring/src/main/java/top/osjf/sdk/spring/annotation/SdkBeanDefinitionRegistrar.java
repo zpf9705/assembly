@@ -361,6 +361,8 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
             beanName = beanNameGenerator.generateBeanName(bmd, registry);
         }
         String[] alisaNames = BeanPropertyUtils.getAlisaNames(names);
+        AnnotationAttributes profileAttributes = annotationAttributes.getAnnotation("profile");
+        builder.addPropertyValue("profiles", profileAttributes.getStringArray("value"));
         return SdkProxyBeanUtils.createBeanDefinitionHolderDistinguishScope(beanDefinition, beanName, alisaNames,
                 registry);
     }
