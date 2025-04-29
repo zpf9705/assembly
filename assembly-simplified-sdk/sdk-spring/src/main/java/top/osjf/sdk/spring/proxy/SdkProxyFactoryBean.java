@@ -20,18 +20,23 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import top.osjf.sdk.core.lang.NotNull;
 import top.osjf.sdk.core.lang.Nullable;
-import top.osjf.sdk.proxy.ComprehensiveDelegationCallback;
-import top.osjf.sdk.proxy.HandlerPostProcessor;
-import top.osjf.sdk.proxy.ProxyModel;
+import top.osjf.sdk.core.util.ArrayUtils;
+import top.osjf.sdk.core.util.internal.logging.InternalLogger;
+import top.osjf.sdk.core.util.internal.logging.InternalLoggerFactory;
+import top.osjf.sdk.proxy.*;
 import top.osjf.sdk.spring.SpringRequestCaller;
 import top.osjf.sdk.spring.beans.DeterminantDisposableBean;
 import top.osjf.sdk.spring.beans.DeterminantInitializingBean;
 import top.osjf.sdk.spring.beans.DeterminantType;
 
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -69,7 +74,10 @@ import java.util.stream.Collectors;
  * @since 1.0.2
  */
 public class SdkProxyFactoryBean
-        extends ComprehensiveDelegationCallback implements FactoryBean<Object>, InitializingBean, DisposableBean {
+        extends ComprehensiveDelegationCallback
+        implements FactoryBean<Object>, EnvironmentAware, InitializingBean, DisposableBean {
+
+    private final InternalLogger LOG = InternalLoggerFactory.getInstance(getClass());
 
     /**
      * The type of SDK proxy interface or abstract class.
@@ -95,6 +103,19 @@ public class SdkProxyFactoryBean
      * A specified SDK proxy type {@link DisposableBean}.
      */
     private DeterminantDisposableBean disposableBean;
+
+    /**
+     * Adapt this {@code FactoryBean} to generate an array of environment
+     * identifiers for available proxy objects.
+     */
+    private String[] profiles;
+
+    /**
+     * If no registration or other requirements are met, the {@code DelegationCallback}
+     * instance will be initialized in advance, and the proxy will execute the subsequent rules.
+     */
+    @Nullable
+    private DelegationCallback callback;
 
     /**
      * Construct a {@code SdkProxyFactoryBean} instance to create
@@ -187,6 +208,16 @@ public class SdkProxyFactoryBean
     }
 
     /**
+     * Set the current {@code FactoryBean} to allow the generation of an environment identity
+     * array of available proxy beans for the proxy class.
+     *
+     * @param profiles an environment identity array.
+     */
+    public void setProfiles(String[] profiles) {
+        this.profiles = profiles;
+    }
+
+    /**
      * Return the bean with the highest {@link Order} priority
      * after filtering and sorting the subclass beans of {@code DeterminantType}.
      *
@@ -198,6 +229,17 @@ public class SdkProxyFactoryBean
         beans = beans.stream().filter(b -> Objects.equals(b.getType(), type)).collect(Collectors.toList());
         AnnotationAwareOrderComparator.sort(beans);
         return !beans.isEmpty() ? beans.get(0) : null;
+    }
+
+
+    @Override
+    public void setEnvironment(@NotNull Environment environment) {
+        if (ArrayUtils.isEmpty(profiles)) {
+            return;
+        }
+        if (!environment.acceptsProfiles(Profiles.of(profiles))) {
+            callback = new NotAllowedEnvExceptionDelegationCallback(environment.getActiveProfiles(), profiles);
+        }
     }
 
     /**
@@ -217,10 +259,19 @@ public class SdkProxyFactoryBean
             return proxy;
         }
         try {
-            proxy = proxyModel.newProxy(type, this);
-        } catch (Exception e) {
+            DelegationCallback callback = this.callback == null ? this : this.callback;
+            proxy = proxyModel.newProxy(type, callback);
+        }
+        catch (Exception e) {
+            LOG.error("Failed to create proxy object of type {} through the proxy model of {}," +
+                            "detailed error message is: {}",
+                    type, proxyModel.name(), e.getMessage());
             throw e;
-        } catch (Throwable e) {
+        }
+        catch (Throwable e) {
+            LOG.error("Failed to create proxy object of type {} through the proxy model of {}," +
+                            "detailed error message is: {}",
+                    type, proxyModel.name(), e.getMessage());
             throw new Exception(e);
         }
         return proxy;
@@ -287,5 +338,24 @@ public class SdkProxyFactoryBean
         return Objects.equals(type, that.type)
                 && Objects.equals(getHost(), that.getHost())
                 && proxyModel == that.proxyModel;
+    }
+
+    private static class NotAllowedEnvExceptionDelegationCallback implements IntegratedDelegationCallback {
+
+        private final String[] activesProfiles;
+
+        private final String[] designationActivesProfiles;
+
+        public NotAllowedEnvExceptionDelegationCallback(String[] activesProfiles, String[] designationActivesProfiles) {
+            this.activesProfiles = activesProfiles;
+            this.designationActivesProfiles = designationActivesProfiles;
+        }
+
+        @Override
+        public Object callback(Method method, Object[] args, PeculiarProxyVariable variable) {
+            throw new ProfileMismatchException(String.format("Environment mismatch. Required: [%s], Actual: [%s]",
+                            String.join(",", designationActivesProfiles),
+                            String.join(",", activesProfiles)));
+        }
     }
 }
