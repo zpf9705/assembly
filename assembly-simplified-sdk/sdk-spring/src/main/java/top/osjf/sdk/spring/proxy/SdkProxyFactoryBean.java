@@ -340,7 +340,7 @@ public class SdkProxyFactoryBean
                 && proxyModel == that.proxyModel;
     }
 
-    private static class NotAllowedEnvExceptionDelegationCallback implements IntegratedDelegationCallback {
+    private static class NotAllowedEnvExceptionDelegationCallback extends ComprehensiveDelegationCallback {
 
         private final String[] activesProfiles;
 
