@@ -18,6 +18,7 @@ package top.osjf.sdk.spring.annotation;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Component;
 import top.osjf.sdk.proxy.ProxyModel;
@@ -106,7 +107,21 @@ public @interface Sdk {
      * for this annotation method, the naming of the proxy bean will
      * be based on the fully qualified class name of the proxy type.
      *
-     * @return The bean properties of the SDK proxy class.
+     * @return Annotation level indication configuration items when
+     * generating proxy beans.
      */
     BeanProperty property() default @BeanProperty;
+
+    /**
+     * Instruct the proxy type to create a proxy object when activated in
+     * a specified environment, and compare {@code Profile#value()} with
+     * {@code Environment#getActiveProfiles()}. Here, Spring's environment
+     * condition annotation is used to provide developers with a more direct
+     * understanding of usage.
+     *
+     * @return The specified environment configuration in annotation form
+     * is invalid when it is {@code null}.
+     * @since 1.0.3
+     */
+    Profile profile() default @Profile({});
 }
