@@ -24,6 +24,8 @@ import top.osjf.sdk.core.util.ReflectUtil;
 
 import java.util.function.Supplier;
 
+import static top.osjf.sdk.core.client.AbstractClient.InstanceHolder.getClientManager;
+
 /**
  * The {@code ClientExecutors} class provides static methods for executing client requests.
  * It does not allow instantiation and only provides static methods to execute requests
@@ -102,9 +104,7 @@ public class ClientExecutors {
      */
     @SuppressWarnings("unchecked")
     protected static <R extends Response> Client<R> getClient(URL url, Request<R> request) {
-        return AbstractClient
-                .InstanceHolder
-                .getClientManager()
+        return getClientManager()
                 .getMaintainedClient(url.getUnique(),
                         (Supplier<Client<R>>) () -> ReflectUtil.instantiates(request.getClientType(), url))
                 .bindRequest(request)
