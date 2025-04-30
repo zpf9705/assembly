@@ -167,12 +167,9 @@ public class ComprehensiveDelegationCallback implements RequestAttributes, Integ
     @Override
     public Object callback(Method method, Object[] args, PeculiarProxyVariable variable) throws Throwable {
         switch (method.getName()) {
-            case "toString":
-                return toString();
-            case "hashCode":
-                return hashCode();
-            case "equals":
-                return equals(args[0]);
+            case "toString": return toString();
+            case "hashCode": return hashCode();
+            case "equals": return equals(args[0]);
         }
         RequestExecuteMetadata metadata = SdkSupport.createRequest(method, args);
         Request<?> request = metadata.getRequest();
