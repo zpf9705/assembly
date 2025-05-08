@@ -23,7 +23,6 @@ import top.osjf.sdk.core.lang.Nullable;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.logging.Logger;
 
 /**
  * Abstract {@link ResponseFlowableCallerElement}, storing common methods and related properties.
@@ -34,9 +33,6 @@ import java.util.logging.Logger;
  */
 public abstract class AbstractResponseFlowableCallerElement<R extends Response> implements
         ResponseFlowableCallerElement<R> {
-
-    /*** JDK logger.*/
-    protected final Logger LOGGER = Logger.getLogger(getClass().getName());
 
     /*** The provider of the running entity, the subject used to generate or execute tasks. */
     @NotNull
@@ -88,10 +84,6 @@ public abstract class AbstractResponseFlowableCallerElement<R extends Response> 
         this.runBody = runBody;
         this.retryTimes = Math.max(retryTimes, 0);
         this.retryIntervalMilliseconds = Math.max(retryIntervalMilliseconds, 0);
-        if (this.retryTimes == 0 && this.retryIntervalMilliseconds > 0) {
-            LOGGER.warning
-                    ("When there is no retry, providing the retry interval parameter will be meaningless.");
-        }
         this.whenResponseNonSuccessRetry = whenResponseNonSuccessRetry;
         this.whenResponseNonSuccessFinalThrow = whenResponseNonSuccessFinalThrow;
         this.customRetryExceptionPredicate = customRetryExceptionPredicate;

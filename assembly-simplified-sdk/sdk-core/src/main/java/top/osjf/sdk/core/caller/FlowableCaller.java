@@ -21,6 +21,8 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import top.osjf.sdk.core.Response;
 import top.osjf.sdk.core.lang.NotNull;
 import top.osjf.sdk.core.lang.Nullable;
+import top.osjf.sdk.core.util.internal.logging.InternalLogger;
+import top.osjf.sdk.core.util.internal.logging.InternalLoggerFactory;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -44,6 +46,8 @@ import java.util.function.Supplier;
  */
 public class FlowableCaller<R extends Response>
         extends AbstractFlowableCaller<R> implements FlowableProcessElement<R>, DisposableRunnable {
+
+    protected static final InternalLogger log = InternalLoggerFactory.getInstance(FlowableCaller.class);
 
     /*** Customized subscription for regular consumers, used to handle normal response results. */
     @Nullable
@@ -119,9 +123,9 @@ public class FlowableCaller<R extends Response>
 
         if (!isDisposed()) {
             disposable.dispose();
-            LOGGER.info("Resource release completed");
+            log.info("Resource release completed");
         } else {
-            LOGGER.info("The resource has been automatically released");
+            log.info("Resource has been automatically released");
         }
     }
 
