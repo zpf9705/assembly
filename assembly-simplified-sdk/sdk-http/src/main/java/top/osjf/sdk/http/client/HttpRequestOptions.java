@@ -23,6 +23,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * NOTE: This file has been copied and slightly modified from {feign.Request.Options}.
+ * <p>
  * A class that encapsulates HTTP request configuration.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
