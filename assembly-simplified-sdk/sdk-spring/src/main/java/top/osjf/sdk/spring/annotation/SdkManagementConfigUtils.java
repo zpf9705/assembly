@@ -62,4 +62,17 @@ public abstract class SdkManagementConfigUtils {
      */
     public static final String DEFAULT_IP_PATTERN =
             "((25[0-5])|(2[0-4]\\d)|(1\\d\\d)|([1-9]\\d)|\\d)(\\.((25[0-5])|(2[0-4]\\d)|(1\\d\\d)|([1-9]\\d)|\\d)){3}";
+
+
+    /**
+     * The name of the internal bean {@code SdkExpressRunner}.
+     */
+    public static final String INTERNAL_SDK_EXPRESS_RUNNER_BEAN_NAME
+            = "top.osjf.sdk.spring.runner.internalSdkExpressRunner";
+
+    /**
+     * The attribute name of {@code SdkExpressRunner} from the
+     * {@code SdkProxyFactoryBean} class.
+     */
+    public static final String EXPRESS_RUNNER_FIELD_NAME = "sdkExpressRunner";
 }
