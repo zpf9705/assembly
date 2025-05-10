@@ -350,6 +350,8 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
         builder.addConstructorArgValue(className);
         builder.addPropertyReference(SdkManagementConfigUtils.REQUEST_CALLER_FIELD_NAME,
                 SdkManagementConfigUtils.INTERNAL_SPRING_REQUEST_CALLER_BEAN_NAME);
+        builder.addPropertyReference(SdkManagementConfigUtils.EXPRESS_RUNNER_FIELD_NAME,
+                SdkManagementConfigUtils.INTERNAL_SDK_EXPRESS_RUNNER_BEAN_NAME);
         AnnotationAttributes beanPropertyAttributes = annotationAttributes.getAnnotation("property");
         BeanDefinition beanDefinition =
                 BeanPropertyUtils.fullBeanDefinition(builder, markedAnnotationMetadata, beanPropertyAttributes);
