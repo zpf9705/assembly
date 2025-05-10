@@ -312,7 +312,7 @@ public class SdkProxyFactoryBean
         //Does it match the specified environment.
         if (ArrayUtils.isNotEmpty(profiles)) {
             matchProfiles = environment.acceptsProfiles(Profiles.of(profiles));
-        }
+        } else matchProfiles = true;
 
         if (initializingBean != null) {
             initializingBean.afterPropertiesSet();
