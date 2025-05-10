@@ -17,14 +17,20 @@
 
 package top.osjf.sdk.spring.annotation;
 
+import com.alibaba.qlexpress4.InitOptions;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import top.osjf.sdk.core.caller.CallOptions;
 import top.osjf.sdk.spring.SpringRequestCaller;
+import top.osjf.sdk.spring.runner.SdkExpressRunner;
 
 /**
  * {@code SpringRequestCaller} configuration class, used to define
  * a {@code SpringRequestCaller} to be managed by the Spring container.
+ * <p>
+ * In version 1.0.3, a new bean {@link SdkExpressRunner} was added to
+ * add template instructions for SDK execution.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
@@ -41,5 +47,17 @@ public class SpringCallerConfiguration {
     @Bean(SdkManagementConfigUtils.INTERNAL_SPRING_REQUEST_CALLER_BEAN_NAME)
     public SpringRequestCaller requestCaller() {
         return new SpringRequestCaller();
+    }
+
+    /**
+     * @since 1.0.3
+     */
+    @Bean(SdkManagementConfigUtils.INTERNAL_SDK_EXPRESS_RUNNER_BEAN_NAME)
+    public SdkExpressRunner sdkExpress4Runner(ObjectProvider<InitOptions> provider) {
+        InitOptions initOptions = provider.orderedStream().findFirst().orElse(null);
+        if (initOptions == null) {
+            initOptions = InitOptions.DEFAULT_OPTIONS;
+        }
+        return new SdkExpressRunner(initOptions);
     }
 }
