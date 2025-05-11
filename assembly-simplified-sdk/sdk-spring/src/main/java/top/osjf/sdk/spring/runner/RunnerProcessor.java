@@ -28,9 +28,7 @@ import javax.lang.model.element.TypeElement;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * An annotation processor that processes classes annotated with {@link Sdk}.
@@ -69,14 +67,13 @@ public class RunnerProcessor extends AbstractProcessor {
                     if (enclosedElement instanceof ExecutableElement) {
                         Name methodName = enclosedElement.getSimpleName();
                         String v = getValue(typeName, methodName);
+                        List<String> keys = new ArrayList<>();
+                        keys.add(getKey(typeName, methodName));
                         QLFunction annotation = enclosedElement.getAnnotation(QLFunction.class);
                         if (annotation != null) {
-                            for (String value : annotation.value()) {
-                                properties.put(value, v);
-                            }
-                        } else {
-                            properties.put(getKey(typeName, methodName), v);
+                            keys.addAll(Arrays.asList(annotation.value()));
                         }
+                        keys.forEach(k -> properties.put(k, v));
                     }
                 }
             }
@@ -94,8 +91,7 @@ public class RunnerProcessor extends AbstractProcessor {
         try {
             createProperties0(StandardLocation.CLASS_OUTPUT, properties);
             createProperties0(StandardLocation.SOURCE_OUTPUT, properties);
-        } catch (Throwable ignored) {
-        }
+        } catch (Throwable ignored) { }
     }
 
     /**

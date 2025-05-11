@@ -30,6 +30,9 @@ import top.osjf.sdk.core.lang.Nullable;
 import top.osjf.sdk.spring.annotation.Sdk;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
@@ -78,12 +81,11 @@ public class SdkExpressRunner extends Express4Runner {
             if (!BasicUtil.isPublic(method)) {
                 continue;
             }
-            String[] functionNames;
+            List<String> functionNames = new ArrayList<>();
+            functionNames.add((clazz.getName() + method.getName())
+                    .replaceAll("[^a-zA-Z0-9]", ""));
             if (QLFunctionUtil.containsQLFunctionForMethod(method)) {
-                functionNames = QLFunctionUtil.getQLFunctionValue(method);
-            } else {
-                functionNames = new String[]{(clazz.getName() + method.getName())
-                        .replaceAll("[^a-zA-Z0-9]", "")};
+                functionNames.addAll(Arrays.asList(QLFunctionUtil.getQLFunctionValue(method))) ;
             }
             for (String functionName : functionNames) {
                 addFunction(functionName, new QMethodFunction(object, method));
@@ -194,7 +196,7 @@ public class SdkExpressRunner extends Express4Runner {
 
         /**
          * Builds the script string by combining the type name and method name.
-         * Throws an {@code IllegalArgumentException} if the type is not annotated with @Sdk.
+         * Throws an {@code IllegalArgumentException} if the type is not annotated with {@link Sdk}.
          *
          * @return the {@code ScriptBuilder} instance for method chaining.
          * @throws IllegalArgumentException if the type is not annotated with {@link Sdk}.
