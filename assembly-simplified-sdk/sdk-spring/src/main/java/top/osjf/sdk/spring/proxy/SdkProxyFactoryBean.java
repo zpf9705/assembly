@@ -38,6 +38,7 @@ import top.osjf.sdk.spring.annotation.Sdk;
 import top.osjf.sdk.spring.beans.DeterminantDisposableBean;
 import top.osjf.sdk.spring.beans.DeterminantInitializingBean;
 import top.osjf.sdk.spring.beans.DeterminantType;
+import top.osjf.sdk.spring.runner.SdkExpressRunner;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -130,6 +131,11 @@ public class SdkProxyFactoryBean
      * @since 1.0.3
      */
     private boolean matchProfiles;
+
+    /**
+     * @see 1.0.3
+     */
+    private SdkExpressRunner sdkExpressRunner;
 
     /**
      * Construct a {@code SdkProxyFactoryBean} instance to create
@@ -233,6 +239,16 @@ public class SdkProxyFactoryBean
     }
 
     /**
+     * Set a {@code SdkExpressRunner} for this factory bean.
+     *
+     * @param sdkExpressRunner a {@code SdkExpressRunner}.
+     * @since 1.0.3
+     */
+    public void setSdkExpressRunner(SdkExpressRunner sdkExpressRunner) {
+        this.sdkExpressRunner = sdkExpressRunner;
+    }
+
+    /**
      * Return the bean with the highest {@link Order} priority
      * after filtering and sorting the subclass beans of {@code DeterminantType}.
      *
@@ -282,6 +298,8 @@ public class SdkProxyFactoryBean
                     type, proxyModel.name(), e.getMessage());
             throw new Exception(e);
         }
+        //Add instruction call set.
+        sdkExpressRunner.addFunction(type, proxy);
         return proxy;
     }
 
