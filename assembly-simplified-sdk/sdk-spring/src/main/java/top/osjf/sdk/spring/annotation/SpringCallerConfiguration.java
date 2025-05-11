@@ -50,6 +50,11 @@ public class SpringCallerConfiguration {
     }
 
     /**
+     * Create a {@code SpringRequestCaller} bean for sdk proxy bean
+     * to support calling by rule template.
+     *
+     * @param provider {@code ObjectProvider} of {@link InitOptions}.
+     * @return a singleton for {@code SdkExpressRunner}.
      * @since 1.0.3
      */
     @Bean(SdkManagementConfigUtils.INTERNAL_SDK_EXPRESS_RUNNER_BEAN_NAME)
