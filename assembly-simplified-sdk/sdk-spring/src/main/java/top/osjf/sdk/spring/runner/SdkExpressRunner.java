@@ -22,20 +22,22 @@ import com.alibaba.qlexpress4.InitOptions;
 import com.alibaba.qlexpress4.QLOptions;
 import com.alibaba.qlexpress4.annotation.QLFunction;
 import com.alibaba.qlexpress4.exception.QLException;
+import com.alibaba.qlexpress4.runtime.Parameters;
+import com.alibaba.qlexpress4.runtime.QContext;
 import com.alibaba.qlexpress4.runtime.function.CustomFunction;
 import com.alibaba.qlexpress4.runtime.function.QMethodFunction;
 import com.alibaba.qlexpress4.utils.BasicUtil;
 import com.alibaba.qlexpress4.utils.QLFunctionUtil;
 import top.osjf.sdk.core.lang.Nullable;
 import top.osjf.sdk.core.util.ArrayUtils;
+import top.osjf.sdk.core.util.ReflectUtil;
 import top.osjf.sdk.spring.annotation.Sdk;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
@@ -107,9 +109,9 @@ public class SdkExpressRunner {
         }
     }
 
-    private static String getMethodParameterNames(Method method){
+    private static String getMethodParameterNames(Method method) {
         Parameter[] parameters = method.getParameters();
-        if (ArrayUtils.isEmpty(parameters)){
+        if (ArrayUtils.isEmpty(parameters)) {
             return "";
         }
         return Arrays.stream(method.getParameters()).map(Parameter::getName)
@@ -229,13 +231,14 @@ public class SdkExpressRunner {
         // and the rule of attaching parameter names in a timely manner
         if (!script.endsWith(")")) {
             CustomFunction function = express4Runner.getFunction(script);
-            if (function == null){
+            if (function == null) {
                 throw new IllegalArgumentException("No SDK Function named " + script);
             }
             if (function instanceof SdkQMethodFunction) {
                 script = ((SdkQMethodFunction) function).addScriptParameterNames(script);
+            } else {
+                script = script.concat("()");
             }
-            else { script = script.concat("()"); }
 
         }
         return script;
@@ -245,13 +248,44 @@ public class SdkExpressRunner {
      * The parameter name combination string of the method attached to the extension {@link QMethodFunction}.
      */
     private static class SdkQMethodFunction extends QMethodFunction {
-        @Nullable private final String parameterNames;
+        private final Method method;
+        private final Object object;
+        @Nullable
+        private final String parameterNames;
+
         public SdkQMethodFunction(Object object, Method method, @Nullable String parameterNames) {
             super(object, method);
+            this.method = method;
+            this.object = object;
             this.parameterNames = parameterNames;
         }
-        public String addScriptParameterNames(String script){
+
+        public String addScriptParameterNames(String script) {
             return script + "(" + parameterNames + ")";
+        }
+
+        @Override
+        public Object call(QContext qContext, Parameters parameters) {
+            try {
+                return super.call(qContext, parameters);
+            }
+            catch (Throwable e) {
+                //When there is a null parameter, perform secondary processing.
+                List<Object> arguments = new CopyOnWriteArrayList<>(BasicUtil.argumentsArr(parameters));
+                List<Object> sortedArguments = new ArrayList<>();
+                for (Class<?> parameterType : method.getParameterTypes()) {
+                    Object sortedArg = null;
+                    for (Object arg : arguments) {
+                        if (parameterType.isInstance(arg)) {
+                            sortedArg = arg;
+                            arguments.remove(arg);
+                            break;
+                        }
+                    }
+                    sortedArguments.add(sortedArg);
+                }
+                return ReflectUtil.invokeMethod(object, method, sortedArguments.toArray());
+            }
         }
     }
 
