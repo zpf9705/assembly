@@ -299,7 +299,7 @@ public class SdkProxyFactoryBean
             throw new Exception(e);
         }
         //Add instruction call set.
-        sdkExpressRunner.addFunction(type, proxy);
+        sdkExpressRunner.addSdkMethodFunction(type, proxy);
         return proxy;
     }
 
