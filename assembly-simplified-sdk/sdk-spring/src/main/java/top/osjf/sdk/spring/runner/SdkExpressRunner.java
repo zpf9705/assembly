@@ -89,7 +89,9 @@ public class SdkExpressRunner {
             String standardizedScriptName =
                     formatStandardizedClearFunctionName(sdkTargetClass.getName(), method.getName());
             String ruleScriptName = (standardizedScriptName).replaceAll("[^a-zA-Z0-9]", "");
-            standardizedScriptCorrespond.putIfAbsent(standardizedScriptName, ruleScriptName);
+            standardizedScriptCorrespond.putIfAbsent(standardizedScriptName,
+                    /* cache standardizedScriptName directly set as method call */
+                    ruleScriptName.concat("()"));
             express4Runner.addFunction(ruleScriptName, new QMethodFunction(sdkProxyObject, method));
             if (QLFunctionUtil.containsQLFunctionForMethod(method)) {
                 for (String qlNameMod : QLFunctionUtil.getQLFunctionValue(method)) {
