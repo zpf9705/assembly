@@ -252,18 +252,15 @@ public class SdkExpressRunner {
         private final Object object;
         @Nullable
         private final String parameterNames;
-
         public SdkQMethodFunction(Object object, Method method, @Nullable String parameterNames) {
             super(object, method);
             this.method = method;
             this.object = object;
             this.parameterNames = parameterNames;
         }
-
         public String addScriptParameterNames(String script) {
             return script + "(" + parameterNames + ")";
         }
-
         @Override
         public Object call(QContext qContext, Parameters parameters) {
             try {
