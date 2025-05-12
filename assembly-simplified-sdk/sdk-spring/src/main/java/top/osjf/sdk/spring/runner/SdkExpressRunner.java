@@ -22,16 +22,21 @@ import com.alibaba.qlexpress4.InitOptions;
 import com.alibaba.qlexpress4.QLOptions;
 import com.alibaba.qlexpress4.annotation.QLFunction;
 import com.alibaba.qlexpress4.exception.QLException;
+import com.alibaba.qlexpress4.runtime.function.CustomFunction;
 import com.alibaba.qlexpress4.runtime.function.QMethodFunction;
 import com.alibaba.qlexpress4.utils.BasicUtil;
 import com.alibaba.qlexpress4.utils.QLFunctionUtil;
 import top.osjf.sdk.core.lang.Nullable;
+import top.osjf.sdk.core.util.ArrayUtils;
 import top.osjf.sdk.spring.annotation.Sdk;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 
@@ -86,13 +91,14 @@ public class SdkExpressRunner {
             if (!BasicUtil.isPublic(method)) {
                 continue;
             }
+            String parameterNames = getMethodParameterNames(method);
             String standardizedScriptName =
                     formatStandardizedClearFunctionName(sdkTargetClass.getName(), method.getName());
             String ruleScriptName = (standardizedScriptName).replaceAll("[^a-zA-Z0-9]", "");
             standardizedScriptCorrespond.putIfAbsent(standardizedScriptName,
                     /* cache standardizedScriptName directly set as method call */
-                    ruleScriptName.concat("()"));
-            express4Runner.addFunction(ruleScriptName, new QMethodFunction(sdkProxyObject, method));
+                    ruleScriptName.concat("(").concat(parameterNames).concat(")"));
+            express4Runner.addFunction(ruleScriptName, new SdkQMethodFunction(sdkProxyObject, method, parameterNames));
             if (QLFunctionUtil.containsQLFunctionForMethod(method)) {
                 for (String qlNameMod : QLFunctionUtil.getQLFunctionValue(method)) {
                     express4Runner.addAlias(qlNameMod, ruleScriptName);
@@ -101,11 +107,21 @@ public class SdkExpressRunner {
         }
     }
 
+    private static String getMethodParameterNames(Method method){
+        Parameter[] parameters = method.getParameters();
+        if (ArrayUtils.isEmpty(parameters)){
+            return "";
+        }
+        return Arrays.stream(method.getParameters()).map(Parameter::getName)
+                .collect(Collectors.joining(","));
+    }
+
     /**
      * Format as a standard and clear class method assignment definition
      * “targetClassName + "@" + methodName”.
+     *
      * @param targetClassName the target class name.
-     * @param methodName  the target class method.
+     * @param methodName      the target class method.
      * @return a standard and clear class method assignment definition.
      */
     public static String formatStandardizedClearFunctionName(Object targetClassName, Object methodName) {
@@ -209,17 +225,34 @@ public class SdkExpressRunner {
             return standardizedScriptCorrespond.get(script);
         }
 
-        /*
-         * Call a method or function in a QLExpress4 script, you usually need
-         * to use parentheses () to pass parameters. The function of parentheses
-         * is to indicate that you are calling an executable operation, rather
-         * than just referencing an object or variable
-         */
+        //Check whether the method call complies with the '()' suffix rule
+        // and the rule of attaching parameter names in a timely manner
+        if (!script.endsWith(")")) {
+            CustomFunction function = express4Runner.getFunction(script);
+            if (function == null){
+                throw new IllegalArgumentException("No SDK Function named " + script);
+            }
+            if (function instanceof SdkQMethodFunction) {
+                script = ((SdkQMethodFunction) function).addScriptParameterNames(script);
+            }
+            else { script = script.concat("()"); }
 
-        if (!script.endsWith("()")) {
-            script = script.concat("()");
         }
         return script;
+    }
+
+    /**
+     * The parameter name combination string of the method attached to the extension {@link QMethodFunction}.
+     */
+    private static class SdkQMethodFunction extends QMethodFunction {
+        @Nullable private final String parameterNames;
+        public SdkQMethodFunction(Object object, Method method, @Nullable String parameterNames) {
+            super(object, method);
+            this.parameterNames = parameterNames;
+        }
+        public String addScriptParameterNames(String script){
+            return script + "(" + parameterNames + ")";
+        }
     }
 
     /**
