@@ -116,7 +116,7 @@ public class RunnerProcessor extends AbstractProcessor {
      * @return a string representing the key in the format "typeName@methodName"
      */
     private static String getKey(Name typeName, Name methodName) {
-        return typeName + "@" + methodName;
+        return SdkExpressRunner.formatStandardizedClearFunctionName(typeName, methodName);
     }
 
     /**

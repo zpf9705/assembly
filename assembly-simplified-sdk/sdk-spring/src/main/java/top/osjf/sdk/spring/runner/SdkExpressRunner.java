@@ -20,9 +20,8 @@ package top.osjf.sdk.spring.runner;
 import com.alibaba.qlexpress4.Express4Runner;
 import com.alibaba.qlexpress4.InitOptions;
 import com.alibaba.qlexpress4.QLOptions;
-import com.alibaba.qlexpress4.QLResult;
+import com.alibaba.qlexpress4.annotation.QLFunction;
 import com.alibaba.qlexpress4.exception.QLException;
-import com.alibaba.qlexpress4.runtime.context.ExpressContext;
 import com.alibaba.qlexpress4.runtime.function.QMethodFunction;
 import com.alibaba.qlexpress4.utils.BasicUtil;
 import com.alibaba.qlexpress4.utils.QLFunctionUtil;
@@ -30,10 +29,9 @@ import top.osjf.sdk.core.lang.Nullable;
 import top.osjf.sdk.spring.annotation.Sdk;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Objects.requireNonNull;
 
@@ -49,48 +47,177 @@ import static java.util.Objects.requireNonNull;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public class SdkExpressRunner extends Express4Runner {
+public class SdkExpressRunner {
 
-    /**
-     * Constructs a {@code SdkExpressRunner} with {@link InitOptions}.
-     *
-     * @param initOptions Initialization options
-     */
+    private final Express4Runner express4Runner;
+
+    private final Map<String, String> standardizedScriptCorrespond = new ConcurrentHashMap<>();
+
     public SdkExpressRunner(InitOptions initOptions) {
-        super(initOptions);
+        express4Runner = new Express4Runner(initOptions);
     }
 
     /**
-     * Methods for expanding new features method with annotation
-     * {@link com.alibaba.qlexpress4.annotation.QLFunction} as function
-     * <p>
-     * The type of the input parameter can be the current type {@link Class#getClass()}
-     * of the object or the actual type of the proxy class.
+     * Add expression functionality for SDK proxy type methods using the
+     * {@code com.alibaba.qlexpress4} specification.
      *
-     * @param clazz  Enter the type of the parameter or the actual type of the proxy object.
-     * @param object Actual type instance object or regular object.
+     * <p>Customized a set of instruction specifications and support annotations
+     * {@link com.alibaba.qlexpress4.annotation.QLFunction} for this framework,
+     * making it easy to call the SDK.
+     * Let's take a look at a set of standard generation cases:
+     * <ul>
+     * <li>For example interface :
+     *  <pre>public interface ExampleInterface { void say(String message) }</pre>
+     *  Generated call instructions: ExampleInterfacesay(message)
+     * </li>
+     * <li>If you have added annotations {@link com.alibaba.qlexpress4.annotation.QLFunction}:
+     * Generated call instructions: {@link QLFunction#value()}(message)
+     * </li>
+     * </ul>
+     *
+     * @param sdkTargetClass The class object of the SDK target proxy type.
+     * @param sdkProxyObject The proxy object of the SDK target proxy type.
      */
-    public void addFunction(@Nullable Class<?> clazz, Object object) {
-        requireNonNull(object, "object");
-        if (clazz == null) {
-            super.addObjFunction(object);
-            return;
-        }
-        Method[] methods = clazz.getDeclaredMethods();
+    public void addSdkMethodFunction(Class<?> sdkTargetClass, Object sdkProxyObject) {
+        requireNonNull(sdkTargetClass, "sdkTargetClass");
+        requireNonNull(sdkProxyObject, "sdkProxyObject");
+        Method[] methods = sdkTargetClass.getDeclaredMethods();
         for (Method method : methods) {
             if (!BasicUtil.isPublic(method)) {
                 continue;
             }
-            List<String> functionNames = new ArrayList<>();
-            functionNames.add((clazz.getName() + method.getName())
-                    .replaceAll("[^a-zA-Z0-9]", ""));
+            String standardizedScriptName =
+                    formatStandardizedClearFunctionName(sdkTargetClass.getName(), method.getName());
+            String ruleScriptName = (standardizedScriptName).replaceAll("[^a-zA-Z0-9]", "");
+            standardizedScriptCorrespond.putIfAbsent(standardizedScriptName, ruleScriptName);
+            express4Runner.addFunction(ruleScriptName, new QMethodFunction(sdkProxyObject, method));
             if (QLFunctionUtil.containsQLFunctionForMethod(method)) {
-                functionNames.addAll(Arrays.asList(QLFunctionUtil.getQLFunctionValue(method))) ;
-            }
-            for (String functionName : functionNames) {
-                addFunction(functionName, new QMethodFunction(object, method));
+                for (String qlNameMod : QLFunctionUtil.getQLFunctionValue(method)) {
+                    express4Runner.addAlias(qlNameMod, ruleScriptName);
+                }
             }
         }
+    }
+
+    /**
+     * Format as a standard and clear class method assignment definition
+     * “targetClassName + "@" + methodName”.
+     * @param targetClassName the target class name.
+     * @param methodName  the target class method.
+     * @return a standard and clear class method assignment definition.
+     */
+    public static String formatStandardizedClearFunctionName(Object targetClassName, Object methodName) {
+        return targetClassName + "@" + methodName;
+    }
+
+    /**
+     * Execute the script set in the context, with no other configuration variables.
+     * <p>
+     * The above instruction added to {@link #addSdkMethodFunction(Class, Object)} conforms to the syntax
+     * of its certain function name,but it is not clear enough. When calling, the following calling rules
+     * are provided to correspond to the calling function name:
+     * <ul>
+     * <li>if {@code ExampleInterfacesay(message)} , you can use ExampleInterface@say replace,
+     * parameter part does not need to be written.</li>
+     * <li>{@link QLFunction#value()} Just use it normally,parameter part does not need to be
+     * written</li>
+     * </ul>
+     *
+     * @param script Call the script.
+     * @return The return result of calling the script,the specific type can be viewed in the processing
+     * rules:{@link top.osjf.sdk.core.support.SdkSupport#resolveResponse}
+     * @throws QLException ---
+     *                     <ul>
+     *                     <li>{@link com.alibaba.qlexpress4.exception.QLSyntaxException}Script syntax error.</li>
+     *                     <li>{@link com.alibaba.qlexpress4.exception.QLRuntimeException}Script runtime error, SDK
+     *                     component call error, need to trace SDK call process.</li>
+     *                     <li>{@link com.alibaba.qlexpress4.exception.QLTimeoutException}The script timed out,
+     *                     visible call configuration {@link QLOptions}.</li>
+     *                     </ul>
+     */
+    public Object execute(String script) throws QLException {
+        return execute(script, Collections.emptyMap());
+    }
+
+    /**
+     * Execute the script set in the context, can pass in custom parameter variables.
+     * <p>
+     * The above instruction added to {@link #addSdkMethodFunction(Class, Object)} conforms to the syntax
+     * of its certain function name,but it is not clear enough. When calling, the following calling rules
+     * are provided to correspond to the calling function name:
+     * <ul>
+     * <li>if {@code ExampleInterfacesay(message)} , you can use ExampleInterface@say replace,
+     * parameter part does not need to be written.</li>
+     * <li>{@link QLFunction#value()} Just use it normally,parameter part does not need to be
+     * written</li>
+     * </ul>
+     *
+     * @param script  Call the script.
+     * @param context The calling context can be a parameter for calling a component method.
+     * @return The return result of calling the script,the specific type can be viewed in the processing
+     * rules:{@link top.osjf.sdk.core.support.SdkSupport#resolveResponse}
+     * @throws QLException ---
+     *                     <ul>
+     *                     <li>{@link com.alibaba.qlexpress4.exception.QLSyntaxException}Script syntax error.</li>
+     *                     <li>{@link com.alibaba.qlexpress4.exception.QLRuntimeException}Script runtime error, SDK
+     *                     component call error, need to trace SDK call process.</li>
+     *                     <li>{@link com.alibaba.qlexpress4.exception.QLTimeoutException}The script timed out,
+     *                     visible call configuration {@link QLOptions}.</li>
+     *                     </ul>
+     */
+    public Object execute(String script, Map<String, Object> context) throws QLException {
+        return execute(script, context, QLOptions.DEFAULT_OPTIONS);
+    }
+
+    /**
+     * Execute the script set in the context, can pass in custom parameter variables and
+     * configure custom calling options.
+     * <p>
+     * The above instruction added to {@link #addSdkMethodFunction(Class, Object)} conforms to the syntax
+     * of its certain function name,but it is not clear enough. When calling, the following calling rules
+     * are provided to correspond to the calling function name:
+     * <ul>
+     * <li>if {@code ExampleInterfacesay(message)} , you can use ExampleInterface@say replace,
+     * parameter part does not need to be written.</li>
+     * <li>{@link QLFunction#value()} Just use it normally,parameter part does not need to be
+     * written</li>
+     * </ul>
+     *
+     * @param script    Call the script.
+     * @param context   The calling context can be a parameter for calling a component method.
+     * @param qlOptions Execute call options.
+     * @return The return result of calling the script,the specific type can be viewed in the processing
+     * rules:{@link top.osjf.sdk.core.support.SdkSupport#resolveResponse}
+     * @throws QLException ---
+     *                     <ul>
+     *                     <li>{@link com.alibaba.qlexpress4.exception.QLSyntaxException}Script syntax error.</li>
+     *                     <li>{@link com.alibaba.qlexpress4.exception.QLRuntimeException}Script runtime error, SDK
+     *                     component call error, need to trace SDK call process.</li>
+     *                     <li>{@link com.alibaba.qlexpress4.exception.QLTimeoutException}The script timed out,
+     *                     visible call configuration {@link QLOptions}.</li>
+     *                     </ul>
+     */
+    public Object execute(String script, @Nullable Map<String, Object> context, QLOptions qlOptions)
+            throws QLException {
+        return express4Runner.execute(getCorrespondScript(script), context, qlOptions).getResult();
+    }
+
+    private String getCorrespondScript(String script) {
+        if (standardizedScriptCorrespond.containsKey(script)) {
+            return standardizedScriptCorrespond.get(script);
+        }
+
+        /*
+         * Call a method or function in a QLExpress4 script, you usually need
+         * to use parentheses () to pass parameters. The function of parentheses
+         * is to indicate that you are calling an executable operation, rather
+         * than just referencing an object or variable
+         */
+
+        if (!script.endsWith("()")) {
+            script = script.concat("()");
+        }
+        return script;
     }
 
     /**
@@ -111,46 +238,6 @@ public class SdkExpressRunner extends Express4Runner {
      */
     public ScriptBuilder newScript() {
         return new ScriptBuilder(this);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public QLResult execute(String script, Map<String, Object> context, QLOptions qlOptions) throws QLException {
-        return super.execute(formatScript(script), context, qlOptions);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public QLResult execute(String script, Object context, QLOptions qlOptions) throws QLException {
-        return super.execute(formatScript(script), context, qlOptions);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public QLResult executeWithAliasObjects(String script, QLOptions qlOptions, Object... objects) {
-        return super.executeWithAliasObjects(formatScript(script), qlOptions, objects);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public QLResult execute(String script, ExpressContext context, QLOptions qlOptions) {
-        return super.execute(formatScript(script), context, qlOptions);
-    }
-
-    private static String formatScript(String script) {
-        script = script.replaceAll("[^a-zA-Z0-9\\(\\)]", "");
-        if (!script.endsWith("()")) {
-            script = script.concat("()");
-        }
-        return script;
     }
 
     public static class ScriptBuilder {
@@ -200,12 +287,16 @@ public class SdkExpressRunner extends Express4Runner {
          *
          * @return the {@code ScriptBuilder} instance for method chaining.
          * @throws IllegalArgumentException if the type is not annotated with {@link Sdk}.
+         * @throws IllegalStateException    if script not registered in {@link #standardizedScriptCorrespond}
          */
         public ScriptBuilder build() {
             if (!type.isAnnotationPresent(Sdk.class)) {
                 throw new IllegalArgumentException("Type must be annotated with @" + Sdk.class.getSimpleName());
             }
             script = type.getName() + "@" + methodName;
+            if (!expressRunner.standardizedScriptCorrespond.containsKey(script)) {
+                throw new IllegalStateException("Unregistered script information.");
+            }
             return this;
         }
 
@@ -222,33 +313,26 @@ public class SdkExpressRunner extends Express4Runner {
 
         /*
          * (non-javadoc)
+         * @see SdkExpressRunner#execute(String)
+         */
+        public Object execute() throws QLException {
+            return expressRunner.execute(getScript());
+        }
+
+        /*
+         * (non-javadoc)
+         * @see SdkExpressRunner#execute(String, Map)
+         */
+        public Object execute(@Nullable Map<String, Object> context) throws QLException {
+            return expressRunner.execute(getScript(), context);
+        }
+
+        /*
+         * (non-javadoc)
          * @see SdkExpressRunner#execute(String, Map, QLOptions)
          */
-        public QLResult execute(Map<String, Object> context, QLOptions qlOptions) throws QLException {
-            return expressRunner.execute(getScript(), context, qlOptions);
-        }
-
-        /*
-         * (non-javadoc)
-         * @see SdkExpressRunner#execute(String, Object, QLOptions)
-         */
-        public QLResult execute(Object context, QLOptions qlOptions) throws QLException {
-            return expressRunner.execute(getScript(), context, qlOptions);
-        }
-
-        /*
-         * (non-javadoc)
-         * @see SdkExpressRunner#executeWithAliasObjects(String, QLOptions, Object...)
-         */
-        public QLResult executeWithAliasObjects(QLOptions qlOptions, Object... objects) {
-            return expressRunner.executeWithAliasObjects(getScript(), qlOptions, objects);
-        }
-
-        /*
-         * (non-javadoc)
-         * @see SdkExpressRunner#execute(String, ExpressContext, QLOptions)
-         */
-        public QLResult execute(ExpressContext context, QLOptions qlOptions) {
+        public Object execute(@Nullable Map<String, Object> context, QLOptions qlOptions)
+                throws QLException {
             return expressRunner.execute(getScript(), context, qlOptions);
         }
     }
