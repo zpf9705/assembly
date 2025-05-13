@@ -43,13 +43,11 @@ import java.util.stream.Collectors;
 import static java.util.Objects.requireNonNull;
 
 /**
- * The {@code SdkExpressRunner} class extends the {@link Express4Runner} class and implements a
- * rule engine for SDK calls.
+ * The {@code SdkExpressRunner} class is used to execute scripts based on {@code QLExpress4}
+ * and supports extending functionality through SDK proxy methods.
  *
- * <p>This class provides support for extending functional methods and uses the annotation
- * {@link com.alibaba.qlexpress4.annotation.QLFunction} to mark functions. Additionally,
- * it overrides the execute methods of the parent class to support script formatting and
- * execution.
+ * <p>This class encapsulates the {@code QLExpress4} executor and provides convenient methods to add
+ * functionality calls to SDK methods.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
@@ -60,10 +58,30 @@ public class SdkExpressRunner {
 
     private final Express4Runner express4Runner;
 
+    /**
+     * Store the mapping relationship between standardized script names and actual script names.
+     * The key is the standardized script name (format: class name @ method name), and the value
+     * is the actual script name (name after removing special characters).
+     */
     private final Map<String, String> standardizedScriptCorrespond = new ConcurrentHashMap<>();
 
+    /**
+     * Initialize a {@link Express4Runner} instance using {@link InitOptions} to
+     * construct {@code SdkExpressRunner}.
+     * @param initOptions Initialization options, used to configure the behavior
+     *                   of {@link Express4Runner}.
+     */
     public SdkExpressRunner(InitOptions initOptions) {
         express4Runner = new Express4Runner(initOptions);
+    }
+
+    /**
+     * Create a new script executor builder for building and executing scripts.
+     *
+     * @return Script Executor Builder Instance.
+     */
+    public ScriptExecutorBuilder newScript() {
+        return new ScriptExecutorBuilder(this);
     }
 
     /**
@@ -283,7 +301,6 @@ public class SdkExpressRunner {
                 return super.call(qContext, parameters);
             }
             catch (Throwable e) {
-
                 //When there is a null parameter, perform secondary processing.
                 List<Object> arguments = new CopyOnWriteArrayList<>(BasicUtil.argumentsArr(parameters));
                 List<Object> sortedArguments = new ArrayList<>();
@@ -301,25 +318,5 @@ public class SdkExpressRunner {
                 return ReflectUtil.invokeMethod(object, method, sortedArguments.toArray());
             }
         }
-    }
-
-    /**
-     * Creates a new instance of {@code ScriptBuilder} associated with this
-     * {@code SdkExpressRunner}.
-     *
-     * <p>Using template {@link ScriptExecutorBuilder}, you can directly specify the
-     * real SDK proxy object type and its method name, making engine calls
-     * more clear and concise. You can refer to the following example:
-     * <pre>
-     *    SdkExpressRunner exampleRunner = new SdkExpressRunner();
-     *    ScriptBuilder exampleBuilder = exampleRunner.newScript();
-     *    exampleBuilder.type(ExampleSdkInterface.class).methodName("say").build().execute(...)
-     * </pre>
-     *
-     * @return a new {@code ScriptBuilder} instance initialized with this
-     * {@code SdkExpressRunner}.
-     */
-    public ScriptExecutorBuilder newScript() {
-        return new ScriptExecutorBuilder(this);
     }
 }
