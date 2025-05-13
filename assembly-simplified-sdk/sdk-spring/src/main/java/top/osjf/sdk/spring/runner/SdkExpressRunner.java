@@ -20,6 +20,7 @@ package top.osjf.sdk.spring.runner;
 import com.alibaba.qlexpress4.Express4Runner;
 import com.alibaba.qlexpress4.InitOptions;
 import com.alibaba.qlexpress4.QLOptions;
+import com.alibaba.qlexpress4.QLResult;
 import com.alibaba.qlexpress4.annotation.QLFunction;
 import com.alibaba.qlexpress4.exception.QLException;
 import com.alibaba.qlexpress4.runtime.Parameters;
@@ -31,7 +32,6 @@ import com.alibaba.qlexpress4.utils.QLFunctionUtil;
 import top.osjf.sdk.core.lang.Nullable;
 import top.osjf.sdk.core.util.ArrayUtils;
 import top.osjf.sdk.core.util.ReflectUtil;
-import top.osjf.sdk.spring.annotation.Sdk;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -119,6 +119,13 @@ public class SdkExpressRunner {
     }
 
     /**
+     * @return Non-modifiable standard script mapping object.
+     */
+    protected Map<String, String> getStandardizedScriptCorrespond() {
+        return Collections.unmodifiableMap(standardizedScriptCorrespond);
+    }
+
+    /**
      * Format as a standard and clear class method assignment definition
      * “targetClassName + "@" + methodName”.
      *
@@ -155,6 +162,7 @@ public class SdkExpressRunner {
      *                     visible call configuration {@link QLOptions}.</li>
      *                     </ul>
      */
+    @Nullable
     public Object execute(String script) throws QLException {
         return execute(script, Collections.emptyMap());
     }
@@ -185,6 +193,7 @@ public class SdkExpressRunner {
      *                     visible call configuration {@link QLOptions}.</li>
      *                     </ul>
      */
+    @Nullable
     public Object execute(String script, Map<String, Object> context) throws QLException {
         return execute(script, context, QLOptions.DEFAULT_OPTIONS);
     }
@@ -217,9 +226,11 @@ public class SdkExpressRunner {
      *                     visible call configuration {@link QLOptions}.</li>
      *                     </ul>
      */
+    @Nullable
     public Object execute(String script, @Nullable Map<String, Object> context, QLOptions qlOptions)
             throws QLException {
-        return express4Runner.execute(getCorrespondScript(script), context, qlOptions).getResult();
+        QLResult result = express4Runner.execute(getCorrespondScript(script), context, qlOptions);
+        return result != null ? result.getResult() : null;
     }
 
     private String getCorrespondScript(String script) {
@@ -252,21 +263,25 @@ public class SdkExpressRunner {
         private final Object object;
         @Nullable
         private final String parameterNames;
+
         public SdkQMethodFunction(Object object, Method method, @Nullable String parameterNames) {
             super(object, method);
             this.method = method;
             this.object = object;
             this.parameterNames = parameterNames;
         }
+
         public String addScriptParameterNames(String script) {
             return script + "(" + parameterNames + ")";
         }
+
         @Override
         public Object call(QContext qContext, Parameters parameters) {
             try {
                 return super.call(qContext, parameters);
             }
             catch (Throwable e) {
+
                 //When there is a null parameter, perform secondary processing.
                 List<Object> arguments = new CopyOnWriteArrayList<>(BasicUtil.argumentsArr(parameters));
                 List<Object> sortedArguments = new ArrayList<>();
@@ -290,7 +305,7 @@ public class SdkExpressRunner {
      * Creates a new instance of {@code ScriptBuilder} associated with this
      * {@code SdkExpressRunner}.
      *
-     * <p>Using template {@link ScriptBuilder}, you can directly specify the
+     * <p>Using template {@link ScriptExecutorBuilder}, you can directly specify the
      * real SDK proxy object type and its method name, making engine calls
      * more clear and concise. You can refer to the following example:
      * <pre>
@@ -302,104 +317,7 @@ public class SdkExpressRunner {
      * @return a new {@code ScriptBuilder} instance initialized with this
      * {@code SdkExpressRunner}.
      */
-    public ScriptBuilder newScript() {
-        return new ScriptBuilder(this);
-    }
-
-    public static class ScriptBuilder {
-
-        private final SdkExpressRunner expressRunner;
-
-        private Class<?> type;
-
-        private String methodName;
-
-        private String script;
-
-        /**
-         * Constructs a new {@code ScriptBuilder} instance with the given {@code SdkExpressRunner}.
-         *
-         * @param expressRunner the {@code SdkExpressRunner} instance to be used for script execution.
-         */
-        public ScriptBuilder(SdkExpressRunner expressRunner) {
-            this.expressRunner = expressRunner;
-        }
-
-        /**
-         * Sets the type of the class to be used in the script.
-         *
-         * @param type the class type to be annotated with {@link Sdk}
-         * @return the {@code ScriptBuilder} instance for method chaining.
-         */
-        public ScriptBuilder type(Class<?> type) {
-            this.type = type;
-            return this;
-        }
-
-        /**
-         * Sets the method name to be invoked in the script.
-         *
-         * @param methodName the name of the method to be invoked
-         * @return the {@code ScriptBuilder} instance for method chaining.
-         */
-        public ScriptBuilder methodName(String methodName) {
-            this.methodName = methodName;
-            return this;
-        }
-
-        /**
-         * Builds the script string by combining the type name and method name.
-         * Throws an {@code IllegalArgumentException} if the type is not annotated with {@link Sdk}.
-         *
-         * @return the {@code ScriptBuilder} instance for method chaining.
-         * @throws IllegalArgumentException if the type is not annotated with {@link Sdk}.
-         * @throws IllegalStateException    if script not registered in {@link #standardizedScriptCorrespond}
-         */
-        public ScriptBuilder build() {
-            if (!type.isAnnotationPresent(Sdk.class)) {
-                throw new IllegalArgumentException("Type must be annotated with @" + Sdk.class.getSimpleName());
-            }
-            script = type.getName() + "@" + methodName;
-            if (!expressRunner.standardizedScriptCorrespond.containsKey(script)) {
-                throw new IllegalStateException("Unregistered script information.");
-            }
-            return this;
-        }
-
-        /**
-         * Retrieves the constructed script string.
-         *
-         * @return the constructed script string
-         * @throws NullPointerException if the script string has not been built yet.
-         */
-        public String getScript() {
-            requireNonNull(script, "script");
-            return script;
-        }
-
-        /*
-         * (non-javadoc)
-         * @see SdkExpressRunner#execute(String)
-         */
-        public Object execute() throws QLException {
-            return expressRunner.execute(getScript());
-        }
-
-        /*
-         * (non-javadoc)
-         * @see SdkExpressRunner#execute(String, Map)
-         */
-        public Object execute(@Nullable Map<String, Object> context) throws QLException {
-            return expressRunner.execute(getScript(), context);
-        }
-
-        /*
-         * (non-javadoc)
-         * @see SdkExpressRunner#execute(String, Map, QLOptions)
-         */
-        public Object execute(@Nullable Map<String, Object> context, QLOptions qlOptions)
-                throws QLException {
-            return expressRunner.execute(getScript(), context, qlOptions);
-        }
+    public ScriptExecutorBuilder newScript() {
+        return new ScriptExecutorBuilder(this);
     }
 }
