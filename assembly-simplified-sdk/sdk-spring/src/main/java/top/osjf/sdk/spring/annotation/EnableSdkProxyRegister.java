@@ -16,6 +16,7 @@
 
 package top.osjf.sdk.spring.annotation;
 
+import org.springframework.aop.ClassFilter;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
@@ -156,6 +157,20 @@ public @interface EnableSdkProxyRegister {
      * @since 1.0.3
      */
     Class<? extends SdkProxyFactoryBean> factoryBean() default SdkProxyFactoryBean.class;
+
+    /**
+     * <p> This property allows specifying the implementation class that implements {@link ClassFilter}.
+     * The specified filter will be applied to the classes marked {@link Sdk} discovered during scanning,
+     * allowing fine-grained control over which classes are included or excluded based on custom criteria.
+     *
+     * <p>By default, this property is set to {@code ClassFilter.class}, which may indicate default or no
+     * op filter implementation. Developers can override this default value to provide their own filtering
+     * logic as needed.
+     *
+     * @return the class of {@code ClassFilter}.
+     * @since 1.0.3
+     */
+    Class<? extends ClassFilter> classFilter() default ClassFilter.class;
 
     /**
      * Defines the regular expression pattern for domain names.
