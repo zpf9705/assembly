@@ -17,6 +17,7 @@
 
 package top.osjf.sdk.spring.annotation;
 
+import org.springframework.aop.ClassFilter;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
@@ -34,11 +35,14 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import top.osjf.sdk.core.lang.NotNull;
 import top.osjf.sdk.core.lang.Nullable;
 import top.osjf.sdk.core.util.ArrayUtils;
 import top.osjf.sdk.core.util.ReflectUtil;
 import top.osjf.sdk.core.util.StringUtils;
+import top.osjf.sdk.core.util.internal.logging.InternalLogger;
+import top.osjf.sdk.core.util.internal.logging.InternalLoggerFactory;
 import top.osjf.sdk.proxy.ProxyModel;
 import top.osjf.sdk.spring.beans.BeanPropertyUtils;
 import top.osjf.sdk.spring.proxy.SdkProxyBeanUtils;
@@ -76,6 +80,8 @@ import java.util.stream.Collectors;
  */
 public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar, EnvironmentAware,
         ResourceLoaderAware, Ordered {
+
+    protected final InternalLogger LOG = InternalLoggerFactory.getInstance(getClass());
 
     /**
      * Prefix for system property placeholders: "${".
@@ -157,21 +163,54 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
         Pattern domainPattern = getDomainPattern(attr);
         Pattern ipPattern = getIpPattern(attr);
         beanNameGenerator = getBeanNameGenerator(attr, beanNameGenerator);
+        ClassFilter classFilter = getClassFilter(attr);
         Class<? extends SdkProxyFactoryBean> factoryBeanClass = getFactoryBeanClass(attr);
         for (String basePackage : basePackages) {
             for (BeanDefinition beanDefinition : provider.findCandidateComponents(basePackage)) {
                 if (beanDefinition instanceof AnnotatedBeanDefinition) {
-                    AnnotatedBeanDefinition annotatedBeanDefinition = (AnnotatedBeanDefinition) beanDefinition;
-                    if (isSupportAnnotatedBeanDefinition(annotatedBeanDefinition)) {
+                    AnnotatedBeanDefinition bd = (AnnotatedBeanDefinition) beanDefinition;
+                    if (isSupportAnnotatedBeanDefinition(bd)) {
+                        if (!matchClassFilter(classFilter, bd)) {
+                            if (LOG.isWarnEnabled()) {
+                                LOG.warn("The class '{}' did not pass the filtering criteria specified by " +
+                                                "the custom class filter '{}', so thus the proxy loading process for " +
+                                                "this class has been skipped.",
+                                        bd.getMetadata().getClassName(), classFilter.getClass().getName());
+                            }
+                            continue;
+                        }
                         BeanDefinitionHolder holder = createBeanDefinitionHolder
-                                (annotatedBeanDefinition, registry, beanNameGenerator, domainPattern, ipPattern,
-                                        factoryBeanClass);
+                                (bd, registry, beanNameGenerator, domainPattern, ipPattern, factoryBeanClass);
                         if (holder != null)
                             BeanDefinitionReaderUtils.registerBeanDefinition(holder, registry);
+                    } else {
+                        if (LOG.isWarnEnabled()) {
+                            LOG.warn("The class '{}' is not an interface or abstract class, so thus the " +
+                                            "proxy loading process for this class has been skipped.",
+                                    bd.getMetadata().getClassName());
+                        }
                     }
                 }
             }
         }
+    }
+
+    /**
+     * Does the operation {@link ClassFilter} match the specified class type?
+     *
+     * @param classFilter the class filter instance.
+     * @param bd          {@code AnnotatedBeanDefinition} instances carrying
+     *                    annotated metadata.
+     * @return            the match boolean result.
+     * @since 1.0.3
+     */
+    private boolean matchClassFilter(ClassFilter classFilter, AnnotatedBeanDefinition bd) {
+        if (classFilter == ClassFilter.TRUE) {
+            return true;
+        }
+        String className = bd.getMetadata().getClassName();
+        return classFilter.matches(
+                ClassUtils.resolveClassName(className, classFilter.getClass().getClassLoader()));
     }
 
     /**
@@ -227,6 +266,23 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
             }
         }
         return systemBeanNameGenerator;
+    }
+
+    /**
+     * Return an instance of {@link ClassFilter} to filter the scan result types of {@link Sdk}.
+     *
+     * @param attr the {@code AnnotationAttributes} of enable annotation.
+     * @return an instance of {@link ClassFilter}
+     * @since 1.0.3
+     */
+    private ClassFilter getClassFilter(AnnotationAttributes attr) {
+        if (attr != null) {
+            Class<? extends ClassFilter> filterClass = attr.getClass("classFilter");
+            if (filterClass != ClassFilter.class) {
+                return ReflectUtil.instantiates(filterClass);
+            }
+        }
+        return ClassFilter.TRUE;
     }
 
     /**
