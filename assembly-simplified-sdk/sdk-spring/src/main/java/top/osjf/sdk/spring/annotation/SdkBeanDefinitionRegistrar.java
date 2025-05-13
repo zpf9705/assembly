@@ -65,7 +65,7 @@ import java.util.stream.Collectors;
  *
  * <p>At the same time, it also implements the {@code EnvironmentAware} and
  * {@code ResourceLoaderAware} interfaces,used to obtain Spring's environment
- * information and resource loader respectively, it can assist in {@link HelpProvider}
+ * information and resource loader respectively, it can assist in {@link ClassPathProvider}
  * scanning the relevant proxy interfaces or abstract class under the specified
  * annotation {@link EnableSdkProxyRegister} class path.
  *
@@ -159,7 +159,7 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
                 .getAnnotationAttributes(EnableSdkProxyRegister.class.getCanonicalName());
         AnnotationAttributes attr = AnnotationAttributes.fromMap(annotationAttributes);
         String[] basePackages = getBasePackages(attr, importingClassMetadata);
-        HelpProvider provider = new HelpProvider(environment, resourceLoader, attr);
+        ClassPathProvider provider = new ClassPathProvider(environment, resourceLoader, attr);
         Pattern domainPattern = getDomainPattern(attr);
         Pattern ipPattern = getIpPattern(attr);
         beanNameGenerator = getBeanNameGenerator(attr, beanNameGenerator);
@@ -515,15 +515,15 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
     }
 
     /**
-     * The {@code HelpProvider} class is used to scan classes marked with
+     * The {@code ClassPathProvider} class is used to scan classes marked with
      * specific annotations {@code @Sdk} in Spring applications.
      *
      * <p>The classes marked with {@code @Sdk} annotations need to be
      * independent and not annotated or enumerated.
      */
-    private static class HelpProvider extends ClassPathScanningCandidateComponentProvider {
+    private static class ClassPathProvider extends ClassPathScanningCandidateComponentProvider {
 
-        public HelpProvider(Environment environment,
+        public ClassPathProvider(Environment environment,
                             ResourceLoader resourceLoader,
                             AnnotationAttributes attr) {
             super(false, environment);
