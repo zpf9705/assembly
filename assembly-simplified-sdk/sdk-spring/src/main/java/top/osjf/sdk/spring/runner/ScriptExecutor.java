@@ -28,6 +28,7 @@ import top.osjf.sdk.core.lang.Nullable;
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
+ * @see ScriptExecutorBuilder
  */
 @FunctionalInterface
 public interface ScriptExecutor {
