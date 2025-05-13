@@ -44,12 +44,11 @@ import static java.util.Objects.requireNonNull;
  *     .options(qlOptions)
  *     .build();
  * }</pre>
- * </p>
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  * @see ScriptExecutor
  */
-public class ScriptExecutorBuilder {
+public final class ScriptExecutorBuilder {
 
     private final SdkExpressRunner expressRunner;
 
