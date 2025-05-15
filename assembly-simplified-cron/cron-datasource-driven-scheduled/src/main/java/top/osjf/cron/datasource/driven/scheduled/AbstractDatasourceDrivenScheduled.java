@@ -91,7 +91,7 @@ public abstract class AbstractDatasourceDrivenScheduled implements DatasourceDri
 
     private final CronTaskRepository cronTaskRepository;
 
-    private String mangerTaskId = Constants.MANAGER_TASK_ID;
+    private String mangerTaskUniqueId = Constants.MANAGER_TASK_UNIQUE_ID;
 
     /**
      * Constructs a new {@code AbstractDatasourceDrivenScheduled} with {@code CronTaskRepository}
@@ -172,7 +172,7 @@ public abstract class AbstractDatasourceDrivenScheduled implements DatasourceDri
 
     @Override
     public void stop() {
-        cronTaskRepository.remove(mangerTaskId);
+        cronTaskRepository.remove(mangerTaskUniqueId);
         for (TaskElement element : getDatasourceTaskElements()) {
             String taskId = element.getTaskId();
             if (!StringUtils.isBlank(taskId)) {
@@ -191,9 +191,9 @@ public abstract class AbstractDatasourceDrivenScheduled implements DatasourceDri
     private TaskElement registerManagerTask() {
         TaskElement managerTaskElement = getManagerDatasourceTaskElement();
         if (managerTaskElement == null) {
-            mangerTaskId = cronTaskRepository.register(getManagerTaskCheckFrequencyCronExpress(), this);
+            mangerTaskUniqueId = cronTaskRepository.register(getManagerTaskCheckFrequencyCronExpress(), this);
         } else {
-            mangerTaskId = managerTaskElement.getId();
+            mangerTaskUniqueId = managerTaskElement.getId();
             if (!registerTask(managerTaskElement)) {
                 throw new IllegalStateException(String.format("[Manager-Task-%s] Failed to register : %s",
                         managerTaskElement.getId(), managerTaskElement.getStatusDescription()));
@@ -246,7 +246,7 @@ public abstract class AbstractDatasourceDrivenScheduled implements DatasourceDri
      * otherwise it is not.
      */
     private boolean isManagerTask(TaskElement taskElement) {
-        return Objects.equals(taskElement.getTaskId(), mangerTaskId);
+        return Objects.equals(taskElement.getId(), mangerTaskUniqueId);
     }
 
     /**

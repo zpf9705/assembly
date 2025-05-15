@@ -26,9 +26,9 @@ package top.osjf.cron.datasource.driven.scheduled;
 public interface Constants {
 
     /**
-     * Default main task ID.
+     * Default main task unique ID.
      */
-    String MANAGER_TASK_ID = "Manager-x109-task-id";
+    String MANAGER_TASK_UNIQUE_ID = "Manager-x109-task-id";
 
     /**
      * The default cron expression for the scanning and checking frequency
