@@ -31,6 +31,57 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
+ * Abstract base class for datasource-driven scheduled task management systems.
+ *
+ * <p>This class provides a complete implementation framework for managing scheduled tasks
+ * that are dynamically driven by external data sources. It handles the full lifecycle
+ * of task management including registration, runtime updates, environment validation,
+ * and resource cleanup.</p>
+ *
+ * <h2>Core Responsibilities:</h2>
+ * <ul>
+ *   <li>Task Lifecycle Management: Implements {@link DatasourceDrivenScheduledLifecycle}
+ *       with proper initialization, startup, and shutdown procedures</li>
+ *   <li>Dynamic Task Registration: Supports both manual and datasource-driven task registration</li>
+ *   <li>Runtime Task Updates: Monitors and applies configuration changes to running tasks</li>
+ *   <li>Environment Validation: Ensures tasks only execute in matching environments</li>
+ *   <li>Concurrency Control: Safe management of concurrent task executions</li>
+ * </ul>
+ *
+ * <h2>Key Components:</h2>
+ * <ol>
+ *   <li>{@link #init()}: Initializes task management infrastructure</li>
+ *   <li>{@link #start()}: Activates all registered tasks and begins monitoring</li>
+ *   <li>{@link #run()}: Core execution method for periodic task validation</li>
+ *   <li>{@link #stop()}: Safely deactivates all tasks and releases resources</li>
+ * </ol>
+ *
+ * <h2>Extension Points (Abstract Methods):</h2>
+ * <dl>
+ *   <dt>{@link #purgeDatasourceTaskElements()}</dt>
+ *   <dd>Clean data source task data before registration</dd>
+ *
+ *   <dt>{@link #getManagerDatasourceTaskElement()}</dt>
+ *   <dd>Provide main management task configuration</dd>
+ *
+ *   <dt>{@link #getDatasourceTaskElements()}</dt>
+ *   <dd>Fetch business tasks from data source</dd>
+ *
+ *   <dt>{@link #profilesMatch(String)}</dt>
+ *   <dd>Environment validation for task activation</dd>
+ *
+ *   <dt>{@link #resolveTaskRunnable(TaskElement)}</dt>
+ *   <dd>Convert task metadata to executable Runnable</dd>
+ * </dl>
+ *
+ * <h2>Runtime Behavior:</h2>
+ * <ol>
+ *   <li>On startup: Registers management task and data source tasks</li>
+ *   <li>During execution: Periodically checks for task updates
+ *   (every {@value Constants#MANAGER_TASK_CHECK_FREQUENCY_CRON} if no provider main task information)</li>
+ *   <li>On update detection: Applies configuration changes or stops/starts tasks as needed</li>
+ * </ol>
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
