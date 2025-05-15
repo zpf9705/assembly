@@ -17,9 +17,7 @@
 
 package top.osjf.cron.spring.datasource.driven.scheduled;
 
-import cn.hutool.core.text.CharSequenceUtil;
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -35,6 +33,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
+import top.osjf.assembly.util.lang.StringUtils;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
@@ -147,7 +146,7 @@ public class SpringMybatisPlusDatasourceDrivenScheduled
     protected boolean profilesMatch(String profiles) {
         return StringUtils.isBlank(profiles)
                 || Arrays.stream(profiles.replace("，", ",").split(","))
-                .anyMatch(s -> activeProfiles.contains(CharSequenceUtil.trim(s)));
+                .anyMatch(s -> activeProfiles.contains(s.trim()));
     }
 
     /**
