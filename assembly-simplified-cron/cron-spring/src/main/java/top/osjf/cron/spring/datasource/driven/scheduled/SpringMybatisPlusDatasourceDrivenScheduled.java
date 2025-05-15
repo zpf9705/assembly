@@ -81,10 +81,10 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * <h2>Configuration Properties:</h2>
  * <dl>
- *   <dt>cron.datasource.driven.logger-name</dt>
+ *   <dt>spring.schedule.cron.datasource.driven.logger-name</dt>
  *   <dd>Customize logger name (overrides default class-based logger)</dd>
  *
- *   <dt>cron.datasource.driven.main-task.id</dt>
+ *   <dt>spring.schedule.cron.datasource.driven.main-task-id</dt>
  *   <dd>Override management task ID</dd>
  * </dl>
  *
@@ -187,7 +187,7 @@ public class SpringMybatisPlusDatasourceDrivenScheduled
 
     @Override
     protected Logger getLogger() {
-        String loggerName = environment.getProperty("cron.datasource.driven.logger-name", "");
+        String loggerName = environment.getProperty("spring.schedule.cron.datasource.driven.logger-name", "");
         if (!StringUtils.isBlank(loggerName)) {
             return LoggerFactory.getLogger(loggerName);
         }
@@ -196,6 +196,6 @@ public class SpringMybatisPlusDatasourceDrivenScheduled
 
     @Override
     protected String getManagerTaskId() {
-        return environment.getProperty("cron.datasource.driven.main-task.id", super.getManagerTaskId());
+        return environment.getProperty("spring.schedule.cron.datasource.driven.main-task-id", super.getManagerTaskId());
     }
 }
