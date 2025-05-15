@@ -91,6 +91,8 @@ public interface TaskElement extends Serializable {
      * by subclasses in the method processing of {@link AbstractDatasourceDrivenScheduled#profilesMatch},
      * mainly for task registration assertions.
      *
+     * <p>Use commas {@code ,} to distinguish and isolate multiple environments.
+     *
      * @return The environment in which the task is registered.
      */
     String getProfiles();
