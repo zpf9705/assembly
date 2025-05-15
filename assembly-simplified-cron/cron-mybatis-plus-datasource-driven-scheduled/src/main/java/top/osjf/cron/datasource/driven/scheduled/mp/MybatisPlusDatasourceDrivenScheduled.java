@@ -131,11 +131,11 @@ public abstract class MybatisPlusDatasourceDrivenScheduled extends AbstractDatas
     }
 
     /**
-     * Return the task ID of the main task, which defaults to {@link Constants#MANAGER_TASK_ID}.
+     * Return the task unique ID of the main task, which defaults to {@link Constants#MANAGER_TASK_UNIQUE_ID}.
      *
      * @return the task ID of the main task.
      */
-    protected String getManagerTaskId() {
-        return Constants.MANAGER_TASK_ID;
+    protected String getManagerTaskUniqueId() {
+        return Constants.MANAGER_TASK_UNIQUE_ID;
     }
 }
