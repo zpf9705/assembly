@@ -33,9 +33,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
-import top.osjf.assembly.util.lang.StringUtils;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.repository.CronTaskRepository;
+import top.osjf.cron.core.util.StringUtils;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 import top.osjf.cron.datasource.driven.scheduled.mp.DatabaseTaskElement;
 import top.osjf.cron.datasource.driven.scheduled.mp.MybatisPlusDatasourceDrivenScheduled;
@@ -188,7 +188,7 @@ public class SpringMybatisPlusDatasourceDrivenScheduled
     @Override
     protected Logger getLogger() {
         String loggerName = environment.getProperty("cron.datasource.driven.logger-name", "");
-        if (StringUtils.isNotBlank(loggerName)) {
+        if (!StringUtils.isBlank(loggerName)) {
             return LoggerFactory.getLogger(loggerName);
         }
         return super.getLogger();
