@@ -75,12 +75,12 @@ import java.util.stream.Collectors;
  * </dl>
  *
  * <h2>Runtime Behavior:</h2>
- * <ol>
+ * <ul>
  *   <li>On startup: Registers management task and data source tasks</li>
  *   <li>During execution: Periodically checks for task updates
  *   (every {@value Constants#MANAGER_TASK_CHECK_FREQUENCY_CRON} if no provider main task information)</li>
  *   <li>On update detection: Applies configuration changes or stops/starts tasks as needed</li>
- * </ol>
+ * </ul>
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
