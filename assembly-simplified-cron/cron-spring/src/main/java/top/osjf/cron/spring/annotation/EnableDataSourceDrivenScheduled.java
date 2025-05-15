@@ -37,8 +37,8 @@ import java.lang.annotation.*;
  *
  * <h2>Example:</h2>
  * <pre>{@code
- * SpringBootApplication
- * EnableDataSourceDrivenScheduled
+ * @SpringBootApplication
+ * @EnableDataSourceDrivenScheduled
  * public class MyApplication {
  *     public static void main(String[] args) {
  *         SpringApplication.run(MyApplication.class, args);
