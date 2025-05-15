@@ -86,13 +86,14 @@ public abstract class MybatisPlusDatasourceDrivenScheduled extends AbstractDatas
     @Nullable
     @Override
     protected TaskElement getManagerDatasourceTaskElement() {
-        return taskElementService.getById(getManagerTaskId());
+        return taskElementService.getById(getManagerTaskUniqueId());
     }
 
     @NotNull
     @Override
     protected List<TaskElement> getDatasourceTaskElements() {
-        return new ArrayList<>(taskElementService.lambdaQuery().ne(DatabaseTaskElement::getId, getManagerTaskId()).list());
+        return new ArrayList<>(taskElementService.lambdaQuery()
+                .ne(DatabaseTaskElement::getId, getManagerTaskUniqueId()).list());
     }
 
     @Override
