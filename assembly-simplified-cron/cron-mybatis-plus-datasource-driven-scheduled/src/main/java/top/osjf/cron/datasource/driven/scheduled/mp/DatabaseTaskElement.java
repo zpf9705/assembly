@@ -24,7 +24,33 @@ import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 import top.osjf.generated.mybatisplus.MybatisPlusCodeGenerate;
 
 /**
- * Dynamic management table for scheduled tasks.
+ * Database entity class for scheduled task configuration, mapped to the "ZT_TASK_SCHEDULER" table.
+ *
+ * <p>This class implements the {@link TaskElement} interface to represent scheduled task configurations
+ * persisted in relational database. It uses MyBatis-Plus annotations for ORM mapping and provides
+ * getter/setter methods for all task properties.</p>
+ *
+ * <h2>Database Mapping:</h2>
+ * <table border="1">
+ *   <tr><th>Field</th><th>Database Column</th><th>Description</th></tr>
+ *   <tr><td>id</td><td>ID</td><td>Unique technical identifier (PK)</td></tr>
+ *   <tr><td>taskId</td><td>TASK_ID</td><td>System-generated task execution ID</td></tr>
+ *   <tr><td>taskName</td><td>TASK_NAME</td><td>Unique task name for execution resolution</td></tr>
+ *   <tr><td>profiles</td><td>PROFILES</td><td>Environment configuration str</td></tr>
+ *   <tr><td>taskDescription</td><td>TASK_DESCRIPTION</td><td>Human-readable task description</td></tr>
+ *   <tr><td>status</td><td>STATUS</td><td>Current task registration status</td></tr>
+ *   <tr><td>statusDescription</td><td>STATUS_DESCRIPTION</td><td>Detailed status explanation</td></tr>
+ *   <tr><td>expression</td><td>EXPRESSION</td><td>Cron execution schedule</td></tr>
+ *   <tr><td>updateSign</td><td>UPDATE_SIGN</td><td>Update indicator (0=no change, 1=modified)</td></tr>
+ * </table>
+ *
+ * <h2>Design Notes:</h2>
+ * <ul>
+ *   <li>Implements Serializable for distributed task management</li>
+ *   <li>Uses MyBatis-Plus annotations for ORM mapping</li>
+ *   <li>Maintains 1:1 mapping with {@link TaskElement} interface</li>
+ *   <li>Includes technical audit fields (ID, UPDATE_SIGN) for data versioning</li>
+ * </ul>
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
