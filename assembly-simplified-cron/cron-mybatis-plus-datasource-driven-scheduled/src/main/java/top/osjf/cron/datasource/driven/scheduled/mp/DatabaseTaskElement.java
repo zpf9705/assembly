@@ -59,10 +59,14 @@ import top.osjf.generated.mybatisplus.MybatisPlusCodeGenerate;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
-@TableName("ZT_TASK_SCHEDULER")
+@TableName(DatabaseTaskElement.NAME)
 @MybatisPlusCodeGenerate(noProviderPackageUseDefault = true, tableChineseName = "定时任务管理表")
 public class DatabaseTaskElement implements TaskElement {
     private static final long serialVersionUID = 6220853967182260722L;
+    /**
+     * A fixed table name that needs to be set by the developer to match the name of the database table.
+     */
+    public static final String NAME = "ZT_TASK_SCHEDULER";
 
     /**
      * @see TaskElement#getId()
