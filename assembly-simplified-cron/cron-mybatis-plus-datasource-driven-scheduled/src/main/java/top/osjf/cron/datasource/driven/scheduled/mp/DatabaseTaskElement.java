@@ -28,11 +28,14 @@ import top.osjf.generated.mybatisplus.MybatisPlusCodeGenerate;
  *
  * <p>This class implements the {@link TaskElement} interface to represent scheduled task configurations
  * persisted in relational database. It uses MyBatis-Plus annotations for ORM mapping and provides
- * getter/setter methods for all task properties.</p>
+ * getter/setter methods for all task properties.
  *
  * <h2>Database Mapping:</h2>
- * <table border="1">
+ * <table>
+ *   <thead>
  *   <tr><th>Field</th><th>Database Column</th><th>Description</th></tr>
+ *   </thead>
+ *   <tbody>
  *   <tr><td>id</td><td>ID</td><td>Unique technical identifier (PK)</td></tr>
  *   <tr><td>taskId</td><td>TASK_ID</td><td>System-generated task execution ID</td></tr>
  *   <tr><td>taskName</td><td>TASK_NAME</td><td>Unique task name for execution resolution</td></tr>
@@ -42,6 +45,7 @@ import top.osjf.generated.mybatisplus.MybatisPlusCodeGenerate;
  *   <tr><td>statusDescription</td><td>STATUS_DESCRIPTION</td><td>Detailed status explanation</td></tr>
  *   <tr><td>expression</td><td>EXPRESSION</td><td>Cron execution schedule</td></tr>
  *   <tr><td>updateSign</td><td>UPDATE_SIGN</td><td>Update indicator (0=no change, 1=modified)</td></tr>
+ *   </tbody>
  * </table>
  *
  * <h2>Design Notes:</h2>

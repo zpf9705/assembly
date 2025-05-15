@@ -33,7 +33,7 @@ import java.util.List;
  *
  * <p>This class extends {@link AbstractDatasourceDrivenScheduled} to provide concrete
  * implementation using MyBatis-Plus as the data persistence layer. It manages scheduled
- * tasks stored in database through MyBatis-Plus's {@link IService} interface.</p>
+ * tasks stored in database through MyBatis-Plus's {@link IService} interface.
  *
  * <h2>Key Features:</h2>
  * <ul>
