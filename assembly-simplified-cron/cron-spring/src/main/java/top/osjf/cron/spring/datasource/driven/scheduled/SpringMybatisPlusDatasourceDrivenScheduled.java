@@ -84,8 +84,8 @@ import java.util.concurrent.ConcurrentHashMap;
  *   <dt>spring.schedule.cron.datasource.driven.logger-name</dt>
  *   <dd>Customize logger name (overrides default class-based logger)</dd>
  *
- *   <dt>spring.schedule.cron.datasource.driven.main-task-id</dt>
- *   <dd>Override management task ID</dd>
+ *   <dt>spring.schedule.cron.datasource.driven.main-task-unique-id</dt>
+ *   <dd>Override management task unique ID</dd>
  * </dl>
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
@@ -126,13 +126,8 @@ public class SpringMybatisPlusDatasourceDrivenScheduled
     @Override
     public void afterPropertiesSet() {
         evaluationContext.setBeanResolver(new BeanFactoryResolver(applicationContext.getAutowireCapableBeanFactory()));
+        initLogger();
         init();
-        //init setting logger
-        String loggerName = environment
-                .getProperty("spring.schedule.cron.datasource.driven.logger-name", "");
-        if (!StringUtils.isBlank(loggerName)) {
-            logger = LoggerFactory.getLogger(loggerName);
-        }
     }
 
     @Override
@@ -185,7 +180,8 @@ public class SpringMybatisPlusDatasourceDrivenScheduled
     @Override
     protected Runnable resolveTaskRunnable(TaskElement element) {
         String taskName = element.getTaskName();
-        return () -> expressionCache.computeIfAbsent(taskName, s -> expressionParser.parseExpression(taskName)).getValue();
+        return () -> expressionCache.computeIfAbsent(taskName,
+                s -> expressionParser.parseExpression(taskName)).getValue(evaluationContext);
     }
 
     @Override
@@ -196,6 +192,14 @@ public class SpringMybatisPlusDatasourceDrivenScheduled
     @Override
     protected Logger getLogger() {
         return logger != null ? logger : super.getLogger();
+    }
+
+    private void initLogger(){
+        String loggerName
+                = environment.getProperty("spring.schedule.cron.datasource.driven.logger-name", "");
+        if (!StringUtils.isBlank(loggerName)) {
+            logger = LoggerFactory.getLogger(loggerName);
+        }
     }
 
     @Override
