@@ -29,9 +29,9 @@ import top.osjf.generated.mybatisplus.MybatisPlusCodeGenerate;
  * <p>This class implements the {@link TaskElement} interface to represent scheduled task configurations
  * persisted in relational database. It uses MyBatis-Plus annotations for ORM mapping and provides
  * getter/setter methods for all task properties.
- *
  * <h2>Database Mapping:</h2>
  * <table>
+ *   <caption>Database Task Element Mapping</caption>
  *   <thead>
  *   <tr><th>Field</th><th>Database Column</th><th>Description</th></tr>
  *   </thead>

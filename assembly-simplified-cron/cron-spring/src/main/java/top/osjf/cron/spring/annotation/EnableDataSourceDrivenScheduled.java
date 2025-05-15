@@ -33,12 +33,12 @@ import java.lang.annotation.*;
  *   <li>Spring-managed task lifecycle</li>
  *   <li>Dynamic SpEL-based task execution</li>
  *   <li>Environment-aware task activation</li>
- * </ul></p>
+ * </ul>
  *
  * <h2>Example:</h2>
  * <pre>{@code
- * @SpringBootApplication
- * @EnableDataSourceDrivenScheduled
+ * SpringBootApplication
+ * EnableDataSourceDrivenScheduled
  * public class MyApplication {
  *     public static void main(String[] args) {
  *         SpringApplication.run(MyApplication.class, args);
