@@ -121,6 +121,7 @@ public abstract class AbstractDatasourceDrivenScheduled implements DatasourceDri
 
     @Override
     public void stop() {
+        cronTaskRepository.remove(mangerTaskId);
         for (TaskElement element : getDatasourceTaskElements()) {
             String taskId = element.getTaskId();
             if (!StringUtils.isBlank(taskId)) {
