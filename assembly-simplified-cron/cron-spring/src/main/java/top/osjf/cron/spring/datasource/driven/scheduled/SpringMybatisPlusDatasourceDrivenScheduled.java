@@ -103,6 +103,8 @@ public class SpringMybatisPlusDatasourceDrivenScheduled
     private final List<String> activeProfiles = new ArrayList<>();
     private ApplicationContext applicationContext;
 
+    private Logger logger;
+
     /**
      * Constructs a new {@code SpringMybatisPlusDatasourceDrivenScheduled} with {@code CronTaskRepository}
      * as its task Manager and {@code IService<DatabaseTaskElement>} as its task information storage.
@@ -125,6 +127,12 @@ public class SpringMybatisPlusDatasourceDrivenScheduled
     public void afterPropertiesSet() {
         evaluationContext.setBeanResolver(new BeanFactoryResolver(applicationContext.getAutowireCapableBeanFactory()));
         init();
+        //init setting logger
+        String loggerName = environment
+                .getProperty("spring.schedule.cron.datasource.driven.logger-name", "");
+        if (!StringUtils.isBlank(loggerName)) {
+            logger = LoggerFactory.getLogger(loggerName);
+        }
     }
 
     @Override
@@ -187,11 +195,7 @@ public class SpringMybatisPlusDatasourceDrivenScheduled
 
     @Override
     protected Logger getLogger() {
-        String loggerName = environment.getProperty("spring.schedule.cron.datasource.driven.logger-name", "");
-        if (!StringUtils.isBlank(loggerName)) {
-            return LoggerFactory.getLogger(loggerName);
-        }
-        return super.getLogger();
+        return logger != null ? logger : super.getLogger();
     }
 
     @Override
