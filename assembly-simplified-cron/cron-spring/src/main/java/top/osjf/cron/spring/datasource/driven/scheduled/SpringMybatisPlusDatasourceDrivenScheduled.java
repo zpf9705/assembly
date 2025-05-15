@@ -199,7 +199,7 @@ public class SpringMybatisPlusDatasourceDrivenScheduled
     }
 
     @Override
-    protected String getManagerTaskId() {
-        return environment.getProperty("spring.schedule.cron.datasource.driven.main-task-id", super.getManagerTaskId());
+    protected String getManagerTaskUniqueId() {
+        return environment.getProperty("spring.schedule.cron.datasource.driven.main-task-unique-id", super.getManagerTaskUniqueId());
     }
 }
