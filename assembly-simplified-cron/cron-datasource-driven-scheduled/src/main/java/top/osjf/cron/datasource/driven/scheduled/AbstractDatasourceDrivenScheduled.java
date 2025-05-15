@@ -193,11 +193,11 @@ public abstract class AbstractDatasourceDrivenScheduled implements DatasourceDri
         if (managerTaskElement == null) {
             mangerTaskId = cronTaskRepository.register(getManagerTaskCheckFrequencyCronExpress(), this);
         } else {
+            mangerTaskId = managerTaskElement.getId();
             if (!registerTask(managerTaskElement)) {
                 throw new IllegalStateException(String.format("[Manager-Task-%s] Failed to register : %s",
                         managerTaskElement.getId(), managerTaskElement.getStatusDescription()));
             }
-            mangerTaskId = managerTaskElement.getId();
         }
         return managerTaskElement;
     }
@@ -210,9 +210,6 @@ public abstract class AbstractDatasourceDrivenScheduled implements DatasourceDri
      * fails and the information is recorded in {@link TaskElement#getStatusDescription()}.
      */
     private boolean registerTask(@NotNull TaskElement taskElement) {
-        if (isManagerTask(taskElement)) {
-            return false;
-        }
         if (taskElement.noActive()) {
             if (taskElement.noActiveDescriptionExist()) {
                 taskElement.setStatusDescription(false, "Status not activated");
@@ -229,7 +226,8 @@ public abstract class AbstractDatasourceDrivenScheduled implements DatasourceDri
             }
             return false;
         }
-        String taskId = cronTaskRepository.register(taskElement.getExpression(), resolveTaskRunnable(taskElement));
+        Runnable taskRunnable = isManagerTask(taskElement) ? this : resolveTaskRunnable(taskElement);
+        String taskId = cronTaskRepository.register(taskElement.getExpression(), taskRunnable);
         taskElement.setTaskId(taskId);
         taskElement.setStatusDescription(true, "Running");
         if (getLogger().isDebugEnabled()) {
