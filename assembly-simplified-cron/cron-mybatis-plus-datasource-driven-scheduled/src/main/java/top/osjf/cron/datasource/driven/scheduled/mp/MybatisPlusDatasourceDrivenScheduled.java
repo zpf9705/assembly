@@ -96,11 +96,38 @@ public abstract class MybatisPlusDatasourceDrivenScheduled extends AbstractDatas
     }
 
     @Override
+    protected void afterStart(List<TaskElement> fulledDatasourceTaskElement) {
+        updateBatchElements(fulledDatasourceTaskElement);
+    }
+
+    @Override
     protected List<TaskElement> getRuntimeNeedCheckDatasourceTaskElements() {
         return new ArrayList<>(taskElementService.lambdaQuery()
                 .and(w -> w.eq(DatabaseTaskElement::getUpdateSign, 1)
                         .or(w2 -> w2.eq(DatabaseTaskElement::getUpdateSign, 0)
                                 .isNull(DatabaseTaskElement::getTaskId))).list());
+    }
+
+    @Override
+    protected void afterRun(List<TaskElement> runtimeCheckedDatasourceTaskElement) {
+        updateBatchElements(runtimeCheckedDatasourceTaskElement);
+    }
+
+    /**
+     * The batch update process has been completed {@link TaskElement}.
+     *
+     * @param processedElements Process processed {@link TaskElement}.
+     */
+    private void updateBatchElements(List<TaskElement> processedElements) {
+        List<DatabaseTaskElement> updatesElements = new ArrayList<>();
+        for (TaskElement taskElement : processedElements) {
+            if (taskElement instanceof DatabaseTaskElement) {
+                updatesElements.add((DatabaseTaskElement) taskElement);
+            }
+        }
+        if (!updatesElements.isEmpty()) {
+            taskElementService.updateBatchById(updatesElements);
+        }
     }
 
     /**
