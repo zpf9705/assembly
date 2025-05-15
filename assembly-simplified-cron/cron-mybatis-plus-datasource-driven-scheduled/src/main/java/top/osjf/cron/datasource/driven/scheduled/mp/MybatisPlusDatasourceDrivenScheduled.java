@@ -29,6 +29,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * MyBatis-Plus integrated implementation of datasource-driven scheduled task management.
+ *
+ * <p>This class extends {@link AbstractDatasourceDrivenScheduled} to provide concrete
+ * implementation using MyBatis-Plus as the data persistence layer. It manages scheduled
+ * tasks stored in database through MyBatis-Plus's {@link IService} interface.</p>
+ *
+ * <h2>Key Features:</h2>
+ * <ul>
+ *   <li>MyBatis-Plus Integration: Uses {@link IService} for CRUD operations on {@link DatabaseTaskElement}</li>
+ *   <li>Task Persistence: Stores task configurations in relational database</li>
+ *   <li>Optimized Queries: Implements efficient database queries for task management</li>
+ *   <li>Status Management: Maintains task status synchronization between memory and database</li>
+ * </ul>
+ *
+ * <h2>Implementation Details:</h2>
+ * <ul>
+ *   <li>Data Purge: {@link #purgeDatasourceTaskElements()} resets task IDs and status flags
+ *       in batch using MyBatis-Plus's lambda update</li>
+ *   <li>Task Retrieval: {@link #getDatasourceTaskElements()} fetches tasks excluding the management task</li>
+ *   <li>Runtime Checks: {@link #getRuntimeNeedCheckDatasourceTaskElements()} implements optimized
+ *       database query for update detection</li>
+ * </ul>
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
@@ -82,6 +105,7 @@ public abstract class MybatisPlusDatasourceDrivenScheduled extends AbstractDatas
 
     /**
      * Return the task ID of the main task, which defaults to {@link Constants#MANAGER_TASK_ID}.
+     *
      * @return the task ID of the main task.
      */
     protected String getManagerTaskId() {
