@@ -106,6 +106,7 @@ public class CronTaskInfoReadableWebMvcHandlerController
      * returns it to the client.
      *
      * @return A response entity containing the list of Cron task information views
+     * @see top.osjf.cron.spring.auth.WebRequestAuthenticationInterceptor
      */
     @Override
     @ResponseBody
