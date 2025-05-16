@@ -85,6 +85,9 @@ public class SpringHandlerMappingMybatisPlusDatasourceDrivenScheduled
                 ReflectUtils.getMethod(this.getClass(), "run"));
     }
 
+    /**
+     * @see top.osjf.cron.spring.auth.WebRequestAuthenticationInterceptor
+     */
     @Override
     @ResponseBody
     public void run() {
