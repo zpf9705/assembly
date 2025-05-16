@@ -53,7 +53,7 @@ public class WebRequestAuthenticationInterceptor implements WebRequestIntercepto
 
     private final boolean enableAuthentication;
 
-    private List<AuthenticationPredicate> predicates;
+    private List<AuthenticationPredicate> authenticationPredicates;
 
     private AuthenticationPredicate defaultAuthenticationPredicate;
 
@@ -62,9 +62,9 @@ public class WebRequestAuthenticationInterceptor implements WebRequestIntercepto
                 = environment.getProperty("spring.schedule.cron.web.request.authentication.enable", boolean.class,
                 false);
         if (enableAuthentication) {
-            List<AuthenticationPredicate> predicates = provider.orderedStream().collect(Collectors.toList());
-            if (CollectionUtils.isNotEmpty(predicates)) {
-                this.predicates = predicates;
+            List<AuthenticationPredicate> authenticationPredicates = provider.orderedStream().collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(authenticationPredicates)) {
+                this.authenticationPredicates = authenticationPredicates;
             } else {
                 this.defaultAuthenticationPredicate = new EnvironmentPropertyAuthenticationPredicate(environment);
             }
@@ -88,8 +88,8 @@ public class WebRequestAuthenticationInterceptor implements WebRequestIntercepto
                     + AUTHENTICATION_WEB_HEADER_NAME);
         }
         boolean authenticationFlag;
-        if (CollectionUtils.isNotEmpty(predicates)) {
-            authenticationFlag = predicates.stream().allMatch(p -> p.test(token));
+        if (CollectionUtils.isNotEmpty(authenticationPredicates)) {
+            authenticationFlag = authenticationPredicates.stream().allMatch(p -> p.test(token));
         } else {
             authenticationFlag = defaultAuthenticationPredicate.test(token);
         }
