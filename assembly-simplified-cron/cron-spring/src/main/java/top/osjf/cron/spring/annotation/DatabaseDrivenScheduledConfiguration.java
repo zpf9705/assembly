@@ -24,6 +24,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.datasource.driven.scheduled.mp.DatabaseTaskElement;
+import top.osjf.cron.spring.datasource.driven.scheduled.SpringHandlerMappingMybatisPlusDatasourceDrivenScheduled;
 import top.osjf.cron.spring.datasource.driven.scheduled.SpringMybatisPlusDatasourceDrivenScheduled;
 
 /**
@@ -40,6 +41,6 @@ public class DatabaseDrivenScheduledConfiguration {
     @Bean
     public SpringMybatisPlusDatasourceDrivenScheduled springMybatisPlusDatasourceDrivenScheduled
             (CronTaskRepository cronTaskRepository, IService<DatabaseTaskElement> taskElementService) {
-        return new SpringMybatisPlusDatasourceDrivenScheduled(cronTaskRepository, taskElementService);
+        return new SpringHandlerMappingMybatisPlusDatasourceDrivenScheduled(cronTaskRepository, taskElementService);
     }
 }
