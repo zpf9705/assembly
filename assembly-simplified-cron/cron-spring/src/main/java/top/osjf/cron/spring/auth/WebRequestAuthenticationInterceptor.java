@@ -38,23 +38,56 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
+ * Specify the request interceptor {@link WebRequestInterceptor} instance for the relevant operations
+ * exposed in HTTP interface format in the cron framework.
+ *
+ * <p>Implements Spring MVC web request interception for authentication verification
+ * on specific request paths.
+ * <h3>Main features:</h3>
+ * <ul>
+ * <li>Enable/disable authentication via configuration {@link #enableAuthentication}</li>
+ * <li>Register path patterns requiring authentication {@link #addInterceptors}</li>
+ * <li>Verify authentication token in request headers {@link #postHandle(WebRequest, ModelMap)}</li>
+ * <li>Support custom regex authentication strategies via AuthenticationPredicate {@link RegexPathMatcher}</li>
+ * </ul>
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
 public class WebRequestAuthenticationInterceptor implements WebRequestInterceptor, WebMvcConfigurer {
 
+    /**
+     * Authentication header name
+     * Clients must include this header with a valid token for authentication
+     */
     public static final String AUTHENTICATION_WEB_HEADER_NAME = "spring-cron-web-request-authentication";
 
+    /**
+     * Authentication path pattern
+     * Uses regex to match requests ending with:
+     * 1. {@link CronTaskInfoReadableWebMvcHandlerController#REQUEST_MAPPING_PATH_OF_GET_CRON_TASK_LIST}
+     * 2. {@link SpringHandlerMappingMybatisPlusDatasourceDrivenScheduled#RUNNING_MAPPING_PATH}
+     */
     public static final String AUTHENTICATION_PATTERN = ".*("
             + CronTaskInfoReadableWebMvcHandlerController.REQUEST_MAPPING_PATH_OF_GET_CRON_TASK_LIST
             + "|"
             + SpringHandlerMappingMybatisPlusDatasourceDrivenScheduled.RUNNING_MAPPING_PATH
             + ")$";
 
+    /**
+     * Authentication enable flag
+     * Read from configuration property: {@code spring.schedule.cron.web.request.authentication.enable}
+     */
     private final boolean enableAuthentication;
 
+    /**
+     * A collection of identity validators provided by developers themselves.
+     */
     private List<AuthenticationPredicate> authenticationPredicates;
 
+    /**
+     * The default authentication device.
+     */
     private AuthenticationPredicate defaultAuthenticationPredicate;
 
     public WebRequestAuthenticationInterceptor(ObjectProvider<AuthenticationPredicate> provider, Environment environment) {
