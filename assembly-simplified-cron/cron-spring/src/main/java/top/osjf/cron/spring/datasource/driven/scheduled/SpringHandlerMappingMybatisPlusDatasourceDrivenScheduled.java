@@ -21,6 +21,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
@@ -82,5 +83,11 @@ public class SpringHandlerMappingMybatisPlusDatasourceDrivenScheduled
                         .params()
                         .build(), this,
                 ReflectUtils.getMethod(this.getClass(), "run"));
+    }
+
+    @Override
+    @ResponseBody
+    public void run() {
+        super.run();
     }
 }
