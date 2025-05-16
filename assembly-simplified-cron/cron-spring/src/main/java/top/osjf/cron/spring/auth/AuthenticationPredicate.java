@@ -33,7 +33,6 @@ import java.util.function.Predicate;
  *   <li>Enables request-level fine-grained permission control</li>
  *   <li>Serves as security extension point for Cron Framework's HTTP interfaces</li>
  * </ul>
- * <p>
  * <h3>Typical Use Cases:</h3>
  * <ul>
  *   <li>When needing dynamic credential validation from database</li>
