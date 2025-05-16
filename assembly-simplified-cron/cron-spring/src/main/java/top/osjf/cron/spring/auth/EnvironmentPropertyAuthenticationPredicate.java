@@ -18,6 +18,7 @@
 package top.osjf.cron.spring.auth;
 
 import org.springframework.core.env.Environment;
+import top.osjf.cron.core.lang.NotNull;
 
 import java.util.Objects;
 
@@ -44,7 +45,7 @@ public class EnvironmentPropertyAuthenticationPredicate implements Authenticatio
     }
 
     @Override
-    public boolean test(String token) {
+    public boolean test(@NotNull String token) {
         return Objects.equals(environment.getProperty("spring.schedule.cron.web.request.authentication.token"), token);
     }
 }
