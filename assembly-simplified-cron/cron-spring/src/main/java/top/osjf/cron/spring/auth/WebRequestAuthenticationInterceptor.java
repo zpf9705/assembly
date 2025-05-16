@@ -17,44 +17,57 @@
 
 package top.osjf.cron.spring.auth;
 
-import org.springframework.context.EnvironmentAware;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.core.env.Environment;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.context.request.WebRequestInterceptor;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.util.CollectionUtils;
 import top.osjf.cron.core.util.StringUtils;
+import top.osjf.cron.spring.CronTaskInfoReadableWebMvcHandlerController;
+import top.osjf.cron.spring.datasource.driven.scheduled.SpringHandlerMappingMybatisPlusDatasourceDrivenScheduled;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
-public class WebRequestAuthenticationInterceptor implements WebRequestInterceptor, EnvironmentAware {
+public class WebRequestAuthenticationInterceptor implements WebRequestInterceptor, WebMvcConfigurer {
 
     public static final String AUTHENTICATION_WEB_HEADER_NAME = "spring-cron-web-request-authentication";
 
-    private final List<AuthenticationPredicate> predicates;
+    private final boolean enableAuthentication;
 
-    private AuthenticationPredicate envAuthenticationPredicate;
+    private List<AuthenticationPredicate> predicates;
 
-    private boolean enableAuthentication;
+    private AuthenticationPredicate defaultAuthenticationPredicate;
 
-    public WebRequestAuthenticationInterceptor(List<AuthenticationPredicate> predicates) {
-        this.predicates = predicates;
-    }
-
-    @Override
-    public void setEnvironment(Environment environment) {
+    public WebRequestAuthenticationInterceptor(ObjectProvider<AuthenticationPredicate> provider, Environment environment) {
         enableAuthentication
                 = environment.getProperty("spring.schedule.cron.web.request.authentication.enable", boolean.class,
                 false);
-        if (enableAuthentication){
-            envAuthenticationPredicate = new EnvironmentAuthenticationPredicate(environment);
+        if (enableAuthentication) {
+            List<AuthenticationPredicate> predicates = provider.orderedStream().collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(predicates)) {
+                this.predicates = predicates;
+            } else {
+                this.defaultAuthenticationPredicate = new EnvironmentPropertyAuthenticationPredicate(environment);
+            }
         }
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addWebRequestInterceptor(this)
+                .addPathPatterns("*"
+                                + CronTaskInfoReadableWebMvcHandlerController.REQUEST_MAPPING_PATH_OF_GET_CRON_TASK_LIST,
+                        "*" + SpringHandlerMappingMybatisPlusDatasourceDrivenScheduled.RUNNING_MAPPING_PATH);
     }
 
     @Override
@@ -69,7 +82,7 @@ public class WebRequestAuthenticationInterceptor implements WebRequestIntercepto
             if (CollectionUtils.isNotEmpty(predicates)) {
                 authenticationFlag = predicates.stream().allMatch(p -> p.test(token));
             } else {
-                authenticationFlag = envAuthenticationPredicate.test(token);
+                authenticationFlag = defaultAuthenticationPredicate.test(token);
             }
             if (!authenticationFlag) {
                 throw new AuthenticationException("Identity dynamic verification failed, unable to access.");

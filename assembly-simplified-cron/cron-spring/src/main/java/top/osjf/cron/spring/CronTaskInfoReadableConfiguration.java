@@ -17,11 +17,14 @@
 
 package top.osjf.cron.spring;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import top.osjf.cron.core.repository.CronTaskRepository;
-import top.osjf.cron.spring.auth.AuthenticationConfigurableBean;
+import top.osjf.cron.spring.auth.AuthenticationPredicate;
+import top.osjf.cron.spring.auth.WebRequestAuthenticationInterceptor;
 
 /**
  * {@link Configuration @Configuration} for {@link CronTaskInfoReadableWebMvcHandlerController}
@@ -41,7 +44,8 @@ public class CronTaskInfoReadableConfiguration {
     }
 
     @Bean
-    public AuthenticationConfigurableBean authenticationConfigurableBean(RequestMappingHandlerMapping handlerMapping){
-        return new AuthenticationConfigurableBean(handlerMapping);
+    public WebRequestAuthenticationInterceptor authenticationConfigurableBean(ObjectProvider<AuthenticationPredicate> provider,
+                                                                              Environment environment) {
+        return new WebRequestAuthenticationInterceptor(provider, environment);
     }
 }

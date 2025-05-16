@@ -25,11 +25,11 @@ import java.util.Objects;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
-public class EnvironmentAuthenticationPredicate implements AuthenticationPredicate {
+public class EnvironmentPropertyAuthenticationPredicate implements AuthenticationPredicate {
 
     private final Environment environment;
 
-    public EnvironmentAuthenticationPredicate(Environment environment) {
+    public EnvironmentPropertyAuthenticationPredicate(Environment environment) {
         this.environment = environment;
     }
 
