@@ -12,7 +12,7 @@
     <groupId>top.osjf.cron</groupId>
     <artifactId>assembly-simplified-cron</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
     <description>
         Parent of cron task.
     </description>
@@ -23,6 +23,8 @@
         <module>cron-quartz</module>
         <module>cron-cron4j</module>
         <module>cron-spring-scheduler</module>
+        <module>cron-mybatis-plus-datasource-driven-scheduled</module>
+        <module>cron-datasource-driven-scheduled</module>
         <module>cron-spring</module>
         <module>cron-spring-boot-starter</module>
     </modules>
@@ -32,6 +34,7 @@
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.version>5.3.12</spring.version>
+        <mp>3.5.3.1</mp>
     </properties>
 
     <dependencyManagement>
@@ -58,6 +61,18 @@
             <dependency>
                 <groupId>top.osjf.cron</groupId>
                 <artifactId>cron-quartz</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>top.osjf.cron</groupId>
+                <artifactId>cron-datasource-driven-scheduled</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>top.osjf.cron</groupId>
+                <artifactId>cron-mybatis-plus-datasource-driven-scheduled</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -101,6 +116,18 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-webmvc</artifactId>
                 <version>${spring.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-annotation</artifactId>
+                <version>${mp}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-extension</artifactId>
+                <version>${mp}</version>
             </dependency>
 
         </dependencies>

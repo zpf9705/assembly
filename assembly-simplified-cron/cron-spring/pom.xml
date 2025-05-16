@@ -6,7 +6,7 @@
     <parent>
         <groupId>top.osjf.cron</groupId>
         <artifactId>assembly-simplified-cron</artifactId>
-        <version>1.0.3</version>
+        <version>1.0.4</version>
     </parent>
 
     <artifactId>cron-spring</artifactId>
@@ -20,6 +20,8 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jetbrains.annotation>24.0.1</jetbrains.annotation>
+        <mp>3.5.3.1</mp>
     </properties>
 
     <dependencies>
@@ -48,6 +50,11 @@
         </dependency>
 
         <dependency>
+            <groupId>top.osjf.cron</groupId>
+            <artifactId>cron-mybatis-plus-datasource-driven-scheduled</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
             <optional>true</optional>
@@ -68,6 +75,25 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-annotation</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-extension</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>${jetbrains.annotation}</version>
             <optional>true</optional>
         </dependency>
 

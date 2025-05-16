@@ -9,31 +9,45 @@
         <version>1.0.4</version>
     </parent>
 
-    <artifactId>cron-hutool</artifactId>
+    <artifactId>cron-mybatis-plus-datasource-driven-scheduled</artifactId>
     <packaging>jar</packaging>
-
-    <description>
-        Cron Task: Implementation of Hutool.
-    </description>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <hutool>5.8.5</hutool>
+        <mp>3.5.3.1</mp>
+        <codes>1.1.6</codes>
     </properties>
 
     <dependencies>
 
         <dependency>
             <groupId>top.osjf.cron</groupId>
-            <artifactId>cron-core</artifactId>
+            <artifactId>cron-datasource-driven-scheduled</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>cn.hutool</groupId>
-            <artifactId>hutool-cron</artifactId>
-            <version>${hutool}</version>
+            <groupId>top.osjf</groupId>
+            <artifactId>assembly-codes</artifactId>
+            <version>${codes}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-annotation</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-extension</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
         </dependency>
 
     </dependencies>
