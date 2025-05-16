@@ -22,8 +22,18 @@ import org.springframework.core.env.Environment;
 import java.util.Objects;
 
 /**
+ * Environment-based Authentication Predicate
+ * <p>
+ * Implements authentication verification by comparing the provided token
+ * with the value configured in the Spring environment properties.
+ *
+ * <p>
+ * This predicate checks against the property:
+ * {@code spring.schedule.cron.web.request.authentication.token}
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
+ * @see AuthenticationPredicate
  */
 public class EnvironmentPropertyAuthenticationPredicate implements AuthenticationPredicate {
 
