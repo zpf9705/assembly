@@ -31,6 +31,10 @@ import top.osjf.cron.spring.auth.WebRequestAuthenticationInterceptor;
  * to create a {@code CronTaskInfoReadableWebMvcHandlerController} instance and hand it over to
  * Spring container management.
  *
+ * <p>Version 1.0.4 provides a specific authentication mechanism for public methods accessible
+ * via HTTP. For details, please refer to {@link WebRequestAuthenticationInterceptor}, and users
+ * can enable it themselves.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
