@@ -21,6 +21,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import top.osjf.cron.core.repository.CronTaskRepository;
@@ -45,7 +46,7 @@ import javax.annotation.Nonnull;
  * @since 1.0.4
  */
 public class SpringHandlerMappingMybatisPlusDatasourceDrivenScheduled
-        extends SpringMybatisPlusDatasourceDrivenScheduled {
+        extends SpringMybatisPlusDatasourceDrivenScheduled implements WebMvcConfigurer {
 
     /**
      * External exposed HTTP trigger endpoint path
@@ -64,12 +65,6 @@ public class SpringHandlerMappingMybatisPlusDatasourceDrivenScheduled
         super(cronTaskRepository, taskElementService);
     }
 
-    /**
-     * {@inheritDoc}
-     * <p>
-     * Rewrite the application event listener to register HTTP request mapping after Spring container
-     * initialization is complete
-     */
     @Override
     public void onApplicationEvent(@Nonnull ContextRefreshedEvent event) {
         super.onApplicationEvent(event);
@@ -83,8 +78,9 @@ public class SpringHandlerMappingMybatisPlusDatasourceDrivenScheduled
                 = applicationContext.getBean(RequestMappingHandlerMapping.class);
 
         handlerMapping.registerMapping(RequestMappingInfo.paths(RUNNING_MAPPING_PATH)
-                        .methods(RequestMethod.POST).build(), this,
+                        .methods(RequestMethod.POST)
+                        .params()
+                        .build(), this,
                 ReflectUtils.getMethod(this.getClass(), "run"));
-
     }
 }
