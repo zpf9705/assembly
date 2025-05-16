@@ -21,6 +21,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import top.osjf.cron.core.repository.CronTaskRepository;
+import top.osjf.cron.spring.auth.AuthenticationConfigurableBean;
 
 /**
  * {@link Configuration @Configuration} for {@link CronTaskInfoReadableWebMvcHandlerController}
@@ -37,5 +38,10 @@ public class CronTaskInfoReadableConfiguration {
     public CronTaskInfoReadableWebMvcHandlerController cronTaskInfoReadableWebMvcHandlerController
             (CronTaskRepository cronTaskRepository, RequestMappingHandlerMapping requestMappingHandlerMapping) {
         return new CronTaskInfoReadableWebMvcHandlerController(cronTaskRepository, requestMappingHandlerMapping);
+    }
+
+    @Bean
+    public AuthenticationConfigurableBean authenticationConfigurableBean(RequestMappingHandlerMapping handlerMapping){
+        return new AuthenticationConfigurableBean(handlerMapping);
     }
 }
