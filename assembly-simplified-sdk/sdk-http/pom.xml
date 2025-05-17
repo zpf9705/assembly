@@ -7,7 +7,7 @@
     <parent>
         <groupId>top.osjf.sdk</groupId>
         <artifactId>assembly-simplified-sdk</artifactId>
-        <version>1.0.3</version>
+        <version>1.0.3-alpha</version>
     </parent>
 
     <artifactId>sdk-http</artifactId>
@@ -18,6 +18,7 @@
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <urlbuilder>1.1.5</urlbuilder>
+        <jetbrains.annotation>24.0.1</jetbrains.annotation>
     </properties>
 
     <dependencies>
@@ -31,6 +32,12 @@
             <groupId>com.palominolabs.http</groupId>
             <artifactId>url-builder</artifactId>
             <version>${urlbuilder}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>${jetbrains.annotation}</version>
         </dependency>
 
     </dependencies>
