@@ -6,7 +6,7 @@
     <parent>
         <groupId>top.osjf.sdk</groupId>
         <artifactId>assembly-simplified-sdk</artifactId>
-        <version>1.0.3</version>
+        <version>1.0.3-alpha</version>
     </parent>
 
     <artifactId>sdk-http-hc5</artifactId>
