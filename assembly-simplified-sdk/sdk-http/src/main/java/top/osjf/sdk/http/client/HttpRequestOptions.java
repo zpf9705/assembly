@@ -17,6 +17,8 @@
 
 package top.osjf.sdk.http.client;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -133,6 +135,7 @@ public final class HttpRequestOptions {
      * @param methodName it's your http method name.
      * @return http method Options
      */
+    @ApiStatus.Experimental
     public HttpRequestOptions getMethodOptions(String methodName) {
         Map<String, HttpRequestOptions> methodOptions =
                 threadToMethodOptions.getOrDefault(getThreadIdentifier(), new HashMap<>());
@@ -146,6 +149,7 @@ public final class HttpRequestOptions {
      * @param methodName it's your http method name.
      * @param options    it's the Options for this method.
      */
+    @ApiStatus.Experimental
     public void setMethodOptions(String methodName, HttpRequestOptions options) {
         String threadIdentifier = getThreadIdentifier();
         Map<String, HttpRequestOptions> methodOptions =
