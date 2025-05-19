@@ -235,6 +235,7 @@ public class SpringSchedulerTaskRepository extends ListenableTaskScheduler {
 
     @Override
     public void start() {
+        //It is initially enabled by default and can be executed after stopping and restarting.
         if (!started.compareAndSet(false, true)) {
             throw new IllegalStateException("Scheduling has not stopped.");
         }
