@@ -18,9 +18,19 @@
 package top.osjf.spring.autoconfigure.cron;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.annotation.Condition;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
+import org.springframework.core.type.AnnotatedTypeMetadata;
+import top.osjf.cron.core.lang.NotNull;
+import top.osjf.cron.core.util.ArrayUtils;
 import top.osjf.cron.spring.annotation.DatabaseDrivenScheduledConfiguration;
 import top.osjf.cron.spring.annotation.EnableDataSourceDrivenScheduled;
+
+import java.lang.annotation.*;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link DatabaseDrivenScheduledConfiguration}.
@@ -30,6 +40,29 @@ import top.osjf.cron.spring.annotation.EnableDataSourceDrivenScheduled;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableDataSourceDrivenScheduled
-@ConditionalOnPropertyProfiles
+@DatasourceDrivenScheduledAutoConfiguration.ConditionalOnDrivenScheduledConfigurablePropertyProfiles
 public class DatasourceDrivenScheduledAutoConfiguration {
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @Documented
+    @Conditional(OnPropertyProfilesCondition.class)
+    public @interface ConditionalOnDrivenScheduledConfigurablePropertyProfiles {
+
+        String PROPERTY_NAME_OF_MATCHED_PROFILES = "spring.schedule.cron.datasource.driven.active-profiles.matched";
+    }
+
+    public static class OnPropertyProfilesCondition implements Condition {
+        @Override
+        public boolean matches(ConditionContext context, @NotNull AnnotatedTypeMetadata metadata) {
+            Environment environment = context.getEnvironment();
+            String[] matchedProfiles = environment
+                    .getProperty(ConditionalOnDrivenScheduledConfigurablePropertyProfiles
+                            .PROPERTY_NAME_OF_MATCHED_PROFILES, String[].class);
+            if (ArrayUtils.isEmpty(matchedProfiles)) {
+                return true;
+            }
+            return environment.acceptsProfiles(Profiles.of(matchedProfiles));
+        }
+    }
 }
