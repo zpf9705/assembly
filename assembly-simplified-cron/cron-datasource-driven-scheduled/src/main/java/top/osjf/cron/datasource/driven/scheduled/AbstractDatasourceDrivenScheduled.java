@@ -26,6 +26,8 @@ import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.core.util.CollectionUtils;
 import top.osjf.cron.core.util.StringUtils;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -168,6 +170,13 @@ public abstract class AbstractDatasourceDrivenScheduled implements DatasourceDri
             }
         }
         afterRun(runtimeCheckedDatasourceTaskElements);
+
+        getLogger().info("The active time for the completion of this inspection work for the main " +
+                "management task is: [{}]", getActiveTime());
+    }
+
+    private static String getActiveTime() {
+        return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
     @Override

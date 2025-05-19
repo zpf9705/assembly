@@ -12,7 +12,7 @@
     <groupId>top.osjf.cron</groupId>
     <artifactId>assembly-simplified-cron</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.4</version>
+    <version>1.0.4-alpha</version>
     <description>
         Parent of cron task.
     </description>
