@@ -1,0 +1,23 @@
+{
+  "properties": [
+    {
+      "name": "spring.schedule.cron.datasource.driven.main-task-unique-id",
+      "type": "java.lang.String",
+      "description": "The ID of the main task.."
+    },
+    {
+      "name": "spring.schedule.cron.datasource.driven.logger-name",
+      "type": "java.lang.String",
+      "description": "The log name of the configuration.."
+    },
+    {
+      "name": "spring.schedule.cron.web.request.authentication.enable",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable authentication of exposed interfaces."
+    },
+    {
+      "name": "spring.schedule.cron.web.request.authentication.token",
+      "type": "java.lang.String",
+      "description": "Provide authentication verification tokens."
+    }
+  ] }
