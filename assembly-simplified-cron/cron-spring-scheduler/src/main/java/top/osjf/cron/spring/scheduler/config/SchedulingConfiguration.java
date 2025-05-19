@@ -29,7 +29,9 @@ import top.osjf.cron.spring.ObjectProviderUtils;
 import top.osjf.cron.spring.scheduler.SpringSchedulerTaskRepository;
 
 /**
- * /**
+ * NOTE: This file has been copied and slightly modified from {org.springframework.scheduling.annotation
+ * .SchedulingConfiguration}.
+ * <p>
  * {@code @Configuration} class that registers a {@link ScheduledAnnotationBeanPostProcessor}
  * bean capable of processing Spring's @{@link org.springframework.scheduling.annotation.Scheduled}
  * and cron framework {@link top.osjf.cron.spring.annotation.Cron} annotation.

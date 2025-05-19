@@ -27,6 +27,9 @@ import java.lang.annotation.*;
 import java.util.concurrent.Executor;
 
 /**
+ * NOTE: This file has been copied and slightly modified from {org.springframework.scheduling.annotation
+ * .EnableScheduling}.
+ * <p>
  * Enables Spring's scheduled task execution capability, similar to
  * functionality found in Spring's {@code <task:*>} XML namespace. To be used
  * on {@link Configuration @Configuration} classes as follows:

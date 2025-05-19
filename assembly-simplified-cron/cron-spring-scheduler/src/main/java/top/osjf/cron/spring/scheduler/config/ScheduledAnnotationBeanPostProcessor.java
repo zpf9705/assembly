@@ -63,6 +63,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * NOTE: This file has been copied and slightly modified from {org.springframework.scheduling.annotation.
+ * ScheduledAnnotationBeanPostProcessor}.
+ * <p>
  * Bean post-processor that registers methods annotated with
  * {@link Scheduled @Scheduled} and {@link Cron @Cron} to be invoked by a
  * {@link org.springframework.scheduling.TaskScheduler} according to the
