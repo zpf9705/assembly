@@ -37,7 +37,8 @@ import top.osjf.cron.spring.annotation.Crones;
 @Import({HutoolCronTaskAutoConfiguration.class,
         QuartzCronTaskAutoConfiguration.class,
         Cron4jCronTaskAutoConfiguration.class,
-        SpringSchedulerAutoConfiguration.class})
+        SpringSchedulerAutoConfiguration.class,
+        DatasourceDrivenScheduledAutoConfiguration.class})
 public class CronTaskAutoConfiguration {
 
     /**
