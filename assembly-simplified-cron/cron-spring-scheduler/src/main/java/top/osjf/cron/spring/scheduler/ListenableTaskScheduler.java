@@ -72,7 +72,7 @@ public abstract class ListenableTaskScheduler extends AbstractCronTaskRepository
      *
      * @return the map of listenable scheduled futures.
      */
-    public Map<String, ListenableScheduledFuture> getListenableScheduledFutures() {
+    protected Map<String, ListenableScheduledFuture> getListenableScheduledFutures() {
         return listenableScheduledFutures;
     }
 
