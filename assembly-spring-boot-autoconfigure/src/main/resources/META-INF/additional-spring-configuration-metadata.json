@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "spring.schedule.cron.datasource.driven.active-profiles.matched",
+      "type": "java.lang.String",
+      "description": "datasource-driven matched profiles."
+    }
+  ] }
