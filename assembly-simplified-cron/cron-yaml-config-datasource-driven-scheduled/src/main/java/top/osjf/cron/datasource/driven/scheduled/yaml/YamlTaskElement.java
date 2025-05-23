@@ -27,8 +27,8 @@ import java.util.Map;
  * YAML configuration files to task elements.
  *
  * <p>The names of YAML configuration properties for tasks written by developers need to
- * be based on constants written in this category, such as {@code x123355:{id:x123355 ,
- * taskName: example}}.
+ * be based on constants written in this category, such as case configuration yaml file
+ * {@code top.osjf.cron.datasource.driven.scheduled.yaml.Example.yml}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
