@@ -39,7 +39,7 @@ import java.lang.annotation.*;
  * <h2>Example:</h2>
  * <pre>{@code
  * SpringBootApplication
- * EnableDataSourceDrivenScheduled
+ * EnableDataSourceDrivenScheduled(DataSource.MY_BATIS_PLUS_ORM_DATABASE)
  * public class MyApplication {
  *     public static void main(String[] args) {
  *         SpringApplication.run(MyApplication.class, args);
