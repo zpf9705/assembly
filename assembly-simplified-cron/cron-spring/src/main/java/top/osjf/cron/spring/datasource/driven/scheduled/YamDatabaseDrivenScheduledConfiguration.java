@@ -37,7 +37,7 @@ public class YamDatabaseDrivenScheduledConfiguration {
                                                                                    Environment environment) {
         String configYamlFileName
                 = environment.getProperty("spring.schedule.cron.datasource.driven.yml.name",
-                "config.yml");
+                "task-config.yml");
         YamlDatasourceTaskElementsOperation operation = new YamlDatasourceTaskElementsOperation(configYamlFileName);
         provider.orderedStream().findFirst().ifPresent(operation::setYaml);
         return operation;
