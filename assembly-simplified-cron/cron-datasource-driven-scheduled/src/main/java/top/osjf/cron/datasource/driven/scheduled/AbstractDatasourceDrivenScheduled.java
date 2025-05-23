@@ -31,7 +31,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * Abstract base class for datasource-driven scheduled task management systems.
@@ -61,12 +60,6 @@ import java.util.stream.Collectors;
  *
  * <h2>Extension Points (Abstract Methods):</h2>
  * <dl>
- *   <dt>{@link #purgeDatasourceTaskElements()}</dt>
- *   <dd>Clean data source task data before registration</dd>
- *
- *   <dt>{@link #getDatasourceTaskElements()}</dt>
- *   <dd>Fetch business tasks from data source</dd>
- *
  *   <dt>{@link #profilesMatch(String)}</dt>
  *   <dd>Environment validation for task activation</dd>
  *
@@ -85,12 +78,13 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
-public abstract class AbstractDatasourceDrivenScheduled implements DatasourceDrivenScheduledLifecycle,
-        DatasourceTaskElementsOperation, ManagerTaskUniqueIdentifierProvider, Runnable {
+public abstract class AbstractDatasourceDrivenScheduled
+        implements DatasourceDrivenScheduledLifecycle, ManagerTaskUniqueIdentifierProvider, Runnable {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final CronTaskRepository cronTaskRepository;
+    private final DatasourceTaskElementsOperation datasourceTaskElementsOperation;
 
     private String mangerTaskUniqueId = Constants.MANAGER_TASK_UNIQUE_ID;
 
@@ -112,17 +106,20 @@ public abstract class AbstractDatasourceDrivenScheduled implements DatasourceDri
 
     /**
      * Constructs a new {@code AbstractDatasourceDrivenScheduled} with {@code CronTaskRepository}
-     * as its task Manager.
+     * as its task Manager and {@code DatasourceTaskElementsOperation} as its task information access.
      *
-     * @param cronTaskRepository the Task management resource explorer.
+     * @param cronTaskRepository              the Task management resource explorer.
+     * @param datasourceTaskElementsOperation the Task data source information retrieval operation interface.
      */
-    public AbstractDatasourceDrivenScheduled(CronTaskRepository cronTaskRepository) {
+    public AbstractDatasourceDrivenScheduled(CronTaskRepository cronTaskRepository,
+                                             DatasourceTaskElementsOperation datasourceTaskElementsOperation) {
         this.cronTaskRepository = cronTaskRepository;
+        this.datasourceTaskElementsOperation = datasourceTaskElementsOperation;
     }
 
     @Override
     public void init() {
-        purgeDatasourceTaskElements();
+        datasourceTaskElementsOperation.purgeDatasourceTaskElements();
     }
 
     @Override
@@ -145,7 +142,7 @@ public abstract class AbstractDatasourceDrivenScheduled implements DatasourceDri
      */
     private void startInternal() {
 
-        List<TaskElement> taskElements = getDatasourceTaskElements();
+        List<TaskElement> taskElements = datasourceTaskElementsOperation.getDatasourceTaskElements();
         if (CollectionUtils.isEmpty(taskElements)) {
             if (getLogger().isDebugEnabled()) {
                 getLogger().debug("No registrable data source task objects were obtained from the data source.");
@@ -168,7 +165,7 @@ public abstract class AbstractDatasourceDrivenScheduled implements DatasourceDri
                     = cronTaskRepository.register(getManagerTaskCheckFrequencyCronExpress(), this);
         }
 
-        afterStart(taskElements);
+        datasourceTaskElementsOperation.afterStart(taskElements);
     }
 
     /**
@@ -176,7 +173,8 @@ public abstract class AbstractDatasourceDrivenScheduled implements DatasourceDri
      */
     private void runInternal() {
 
-        List<TaskElement> runtimeCheckedDatasourceTaskElements = getRuntimeNeedCheckDatasourceTaskElements();
+        List<TaskElement> runtimeCheckedDatasourceTaskElements =
+                datasourceTaskElementsOperation.getRuntimeNeedCheckDatasourceTaskElements();
         if (CollectionUtils.isEmpty(runtimeCheckedDatasourceTaskElements)) {
             return;
         }
@@ -218,7 +216,7 @@ public abstract class AbstractDatasourceDrivenScheduled implements DatasourceDri
             }
         }
 
-        afterRun(runtimeCheckedDatasourceTaskElements);
+        datasourceTaskElementsOperation.afterRun(runtimeCheckedDatasourceTaskElements);
 
         getLogger().info("The active time for the completion of this inspection work for the main " +
                 "management task is: [{}]", getActiveTime());
@@ -233,13 +231,13 @@ public abstract class AbstractDatasourceDrivenScheduled implements DatasourceDri
      */
     private void stopInternal() {
         cronTaskRepository.remove(mangerTaskUniqueId);
-        for (TaskElement element : getDatasourceTaskElements()) {
+        for (TaskElement element : datasourceTaskElementsOperation.getDatasourceTaskElements()) {
             String taskId = element.getTaskId();
             if (!StringUtils.isBlank(taskId)) {
                 cronTaskRepository.remove(taskId);
             }
         }
-        purgeDatasourceTaskElements();
+        datasourceTaskElementsOperation.purgeDatasourceTaskElements();
     }
 
     /**
@@ -325,44 +323,4 @@ public abstract class AbstractDatasourceDrivenScheduled implements DatasourceDri
      */
     @NotNull
     protected abstract Runnable resolveTaskRunnable(TaskElement element);
-
-    /**
-     * The callback method after the completion of the start cycle execution.
-     *
-     * <p>The callback provides the relevant registration information set
-     * (including the main task information if provided) after filling in the
-     * registration information, and developers can perform data persistence
-     * update operations.
-     *
-     * @param fulledDatasourceTaskElement The set of data source task information after
-     *                                    filling in the registration information.
-     */
-    protected void afterStart(List<TaskElement> fulledDatasourceTaskElement) {
-
-    }
-
-    /**
-     * Return the collection of data source task information that needs to be updated
-     * and checked during runtime.
-     *
-     * @return the collection of data source task information.
-     */
-    protected List<TaskElement> getRuntimeNeedCheckDatasourceTaskElements() {
-        return getDatasourceTaskElements().stream().filter(t -> Objects.equals(t.getUpdateSign(), 1)
-                || (Objects.equals(t.getUpdateSign(), 1) && t.getTaskId() == null)).collect(Collectors.toList());
-    }
-
-    /**
-     * The callback after executing the {@link #run()} method of the main management task at runtime.
-     *
-     * <p>Mainly perform dynamic update detection on the data obtained from
-     * {@link #getRuntimeNeedCheckDatasourceTaskElements()}, and there may be updated task fields.
-     * Developers can call back here to update the data.
-     *
-     * @param runtimeCheckedDatasourceTaskElement The collection of relevant task information after the
-     *                                            runtime detection process for updating data (if any).
-     */
-    protected void afterRun(List<TaskElement> runtimeCheckedDatasourceTaskElement) {
-
-    }
 }
