@@ -50,7 +50,7 @@ public class DatasourceDrivenScheduledAutoConfiguration {
     @Import(MybatisPlusDatabaseDrivenScheduledConfiguration.class)
     @ConditionalOnClass(MybatisPlusDatasourceTaskElementsOperation.class)
     @ConditionalOnProperty(prefix = "spring.schedule.cron", name = "scheduledDrivenDataSource",
-            havingValue = "MY_BATIS_PLUS_ORM_DATABASE", matchIfMissing = true)
+            havingValue = "my_batis_plus_orm_database")
     public static class MybatisPlusDatabaseDrivenScheduledAutoConfiguration {
     }
 
@@ -58,7 +58,8 @@ public class DatasourceDrivenScheduledAutoConfiguration {
     @Import(YamDatabaseDrivenScheduledConfiguration.class)
     @ConditionalOnClass(YamlDatasourceTaskElementsOperation.class)
     @ConditionalOnProperty(prefix = "spring.schedule.cron", name = "scheduledDrivenDataSource",
-            havingValue = "YAML_CONFIG", matchIfMissing = true)
+            havingValue = "yaml_config")
+    @Primary
     public static class YamDatabaseDrivenScheduledAutoConfiguration {
     }
 
