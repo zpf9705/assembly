@@ -17,15 +17,15 @@
 
 package top.osjf.cron.spring.annotation;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
 import top.osjf.cron.core.lang.NotNull;
-import top.osjf.cron.core.repository.CronTaskRepository;
-import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
-import top.osjf.cron.spring.datasource.driven.scheduled.*;
+import top.osjf.cron.spring.datasource.driven.scheduled.DataSource;
+import top.osjf.cron.spring.datasource.driven.scheduled.MybatisPlusDatabaseDrivenScheduledConfiguration;
+import top.osjf.cron.spring.datasource.driven.scheduled.SpringDatasourceDrivenScheduled;
+import top.osjf.cron.spring.datasource.driven.scheduled.YamDatabaseDrivenScheduledConfiguration;
 
 /**
  * {@link Configuration Configuration} for {@link SpringDatasourceDrivenScheduled}.
@@ -46,18 +46,14 @@ public class DatabaseDrivenScheduledConfiguration implements ImportSelector {
             DataSource dataSource = attributes.getEnum("value");
             switch (dataSource){
                 case MY_BATIS_PLUS_ORM_DATABASE:
-                    return new String[]{MybatisPlusDatabaseDrivenScheduledConfiguration.class.getCanonicalName()};
+                    return new String[]{MybatisPlusDatabaseDrivenScheduledConfiguration.class.getCanonicalName(),
+                            SpringDatasourceDrivenScheduled.class.getCanonicalName()};
                 case YAML_CONFIG:
-                    return new String[]{YamDatabaseDrivenScheduledConfiguration.class.getCanonicalName()};
+                    return new String[]{YamDatabaseDrivenScheduledConfiguration.class.getCanonicalName(),
+                            SpringDatasourceDrivenScheduled.class.getCanonicalName()};
             }
         }
 
-        return new String[0];
-    }
-
-    @Bean
-    public SpringDatasourceDrivenScheduled springDatasourceDrivenScheduled
-            (CronTaskRepository cronTaskRepository, DatasourceTaskElementsOperation datasourceTaskElementsOperation) {
-        return new SpringHandlerMappingDatasourceDrivenScheduled(cronTaskRepository, datasourceTaskElementsOperation);
+        return new String[]{SpringDatasourceDrivenScheduled.class.getCanonicalName()};
     }
 }
