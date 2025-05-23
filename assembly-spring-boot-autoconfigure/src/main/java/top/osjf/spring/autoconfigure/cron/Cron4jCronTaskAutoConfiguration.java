@@ -18,11 +18,13 @@ package top.osjf.spring.autoconfigure.cron;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
+import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
 import top.osjf.cron.spring.CronTaskConfiguration;
 import top.osjf.cron.spring.cron4j.Cron4jCronTaskConfiguration;
@@ -36,7 +38,8 @@ import top.osjf.cron.spring.cron4j.Cron4jCronTaskConfiguration;
 @Configuration(proxyBeanMethods = false)
 @Import({Cron4jCronTaskConfiguration.class, CronTaskConfiguration.class})
 @ConditionalOnClass({Cron4jCronTaskRepository.class})
-@ConditionalOnProperty(name = "spring.schedule.cron.client-type", havingValue = "cron4j", matchIfMissing = true)
+@ConditionalOnProperty(name = "spring.schedule.cron.client-type", havingValue = "cron4j")
+@ConditionalOnMissingBean(CronTaskRepository.class)
 public class Cron4jCronTaskAutoConfiguration {
 
     @Bean
