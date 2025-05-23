@@ -285,9 +285,12 @@ public abstract class AbstractDatasourceDrivenScheduled implements DatasourceDri
     }
 
     /**
-     * Return the cron expression for the execution frequency of the main management task.
+     * Return the cron expression when the data source is not provided by the main task,
+     * i.e. {@link #getManagerTaskUniqueIdentifier()} is null. This framework independently
+     * registers the cron expression used for the main management task, and developers can
+     * also define this value themselves.
      *
-     * @return the cron expression for the execution frequency of the main management task.
+     * @return the default cron expression for the execution frequency of the main management task.
      */
     protected String getManagerTaskCheckFrequencyCronExpress() {
         return Constants.MANAGER_TASK_CHECK_FREQUENCY_CRON;
