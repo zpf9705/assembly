@@ -18,6 +18,7 @@
 package top.osjf.cron.spring.annotation;
 
 import org.springframework.context.annotation.Import;
+import top.osjf.cron.spring.datasource.driven.scheduled.DataSource;
 
 import java.lang.annotation.*;
 
@@ -54,4 +55,6 @@ import java.lang.annotation.*;
 @Documented
 @Import(DatabaseDrivenScheduledConfiguration.class)
 public @interface EnableDataSourceDrivenScheduled {
+
+    DataSource value();
 }
