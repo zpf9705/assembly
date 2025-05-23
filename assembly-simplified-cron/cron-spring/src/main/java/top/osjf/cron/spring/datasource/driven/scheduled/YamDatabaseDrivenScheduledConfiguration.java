@@ -19,6 +19,7 @@ package top.osjf.cron.spring.datasource.driven.scheduled;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 import org.yaml.snakeyaml.Yaml;
 import top.osjf.cron.datasource.driven.scheduled.yaml.YamlDatasourceTaskElementsOperation;
@@ -36,6 +37,7 @@ import top.osjf.cron.datasource.driven.scheduled.yaml.YamlDatasourceTaskElements
 public class YamDatabaseDrivenScheduledConfiguration {
 
     @Bean
+    @Primary
     public YamlDatasourceTaskElementsOperation yamlDatasourceTaskElementsOperation(ObjectProvider<Yaml> provider,
                                                                                    Environment environment) {
         String configYamlFileName
