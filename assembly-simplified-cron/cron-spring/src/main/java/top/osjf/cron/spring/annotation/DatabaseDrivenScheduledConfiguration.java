@@ -17,30 +17,47 @@
 
 package top.osjf.cron.spring.annotation;
 
-import com.baomidou.mybatisplus.extension.service.IService;
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportSelector;
+import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.type.AnnotationMetadata;
+import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.repository.CronTaskRepository;
-import top.osjf.cron.datasource.driven.scheduled.mp.DatabaseTaskElement;
-import top.osjf.cron.spring.datasource.driven.scheduled.SpringHandlerMappingMybatisPlusDatasourceDrivenScheduled;
-import top.osjf.cron.spring.datasource.driven.scheduled.SpringMybatisPlusDatasourceDrivenScheduled;
+import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
+import top.osjf.cron.spring.datasource.driven.scheduled.*;
 
 /**
- * {@link Configuration Configuration} for {@link SpringMybatisPlusDatasourceDrivenScheduled}.
+ * {@link Configuration Configuration} for {@link SpringDatasourceDrivenScheduled}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
 @Configuration(proxyBeanMethods = false)
-@MapperScan("top.osjf.cron.datasource.driven.scheduled.mapper")
-@ComponentScan("top.osjf.cron.datasource.driven.scheduled.manager")
-public class DatabaseDrivenScheduledConfiguration {
+public class DatabaseDrivenScheduledConfiguration implements ImportSelector {
+
+    @Override
+    @NotNull
+    public String[] selectImports(AnnotationMetadata metadata) {
+        AnnotationAttributes attributes
+                = AnnotationAttributes
+                .fromMap(metadata.getAnnotationAttributes(EnableDataSourceDrivenScheduled.class.getCanonicalName()));
+        if (attributes != null){
+            DataSource dataSource = attributes.getEnum("value");
+            switch (dataSource){
+                case MY_BATIS_PLUS_ORM_DATABASE:
+                    return new String[]{MybatisPlusDatabaseDrivenScheduledConfiguration.class.getCanonicalName()};
+                case YAML_CONFIG:
+                    return new String[]{YamDatabaseDrivenScheduledConfiguration.class.getCanonicalName()};
+            }
+        }
+
+        return new String[0];
+    }
 
     @Bean
-    public SpringMybatisPlusDatasourceDrivenScheduled springMybatisPlusDatasourceDrivenScheduled
-            (CronTaskRepository cronTaskRepository, IService<DatabaseTaskElement> taskElementService) {
-        return new SpringHandlerMappingMybatisPlusDatasourceDrivenScheduled(cronTaskRepository, taskElementService);
+    public SpringDatasourceDrivenScheduled springDatasourceDrivenScheduled
+            (CronTaskRepository cronTaskRepository, DatasourceTaskElementsOperation datasourceTaskElementsOperation) {
+        return new SpringHandlerMappingDatasourceDrivenScheduled(cronTaskRepository, datasourceTaskElementsOperation);
     }
 }
