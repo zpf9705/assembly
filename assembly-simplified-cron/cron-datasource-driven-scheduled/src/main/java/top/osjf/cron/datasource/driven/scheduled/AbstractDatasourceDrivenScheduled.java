@@ -20,7 +20,6 @@ package top.osjf.cron.datasource.driven.scheduled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.osjf.cron.core.lang.NotNull;
-import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.repository.CronTaskInfo;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.core.util.CollectionUtils;
@@ -28,6 +27,8 @@ import top.osjf.cron.core.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -63,9 +64,6 @@ import java.util.stream.Collectors;
  *   <dt>{@link #purgeDatasourceTaskElements()}</dt>
  *   <dd>Clean data source task data before registration</dd>
  *
- *   <dt>{@link #getManagerDatasourceTaskElement()}</dt>
- *   <dd>Provide main management task configuration</dd>
- *
  *   <dt>{@link #getDatasourceTaskElements()}</dt>
  *   <dd>Fetch business tasks from data source</dd>
  *
@@ -87,13 +85,28 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
-public abstract class AbstractDatasourceDrivenScheduled implements DatasourceDrivenScheduledLifecycle, Runnable {
+public abstract class AbstractDatasourceDrivenScheduled implements DatasourceDrivenScheduledLifecycle,
+        ManagerTaskUniqueIdentifierProvider, Runnable {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final CronTaskRepository cronTaskRepository;
 
     private String mangerTaskUniqueId = Constants.MANAGER_TASK_UNIQUE_ID;
+
+    public static final String PROFILES_SYSTEM_PROPERTY_NAME = "cron.datasource.driven.scheduled.profiles";
+    private static List<String> SYSTEM_PROFILES;
+
+    static { loadRegisterProfiles(); }
+
+    /**
+     * Load the system level configuration task loading environment.
+     */
+    static void loadRegisterProfiles() {
+        String property = System.getProperty(PROFILES_SYSTEM_PROPERTY_NAME);
+        SYSTEM_PROFILES = StringUtils.isBlank(property)
+                ? Collections.emptyList() : Arrays.asList(property.split(","));
+    }
 
     /**
      * Constructs a new {@code AbstractDatasourceDrivenScheduled} with {@code CronTaskRepository}
@@ -112,27 +125,60 @@ public abstract class AbstractDatasourceDrivenScheduled implements DatasourceDri
 
     @Override
     public void start() {
-        TaskElement taskElement = registerManagerTask();
-        List<TaskElement> taskElements = getDatasourceTaskElements();
-        if (CollectionUtils.isEmpty(taskElements)) {
-            if (getLogger().isDebugEnabled()) {
-                getLogger().debug("No registrable data source task object was obtained.");
-                return;
-            }
-        }
-        taskElements.forEach(this::registerTask);
-        if (taskElement != null) {
-            taskElements.add(taskElement);
-        }
-        afterStart(taskElements);
+        startInternal();
     }
 
     @Override
     public void run() {
+        runInternal();
+    }
+
+    @Override
+    public void stop() {
+        stopInternal();
+    }
+
+    /**
+     * The internal method of {@link #start()}.
+     */
+    private void startInternal(){
+
+        List<TaskElement> taskElements = getDatasourceTaskElements();
+        if (CollectionUtils.isEmpty(taskElements)) {
+            if (getLogger().isDebugEnabled()) {
+                getLogger().debug("No registrable data source task objects were obtained from the data source.");
+                return;
+            }
+        }
+
+        this.mangerTaskUniqueId = getManagerTaskUniqueIdentifier();
+        boolean managerTaskRegisterFlag = false;
+
+        for (TaskElement taskElement : taskElements) {
+            registerTask(taskElement);
+            if (!managerTaskRegisterFlag && isManagerTask(taskElement)) {
+                managerTaskRegisterFlag = true;
+            }
+        }
+
+        if (!managerTaskRegisterFlag) {
+            this.mangerTaskUniqueId
+                    = cronTaskRepository.register(getManagerTaskCheckFrequencyCronExpress(), this);
+        }
+
+        afterStart(taskElements);
+    }
+
+    /**
+     * The internal method of {@link #run()}.
+     */
+    private void runInternal() {
+
         List<TaskElement> runtimeCheckedDatasourceTaskElements = getRuntimeNeedCheckDatasourceTaskElements();
         if (CollectionUtils.isEmpty(runtimeCheckedDatasourceTaskElements)) {
             return;
         }
+
         for (TaskElement element : runtimeCheckedDatasourceTaskElements) {
             if (element.isAfterUpdate()) {
                 if (element.willBePaused()) {
@@ -169,6 +215,7 @@ public abstract class AbstractDatasourceDrivenScheduled implements DatasourceDri
                 registerTask(element);
             }
         }
+
         afterRun(runtimeCheckedDatasourceTaskElements);
 
         getLogger().info("The active time for the completion of this inspection work for the main " +
@@ -179,8 +226,10 @@ public abstract class AbstractDatasourceDrivenScheduled implements DatasourceDri
         return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
-    @Override
-    public void stop() {
+    /**
+     * The internal method of {@link #stop()}.
+     */
+    private void stopInternal() {
         cronTaskRepository.remove(mangerTaskUniqueId);
         for (TaskElement element : getDatasourceTaskElements()) {
             String taskId = element.getTaskId();
@@ -192,33 +241,11 @@ public abstract class AbstractDatasourceDrivenScheduled implements DatasourceDri
     }
 
     /**
-     * Register the main management check task to the task management resource.
-     *
-     * @return the main management.
-     */
-    @Nullable
-    private TaskElement registerManagerTask() {
-        TaskElement managerTaskElement = getManagerDatasourceTaskElement();
-        if (managerTaskElement == null) {
-            mangerTaskUniqueId = cronTaskRepository.register(getManagerTaskCheckFrequencyCronExpress(), this);
-        } else {
-            mangerTaskUniqueId = managerTaskElement.getId();
-            if (!registerTask(managerTaskElement)) {
-                throw new IllegalStateException(String.format("[Manager-Task-%s] Failed to register : %s",
-                        managerTaskElement.getId(), managerTaskElement.getStatusDescription()));
-            }
-        }
-        return managerTaskElement;
-    }
-
-    /**
      * Register tasks that require dynamic management to the task registration manager.
      *
      * @param taskElement the Task element information.
-     * @return {@code true} indicates successful registration, otherwise registration
-     * fails and the information is recorded in {@link TaskElement#getStatusDescription()}.
      */
-    private boolean registerTask(@NotNull TaskElement taskElement) {
+    private void registerTask(@NotNull TaskElement taskElement) {
         if (taskElement.noActive()) {
             if (taskElement.noActiveDescriptionExist()) {
                 taskElement.setStatusDescription(false, "Status not activated");
@@ -226,14 +253,14 @@ public abstract class AbstractDatasourceDrivenScheduled implements DatasourceDri
             if (getLogger().isDebugEnabled()) {
                 getLogger().debug("[Task-{}] Failed to register : Status not activated", taskElement.getTaskId());
             }
-            return false;
+            return;
         }
         if (!profilesMatch(taskElement.getProfiles())) {
             taskElement.setStatusDescription(false, "Environment mismatch");
             if (getLogger().isDebugEnabled()) {
                 getLogger().debug("[Task-{}] Failed to register : Environment mismatch", taskElement.getTaskId());
             }
-            return false;
+            return;
         }
         Runnable taskRunnable = isManagerTask(taskElement) ? this : resolveTaskRunnable(taskElement);
         String taskId = cronTaskRepository.register(taskElement.getExpression(), taskRunnable);
@@ -244,7 +271,6 @@ public abstract class AbstractDatasourceDrivenScheduled implements DatasourceDri
                     taskElement.getTaskId(), taskElement.getTaskName(), taskElement.getTaskDescription(),
                     taskElement.getExpression());
         }
-        return true;
     }
 
     /**
@@ -254,7 +280,7 @@ public abstract class AbstractDatasourceDrivenScheduled implements DatasourceDri
      * @return {@code true} represents the information of the main management task,
      * otherwise it is not.
      */
-    private boolean isManagerTask(TaskElement taskElement) {
+    protected boolean isManagerTask(TaskElement taskElement) {
         return Objects.equals(taskElement.getId(), mangerTaskUniqueId);
     }
 
@@ -283,16 +309,6 @@ public abstract class AbstractDatasourceDrivenScheduled implements DatasourceDri
     protected abstract void purgeDatasourceTaskElements();
 
     /**
-     * Return the {@link TaskElement} instance of the main management task, which can be
-     * {@code null}. When {@code null}, use direct registration without recording the
-     * relevant returned task ID.
-     *
-     * @return the {@link TaskElement} instance of the main management task.
-     */
-    @Nullable
-    protected abstract TaskElement getManagerDatasourceTaskElement();
-
-    /**
      * Return the collection of {@link TaskElement} instances except for the main management
      * task, and return the relevant task IDs after registration is completed.
      *
@@ -306,7 +322,9 @@ public abstract class AbstractDatasourceDrivenScheduled implements DatasourceDri
      * @param profiles Recorded environmental information.
      * @return {@code true} indicates that the environment matches, otherwise it does not match.
      */
-    protected abstract boolean profilesMatch(String profiles);
+    protected boolean profilesMatch(String profiles){
+        return SYSTEM_PROFILES.contains(profiles);
+    }
 
     /**
      * Analyze the running function of the sub-task through task information parsing.
@@ -339,12 +357,7 @@ public abstract class AbstractDatasourceDrivenScheduled implements DatasourceDri
      * @return the collection of data source task information.
      */
     protected List<TaskElement> getRuntimeNeedCheckDatasourceTaskElements() {
-        List<TaskElement> datasourceTaskElements = getDatasourceTaskElements();
-        TaskElement managerDatasourceTaskElement = getManagerDatasourceTaskElement();
-        if (managerDatasourceTaskElement != null) {
-            datasourceTaskElements.add(managerDatasourceTaskElement);
-        }
-        return datasourceTaskElements.stream().filter(t -> Objects.equals(t.getUpdateSign(), 1)
+        return getDatasourceTaskElements().stream().filter(t -> Objects.equals(t.getUpdateSign(), 1)
                 || (Objects.equals(t.getUpdateSign(), 1) && t.getTaskId() == null)).collect(Collectors.toList());
     }
 
