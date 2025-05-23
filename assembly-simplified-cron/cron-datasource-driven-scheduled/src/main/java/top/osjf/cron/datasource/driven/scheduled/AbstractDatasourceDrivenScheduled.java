@@ -86,7 +86,7 @@ public abstract class AbstractDatasourceDrivenScheduled
     private final CronTaskRepository cronTaskRepository;
     private final DatasourceTaskElementsOperation datasourceTaskElementsOperation;
 
-    private String mangerTaskUniqueId = Constants.MANAGER_TASK_UNIQUE_ID;
+    private String mangerTaskUniqueId;
 
     public static final String PROFILES_SYSTEM_PROPERTY_NAME = "cron.datasource.driven.scheduled.profiles";
     private static List<String> SYSTEM_PROFILES;
