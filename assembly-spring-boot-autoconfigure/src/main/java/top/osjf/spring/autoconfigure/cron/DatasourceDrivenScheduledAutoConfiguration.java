@@ -62,7 +62,6 @@ public class DatasourceDrivenScheduledAutoConfiguration {
     @ConditionalOnClass(YamlDatasourceTaskElementsOperation.class)
     @ConditionalOnProperty(prefix = "spring.schedule.cron", name = "scheduledDrivenDataSource",
             havingValue = "yaml_config")
-    @Primary
     public static class YamDatabaseDrivenScheduledAutoConfiguration {
     }
 
