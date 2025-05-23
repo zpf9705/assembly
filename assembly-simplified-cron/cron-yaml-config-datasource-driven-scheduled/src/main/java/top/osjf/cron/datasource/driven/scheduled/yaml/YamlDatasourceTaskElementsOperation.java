@@ -28,8 +28,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -61,9 +59,17 @@ public class YamlDatasourceTaskElementsOperation implements DatasourceTaskElemen
     private final String configYamlFileName;
 
     /**
-     * Constructs a new {@code YamlDatasourceTaskElementsOperation} with a yaml configuration file name.
+     * Constructs a new {@code YamlDatasourceTaskElementsOperation} with a YAML configuration file name.
      *
-     * @param configYamlFileName the path to the YAML configuration file.
+     * <p>The YAML configuration file should be located in the classpath (e.g., under the {@code resources}
+     * directory). The path should be specified as a classpath resource path, not a filesystem path.
+     *
+     * <p><b>Example:</b> If the file is located at {@code src/main/resources/a.yml}, you can pass
+     * {@code "a.yml"} as the parameter. Internally, it will be loaded using
+     * {@code ClassLoader.getResourceAsStream("/a.yml")}.
+     *
+     * @param configYamlFileName the classpath resource path to the YAML configuration file (e.g., "a.yml").
+     * @throws NullPointerException if {@code configYamlFileName} is {@code null}.
      */
     public YamlDatasourceTaskElementsOperation(String configYamlFileName) {
         this.configYamlFileName = requireNonNull(configYamlFileName, "configYamlFileName == null");
@@ -167,7 +173,7 @@ public class YamlDatasourceTaskElementsOperation implements DatasourceTaskElemen
          * @throws IOException if file not found.
          */
         private InputStream getConfigYamlFileInputStream() throws IOException {
-            return Files.newInputStream(Paths.get(configYamlFileName));
+            return ClassLoader.getSystemResourceAsStream(configYamlFileName);
         }
 
         /**
