@@ -29,6 +29,15 @@ public class DataSourceDrivenException extends CronInternalException {
     private static final long serialVersionUID = -642360262042974699L;
 
     /**
+     * Constructs a new {@code DataSourceDrivenException} with the specified detail message.
+     *
+     * @param message the internal detail message.
+     */
+    public DataSourceDrivenException(String message) {
+        super(message);
+    }
+
+    /**
      * Constructs a new {@code DataSourceDrivenException} with the specified detail message and
      * the specified internal cause
      *

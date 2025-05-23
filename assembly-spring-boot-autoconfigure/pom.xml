@@ -61,6 +61,20 @@
         </dependency>
 
         <dependency>
+            <groupId>top.osjf.cron</groupId>
+            <artifactId>cron-mybatis-plus-datasource-driven-scheduled</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>top.osjf.cron</groupId>
+            <artifactId>cron-yaml-config-datasource-driven-scheduled</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
             <groupId>top.osjf.spring.optimize</groupId>
             <artifactId>service-bean</artifactId>
             <version>${project.version}</version>

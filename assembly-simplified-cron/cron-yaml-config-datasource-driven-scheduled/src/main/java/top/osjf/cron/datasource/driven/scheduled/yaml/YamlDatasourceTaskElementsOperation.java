@@ -25,7 +25,6 @@ import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
 import java.util.*;
@@ -136,7 +135,8 @@ public class YamlDatasourceTaskElementsOperation implements DatasourceTaskElemen
     private void updateYamlConfigFile(Map<String, Map<String, String>> updateDrivenTaskYamlConfig) {
         try (Writer writer = new FileWriter(configYamlFileName)) {
             yaml.dump(updateDrivenTaskYamlConfig, writer);
-        } catch (IOException ex) {
+        }
+        catch (Throwable ex) {
             throw new DataSourceDrivenException("Error writing to file: " + configYamlFileName, ex);
         }
     }
@@ -159,9 +159,16 @@ public class YamlDatasourceTaskElementsOperation implements DatasourceTaskElemen
          */
         private void loading() {
             try (InputStream inputStream = getConfigYamlFileInputStream()) {
+                if (inputStream == null){
+                    throw new DataSourceDrivenException("No such yml config " + configYamlFileName);
+                }
                 drivenTaskYamlConfig = yaml.load(inputStream);
-            } catch (IOException e) {
-                throw new DataSourceDrivenException("Failed to load yaml file : " + configYamlFileName, e);
+            }
+            catch (DataSourceDrivenException ex){
+                throw ex;
+            }
+            catch (Throwable ex) {
+                throw new DataSourceDrivenException("Failed to load yaml file : " + configYamlFileName, ex);
             }
             taskElements = drivenTaskYamlConfig.values().stream().map(YamlTaskElement::new).collect(Collectors.toList());
         }
@@ -170,9 +177,8 @@ public class YamlDatasourceTaskElementsOperation implements DatasourceTaskElemen
          * Retrieve the information flow of the specified file.
          *
          * @return the {@link InputStream} of the specified file.
-         * @throws IOException if file not found.
          */
-        private InputStream getConfigYamlFileInputStream() throws IOException {
+        private InputStream getConfigYamlFileInputStream() {
             return ClassLoader.getSystemResourceAsStream(configYamlFileName);
         }
 
