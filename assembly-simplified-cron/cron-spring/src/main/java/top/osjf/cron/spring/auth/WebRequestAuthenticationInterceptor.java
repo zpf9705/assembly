@@ -29,9 +29,8 @@ import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.util.CollectionUtils;
 import top.osjf.cron.core.util.StringUtils;
 import top.osjf.cron.spring.CronTaskInfoReadableWebMvcHandlerController;
-import top.osjf.cron.spring.datasource.driven.scheduled.SpringHandlerMappingMybatisPlusDatasourceDrivenScheduled;
+import top.osjf.cron.spring.datasource.driven.scheduled.SpringHandlerMappingDatasourceDrivenScheduled;
 
-import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +53,7 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
-public class WebRequestAuthenticationInterceptor implements WebRequestInterceptor, WebMvcConfigurer {
+public class WebRequestAuthenticationInterceptor implements AuthenticationInterceptor, WebMvcConfigurer {
 
     /**
      * Authentication header name
@@ -66,12 +65,12 @@ public class WebRequestAuthenticationInterceptor implements WebRequestIntercepto
      * Authentication path pattern
      * Uses regex to match requests ending with:
      * 1. {@link CronTaskInfoReadableWebMvcHandlerController#REQUEST_MAPPING_PATH_OF_GET_CRON_TASK_LIST}
-     * 2. {@link SpringHandlerMappingMybatisPlusDatasourceDrivenScheduled#RUNNING_MAPPING_PATH}
+     * 2. {@link SpringHandlerMappingDatasourceDrivenScheduled#RUNNING_MAPPING_PATH}
      */
     public static final String AUTHENTICATION_PATTERN = ".*("
             + CronTaskInfoReadableWebMvcHandlerController.REQUEST_MAPPING_PATH_OF_GET_CRON_TASK_LIST
             + "|"
-            + SpringHandlerMappingMybatisPlusDatasourceDrivenScheduled.RUNNING_MAPPING_PATH
+            + SpringHandlerMappingDatasourceDrivenScheduled.RUNNING_MAPPING_PATH
             + ")$";
 
     /**
@@ -114,7 +113,7 @@ public class WebRequestAuthenticationInterceptor implements WebRequestIntercepto
     }
 
     @Override
-    public void preHandle(@NotNull WebRequest request) {
+    public void preHandle(@NotNull WebRequest request) throws AuthenticationException {
         String token = request.getHeader(AUTHENTICATION_WEB_HEADER_NAME);
         if (StringUtils.isBlank(token)) {
             throw new AuthenticationException("Missing header information for access verification: "
@@ -129,14 +128,6 @@ public class WebRequestAuthenticationInterceptor implements WebRequestIntercepto
         if (!authenticationFlag) {
             throw new AuthenticationException("Identity dynamic verification failed, unable to access.");
         }
-    }
-
-    @Override
-    public void postHandle(@NotNull WebRequest request, @Nullable ModelMap model) {
-    }
-
-    @Override
-    public void afterCompletion(@NotNull WebRequest request, @Nullable Exception ex) {
     }
 
     private static class RegexPathMatcher implements PathMatcher {
