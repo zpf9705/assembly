@@ -106,7 +106,6 @@ public class SpringDatasourceDrivenScheduled extends AbstractDatasourceDrivenSch
     private ApplicationContext applicationContext;
 
     private Logger logger;
-    private final DatasourceTaskElementsOperation datasourceTaskElementsOperation;
 
     /**
      * Constructs a new {@code SpringDatasourceDrivenScheduled} with {@code CronTaskRepository}
@@ -117,8 +116,7 @@ public class SpringDatasourceDrivenScheduled extends AbstractDatasourceDrivenSch
      */
     public SpringDatasourceDrivenScheduled(CronTaskRepository cronTaskRepository,
                                            DatasourceTaskElementsOperation datasourceTaskElementsOperation) {
-        super(cronTaskRepository);
-        this.datasourceTaskElementsOperation = datasourceTaskElementsOperation;
+        super(cronTaskRepository, datasourceTaskElementsOperation);
     }
 
     @Override
@@ -204,16 +202,6 @@ public class SpringDatasourceDrivenScheduled extends AbstractDatasourceDrivenSch
         if (!StringUtils.isBlank(loggerName)) {
             logger = LoggerFactory.getLogger(loggerName);
         }
-    }
-
-    @Override
-    public void purgeDatasourceTaskElements() {
-        datasourceTaskElementsOperation.purgeDatasourceTaskElements();
-    }
-
-    @Override
-    public List<TaskElement> getDatasourceTaskElements() {
-        return datasourceTaskElementsOperation.getDatasourceTaskElements();
     }
 
     @Override
