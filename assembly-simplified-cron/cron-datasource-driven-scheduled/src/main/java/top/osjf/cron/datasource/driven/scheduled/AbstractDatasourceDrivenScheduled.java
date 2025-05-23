@@ -86,7 +86,7 @@ import java.util.stream.Collectors;
  * @since 1.0.4
  */
 public abstract class AbstractDatasourceDrivenScheduled implements DatasourceDrivenScheduledLifecycle,
-        ManagerTaskUniqueIdentifierProvider, Runnable {
+        DatasourceTaskElementsOperation, ManagerTaskUniqueIdentifierProvider, Runnable {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -97,7 +97,9 @@ public abstract class AbstractDatasourceDrivenScheduled implements DatasourceDri
     public static final String PROFILES_SYSTEM_PROPERTY_NAME = "cron.datasource.driven.scheduled.profiles";
     private static List<String> SYSTEM_PROFILES;
 
-    static { loadRegisterProfiles(); }
+    static {
+        loadRegisterProfiles();
+    }
 
     /**
      * Load the system level configuration task loading environment.
@@ -141,7 +143,7 @@ public abstract class AbstractDatasourceDrivenScheduled implements DatasourceDri
     /**
      * The internal method of {@link #start()}.
      */
-    private void startInternal(){
+    private void startInternal() {
 
         List<TaskElement> taskElements = getDatasourceTaskElements();
         if (CollectionUtils.isEmpty(taskElements)) {
@@ -306,26 +308,12 @@ public abstract class AbstractDatasourceDrivenScheduled implements DatasourceDri
     }
 
     /**
-     * Clean the data source task information data to prevent dirty data issues during the
-     * registration process, which is defined by the developer themselves.
-     */
-    protected abstract void purgeDatasourceTaskElements();
-
-    /**
-     * Return the collection of {@link TaskElement} instances except for the main management
-     * task, and return the relevant task IDs after registration is completed.
-     *
-     * @return the {@link TaskElement} instances of except the main management task.
-     */
-    protected abstract List<TaskElement> getDatasourceTaskElements();
-
-    /**
      * Judging whether the registration environment matches is determined by the subclass.
      *
      * @param profiles Recorded environmental information.
      * @return {@code true} indicates that the environment matches, otherwise it does not match.
      */
-    protected boolean profilesMatch(String profiles){
+    protected boolean profilesMatch(String profiles) {
         return SYSTEM_PROFILES.contains(profiles);
     }
 
