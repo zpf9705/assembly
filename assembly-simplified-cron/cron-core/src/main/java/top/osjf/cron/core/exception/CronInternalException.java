@@ -49,4 +49,16 @@ public class CronInternalException extends RuntimeException {
     public CronInternalException(Throwable cause) {
         super(cause);
     }
+
+    /**
+     * Constructs a new {@code CronInternalException} with the specified detail message and
+     * the specified internal cause
+     *
+     * @param message the internal detail message.
+     * @param cause   the internal cause (which is saved for later retrieval by the
+     *                {@link #getCause()} method).
+     */
+    public CronInternalException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

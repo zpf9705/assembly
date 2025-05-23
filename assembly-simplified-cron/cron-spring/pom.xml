@@ -22,6 +22,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jetbrains.annotation>24.0.1</jetbrains.annotation>
         <mp>3.5.3.1</mp>
+        <ymal>1.28</ymal>
     </properties>
 
     <dependencies>
@@ -52,6 +53,13 @@
         <dependency>
             <groupId>top.osjf.cron</groupId>
             <artifactId>cron-mybatis-plus-datasource-driven-scheduled</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>top.osjf.cron</groupId>
+            <artifactId>cron-yaml-config-datasource-driven-scheduled</artifactId>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
@@ -87,6 +95,13 @@
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-extension</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>${ymal}</version>
             <optional>true</optional>
         </dependency>
 

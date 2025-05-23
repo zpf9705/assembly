@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>top.osjf.cron</groupId>
+        <artifactId>assembly-simplified-cron</artifactId>
+        <version>1.0.4-alpha</version>
+    </parent>
+
+    <artifactId>cron-yaml-config-datasource-driven-scheduled</artifactId>
+    <packaging>jar</packaging>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <ymal>1.28</ymal>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>top.osjf.cron</groupId>
+            <artifactId>cron-datasource-driven-scheduled</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>${ymal}</version>
+            <optional>true</optional>
+        </dependency>
+
+    </dependencies>
+
+</project>

@@ -18,30 +18,44 @@
 package top.osjf.spring.autoconfigure.cron;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.Condition;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.util.ArrayUtils;
 import top.osjf.cron.spring.annotation.DatabaseDrivenScheduledConfiguration;
-import top.osjf.cron.spring.annotation.EnableDataSourceDrivenScheduled;
+import top.osjf.cron.spring.datasource.driven.scheduled.MybatisPlusDatabaseDrivenScheduledConfiguration;
+import top.osjf.cron.spring.datasource.driven.scheduled.SpringDatasourceDrivenScheduled;
+import top.osjf.cron.spring.datasource.driven.scheduled.YamDatabaseDrivenScheduledConfiguration;
 
 import java.lang.annotation.*;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for {@link DatabaseDrivenScheduledConfiguration}.
+ * {@link EnableAutoConfiguration Auto-configuration} for {@link SpringDatasourceDrivenScheduled}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
 @Configuration(proxyBeanMethods = false)
-@EnableDataSourceDrivenScheduled
+@Import(DatabaseDrivenScheduledConfiguration.class)
 @DatasourceDrivenScheduledAutoConfiguration.ConditionalOnDrivenScheduledConfigurablePropertyProfiles
 public class DatasourceDrivenScheduledAutoConfiguration {
+
+    @Configuration(proxyBeanMethods = false)
+    @Import(MybatisPlusDatabaseDrivenScheduledConfiguration.class)
+    @ConditionalOnProperty(prefix = "spring.schedule.cron", name = "scheduledDrivenDataSource",
+            havingValue = "MY_BATIS_PLUS_ORM_DATABASE")
+    public static class MybatisPlusDatabaseDrivenScheduledAutoConfiguration {
+    }
+
+    @Configuration(proxyBeanMethods = false)
+    @Import(YamDatabaseDrivenScheduledConfiguration.class)
+    @ConditionalOnProperty(prefix = "spring.schedule.cron", name = "scheduledDrivenDataSource",
+            havingValue = "YAML_CONFIG", matchIfMissing = true)
+    public static class YamDatabaseDrivenScheduledAutoConfiguration {
+    }
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.TYPE, ElementType.METHOD})

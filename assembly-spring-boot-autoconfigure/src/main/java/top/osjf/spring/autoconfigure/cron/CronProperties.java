@@ -20,6 +20,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
+import top.osjf.cron.spring.datasource.driven.scheduled.DataSource;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,6 +47,11 @@ public class CronProperties {
 
     private final Cron4j cron4j = new Cron4j();
 
+    /**
+     * @since 1.0.4
+     */
+    private DataSource scheduledDrivenDataSource;
+
     public ClientType getClientType() {
         return clientType;
     }
@@ -64,6 +70,14 @@ public class CronProperties {
 
     public Cron4j getCron4j() {
         return cron4j;
+    }
+
+    public DataSource getScheduledDrivenDataSource() {
+        return scheduledDrivenDataSource;
+    }
+
+    public void setScheduledDrivenDataSource(DataSource scheduledDrivenDataSource) {
+        this.scheduledDrivenDataSource = scheduledDrivenDataSource;
     }
 
     /**

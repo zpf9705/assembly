@@ -23,8 +23,9 @@
         <module>cron-quartz</module>
         <module>cron-cron4j</module>
         <module>cron-spring-scheduler</module>
-        <module>cron-mybatis-plus-datasource-driven-scheduled</module>
         <module>cron-datasource-driven-scheduled</module>
+        <module>cron-mybatis-plus-datasource-driven-scheduled</module>
+        <module>cron-yaml-config-datasource-driven-scheduled</module>
         <module>cron-spring</module>
         <module>cron-spring-boot-starter</module>
     </modules>
@@ -73,6 +74,12 @@
             <dependency>
                 <groupId>top.osjf.cron</groupId>
                 <artifactId>cron-mybatis-plus-datasource-driven-scheduled</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>top.osjf.cron</groupId>
+                <artifactId>cron-yaml-config-datasource-driven-scheduled</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
