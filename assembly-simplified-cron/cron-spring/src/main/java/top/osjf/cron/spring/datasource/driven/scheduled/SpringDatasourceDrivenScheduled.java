@@ -224,7 +224,7 @@ public class SpringDatasourceDrivenScheduled extends AbstractDatasourceDrivenSch
 
     @Override
     protected String getManagerTaskCheckFrequencyCronExpress() {
-        return environment.getProperty("spring.schedule.cron.datasource.driven.main-task-unique-id",
+        return environment.getProperty("spring.schedule.cron.datasource.driven.main-task-express",
                 super.getManagerTaskCheckFrequencyCronExpress());
     }
 }
