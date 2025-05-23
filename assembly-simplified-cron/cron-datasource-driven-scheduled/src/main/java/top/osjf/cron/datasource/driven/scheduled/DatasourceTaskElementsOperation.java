@@ -27,6 +27,10 @@ import java.util.List;
  * <ul>
  *   <li>Cleaning up invalid or expired task data to prevent dirty data during registration</li>
  *   <li>Retrieving task information sets for registration and runtime dynamic checks</li>
+ *   <li>Callback after {@link DatasourceDrivenScheduledLifecycle#start()} to update source data</li>
+ *   <li>Retrieving runtime specific conditions require a dataset that is specifically checked by the
+ *   main task.</li>
+ *   <li>Callback after {@link AbstractDatasourceDrivenScheduled#run()} to update source data</li>
  * </ul>
  *
  * <p>Implementations should define cleanup logic and task information retrieval strategies according
@@ -65,4 +69,43 @@ public interface DatasourceTaskElementsOperation {
      * @return Current set of task information from the datasource (may include primary task)
      */
     List<TaskElement> getDatasourceTaskElements();
+
+    /**
+     * This method is a callback method for {@link DatasourceDrivenScheduledLifecycle#start()}.
+     * After the task data source driver starts the method, the registered updated task data
+     * {@link TaskElement} collection is called back to the data source for update operation.
+     *
+     * @param fulledDatasourceTaskElement After task registration, the updated data set needs to
+     *                                    be mapped with additional entries (such as {@link TaskElement#getTaskId()}).
+     */
+    void afterStart(List<TaskElement> fulledDatasourceTaskElement);
+
+    /**
+     * Returning to dynamic operation requires the main task to check and update the relevant
+     * {@link TaskElement} dataset of the entry.
+     *
+     * <p>The return collection data of this method is not equivalent to {@link #getDatasourceTaskElements()},
+     * and developers need to filter it according to the actual situation of the data source.
+     *
+     * <p>However, in general, the situation is: {@link TaskElement#getUpdateSign()} is 1 (i.e. waiting to be
+     * updated) or {@link TaskElement#getUpdateSign()} is 0 and there is no {@link TaskElement#getTaskId()}
+     * (this situation is a dynamically added task).
+     *
+     * @return the main task to check and update the relevant {@link TaskElement} dataset of the entry.
+     */
+    List<TaskElement> getRuntimeNeedCheckDatasourceTaskElements();
+
+    /**
+     * This method is for the main management task to drive the callback of protective gear after
+     * the scheduled inspection of {@link AbstractDatasourceDrivenScheduled#run()}.
+     *
+     * <p>According to the developer's modification prompts for {@link TaskElement#getUpdateSign()},
+     * the task is dynamically checked and updated during runtime (see method {@link AbstractDatasourceDrivenScheduled#run()}).
+     * After the changes and updates are completed, the data source needs to be updated and returned
+     * to the update.
+     *
+     * @param runtimeCheckedDatasourceTaskElement Dynamically check and update the {@link TaskElement} collection
+     *                                            of tasks during runtime.
+     */
+    void afterRun(List<TaskElement> runtimeCheckedDatasourceTaskElement);
 }
