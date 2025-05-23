@@ -19,6 +19,7 @@ package top.osjf.spring.autoconfigure.cron;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
@@ -26,6 +27,7 @@ import org.springframework.core.env.Profiles;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.util.ArrayUtils;
+import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.mp.MybatisPlusDatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.yaml.YamlDatasourceTaskElementsOperation;
 import top.osjf.cron.spring.annotation.DatabaseDrivenScheduledConfiguration;
@@ -51,6 +53,7 @@ public class DatasourceDrivenScheduledAutoConfiguration {
     @ConditionalOnClass(MybatisPlusDatasourceTaskElementsOperation.class)
     @ConditionalOnProperty(prefix = "spring.schedule.cron", name = "scheduledDrivenDataSource",
             havingValue = "my_batis_plus_orm_database")
+    @ConditionalOnMissingBean(DatasourceTaskElementsOperation.class)
     public static class MybatisPlusDatabaseDrivenScheduledAutoConfiguration {
     }
 
