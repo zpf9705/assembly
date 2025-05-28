@@ -47,7 +47,12 @@ import static java.util.Objects.isNull;
  * </ul>
  *
  * <p>Supports custom YAML parser injection via {@link #setYaml(Yaml)}, with SnakeYAML as default.
- * Task configurations are encapsulated by {@link YamlTaskElement}, enabling runtime configuration batch updates.
+ * Task configurations are encapsulated by {@link YamlTaskElement}, enabling runtime configuration
+ * batch updates.
+ *
+ * <p>The configuration file name and public upper layer path of yaml default to {@code task-config.yml}
+ * and {@code System.getProperty("user.dir")}, and developers can define them themselves through the
+ * set method {@link #setConfigYamlFileName} and {@link #setBaseDir}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
