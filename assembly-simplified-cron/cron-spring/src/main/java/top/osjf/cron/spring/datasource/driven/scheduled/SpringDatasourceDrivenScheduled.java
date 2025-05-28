@@ -206,8 +206,9 @@ public class SpringDatasourceDrivenScheduled extends AbstractDatasourceDrivenSch
 
     @Override
     @Nullable
-    public String getManagerTaskUniqueIdentifier() {
-        return environment.getProperty("spring.schedule.cron.datasource.driven.main-task-unique-id");
+    public String[] getManagerTaskUniqueIdentifiers() {
+        return environment.getProperty("spring.schedule.cron.datasource.driven.main-task-unique-id",
+                String[].class);
     }
 
     @Override
