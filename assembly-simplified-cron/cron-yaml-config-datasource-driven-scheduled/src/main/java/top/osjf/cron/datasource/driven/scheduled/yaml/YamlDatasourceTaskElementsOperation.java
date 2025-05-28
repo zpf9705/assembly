@@ -24,9 +24,9 @@ import top.osjf.cron.datasource.driven.scheduled.DataSourceDrivenException;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 
-import java.io.FileWriter;
-import java.io.InputStream;
-import java.io.Writer;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -54,20 +54,14 @@ import static java.util.Objects.requireNonNull;
 public class YamlDatasourceTaskElementsOperation implements DatasourceTaskElementsOperation {
 
     private static final Yaml DEFAULT_YAML_PARSER = new Yaml();
+    private static final String USER_DIR = System.getProperty("user.dir");
     private Yaml yaml = DEFAULT_YAML_PARSER;
-    private final String configYamlFileName;
+    private String configYamlFileName;
 
     /**
      * Constructs a new {@code YamlDatasourceTaskElementsOperation} with a YAML configuration file name.
      *
-     * <p>The YAML configuration file should be located in the classpath (e.g., under the {@code resources}
-     * directory). The path should be specified as a classpath resource path, not a filesystem path.
-     *
-     * <p><b>Example:</b> If the file is located at {@code src/main/resources/a.yml}, you can pass
-     * {@code "a.yml"} as the parameter. Internally, it will be loaded using
-     * {@code ClassLoader.getResourceAsStream("/a.yml")}.
-     *
-     * @param configYamlFileName the classpath resource path to the YAML configuration file (e.g., "a.yml").
+     * @param configYamlFileName the yaml config name.
      * @throws NullPointerException if {@code configYamlFileName} is {@code null}.
      */
     public YamlDatasourceTaskElementsOperation(String configYamlFileName) {
@@ -133,7 +127,9 @@ public class YamlDatasourceTaskElementsOperation implements DatasourceTaskElemen
      * @param updateDrivenTaskYamlConfig The configuration of the map format that needs to be updated.
      */
     private void updateYamlConfigFile(Map<String, Map<String, String>> updateDrivenTaskYamlConfig) {
-        try (Writer writer = new FileWriter(configYamlFileName)) {
+        try (Writer writer
+                     = new OutputStreamWriter
+                (Files.newOutputStream(Paths.get(ClassLoader.getSystemResource(configYamlFileName).toURI())))) {
             yaml.dump(updateDrivenTaskYamlConfig, writer);
         }
         catch (Throwable ex) {
@@ -159,9 +155,6 @@ public class YamlDatasourceTaskElementsOperation implements DatasourceTaskElemen
          */
         private void loading() {
             try (InputStream inputStream = getConfigYamlFileInputStream()) {
-                if (inputStream == null){
-                    throw new DataSourceDrivenException("No such yml config " + configYamlFileName);
-                }
                 drivenTaskYamlConfig = yaml.load(inputStream);
             }
             catch (DataSourceDrivenException ex){
@@ -177,9 +170,25 @@ public class YamlDatasourceTaskElementsOperation implements DatasourceTaskElemen
          * Retrieve the information flow of the specified file.
          *
          * @return the {@link InputStream} of the specified file.
+         * @throws  IOException
+         *          if an I/O error occurs
          */
-        private InputStream getConfigYamlFileInputStream() {
-            return ClassLoader.getSystemResourceAsStream(configYamlFileName);
+        private InputStream getConfigYamlFileInputStream() throws IOException {
+            try {
+                return new FileInputStream(configYamlFileName);
+            }
+            catch (FileNotFoundException ex){
+                if (configYamlFileName.startsWith(USER_DIR)){
+                    throw ex;
+                }
+                configYamlFileName = configYamlFileName.startsWith(File.separator) ?
+                        USER_DIR + configYamlFileName :
+                        USER_DIR + File.separator + configYamlFileName;
+                return getConfigYamlFileInputStream();
+            }
+            catch (Throwable ex){
+                throw new DataSourceDrivenException("Failed to get config yaml file inputStream", ex);
+            }
         }
 
         /**
