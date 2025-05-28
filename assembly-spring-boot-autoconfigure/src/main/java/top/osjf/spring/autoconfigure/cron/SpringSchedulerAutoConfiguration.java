@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskSchedulingProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -49,6 +50,7 @@ import top.osjf.cron.spring.scheduler.config.EnableScheduling;
 @ConditionalOnClass({SpringSchedulerTaskRepository.class})
 @AutoConfigureBefore(TaskSchedulingAutoConfiguration.class)
 @EnableConfigurationProperties(TaskSchedulingProperties.class)
+@ConditionalOnProperty(name = "spring.schedule.cron.client-type", havingValue = "spring-scheduler", matchIfMissing = true)
 public class SpringSchedulerAutoConfiguration {
 
 
