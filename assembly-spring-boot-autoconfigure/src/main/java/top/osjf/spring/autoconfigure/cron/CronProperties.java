@@ -50,7 +50,7 @@ public class CronProperties {
     /**
      * @since 1.0.4
      */
-    private DataSource scheduledDrivenDataSource;
+    private ScheduledDriven scheduledDriven = new ScheduledDriven();
 
     public ClientType getClientType() {
         return clientType;
@@ -72,12 +72,12 @@ public class CronProperties {
         return cron4j;
     }
 
-    public DataSource getScheduledDrivenDataSource() {
-        return scheduledDrivenDataSource;
+    public ScheduledDriven getScheduledDriven() {
+        return scheduledDriven;
     }
 
-    public void setScheduledDrivenDataSource(DataSource scheduledDrivenDataSource) {
-        this.scheduledDrivenDataSource = scheduledDrivenDataSource;
+    public void setScheduledDriven(ScheduledDriven scheduledDriven) {
+        this.scheduledDriven = scheduledDriven;
     }
 
     /**
@@ -98,7 +98,15 @@ public class CronProperties {
         /**
          * Use the cron4j cron client.
          */
-        CRON4J
+        CRON4J,
+
+        /**
+         * Use the spring scheduler cron client.
+         *
+         * @see SpringSchedulerAutoConfiguration
+         * @since 1.0.4
+         */
+        SPRING_SCHEDULER
     }
 
     /**
@@ -253,6 +261,38 @@ public class CronProperties {
             properties.addProperty(Cron4jCronTaskRepository.PROPERTY_NAME_OF_TIMEZONE, timezone);
             properties.addProperty(Cron4jCronTaskRepository.PROPERTY_NAME_OF_DAEMON, daemon);
             return properties;
+        }
+    }
+
+    /**
+     * Properties related to dynamic task management.
+     */
+    public static class ScheduledDriven {
+
+        /**
+         * Whether to enable dynamic data source configuration management scheduled tasks.
+         */
+        private boolean enable = false;
+
+        /**
+         * Select the data source type for dynamically enabling data source configuration.
+         */
+        private DataSource dataSource;
+
+        public boolean isEnable() {
+            return enable;
+        }
+
+        public void setEnable(boolean enable) {
+            this.enable = enable;
+        }
+
+        public DataSource getDataSource() {
+            return dataSource;
+        }
+
+        public void setDataSource(DataSource dataSource) {
+            this.dataSource = dataSource;
         }
     }
 }
