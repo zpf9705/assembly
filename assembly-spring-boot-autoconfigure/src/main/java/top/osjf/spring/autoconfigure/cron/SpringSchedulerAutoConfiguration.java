@@ -50,7 +50,7 @@ import top.osjf.cron.spring.scheduler.config.EnableScheduling;
 @ConditionalOnClass({SpringSchedulerTaskRepository.class})
 @AutoConfigureBefore(TaskSchedulingAutoConfiguration.class)
 @EnableConfigurationProperties(TaskSchedulingProperties.class)
-@ConditionalOnProperty(name = "spring.schedule.cron.client-type", havingValue = "spring-scheduler", matchIfMissing = true)
+@ConditionalOnProperty(name = "spring.schedule.cron.client-type", havingValue = "spring_scheduler", matchIfMissing = true)
 public class SpringSchedulerAutoConfiguration {
 
 
