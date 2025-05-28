@@ -20,10 +20,10 @@ package top.osjf.cron.datasource.driven.scheduled;
 import top.osjf.cron.core.lang.Nullable;
 
 /**
- * Provide interface for the ID of the main management task.
+ * Provide interface for the IDs of the main management task.
  *
  * <p>The secondary interface can be rewritten by the developer to provide the main
- * task ID. If it is not available, the framework will register and supplement it
+ * task IDs. If it is not available, the framework will register and supplement it
  * on its own.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
@@ -32,11 +32,11 @@ import top.osjf.cron.core.lang.Nullable;
 public interface ManagerTaskUniqueIdentifierProvider {
 
     /**
-     * @return The ID of the main management task.
+     * @return The IDs of the main management task.
      * @see TaskElement#getId()
      */
     @Nullable
-    default String getManagerTaskUniqueIdentifier() {
+    default String[] getManagerTaskUniqueIdentifier() {
         return null;
     }
 }
