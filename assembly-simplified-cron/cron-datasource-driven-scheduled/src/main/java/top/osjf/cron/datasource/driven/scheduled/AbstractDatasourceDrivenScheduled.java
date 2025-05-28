@@ -30,7 +30,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Abstract base class for datasource-driven scheduled task management systems.
@@ -79,14 +80,15 @@ import java.util.Objects;
  * @since 1.0.4
  */
 public abstract class AbstractDatasourceDrivenScheduled
-        implements DatasourceDrivenScheduledLifecycle, ManagerTaskUniqueIdentifierProvider, Runnable {
+        implements DatasourceDrivenScheduledLifecycle, ManagerTaskUniqueIdentifiersProvider, Runnable {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final CronTaskRepository cronTaskRepository;
     private final DatasourceTaskElementsOperation datasourceTaskElementsOperation;
+    private final Lock runLock = new ReentrantLock();
 
-    private String mangerTaskUniqueId;
+    private String[] mangerTaskUniqueIds;
 
     public static final String PROFILES_SYSTEM_PROPERTY_NAME = "cron.datasource.driven.scheduled.profiles";
     private static List<String> SYSTEM_PROFILES;
@@ -129,7 +131,13 @@ public abstract class AbstractDatasourceDrivenScheduled
 
     @Override
     public void run() {
-        runInternal();
+        runLock.lock();
+        try {
+            runInternal();
+        }
+        finally {
+            runLock.unlock();
+        }
     }
 
     @Override
@@ -150,7 +158,7 @@ public abstract class AbstractDatasourceDrivenScheduled
             }
         }
 
-        this.mangerTaskUniqueId = getManagerTaskUniqueIdentifier();
+        this.mangerTaskUniqueIds = getManagerTaskUniqueIdentifiers();
         boolean managerTaskRegisterFlag = false;
 
         for (TaskElement taskElement : taskElements) {
@@ -161,8 +169,8 @@ public abstract class AbstractDatasourceDrivenScheduled
         }
 
         if (!managerTaskRegisterFlag) {
-            this.mangerTaskUniqueId
-                    = cronTaskRepository.register(getManagerTaskCheckFrequencyCronExpress(), this);
+            this.mangerTaskUniqueIds
+                    = new String[]{cronTaskRepository.register(getManagerTaskCheckFrequencyCronExpress(), this)};
         }
 
         datasourceTaskElementsOperation.afterStart(taskElements);
@@ -184,8 +192,10 @@ public abstract class AbstractDatasourceDrivenScheduled
                 if (element.willBePaused()) {
                     if (isManagerTask(element)) {
                         if (getLogger().isWarnEnabled()) {
-                            getLogger().warn("[Runtime-checked] The main management task will be stopped" +
-                                    " and the management ability will be lost.");
+                            getLogger().warn("[Runtime-checked] The main management check task [{}] will be " +
+                                    "automatically stopped, which will result in the loss of the scheduled check" +
+                                    " capability with a frequency of [{}]. If multiple main tasks are configured," +
+                                    " please ignore this reminder.", element.getTaskId(), element.getExpression());
                         }
                     }
                     String taskId = element.getTaskId();
@@ -230,7 +240,11 @@ public abstract class AbstractDatasourceDrivenScheduled
      * The internal method of {@link #stop()}.
      */
     private void stopInternal() {
-        cronTaskRepository.remove(mangerTaskUniqueId);
+
+        for (String mangerTaskUniqueId : mangerTaskUniqueIds) {
+            cronTaskRepository.remove(mangerTaskUniqueId);
+        }
+
         for (TaskElement element : datasourceTaskElementsOperation.getDatasourceTaskElements()) {
             String taskId = element.getTaskId();
             if (!StringUtils.isBlank(taskId)) {
@@ -281,14 +295,14 @@ public abstract class AbstractDatasourceDrivenScheduled
      * otherwise it is not.
      */
     protected boolean isManagerTask(TaskElement taskElement) {
-        return Objects.equals(taskElement.getId(), mangerTaskUniqueId);
+        return Arrays.binarySearch(mangerTaskUniqueIds, taskElement.getId()) >= 0;
     }
 
     /**
      * Return the cron expression when the data source is not provided by the main task,
-     * i.e. {@link #getManagerTaskUniqueIdentifier()} is null. This framework independently
-     * registers the cron expression used for the main management task, and developers can
-     * also define this value themselves.
+     * i.e. {@link #getManagerTaskUniqueIdentifiers()} is {@code null}. This framework
+     * independently registers the cron expression used for the main management task, and
+     * developers can also define this value themselves.
      *
      * @return the default cron expression for the execution frequency of the main management task.
      */
