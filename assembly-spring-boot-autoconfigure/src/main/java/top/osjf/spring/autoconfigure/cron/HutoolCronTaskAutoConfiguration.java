@@ -36,10 +36,10 @@ import top.osjf.cron.spring.hutool.HutoolCronTaskConfiguration;
  * @since 1.0.3
  */
 @Configuration(proxyBeanMethods = false)
+@ConditionalOnMissingBean(CronTaskRepository.class)
 @Import({HutoolCronTaskConfiguration.class, CronTaskConfiguration.class})
 @ConditionalOnClass({HutoolCronTaskRepository.class})
-@ConditionalOnProperty(name = "spring.schedule.cron.client-type", havingValue = "hutool", matchIfMissing = true)
-@ConditionalOnMissingBean(CronTaskRepository.class)
+@ConditionalOnProperty(name = "spring.schedule.cron.client-type", havingValue = "hutool")
 public class HutoolCronTaskAutoConfiguration {
 
     @Bean
