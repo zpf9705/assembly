@@ -46,6 +46,7 @@ import java.lang.annotation.*;
 @Configuration(proxyBeanMethods = false)
 @Import(DatabaseDrivenScheduledConfiguration.class)
 @DatasourceDrivenScheduledAutoConfiguration.ConditionalOnDrivenScheduledConfigurablePropertyProfiles
+@ConditionalOnProperty(prefix = "spring.schedule.cron", name = "scheduled-driven.enable", havingValue = "true")
 public class DatasourceDrivenScheduledAutoConfiguration {
 
     @Configuration(proxyBeanMethods = false)
