@@ -41,8 +41,12 @@ public class YamDatabaseDrivenScheduledConfiguration {
         String configYamlFileName
                 = environment.getProperty("spring.schedule.cron.datasource.driven.yml-config-name",
                 "task-config.yml");
+        String configYamlBaseDir
+                = environment.getProperty("spring.schedule.cron.datasource.driven.yml-base-dir",
+                System.getProperty("user.dir"));
         YamlDatasourceTaskElementsOperation operation = new YamlDatasourceTaskElementsOperation(configYamlFileName);
         provider.orderedStream().findFirst().ifPresent(operation::setYaml);
+        operation.setBaseDir(configYamlBaseDir);
         return operation;
     }
 }

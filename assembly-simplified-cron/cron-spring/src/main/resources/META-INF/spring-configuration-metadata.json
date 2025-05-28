@@ -16,6 +16,11 @@
       "description": "The name that needs to be configured after selecting DataSource.YAML_CONFIG as the data source."
     },
     {
+      "name": "spring.schedule.cron.datasource.driven.yml-base-dir",
+      "type": "java.lang.String",
+      "description": "The base directory path for resolving dynamic configuration files."
+    },
+    {
       "name": "spring.schedule.cron.datasource.driven.logger-name",
       "type": "java.lang.String",
       "description": "The log name of the configuration.."
