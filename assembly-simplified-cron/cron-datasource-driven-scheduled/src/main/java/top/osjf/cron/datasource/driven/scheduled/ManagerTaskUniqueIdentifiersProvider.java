@@ -29,14 +29,15 @@ import top.osjf.cron.core.lang.Nullable;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
-public interface ManagerTaskUniqueIdentifierProvider {
+public interface ManagerTaskUniqueIdentifiersProvider {
 
     /**
+     * Return the main management task ID array used to manage scheduled task information.
      * @return The IDs of the main management task.
      * @see TaskElement#getId()
      */
     @Nullable
-    default String[] getManagerTaskUniqueIdentifier() {
+    default String[] getManagerTaskUniqueIdentifiers() {
         return null;
     }
 }
