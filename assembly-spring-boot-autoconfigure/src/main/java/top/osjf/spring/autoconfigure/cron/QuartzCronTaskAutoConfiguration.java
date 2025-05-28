@@ -37,10 +37,10 @@ import java.util.List;
  * @since 1.0.3
  */
 @Configuration(proxyBeanMethods = false)
+@ConditionalOnMissingBean(CronTaskRepository.class)
 @ConditionalOnClass({QuartzCronTaskRepository.class})
 @EnableQuartzCronTaskRegister
 @ConditionalOnProperty(name = "spring.schedule.cron.client-type", havingValue = "quartz")
-@ConditionalOnMissingBean(CronTaskRepository.class)
 public class QuartzCronTaskAutoConfiguration {
 
     @Bean
