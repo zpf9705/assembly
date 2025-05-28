@@ -171,16 +171,13 @@ public class YamlTaskElement implements TaskElement {
 
     /**
      * Purge potential task IDs, update tags, and task status descriptions from the data.
-     *
-     * @param drivenTaskYamlConfig Complete reference configuration loaded.
      * @return if {@code true} has been purge out，{@code false} otherwise.
      */
-    protected boolean purge(Map<String, Map<String, String>> drivenTaskYamlConfig) {
+    protected boolean purge() {
         if (!StringUtils.isBlank(getTaskId())) {
             sourceYamlConfig.put(TASK_ID_KEY_NAME, "");
             sourceYamlConfig.put(UPDATE_SIGN_KEY_NAME, "0");
             sourceYamlConfig.put(STATUS_DESCRIPTION_KEY_NAME, "");
-            drivenTaskYamlConfig.put(getId(), sourceYamlConfig);
             return true;
         }
         return false;

@@ -203,7 +203,7 @@ public class YamlDatasourceTaskElementsOperation implements DatasourceTaskElemen
         }
 
         /**
-         * @see YamlTaskElement#purge(Map)
+         * @see YamlTaskElement#purge()
          */
         public void purge() {
             if (CollectionUtils.isEmpty(taskElements)) {
@@ -211,7 +211,7 @@ public class YamlDatasourceTaskElementsOperation implements DatasourceTaskElemen
             }
             boolean updateFlag = false;
             for (YamlTaskElement taskElement : taskElements) {
-                if (taskElement.purge(drivenTaskYamlConfig) && !updateFlag) {
+                if (taskElement.purge() && !updateFlag) {
                     updateFlag = true;
                 }
             }
