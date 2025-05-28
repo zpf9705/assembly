@@ -25,11 +25,13 @@ import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 
 import java.io.*;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
-import static java.util.Objects.requireNonNull;
 
 /**
  * Abstract class for YAML-configured of scheduled task datasource operation.
@@ -53,34 +55,12 @@ import static java.util.Objects.requireNonNull;
 public class YamlDatasourceTaskElementsOperation implements DatasourceTaskElementsOperation {
 
     private static final Yaml DEFAULT_YAML_PARSER = new Yaml();
+    private static final String DEFAULT_CONFIG_FILE_NAME = "task-config.yml";
+    private static final String DEFAULT_BASE_DIR= System.getProperty("user.dir");
+
     private Yaml yaml = DEFAULT_YAML_PARSER;
-    private final String configYamlFileName;
-    private String baseDir = null;
-
-    /**
-     * Constructs a new {@code YamlDatasourceTaskElementsOperation} with a YAML configuration file name.
-     *
-     * <p><strong>Important Note:</strong> The configuration file specified by {@code configYamlFileName}
-     * must be dynamically modifiable at runtime and should NOT be placed under the {@code resources} directory.
-     *
-     * @param configYamlFileName the path to the YAML configuration file. The file must exist in a writable
-     *                           external directory (e.g., the working directory or an absolute path) to allow
-     *                           runtime updates.This parameter cannot be {@code null}.
-     * @throws NullPointerException if {@code configYamlFileName} is {@code null}.
-     */
-    public YamlDatasourceTaskElementsOperation(String configYamlFileName) {
-        this.configYamlFileName = requireNonNull(configYamlFileName, "configYamlFileName == null");
-    }
-
-    /**
-     * Sets the Yaml instance to be used for parsing and serialization.
-     *
-     * @param yaml The Yaml instance to set. This instance will be used for YAML
-     *             parsing and serialization operations.
-     */
-    public void setYaml(@NotNull Yaml yaml) {
-        this.yaml = yaml;
-    }
+    private String baseDir = DEFAULT_BASE_DIR;
+    private String configYamlFileName = DEFAULT_CONFIG_FILE_NAME;
 
     /**
      * Sets the base directory path for resolving dynamic configuration files.
@@ -95,6 +75,30 @@ public class YamlDatasourceTaskElementsOperation implements DatasourceTaskElemen
      */
     public void setBaseDir(@NotNull String baseDir) {
         this.baseDir = baseDir;
+    }
+
+    /**
+     * Sets the yml config file name for resolving dynamic configuration files.
+     *
+     * <p><strong>Important Note:</strong> The configuration file specified by {@code configYamlFileName}
+     * must be dynamically modifiable at runtime and should NOT be placed under the {@code resources} directory.
+     *
+     * @param configYamlFileName the path to the YAML configuration file. The file must exist in a writable
+     *                           external directory (e.g., the working directory or an absolute path) to allow
+     *                           runtime updates.This parameter cannot be {@code null}.
+     */
+    public void setConfigYamlFileName(@NotNull String configYamlFileName) {
+        this.configYamlFileName = configYamlFileName;
+    }
+
+    /**
+     * Sets the Yaml instance to be used for parsing and serialization.
+     *
+     * @param yaml The Yaml instance to set. This instance will be used for YAML
+     *             parsing and serialization operations.
+     */
+    public void setYaml(@NotNull Yaml yaml) {
+        this.yaml = yaml;
     }
 
     @Override

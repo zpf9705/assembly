@@ -21,7 +21,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.yaml.snakeyaml.Yaml;
+import top.osjf.cron.core.util.StringUtils;
 import top.osjf.cron.datasource.driven.scheduled.yaml.YamlDatasourceTaskElementsOperation;
+
+import java.util.function.Consumer;
 
 /**
  * {@link Configuration Configuration} for {@link YamDatabaseDrivenScheduledConfiguration}.
@@ -38,15 +41,19 @@ public class YamDatabaseDrivenScheduledConfiguration {
     @Bean
     public YamlDatasourceTaskElementsOperation yamlDatasourceTaskElementsOperation(ObjectProvider<Yaml> provider,
                                                                                    Environment environment) {
-        String configYamlFileName
-                = environment.getProperty("spring.schedule.cron.datasource.driven.yml-config-name",
-                "task-config.yml");
-        String configYamlBaseDir
-                = environment.getProperty("spring.schedule.cron.datasource.driven.yml-base-dir",
-                System.getProperty("user.dir"));
-        YamlDatasourceTaskElementsOperation operation = new YamlDatasourceTaskElementsOperation(configYamlFileName);
+        YamlDatasourceTaskElementsOperation operation = new YamlDatasourceTaskElementsOperation();
         provider.orderedStream().findFirst().ifPresent(operation::setYaml);
-        operation.setBaseDir(configYamlBaseDir);
+        ifNotBlankAccept(environment.getProperty("spring.schedule.cron.datasource.driven.yml-config-name"),
+                operation::setConfigYamlFileName);
+        ifNotBlankAccept(environment.getProperty("spring.schedule.cron.datasource.driven.yml-base-dir"),
+                operation::setBaseDir);
         return operation;
+    }
+
+    static void ifNotBlankAccept(String property, Consumer<String> consumer){
+        if (StringUtils.isBlank(property)){
+            return;
+        }
+        consumer.accept(property);
     }
 }
