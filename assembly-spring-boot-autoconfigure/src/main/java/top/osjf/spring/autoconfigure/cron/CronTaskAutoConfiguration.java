@@ -34,10 +34,10 @@ import top.osjf.cron.spring.annotation.Crones;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(CronProperties.class)
-@Import({HutoolCronTaskAutoConfiguration.class,
+@Import({SpringSchedulerAutoConfiguration.class,
+        HutoolCronTaskAutoConfiguration.class,
         QuartzCronTaskAutoConfiguration.class,
         Cron4jCronTaskAutoConfiguration.class,
-        SpringSchedulerAutoConfiguration.class,
         DatasourceDrivenScheduledAutoConfiguration.class})
 public class CronTaskAutoConfiguration {
 
