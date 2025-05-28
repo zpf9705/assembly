@@ -276,6 +276,8 @@ public class CronProperties {
 
         /**
          * Select the data source type for dynamically enabling data source configuration.
+         *
+         * <p>The configuration takes effect when {@link #enable} is {@code true}.
          */
         private DataSource dataSource;
 
