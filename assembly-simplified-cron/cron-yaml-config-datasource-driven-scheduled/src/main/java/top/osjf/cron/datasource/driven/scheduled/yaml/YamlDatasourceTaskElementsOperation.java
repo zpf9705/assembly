@@ -209,7 +209,13 @@ public class YamlDatasourceTaskElementsOperation implements DatasourceTaskElemen
             if (CollectionUtils.isEmpty(taskElements)) {
                 return;
             }
-            if (taskElements.stream().anyMatch(element -> element.purge(drivenTaskYamlConfig))) {
+            boolean updateFlag = false;
+            for (YamlTaskElement taskElement : taskElements) {
+                if (taskElement.purge(drivenTaskYamlConfig) && !updateFlag) {
+                    updateFlag = true;
+                }
+            }
+            if (updateFlag) {
                 updateYamlConfigFile(drivenTaskYamlConfig);
             }
         }
