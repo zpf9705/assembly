@@ -44,8 +44,6 @@ import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * {@code SpringDatasourceDrivenScheduled} Extension {@link AbstractDatasourceDrivenScheduled},
@@ -101,7 +99,6 @@ public class SpringDatasourceDrivenScheduled
 
     private final SpelExpressionParser expressionParser = new SpelExpressionParser();
     private final StandardEvaluationContext evaluationContext = new StandardEvaluationContext();
-    private final Map<String, Expression> expressionCache = new ConcurrentHashMap<>();
 
     private Environment environment;
     private final List<String> activeProfiles = new ArrayList<>();
@@ -184,8 +181,8 @@ public class SpringDatasourceDrivenScheduled
     @Override
     protected Runnable resolveTaskRunnable(TaskElement element) {
         String taskName = element.getTaskName();
-        return () -> expressionCache.computeIfAbsent(taskName,
-                s -> expressionParser.parseExpression(taskName)).getValue(evaluationContext);
+        Expression expression = expressionParser.parseExpression(taskName);
+        return () -> expression.getValue(evaluationContext);
     }
 
     @Override
