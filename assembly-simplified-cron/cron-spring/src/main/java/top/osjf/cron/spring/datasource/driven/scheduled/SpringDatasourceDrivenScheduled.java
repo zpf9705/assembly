@@ -38,6 +38,7 @@ import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.core.util.StringUtils;
 import top.osjf.cron.datasource.driven.scheduled.AbstractDatasourceDrivenScheduled;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
+import top.osjf.cron.datasource.driven.scheduled.DefaultDatasourceDrivenScheduled;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 
 import java.util.ArrayList;
@@ -93,7 +94,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
-public class SpringDatasourceDrivenScheduled extends AbstractDatasourceDrivenScheduled
+public class SpringDatasourceDrivenScheduled
+        extends DefaultDatasourceDrivenScheduled
         implements EnvironmentAware, InitializingBean, ApplicationContextAware,
         ApplicationListener<ContextRefreshedEvent>, DisposableBean {
 
