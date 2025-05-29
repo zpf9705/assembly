@@ -23,8 +23,10 @@ import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.repository.CronTaskInfo;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.core.util.CollectionUtils;
+import top.osjf.cron.core.util.ReflectUtils;
 import top.osjf.cron.core.util.StringUtils;
 
+import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -339,9 +341,48 @@ public abstract class AbstractDatasourceDrivenScheduled
     /**
      * Analyze the running function of the sub-task through task information parsing.
      *
+     * <p>The fully qualified name interval "@" of the default class plus the name of
+     * the method is used as a candidate resolution for {@link TaskElement#getTaskName()}.
+     *
      * @param element the task element information.
      * @return the Task execution function.
+     * @throws DataSourceDrivenException If the parsing rules are not met or the task fails to run.
      */
     @NotNull
-    protected abstract Runnable resolveTaskRunnable(TaskElement element);
+    protected Runnable resolveTaskRunnable(TaskElement element) {
+        String taskName = element.getTaskName();
+        String[] sp = taskName.split("@"); /*class.name()@method.name()*/
+        if (sp.length != 2) {
+            if (getLogger().isDebugEnabled()) {
+                getLogger().debug("{} does not comply with parsing rules " +
+                        "[class's qualified name @ method name]", taskName);
+            }
+            throw new DataSourceDrivenException(taskName + " does not comply with parsing rules " +
+                    "[class's qualified name @ method name].");
+        }
+        Object target;
+        Method targetMethod;
+        try {
+            Class<?> clazz = ReflectUtils.forName(sp[0]);
+            target = ReflectUtils.newInstance(clazz);
+            targetMethod = ReflectUtils.getMethod(clazz, sp[1]);
+        }
+        catch (Exception ex) {
+            if (getLogger().isDebugEnabled()) {
+                getLogger().debug("Failed to resolve task [{}] runnable cause [{}]", element.getId(), ex.getMessage());
+            }
+            throw new DataSourceDrivenException("Failed to resolve task runnable " + element.getId(), ex);
+        }
+        return () -> {
+            try {
+                ReflectUtils.invokeMethod(target, targetMethod);
+            }
+            catch (Exception ex) {
+                if (getLogger().isDebugEnabled()) {
+                    getLogger().debug("Failed to invoke task [{}] cause [{}]", element.getId(), ex.getMessage());
+                }
+                throw new DataSourceDrivenException("Failed to invoke task " + element.getId(), ex);
+            }
+        };
+    }
 }
