@@ -36,10 +36,7 @@ import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.core.util.StringUtils;
-import top.osjf.cron.datasource.driven.scheduled.AbstractDatasourceDrivenScheduled;
-import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
-import top.osjf.cron.datasource.driven.scheduled.DefaultDatasourceDrivenScheduled;
-import top.osjf.cron.datasource.driven.scheduled.TaskElement;
+import top.osjf.cron.datasource.driven.scheduled.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -176,6 +173,13 @@ public class SpringDatasourceDrivenScheduled
      *         String result3 = valueExpr.getValue(evaluationContext, String.class);
      *         System.out.println("Chain call result: " + result3);
      * </pre>
+     *
+     * @throws org.springframework.expression.ParseException      It has been clearly stated that [an exception
+     *                                                            occurred during parsing] is not encapsulated
+     *                                                            as {@link DataSourceDrivenException}.
+     * @throws org.springframework.expression.EvaluationException It has been clearly stated that [if there is a
+     *                                                            problem during evaluation] is not encapsulated
+     *                                                            as {@link DataSourceDrivenException}.
      */
     @NotNull
     @Override
