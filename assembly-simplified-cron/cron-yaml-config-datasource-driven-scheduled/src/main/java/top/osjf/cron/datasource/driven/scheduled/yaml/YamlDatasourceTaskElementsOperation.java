@@ -29,6 +29,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
@@ -62,6 +65,10 @@ public class YamlDatasourceTaskElementsOperation implements DatasourceTaskElemen
     private static final Yaml DEFAULT_YAML_PARSER = new Yaml();
     private static final String DEFAULT_CONFIG_FILE_NAME = "task-config.yml";
     private static final String DEFAULT_BASE_DIR= System.getProperty("user.dir");
+
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+    private final Lock loadLock = lock.readLock();
+    private final Lock dumpLock = lock.writeLock();
 
     private Yaml yaml = DEFAULT_YAML_PARSER;
     private String baseDir = DEFAULT_BASE_DIR;
@@ -155,11 +162,15 @@ public class YamlDatasourceTaskElementsOperation implements DatasourceTaskElemen
      * @param updateDrivenTaskYamlConfig The configuration of the map format that needs to be updated.
      */
     private void updateYamlConfigFile(Map<String, Map<String, String>> updateDrivenTaskYamlConfig) {
+        dumpLock.lock();
         try (Writer writer = new FileWriter(configYamlFileName)) {
             yaml.dump(updateDrivenTaskYamlConfig, writer);
         }
         catch (Throwable ex) {
             throw new DataSourceDrivenException("Error writing to file: " + configYamlFileName, ex);
+        }
+        finally {
+            dumpLock.unlock();
         }
     }
 
@@ -180,8 +191,11 @@ public class YamlDatasourceTaskElementsOperation implements DatasourceTaskElemen
          * Load the relevant configuration information of the specified file.
          */
         private void loading() {
+            loadLock.lock();
             try (InputStream inputStream = getConfigYamlFileInputStream()) {
                 drivenTaskYamlConfig = yaml.load(inputStream);
+                taskElements = drivenTaskYamlConfig.values().stream().map(YamlTaskElement::new)
+                        .collect(Collectors.toList());
             }
             catch (DataSourceDrivenException ex) {
                 throw ex;
@@ -189,7 +203,9 @@ public class YamlDatasourceTaskElementsOperation implements DatasourceTaskElemen
             catch (Throwable ex) {
                 throw new DataSourceDrivenException("Failed to load yaml file : " + configYamlFileName, ex);
             }
-            taskElements = drivenTaskYamlConfig.values().stream().map(YamlTaskElement::new).collect(Collectors.toList());
+            finally {
+                loadLock.unlock();
+            }
         }
 
         /**

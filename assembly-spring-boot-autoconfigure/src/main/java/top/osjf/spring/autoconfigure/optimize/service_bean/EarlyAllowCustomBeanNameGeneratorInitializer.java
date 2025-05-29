@@ -41,7 +41,7 @@ public class EarlyAllowCustomBeanNameGeneratorInitializer
         // introduced to determine whether optimization should be performed.
         try {
             isPresent = ClassUtils.isPresent("top.osjf.optimize.service_bean.context.ServiceContext",
-                    null);
+                    EarlyAllowCustomBeanNameGeneratorInitializer.class.getClassLoader());
         } catch (Throwable e) {
             isPresent = false;
         }
