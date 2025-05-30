@@ -22,6 +22,9 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.ImportSelector;
+import org.springframework.core.type.AnnotationMetadata;
+import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.spring.annotation.Cron;
 import top.osjf.cron.spring.annotation.Crones;
@@ -34,11 +37,7 @@ import top.osjf.cron.spring.annotation.Crones;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(CronProperties.class)
-@Import({SpringSchedulerAutoConfiguration.class,
-        HutoolCronTaskAutoConfiguration.class,
-        QuartzCronTaskAutoConfiguration.class,
-        Cron4jCronTaskAutoConfiguration.class,
-        DatasourceDrivenScheduledAutoConfiguration.class})
+@Import({CronTaskAutoConfiguration.CronConfigurationImportSelector.class, DatasourceDrivenScheduledAutoConfiguration.class})
 public class CronTaskAutoConfiguration {
 
     /**
@@ -51,5 +50,24 @@ public class CronTaskAutoConfiguration {
     @Bean
     public static LazyInitializationExcludeFilter cronBeanLazyInitializationExcludeFilter() {
         return new CronBeanLazyInitializationExcludeFilter();
+    }
+
+    /**
+     * {@link ImportSelector} to add {@link CronProperties.ClientType} configuration classes.
+     * @since 1.0.4
+     */
+    public static class CronConfigurationImportSelector implements ImportSelector {
+
+        @Override
+        @NotNull
+        public String[] selectImports(@NotNull AnnotationMetadata importingClassMetadata) {
+            CronProperties.ClientType[] types = CronProperties.ClientType.values();
+            String[] imports = new String[types.length];
+            for (int i = 0; i < types.length; i++) {
+                imports[i] = CronConfigurations.getConfigurationClass(types[i]);
+            }
+            return imports;
+        }
+
     }
 }
