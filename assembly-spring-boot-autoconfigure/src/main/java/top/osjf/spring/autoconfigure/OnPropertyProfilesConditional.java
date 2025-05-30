@@ -60,13 +60,13 @@ public class OnPropertyProfilesConditional extends SpringBootCondition {
                 return ConditionOutcome.match(message.because("The property '" + propertyName + "' was not" +
                         " found in the configuration."));
             }
-            final String reasonTemplate = "required profile '" + Arrays.toString(specified.get()) + "' is %s active";
+            final String reasonTemplate = "required profile '" + Arrays.toString(specified.get()) + "' %s active";
             String reason;
             if (environment.acceptsProfiles(Profiles.of(specified.get()))) {
-                reason = String.format(reasonTemplate, "");
+                reason = String.format(reasonTemplate, "is");
             }
             else {
-                reason = String.format(reasonTemplate, "not");
+                reason = String.format(reasonTemplate, "is not");
             }
             return ConditionOutcome.match(message.because(reason));
         }
