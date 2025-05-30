@@ -36,9 +36,9 @@ import top.osjf.cron.spring.hutool.HutoolCronTaskConfiguration;
  * @since 1.0.3
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnMissingBean(CronTaskRepository.class)
 @Import({HutoolCronTaskConfiguration.class, CronTaskConfiguration.class})
 @ConditionalOnClass({HutoolCronTaskRepository.class})
+@ConditionalOnMissingBean(CronTaskRepository.class)
 @Conditional(CronCondition.class)
 public class HutoolCronTaskAutoConfiguration {
 

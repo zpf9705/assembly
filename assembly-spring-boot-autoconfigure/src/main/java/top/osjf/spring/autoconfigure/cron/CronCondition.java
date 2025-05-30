@@ -48,7 +48,7 @@ public class CronCondition extends SpringBootCondition {
         Environment environment = context.getEnvironment();
         try {
             BindResult<CronProperties.ClientType> specified = Binder.get(environment)
-                    .bind("spring.schedule.cron.clientType", CronProperties.ClientType.class);
+                    .bind("spring.schedule.cron.client-type", CronProperties.ClientType.class);
             if (!specified.isBound()) {
                 return ConditionOutcome.match(message.because("automatic cron client type"));
             }
