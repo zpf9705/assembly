@@ -21,12 +21,13 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.bind.BindResult;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import top.osjf.cron.core.lang.NotNull;
-import top.osjf.cron.core.util.ArrayUtils;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.mp.MybatisPlusDatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.yaml.YamlDatasourceTaskElementsOperation;
@@ -79,13 +80,13 @@ public class DatasourceDrivenScheduledAutoConfiguration {
         @Override
         public boolean matches(ConditionContext context, @NotNull AnnotatedTypeMetadata metadata) {
             Environment environment = context.getEnvironment();
-            String[] matchedProfiles = environment
-                    .getProperty(ConditionalOnDrivenScheduledConfigurablePropertyProfiles
+            BindResult<String[]> specified = Binder.get(environment)
+                    .bind(ConditionalOnDrivenScheduledConfigurablePropertyProfiles
                             .PROPERTY_NAME_OF_MATCHED_PROFILES, String[].class);
-            if (ArrayUtils.isEmpty(matchedProfiles)) {
+            if (!specified.isBound()) {
                 return true;
             }
-            return environment.acceptsProfiles(Profiles.of(matchedProfiles));
+            return environment.acceptsProfiles(Profiles.of(specified.get()));
         }
     }
 }
