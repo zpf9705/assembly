@@ -60,10 +60,15 @@ public class OnPropertyProfilesConditional extends SpringBootCondition {
                 return ConditionOutcome.match(message.because("The property '" + propertyName + "' was not" +
                         " found in the configuration."));
             }
+            final String reasonTemplate = "required profile '" + Arrays.toString(specified.get()) + "' is %s active";
+            String reason;
             if (environment.acceptsProfiles(Profiles.of(specified.get()))) {
-                return ConditionOutcome.match(message
-                        .because("required profile '" + Arrays.toString(specified.get()) + "' is active"));
+                reason = String.format(reasonTemplate, "");
             }
+            else {
+                reason = String.format(reasonTemplate, "not");
+            }
+            return ConditionOutcome.match(message.because(reason));
         }
         return ConditionOutcome.noMatch(message.because("Annotation attributes [top.osjf.spring.autoconfigure" +
                 ".ConditionalOnPropertyProfiles] does not exist"));
