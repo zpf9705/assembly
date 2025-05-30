@@ -86,6 +86,14 @@ public class CronProperties {
     public enum ClientType {
 
         /**
+         * Use the spring scheduler cron client.
+         *
+         * @see SpringSchedulerAutoConfiguration
+         * @since 1.0.4
+         */
+        SPRING_SCHEDULER,
+
+        /**
          * Use the hutool cron client.
          */
         HUTOOL,
@@ -99,14 +107,6 @@ public class CronProperties {
          * Use the cron4j cron client.
          */
         CRON4J,
-
-        /**
-         * Use the spring scheduler cron client.
-         *
-         * @see SpringSchedulerAutoConfiguration
-         * @since 1.0.4
-         */
-        SPRING_SCHEDULER
     }
 
     /**
