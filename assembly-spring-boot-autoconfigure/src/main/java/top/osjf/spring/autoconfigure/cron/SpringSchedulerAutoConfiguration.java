@@ -23,19 +23,20 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskSchedulingProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.task.TaskSchedulerBuilder;
 import org.springframework.boot.task.TaskSchedulerCustomizer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.config.TaskManagementConfigUtils;
+import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.spring.CronTaskInfoReadableConfiguration;
 import top.osjf.cron.spring.scheduler.SpringSchedulerTaskRepository;
 import top.osjf.cron.spring.scheduler.config.EnableScheduling;
@@ -50,7 +51,8 @@ import top.osjf.cron.spring.scheduler.config.EnableScheduling;
 @ConditionalOnClass({SpringSchedulerTaskRepository.class})
 @AutoConfigureBefore(TaskSchedulingAutoConfiguration.class)
 @EnableConfigurationProperties(TaskSchedulingProperties.class)
-@ConditionalOnProperty(name = "spring.schedule.cron.client-type", havingValue = "spring_scheduler", matchIfMissing = true)
+@ConditionalOnMissingBean(CronTaskRepository.class)
+@Conditional(CronCondition.class)
 public class SpringSchedulerAutoConfiguration {
 
 

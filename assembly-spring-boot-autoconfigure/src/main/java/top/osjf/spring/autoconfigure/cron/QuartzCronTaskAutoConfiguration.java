@@ -20,8 +20,8 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.core.repository.CronTaskRepository;
@@ -40,7 +40,7 @@ import java.util.List;
 @ConditionalOnMissingBean(CronTaskRepository.class)
 @ConditionalOnClass({QuartzCronTaskRepository.class})
 @EnableQuartzCronTaskRegister
-@ConditionalOnProperty(name = "spring.schedule.cron.client-type", havingValue = "quartz")
+@Conditional(CronCondition.class)
 public class QuartzCronTaskAutoConfiguration {
 
     @Bean
