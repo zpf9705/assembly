@@ -21,13 +21,8 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.bind.BindResult;
-import org.springframework.boot.context.properties.bind.Binder;
-import org.springframework.context.annotation.*;
-import org.springframework.core.env.Environment;
-import org.springframework.core.env.Profiles;
-import org.springframework.core.type.AnnotatedTypeMetadata;
-import top.osjf.cron.core.lang.NotNull;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.mp.MybatisPlusDatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.yaml.YamlDatasourceTaskElementsOperation;
@@ -35,8 +30,9 @@ import top.osjf.cron.spring.annotation.DatabaseDrivenScheduledConfiguration;
 import top.osjf.cron.spring.datasource.driven.scheduled.MybatisPlusDatabaseDrivenScheduledConfiguration;
 import top.osjf.cron.spring.datasource.driven.scheduled.SpringDatasourceDrivenScheduled;
 import top.osjf.cron.spring.datasource.driven.scheduled.YamDatabaseDrivenScheduledConfiguration;
+import top.osjf.spring.autoconfigure.ConditionalOnPropertyProfiles;
 
-import java.lang.annotation.*;
+import static top.osjf.spring.autoconfigure.cron.DatasourceDrivenScheduledAutoConfiguration.PROPERTY_NAME_OF_MATCHED_PROFILES;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link SpringDatasourceDrivenScheduled}.
@@ -46,9 +42,12 @@ import java.lang.annotation.*;
  */
 @Configuration(proxyBeanMethods = false)
 @Import(DatabaseDrivenScheduledConfiguration.class)
-@DatasourceDrivenScheduledAutoConfiguration.ConditionalOnDrivenScheduledConfigurablePropertyProfiles
+@ConditionalOnPropertyProfiles(propertyName = PROPERTY_NAME_OF_MATCHED_PROFILES)
 @ConditionalOnProperty(prefix = "spring.schedule.cron", name = "scheduled-driven.enable", havingValue = "true")
 public class DatasourceDrivenScheduledAutoConfiguration {
+
+    public static final String PROPERTY_NAME_OF_MATCHED_PROFILES
+            = "spring.schedule.cron.datasource.driven.active-profiles.matched";
 
     @Configuration(proxyBeanMethods = false)
     @Import(MybatisPlusDatabaseDrivenScheduledConfiguration.class)
@@ -65,28 +64,5 @@ public class DatasourceDrivenScheduledAutoConfiguration {
     @ConditionalOnProperty(prefix = "spring.schedule.cron", name = "scheduled-driven.data-source",
             havingValue = "yaml_config", matchIfMissing = true)
     public static class YamDatabaseDrivenScheduledAutoConfiguration {
-    }
-
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.TYPE, ElementType.METHOD})
-    @Documented
-    @Conditional(OnPropertyProfilesCondition.class)
-    public @interface ConditionalOnDrivenScheduledConfigurablePropertyProfiles {
-
-        String PROPERTY_NAME_OF_MATCHED_PROFILES = "spring.schedule.cron.datasource.driven.active-profiles.matched";
-    }
-
-    public static class OnPropertyProfilesCondition implements Condition {
-        @Override
-        public boolean matches(ConditionContext context, @NotNull AnnotatedTypeMetadata metadata) {
-            Environment environment = context.getEnvironment();
-            BindResult<String[]> specified = Binder.get(environment)
-                    .bind(ConditionalOnDrivenScheduledConfigurablePropertyProfiles
-                            .PROPERTY_NAME_OF_MATCHED_PROFILES, String[].class);
-            if (!specified.isBound()) {
-                return true;
-            }
-            return environment.acceptsProfiles(Profiles.of(specified.get()));
-        }
     }
 }
