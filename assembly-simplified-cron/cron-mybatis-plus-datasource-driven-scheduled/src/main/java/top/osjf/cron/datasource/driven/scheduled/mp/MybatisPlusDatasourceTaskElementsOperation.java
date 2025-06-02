@@ -17,7 +17,9 @@
 
 package top.osjf.cron.datasource.driven.scheduled.mp;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.IService;
+import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 
@@ -99,6 +101,13 @@ public class MybatisPlusDatasourceTaskElementsOperation implements DatasourceTas
     @Override
     public void afterRun(List<TaskElement> runtimeCheckedDatasourceTaskElement) {
         updateBatchElements(runtimeCheckedDatasourceTaskElement);
+    }
+
+    @Override
+    @Nullable
+    public TaskElement getElementById(String id) {
+        return taskElementService.getOne(Wrappers.<DatabaseTaskElement>lambdaQuery()
+                .eq(DatabaseTaskElement::getTaskId, id), false);
     }
 
     /**
