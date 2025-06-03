@@ -171,6 +171,8 @@ public abstract class AbstractDatasourceDrivenScheduled
         }
 
         if (!managerTaskRegisterFlag) {
+
+            // Execute at a self configured fixed frequency without a designated main task management.
             this.mangerTaskUniqueIds
                     = new String[]{cronTaskRepository.register(getManagerTaskCheckFrequencyCronExpress(), this)};
         }
@@ -195,7 +197,11 @@ public abstract class AbstractDatasourceDrivenScheduled
         }
 
         for (TaskElement element : runtimeCheckedDatasourceTaskElements) {
+
+            // Pre-check for dynamic changes in markers.
             if (element.isAfterUpdate()) {
+
+                // Here it is judged to be terminated.
                 if (element.willBePaused()) {
                     if (isManagerTask(element)) {
                         if (getLogger().isWarnEnabled()) {
@@ -211,10 +217,14 @@ public abstract class AbstractDatasourceDrivenScheduled
                     getLogger().info("[Runtime-checked-Task-{}] [{}] execution has been stopped.",
                             element.getTaskId(), element.getTaskDescription());
                 }
+
+                // Determine the pending startup here.
                 else if (element.willBeActive()) {
                     registerTask(element);
                 }
+
                 else {
+                    // Check for changes in expressions.
                     String taskId = element.getTaskId();
                     if (!StringUtils.isBlank(taskId)) {
                         CronTaskInfo cronTaskInfo = cronTaskRepository.getCronTaskInfo(taskId);
@@ -229,8 +239,12 @@ public abstract class AbstractDatasourceDrivenScheduled
                         }
                     }
                 }
+
+                // Reset update tag.
                 element.resetUpdateStatus();
             }
+
+            // Check the status of dynamically added tasks.
             else if (element.isAfterInsert()) {
                 registerTask(element);
             }
