@@ -264,14 +264,14 @@ public abstract class AbstractDatasourceDrivenScheduled
                             getLogger().warn("[Runtime-checked] The main management check task [{}] will be " +
                                     "automatically stopped, which will result in the loss of the scheduled check" +
                                     " capability with a frequency of [{}]. If multiple main tasks are configured," +
-                                    " please ignore this reminder.", element.getTaskId(), element.getExpression());
+                                    " please ignore this reminder.", element.getId(), element.getExpression());
                         }
                     }
                     String taskId = element.getTaskId();
                     cronTaskRepository.remove(taskId);
                     element.pausedClear();
                     getLogger().info("[Runtime-checked-Task-{}] [{}] execution has been stopped.",
-                            element.getTaskId(), element.getTaskDescription());
+                            element.getId(), element.getTaskDescription());
                 }
 
                 // Determine the pending startup here.
@@ -368,14 +368,14 @@ public abstract class AbstractDatasourceDrivenScheduled
                 taskElement.setStatusDescription(false, "Status not activated");
             }
             if (isLoggerDebug()) {
-                getLogger().debug("[Task-{}] Failed to register : Status not activated", taskElement.getTaskId());
+                getLogger().debug("[Task-{}] Failed to register : Status not activated", taskElement.getId());
             }
             return;
         }
         if (!profilesMatch(taskElement.getProfiles())) {
             taskElement.setStatusDescription(false, "Environment mismatch");
             if (isLoggerDebug()) {
-                getLogger().debug("[Task-{}] Failed to register : Environment mismatch", taskElement.getTaskId());
+                getLogger().debug("[Task-{}] Failed to register : Environment mismatch", taskElement.getId());
             }
             return;
         }
@@ -385,7 +385,7 @@ public abstract class AbstractDatasourceDrivenScheduled
         taskElement.setStatusDescription(true, "Running");
         if (isLoggerDebug()) {
             getLogger().debug("[Task-{}] Successfully to register : name [{}] ||  description [{}] || expression [{}]",
-                    taskElement.getTaskId(), taskElement.getTaskName(), taskElement.getTaskDescription(),
+                    taskElement.getId(), taskElement.getTaskName(), taskElement.getTaskDescription(),
                     taskElement.getExpression());
         }
     }
