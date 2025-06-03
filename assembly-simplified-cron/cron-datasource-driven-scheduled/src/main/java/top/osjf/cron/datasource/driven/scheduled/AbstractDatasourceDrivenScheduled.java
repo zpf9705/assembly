@@ -176,9 +176,7 @@ public abstract class AbstractDatasourceDrivenScheduled
         // The marking has been init.
         inited = true;
 
-        if (isLoggerDebug()) {
-            getLogger().debug("Drive scheduler service has been successfully inited !");
-        }
+        debug("Drive scheduler service has been successfully inited !");
     }
 
     /**
@@ -200,10 +198,8 @@ public abstract class AbstractDatasourceDrivenScheduled
 
         List<TaskElement> taskElements = datasourceTaskElementsOperation.getDatasourceTaskElements();
         if (CollectionUtils.isEmpty(taskElements)) {
-            if (isLoggerDebug()) {
-                getLogger().debug("No registrable data source task objects were obtained from the data source.");
-                return;
-            }
+            debug("No registrable data source task objects were obtained from the data source.");
+            return;
         }
 
         this.mangerTaskUniqueIds = getManagerTaskUniqueIdentifiers();
@@ -228,9 +224,7 @@ public abstract class AbstractDatasourceDrivenScheduled
         // The marking has been start.
         started = true;
 
-        if (isLoggerDebug()) {
-            getLogger().debug("Drive scheduler service has been successfully started !");
-        }
+        debug("Drive scheduler service has been successfully started !");
     }
 
     /**
@@ -240,10 +234,8 @@ public abstract class AbstractDatasourceDrivenScheduled
 
         assertStarted();
 
-        if (isLoggerDebug()) {
-            getLogger().debug("[Time-{}] => Drive scheduler service checks on scheduled information.",
-                    getActiveTime());
-        }
+        debug("[Time-{}] => Drive scheduler service checks on scheduled information.",
+                getActiveTime());
 
         List<TaskElement> runtimeCheckedDatasourceTaskElements =
                 datasourceTaskElementsOperation.getRuntimeNeedCheckDatasourceTaskElements();
@@ -262,18 +254,16 @@ public abstract class AbstractDatasourceDrivenScheduled
                     if (isManagerTask(element)) {
 
                         // The stopping of the main inspection task is quite serious and may lead to
-                        // the effectiveness of automatic management. Here is a warning reminder.
-                        if (getLogger().isWarnEnabled()) {
-                            getLogger().warn("[Runtime-checked] The main management check task [{}] will be " +
-                                    "automatically stopped, which will result in the loss of the scheduled check" +
-                                    " capability with a frequency of [{}]. If multiple main tasks are configured," +
-                                    " please ignore this reminder.", element.getId(), element.getExpression());
-                        }
+                        // the effectiveness of automatic management.
+                        debug("[Runtime-checked] The main management check task [{}] will be " +
+                                "automatically stopped, which will result in the loss of the scheduled check" +
+                                " capability with a frequency of [{}]. If multiple main tasks are configured," +
+                                " please ignore this reminder.", element.getId(), element.getExpression());
                     }
                     String taskId = element.getTaskId();
                     cronTaskRepository.remove(taskId);
                     element.pausedClear();
-                    getLogger().info("[Runtime-checked-Task-{}] [{}] execution has been stopped.",
+                    debug("[Runtime-checked-Task-{}] [{}] execution has been stopped.",
                             element.getId(), element.getTaskDescription());
                 }
 
@@ -290,11 +280,9 @@ public abstract class AbstractDatasourceDrivenScheduled
                         String oldExpression = cronTaskInfo != null ? cronTaskInfo.getExpression() : null;
                         if (element.expressionNoSame(oldExpression)) {
                             cronTaskRepository.update(element.getTaskId(), element.getExpression());
-                            if (isLoggerDebug()) {
-                                getLogger().debug("[Runtime-checked-Task-{}] Task name [{}] description [{}] change " +
-                                                "expression old [{}] to new [{}].", element.getId(), element.getTaskName(),
-                                        element.getTaskDescription(), oldExpression, element.getExpression());
-                            }
+                            debug("[Runtime-checked-Task-{}] Task name [{}] description [{}] change " +
+                                            "expression old [{}] to new [{}].", element.getId(), element.getTaskName(),
+                                    element.getTaskDescription(), oldExpression, element.getExpression());
                         }
                     }
                 }
@@ -311,10 +299,8 @@ public abstract class AbstractDatasourceDrivenScheduled
 
         datasourceTaskElementsOperation.afterRun(runtimeCheckedDatasourceTaskElements);
 
-        if (isLoggerDebug()) {
-            getLogger().debug("[Time-{}] => Drive scheduler service check of timing information has ended.",
-                    getActiveTime());
-        }
+        debug("[Time-{}] => Drive scheduler service check of timing information has ended.",
+                getActiveTime());
     }
 
     private static String getActiveTime() {
@@ -343,10 +329,8 @@ public abstract class AbstractDatasourceDrivenScheduled
         // The marking has been stopped.
         started = false;
 
-        if (isLoggerDebug()) {
-            getLogger().debug("Drive scheduler service has stopped running. To reactivate" +
-                    " the service, trigger the startup operation via the dynamic lifecycle management interface.");
-        }
+        debug("Drive scheduler service has stopped running. To reactivate" +
+                " the service, trigger the startup operation via the dynamic lifecycle management interface.");
     }
 
     /**
@@ -370,27 +354,21 @@ public abstract class AbstractDatasourceDrivenScheduled
             if (taskElement.noActiveDescriptionExist()) {
                 taskElement.setStatusDescription(false, "Status not activated");
             }
-            if (isLoggerDebug()) {
-                getLogger().debug("[Task-{}] Failed to register : Status not activated", taskElement.getId());
-            }
+            debug("[Task-{}] Failed to register : Status not activated", taskElement.getId());
             return;
         }
         if (!profilesMatch(taskElement.getProfiles())) {
             taskElement.setStatusDescription(false, "Environment mismatch");
-            if (isLoggerDebug()) {
-                getLogger().debug("[Task-{}] Failed to register : Environment mismatch", taskElement.getId());
-            }
+            debug("[Task-{}] Failed to register : Environment mismatch", taskElement.getId());
             return;
         }
         Runnable taskRunnable = isManagerTask(taskElement) ? this : resolveTaskRunnable(taskElement);
         String taskId = cronTaskRepository.register(taskElement.getExpression(), taskRunnable);
         taskElement.setTaskId(taskId);
         taskElement.setStatusDescription(true, "Running");
-        if (isLoggerDebug()) {
-            getLogger().debug("[Task-{}] Successfully to register : name [{}] ||  description [{}] || expression [{}]",
-                    taskElement.getId(), taskElement.getTaskName(), taskElement.getTaskDescription(),
-                    taskElement.getExpression());
-        }
+        debug("[Task-{}] Successfully to register : name [{}] ||  description [{}] || expression [{}]",
+                taskElement.getId(), taskElement.getTaskName(), taskElement.getTaskDescription(),
+                taskElement.getExpression());
     }
 
     /**
@@ -450,10 +428,7 @@ public abstract class AbstractDatasourceDrivenScheduled
         String taskName = element.getTaskName();
         String[] sp = taskName.split("@"); /*class.name()@method.name()*/
         if (sp.length != 2) {
-            if (isLoggerDebug()) {
-                getLogger().debug("{} does not comply with parsing rules " +
-                        "[class's qualified name @ method name]", taskName);
-            }
+            debug("{} does not comply with parsing rules [class's qualified name @ method name]", taskName);
             throw new DataSourceDrivenException(taskName + " does not comply with parsing rules " +
                     "[class's qualified name @ method name].");
         }
@@ -465,9 +440,7 @@ public abstract class AbstractDatasourceDrivenScheduled
             targetMethod = ReflectUtils.getMethod(clazz, sp[1]);
         }
         catch (Exception ex) {
-            if (isLoggerDebug()) {
-                getLogger().debug("Failed to resolve task [" + element.getId() + "] to runnable.", ex);
-            }
+            debug("Failed to resolve task [" + element.getId() + "] to runnable.", ex);
             throw new DataSourceDrivenException("Failed to resolve task runnable " + element.getId(), ex);
         }
         return () -> {
@@ -475,9 +448,7 @@ public abstract class AbstractDatasourceDrivenScheduled
                 ReflectUtils.invokeMethod(target, targetMethod);
             }
             catch (Exception ex) {
-                if (isLoggerDebug()) {
-                    getLogger().debug("Failed to invoke task [" + element.getId() + "].", ex);
-                }
+                debug("Failed to invoke task [" + element.getId() + "].", ex);
                 throw new DataSourceDrivenException("Failed to invoke task " + element.getId(), ex);
             }
         };
@@ -488,5 +459,29 @@ public abstract class AbstractDatasourceDrivenScheduled
      */
     private boolean isLoggerDebug() {
         return getLogger().isDebugEnabled();
+    }
+
+    /**
+     * Log a message at the DEBUG level according to the specified format
+     * and arguments.
+     * @param format    the format string
+     * @param arguments a list of 3 or more arguments
+     */
+    private void debug(String format, Object... arguments) {
+        if (isLoggerDebug()) {
+            getLogger().debug(format, arguments);
+        }
+    }
+
+    /**
+     * Log an exception (throwable) at the DEBUG level with an
+     * accompanying message.
+     * @param msg the message accompanying the exception
+     * @param t   the exception (throwable) to log
+     */
+    private void debug(String msg, Throwable t) {
+        if (isLoggerDebug()) {
+            getLogger().debug(msg, t);
+        }
     }
 }
