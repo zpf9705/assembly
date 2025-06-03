@@ -88,7 +88,10 @@ public abstract class AbstractDatasourceDrivenScheduled
 
     private final CronTaskRepository cronTaskRepository;
     private final DatasourceTaskElementsOperation datasourceTaskElementsOperation;
-    private final Lock runLock = new ReentrantLock();
+
+    /** Flag that indicates whether this driven scheduler is currently start. */
+    private boolean started = false;
+    private final Lock lock = new ReentrantLock();
 
     private String[] mangerTaskUniqueIds;
 
@@ -128,29 +131,45 @@ public abstract class AbstractDatasourceDrivenScheduled
 
     @Override
     public void start() {
-        startInternal();
+
+        lockExecuteLifecycle(this::startInternal);
     }
 
     @Override
     public void run() {
-        runLock.lock();
-        try {
-            runInternal();
-        }
-        finally {
-            runLock.unlock();
-        }
+
+        lockExecuteLifecycle(this::runInternal);
     }
 
     @Override
     public void stop() {
-        stopInternal();
+
+        lockExecuteLifecycle(this::stopInternal);
+    }
+
+    /**
+     * Synchronize the execution of various stages of the lifecycle.
+     * @param r {@link DatasourceDrivenScheduledLifecycle} action.
+     */
+    private void lockExecuteLifecycle(Runnable r) {
+        lock.lock();
+        try {
+            r.run();
+        }
+        finally {
+            lock.unlock();
+        }
     }
 
     /**
      * The internal method of {@link #start()}.
      */
     private void startInternal() {
+
+        // Check if dynamic task management has been initiated.
+        if (started) {
+            throw new IllegalStateException("Driven Scheduler already started!");
+        }
 
         List<TaskElement> taskElements = datasourceTaskElementsOperation.getDatasourceTaskElements();
         if (CollectionUtils.isEmpty(taskElements)) {
@@ -178,12 +197,17 @@ public abstract class AbstractDatasourceDrivenScheduled
         }
 
         datasourceTaskElementsOperation.afterStart(taskElements);
+
+        // The marking has been start.
+        started = true;
     }
 
     /**
      * The internal method of {@link #run()}.
      */
     private void runInternal() {
+
+        assertStarted();
 
         if (getLogger().isDebugEnabled()) {
             getLogger().debug("[Time-{}] => Perform dynamic information checks on scheduled information.",
@@ -267,6 +291,8 @@ public abstract class AbstractDatasourceDrivenScheduled
      */
     private void stopInternal() {
 
+        assertStarted();
+
         for (String mangerTaskUniqueId : mangerTaskUniqueIds) {
             cronTaskRepository.remove(mangerTaskUniqueId);
         }
@@ -278,6 +304,20 @@ public abstract class AbstractDatasourceDrivenScheduled
             }
         }
         datasourceTaskElementsOperation.purgeDatasourceTaskElements();
+
+        // The marking has been stopped.
+        started = false;
+    }
+
+    /**
+     * Check if dynamic task management has been started, and if it has not been started,
+     * throw a status exception error.
+     * @throws IllegalStateException if Driven Scheduler not started.
+     */
+    private void assertStarted() {
+        if (!started) {
+            throw new IllegalStateException("Driven Scheduler not started !");
+        }
     }
 
     /**
