@@ -89,8 +89,11 @@ public abstract class AbstractDatasourceDrivenScheduled
     private final CronTaskRepository cronTaskRepository;
     private final DatasourceTaskElementsOperation datasourceTaskElementsOperation;
 
+    /** Flag that indicates whether this driven scheduler is currently init. */
+    private boolean inited = false;
     /** Flag that indicates whether this driven scheduler is currently start. */
     private boolean started = false;
+
     private final Lock lock = new ReentrantLock();
 
     private String[] mangerTaskUniqueIds;
@@ -98,9 +101,7 @@ public abstract class AbstractDatasourceDrivenScheduled
     public static final String PROFILES_SYSTEM_PROPERTY_NAME = "cron.datasource.driven.scheduled.profiles";
     private static List<String> SYSTEM_PROFILES;
 
-    static {
-        loadRegisterProfiles();
-    }
+    static {  loadRegisterProfiles(); }
 
     /**
      * Load the system level configuration task loading environment.
@@ -126,7 +127,8 @@ public abstract class AbstractDatasourceDrivenScheduled
 
     @Override
     public void init() {
-        datasourceTaskElementsOperation.purgeDatasourceTaskElements();
+
+        lockExecuteLifecycle(this::initInternal);
     }
 
     @Override
@@ -162,13 +164,32 @@ public abstract class AbstractDatasourceDrivenScheduled
     }
 
     /**
+     * The internal method of {@link #init()}.
+     */
+    private void initInternal() {
+
+        // Purge data.
+        datasourceTaskElementsOperation.purgeDatasourceTaskElements();
+
+        // The marking has been init.
+        inited = true;
+    }
+
+    /**
      * The internal method of {@link #start()}.
+     * @throws IllegalStateException if Drive scheduler has not been initialized
+     *                               or already started.
      */
     private void startInternal() {
 
-        // Check if dynamic task management has been initiated.
+        //Check if initialization has been performed before starting.
+        if (!inited) {
+            throw new IllegalStateException("Drive scheduler has not been initialized !");
+        }
+
+        // Check if dynamic task management has been started.
         if (started) {
-            throw new IllegalStateException("Driven Scheduler already started!");
+            throw new IllegalStateException("Driven Scheduler already started !");
         }
 
         List<TaskElement> taskElements = datasourceTaskElementsOperation.getDatasourceTaskElements();
