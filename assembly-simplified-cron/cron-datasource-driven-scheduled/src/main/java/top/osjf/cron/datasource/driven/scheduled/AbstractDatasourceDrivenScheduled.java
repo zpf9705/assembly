@@ -466,7 +466,7 @@ public abstract class AbstractDatasourceDrivenScheduled
         }
         catch (Exception ex) {
             if (isLoggerDebug()) {
-                getLogger().debug("Failed to resolve task [" + element.getId() + "] runnable.", ex);
+                getLogger().debug("Failed to resolve task [" + element.getId() + "] to runnable.", ex);
             }
             throw new DataSourceDrivenException("Failed to resolve task runnable " + element.getId(), ex);
         }
