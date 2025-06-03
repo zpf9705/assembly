@@ -53,24 +53,21 @@ public class OnPropertyProfilesConditional extends SpringBootCondition {
                 , sourceClass);
         Map<String, Object> attr
                 = metadata.getAnnotationAttributes(ConditionalOnPropertyProfiles.class.getCanonicalName());
-        if (attr != null) {
-            String propertyName = (String) attr.get("propertyName");
-            BindResult<String[]> specified = Binder.get(environment).bind(propertyName, String[].class);
-            if (!specified.isBound()) {
-                return ConditionOutcome.match(message.because("The property '" + propertyName + "' was not" +
-                        " found in the configuration."));
-            }
-            final String reasonTemplate = "required profile '" + Arrays.toString(specified.get()) + "' %s active";
-            String reason;
-            if (environment.acceptsProfiles(Profiles.of(specified.get()))) {
-                reason = String.format(reasonTemplate, "is");
-            }
-            else {
-                reason = String.format(reasonTemplate, "is not");
-            }
-            return ConditionOutcome.match(message.because(reason));
+        if (attr == null) {
+            return ConditionOutcome.noMatch(message
+                    .because("Missing required annotation: @ConditionalOnPropertyProfiles"));
         }
-        return ConditionOutcome.noMatch(message.because("Annotation attributes [top.osjf.spring.autoconfigure" +
-                ".ConditionalOnPropertyProfiles] does not exist"));
+        String propertyName = (String) attr.get("propertyName");
+        BindResult<String[]> specified = Binder.get(environment).bind(propertyName, String[].class);
+        if (!specified.isBound()) {
+            return ConditionOutcome.match(message.because("The property '" + propertyName + "' was not" +
+                    " found in the configuration."));
+        }
+        return environment.acceptsProfiles(Profiles.of(specified.get())) ?
+                ConditionOutcome.match(message.because(
+                        "Required profile '" + Arrays.toString(specified.get()) + "' is active")) :
+                ConditionOutcome.noMatch(message.because(
+                        "Required profile '" + Arrays.toString(specified.get()) + "' is not active"));
+
     }
 }
