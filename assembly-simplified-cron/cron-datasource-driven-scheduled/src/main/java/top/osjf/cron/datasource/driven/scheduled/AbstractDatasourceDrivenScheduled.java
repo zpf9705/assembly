@@ -210,9 +210,11 @@ public abstract class AbstractDatasourceDrivenScheduled
                     element.pausedClear();
                     getLogger().info("[Runtime-checked-Task-{}] [{}] execution has been stopped.",
                             element.getTaskId(), element.getTaskDescription());
-                } else if (element.willBeActive()) {
+                }
+                else if (element.willBeActive()) {
                     registerTask(element);
-                } else {
+                }
+                else {
                     String taskId = element.getTaskId();
                     if (!StringUtils.isBlank(taskId)) {
                         CronTaskInfo cronTaskInfo = cronTaskRepository.getCronTaskInfo(taskId);
@@ -228,7 +230,8 @@ public abstract class AbstractDatasourceDrivenScheduled
                     }
                 }
                 element.resetUpdateStatus();
-            } else if (element.isAfterInsert()) {
+            }
+            else if (element.isAfterInsert()) {
                 registerTask(element);
             }
         }
