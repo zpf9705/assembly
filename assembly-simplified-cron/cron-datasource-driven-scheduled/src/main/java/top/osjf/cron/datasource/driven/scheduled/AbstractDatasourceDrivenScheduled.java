@@ -98,7 +98,8 @@ public abstract class AbstractDatasourceDrivenScheduled
 
     private String[] mangerTaskUniqueIds;
 
-    /** Property name that indicates configurable system {@link System#setProperty} environment variables. */
+    /** Property name that determines the task execution environment can be configured in the system
+     * variable {@link System#setProperty}. */
     public static final String PROFILES_SYSTEM_PROPERTY_NAME = "cron.datasource.driven.scheduled.profiles";
     private static List<String> SYSTEM_PROFILES;
 
