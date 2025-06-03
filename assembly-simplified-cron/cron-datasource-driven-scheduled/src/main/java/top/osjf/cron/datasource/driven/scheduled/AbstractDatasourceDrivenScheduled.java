@@ -241,6 +241,8 @@ public abstract class AbstractDatasourceDrivenScheduled
                 datasourceTaskElementsOperation.getRuntimeNeedCheckDatasourceTaskElements();
 
         if (CollectionUtils.isEmpty(runtimeCheckedDatasourceTaskElements)) {
+            debug("[Time-{}] => Drive scheduler service check of timing information has " +
+                            "ended : No processable data provided.", getActiveTime());
             return;
         }
 
