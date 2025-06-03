@@ -247,6 +247,7 @@ public abstract class AbstractDatasourceDrivenScheduled
 
         List<TaskElement> runtimeCheckedDatasourceTaskElements =
                 datasourceTaskElementsOperation.getRuntimeNeedCheckDatasourceTaskElements();
+
         if (CollectionUtils.isEmpty(runtimeCheckedDatasourceTaskElements)) {
             return;
         }
@@ -465,7 +466,7 @@ public abstract class AbstractDatasourceDrivenScheduled
         }
         catch (Exception ex) {
             if (isLoggerDebug()) {
-                getLogger().debug("Failed to resolve task [{}] runnable cause [{}]", element.getId(), ex.getMessage());
+                getLogger().debug("Failed to resolve task [" + element.getId() + "] runnable.", ex);
             }
             throw new DataSourceDrivenException("Failed to resolve task runnable " + element.getId(), ex);
         }
@@ -475,7 +476,7 @@ public abstract class AbstractDatasourceDrivenScheduled
             }
             catch (Exception ex) {
                 if (isLoggerDebug()) {
-                    getLogger().debug("Failed to invoke task [{}] cause [{}]", element.getId(), ex.getMessage());
+                    getLogger().debug("Failed to invoke task [" + element.getId() + "].", ex);
                 }
                 throw new DataSourceDrivenException("Failed to invoke task " + element.getId(), ex);
             }
