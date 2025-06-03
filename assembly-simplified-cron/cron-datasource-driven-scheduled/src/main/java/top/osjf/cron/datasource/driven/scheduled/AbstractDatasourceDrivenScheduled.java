@@ -173,6 +173,10 @@ public abstract class AbstractDatasourceDrivenScheduled
 
         // The marking has been init.
         inited = true;
+
+        if (isLoggerDebug()) {
+            getLogger().debug("Drive scheduler service has been successfully inited !");
+        }
     }
 
     /**
@@ -221,6 +225,10 @@ public abstract class AbstractDatasourceDrivenScheduled
 
         // The marking has been start.
         started = true;
+
+        if (isLoggerDebug()) {
+            getLogger().debug("Drive scheduler service has been successfully started !");
+        }
     }
 
     /**
@@ -231,7 +239,7 @@ public abstract class AbstractDatasourceDrivenScheduled
         assertStarted();
 
         if (isLoggerDebug()) {
-            getLogger().debug("[Time-{}] => Perform dynamic information checks on scheduled information.",
+            getLogger().debug("[Time-{}] => Drive scheduler service checks on scheduled information.",
                     getActiveTime());
         }
 
@@ -301,7 +309,7 @@ public abstract class AbstractDatasourceDrivenScheduled
         datasourceTaskElementsOperation.afterRun(runtimeCheckedDatasourceTaskElements);
 
         if (isLoggerDebug()) {
-            getLogger().debug("[Time-{}] => The dynamic information check of timing information has ended.",
+            getLogger().debug("[Time-{}] => Drive scheduler service check of timing information has ended.",
                     getActiveTime());
         }
     }
@@ -331,6 +339,11 @@ public abstract class AbstractDatasourceDrivenScheduled
 
         // The marking has been stopped.
         started = false;
+
+        if (isLoggerDebug()) {
+            getLogger().debug("Drive scheduler service has stopped running. To reactivate" +
+                    " the service, trigger the startup operation via the dynamic lifecycle management interface");
+        }
     }
 
     /**
