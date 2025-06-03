@@ -44,9 +44,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.util.CollectionUtils;
+import top.osjf.cron.core.lang.Nullable;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration} for Apache ssh {@link SshClient}.
@@ -60,8 +63,108 @@ public class SshClientAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(SshClient.class)
-    public SshClient sshClient(ClientBuilder clientBuilder) {
-        return clientBuilder.build(true);
+    public SshClient sshClient(ClientBuilder clientBuilder, Environment environment) {
+        return clientBuilder.build(environment.getProperty("ssh-client.builder.is-fill-with-default-values",
+                boolean.class, true));
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ClientBuilder.class)
+    public ClientBuilder sshclientBuilder(
+            ObjectProvider<ServerKeyVerifier> ServerKeyVerifierObjectProvider,
+            ObjectProvider<HostConfigEntryResolver> hostConfigEntryResolverObjectProvider,
+            ObjectProvider<ClientIdentityLoader> clientIdentityLoaderObjectProvider,
+            ObjectProvider<FilePasswordProvider> filePasswordProviderObjectProvider,
+            ObjectProvider<Factory<SshClient>> sshClientFactoryObjectProvider,
+            ObjectProvider<KeyExchangeFactory> keyExchangeFactoryObjectProvider,
+            ObjectProvider<KexExtensionHandler> kexExtensionHandlerObjectProvider,
+            ObjectProvider<NamedFactory<Signature>> signatureNamedFactoryObjectProvider,
+            ObjectProvider<Factory<Random>> randomFactoryObjectProvider,
+            ObjectProvider<NamedFactory<Cipher>> cipherNamedFactoryObjectProvider,
+            ObjectProvider<NamedFactory<Compression>> compressionNamedFactoryObjectProvider,
+            ObjectProvider<NamedFactory<Mac>> macNamedFactoryObjectProvider,
+            ObjectProvider<ChannelFactory> channelFactoryObjectProvider,
+            ObjectProvider<FileSystemFactory> fileSystemFactoryObjectProvider,
+            ObjectProvider<ForwardingFilter> forwardingFilterObjectProvider,
+            ObjectProvider<ForwarderFactory> forwarderFactoryObjectProvider,
+            ObjectProvider<RequestHandler<ConnectionService>> connectionServiceRequestHandlerObjectProvider,
+            ObjectProvider<ChannelStreamWriterResolver> channelStreamWriterResolverObjectProvider,
+            ObjectProvider<UnknownChannelReferenceHandler> unknownChannelReferenceHandlerObjectProvider,
+            ObjectProvider<SshClientBuilderCustomizer> sshClientBuilderCustomizerObjectProvider) {
+
+        ClientBuilder builder = ClientBuilder.builder();
+
+        ServerKeyVerifier serverKeyVerifier = orderedStreamFirst(ServerKeyVerifierObjectProvider);
+        if (serverKeyVerifier != null) builder.serverKeyVerifier(serverKeyVerifier);
+
+        HostConfigEntryResolver hostConfigEntryResolver = orderedStreamFirst(hostConfigEntryResolverObjectProvider);
+        if (hostConfigEntryResolver != null) builder.hostConfigEntryResolver(hostConfigEntryResolver);
+
+        ClientIdentityLoader clientIdentityLoader = orderedStreamFirst(clientIdentityLoaderObjectProvider);
+        if (clientIdentityLoader != null) builder.clientIdentityLoader(clientIdentityLoader);
+
+        FilePasswordProvider filePasswordProvider = orderedStreamFirst(filePasswordProviderObjectProvider);
+        if (filePasswordProvider != null) builder.filePasswordProvider(filePasswordProvider);
+
+        Factory<SshClient> sshClientFactory = orderedStreamFirst(sshClientFactoryObjectProvider);
+        if (sshClientFactory != null) builder.factory(sshClientFactory);
+
+        List<KeyExchangeFactory> keyExchangeFactories = orderedStreamList(keyExchangeFactoryObjectProvider);
+        if (!CollectionUtils.isEmpty(keyExchangeFactories)) builder.keyExchangeFactories(keyExchangeFactories);
+
+        KexExtensionHandler kexExtensionHandler = orderedStreamFirst(kexExtensionHandlerObjectProvider);
+        if (kexExtensionHandler != null) builder.kexExtensionHandler(kexExtensionHandler);
+
+        List<NamedFactory<Signature>> signatureNamedFactories = orderedStreamList(signatureNamedFactoryObjectProvider);
+        if (!CollectionUtils.isEmpty(signatureNamedFactories)) builder.signatureFactories(signatureNamedFactories);
+
+        Factory<Random> randomFactory = orderedStreamFirst(randomFactoryObjectProvider);
+        if (randomFactory != null) builder.randomFactory(randomFactory);
+
+        List<NamedFactory<Cipher>> cipherNamedFactories = orderedStreamList(cipherNamedFactoryObjectProvider);
+        if (!CollectionUtils.isEmpty(cipherNamedFactories)) builder.cipherFactories(cipherNamedFactories);
+
+        List<NamedFactory<Compression>> compressionNamedFactories = orderedStreamList(compressionNamedFactoryObjectProvider);
+        if (!CollectionUtils.isEmpty(compressionNamedFactories))
+            builder.compressionFactories(compressionNamedFactories);
+
+        List<NamedFactory<Mac>> macNamedFactories = orderedStreamList(macNamedFactoryObjectProvider);
+        if (!CollectionUtils.isEmpty(macNamedFactories)) builder.macFactories(macNamedFactories);
+
+        List<ChannelFactory> channelFactories = orderedStreamList(channelFactoryObjectProvider);
+        if (!CollectionUtils.isEmpty(channelFactories)) builder.channelFactories(channelFactories);
+
+        FileSystemFactory fileSystemFactory = orderedStreamFirst(fileSystemFactoryObjectProvider);
+        if (fileSystemFactory != null) builder.fileSystemFactory(fileSystemFactory);
+
+        ForwardingFilter forwardingFilter = orderedStreamFirst(forwardingFilterObjectProvider);
+        if (forwardingFilter != null) builder.forwardingFilter(forwardingFilter);
+
+        ForwarderFactory forwarderFactory = orderedStreamFirst(forwarderFactoryObjectProvider);
+        if (forwarderFactory != null) builder.forwarderFactory(forwarderFactory);
+
+        List<RequestHandler<ConnectionService>> connectionServiceRequestHandlers = orderedStreamList
+                (connectionServiceRequestHandlerObjectProvider);
+        if (!CollectionUtils.isEmpty(connectionServiceRequestHandlers)) {
+            builder.globalRequestHandlers(connectionServiceRequestHandlers);
+        }
+
+        ChannelStreamWriterResolver writerResolver = orderedStreamFirst(channelStreamWriterResolverObjectProvider);
+        if (writerResolver != null) {
+            builder.channelStreamPacketWriterResolver(writerResolver);
+        }
+
+        UnknownChannelReferenceHandler referenceHandler = orderedStreamFirst(unknownChannelReferenceHandlerObjectProvider);
+        if (referenceHandler != null) {
+            builder.unknownChannelReferenceHandler(referenceHandler);
+        }
+
+        List<SshClientBuilderCustomizer> sshClientBuilderCustomizers = orderedStreamList
+                (sshClientBuilderCustomizerObjectProvider);
+        if (!CollectionUtils.isEmpty(sshClientBuilderCustomizers)) sshClientBuilderCustomizers
+                .forEach(c -> c.customize(builder));
+
+        return builder;
     }
 
     @Bean
@@ -69,148 +172,16 @@ public class SshClientAutoConfiguration {
         return new SshClientLifecycle(sshClient);
     }
 
-    @Bean
-    public ClientBuilder sshclientBuilder(
-            //org.apache.sshd.client.SshClient
-            ObjectProvider<List<ServerKeyVerifier>> serverKeyVerifiers,
-            ObjectProvider<List<HostConfigEntryResolver>> hostConfigEntryResolvers,
-            ObjectProvider<List<ClientIdentityLoader>> clientIdentityLoaders,
-            ObjectProvider<List<FilePasswordProvider>> filePasswordProviders,
-            //org.apache.sshd.common.BaseBuilder
-            ObjectProvider<List<Factory<SshClient>>> sshClientFactories,
-            ObjectProvider<List<KeyExchangeFactory>> keyExchangeFactories,
-            ObjectProvider<List<KexExtensionHandler>> kexExtensionHandlers,
-            ObjectProvider<List<NamedFactory<Signature>>> signatureNamedFactories,
-            ObjectProvider<List<Factory<Random>>> randomFactories,
-            ObjectProvider<List<NamedFactory<Cipher>>> cipherNamedFactories,
-            ObjectProvider<List<NamedFactory<Compression>>> compressionNamedFactories,
-            ObjectProvider<List<NamedFactory<Mac>>> macNamedFactories,
-            ObjectProvider<List<ChannelFactory>> channelFactories,
-            ObjectProvider<List<FileSystemFactory>> fileSystemFactories,
-            ObjectProvider<List<ForwardingFilter>> forwardingFilters,
-            ObjectProvider<List<ForwarderFactory>> forwarderFactories,
-            ObjectProvider<List<RequestHandler<ConnectionService>>> connectionServiceRequestHandlers,
-            ObjectProvider<List<ChannelStreamWriterResolver>> channelStreamWriterResolvers,
-            ObjectProvider<List<UnknownChannelReferenceHandler>> unknownChannelReferenceHandlers,
-            //SshClientBuilderCustomizer
-            ObjectProvider<List<SshClientBuilderCustomizer>> sshClientBuilderCustomizes) {
-        ClientBuilder builder = ClientBuilder.builder();
-
-        ServerKeyVerifier serverKeyVerifier = orderedStreamFirst(serverKeyVerifiers);
-        if (serverKeyVerifier != null) {
-            builder.serverKeyVerifier(serverKeyVerifier);
-        }
-
-        HostConfigEntryResolver hostConfigEntryResolver = orderedStreamFirst(hostConfigEntryResolvers);
-        if (hostConfigEntryResolver != null) {
-            builder.hostConfigEntryResolver(hostConfigEntryResolver);
-        }
-
-        ClientIdentityLoader clientIdentityLoader = orderedStreamFirst(clientIdentityLoaders);
-        if (clientIdentityLoader != null) {
-            builder.clientIdentityLoader(clientIdentityLoader);
-        }
-
-        FilePasswordProvider filePasswordProvider = orderedStreamFirst(filePasswordProviders);
-        if (filePasswordProvider != null) {
-            builder.filePasswordProvider(filePasswordProvider);
-        }
-
-        Factory<SshClient> sshClientFactory = orderedStreamFirst(sshClientFactories);
-        if (sshClientFactory != null) {
-            builder.factory(sshClientFactory);
-        }
-
-        List<KeyExchangeFactory> keyExchangeFactories0 = orderedStreamList(keyExchangeFactories);
-        if (!CollectionUtils.isEmpty(keyExchangeFactories0)) {
-            builder.keyExchangeFactories(keyExchangeFactories0);
-        }
-
-        KexExtensionHandler kexExtensionHandler = orderedStreamFirst(kexExtensionHandlers);
-        if (kexExtensionHandler != null) {
-            builder.kexExtensionHandler(kexExtensionHandler);
-        }
-
-        List<NamedFactory<Signature>> signatureNamedFactories0 = orderedStreamList(signatureNamedFactories);
-        if (!CollectionUtils.isEmpty(signatureNamedFactories0)) {
-            builder.signatureFactories(signatureNamedFactories0);
-        }
-
-        Factory<Random> randomFactory = orderedStreamFirst(randomFactories);
-        if (randomFactory != null) {
-            builder.randomFactory(randomFactory);
-        }
-
-        List<NamedFactory<Cipher>> cipherNamedFactories0 = orderedStreamList(cipherNamedFactories);
-        if (!CollectionUtils.isEmpty(cipherNamedFactories0)) {
-            builder.cipherFactories(cipherNamedFactories0);
-        }
-
-        List<NamedFactory<Compression>> compressionNamedFactories0 = orderedStreamList(compressionNamedFactories);
-        if (!CollectionUtils.isEmpty(compressionNamedFactories0)) {
-            builder.compressionFactories(compressionNamedFactories0);
-        }
-
-        List<NamedFactory<Mac>> macNamedFactories0 = orderedStreamList(macNamedFactories);
-        if (!CollectionUtils.isEmpty(macNamedFactories0)) {
-            builder.macFactories(macNamedFactories0);
-        }
-
-        List<ChannelFactory> channelFactories0 = orderedStreamList(channelFactories);
-        if (!CollectionUtils.isEmpty(channelFactories0)) {
-            builder.channelFactories(channelFactories0);
-        }
-
-        FileSystemFactory fileSystemFactory = orderedStreamFirst(fileSystemFactories);
-        if (fileSystemFactory != null) {
-            builder.fileSystemFactory(fileSystemFactory);
-        }
-
-        ForwardingFilter forwardingFilter = orderedStreamFirst(forwardingFilters);
-        if (forwardingFilter != null) {
-            builder.forwardingFilter(forwardingFilter);
-        }
-
-        ForwarderFactory forwarderFactory = orderedStreamFirst(forwarderFactories);
-        if (forwarderFactory != null) {
-            builder.forwarderFactory(forwarderFactory);
-        }
-
-        List<RequestHandler<ConnectionService>> connectionServiceRequestHandlers0
-                = orderedStreamList(connectionServiceRequestHandlers);
-        if (!CollectionUtils.isEmpty(connectionServiceRequestHandlers0)) {
-            builder.globalRequestHandlers(connectionServiceRequestHandlers0);
-        }
-
-        ChannelStreamWriterResolver writerResolver = orderedStreamFirst(channelStreamWriterResolvers);
-        if (writerResolver != null) {
-            builder.channelStreamPacketWriterResolver(writerResolver);
-        }
-
-        UnknownChannelReferenceHandler referenceHandler = orderedStreamFirst(unknownChannelReferenceHandlers);
-        if (referenceHandler != null) {
-            builder.unknownChannelReferenceHandler(referenceHandler);
-        }
-
-        List<SshClientBuilderCustomizer> sshClientBuilderCustomizers0 = orderedStreamList(sshClientBuilderCustomizes);
-        if (!CollectionUtils.isEmpty(sshClientBuilderCustomizers0)) {
-            sshClientBuilderCustomizers0.forEach(c -> c.customize(builder));
-        }
-
-        return builder;
-    }
-
-    private <T> List<T> orderedStreamList(ObjectProvider<List<T>> provider) {
-        return provider.orderedStream()
-                .findFirst()
-                .orElse(null);
-    }
-
-    private <T> T orderedStreamFirst(ObjectProvider<List<T>> provider) {
+    @Nullable
+    private <T> T orderedStreamFirst(ObjectProvider<T> provider) {
         List<T> beans = orderedStreamList(provider);
         if (CollectionUtils.isEmpty(beans)) {
             return null;
         }
         return beans.get(0);
+    }
+
+    private <T> List<T> orderedStreamList(ObjectProvider<T> provider) {
+        return provider.orderedStream().collect(Collectors.toList());
     }
 }
