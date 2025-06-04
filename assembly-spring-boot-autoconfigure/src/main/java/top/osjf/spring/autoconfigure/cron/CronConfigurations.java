@@ -45,9 +45,9 @@ final class CronConfigurations {
     private CronConfigurations() {
     }
 
-    static String getConfigurationClass(CronProperties.ClientType cacheType) {
-        String configurationClassName = MAPPINGS.get(cacheType);
-        Assert.state(configurationClassName != null, () -> "Unknown cache type " + cacheType);
+    static String getConfigurationClass(CronProperties.ClientType clientType) {
+        String configurationClassName = MAPPINGS.get(clientType);
+        Assert.state(configurationClassName != null, () -> "Unknown client type " + clientType);
         return configurationClassName;
     }
 
