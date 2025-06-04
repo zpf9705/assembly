@@ -49,6 +49,7 @@ import org.springframework.util.CollectionUtils;
 import top.osjf.cron.core.lang.Nullable;
 
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -63,14 +64,15 @@ public class SshClientAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(SshClient.class)
-    public SshClient sshClient(ClientBuilder clientBuilder, Environment environment) {
+    public SshClient sshClient(ClientBuilder clientBuilder,
+                               Environment environment) {
         return clientBuilder.build(environment.getProperty("ssh-client.builder.is-fill-with-default-values",
                 boolean.class, true));
     }
 
     @Bean
-    @ConditionalOnMissingBean(ClientBuilder.class)
-    public ClientBuilder sshclientBuilder(
+    @ConditionalOnMissingBean
+    public ClientBuilder clientBuilder(
             ObjectProvider<ServerKeyVerifier> ServerKeyVerifierObjectProvider,
             ObjectProvider<HostConfigEntryResolver> hostConfigEntryResolverObjectProvider,
             ObjectProvider<ClientIdentityLoader> clientIdentityLoaderObjectProvider,
@@ -88,7 +90,7 @@ public class SshClientAutoConfiguration {
             ObjectProvider<ForwardingFilter> forwardingFilterObjectProvider,
             ObjectProvider<ForwarderFactory> forwarderFactoryObjectProvider,
             ObjectProvider<RequestHandler<ConnectionService>> connectionServiceRequestHandlerObjectProvider,
-            ObjectProvider<ChannelStreamWriterResolver> channelStreamWriterResolverObjectProvider,
+            ObjectProvider<ChannelStreamWriterResolverSupplier> ChannelStreamWriterResolverSupplierObjectProvider,
             ObjectProvider<UnknownChannelReferenceHandler> unknownChannelReferenceHandlerObjectProvider,
             ObjectProvider<SshClientBuilderCustomizer> sshClientBuilderCustomizerObjectProvider) {
 
@@ -145,32 +147,32 @@ public class SshClientAutoConfiguration {
 
         List<RequestHandler<ConnectionService>> connectionServiceRequestHandlers = orderedStreamList
                 (connectionServiceRequestHandlerObjectProvider);
-        if (!CollectionUtils.isEmpty(connectionServiceRequestHandlers)) {
+        if (!CollectionUtils.isEmpty(connectionServiceRequestHandlers))
             builder.globalRequestHandlers(connectionServiceRequestHandlers);
-        }
 
-        ChannelStreamWriterResolver writerResolver = orderedStreamFirst(channelStreamWriterResolverObjectProvider);
-        if (writerResolver != null) {
-            builder.channelStreamPacketWriterResolver(writerResolver);
-        }
+        ChannelStreamWriterResolverSupplier writerResolverSupplier
+                = orderedStreamFirst(ChannelStreamWriterResolverSupplierObjectProvider);
+        if (writerResolverSupplier != null)
+            builder.channelStreamPacketWriterResolver(writerResolverSupplier.get());
 
         UnknownChannelReferenceHandler referenceHandler = orderedStreamFirst(unknownChannelReferenceHandlerObjectProvider);
-        if (referenceHandler != null) {
-            builder.unknownChannelReferenceHandler(referenceHandler);
-        }
+        if (referenceHandler != null) builder.unknownChannelReferenceHandler(referenceHandler);
 
         List<SshClientBuilderCustomizer> sshClientBuilderCustomizers = orderedStreamList
                 (sshClientBuilderCustomizerObjectProvider);
-        if (!CollectionUtils.isEmpty(sshClientBuilderCustomizers)) sshClientBuilderCustomizers
-                .forEach(c -> c.customize(builder));
+        if (!CollectionUtils.isEmpty(sshClientBuilderCustomizers))
+            sshClientBuilderCustomizers.forEach(c -> c.customize(builder));
 
         return builder;
     }
 
     @Bean
+    @ConditionalOnMissingBean
     public SshClientLifecycle sshClientLifecycle(SshClient sshClient) {
         return new SshClientLifecycle(sshClient);
     }
+
+    public interface ChannelStreamWriterResolverSupplier extends Supplier<ChannelStreamWriterResolver> { }
 
     @Nullable
     private <T> T orderedStreamFirst(ObjectProvider<T> provider) {
