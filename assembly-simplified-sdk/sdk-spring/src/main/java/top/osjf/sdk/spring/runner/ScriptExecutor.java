@@ -40,5 +40,5 @@ public interface ScriptExecutor {
      * @throws QLException If an error occurs during script execution, this exception is thrown.
      */
     @Nullable
-    Object execute() throws QLException;
+    Object execute() throws SdkExpressRunnerException;
 }

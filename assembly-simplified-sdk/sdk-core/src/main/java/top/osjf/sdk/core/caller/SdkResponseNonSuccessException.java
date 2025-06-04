@@ -41,4 +41,15 @@ public class SdkResponseNonSuccessException extends SdkCallerException {
     public SdkResponseNonSuccessException(String s) {
         super(s);
     }
+
+    /**
+     * Creates a {@code SdkResponseNonSuccessException} by given message and
+     * the cause {@code Throwable}.
+     *
+     * @param message the error message.
+     * @param cause   the cause {@code Throwable}.
+     */
+    public SdkResponseNonSuccessException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

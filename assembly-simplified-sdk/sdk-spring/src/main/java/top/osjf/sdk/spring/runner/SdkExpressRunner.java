@@ -23,13 +23,14 @@ import com.alibaba.qlexpress4.QLOptions;
 import com.alibaba.qlexpress4.QLResult;
 import com.alibaba.qlexpress4.annotation.QLFunction;
 import com.alibaba.qlexpress4.exception.QLException;
+import com.alibaba.qlexpress4.exception.QLRuntimeException;
+import com.alibaba.qlexpress4.exception.UserDefineException;
 import com.alibaba.qlexpress4.runtime.Parameters;
 import com.alibaba.qlexpress4.runtime.QContext;
 import com.alibaba.qlexpress4.runtime.function.CustomFunction;
 import com.alibaba.qlexpress4.runtime.function.QMethodFunction;
 import com.alibaba.qlexpress4.utils.BasicUtil;
 import com.alibaba.qlexpress4.utils.QLFunctionUtil;
-import top.osjf.sdk.core.exception.SdkException;
 import top.osjf.sdk.core.lang.Nullable;
 import top.osjf.sdk.core.util.ArrayUtils;
 import top.osjf.sdk.core.util.ReflectUtil;
@@ -175,7 +176,7 @@ public class SdkExpressRunner {
      * @param script Call the script.
      * @return The return result of calling the script,the specific type can be viewed in the processing
      * rules:{@link top.osjf.sdk.core.support.SdkSupport#resolveResponse}
-     * @throws QLException ---
+     * @throws SdkExpressRunnerException --- {@link SdkExpressRunnerException#getCause()} ---
      *                     <ul>
      *                     <li>{@link com.alibaba.qlexpress4.exception.QLSyntaxException}Script syntax error.</li>
      *                     <li>{@link com.alibaba.qlexpress4.exception.QLRuntimeException}Script runtime error, SDK
@@ -185,7 +186,7 @@ public class SdkExpressRunner {
      *                     </ul>
      */
     @Nullable
-    public Object execute(String script) throws QLException {
+    public Object execute(String script) throws SdkExpressRunnerException {
         return execute(script, Collections.emptyMap());
     }
 
@@ -206,7 +207,7 @@ public class SdkExpressRunner {
      * @param context The calling context can be a parameter for calling a component method.
      * @return The return result of calling the script,the specific type can be viewed in the processing
      * rules:{@link top.osjf.sdk.core.support.SdkSupport#resolveResponse}
-     * @throws QLException ---
+     * @throws SdkExpressRunnerException --- {@link SdkExpressRunnerException#getCause()} ---
      *                     <ul>
      *                     <li>{@link com.alibaba.qlexpress4.exception.QLSyntaxException}Script syntax error.</li>
      *                     <li>{@link com.alibaba.qlexpress4.exception.QLRuntimeException}Script runtime error, SDK
@@ -216,7 +217,7 @@ public class SdkExpressRunner {
      *                     </ul>
      */
     @Nullable
-    public Object execute(String script, Map<String, Object> context) throws QLException {
+    public Object execute(String script, Map<String, Object> context) throws SdkExpressRunnerException {
         return execute(script, context, QLOptions.DEFAULT_OPTIONS);
     }
 
@@ -239,7 +240,7 @@ public class SdkExpressRunner {
      * @param qlOptions Execute call options.
      * @return The return result of calling the script,the specific type can be viewed in the processing
      * rules:{@link top.osjf.sdk.core.support.SdkSupport#resolveResponse}
-     * @throws QLException ---
+     * @throws SdkExpressRunnerException --- {@link SdkExpressRunnerException#getCause()} ---
      *                     <ul>
      *                     <li>{@link com.alibaba.qlexpress4.exception.QLSyntaxException}Script syntax error.</li>
      *                     <li>{@link com.alibaba.qlexpress4.exception.QLRuntimeException}Script runtime error, SDK
@@ -250,8 +251,20 @@ public class SdkExpressRunner {
      */
     @Nullable
     public Object execute(String script, @Nullable Map<String, Object> context, QLOptions qlOptions)
-            throws QLException {
-        QLResult result = express4Runner.execute(getCorrespondScript(script), context, qlOptions);
+            throws SdkExpressRunnerException {
+        QLResult result;
+        try {
+            result = express4Runner.execute(getCorrespondScript(script), context, qlOptions);
+        }
+        catch (QLException ex){
+            if (ex instanceof QLRuntimeException) {
+                Object catchObj = ((QLRuntimeException) ex).getCatchObj();
+                if (catchObj instanceof SdkExpressRunnerException) {
+                    throw (SdkExpressRunnerException) catchObj;
+                }
+            }
+            throw new SdkExpressRunnerException(ex.getMessage(), ex);
+        }
         return result != null ? result.getResult() : null;
     }
 
@@ -309,39 +322,44 @@ public class SdkExpressRunner {
 
         private Object internalExceptionCall(Throwable e, Parameters parameters) throws Throwable {
 
-            if (e instanceof InvocationTargetException) {
-                Throwable targetException = ((InvocationTargetException) e).getTargetException();
-                // The relevant subclasses of the SDK throw exceptions directly.
-                if (targetException instanceof SdkException) {
-                    throw targetException;
-                }
-            }
+            if (e instanceof UserDefineException) { // When there is an exception with incorrect expression parsing
+                // parameters, perform parsing and execution on your own.
 
-            // Reorganize the search according to the method parameter type and order.
-            List<Object> arguments = new CopyOnWriteArrayList<>(BasicUtil.argumentsArr(parameters));
-            List<Object> sortedArguments = new ArrayList<>();
-            for (Class<?> parameterType : method.getParameterTypes()) {
-                Object sortedArg = null;
-                for (Object arg : arguments) {
-                    if (parameterType.isInstance(arg)) {
-                        sortedArg = arg;
-                        arguments.remove(arg);
-                        break;
+                // Reorganize the search according to the method parameter type and order.
+                List<Object> arguments = new CopyOnWriteArrayList<>(BasicUtil.argumentsArr(parameters));
+                List<Object> sortedArguments = new ArrayList<>();
+                for (Class<?> parameterType : method.getParameterTypes()) {
+                    Object sortedArg = null;
+                    for (Object arg : arguments) {
+                        if (parameterType.isInstance(arg)) {
+                            sortedArg = arg;
+                            arguments.remove(arg);
+                            break;
+                        }
                     }
+                    sortedArguments.add(sortedArg);
                 }
-                sortedArguments.add(sortedArg);
-            }
 
-            try {
-                ReflectUtil.makeAccessible(method);
-                return method.invoke(object, sortedArguments.toArray());
+                try {
+                    ReflectUtil.makeAccessible(method);
+                    return method.invoke(object, sortedArguments.toArray());
+                }
+                catch (IllegalAccessException | IllegalArgumentException ex){
+                    // wrapper RuntimeException to SdkExpressRunnerException .
+                    throw new SdkExpressRunnerException(ex.getMessage(), ex);
+                }
+                catch (InvocationTargetException ex) {
+                    // wrapper target RuntimeException to SdkExpressRunnerException .
+                    Throwable targetException = ex.getTargetException();
+                    throw new SdkExpressRunnerException(targetException.getMessage(), targetException);
+                }
             }
-            catch (IllegalAccessException | IllegalArgumentException ex){
-                throw new SdkExpressRunnerException(ex); // wrapper RuntimeException to SdkExpressRunnerException .
-            }
-            catch (InvocationTargetException ex) {
-                // wrapper target RuntimeException to SdkExpressRunnerException .
-                throw new SdkExpressRunnerException(ex.getTargetException());
+            else {
+                if (e instanceof InvocationTargetException){
+                    // Throwing a target exception.
+                    throw ((InvocationTargetException) e).getTargetException();
+                }
+                throw e;
             }
         }
     }

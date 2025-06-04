@@ -44,4 +44,15 @@ public class SdkCallerException extends SdkException {
     public SdkCallerException(String s) {
         super(s);
     }
+
+    /**
+     * Creates a {@code SdkCallerException} by given message and
+     * the cause {@code Throwable}.
+     *
+     * @param message the error message.
+     * @param cause   the cause {@code Throwable}.
+     */
+    public SdkCallerException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

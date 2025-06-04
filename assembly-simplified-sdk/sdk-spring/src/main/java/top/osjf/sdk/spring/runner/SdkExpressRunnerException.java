@@ -17,7 +17,7 @@
 
 package top.osjf.sdk.spring.runner;
 
-import top.osjf.sdk.core.exception.SdkException;
+import top.osjf.sdk.core.caller.SdkResponseNonSuccessException;
 
 /**
  * This exception class indicates an error thrown during the execution of an SDK expression.
@@ -25,16 +25,18 @@ import top.osjf.sdk.core.exception.SdkException;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
-public class SdkExpressRunnerException extends SdkException {
+public class SdkExpressRunnerException extends SdkResponseNonSuccessException {
 
     private static final long serialVersionUID = -6775159876342308932L;
 
     /**
-     * Creates a {@code SdkExpressRunnerException} by given cause {@code Throwable}.
+     * Creates a {@code SdkExpressRunnerException} by given message and
+     * the cause {@code Throwable}.
      *
-     * @param cause the cause {@code Throwable}.
+     * @param message the error message.
+     * @param cause   the cause {@code Throwable}.
      */
-    public SdkExpressRunnerException(Throwable cause) {
-        super(cause);
+    public SdkExpressRunnerException(String message, Throwable cause) {
+        super(message, cause);
     }
 }
