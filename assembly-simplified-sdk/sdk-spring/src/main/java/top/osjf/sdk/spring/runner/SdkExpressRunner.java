@@ -31,6 +31,7 @@ import com.alibaba.qlexpress4.runtime.function.CustomFunction;
 import com.alibaba.qlexpress4.runtime.function.QMethodFunction;
 import com.alibaba.qlexpress4.utils.BasicUtil;
 import com.alibaba.qlexpress4.utils.QLFunctionUtil;
+import top.osjf.sdk.core.caller.SdkResponseNonSuccessException;
 import top.osjf.sdk.core.lang.Nullable;
 import top.osjf.sdk.core.util.ArrayUtils;
 import top.osjf.sdk.core.util.ReflectUtil;
@@ -259,8 +260,15 @@ public class SdkExpressRunner {
         catch (QLException ex){
             if (ex instanceof QLRuntimeException) {
                 Object catchObj = ((QLRuntimeException) ex).getCatchObj();
-                if (catchObj instanceof SdkExpressRunnerException) {
-                    throw (SdkExpressRunnerException) catchObj;
+                if (catchObj instanceof Throwable) {
+                    if (catchObj instanceof SdkExpressRunnerException) {
+                        throw (SdkExpressRunnerException) catchObj;
+                    }
+                    else if (catchObj instanceof SdkResponseNonSuccessException) {
+                        SdkResponseNonSuccessException nonSuccessException
+                                 = (SdkResponseNonSuccessException) catchObj;
+                        throw new SdkExpressRunnerException(nonSuccessException.getMessage(), nonSuccessException);
+                    }
                 }
             }
             throw new SdkExpressRunnerException(ex.getMessage(), ex);
