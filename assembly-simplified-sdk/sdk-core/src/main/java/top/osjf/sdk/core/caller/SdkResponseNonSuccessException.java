@@ -26,10 +26,18 @@ public class SdkResponseNonSuccessException extends SdkCallerException {
 
     private static final long serialVersionUID = -8031736713390106538L;
 
+    /**
+     * Creates a {@code SdkResponseNonSuccessException} without args.
+     */
     public SdkResponseNonSuccessException() {
         super();
     }
 
+    /**
+     * Creates a {@code SdkResponseNonSuccessException} by given message.
+     *
+     * @param s the detail error message.
+     */
     public SdkResponseNonSuccessException(String s) {
         super(s);
     }

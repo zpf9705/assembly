@@ -29,10 +29,12 @@ import com.alibaba.qlexpress4.runtime.function.CustomFunction;
 import com.alibaba.qlexpress4.runtime.function.QMethodFunction;
 import com.alibaba.qlexpress4.utils.BasicUtil;
 import com.alibaba.qlexpress4.utils.QLFunctionUtil;
+import top.osjf.sdk.core.caller.SdkResponseNonSuccessException;
 import top.osjf.sdk.core.lang.Nullable;
 import top.osjf.sdk.core.util.ArrayUtils;
 import top.osjf.sdk.core.util.ReflectUtil;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.*;
@@ -301,6 +303,16 @@ public class SdkExpressRunner {
                 return super.call(qContext, parameters);
             }
             catch (Throwable e) {
+
+                if (e instanceof InvocationTargetException){
+                    Throwable targetException = ((InvocationTargetException) e).getTargetException();
+
+                    if (targetException instanceof SdkResponseNonSuccessException) {
+
+                    }
+                }
+
+
                 //When there is a null parameter, perform secondary processing.
                 List<Object> arguments = new CopyOnWriteArrayList<>(BasicUtil.argumentsArr(parameters));
                 List<Object> sortedArguments = new ArrayList<>();
