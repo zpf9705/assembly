@@ -29,7 +29,7 @@ import com.alibaba.qlexpress4.runtime.function.CustomFunction;
 import com.alibaba.qlexpress4.runtime.function.QMethodFunction;
 import com.alibaba.qlexpress4.utils.BasicUtil;
 import com.alibaba.qlexpress4.utils.QLFunctionUtil;
-import top.osjf.sdk.core.caller.SdkResponseNonSuccessException;
+import top.osjf.sdk.core.exception.SdkException;
 import top.osjf.sdk.core.lang.Nullable;
 import top.osjf.sdk.core.util.ArrayUtils;
 import top.osjf.sdk.core.util.ReflectUtil;
@@ -298,36 +298,50 @@ public class SdkExpressRunner {
         }
 
         @Override
-        public Object call(QContext qContext, Parameters parameters) {
+        public Object call(QContext qContext, Parameters parameters) throws Throwable {
             try {
                 return super.call(qContext, parameters);
             }
             catch (Throwable e) {
+                return internalExceptionCall(e, parameters);
+            }
+        }
 
-                if (e instanceof InvocationTargetException){
-                    Throwable targetException = ((InvocationTargetException) e).getTargetException();
+        private Object internalExceptionCall(Throwable e, Parameters parameters) throws Throwable {
 
-                    if (targetException instanceof SdkResponseNonSuccessException) {
+            if (e instanceof InvocationTargetException) {
+                Throwable targetException = ((InvocationTargetException) e).getTargetException();
+                // The relevant subclasses of the SDK throw exceptions directly.
+                if (targetException instanceof SdkException) {
+                    throw targetException;
+                }
+            }
 
+            // Reorganize the search according to the method parameter type and order.
+            List<Object> arguments = new CopyOnWriteArrayList<>(BasicUtil.argumentsArr(parameters));
+            List<Object> sortedArguments = new ArrayList<>();
+            for (Class<?> parameterType : method.getParameterTypes()) {
+                Object sortedArg = null;
+                for (Object arg : arguments) {
+                    if (parameterType.isInstance(arg)) {
+                        sortedArg = arg;
+                        arguments.remove(arg);
+                        break;
                     }
                 }
+                sortedArguments.add(sortedArg);
+            }
 
-
-                //When there is a null parameter, perform secondary processing.
-                List<Object> arguments = new CopyOnWriteArrayList<>(BasicUtil.argumentsArr(parameters));
-                List<Object> sortedArguments = new ArrayList<>();
-                for (Class<?> parameterType : method.getParameterTypes()) {
-                    Object sortedArg = null;
-                    for (Object arg : arguments) {
-                        if (parameterType.isInstance(arg)) {
-                            sortedArg = arg;
-                            arguments.remove(arg);
-                            break;
-                        }
-                    }
-                    sortedArguments.add(sortedArg);
-                }
-                return ReflectUtil.invokeMethod(object, method, sortedArguments.toArray());
+            try {
+                ReflectUtil.makeAccessible(method);
+                return method.invoke(object, sortedArguments.toArray());
+            }
+            catch (IllegalAccessException | IllegalArgumentException ex){
+                throw new SdkExpressRunnerException(ex); // wrapper RuntimeException to SdkExpressRunnerException .
+            }
+            catch (InvocationTargetException ex) {
+                // wrapper target RuntimeException to SdkExpressRunnerException .
+                throw new SdkExpressRunnerException(ex.getTargetException());
             }
         }
     }
