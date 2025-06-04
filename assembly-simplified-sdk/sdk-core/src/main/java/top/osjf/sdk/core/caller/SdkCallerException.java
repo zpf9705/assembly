@@ -19,7 +19,8 @@ package top.osjf.sdk.core.caller;
 import top.osjf.sdk.core.exception.SdkException;
 
 /**
- * Sdk caller exception.
+ * Sdk caller exception indicate the error thrown when using the {@link CallOptions}
+ * mapping {@link RequestCaller} scheme.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
@@ -28,10 +29,18 @@ public class SdkCallerException extends SdkException {
 
     private static final long serialVersionUID = -8031736713390106538L;
 
+    /**
+     * Creates a {@code SdkCallerException} without args.
+     */
     public SdkCallerException() {
         super();
     }
 
+    /**
+     * Creates a {@code SdkCallerException} by given message.
+     *
+     * @param s the detail error message.
+     */
     public SdkCallerException(String s) {
         super(s);
     }
