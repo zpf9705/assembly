@@ -25,7 +25,6 @@ import org.apache.sshd.common.Factory;
 import org.apache.sshd.common.NamedFactory;
 import org.apache.sshd.common.channel.ChannelFactory;
 import org.apache.sshd.common.channel.RequestHandler;
-import org.apache.sshd.common.channel.throttle.ChannelStreamWriterResolver;
 import org.apache.sshd.common.cipher.Cipher;
 import org.apache.sshd.common.compression.Compression;
 import org.apache.sshd.common.config.keys.FilePasswordProvider;
@@ -49,7 +48,6 @@ import org.springframework.util.CollectionUtils;
 import top.osjf.cron.core.lang.Nullable;
 
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -171,8 +169,6 @@ public class SshClientAutoConfiguration {
     public SshClientLifecycle sshClientLifecycle(SshClient sshClient) {
         return new SshClientLifecycle(sshClient);
     }
-
-    public interface ChannelStreamWriterResolverSupplier extends Supplier<ChannelStreamWriterResolver> { }
 
     @Nullable
     private <T> T orderedStreamFirst(ObjectProvider<T> provider) {
