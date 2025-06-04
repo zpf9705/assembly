@@ -184,6 +184,7 @@ public class SdkExpressRunner {
      *                     component call error, need to trace SDK call process.</li>
      *                     <li>{@link com.alibaba.qlexpress4.exception.QLTimeoutException}The script timed out,
      *                     visible call configuration {@link QLOptions}.</li>
+     *                     <li>{@link SdkResponseNonSuccessException} sdk execute process unsuccessful.</li>
      *                     </ul>
      */
     @Nullable
@@ -215,6 +216,7 @@ public class SdkExpressRunner {
      *                     component call error, need to trace SDK call process.</li>
      *                     <li>{@link com.alibaba.qlexpress4.exception.QLTimeoutException}The script timed out,
      *                     visible call configuration {@link QLOptions}.</li>
+     *                     <li>{@link SdkResponseNonSuccessException} sdk execute process unsuccessful.</li>
      *                     </ul>
      */
     @Nullable
@@ -248,6 +250,7 @@ public class SdkExpressRunner {
      *                     component call error, need to trace SDK call process.</li>
      *                     <li>{@link com.alibaba.qlexpress4.exception.QLTimeoutException}The script timed out,
      *                     visible call configuration {@link QLOptions}.</li>
+     *                     <li>{@link SdkResponseNonSuccessException} sdk execute process unsuccessful.</li>
      *                     </ul>
      */
     @Nullable
