@@ -265,9 +265,7 @@ public class SdkExpressRunner {
                         throw (SdkExpressRunnerException) catchObj;
                     }
                     else if (catchObj instanceof SdkResponseNonSuccessException) {
-                        SdkResponseNonSuccessException nonSuccessException
-                                 = (SdkResponseNonSuccessException) catchObj;
-                        throw new SdkExpressRunnerException(nonSuccessException.getMessage(), nonSuccessException);
+                        throw new SdkExpressRunnerException((SdkResponseNonSuccessException) catchObj);
                     }
                 }
             }

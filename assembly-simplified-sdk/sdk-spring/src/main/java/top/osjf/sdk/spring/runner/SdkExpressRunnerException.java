@@ -29,6 +29,19 @@ public class SdkExpressRunnerException extends SdkResponseNonSuccessException {
 
     private static final long serialVersionUID = -6775159876342308932L;
 
+    private SdkResponseNonSuccessException parent;
+
+    /**
+     * Creates a {@code SdkExpressRunnerException} by given message and
+     * the cause {@code SdkResponseNonSuccessException}.
+     *
+     * @param parent   the parent cause {@code SdkResponseNonSuccessException}.
+     */
+    public SdkExpressRunnerException(SdkResponseNonSuccessException parent) {
+        super();
+        this.parent = parent;
+    }
+
     /**
      * Creates a {@code SdkExpressRunnerException} by given message and
      * the cause {@code Throwable}.
@@ -38,5 +51,15 @@ public class SdkExpressRunnerException extends SdkResponseNonSuccessException {
      */
     public SdkExpressRunnerException(String message, Throwable cause) {
         super(message, cause);
+    }
+
+    @Override
+    public synchronized Throwable getCause() {
+        return parent != null ? parent : super.getCause();
+    }
+
+    @Override
+    public String getMessage() {
+        return parent != null ? parent.getMessage() : super.getMessage();
     }
 }
