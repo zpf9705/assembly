@@ -17,7 +17,6 @@
 
 package top.osjf.sdk.spring.runner;
 
-import com.alibaba.qlexpress4.exception.QLException;
 import top.osjf.sdk.core.lang.Nullable;
 
 /**
@@ -37,7 +36,7 @@ public interface ScriptExecutor {
      * <p>Implementing classes must define the specific logic for script execution and return the result.
      *
      * @return The result of the script execution, as an Object.
-     * @throws QLException If an error occurs during script execution, this exception is thrown.
+     * @throws SdkExpressRunnerException If an error occurs during script execution, this exception is thrown.
      */
     @Nullable
     Object execute() throws SdkExpressRunnerException;
