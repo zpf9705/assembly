@@ -19,9 +19,11 @@ package top.osjf.cron.spring.scheduler;
 
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.repository.AbstractCronTaskRepository;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -128,6 +130,31 @@ public abstract class ListenableTaskScheduler extends AbstractCronTaskRepository
     @NotNull
     public ListenableScheduledFuture scheduleWithFixedDelay(@NotNull Runnable task, long delay) {
         return execute(r -> taskScheduler.scheduleWithFixedDelay(r, delay), task, null);
+    }
+
+    @Override
+    public void stop() {
+        super.stop();
+
+        // Pause the running task.
+        for (Map.Entry<String, ListenableScheduledFuture> entry : futureCache.entrySet()) {
+            ListenableScheduledFuture future = entry.getValue();
+            if (!future.isCancelled()) {
+                future.cancel(true);
+            }
+        }
+        futureCache.clear();
+
+        // Try to close the thread pool.
+        if (taskScheduler instanceof CloseableTaskScheduler) {
+            try {
+                ((CloseableTaskScheduler) taskScheduler).close();
+            } catch (IOException ignored) {
+            }
+        }
+        else if (taskScheduler instanceof ThreadPoolTaskScheduler) {
+            ((ThreadPoolTaskScheduler) taskScheduler).getScheduledExecutor().shutdownNow();
+        }
     }
 
     /**
