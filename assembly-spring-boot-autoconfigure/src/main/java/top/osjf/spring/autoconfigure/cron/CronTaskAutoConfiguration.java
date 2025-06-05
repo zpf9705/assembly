@@ -81,7 +81,7 @@ public class CronTaskAutoConfiguration {
         @Override
         public void afterPropertiesSet() {
             Assert.notNull(this.cronTaskRepositories.getIfAvailable(),
-                    () -> "No cron task repository could be auto-configured, check your configuration (caching type is '"
+                    () -> "No cron task repository could be auto-configured, check your configuration (client type is '"
                             + this.cronProperties.getClientType() + "')");
         }
 
