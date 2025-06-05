@@ -99,7 +99,7 @@ public class CronTaskAutoConfiguration {
             CronProperties.ClientType[] types = CronProperties.ClientType.values();
             String[] imports = new String[types.length];
             for (int i = 0; i < types.length; i++) {
-                imports[i] = CronConfigurations.getConfigurationClass(types[i]);
+                imports[i] = CronAutoConfigurations.getConfigurationClass(types[i]);
             }
             return imports;
         }
