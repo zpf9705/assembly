@@ -162,6 +162,52 @@ public class SdkExpressRunner {
     }
 
     /**
+     *
+     * @param script  Call the script.
+     * @param args    The array parameters that make up the template execution context parameters.
+     * @return The return result of calling the script,the specific type can be viewed in the processing
+     * rules:{@link top.osjf.sdk.core.support.SdkSupport#resolveResponse}
+     * @throws SdkExpressRunnerException --- {@link SdkExpressRunnerException#getCause()} ---
+     *                     <ul>
+     *                     <li>{@link com.alibaba.qlexpress4.exception.QLSyntaxException}Script syntax error.</li>
+     *                     <li>{@link com.alibaba.qlexpress4.exception.QLRuntimeException}Script runtime error, SDK
+     *                     component call error, need to trace SDK call process.</li>
+     *                     <li>{@link com.alibaba.qlexpress4.exception.QLTimeoutException}The script timed out,
+     *                     visible call configuration {@link QLOptions}.</li>
+     *                     <li>{@link SdkResponseNonSuccessException} sdk execute process unsuccessful.</li>
+     *                     </ul>
+     */
+    public Object execute(String script, Object... args) {
+        return execute(script, QLOptions.DEFAULT_OPTIONS, args);
+    }
+
+    /**
+     *
+     * @param script    Call the script.
+     * @param qlOptions Execute call options.
+     * @param args      The array parameters that make up the template execution context parameters.
+     * @return The return result of calling the script,the specific type can be viewed in the processing
+     * rules:{@link top.osjf.sdk.core.support.SdkSupport#resolveResponse}
+     * @throws SdkExpressRunnerException --- {@link SdkExpressRunnerException#getCause()} ---
+     *                     <ul>
+     *                     <li>{@link com.alibaba.qlexpress4.exception.QLSyntaxException}Script syntax error.</li>
+     *                     <li>{@link com.alibaba.qlexpress4.exception.QLRuntimeException}Script runtime error, SDK
+     *                     component call error, need to trace SDK call process.</li>
+     *                     <li>{@link com.alibaba.qlexpress4.exception.QLTimeoutException}The script timed out,
+     *                     visible call configuration {@link QLOptions}.</li>
+     *                     <li>{@link SdkResponseNonSuccessException} sdk execute process unsuccessful.</li>
+     *                     </ul>
+     */
+    public Object execute(String script, QLOptions qlOptions, Object... args) {
+        CustomFunction function;
+        if (script.endsWith(")") || ArrayUtils.isEmpty(args)
+                || !((function = express4Runner.getFunction(script)) instanceof SdkQMethodFunction)) {
+            return execute(script);
+        }
+        return execute(script, ((SdkQMethodFunction) function).transferContext(args), qlOptions);
+    }
+
+    /**
      * Execute the script set in the context, with no other configuration variables.
      * <p>
      * The above instruction added to {@link #addSdkMethodFunction(Class, Object)} conforms to the syntax
@@ -317,6 +363,37 @@ public class SdkExpressRunner {
 
         public String addScriptParameterNames(String script) {
             return script + "(" + parameterNames + ")";
+        }
+
+        /**
+         * Based on the provided valid parameter array and the known method parameter list, assemble a
+         * contextual template that maps parameter values to parameter names to execute parameter
+         * information.
+         *
+         * @param args  The array parameters that make up the template execution context parameters.
+         * @return      The context template that maps parameter names to parameter values executes
+         *              parameter information.
+         */
+        public Map<String, Object> transferContext(Object... args) {
+            Parameter[] parameters;
+            if (ArrayUtils.isEmpty(args) || ArrayUtils.isEmpty((parameters = method.getParameters()))) {
+                return Collections.emptyMap();
+            }
+            if (args.length != parameters.length) {
+                throw new IllegalArgumentException("Provided parameter length is " + args.length + ", " +
+                        "but the parsing method parameter length is " + parameters.length + ".");
+            }
+            Map<String, Object> content = new HashMap<>();
+            for (int i = 0; i < args.length; i++) {
+                Parameter parameter = parameters[i];
+                Object arg = args[0];
+                if (!parameter.getType().isInstance(arg)) {
+                    throw new IllegalArgumentException("Type "+ parameter.getType() +" is required, " +
+                            "but " + arg.getClass() + " is provided.");
+                }
+                content.put(parameter.getName(), arg);
+            }
+            return content;
         }
 
         @Override
