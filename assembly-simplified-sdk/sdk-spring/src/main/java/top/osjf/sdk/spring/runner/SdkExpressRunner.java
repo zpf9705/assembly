@@ -167,6 +167,7 @@ public class SdkExpressRunner {
      *
      * @param script  Call the script.
      * @param context The array parameters that make up the template execution context parameters.
+     * @param <T>     The specified type of result.
      * @return The return result of calling the script,the specific type can be viewed in the processing
      * rules:{@link top.osjf.sdk.core.support.SdkSupport#resolveResponse}
      * @throws SdkExpressRunnerException  If the parameter type does not match the original method type.
@@ -180,7 +181,8 @@ public class SdkExpressRunner {
      *                     <li>{@link SdkResponseNonSuccessException} sdk execute process unsuccessful.</li>
      *                     </ul>
      */
-    public Object execute(String script, Object... context) {
+    @Nullable
+    public <T> T execute(String script, Object... context) {
         return execute(script, QLOptions.DEFAULT_OPTIONS, context);
     }
 
@@ -196,6 +198,7 @@ public class SdkExpressRunner {
      * @param script    Call the script.
      * @param qlOptions Execute call options.
      * @param context   The array parameters that make up the template execution context parameters.
+     * @param <T>       The specified type of result.
      * @return The return result of calling the script,the specific type can be viewed in the processing
      * rules:{@link top.osjf.sdk.core.support.SdkSupport#resolveResponse}
      * @throws SdkExpressRunnerException  If the parameter type does not match the original method type.
@@ -210,7 +213,8 @@ public class SdkExpressRunner {
      *                     <li>{@link IllegalArgumentException} sdk execute process unsuccessful.</li>
      *                     </ul>
      */
-    public Object execute(String script, QLOptions qlOptions, Object... context) {
+    @Nullable
+    public <T> T execute(String script, QLOptions qlOptions, Object... context) {
         CustomFunction function;
         // The input function research template is executed directly if there is no context parameter
         // array provided for the rich ending or no context parameter array.
@@ -234,7 +238,8 @@ public class SdkExpressRunner {
      * written</li>
      * </ul>
      *
-     * @param script Call the script.
+     * @param script    Call the script.
+     * @param <T>       The specified type of result.
      * @return The return result of calling the script,the specific type can be viewed in the processing
      * rules:{@link top.osjf.sdk.core.support.SdkSupport#resolveResponse}
      * @throws SdkExpressRunnerException --- {@link SdkExpressRunnerException#getCause()} ---
@@ -247,7 +252,7 @@ public class SdkExpressRunner {
      *                     </ul>
      */
     @Nullable
-    public Object execute(String script) throws SdkExpressRunnerException {
+    public <T> T execute(String script) throws SdkExpressRunnerException {
         return execute(script, Collections.emptyMap());
     }
 
@@ -266,6 +271,7 @@ public class SdkExpressRunner {
      *
      * @param script  Call the script.
      * @param context The calling context can be a parameter for calling a component method.
+     * @param <T>       The specified type of result.
      * @return The return result of calling the script,the specific type can be viewed in the processing
      * rules:{@link top.osjf.sdk.core.support.SdkSupport#resolveResponse}
      * @throws SdkExpressRunnerException --- {@link SdkExpressRunnerException#getCause()} ---
@@ -278,7 +284,7 @@ public class SdkExpressRunner {
      *                     </ul>
      */
     @Nullable
-    public Object execute(String script, Map<String, Object> context) throws SdkExpressRunnerException {
+    public <T> T execute(String script, Map<String, Object> context) throws SdkExpressRunnerException {
         return execute(script, context, QLOptions.DEFAULT_OPTIONS);
     }
 
@@ -299,6 +305,7 @@ public class SdkExpressRunner {
      * @param script    Call the script.
      * @param context   The calling context can be a parameter for calling a component method.
      * @param qlOptions Execute call options.
+     * @param <T>       The specified type of result.
      * @return The return result of calling the script,the specific type can be viewed in the processing
      * rules:{@link top.osjf.sdk.core.support.SdkSupport#resolveResponse}
      * @throws SdkExpressRunnerException --- {@link SdkExpressRunnerException#getCause()} ---
@@ -312,7 +319,8 @@ public class SdkExpressRunner {
      *                     </ul>
      */
     @Nullable
-    public Object execute(String script, @Nullable Map<String, Object> context, QLOptions qlOptions)
+    @SuppressWarnings("unchecked")
+    public <T> T execute(String script, @Nullable Map<String, Object> context, QLOptions qlOptions)
             throws SdkExpressRunnerException {
         QLResult result;
         try {
@@ -332,7 +340,7 @@ public class SdkExpressRunner {
             }
             throw new SdkExpressRunnerException(ex.getMessage(), ex);
         }
-        return result != null ? result.getResult() : null;
+        return result != null ? (T) result.getResult() : null;
     }
 
     private String getCorrespondScript(String script) {
