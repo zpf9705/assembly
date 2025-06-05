@@ -179,10 +179,12 @@ public abstract class ListenableTaskScheduler extends AbstractCronTaskRepository
      * @return An instance of {@link ListenableScheduledFuture} with added listening function.
      */
     @NotNull
-    private ListenableScheduledFuture execute(Function<Runnable, ScheduledFuture<?>> func, Runnable runnable, Trigger trigger) {
+    private ListenableScheduledFuture execute(Function<Runnable, ScheduledFuture<?>> func, Runnable runnable,
+                                              Trigger trigger) {
         ListenableRunnable listenableRunnable = wrapperRunnableToListenable(runnable, trigger);
         ScheduledFuture<?> scheduledFuture = func.apply(listenableRunnable);
-        ListenableScheduledFuture listenableScheduledFuture = new ListenableScheduledFuture(listenableRunnable, scheduledFuture);
+        ListenableScheduledFuture listenableScheduledFuture
+                = new ListenableScheduledFuture(listenableRunnable, scheduledFuture);
         futureCache.putIfAbsent(listenableRunnable.getId(), listenableScheduledFuture);
         return listenableScheduledFuture;
     }
