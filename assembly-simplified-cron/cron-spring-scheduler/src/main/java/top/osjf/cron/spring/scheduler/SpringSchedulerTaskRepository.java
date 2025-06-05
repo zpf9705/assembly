@@ -17,6 +17,7 @@
 package top.osjf.cron.spring.scheduler;
 
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.scheduling.TaskScheduler;
@@ -69,7 +70,8 @@ import java.util.stream.Collectors;
  * @see CronListener
  */
 public class SpringSchedulerTaskRepository
-        extends ListenableTaskScheduler implements ApplicationListener<ContextRefreshedEvent>, DisposableBean {
+        extends ListenableTaskScheduler
+        implements InitializingBean, ApplicationListener<ContextRefreshedEvent>, DisposableBean {
 
     private final IdGenerator idGenerator = new SimpleIdGenerator();
 
@@ -87,6 +89,11 @@ public class SpringSchedulerTaskRepository
      */
     public SpringSchedulerTaskRepository(@NotNull TaskScheduler taskScheduler) {
         super(taskScheduler);
+    }
+
+    @Override
+    public void afterPropertiesSet() {
+        super.start();
     }
 
     /**

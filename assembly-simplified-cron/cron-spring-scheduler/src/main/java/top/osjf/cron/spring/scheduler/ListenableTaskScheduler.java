@@ -23,7 +23,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.repository.AbstractCronTaskRepository;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
@@ -134,12 +133,6 @@ public abstract class ListenableTaskScheduler extends AbstractCronTaskRepository
     @NotNull
     public ListenableScheduledFuture scheduleWithFixedDelay(@NotNull Runnable task, long delay) {
         return execute(r -> taskScheduler.scheduleWithFixedDelay(r, delay), task, null);
-    }
-
-    @Override
-    @PostConstruct
-    public void start() {
-        super.start();
     }
 
     /**
