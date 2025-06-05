@@ -143,7 +143,7 @@ public abstract class ListenableTaskScheduler extends AbstractCronTaskRepository
     /**
      * The function object that executes the given encapsulation task registration behavior
      * encapsulates the {@link ScheduledFuture} execution result and related task information
-     * into a {@link ListenableScheduledFuture} object with an ID tag cached in {@link #listenableScheduledFutures}
+     * into a {@link ListenableScheduledFuture} object with an ID tag cached in {@link #getFutureCache}
      * for later management.
      *
      * @param func     get the function object of the {@link ScheduledFuture} instance.
@@ -156,7 +156,7 @@ public abstract class ListenableTaskScheduler extends AbstractCronTaskRepository
         ListenableRunnable listenableRunnable = wrapperRunnableToListenable(runnable, trigger);
         ScheduledFuture<?> scheduledFuture = func.apply(listenableRunnable);
         ListenableScheduledFuture listenableScheduledFuture = new ListenableScheduledFuture(listenableRunnable, scheduledFuture);
-        listenableScheduledFutures.putIfAbsent(listenableRunnable.getId(), listenableScheduledFuture);
+        futureCache.putIfAbsent(listenableRunnable.getId(), listenableScheduledFuture);
         return listenableScheduledFuture;
     }
 }
