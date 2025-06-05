@@ -73,8 +73,6 @@ public class SpringSchedulerTaskRepository
 
     private final IdGenerator idGenerator = new SimpleIdGenerator();
 
-    private final AtomicBoolean started = new AtomicBoolean(true);
-
     /**
      * Creates a new {@code SpringSchedulerTaskRepository} with default {@link DefaultManagedTaskScheduler}.
      */
@@ -110,7 +108,7 @@ public class SpringSchedulerTaskRepository
 
     @Override
     public String register(@NotNull String expression, @NotNull Runnable runnable) throws CronInternalException {
-        assertSchedulerStarted();
+        super.ensureStarted();
         return RepositoryUtils.doRegister(() ->
                         schedule(runnable, new CronTrigger(expression)).getListenableRunnable().getId(),
                 IllegalArgumentException.class);
@@ -198,7 +196,7 @@ public class SpringSchedulerTaskRepository
 
     @Override
     public void update(@NotNull String id, @NotNull String newExpression) {
-        assertSchedulerStarted();
+        super.ensureStarted();
         ListenableScheduledFuture listenableScheduledFuture = getListenableScheduledFutures().remove(id);
         if (listenableScheduledFuture == null) {
             throw new CronInternalException("ID " + id + " did not find the corresponding task information.");
@@ -209,50 +207,23 @@ public class SpringSchedulerTaskRepository
 
     @Override
     public void remove(@NotNull String id) {
-        assertSchedulerStarted();
+        super.ensureStarted();
         ListenableScheduledFuture listenableScheduledFuture = getListenableScheduledFutures().remove(id);
         if (listenableScheduledFuture != null) {
             listenableScheduledFuture.cancel(true);
         }
     }
 
-    /**
-     * Asserts that the scheduler has been started.
-     *
-     * <p>This method checks whether the scheduler has been started. If the scheduler
-     * has not been started,it throws an {@link IllegalStateException}.
-     */
-    protected void assertSchedulerStarted() {
-        if (!isStarted()) {
-            throw new IllegalStateException("Scheduling has not started yet.");
-        }
-    }
-
-    @Override
-    public void start() {
-        //It is initially enabled by default and can be executed after stopping and restarting.
-        if (!started.compareAndSet(false, true)) {
-            throw new IllegalStateException("Scheduling has not stopped.");
-        }
-    }
-
     @Override
     public void stop() {
-        if (!started.compareAndSet(true, false)) {
-            throw new IllegalStateException("Scheduling has not started yet.");
-        }
-        Map<String, ListenableScheduledFuture> listenableScheduledFutures = getListenableScheduledFutures();
-        for (Map.Entry<String, ListenableScheduledFuture> entry : listenableScheduledFutures.entrySet()) {
-            ListenableScheduledFuture scheduledFuture = listenableScheduledFutures.get(entry.getKey());
+        super.stop();
+        Map<String, ListenableScheduledFuture> sfs = getListenableScheduledFutures();
+        for (Map.Entry<String, ListenableScheduledFuture> entry : sfs.entrySet()) {
+            ListenableScheduledFuture scheduledFuture = entry.getValue();
             if (!scheduledFuture.isCancelled()) {
                 scheduledFuture.cancel(true);
             }
         }
-        listenableScheduledFutures.clear();
-    }
-
-    @Override
-    public boolean isStarted() {
-        return started.get();
+        sfs.clear();
     }
 }
