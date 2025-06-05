@@ -50,28 +50,30 @@ public class NoOpCronTaskRepository extends AbstractCronTaskRepository {
 
     @Override
     public String register(@Nonnull String expression, @Nonnull Runnable runnable) throws CronInternalException {
-        return UUID.randomUUID().toString();
+        return getWithoutOperationId();
     }
 
     @Override
     public String register(@Nonnull String expression, @Nonnull CronMethodRunnable runnable) throws CronInternalException {
-        return UUID.randomUUID().toString();
+        return getWithoutOperationId();
     }
 
     @Override
     public String register(@Nonnull String expression, @Nonnull RunnableTaskBody body) throws CronInternalException {
-        return UUID.randomUUID().toString();
+        return getWithoutOperationId();
     }
 
     @Override
     public String register(@Nonnull String expression, @Nonnull TaskBody body) throws CronInternalException {
-        return UUID.randomUUID().toString();
+        return getWithoutOperationId();
     }
 
     @Override
     public String register(@Nonnull CronTask task) throws CronInternalException {
-        return UUID.randomUUID().toString();
+        return getWithoutOperationId();
     }
+
+    static String getWithoutOperationId() { return UUID.randomUUID().toString(); }
 
     @Nullable
     @Override
