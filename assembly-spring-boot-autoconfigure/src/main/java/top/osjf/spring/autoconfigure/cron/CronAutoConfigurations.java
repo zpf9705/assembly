@@ -29,7 +29,7 @@ import java.util.Map;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
-final class CronConfigurations {
+final class CronAutoConfigurations {
 
     private static final Map<CronProperties.ClientType, String> MAPPINGS;
 
@@ -43,7 +43,7 @@ final class CronConfigurations {
         MAPPINGS = Collections.unmodifiableMap(mappings);
     }
 
-    private CronConfigurations() {
+    private CronAutoConfigurations() {
     }
 
     static String getConfigurationClass(CronProperties.ClientType clientType) {

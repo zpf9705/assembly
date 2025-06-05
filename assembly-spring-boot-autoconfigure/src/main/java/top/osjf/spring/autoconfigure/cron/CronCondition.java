@@ -52,7 +52,8 @@ public class CronCondition extends SpringBootCondition {
             if (!specified.isBound()) {
                 return ConditionOutcome.match(message.because("automatic cron client type"));
             }
-            CronProperties.ClientType required = CronConfigurations.getType(((AnnotationMetadata) metadata).getClassName());
+            CronProperties.ClientType required = CronAutoConfigurations.getType(((AnnotationMetadata) metadata)
+                    .getClassName());
             if (specified.get() == required) {
                 return ConditionOutcome.match(message.because(specified.get() + " cron client type"));
             }
