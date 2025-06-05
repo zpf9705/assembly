@@ -16,6 +16,7 @@
 
 package top.osjf.cron.spring.scheduler;
 
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.scheduling.TaskScheduler;
@@ -69,7 +70,7 @@ import java.util.stream.Collectors;
  * @see CronListener
  */
 public class SpringSchedulerTaskRepository
-        extends ListenableTaskScheduler implements ApplicationListener<ContextRefreshedEvent> {
+        extends ListenableTaskScheduler implements ApplicationListener<ContextRefreshedEvent>, DisposableBean {
 
     private final IdGenerator idGenerator = new SimpleIdGenerator();
 
@@ -92,6 +93,7 @@ public class SpringSchedulerTaskRepository
     /**
      * {@inheritDoc}
      * Set all {@link CronListener} beans in the container to the current bean.
+     *
      * @param event the event to respond to
      */
     @Override
@@ -197,33 +199,38 @@ public class SpringSchedulerTaskRepository
     @Override
     public void update(@NotNull String id, @NotNull String newExpression) {
         super.ensureStarted();
-        ListenableScheduledFuture listenableScheduledFuture = getListenableScheduledFutures().remove(id);
-        if (listenableScheduledFuture == null) {
+        ListenableScheduledFuture future = getFutureCache().remove(id);
+        if (future == null) {
             throw new CronInternalException("ID " + id + " did not find the corresponding task information.");
         }
-        listenableScheduledFuture.cancel(true);
-        register(newExpression, listenableScheduledFuture.getListenableRunnable().getRunnable());
+        future.cancel(true);
+        register(newExpression, future.getListenableRunnable().getRunnable());
     }
 
     @Override
     public void remove(@NotNull String id) {
         super.ensureStarted();
-        ListenableScheduledFuture listenableScheduledFuture = getListenableScheduledFutures().remove(id);
-        if (listenableScheduledFuture != null) {
-            listenableScheduledFuture.cancel(true);
+        ListenableScheduledFuture future = getFutureCache().remove(id);
+        if (future != null && !future.isCancelled()) {
+            future.cancel(true);
         }
     }
 
     @Override
     public void stop() {
         super.stop();
-        Map<String, ListenableScheduledFuture> sfs = getListenableScheduledFutures();
-        for (Map.Entry<String, ListenableScheduledFuture> entry : sfs.entrySet()) {
-            ListenableScheduledFuture scheduledFuture = entry.getValue();
-            if (!scheduledFuture.isCancelled()) {
-                scheduledFuture.cancel(true);
+        Map<String, ListenableScheduledFuture> futureCache = getFutureCache();
+        for (Map.Entry<String, ListenableScheduledFuture> entry : futureCache.entrySet()) {
+            ListenableScheduledFuture future = entry.getValue();
+            if (!future.isCancelled()) {
+                future.cancel(true);
             }
         }
-        sfs.clear();
+        futureCache.clear();
+    }
+
+    @Override
+    public void destroy() {
+        stop();
     }
 }
