@@ -32,6 +32,15 @@ public class SdkExpressRunnerException extends SdkResponseNonSuccessException {
     private SdkResponseNonSuccessException parent;
 
     /**
+     * Creates a {@code SdkExpressRunnerException} by given message.
+     *
+     * @param s the detail error message.
+     */
+    public SdkExpressRunnerException(String s) {
+        super(s);
+    }
+
+    /**
      * Creates a {@code SdkExpressRunnerException} by given message and
      * the cause {@code SdkResponseNonSuccessException}.
      *
