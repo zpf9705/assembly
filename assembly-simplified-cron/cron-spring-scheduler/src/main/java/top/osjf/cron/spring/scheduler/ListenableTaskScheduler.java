@@ -23,6 +23,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.repository.AbstractCronTaskRepository;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
@@ -71,6 +72,9 @@ public abstract class ListenableTaskScheduler extends AbstractCronTaskRepository
 
     /**
      * Gets the caching of listenable scheduled futures.
+     *
+     * <p>Providing dynamic operations related to task completion resources to subclasses
+     * is equivalent to allocating resource responsibilities.
      *
      * @return the caching of listenable scheduled futures.
      */
@@ -132,6 +136,17 @@ public abstract class ListenableTaskScheduler extends AbstractCronTaskRepository
         return execute(r -> taskScheduler.scheduleWithFixedDelay(r, delay), task, null);
     }
 
+    @Override
+    @PostConstruct
+    public void start() {
+        super.start();
+    }
+
+    /**
+     * The closing operation of the task scheduler and task cache cleaning should be completed by
+     * this class, compatible with the Spring framework's bean cycle processing, and should be
+     * completed by the resource class.
+     */
     @Override
     public void stop() {
         super.stop();

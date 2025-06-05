@@ -34,7 +34,6 @@ import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.repository.*;
 import top.osjf.cron.core.util.GsonUtils;
 
-import javax.annotation.PostConstruct;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Objects;
@@ -217,13 +216,7 @@ public class SpringSchedulerTaskRepository
     }
 
     @Override
-    @PostConstruct
-    public void start() {
-        super.start();
-    }
-
-    @Override
     public void destroy() {
-        stop();
+        super.stop();
     }
 }
