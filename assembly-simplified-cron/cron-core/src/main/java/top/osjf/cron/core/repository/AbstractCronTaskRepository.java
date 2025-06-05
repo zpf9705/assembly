@@ -53,7 +53,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public abstract class AbstractCronTaskRepository implements CronTaskRepository {
+public abstract class AbstractCronTaskRepository extends AbstractLifecycleRepository implements CronTaskRepository {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
