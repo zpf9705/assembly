@@ -162,9 +162,11 @@ public class SdkExpressRunner {
     }
 
     /**
+     * Execute the script set in the context, can pass in custom parameter variables and
+     * with default call options.
      *
      * @param script  Call the script.
-     * @param args    The array parameters that make up the template execution context parameters.
+     * @param context The array parameters that make up the template execution context parameters.
      * @return The return result of calling the script,the specific type can be viewed in the processing
      * rules:{@link top.osjf.sdk.core.support.SdkSupport#resolveResponse}
      * @throws SdkExpressRunnerException --- {@link SdkExpressRunnerException#getCause()} ---
@@ -177,15 +179,22 @@ public class SdkExpressRunner {
      *                     <li>{@link SdkResponseNonSuccessException} sdk execute process unsuccessful.</li>
      *                     </ul>
      */
-    public Object execute(String script, Object... args) {
-        return execute(script, QLOptions.DEFAULT_OPTIONS, args);
+    public Object execute(String script, Object... context) {
+        return execute(script, QLOptions.DEFAULT_OPTIONS, context);
     }
 
     /**
+     * Execute the script set in the context, can pass in custom parameter variables and
+     * configure custom calling options.
+     * <p>
+     * Based on method {@link #execute(String, Map, QLOptions)}, perform targeted transformation
+     * of contextual template execution information according to the input template variable
+     * parameter list, and match parameters in order. Pay special attention to the parameter
+     * order and type of the original method.
      *
      * @param script    Call the script.
      * @param qlOptions Execute call options.
-     * @param args      The array parameters that make up the template execution context parameters.
+     * @param context   The array parameters that make up the template execution context parameters.
      * @return The return result of calling the script,the specific type can be viewed in the processing
      * rules:{@link top.osjf.sdk.core.support.SdkSupport#resolveResponse}
      * @throws SdkExpressRunnerException --- {@link SdkExpressRunnerException#getCause()} ---
@@ -196,15 +205,18 @@ public class SdkExpressRunner {
      *                     <li>{@link com.alibaba.qlexpress4.exception.QLTimeoutException}The script timed out,
      *                     visible call configuration {@link QLOptions}.</li>
      *                     <li>{@link SdkResponseNonSuccessException} sdk execute process unsuccessful.</li>
+     *                     <li>{@link IllegalArgumentException} sdk execute process unsuccessful.</li>
      *                     </ul>
      */
-    public Object execute(String script, QLOptions qlOptions, Object... args) {
+    public Object execute(String script, QLOptions qlOptions, Object... context) {
         CustomFunction function;
-        if (script.endsWith(")") || ArrayUtils.isEmpty(args)
+        // The input function research template is executed directly if there is no context parameter
+        // array provided for the rich ending or no context parameter array.
+        if (script.endsWith(")") || ArrayUtils.isEmpty(context)
                 || !((function = express4Runner.getFunction(script)) instanceof SdkQMethodFunction)) {
             return execute(script);
         }
-        return execute(script, ((SdkQMethodFunction) function).transferContext(args), qlOptions);
+        return execute(script, ((SdkQMethodFunction) function).transferContext(context), qlOptions);
     }
 
     /**
@@ -223,14 +235,14 @@ public class SdkExpressRunner {
      * @param script Call the script.
      * @return The return result of calling the script,the specific type can be viewed in the processing
      * rules:{@link top.osjf.sdk.core.support.SdkSupport#resolveResponse}
-     * @throws SdkExpressRunnerException --- {@link SdkExpressRunnerException#getCause()} ---
+     * @throws SdkExpressRunnerException  If the parameter type does not match the original method type.
+     *                      --- {@link SdkExpressRunnerException#getCause()} ---
      *                     <ul>
      *                     <li>{@link com.alibaba.qlexpress4.exception.QLSyntaxException}Script syntax error.</li>
      *                     <li>{@link com.alibaba.qlexpress4.exception.QLRuntimeException}Script runtime error, SDK
      *                     component call error, need to trace SDK call process.</li>
      *                     <li>{@link com.alibaba.qlexpress4.exception.QLTimeoutException}The script timed out,
      *                     visible call configuration {@link QLOptions}.</li>
-     *                     <li>{@link SdkResponseNonSuccessException} sdk execute process unsuccessful.</li>
      *                     </ul>
      */
     @Nullable
@@ -255,14 +267,14 @@ public class SdkExpressRunner {
      * @param context The calling context can be a parameter for calling a component method.
      * @return The return result of calling the script,the specific type can be viewed in the processing
      * rules:{@link top.osjf.sdk.core.support.SdkSupport#resolveResponse}
-     * @throws SdkExpressRunnerException --- {@link SdkExpressRunnerException#getCause()} ---
+     * @throws SdkExpressRunnerException  If the parameter type does not match the original method type.
+     *                      --- {@link SdkExpressRunnerException#getCause()} ---
      *                     <ul>
      *                     <li>{@link com.alibaba.qlexpress4.exception.QLSyntaxException}Script syntax error.</li>
      *                     <li>{@link com.alibaba.qlexpress4.exception.QLRuntimeException}Script runtime error, SDK
      *                     component call error, need to trace SDK call process.</li>
      *                     <li>{@link com.alibaba.qlexpress4.exception.QLTimeoutException}The script timed out,
      *                     visible call configuration {@link QLOptions}.</li>
-     *                     <li>{@link SdkResponseNonSuccessException} sdk execute process unsuccessful.</li>
      *                     </ul>
      */
     @Nullable
@@ -380,7 +392,7 @@ public class SdkExpressRunner {
                 return Collections.emptyMap();
             }
             if (args.length != parameters.length) {
-                throw new IllegalArgumentException("Provided parameter length is " + args.length + ", " +
+                throw new SdkExpressRunnerException("Provided parameter length is " + args.length + ", " +
                         "but the parsing method parameter length is " + parameters.length + ".");
             }
             Map<String, Object> content = new HashMap<>();
@@ -388,7 +400,7 @@ public class SdkExpressRunner {
                 Parameter parameter = parameters[i];
                 Object arg = args[0];
                 if (!parameter.getType().isInstance(arg)) {
-                    throw new IllegalArgumentException("Type "+ parameter.getType() +" is required, " +
+                    throw new SdkExpressRunnerException("Type "+ parameter.getType() +" is required, " +
                             "but " + arg.getClass() + " is provided.");
                 }
                 content.put(parameter.getName(), arg);
