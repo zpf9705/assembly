@@ -45,7 +45,7 @@ public class NoOpCronTaskRepository extends AbstractCronTaskRepository {
 
     @Override
     public boolean isStarted() {
-        return true;
+        return false;
     }
 
     @Override
