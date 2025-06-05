@@ -16,6 +16,8 @@
 
 package top.osjf.spring.autoconfigure.cron;
 
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.LazyInitializationExcludeFilter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -24,6 +26,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.util.Assert;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.spring.annotation.Cron;
@@ -50,6 +53,38 @@ public class CronTaskAutoConfiguration {
     @Bean
     public static LazyInitializationExcludeFilter cronBeanLazyInitializationExcludeFilter() {
         return new CronBeanLazyInitializationExcludeFilter();
+    }
+
+    @Bean
+    public CronClientValidator cronTaskAutoConfigurationValidator(CronProperties cronProperties,
+                                                                  ObjectProvider<CronTaskRepository> cronTaskRepositories) {
+        return new CronClientValidator(cronProperties, cronTaskRepositories);
+    }
+
+    /**
+     * Bean used to validate that a {@link CronTaskRepository} exists and provide a more meaningful
+     * exception.
+     * @since 1.0.4
+     */
+    public static class CronClientValidator implements InitializingBean {
+
+        private final CronProperties cronProperties;
+
+        private final ObjectProvider<CronTaskRepository> cronTaskRepositories;
+
+        public CronClientValidator(CronProperties cronProperties,
+                                   ObjectProvider<CronTaskRepository> cronTaskRepositories) {
+            this.cronProperties = cronProperties;
+            this.cronTaskRepositories = cronTaskRepositories;
+        }
+
+        @Override
+        public void afterPropertiesSet() {
+            Assert.notNull(this.cronTaskRepositories.getIfAvailable(),
+                    () -> "No cron task repository could be auto-configured, check your configuration (caching type is '"
+                            + this.cronProperties.getClientType() + "')");
+        }
+
     }
 
     /**
