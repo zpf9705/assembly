@@ -16,7 +16,8 @@
 
 package top.osjf.cron.spring.scheduler;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.concurrent.DefaultManagedTaskScheduler;
@@ -67,7 +68,8 @@ import java.util.stream.Collectors;
  * @see ListenableRunnable
  * @see CronListener
  */
-public class SpringSchedulerTaskRepository extends ListenableTaskScheduler {
+public class SpringSchedulerTaskRepository
+        extends ListenableTaskScheduler implements ApplicationListener<ContextRefreshedEvent> {
 
     private final IdGenerator idGenerator = new SimpleIdGenerator();
 
@@ -90,21 +92,14 @@ public class SpringSchedulerTaskRepository extends ListenableTaskScheduler {
     }
 
     /**
+     * {@inheritDoc}
      * Set all {@link CronListener} beans in the container to the current bean.
-     *
-     * <p><strong>Note:</strong></p>
-     * If a bean depends on this bean {@code SchedulingRepository} and implements
-     * {@code CronListener}, it is also a {@code CronListener} bean, which
-     * will result in circular dependencies and program errors. It is recommended to
-     * separate the logic extraction and processing.
-     *
-     * @param cronListeners all {@link CronListener} beans in the container.
+     * @param event the event to respond to
      */
-    @Autowired(required = false)
-    public void setSchedulingListeners(List<CronListener> cronListeners) {
-        for (CronListener cronListener : cronListeners) {
-            getCronListenerCollector().addCronListener(cronListener);
-        }
+    @Override
+    public void onApplicationEvent(@NotNull ContextRefreshedEvent event) {
+        event.getApplicationContext().getBeansOfType(CronListener.class)
+                .forEach((n, c) -> getCronListenerCollector().addLastCronListener(c));
     }
 
     @Override
