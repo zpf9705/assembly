@@ -107,6 +107,11 @@ public class CronProperties {
          * Use the cron4j cron client.
          */
         CRON4J,
+
+        /**
+         * No client.
+         */
+        NONE
     }
 
     /**
