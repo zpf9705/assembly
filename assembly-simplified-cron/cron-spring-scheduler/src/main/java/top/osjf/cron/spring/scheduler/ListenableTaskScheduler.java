@@ -39,9 +39,9 @@ import java.util.function.Function;
  * object, and its return value will be converted into a listener attached
  * {@link ListenableScheduledFuture} instance object.
  *
- * <p>All registered task information will be retained in {@link #listenableScheduledFutures}
- * and can be managed later. For example, in {@link SpringSchedulerTaskRepository}, the retained
- * task information can be updated and stopped through a unique ID.
+ * <p>All registered task information will be retained in {@link #futureCache} and can be managed
+ * later. For example, in {@link SpringSchedulerTaskRepository}, the retained task information can
+ * be updated and stopped through a unique ID.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
