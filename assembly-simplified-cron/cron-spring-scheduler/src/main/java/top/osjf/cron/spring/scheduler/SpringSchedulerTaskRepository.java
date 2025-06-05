@@ -203,7 +203,7 @@ public class SpringSchedulerTaskRepository
         if (future == null) {
             throw new CronInternalException("ID " + id + " did not find the corresponding task information.");
         }
-        future.cancel(true);
+        if (!future.isCancelled()) future.cancel(true);
         register(newExpression, future.getListenableRunnable().getRunnable());
     }
 
