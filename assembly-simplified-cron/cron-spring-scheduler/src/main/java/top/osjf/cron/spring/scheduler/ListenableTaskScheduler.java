@@ -54,9 +54,9 @@ public abstract class ListenableTaskScheduler extends AbstractCronTaskRepository
     private final TaskScheduler taskScheduler;
 
     /**
-     * A map to store the listenable scheduled futures, keyed by a unique identifier for each task.
+     * A map to cache listenable scheduled futures, keyed by a unique identifier for each task.
      */
-    private final Map<String, ListenableScheduledFuture> listenableScheduledFutures = new ConcurrentHashMap<>(16);
+    private final Map<String, ListenableScheduledFuture> futureCache = new ConcurrentHashMap<>(16);
 
     /**
      * Constructs a new {@code ListenableTaskScheduler} with the given Spring {@code TaskScheduler}.
@@ -68,12 +68,12 @@ public abstract class ListenableTaskScheduler extends AbstractCronTaskRepository
     }
 
     /**
-     * Gets the map of listenable scheduled futures.
+     * Gets the caching of listenable scheduled futures.
      *
-     * @return the map of listenable scheduled futures.
+     * @return the caching of listenable scheduled futures.
      */
-    protected Map<String, ListenableScheduledFuture> getListenableScheduledFutures() {
-        return listenableScheduledFutures;
+    protected Map<String, ListenableScheduledFuture> getFutureCache() {
+        return futureCache;
     }
 
     /**
