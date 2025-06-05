@@ -146,7 +146,7 @@ public class SpringSchedulerTaskRepository
 
     @Override
     public List<CronTaskInfo> getAllCronTaskInfo() {
-        return getListenableScheduledFutures().keySet()
+        return getFutureCache().keySet()
                 .stream()
                 .map(this::buildCronTaskInfo)
                 .filter(Objects::nonNull)
@@ -161,7 +161,7 @@ public class SpringSchedulerTaskRepository
      */
     @Nullable
     private CronTaskInfo buildCronTaskInfo(String id) {
-        ListenableScheduledFuture listenableScheduledFuture = getListenableScheduledFutures().get(id);
+        ListenableScheduledFuture listenableScheduledFuture = getFutureCache().get(id);
         if (listenableScheduledFuture == null) {
             return null;
         }
