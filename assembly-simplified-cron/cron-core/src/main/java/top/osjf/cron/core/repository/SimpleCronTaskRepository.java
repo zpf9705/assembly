@@ -280,7 +280,7 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
             }
         }
 
-        public ScheduledFuture<?> getFuture() {
+        private ScheduledFuture<?> getFuture() {
             scheduleLock.lock();
             try {
                 return scheduledFuture;
