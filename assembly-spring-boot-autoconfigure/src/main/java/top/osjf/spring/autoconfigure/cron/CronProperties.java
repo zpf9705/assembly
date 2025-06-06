@@ -290,7 +290,7 @@ public class CronProperties {
         /**
          * Maximum allowed number of threads.
          */
-        private int poolCoreSize;
+        private int poolCoreSize = 6;
 
         /**
          * Select the supported types for cron expression parsing.
