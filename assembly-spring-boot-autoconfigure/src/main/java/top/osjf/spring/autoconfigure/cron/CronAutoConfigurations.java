@@ -39,6 +39,7 @@ final class CronAutoConfigurations {
         mappings.put(CronProperties.ClientType.HUTOOL, HutoolCronTaskAutoConfiguration.class.getName());
         mappings.put(CronProperties.ClientType.QUARTZ, QuartzCronTaskAutoConfiguration.class.getName());
         mappings.put(CronProperties.ClientType.CRON4J, Cron4jCronTaskAutoConfiguration.class.getName());
+        mappings.put(CronProperties.ClientType.SIMPLE, SimpleCronTaskAutoConfiguration.class.getName());
         mappings.put(CronProperties.ClientType.NONE, NoOpCornTaskAutoConfiguration.class.getName());
         MAPPINGS = Collections.unmodifiableMap(mappings);
     }
