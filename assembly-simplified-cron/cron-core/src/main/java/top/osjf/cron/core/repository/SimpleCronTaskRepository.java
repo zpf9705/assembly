@@ -249,8 +249,17 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
         public SimpleRunnabledScheduledFuture(String expression, Runnable rawRunnable) {
             this.rawRunnable = rawRunnable;
             this.listenerContext = new SimpleListenerContext(getNextId(), this);
-            this.cron = cronParser.parse(expression);
+            this.cron = parseToCron(expression);
             schedule();
+        }
+
+        // Parse cron express to {@link Cron} instance.
+        private Cron parseToCron(String expression) throws CronInternalException {
+            try {
+                return cronParser.parse(expression);
+            } catch (IllegalArgumentException ex) {
+                throw new CronInternalException(ex.getMessage(), ex);
+            }
         }
 
         /**
