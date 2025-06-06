@@ -30,6 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 /**
  * Abstract implementation of the {@link CronTaskRepository} interface.
@@ -128,7 +129,7 @@ public abstract class AbstractCronTaskRepository extends AbstractLifecycleReposi
      */
     @Override
     public void addListener(@NotNull CronListener listener) {
-        getCronListenerCollector().addCronListener(listener);
+        ensureCheckedListenerIsLastIfRuntime(co -> co.addCronListener(listener));
     }
 
     /**
@@ -144,7 +145,7 @@ public abstract class AbstractCronTaskRepository extends AbstractLifecycleReposi
      */
     @Override
     public void addLastListener(@NotNull CronListener listener) {
-        getCronListenerCollector().addLastCronListener(listener);
+        ensureCheckedListenerIsLastIfRuntime(co -> co.addLastCronListener(listener));
     }
 
     /**
@@ -158,8 +159,34 @@ public abstract class AbstractCronTaskRepository extends AbstractLifecycleReposi
     /**
      * @return The listener collector for subclasses.
      */
-    protected CronListenerCollector getCronListenerCollector(){
+    protected CronListenerCollector getCronListenerCollector() {
         return listenerCollector;
+    }
+
+    /**
+     * To ensure that {@link #checkedCronListener} is at the end of the queue and can be removed
+     * after completing the registration task, and can go through all previous listeners, the
+     * interception check method for the tail methods {@link #addLastListener} and {@link #addListener}
+     * is used.
+     *
+     * @param next The next step is to add a real operation listener.
+     */
+    private void ensureCheckedListenerIsLastIfRuntime(Consumer<CronListenerCollector> next) {
+        CronListenerCollector cronListenerCollector = getCronListenerCollector();
+        boolean shouldAddCheckedLast = addRegisterTimesCheckedCronListener.get();
+
+        if (shouldAddCheckedLast && cronListenerCollector.hasCronListener(checkedCronListener)) {
+            // Remove checkedCronListener if it exists
+            removeListener(checkedCronListener);
+        }
+
+        // Execute the next consumer
+        next.accept(cronListenerCollector);
+
+        if (shouldAddCheckedLast) {
+            // Ensure checkedCronListener is the last
+            addLastListener(checkedCronListener);
+        }
     }
 
     /**
