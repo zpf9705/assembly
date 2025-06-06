@@ -21,11 +21,11 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import top.osjf.cron.core.lang.NotNull;
+import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.repository.AbstractCronTaskRepository;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.function.Function;
@@ -67,18 +67,6 @@ public abstract class ListenableTaskScheduler extends AbstractCronTaskRepository
      */
     public ListenableTaskScheduler(@NotNull TaskScheduler taskScheduler) {
         this.taskScheduler = taskScheduler;
-    }
-
-    /**
-     * Gets the caching of listenable scheduled futures.
-     *
-     * <p>Providing dynamic operations related to task completion resources to subclasses
-     * is equivalent to allocating resource responsibilities.
-     *
-     * @return the caching of listenable scheduled futures.
-     */
-    protected Map<String, ListenableScheduledFuture> getFutureCache() {
-        return futureCache;
     }
 
     /**
@@ -136,6 +124,35 @@ public abstract class ListenableTaskScheduler extends AbstractCronTaskRepository
     }
 
     /**
+     * Return unmodifiable set of unique ID of the registered tasks.
+     * @return Unmodifiable set of unique ID of the registered tasks.
+     */
+    protected Set<String> getFutureIds() {
+        return Collections.unmodifiableSet(futureCache.keySet());
+    }
+
+    /**
+     * Return the cached {@link ListenableScheduledFuture} task found by ID.
+     * @param id the Unique ID of the registered task.
+     * @return Specify the {@link ListenableScheduledFuture} task with the specified ID.
+     */
+    @Nullable
+    protected ListenableScheduledFuture getFuture(@NotNull String id) {
+        return futureCache.get(id);
+    }
+
+    /**
+     * Cancel the cache {@link ScheduledFuture} task corresponding to the specified ID.
+     * @param id the Unique ID of the registered task.
+     */
+    protected void cancelFuture(@NotNull String id) {
+        ListenableScheduledFuture future = futureCache.remove(id);
+        if (future != null && !future.isCancelled()) {
+            future.cancel(true);
+        }
+    }
+
+    /**
      * The closing operation of the task scheduler and task cache cleaning should be completed by
      * this class, compatible with the Spring framework's bean cycle processing, and should be
      * completed by the resource class.
@@ -178,7 +195,7 @@ public abstract class ListenableTaskScheduler extends AbstractCronTaskRepository
     /**
      * The function object that executes the given encapsulation task registration behavior
      * encapsulates the {@link ScheduledFuture} execution result and related task information
-     * into a {@link ListenableScheduledFuture} object with an ID tag cached in {@link #getFutureCache}
+     * into a {@link ListenableScheduledFuture} object with an ID tag cached in {@link #futureCache}
      * for later management.
      *
      * @param func     get the function object of the {@link ScheduledFuture} instance.
