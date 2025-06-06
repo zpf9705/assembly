@@ -379,4 +379,15 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
     public boolean isStarted() {
         return scheduler.isStarted();
     }
+
+    @Override
+    public void reStart() {
+        if (isStarted()) {
+            stop();
+            start();
+        }
+        else {
+            start();
+        }
+    }
 }
