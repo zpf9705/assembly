@@ -121,6 +121,7 @@ public abstract class CronListenerCollector {
      * Return a {@code Boolean} flag that the input {@code CronListener} already registered
      * in {@link #cronListeners}.
      *
+     * @param cronListener {@code CronListener} instance for determining registration or not.
      * @return a {@code Boolean} flag that the input {@code CronListener} already registered
      *         in {@link #cronListeners}.
      * @since 1.0.4
