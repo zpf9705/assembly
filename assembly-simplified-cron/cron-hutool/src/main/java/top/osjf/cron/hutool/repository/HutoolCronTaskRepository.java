@@ -236,17 +236,26 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
         scheduler.addListener(taskListener);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String register(@NotNull String expression, @NotNull Runnable runnable) throws CronInternalException {
         return RepositoryUtils.doRegister(() ->
                 scheduler.schedule(expression, runnable), CronException.class);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String register(@NotNull String expression, @NotNull CronMethodRunnable runnable) throws CronInternalException {
         return register(expression, (Runnable) runnable);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String register(@NotNull String expression, @NotNull RunnableTaskBody body) throws CronInternalException {
         return register(expression, body.getRunnable());
@@ -296,12 +305,18 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
         return register(task.getExpression(), new RunnableTaskBody(task.getRunnable()));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Nullable
     public CronTaskInfo getCronTaskInfo(@NotNull String id) {
         return CronTaskInfoBuildUtils.buildCronTaskInfo(id, scheduler);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<CronTaskInfo> getAllCronTaskInfo() {
         return scheduler.getTaskTable()
@@ -311,12 +326,18 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
                 .filter(Objects::nonNull).collect(Collectors.toList());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void update(@NotNull String taskId, @NotNull String newExpression) {
         RepositoryUtils.doVoidInvoke(() ->
                 scheduler.updatePattern(taskId, new CronPattern(newExpression)), CronException.class);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void remove(@NotNull String taskId) {
         RepositoryUtils.doVoidInvoke(() -> scheduler.descheduleWithStatus(taskId), null);
@@ -328,6 +349,9 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
         return taskListener;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void start() {
         if (isStarted()) {
@@ -336,6 +360,9 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
         scheduler.start();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @PreDestroy
     public void stop() {
@@ -345,6 +372,9 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
         scheduler.stop(ifStopClearTasks);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isStarted() {
         return scheduler.isStarted();

@@ -35,39 +35,63 @@ import java.util.UUID;
  */
 public class NoOpCronTaskRepository extends AbstractCronTaskRepository {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void start() {
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void stop() {
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isStarted() {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String register(@Nonnull String expression, @Nonnull Runnable runnable) throws CronInternalException {
         return getWithoutOperationId();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String register(@Nonnull String expression, @Nonnull CronMethodRunnable runnable) throws CronInternalException {
         return getWithoutOperationId();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String register(@Nonnull String expression, @Nonnull RunnableTaskBody body) throws CronInternalException {
         return getWithoutOperationId();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String register(@Nonnull String expression, @Nonnull TaskBody body) throws CronInternalException {
         return getWithoutOperationId();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String register(@Nonnull CronTask task) throws CronInternalException {
         return getWithoutOperationId();
@@ -75,21 +99,33 @@ public class NoOpCronTaskRepository extends AbstractCronTaskRepository {
 
     static String getWithoutOperationId() { return UUID.randomUUID().toString(); }
 
+    /**
+     * {@inheritDoc}
+     */
     @Nullable
     @Override
     public CronTaskInfo getCronTaskInfo(@Nonnull String id) {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<CronTaskInfo> getAllCronTaskInfo() {
         return Collections.emptyList();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void update(@Nonnull String id, @Nonnull String newExpression) throws CronInternalException {
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void remove(@Nonnull String id) throws CronInternalException {
     }

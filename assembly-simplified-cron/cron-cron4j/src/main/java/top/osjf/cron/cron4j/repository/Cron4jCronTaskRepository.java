@@ -289,11 +289,17 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
         return register(task.getExpression(), new RunnableTaskBody(task.getRunnable()));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CronTaskInfo getCronTaskInfo(@NotNull String id) {
         return buildCronTaskInfo(id);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<CronTaskInfo> getAllCronTaskInfo() {
         return Arrays.stream(scheduler.getExecutingTasks())
@@ -359,17 +365,26 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
         return schedulerListener;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void start() {
         scheduler.start();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @PreDestroy
     public void stop() {
         scheduler.stop();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isStarted() {
         return scheduler.isStarted();
