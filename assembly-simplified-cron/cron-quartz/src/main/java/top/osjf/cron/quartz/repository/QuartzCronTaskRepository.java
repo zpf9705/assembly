@@ -512,9 +512,4 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
             return false;
         }
     }
-
-    @Override
-    public void reStart() {
-        throw new ReStartedUnsupportedException();
-    }
 }
