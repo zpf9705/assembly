@@ -377,7 +377,6 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
      */
     @Override
     public String register(@NotNull String expression, @NotNull Runnable runnable) throws CronInternalException {
-        ensureStarted();
         return new SimpleRunnabledScheduledFuture(expression, runnable).listenerContext.id;
     }
 
