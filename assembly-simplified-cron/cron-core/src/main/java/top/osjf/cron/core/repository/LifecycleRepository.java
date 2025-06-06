@@ -73,12 +73,5 @@ public interface LifecycleRepository extends Lifecycle {
      *
      * @throws ReStartedUnsupportedException if reStart operation cannot be supported.
      */
-    default void reStart() {
-        if (isStarted()) {
-            stop();
-            start();
-        } else {
-            start();
-        }
-    }
+    void reStart();
 }
