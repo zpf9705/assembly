@@ -169,6 +169,9 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
     public void stop() {
         super.stop();
         if (awaitTermination) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Closed Pool");
+            }
             scheduledExecutorService.shutdown();
             try {
                 if (!scheduledExecutorService.awaitTermination(awaitTerminationTimeout, awaitTerminationTimeoutUnit)) {
