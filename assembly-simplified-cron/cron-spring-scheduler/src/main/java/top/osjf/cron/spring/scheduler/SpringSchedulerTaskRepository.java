@@ -147,6 +147,7 @@ public class SpringSchedulerTaskRepository
     }
 
     @Override
+    @Nullable
     public CronTaskInfo getCronTaskInfo(@NotNull String id) {
         ensureStarted();
         return buildCronTaskInfo(id);
