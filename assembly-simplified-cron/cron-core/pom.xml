@@ -23,6 +23,7 @@
         <jsr305>3.0.2</jsr305>
         <slf4j>1.7.32</slf4j>
         <gson>2.9.0</gson>
+        <cronutils>9.1.6</cronutils>
     </properties>
 
     <dependencies>
@@ -43,6 +44,12 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>${gson}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.cronutils</groupId>
+            <artifactId>cron-utils</artifactId>
+            <version>${cronutils}</version>
         </dependency>
 
     </dependencies>
