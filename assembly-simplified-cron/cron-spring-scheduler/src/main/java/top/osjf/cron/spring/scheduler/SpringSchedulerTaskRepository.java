@@ -147,11 +147,13 @@ public class SpringSchedulerTaskRepository
 
     @Override
     public CronTaskInfo getCronTaskInfo(@NotNull String id) {
+        ensureStarted();
         return buildCronTaskInfo(id);
     }
 
     @Override
     public List<CronTaskInfo> getAllCronTaskInfo() {
+        ensureStarted();
         return getFutureIds()
                 .stream()
                 .map(this::buildCronTaskInfo)
