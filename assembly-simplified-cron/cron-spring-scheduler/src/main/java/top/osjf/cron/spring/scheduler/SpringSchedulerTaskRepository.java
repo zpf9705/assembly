@@ -25,6 +25,7 @@ import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.concurrent.DefaultManagedTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.scheduling.support.PeriodicTrigger;
+import org.springframework.util.Assert;
 import org.springframework.util.IdGenerator;
 import org.springframework.util.SimpleIdGenerator;
 import top.osjf.cron.core.exception.CronInternalException;
@@ -208,9 +209,7 @@ public class SpringSchedulerTaskRepository
     public void update(@NotNull String id, @NotNull String newExpression) {
         ensureStarted();
         ListenableScheduledFuture future = getFuture(id);
-        if (future == null) {
-            throw new CronInternalException("ID " + id + " did not find the corresponding task information.");
-        }
+        Assert.notNull(future, "Missing task information according to id " + id);
         cancelFuture(id);
         register(newExpression, future.getListenableRunnable().getRunnable());
     }
