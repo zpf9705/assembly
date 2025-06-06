@@ -22,8 +22,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.core.repository.SimpleCronTaskRepository;
+import top.osjf.cron.spring.CronTaskConfiguration;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -36,6 +38,7 @@ import java.util.concurrent.ScheduledExecutorService;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnMissingBean(CronTaskRepository.class)
+@Import(CronTaskConfiguration.class)
 @Conditional(CronCondition.class)
 public class SimpleCronTaskAutoConfiguration {
 
