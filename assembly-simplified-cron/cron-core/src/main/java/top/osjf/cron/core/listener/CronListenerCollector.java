@@ -118,6 +118,23 @@ public abstract class CronListenerCollector {
     }
 
     /**
+     * Return a {@code Boolean} flag that the input {@code CronListener} already registered
+     * in {@link #cronListeners}.
+     *
+     * @return a {@code Boolean} flag that the input {@code CronListener} already registered
+     *         in {@link #cronListeners}.
+     * @since 1.0.4
+     */
+    public boolean hasCronListener(CronListener cronListener) {
+        lock.lock();
+        try {
+            return cronListeners.contains(cronListener);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
      * Return the type of {@code ListenerContext}, usually an instantiated subclass
      * of {@code ListenerContext}.
      *
