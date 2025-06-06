@@ -49,6 +49,9 @@ public class CronProperties {
 
     private final Cron4j cron4j = new Cron4j();
 
+    /**
+     * @since 1.0.4
+     */
     private final Simple simple = new Simple();
 
     /**
@@ -283,7 +286,8 @@ public class CronProperties {
     }
 
     /**
-     * Properties related to siple cron client
+     * Properties related to simple cron client.
+     * @since 1.0.4
      */
     public static class Simple {
 
@@ -356,6 +360,7 @@ public class CronProperties {
 
     /**
      * Properties related to dynamic task management.
+     * @since 1.0.4
      */
     public static class ScheduledDriven {
 
