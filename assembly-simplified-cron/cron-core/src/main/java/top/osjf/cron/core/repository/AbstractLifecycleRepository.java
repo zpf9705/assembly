@@ -32,6 +32,9 @@ public abstract class AbstractLifecycleRepository implements LifecycleRepository
      */
     private final AtomicBoolean isStarted = new AtomicBoolean(false);
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void start() {
         if (isStarted.compareAndSet(false, true)) {
@@ -40,6 +43,9 @@ public abstract class AbstractLifecycleRepository implements LifecycleRepository
         throw new IllegalStateException("this repository has started");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void stop() {
         if (isStarted.compareAndSet(true, false)) {
@@ -48,9 +54,20 @@ public abstract class AbstractLifecycleRepository implements LifecycleRepository
         throw new IllegalStateException("this repository has stopped");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isStarted() {
         return isStarted.get();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void reStart() {
+        throw new ReStartedUnsupportedException();
     }
 
     /**
