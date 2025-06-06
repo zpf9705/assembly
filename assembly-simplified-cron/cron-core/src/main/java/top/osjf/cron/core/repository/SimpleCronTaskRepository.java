@@ -104,7 +104,7 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
     /**
      * Creates a new {@code SimpleCronTaskRepository} with given {@code CronType}.
      *
-     * @param cronType some cron type. If null, a RuntimeException will be raised.
+     * @param cronType An enumeration class representing the cron expression parsing style of the framework.
      */
     public SimpleCronTaskRepository(CronType cronType) {
         this(Executors.newScheduledThreadPool(1), cronType);
@@ -114,7 +114,7 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
      * Creates a new {@code SimpleCronTaskRepository} with the
      * given core pool size and given {@code CronType}.
      *
-     * @param cronType     some cron type. If null, a RuntimeException will be raised.
+     * @param cronType     An enumeration class representing the cron expression parsing style of the framework.
      * @param corePoolSize the number of threads to keep in the pool,
      *                     even if they are idle.
      */
@@ -126,7 +126,8 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
      * Creates a new {@code SimpleCronTaskRepository} with the
      * given {@link ScheduledExecutorService} instance given {@code CronType}.
      *
-     * @param cronType                 some cron type. If null, a RuntimeException will be raised.
+     * @param cronType                 An enumeration class representing the cron expression parsing
+     *                                 style of the framework.
      * @param scheduledExecutorService An {@link ScheduledExecutorService} instance that can schedule
      *                                 commands to run after a given delay, or to execute periodically.
      */
