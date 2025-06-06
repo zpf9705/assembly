@@ -116,7 +116,7 @@ public class SpringSchedulerTaskRepository
 
     @Override
     public String register(@NotNull String expression, @NotNull Runnable runnable) throws CronInternalException {
-        super.ensureStarted();
+        ensureStarted();
         return RepositoryUtils.doRegister(() ->
                         schedule(runnable, new CronTrigger(expression)).getListenableRunnable().getId(),
                 IllegalArgumentException.class);
@@ -152,7 +152,7 @@ public class SpringSchedulerTaskRepository
 
     @Override
     public List<CronTaskInfo> getAllCronTaskInfo() {
-        return getFutureCache().keySet()
+        return getFutureIds()
                 .stream()
                 .map(this::buildCronTaskInfo)
                 .filter(Objects::nonNull)
@@ -167,11 +167,11 @@ public class SpringSchedulerTaskRepository
      */
     @Nullable
     private CronTaskInfo buildCronTaskInfo(String id) {
-        ListenableScheduledFuture listenableScheduledFuture = getFutureCache().get(id);
-        if (listenableScheduledFuture == null) {
+        ListenableScheduledFuture future = getFuture(id);
+        if (future == null) {
             return null;
         }
-        ListenableRunnable listenableRunnable = listenableScheduledFuture.getListenableRunnable();
+        ListenableRunnable listenableRunnable = future.getListenableRunnable();
         Trigger trigger = listenableRunnable.getTrigger();
         String expression = null;
         if (trigger instanceof CronTrigger) {
@@ -204,22 +204,19 @@ public class SpringSchedulerTaskRepository
 
     @Override
     public void update(@NotNull String id, @NotNull String newExpression) {
-        super.ensureStarted();
-        ListenableScheduledFuture future = getFutureCache().remove(id);
+        ensureStarted();
+        ListenableScheduledFuture future = getFuture(id);
         if (future == null) {
             throw new CronInternalException("ID " + id + " did not find the corresponding task information.");
         }
-        if (!future.isCancelled()) future.cancel(true);
+        cancelFuture(id);
         register(newExpression, future.getListenableRunnable().getRunnable());
     }
 
     @Override
     public void remove(@NotNull String id) {
-        super.ensureStarted();
-        ListenableScheduledFuture future = getFutureCache().remove(id);
-        if (future != null && !future.isCancelled()) {
-            future.cancel(true);
-        }
+        ensureStarted();
+        cancelFuture(id);
     }
 
     @Override
