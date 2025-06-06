@@ -16,6 +16,7 @@
 
 package top.osjf.spring.autoconfigure.cron;
 
+import com.cronutils.model.CronType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
@@ -25,6 +26,7 @@ import top.osjf.cron.spring.datasource.driven.scheduled.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 /**
@@ -46,6 +48,8 @@ public class CronProperties {
     private final Quartz quartz = new Quartz();
 
     private final Cron4j cron4j = new Cron4j();
+
+    private final Simple simple = new Simple();
 
     /**
      * @since 1.0.4
@@ -70,6 +74,10 @@ public class CronProperties {
 
     public Cron4j getCron4j() {
         return cron4j;
+    }
+
+    public Simple getSimple() {
+        return simple;
     }
 
     public ScheduledDriven getScheduledDriven() {
@@ -107,6 +115,11 @@ public class CronProperties {
          * Use the cron4j cron client.
          */
         CRON4J,
+
+        /**
+         * Use the simple cron client.
+         */
+        SIMPLE,
 
         /**
          * No client.
@@ -266,6 +279,78 @@ public class CronProperties {
             properties.addProperty(Cron4jCronTaskRepository.PROPERTY_NAME_OF_TIMEZONE, timezone);
             properties.addProperty(Cron4jCronTaskRepository.PROPERTY_NAME_OF_DAEMON, daemon);
             return properties;
+        }
+    }
+
+    /**
+     * Properties related to siple cron client
+     */
+    public static class Simple {
+
+        /**
+         * Maximum allowed number of threads.
+         */
+        private int poolCoreSize;
+
+        /**
+         * Select the supported types for cron expression parsing.
+         */
+        private CronType cronType = CronType.QUARTZ;
+
+        /**
+         * When closing {@link java.util.concurrent.ScheduledExecutorService},
+         * do you wait in the pool for the task to complete.
+         */
+        private boolean awaitTermination = true;
+
+        /**
+         * The delay time waiting for the completion of tasks in the pool.
+         */
+        private long awaitTerminationTimeout = 10;
+
+        /**
+         * The delay time unit for waiting for the completion of tasks in the pool.
+         */
+        private TimeUnit awaitTerminationTimeoutUnit = TimeUnit.SECONDS;
+
+        public int getPoolCoreSize() {
+            return poolCoreSize;
+        }
+
+        public void setPoolCoreSize(int poolCoreSize) {
+            this.poolCoreSize = poolCoreSize;
+        }
+
+        public CronType getCronType() {
+            return cronType;
+        }
+
+        public void setCronType(CronType cronType) {
+            this.cronType = cronType;
+        }
+
+        public boolean isAwaitTermination() {
+            return awaitTermination;
+        }
+
+        public void setAwaitTermination(boolean awaitTermination) {
+            this.awaitTermination = awaitTermination;
+        }
+
+        public long getAwaitTerminationTimeout() {
+            return awaitTerminationTimeout;
+        }
+
+        public void setAwaitTerminationTimeout(long awaitTerminationTimeout) {
+            this.awaitTerminationTimeout = awaitTerminationTimeout;
+        }
+
+        public TimeUnit getAwaitTerminationTimeoutUnit() {
+            return awaitTerminationTimeoutUnit;
+        }
+
+        public void setAwaitTerminationTimeoutUnit(TimeUnit awaitTerminationTimeoutUnit) {
+            this.awaitTerminationTimeoutUnit = awaitTerminationTimeoutUnit;
         }
     }
 
