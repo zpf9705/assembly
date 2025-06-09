@@ -123,7 +123,6 @@ public class SpringSchedulerTaskRepository
      */
     @Override
     public String register(@NotNull String expression, @NotNull Runnable runnable) throws CronInternalException {
-        ensureStarted();
         return RepositoryUtils.doRegister(() ->
                         schedule(runnable, new CronTrigger(expression)).getListenableRunnable().getId(),
                 IllegalArgumentException.class);
