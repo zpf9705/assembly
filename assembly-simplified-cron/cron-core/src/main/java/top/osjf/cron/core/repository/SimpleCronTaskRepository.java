@@ -434,7 +434,6 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
     @Nullable
     @Override
     public CronTaskInfo getCronTaskInfo(@NotNull String id) {
-        ensureStarted();
         return Optional.ofNullable(futureCache.get(id)).map(SimpleRunnabledScheduledFuture::toCronTaskInfo)
                 .orElse(null);
     }
@@ -444,7 +443,6 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
      */
     @Override
     public List<CronTaskInfo> getAllCronTaskInfo() {
-        ensureStarted();
         return futureCache.values()
                 .stream().map(SimpleRunnabledScheduledFuture::toCronTaskInfo)
                 .collect(Collectors.toList());
@@ -455,7 +453,6 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
      */
     @Override
     public void update(@NotNull String id, @NotNull String newExpression) throws CronInternalException {
-        ensureStarted();
         SimpleRunnabledScheduledFuture future = futureCache.get(id);
         if (future == null) {
             throw new CronInternalException("Missing task information according to id " + id);
@@ -469,7 +466,6 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
      */
     @Override
     public void remove(@NotNull String id) throws CronInternalException {
-        ensureStarted();
         SimpleRunnabledScheduledFuture future = futureCache.remove(id);
         if (future != null && !future.isCancelled()) {
             future.cancel(true);
