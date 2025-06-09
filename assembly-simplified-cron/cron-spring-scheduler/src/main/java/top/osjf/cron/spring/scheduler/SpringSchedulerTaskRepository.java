@@ -170,7 +170,6 @@ public class SpringSchedulerTaskRepository
     @Override
     @Nullable
     public CronTaskInfo getCronTaskInfo(@NotNull String id) {
-        ensureStarted();
         return buildCronTaskInfo(id);
     }
 
@@ -179,7 +178,6 @@ public class SpringSchedulerTaskRepository
      */
     @Override
     public List<CronTaskInfo> getAllCronTaskInfo() {
-        ensureStarted();
         return getFutureIds()
                 .stream()
                 .map(this::buildCronTaskInfo)
@@ -235,7 +233,6 @@ public class SpringSchedulerTaskRepository
      */
     @Override
     public void update(@NotNull String id, @NotNull String newExpression) {
-        ensureStarted();
         ListenableScheduledFuture future = getFuture(id);
         Assert.notNull(future, "Missing task information according to id " + id);
         cancelFuture(id);
@@ -247,7 +244,6 @@ public class SpringSchedulerTaskRepository
      */
     @Override
     public void remove(@NotNull String id) {
-        ensureStarted();
         cancelFuture(id);
     }
 
