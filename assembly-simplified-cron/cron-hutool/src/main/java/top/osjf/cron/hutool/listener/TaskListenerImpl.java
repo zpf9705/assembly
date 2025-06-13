@@ -20,6 +20,7 @@ package top.osjf.cron.hutool.listener;
 import cn.hutool.cron.TaskExecutor;
 import cn.hutool.cron.listener.TaskListener;
 import top.osjf.cron.core.listener.CronListenerCollector;
+import top.osjf.cron.core.listener.DefaultCronListenerCollector;
 import top.osjf.cron.core.listener.ListenerContextTypeProvider;
 
 /**
@@ -30,7 +31,7 @@ import top.osjf.cron.core.listener.ListenerContextTypeProvider;
  * @since 1.0.3
  */
 @ListenerContextTypeProvider(HutoolListenerContent.class)
-public class TaskListenerImpl extends CronListenerCollector implements TaskListener {
+public class TaskListenerImpl extends DefaultCronListenerCollector implements TaskListener {
     @Override
     public void onStart(TaskExecutor executor) {
         doStartListener(executor);

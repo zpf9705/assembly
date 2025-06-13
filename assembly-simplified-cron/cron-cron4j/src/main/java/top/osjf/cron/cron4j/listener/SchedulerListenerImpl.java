@@ -20,6 +20,7 @@ package top.osjf.cron.cron4j.listener;
 import it.sauronsoftware.cron4j.SchedulerListener;
 import it.sauronsoftware.cron4j.TaskExecutor;
 import top.osjf.cron.core.listener.CronListenerCollector;
+import top.osjf.cron.core.listener.DefaultCronListenerCollector;
 import top.osjf.cron.core.listener.ListenerContextTypeProvider;
 
 /**
@@ -30,7 +31,7 @@ import top.osjf.cron.core.listener.ListenerContextTypeProvider;
  * @since 1.0.3
  */
 @ListenerContextTypeProvider(Cron4jListenerContent.class)
-public class SchedulerListenerImpl extends CronListenerCollector implements SchedulerListener {
+public class SchedulerListenerImpl extends DefaultCronListenerCollector implements SchedulerListener {
 
     @Override
     public void taskLaunching(TaskExecutor executor) {
