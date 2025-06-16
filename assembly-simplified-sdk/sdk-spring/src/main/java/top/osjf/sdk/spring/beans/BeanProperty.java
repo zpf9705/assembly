@@ -40,8 +40,13 @@ import java.lang.annotation.*;
  * annotated with {@link Sdk}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @see BeanPropertyUtils
  * @since 1.0.0
+ * @see Sdk
+ * @see top.osjf.sdk.spring.proxy.SdkProxyFactoryBean
+ * @see BeanPropertyUtils
+ * @see Bean
+ * @see BeanDefinition
+ * @see BeanDefinitionBuilder
  */
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
