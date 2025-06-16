@@ -124,4 +124,10 @@ public @interface Sdk {
      * @since 1.0.3
      */
     Profile profile() default @Profile({});
+
+    /**
+     *
+     * @return
+     */
+    boolean enableExpressionCall() default false;
 }
