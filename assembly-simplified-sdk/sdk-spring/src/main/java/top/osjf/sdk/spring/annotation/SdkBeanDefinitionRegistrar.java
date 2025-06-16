@@ -77,6 +77,9 @@ import java.util.stream.Collectors;
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
+ * @see EnableSdkProxyRegister
+ * @see Sdk
+ * @see SdkProxyFactoryBean
  */
 public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar, EnvironmentAware,
         ResourceLoaderAware, Ordered {
@@ -387,6 +390,7 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
      * @param factoryBeanClass        the custom {@code SdkProxyFactoryBean} class.
      * @return The created {@code BeanDefinitionHolder} instance.
      */
+    @Nullable
     private BeanDefinitionHolder createBeanDefinitionHolder(AnnotatedBeanDefinition annotatedBeanDefinition,
                                                             BeanDefinitionRegistry registry,
                                                             BeanNameGenerator beanNameGenerator,
@@ -421,6 +425,7 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
         String[] alisaNames = BeanPropertyUtils.getAlisaNames(names);
         AnnotationAttributes profileAttributes = annotationAttributes.getAnnotation("profile");
         builder.addPropertyValue("profiles", profileAttributes.getStringArray("value"));
+        builder.addPropertyValue("enableExpressionCall", annotationAttributes.getBoolean("enableExpressionCall"));
         return SdkProxyBeanUtils.createBeanDefinitionHolderDistinguishScope(beanDefinition, beanName, alisaNames,
                 registry);
     }
