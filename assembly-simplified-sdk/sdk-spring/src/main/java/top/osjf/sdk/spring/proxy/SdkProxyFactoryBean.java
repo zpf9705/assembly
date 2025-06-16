@@ -20,7 +20,10 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.context.EnvironmentAware;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
@@ -35,6 +38,7 @@ import top.osjf.sdk.proxy.HandlerPostProcessor;
 import top.osjf.sdk.proxy.ProxyModel;
 import top.osjf.sdk.spring.SpringRequestCaller;
 import top.osjf.sdk.spring.annotation.Sdk;
+import top.osjf.sdk.spring.beans.BeanPropertyUtils;
 import top.osjf.sdk.spring.beans.DeterminantDisposableBean;
 import top.osjf.sdk.spring.beans.DeterminantInitializingBean;
 import top.osjf.sdk.spring.beans.DeterminantType;
@@ -84,6 +88,14 @@ import java.util.stream.Collectors;
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
+ * @see top.osjf.sdk.spring.annotation.EnableSdkProxyRegister
+ * @see top.osjf.sdk.spring.annotation.SdkBeanDefinitionRegistrar
+ * @see BeanPropertyUtils
+ * @see top.osjf.sdk.spring.beans.BeanProperty
+ * @see org.springframework.context.annotation.Profile
+ * @see Bean
+ * @see BeanDefinition
+ * @see BeanDefinitionBuilder
  */
 public class SdkProxyFactoryBean
         extends ComprehensiveDelegationCallback
