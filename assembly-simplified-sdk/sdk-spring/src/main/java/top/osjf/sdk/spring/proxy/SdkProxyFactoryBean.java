@@ -138,6 +138,12 @@ public class SdkProxyFactoryBean
     private SdkExpressRunner sdkExpressRunner;
 
     /**
+     * A boolean flag supports method calls for {@link SdkExpressRunner}.
+     * @since 1.0.3
+     */
+    private boolean enableExpressionCall;
+
+    /**
      * Construct a {@code SdkProxyFactoryBean} instance to create
      * a proxy Bean of the specified type.
      *
@@ -249,6 +255,16 @@ public class SdkProxyFactoryBean
     }
 
     /**
+     * Set a boolean flag for this factory bean to supports method calls for {@link SdkExpressRunner}.
+     * @param enableExpressionCall a boolean flag for this factory bean to supports method calls
+     *                             for {@link SdkExpressRunner}.
+     * @since 1.0.3
+     */
+    public void setEnableExpressionCall(boolean enableExpressionCall) {
+        this.enableExpressionCall = enableExpressionCall;
+    }
+
+    /**
      * Return the bean with the highest {@link Order} priority
      * after filtering and sorting the subclass beans of {@code DeterminantType}.
      *
@@ -298,9 +314,19 @@ public class SdkProxyFactoryBean
                     type, proxyModel.name(), e.getMessage());
             throw new Exception(e);
         }
-        //Add instruction call set.
-        sdkExpressRunner.addSdkMethodFunction(type, proxy);
+        registerExpressionCall();
         return proxy;
+    }
+
+    /**
+     * Support for registering expression calls is if {@link #enableExpressionCall} equals {@code true}.
+     * @since 1.0.3
+     */
+    private void registerExpressionCall() {
+        if (enableExpressionCall) {
+            //Add instruction call set.
+            sdkExpressRunner.addSdkMethodFunction(type, proxy);
+        }
     }
 
     /**
