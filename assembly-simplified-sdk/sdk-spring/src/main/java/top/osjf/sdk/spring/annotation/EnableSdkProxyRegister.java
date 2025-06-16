@@ -69,6 +69,8 @@ import java.lang.annotation.*;
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
+ * @see SdkBeanDefinitionRegistrar
+ * @see SdkProxyFactoryBean
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
