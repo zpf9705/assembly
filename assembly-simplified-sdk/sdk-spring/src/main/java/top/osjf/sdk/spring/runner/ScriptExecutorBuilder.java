@@ -44,9 +44,10 @@ import static java.util.Objects.requireNonNull;
  *     .options(qlOptions)
  *     .build();
  * }</pre>
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.3
  * @see ScriptExecutor
+ * @since 1.0.3
  */
 public final class ScriptExecutorBuilder {
 
@@ -125,12 +126,17 @@ public final class ScriptExecutorBuilder {
      * Use the given chain assignment information component to create a script executor instance.
      *
      * @return the Script executor function instance.
-     * @throws IllegalArgumentException if the type is not annotated with {@link Sdk}.
-     * @throws IllegalStateException    if script not registered in {@link SdkExpressRunner#getStandardizedScriptCorrespond()}
+     * @throws IllegalArgumentException      if the type is not annotated with {@link Sdk}.
+     * @throws UnsupportedOperationException If expression call support is not enabled.
+     * @throws IllegalStateException         if script not registered in {@link SdkExpressRunner#getStandardizedScriptCorrespond()}
      */
     public ScriptExecutor build() {
-        if (!type.isAnnotationPresent(Sdk.class)) {
+        Sdk sdk = type.getAnnotation(Sdk.class);
+        if (sdk == null) {
             throw new IllegalArgumentException("Type must be annotated with @" + Sdk.class.getSimpleName());
+        }
+        if (!sdk.enableExpressionCall()) {
+            throw new UnsupportedOperationException("Expression call support is not enabled.");
         }
         script = SdkExpressRunner.formatStandardizedClearFunctionName(type.getName(), methodName);
         if (!expressRunner.getStandardizedScriptCorrespond().containsKey(script)) {
