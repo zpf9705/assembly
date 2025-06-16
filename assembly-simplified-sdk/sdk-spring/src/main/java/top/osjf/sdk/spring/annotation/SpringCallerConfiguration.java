@@ -19,11 +19,13 @@ package top.osjf.sdk.spring.annotation;
 
 import com.alibaba.qlexpress4.InitOptions;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import top.osjf.sdk.core.caller.CallOptions;
 import top.osjf.sdk.spring.SpringRequestCaller;
 import top.osjf.sdk.spring.runner.SdkExpressRunner;
+import top.osjf.sdk.spring.runner.intercept.ScriptExecuteInterceptor;
 
 /**
  * {@code SpringRequestCaller} configuration class, used to define
@@ -64,5 +66,20 @@ public class SpringCallerConfiguration {
             initOptions = InitOptions.DEFAULT_OPTIONS;
         }
         return new SdkExpressRunner(initOptions);
+    }
+
+    /**
+     * Create a {@code ScriptExecuteInterceptor} bean to support dynamic interception of proxy
+     * expression execution.
+     *
+     * @param sdkExpressRunner internal instance of {@link SdkExpressRunner}
+     * @return a singleton for {@code ScriptExecuteInterceptor}.
+     * @since 1.0.3
+     */
+    @Bean
+    public ScriptExecuteInterceptor scriptExecuteInterceptor
+    (@Qualifier(SdkManagementConfigUtils.INTERNAL_SDK_EXPRESS_RUNNER_BEAN_NAME)
+     SdkExpressRunner sdkExpressRunner) {
+        return new ScriptExecuteInterceptor(sdkExpressRunner);
     }
 }
