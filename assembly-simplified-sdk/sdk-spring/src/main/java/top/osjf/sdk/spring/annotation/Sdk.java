@@ -23,6 +23,8 @@ import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Component;
 import top.osjf.sdk.proxy.ProxyModel;
 import top.osjf.sdk.spring.beans.BeanProperty;
+import top.osjf.sdk.spring.proxy.SdkProxyFactoryBean;
+import top.osjf.sdk.spring.runner.SdkExpressRunner;
 
 import java.lang.annotation.*;
 
@@ -129,8 +131,17 @@ public @interface Sdk {
     Profile profile() default @Profile({});
 
     /**
-     *
-     * @return
+     * A {@code Boolean} tag about whether to support SDK methods, abandoning the
+     * traditional method of calling directly and turning to simple custom instruction
+     * calls.
+     * <p>This property defaults to {@code false}, which means support for instruction
+     * invocation is not enabled. If set to {@code true}, it will adapt to the invocation
+     * of {@link SdkExpressRunner}, such as method {@link SdkExpressRunner#execute}.
+     * @return A Boolean tag is used to indicate whether to call the SDK method
+     *         through {@link SdkExpressRunner}.
+     * @see SdkProxyFactoryBean#setEnableExpressionCall
+     * @see SdkProxyFactoryBean#getObject()
+     * @since 1.0.4
      */
     boolean enableExpressionCall() default false;
 }
