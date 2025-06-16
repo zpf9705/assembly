@@ -105,7 +105,8 @@ public class ScriptExecuteInterceptor {
     protected Object doExecute(ScriptExecuteContext context) {
         try {
             return sdkExpressRunner.execute(context.getScript(), context.getContext());
-        } catch (SdkExpressRunnerException ex) {
+        }
+        catch (SdkExpressRunnerException ex) {
             log.error("Failed to do script " + context.getScript() + " with context "
                     + Arrays.toString(context.getContext()), ex);
             throw ex;
