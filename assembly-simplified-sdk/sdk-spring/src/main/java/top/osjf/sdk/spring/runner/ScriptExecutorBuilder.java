@@ -135,6 +135,8 @@ public final class ScriptExecutorBuilder {
         if (sdk == null) {
             throw new IllegalArgumentException("Type must be annotated with @" + Sdk.class.getSimpleName());
         }
+        // Not enabling expression call support indicates that the relevant calling object
+        // instance has not been registered to support expression calls.
         if (!sdk.enableExpressionCall()) {
             throw new UnsupportedOperationException("Expression call support is not enabled.");
         }
