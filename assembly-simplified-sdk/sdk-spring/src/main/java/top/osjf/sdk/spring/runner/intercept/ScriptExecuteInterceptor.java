@@ -108,6 +108,9 @@ public class ScriptExecuteInterceptor {
      * @throws SdkExpressRunnerException if execute by {@link #sdkExpressRunner} failed.
      */
     protected Object doExecute(ScriptExecuteContext context) {
+        if (log.isDebugEnabled()) {
+            log.debug("Execute script {}", context.getScript());
+        }
         try {
             return sdkExpressRunner.execute(context.getScript(), context.getContext());
         }
