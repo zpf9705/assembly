@@ -20,6 +20,7 @@ package top.osjf.sdk.spring.runner.intercept;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.util.Assert;
 import top.osjf.sdk.core.util.internal.logging.InternalLogger;
 import top.osjf.sdk.core.util.internal.logging.InternalLoggerFactory;
@@ -72,7 +73,8 @@ public class ScriptExecuteInterceptor {
     /**
      * Execute the expression for intercepting the cut plane, dynamically parameter {@link #getContexts}
      * according to the method of cutting in, obtain multiple {@link ScriptExecuteContext} instances,
-     * execute in the order of parameters, and return the last result.
+     * Execute in the order of parsing and sorting parameters according to {@link AnnotationAwareOrderComparator},
+     * and return the last result.
      * @param pjp the instance of {@link ProceedingJoinPoint}.
      * @return The execution result of the last bit of multiple context execution chains.
      */
@@ -98,6 +100,7 @@ public class ScriptExecuteInterceptor {
             }
         }
         Assert.notEmpty(contexts, "Missing context");
+        AnnotationAwareOrderComparator.sort(contexts); // sorted ...
         return contexts;
     }
 
