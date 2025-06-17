@@ -320,7 +320,7 @@ public class SdkExpressRunner {
      */
     @Nullable
     @SuppressWarnings("unchecked")
-    public <T> T execute(String script, @Nullable Map<String, Object> context, QLOptions qlOptions)
+    public <T> T execute(String script, Map<String, Object> context, QLOptions qlOptions)
             throws SdkExpressRunnerException {
         QLResult result;
         try {
