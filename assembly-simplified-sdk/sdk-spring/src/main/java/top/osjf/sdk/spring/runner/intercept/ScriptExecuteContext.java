@@ -18,6 +18,7 @@
 package top.osjf.sdk.spring.runner.intercept;
 
 import com.alibaba.qlexpress4.annotation.QLFunction;
+import top.osjf.sdk.core.lang.NotNull;
 import top.osjf.sdk.spring.runner.SdkExpressRunner;
 
 /**
@@ -46,6 +47,7 @@ public interface ScriptExecuteContext {
      *
      * @return the name of the script executed by the expression.
      */
+    @NotNull
     String getScript();
 
     /**
