@@ -59,6 +59,11 @@ public class ScriptExecuteInterceptor {
         this.sdkExpressRunner = sdkExpressRunner;
     }
 
+    /**
+     * Around advice to intercept with annotation {@link ScriptInterceptor}
+     * @param pjp the instance of {@link ProceedingJoinPoint}.
+     * @return    the result of {@link #doIntercept}
+     */
     @Around("@annotation(ScriptInterceptor)")
     public Object intercept(ProceedingJoinPoint pjp) {
         return doIntercept(pjp);
