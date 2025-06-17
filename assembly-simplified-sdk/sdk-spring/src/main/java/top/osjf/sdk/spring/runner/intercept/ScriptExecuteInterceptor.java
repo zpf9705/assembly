@@ -29,6 +29,7 @@ import top.osjf.sdk.spring.runner.SdkExpressRunnerException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -88,7 +89,8 @@ public class ScriptExecuteInterceptor {
     }
 
     /**
-     * Extract the {@link ScriptExecuteContext} set by intercepting parameters from the cross-section.
+     * Extract the {@link ScriptExecuteContext} set by intercepting parameters from the cross-section
+     * and local {@link ScriptExecuteContext} manager.
      * @param pjp the instance of {@link ProceedingJoinPoint}.
      * @return The extracted {@link ScriptExecuteContext} set.
      */
@@ -99,9 +101,24 @@ public class ScriptExecuteInterceptor {
                 contexts.add((ScriptExecuteContext) arg);
             }
         }
+        contexts.addAll(getLocalContexts());
         Assert.notEmpty(contexts, "Missing context");
         AnnotationAwareOrderComparator.sort(contexts); // sorted ...
         return contexts;
+    }
+
+    /**
+     * Return the locally dynamically set {@link ScriptExecuteContext} collection, which will
+     * be used together with parameter extraction.
+     * @return The local {@link ScriptExecuteContext} set.
+     */
+    protected List<ScriptExecuteContext> getLocalContexts() {
+        if (LocalScriptExecuteContextManager.hasContext()) {
+            List<ScriptExecuteContext> contexts = LocalScriptExecuteContextManager.getContexts();
+            LocalScriptExecuteContextManager.removeAll();
+            return contexts;
+        }
+        return Collections.emptyList();
     }
 
     /**
