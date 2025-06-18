@@ -35,4 +35,13 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
 public @interface ScriptInterceptor {
+
+    /**
+     * Indicate that {@link ScriptExecuteInterceptor} should make the script execution
+     * result public as {@code ThreadLocal} Used for retrieval through class
+     * {@link LocalScriptExecuteContextManager#getResults()}. By default, it is turned off, which
+     * does not guarantee that {@link LocalScriptExecuteContextManager#getResults()}
+     * access will work properly.
+     */
+    boolean exposeResults() default false;
 }
