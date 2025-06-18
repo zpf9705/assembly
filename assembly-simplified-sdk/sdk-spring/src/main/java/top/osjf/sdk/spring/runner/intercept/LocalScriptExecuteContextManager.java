@@ -94,10 +94,10 @@ public abstract class LocalScriptExecuteContextManager {
     }
 
     /**
-     * Add a script execution context to the current thread.
-     * @param scriptResults The script execution results to add, must not be {@literal null}.
+     * Set a script execution result list to the current thread.
+     * @param scriptResults The script execution result list to set, must not be {@literal null}.
      */
-    public static void addScriptResults(List<Object> scriptResults) {
+    public static void setScriptResults(List<Object> scriptResults) {
         Assert.notNull(scriptResults, "Script results must not be null");
         results.set(scriptResults);
     }
