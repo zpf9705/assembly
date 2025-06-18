@@ -17,9 +17,9 @@
 
 package top.osjf.sdk.spring.runner.intercept;
 
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.*;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.util.Assert;
 import top.osjf.sdk.core.util.internal.logging.InternalLogger;
@@ -61,14 +61,34 @@ public class ScriptExecuteInterceptor {
         this.sdkExpressRunner = sdkExpressRunner;
     }
 
+    @Pointcut("@annotation(ScriptInterceptor)")
+    public void pointcut () { }
+
     /**
-     * Around advice to intercept with annotation {@link ScriptInterceptor}
-     * @param pjp the instance of {@link ProceedingJoinPoint}.
-     * @return    the result of {@link #doIntercept}
+     * Before advice to intercept with annotation {@link ScriptInterceptor}
+     * @param jp the instance of {@link JoinPoint}.
      */
-    @Around("@annotation(ScriptInterceptor)")
-    public Object intercept(ProceedingJoinPoint pjp) {
-        return doIntercept(pjp);
+    @Before("pointcut()")
+    public void doInterceptBefore(JoinPoint jp) {
+         doInterceptBeforeInternal(jp);
+    }
+
+    /**
+     * After advice to intercept with annotation {@link ScriptInterceptor}
+     * @param jp the instance of {@link JoinPoint}.
+     */
+    @After("pointcut()")
+    public void doInterceptAfter(JoinPoint jp) {
+        release();
+    }
+
+    /**
+     * AfterThrowing advice to intercept with annotation {@link ScriptInterceptor}
+     * @param jp the instance of {@link JoinPoint}.
+     */
+    @AfterThrowing("pointcut()")
+    public void intercept(JoinPoint jp) {
+        release();
     }
 
     /**
@@ -76,25 +96,36 @@ public class ScriptExecuteInterceptor {
      * according to the method of cutting in, obtain multiple {@link ScriptExecuteContext} instances,
      * Execute in the order of parsing and sorting parameters according to {@link AnnotationAwareOrderComparator},
      * and return the last result.
-     * @param pjp the instance of {@link ProceedingJoinPoint}.
-     * @return The execution result of the last bit of multiple context execution chains.
+     * @param jp the instance of {@link JoinPoint}.
      */
-    protected Object doIntercept(ProceedingJoinPoint pjp) {
-        List<ScriptExecuteContext> contexts = getContexts(pjp);
-        Object lastResult = null;
+    protected void doInterceptBeforeInternal(JoinPoint jp) {
+        List<ScriptExecuteContext> contexts = getContexts(jp);
+        List<Object> results = new ArrayList<>();
         for (ScriptExecuteContext sc : contexts) {
-            lastResult = doExecute(sc);
+            results.add(doExecute(sc));
         }
-        return lastResult;
+        ScriptInterceptor si
+                = ((MethodSignature) jp.getSignature())
+                .getMethod().getAnnotation(ScriptInterceptor.class);
+        if (si.exposeResults()) {
+            LocalScriptExecuteContextManager.setScriptResults(results);
+        }
+    }
+
+    /**
+     * Release all local resources.
+     */
+    protected void release() {
+        LocalScriptExecuteContextManager.removeAll();
     }
 
     /**
      * Extract the {@link ScriptExecuteContext} set by intercepting parameters from the cross-section
      * and local {@link ScriptExecuteContext} manager.
-     * @param pjp the instance of {@link ProceedingJoinPoint}.
+     * @param pjp the instance of {@link JoinPoint}.
      * @return The extracted {@link ScriptExecuteContext} set.
      */
-    protected List<ScriptExecuteContext> getContexts(ProceedingJoinPoint pjp) {
+    protected List<ScriptExecuteContext> getContexts(JoinPoint pjp) {
         List<ScriptExecuteContext> contexts = new ArrayList<>();
         for (Object arg : pjp.getArgs()) {
             if (arg instanceof ScriptExecuteContext) {
@@ -114,9 +145,7 @@ public class ScriptExecuteInterceptor {
      */
     protected List<ScriptExecuteContext> getLocalContexts() {
         if (LocalScriptExecuteContextManager.hasContext()) {
-            List<ScriptExecuteContext> contexts = LocalScriptExecuteContextManager.getContexts();
-            LocalScriptExecuteContextManager.removeAll();
-            return contexts;
+            return LocalScriptExecuteContextManager.getContexts();
         }
         return Collections.emptyList();
     }
