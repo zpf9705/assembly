@@ -36,6 +36,12 @@ import java.util.List;
  * {@link ScriptExecuteContext} object execution set of running threads through this
  * type, and can also add execution when intercepting execution.
  *
+ * <p>The results of the required script execution will be temporarily stored by the
+ * thread, and the user can call {@link #getResults()} to obtain an immutable result
+ * list, which will be returned in the order of script execution. It is not ruled out
+ * that it may be {@literal null}, as can be seen from the sorting and execution logic
+ * of {@link ScriptExecuteInterceptor#getContexts}.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
@@ -43,6 +49,9 @@ public abstract class LocalScriptExecuteContextManager {
 
     private static final ThreadLocal<List<ScriptExecuteContext>> contexts =
             new NamedThreadLocal<>("Script contexts");
+
+    private static final ThreadLocal<List<Object>> results =
+            new NamedThreadLocal<>("Script execute results");
 
     /**
      * Check if the current thread has any script execution contexts.
@@ -62,6 +71,14 @@ public abstract class LocalScriptExecuteContextManager {
     }
 
     /**
+     * Get all script execution results for the current thread (unmodifiable).
+     * @return An unmodifiable list of script execution results.
+     */
+    public static List<Object> getResults() {
+        return Collections.unmodifiableList(results.get());
+    }
+
+    /**
      * Add a script execution context to the current thread.
      * @param context The script execution context to add, must not be {@literal null}.
      */
@@ -74,6 +91,15 @@ public abstract class LocalScriptExecuteContextManager {
             contexts.set(cc);
         }
         cc.add(context);
+    }
+
+    /**
+     * Add a script execution context to the current thread.
+     * @param scriptResults The script execution results to add, must not be {@literal null}.
+     */
+    public static void addScriptResults(List<Object> scriptResults) {
+        Assert.notNull(scriptResults, "Script results must not be null");
+        results.set(scriptResults);
     }
 
     /**
@@ -92,5 +118,6 @@ public abstract class LocalScriptExecuteContextManager {
      */
     public static void removeAll() {
         contexts.remove();
+        results.remove();
     }
 }
