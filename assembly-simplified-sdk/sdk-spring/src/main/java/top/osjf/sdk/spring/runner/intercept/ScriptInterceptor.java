@@ -42,6 +42,7 @@ public @interface ScriptInterceptor {
      * {@link LocalScriptExecuteContextManager#getResults()}. By default, it is turned off, which
      * does not guarantee that {@link LocalScriptExecuteContextManager#getResults()}
      * access will work properly.
+     * @return The {@code boolean} flag that indicate as mentioned above.
      */
     boolean exposeResults() default false;
 }
