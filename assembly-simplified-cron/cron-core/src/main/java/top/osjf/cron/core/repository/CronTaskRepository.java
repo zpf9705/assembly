@@ -20,6 +20,7 @@ import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lang.Nullable;
+import top.osjf.cron.core.lang.Wrapper;
 import top.osjf.cron.core.listener.CronListener;
 
 import java.util.List;
@@ -50,7 +51,7 @@ import java.util.List;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public interface CronTaskRepository extends LifecycleRepository {
+public interface CronTaskRepository extends LifecycleRepository, Wrapper {
 
     /**
      * Register a new scheduled task using the given cron expression and a {@code Runnable}.
