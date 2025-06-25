@@ -99,7 +99,13 @@ public abstract class LocalScriptExecuteContextManager {
      */
     public static void setScriptResults(List<Object> scriptResults) {
         Assert.notNull(scriptResults, "Script results must not be null");
-        results.set(scriptResults);
+        List<Object> objects = results.get();
+        if (CollectionUtils.isNotEmpty(objects)) {
+            objects.addAll(scriptResults);
+        }
+        else {
+            results.set(scriptResults);
+        }
     }
 
     /**
