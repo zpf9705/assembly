@@ -78,9 +78,9 @@ public class IdempotentMethodAspect implements ApplicationContextAware {
     }
 
     @Around("@annotation(idempotentAnnotation)")
-    public Object around(ProceedingJoinPoint joinPoint, Idempotent idempotentAnnotation) throws Throwable {
+    public Object around(ProceedingJoinPoint pjp, Idempotent idempotentAnnotation) throws Throwable {
         // Obtain idempotent identifier.
-        String idempotentKey = generateIdempotentKey(joinPoint, idempotentAnnotation);
+        String idempotentKey = generateIdempotentKey(pjp, idempotentAnnotation);
 
         // Verify if the current request is a duplicate request.
         TimeUnit timeUnit = idempotentAnnotation.timeUnit();
@@ -91,7 +91,7 @@ public class IdempotentMethodAspect implements ApplicationContextAware {
         });
 
         try {
-            Object result = joinPoint.proceed();
+            Object result = pjp.proceed();
             if (idempotentAnnotation.removeKeyWhenFinished()) {
                 cache.removeIdempotent(idempotentKey);
             }
