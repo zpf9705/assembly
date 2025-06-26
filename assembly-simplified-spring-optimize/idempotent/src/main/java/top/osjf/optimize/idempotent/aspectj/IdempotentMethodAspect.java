@@ -41,6 +41,7 @@ import top.osjf.optimize.idempotent.annotation.Idempotent;
 import top.osjf.optimize.idempotent.cache.IdempotentCache;
 import top.osjf.optimize.idempotent.exception.IdempotentException;
 
+import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
 
@@ -57,6 +58,11 @@ import java.util.concurrent.TimeUnit;
  */
 @Aspect
 public class IdempotentMethodAspect implements ApplicationContextAware {
+
+    /**
+     * Get the spring el expression for accessing the URI mapping path.
+     */
+    private static final String GET_URI_EXPRESSION = "#" + RequestAttributes.REFERENCE_REQUEST + ".getRequestURI()";
 
     /**
      * Shared SpEL expression parser instance.
@@ -96,7 +102,8 @@ public class IdempotentMethodAspect implements ApplicationContextAware {
                 cache.removeIdempotent(idempotentKey);
             }
             return result;
-        } catch (Throwable e) {
+        }
+        catch (Throwable e) {
             // When there is an exception, decide whether to delete idempotent keys based on the configuration.
             if (idempotentAnnotation.removeKeyWhenError()) {
                 cache.removeIdempotent(idempotentKey);
@@ -106,34 +113,40 @@ public class IdempotentMethodAspect implements ApplicationContextAware {
     }
 
     private String generateIdempotentKey(ProceedingJoinPoint pjp, Idempotent idempotentAnnotation) {
-        String unique = idempotentAnnotation.unique();
-        // If no expression is filled in, return prefix directly.
-        if ("".equals(unique)) {
-            return idempotentAnnotation.prefix();
-        }
 
-        // Obtain the spEL context based on the current tangent point.
-        StandardEvaluationContext context = getStandardEvaluationContext(pjp);
+        // build the spEL context based on the current tangent point.
+        StandardEvaluationContext context = buildStandardEvaluationContext(pjp);
 
-        // Combine with the prefix to obtain the complete key
-        return parseExpression(idempotentAnnotation.prefix(), context) +
-                //Resolve the unique identifier
-                "@" + parseExpression(unique, context);
-    }
-
-    private String parseExpression(String expressionString, StandardEvaluationContext context) {
+        //Resolve the unique identifier
+        String expressionString = idempotentAnnotation.value();
         if ("".equals(expressionString)) {
             return "";
         }
+
+        // maybe url prefix ?
+        String urlPrefix = "";
+        if (RequestContextHolder.getRequestAttributes() instanceof ServletRequestAttributes
+                && idempotentAnnotation.addUriPrefixIfWebRequest()) {
+            urlPrefix = expressionParser.parseExpression(GET_URI_EXPRESSION).getValue(context, String.class);
+        }
+
         try {
-            return expressionParser.parseExpression(expressionString).getValue(context, String.class);
-        } catch (ParseException ex) {
+            return urlPrefix + "@" + expressionParser.parseExpression(expressionString).getValue(context, String.class);
+        }
+        catch (ParseException ex) {
             // exceptions return self .
             return expressionString;
         }
     }
 
-    private StandardEvaluationContext getStandardEvaluationContext(ProceedingJoinPoint pjp) {
+    /**
+     * Build a method level {@link MethodBasedEvaluationContext}, which can use the spring
+     * el expression to obtain the relevant content of {@link HttpServletRequest} (if it is
+     * a web request) and method parameters.
+     * @param pjp the aspectj {@link ProceedingJoinPoint} instance.
+     * @return The expression execution context instance of the component.
+     */
+    private StandardEvaluationContext buildStandardEvaluationContext(ProceedingJoinPoint pjp) {
 
         // Retrieve the current method and its parameters.
         Method method = ((MethodSignature) pjp.getSignature()).getMethod();
@@ -155,10 +168,10 @@ public class IdempotentMethodAspect implements ApplicationContextAware {
 
         // If in a servlet environment, the request information is placed
         // in context for easy retrieval of request parameters.
-        ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder
-                .getRequestAttributes();
-        if (requestAttributes != null) {
-            context.setVariable(RequestAttributes.REFERENCE_REQUEST, requestAttributes.getRequest());
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        if (requestAttributes instanceof ServletRequestAttributes) {
+            context.setVariable(RequestAttributes.REFERENCE_REQUEST,
+                    ((ServletRequestAttributes) requestAttributes).getRequest());
         }
         return context;
     }
