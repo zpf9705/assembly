@@ -49,7 +49,8 @@ public class IdempotentKeyExpiry implements Expiry<String, String> {
     public void setDuration(@Nullable Long nanosDuration) {
         if (nanosDuration == null) {
             durations.remove();
-        } else {
+        }
+        else {
             durations.set(nanosDuration);
         }
     }

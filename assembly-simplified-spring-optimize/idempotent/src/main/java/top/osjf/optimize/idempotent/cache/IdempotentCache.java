@@ -54,7 +54,8 @@ public class IdempotentCache {
             }
             // Key already exists
             return false;
-        } finally {
+        }
+        finally {
             expiry.setDuration(null);
         }
     }
