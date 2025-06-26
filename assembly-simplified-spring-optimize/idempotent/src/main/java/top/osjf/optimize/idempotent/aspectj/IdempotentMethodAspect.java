@@ -21,10 +21,6 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.expression.BeanFactoryResolver;
 import org.springframework.context.expression.MethodBasedEvaluationContext;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
@@ -32,7 +28,6 @@ import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.ParseException;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
-import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -57,7 +52,7 @@ import java.util.concurrent.TimeUnit;
  * @since 1.0.4
  */
 @Aspect
-public class IdempotentMethodAspect implements ApplicationContextAware {
+public class IdempotentMethodAspect {
 
     /**
      * Get the spring el expression for accessing the URI mapping path.
@@ -75,13 +70,6 @@ public class IdempotentMethodAspect implements ApplicationContextAware {
     private final ParameterNameDiscoverer parameterNameDiscoverer = new LocalVariableTableParameterNameDiscoverer();
 
     private final IdempotentCache cache = new IdempotentCache();
-
-    private ApplicationContext applicationContext;
-
-    @Override
-    public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
 
     @Around("@annotation(idempotentAnnotation)")
     public Object around(ProceedingJoinPoint pjp, Idempotent idempotentAnnotation) throws Throwable {
@@ -119,10 +107,6 @@ public class IdempotentMethodAspect implements ApplicationContextAware {
 
         //Resolve the unique identifier
         String expressionString = idempotentAnnotation.value();
-        if ("".equals(expressionString)) {
-            return "";
-        }
-
         // maybe url prefix ?
         String urlPrefix = "";
         if (RequestContextHolder.getRequestAttributes() instanceof ServletRequestAttributes
@@ -154,9 +138,6 @@ public class IdempotentMethodAspect implements ApplicationContextAware {
 
         StandardEvaluationContext context
                 = new MethodBasedEvaluationContext(pjp.getTarget(), method, args, parameterNameDiscoverer);
-
-        // Set support for bean name resolution.
-        context.setBeanResolver(new BeanFactoryResolver(applicationContext.getAutowireCapableBeanFactory()));
 
         // Support for parameter parsing.
         String[] parameterNames = parameterNameDiscoverer.getParameterNames(method);
