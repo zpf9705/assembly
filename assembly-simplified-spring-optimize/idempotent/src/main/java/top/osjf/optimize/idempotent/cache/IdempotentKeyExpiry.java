@@ -49,24 +49,50 @@ public class IdempotentKeyExpiry implements Expiry<String, String> {
     public void setDuration(@Nullable Long nanosDuration) {
         if (nanosDuration == null) {
             durations.remove();
-        }
-        else {
+        } else {
             durations.set(nanosDuration);
         }
     }
 
+    /**
+     * Mainly based on the idempotent specified time of the current thread, without
+     * setting a default of 60 seconds.
+     *
+     * @param key         {@inheritDoc}
+     * @param value       {@inheritDoc}
+     * @param currentTime {@inheritDoc}
+     * @return {@inheritDoc}
+     */
     @Override
     public long expireAfterCreate(@NonNull String key, @NonNull String value, long currentTime) {
         Long duration = durations.get();
         return duration != null ? duration : TimeUnit.SECONDS.toNanos(60);
     }
 
+    /**
+     * Idempotent key cannot be modified, this method is not supported.
+     *
+     * @param key             {@inheritDoc}
+     * @param value           {@inheritDoc}
+     * @param currentTime     {@inheritDoc}
+     * @param currentDuration {@inheritDoc}
+     * @return {@inheritDoc}
+     */
     @Override
     public long expireAfterUpdate(@NonNull String key, @NonNull String value, long currentTime,
                                   @NonNegative long currentDuration) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Return the remaining cache nanosecond time during reading, subject to creation.
+     *
+     * @param key             {@inheritDoc}
+     * @param value           {@inheritDoc}
+     * @param currentTime     {@inheritDoc}
+     * @param currentDuration {@inheritDoc}
+     * @return {@inheritDoc}
+     */
     @Override
     public long expireAfterRead(@NonNull String key, @NonNull String value, long currentTime,
                                 @NonNegative long currentDuration) {
