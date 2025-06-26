@@ -46,8 +46,7 @@ public @interface Idempotent {
      *
      * @return Unique identifier for idempotent methods.
      */
-    @Language("SpEL")
-    String value();
+    @Language("SpEL") String value();
 
     /**
      * The {@code boolean} flag that add a URI prefix to the idempotent access method for
