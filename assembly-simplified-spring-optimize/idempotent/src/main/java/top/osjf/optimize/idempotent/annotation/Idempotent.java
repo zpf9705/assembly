@@ -18,6 +18,7 @@
 package top.osjf.optimize.idempotent.annotation;
 
 import org.intellij.lang.annotations.Language;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import java.lang.annotation.*;
 import java.util.concurrent.TimeUnit;
@@ -40,22 +41,23 @@ import java.util.concurrent.TimeUnit;
 public @interface Idempotent {
 
     /**
-     * Idempotent classification markers to prevent repetition of idempotent markers
-     * {@link #unique()} can be obtained using constants or spring's el expressions.
-     *
-     * @return Idempotent classification markers.
-     */
-    @Language("SpEL")
-    String prefix() default "idem";
-
-    /**
      * The unique identifier of idempotent methods serves as the sole basis for determining
      * idempotency, which can accept fixed constants and the el expression pattern of Spring.
      *
      * @return Unique identifier for idempotent methods.
      */
     @Language("SpEL")
-    String unique() default "";
+    String value() default "";
+
+    /**
+     * The {@code boolean} flag that add a URI prefix to the idempotent access method for
+     * webpage requests.
+     * <p>The setting of this property is {@code true}. If it is not a web request access,
+     * it will not be concatenated because {@link RequestContextHolder#getRequestAttributes()}
+     * has no value.
+     * @return {@code true} add uri prefix if web request, {@code false} otherwise.
+     */
+    boolean addUriPrefixIfWebRequest() default true;
 
     /**
      * <p>
