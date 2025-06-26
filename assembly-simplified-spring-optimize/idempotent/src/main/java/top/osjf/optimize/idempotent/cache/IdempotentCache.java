@@ -35,11 +35,29 @@ public class IdempotentCache {
 
     private final Cache<String, String> cache;
 
+    /**
+     * Construct a {@link IdempotentCache} to build a {@link Cache}
+     * to control the validity period of idempotent information.
+     */
     public IdempotentCache() {
         this.expiry = new IdempotentKeyExpiry();
         this.cache = Caffeine.newBuilder().expireAfter(expiry).build();
     }
 
+    /**
+     * After successfully setting the cache idempotent key within the specified
+     * nanosecond time, the idempotent key cannot be used again within the specified
+     * nanosecond time.
+     *
+     * <p>The success or failure of caching idempotent keys will be returned with
+     * {@code Boolean} markers, and users can make control judgments based on the
+     * return value.
+     *
+     * @param idempotentKey The idempotent key to cache.
+     * @param nanosDuration The number of nanoseconds controlled by idempotency.
+     * @return The {@code Boolean} that idempotent setting successful，{@code true}
+     *         successful,{@code false} otherwise.
+     */
     public boolean cacheIdempotent(String idempotentKey, long nanosDuration) {
         requireNonNull(idempotentKey, "idempotentKey");
         try {
@@ -60,6 +78,10 @@ public class IdempotentCache {
         }
     }
 
+    /**
+     * Proactively remove power-law values and release idempotent control.
+     * @param idempotentKey The idempotent key to be removed.
+     */
     public void removeIdempotent(String idempotentKey) {
         // Invalidate (remove) the key from the cache
         this.cache.invalidate(idempotentKey);
