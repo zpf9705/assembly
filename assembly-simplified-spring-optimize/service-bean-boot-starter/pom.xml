@@ -16,7 +16,6 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <assembly.sb.autoconfigure>1.0.3</assembly.sb.autoconfigure>
     </properties>
 
     <dependencies>
@@ -24,7 +23,6 @@
         <dependency>
             <groupId>top.osjf</groupId>
             <artifactId>assembly-spring-boot-autoconfigure</artifactId>
-            <version>${assembly.sb.autoconfigure}</version>
         </dependency>
 
         <dependency>
