@@ -54,10 +54,13 @@ public @interface Idempotent {
      * Recommended to use SpEL expressions with request parameters to avoid conflicts
      * across different requests.
      * </p>
+     * <p>If the expression is {@literal null}, then the input parameters of the
+     * idempotent method will be converted into JSON concatenation as the control
+     * idempotent key for this access.
      *
      * @return Unique identifier string for idempotent method.
      */
-    @Language("SpEL") String value();
+    @Language("SpEL") String value() default "";
 
     /**
      * Add URI Prefix for Web Requests.
