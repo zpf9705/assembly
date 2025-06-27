@@ -23,7 +23,6 @@
         <dependency>
             <groupId>top.osjf</groupId>
             <artifactId>assembly-spring-boot-autoconfigure</artifactId>
-            <version>1.0.4-alpha</version>
         </dependency>
 
         <dependency>
