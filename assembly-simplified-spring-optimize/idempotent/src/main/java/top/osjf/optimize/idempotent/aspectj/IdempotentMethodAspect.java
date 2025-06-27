@@ -38,7 +38,9 @@ import top.osjf.optimize.idempotent.exception.IdempotentException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * NOTE: This file has been copied and slightly modified from {com.healthy-chn.cloud}.
@@ -70,6 +72,8 @@ public class IdempotentMethodAspect {
     private final ParameterNameDiscoverer parameterNameDiscoverer = new LocalVariableTableParameterNameDiscoverer();
 
     private final IdempotentCache cache = new IdempotentCache();
+
+    private final JSONSerializer jsonSerializer = new JSONSerializer();
 
     @Around("@annotation(idempotentAnnotation)")
     public Object around(ProceedingJoinPoint pjp, Idempotent idempotentAnnotation) throws Throwable {
@@ -107,6 +111,14 @@ public class IdempotentMethodAspect {
 
         //Resolve the unique identifier
         String expressionString = idempotentAnnotation.value();
+        if ("".equals(expressionString)) {
+            Object[] args = pjp.getArgs();
+            Assert.notEmpty(args, "No args"); // The expression is empty, and the parameter must exist.
+            // If the expression is empty, then convert the method parameter array
+            // to JSON and concatenate them as idempotent keys.
+            return Arrays.stream(pjp.getArgs()).map(jsonSerializer::toJSONString)
+                    .collect(Collectors.joining("-"));
+        }
         // maybe url prefix ?
         String urlPrefix = "";
         if (RequestContextHolder.getRequestAttributes() instanceof ServletRequestAttributes
@@ -154,6 +166,9 @@ public class IdempotentMethodAspect {
             context.setVariable(RequestAttributes.REFERENCE_REQUEST,
                     ((ServletRequestAttributes) requestAttributes).getRequest());
         }
+
+        // Add JSON serialization support.
+        context.setVariable("json", jsonSerializer);
         return context;
     }
 }
