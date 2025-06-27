@@ -109,16 +109,6 @@ public class IdempotentMethodAspect {
         // build the spEL context based on the current tangent point.
         StandardEvaluationContext context = buildStandardEvaluationContext(pjp);
 
-        //Resolve the unique identifier
-        String expressionString = idempotentAnnotation.value();
-        if ("".equals(expressionString)) {
-            Object[] args = pjp.getArgs();
-            Assert.notEmpty(args, "No args"); // The expression is empty, and the parameter must exist.
-            // If the expression is empty, then convert the method parameter array
-            // to JSON and concatenate them as idempotent keys.
-            return Arrays.stream(pjp.getArgs()).map(jsonSerializer::toJSONString)
-                    .collect(Collectors.joining("-"));
-        }
         // maybe url prefix ?
         String urlPrefix = "";
         if (RequestContextHolder.getRequestAttributes() instanceof ServletRequestAttributes
@@ -126,13 +116,29 @@ public class IdempotentMethodAspect {
             urlPrefix = expressionParser.parseExpression(GET_URI_EXPRESSION).getValue(context, String.class);
         }
 
-        try {
-            return urlPrefix + "@" + expressionParser.parseExpression(expressionString).getValue(context, String.class);
+        //Resolve the unique identifier
+
+        String expressionValue;
+        String expressionString = idempotentAnnotation.value();
+        if ("".equals(expressionString)) {
+            Object[] args = pjp.getArgs();
+            Assert.notEmpty(args, "No args"); // The expression is empty, and the parameter must exist.
+            // If the expression is empty, then convert the method parameter array
+            // to JSON and concatenate them as idempotent keys.
+            expressionValue =  Arrays.stream(pjp.getArgs()).map(jsonSerializer::toJSONString)
+                    .collect(Collectors.joining("-"));
         }
-        catch (ParseException ex) {
-            // exceptions return self .
-            return expressionString;
+        else {
+            try {
+                expressionValue = expressionParser.parseExpression(expressionString).getValue(context, String.class);
+            }
+            catch (ParseException ex){
+                // exceptions return self .
+                expressionValue = expressionString;
+            }
         }
+
+        return urlPrefix + "@" + expressionValue;
     }
 
     /**
