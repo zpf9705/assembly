@@ -21,7 +21,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Configuration;
 import top.osjf.optimize.idempotent.annotation.EnableIdempotent;
-import top.osjf.optimize.idempotent.cache.IdempotentCache;
+import top.osjf.optimize.idempotent.annotation.Idempotent;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@code Idempotent}.
@@ -29,7 +29,7 @@ import top.osjf.optimize.idempotent.cache.IdempotentCache;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
-@ConditionalOnClass(IdempotentCache.class)
+@ConditionalOnClass(Idempotent.class)
 @Configuration(proxyBeanMethods = false)
 @EnableIdempotent
 public class IdempotentAutoConfiguration {
