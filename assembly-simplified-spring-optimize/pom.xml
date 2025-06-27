@@ -16,6 +16,8 @@
     <modules>
         <module>service-bean</module>
         <module>service-bean-boot-starter</module>
+        <module>idempotent</module>
+        <module>idempotent-boot-starter</module>
     </modules>
 
     <properties>
@@ -45,6 +47,24 @@
             <dependency>
                 <groupId>top.osjf.spring.optimize</groupId>
                 <artifactId>service-bean-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>top.osjf.spring.optimize</groupId>
+                <artifactId>idempotent</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>top.osjf.spring.optimize</groupId>
+                <artifactId>idempotent-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>top.osjf</groupId>
+                <artifactId>assembly-spring-boot-autoconfigure</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
