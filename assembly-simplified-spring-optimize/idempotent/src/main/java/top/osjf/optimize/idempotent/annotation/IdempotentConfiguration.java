@@ -22,14 +22,16 @@ import org.springframework.context.annotation.Configuration;
 import top.osjf.optimize.idempotent.aspectj.IdempotentMethodAspect;
 
 /**
- * {@link Configuration Configuration} to enable idempotent support.
+ * The idempotent {@link Configuration Configuration} that build a tangent class
+ * surrounding idempotent method to achieve idempotency.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
 @Configuration(proxyBeanMethods = false)
 public class IdempotentConfiguration {
     @Bean
-    public IdempotentMethodAspect idempotentMethodAspect(){
+    public IdempotentMethodAspect idempotentMethodAspect() {
         return new IdempotentMethodAspect();
     }
 }
