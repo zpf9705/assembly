@@ -25,9 +25,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Enable annotation for idempotent support, which can be used to configure idempotent
- * method aspect support {@link top.osjf.optimize.idempotent.aspectj.IdempotentMethodAspect},
- * adding idempotent support before and after method execution to ensure business stability.
+ * This annotation is used to enable idempotent support and load the necessary
+ * configurations for {@code IdempotentConfiguration} idempotent.
+ *
+ * <p>The method of {@link Idempotent} annotation identification will be the
+ * primary support object after enabling idempotent support. Based on the
+ * relevant content of the annotation, idempotent control can be given
+ * around {@link top.osjf.optimize.idempotent.aspectj.IdempotentMethodAspect}.
+ * Developers only need to define an idempotent unique key to easily implement
+ * idempotent schemes, and can release idempotent control at the appropriate
+ * time according to customization.
+ *
+ * <p>This annotation is used to determine whether to enable idempotent support,
+ * and whether to remove it will enable idempotent plug-in support.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
