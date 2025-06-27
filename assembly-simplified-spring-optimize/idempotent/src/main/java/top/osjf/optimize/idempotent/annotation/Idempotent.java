@@ -26,11 +26,12 @@ import java.util.concurrent.TimeUnit;
 /**
  * NOTE: This file has been copied and slightly modified from {com.healthy-chn.cloud}.
  * <p>
- * The annotation of information enrichment required for idempotency.
- *
- * <p>This annotation is used to indicate the idempotent information of a certain idempotent
- * method, including the name, idempotent control time, reminder when idempotent validation
- * fails, and idempotent active deletion settings to ensure idempotent activity.
+ * <h1>idempotent control annotation</h1>
+ * <p>Used to mark methods that require idempotent control, preventing duplicate
+ * submissions or processing of interfaces through unique identification and validity
+ * mechanisms.
+ * <p>Suitable for key business scenarios such as payment, order creation, and inventory
+ * deduction, ensuring that the operation is only executed once.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
@@ -41,61 +42,110 @@ import java.util.concurrent.TimeUnit;
 public @interface Idempotent {
 
     /**
-     * The unique identifier of idempotent methods serves as the sole basis for determining
-     * idempotency, which can accept fixed constants and the el expression pattern of Spring.
+     * Unique Identifier for Idempotent Method.
+     * <p>
+     * The sole basis for idempotency verification. Supports two modes:
+     * <ul>
+     *     <li>Fixed constant: Directly specify a string (e.g., "ORDER_CREATE")</li>
+     *     <li>SpEL expression: Dynamically generate via Spring Expression Language
+     *     (e.g., "#request.userId + '_' + #params.orderId")</li>
+     * </ul>
+     * </p>
+     * <p>
+     * Recommended to use SpEL expressions with request parameters to avoid conflicts
+     * across different requests.
+     * </p>
      *
-     * @return Unique identifier for idempotent methods.
+     * @return Unique identifier string for idempotent method.
      */
     @Language("SpEL") String value();
 
     /**
-     * The {@code boolean} flag that add a URI prefix to the idempotent access method for
-     * webpage requests.
-     * <p>The setting of this property is {@code true}. If it is not a web request access,
-     * it will not be concatenated because {@link RequestContextHolder#getRequestAttributes()}
-     * has no value.
-     * @return {@code true} add uri prefix if web request, {@code false} otherwise.
+     * Add URI Prefix for Web Requests.
+     * <p>
+     * When set to {@code true}, if the current request is a web request (determined via
+     * {@link RequestContextHolder#getRequestAttributes()}), the generated idempotent key
+     * will be prefixed with the current request URI, e.g.:
+     * <pre>
+     * Original key: "USER_123" → Actual key: "/api/user/USER_123"
+     * </pre>
+     * </p>
+     * <p>
+     * Suitable for scenarios requiring idempotency isolation by request path (e.g., different
+     * endpoints use distinct keys).
+     * </p>
+     *
+     * @return {@code true} to add URI prefix for web requests, {@code false} otherwise
      */
     boolean addUriPrefixIfWebRequest() default true;
 
     /**
+     * Idempotent Key TTL.
      * <p>
-     * The duration of idempotent control must be greater than the processing time of the business.
+     * The duration for which the idempotent key remains valid. Unit is specified by {@link #timeUnit()}.
+     * If the business processing time exceeds this duration, the key can be reused.
      * </p>
-     * The value is the duration of the marking of the idempotent key. If it exceeds the marking time,
-     * the idempotent key can be used again.
+     * <p>
+     * Default is 60 seconds. Adjust based on business requirements (e.g., longer TTL for payment scenarios).
+     * </p>
      *
-     * @return tag duration, default is 60 seconds.
+     * @return TTL duration of the idempotent key (numeric value).
      */
     long duration() default 60;
 
     /**
-     * Idempotent control duration unit, default is {@link TimeUnit#SECONDS}.
+     * Time Unit for TTL.
+     * <p>
+     * Specifies the time unit for {@link #duration()}. Default is {@link TimeUnit#SECONDS}.
+     * Options include milliseconds, seconds, minutes, hours, etc.
+     * </p>
      *
-     * @return idempotent control duration unit.
+     * @return Time unit enum value.
      */
     TimeUnit timeUnit() default TimeUnit.SECONDS;
 
     /**
-     * Indicate the information reminder given when idempotent parity check fails.
+     * Error Message for Idempotency Check Failure.
+     * <p>
+     * The message returned to the client when idempotency check fails.
+     * Default is: "Repeated request, please try again later".
+     * </p>
+     * <p>
+     * Customize based on business requirements (e.g., "Order already submitted, please do not repeat").
+     * </p>
      *
-     * @return Reminder information.
+     * @return Error message for idempotency check failure
      */
     String message() default "Repeated request, please try again later";
 
     /**
-     * The {@code boolean} flag that should the idempotent key be cleared immediately
-     * after the completion of the business
+     * Clear Key Immediately After Business Completion.
+     * <p>
+     * When set to {@code true}, the idempotent key is cleared immediately after successful
+     * business logic execution.
+     * Suitable for scenarios requiring high real-time performance.
+     * </p>
+     * <p>
+     * Default is {@code false}, meaning the key is not actively cleared (relies on TTL expiration).
+     * </p>
      *
-     * @return {@code true}: Clear Now {@code false}: Not handled.
+     * @return {@code true} to clear immediately after business completion, {@code false} otherwise
      */
     boolean removeKeyWhenFinished() default false;
 
     /**
-     * The {@code boolean} flag that should the key of the exponent be cleared
-     * immediately when the business execution is abnormal.
+     * Clear Key Immediately on Business Error.
+     * <p>
+     * When set to {@code true}, the idempotent key is cleared immediately if business
+     * logic throws an exception.
+     * Prevents key leakage due to exceptions.
+     * </p>
+     * <p>
+     * Default is {@code false}, meaning the key is not actively cleared on error
+     * (relies on TTL expiration).
+     * </p>
      *
-     * @return {@code true}: Clear Now {@code false}: Not handled.
+     * @return {@code true} to clear immediately on business error, {@code false} otherwise
      */
     boolean removeKeyWhenError() default false;
 }
