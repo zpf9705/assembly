@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * NOTE: This file has been copied and slightly modified from {com.healthy-chn.cloud}.
  * <p>
- * <h1>idempotent control annotation</h1>
+ * <strong>idempotent control annotation</strong>
  * <p>Used to mark methods that require idempotent control, preventing duplicate
  * submissions or processing of interfaces through unique identification and validity
  * mechanisms.
@@ -50,7 +50,6 @@ public @interface Idempotent {
      *     <li>SpEL expression: Dynamically generate via Spring Expression Language
      *     (e.g., "#request.userId + '_' + #params.orderId")</li>
      * </ul>
-     * </p>
      * <p>
      * Recommended to use SpEL expressions with request parameters to avoid conflicts
      * across different requests.
@@ -69,7 +68,6 @@ public @interface Idempotent {
      * <pre>
      * Original key: "USER_123" → Actual key: "/api/user/USER_123"
      * </pre>
-     * </p>
      * <p>
      * Suitable for scenarios requiring idempotency isolation by request path (e.g., different
      * endpoints use distinct keys).
