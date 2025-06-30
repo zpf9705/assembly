@@ -24,10 +24,11 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.expression.MethodBasedEvaluationContext;
+import org.springframework.context.expression.BeanFactoryResolver;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
-import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.AccessException;
+import org.springframework.expression.BeanResolver;
 import org.springframework.expression.ParseException;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
@@ -42,6 +43,7 @@ import top.osjf.optimize.idempotent.decoder.Decoder;
 import top.osjf.optimize.idempotent.decoder.JSONDecoder;
 import top.osjf.optimize.idempotent.exception.IdempotentException;
 
+import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -70,7 +72,7 @@ public class IdempotentMethodAspect implements ApplicationContextAware {
     /**
      * Shared SpEL expression parser instance.
      */
-    private final ExpressionParser expressionParser = new SpelExpressionParser();
+    private final SpelExpressionParser expressionParser = new SpelExpressionParser();
 
     /**
      * Parameter name discoverer used to extract method parameter names.
@@ -82,10 +84,12 @@ public class IdempotentMethodAspect implements ApplicationContextAware {
     private final JSONDecoder jsonDecoder = new JSONDecoder();
 
     private ApplicationContext applicationContext;
+    private BeanResolver beanResolver;
 
     @Override
     public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+        beanResolver = new BeanFactoryResolver(applicationContext);
     }
 
     @Around("@annotation(idempotentAnnotation)")
@@ -191,6 +195,36 @@ public class IdempotentMethodAspect implements ApplicationContextAware {
 
         // Add other Decoder support.
         applicationContext.getBeansOfType(Decoder.class).forEach(context::setVariable);
+
         return context;
+    }
+
+    /**
+     * Support {@link org.springframework.context.expression.MethodBasedEvaluationContext}
+     * cannot be searched from {@link StandardEvaluationContext#lookupVariable(String)},
+     * default is the global recognition of beans.
+     */
+    private class MethodBasedEvaluationContext
+            extends org.springframework.context.expression.MethodBasedEvaluationContext{
+
+        public MethodBasedEvaluationContext(Object rootObject, Method method, Object[] arguments,
+                                            ParameterNameDiscoverer parameterNameDiscoverer) {
+            super(rootObject, method, arguments, parameterNameDiscoverer);
+        }
+
+        @Nullable
+        @Override
+        public Object lookupVariable(@NonNull String name) {
+            Object o = super.lookupVariable(name);
+            if (o == null){
+                try {
+                    return beanResolver.resolve(this, name);
+                }
+                catch (AccessException ex){
+                    // Ignored ...
+                }
+            }
+            return o;
+        }
     }
 }
