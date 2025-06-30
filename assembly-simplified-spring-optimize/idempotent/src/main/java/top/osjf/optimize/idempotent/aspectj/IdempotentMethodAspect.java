@@ -21,6 +21,9 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.expression.MethodBasedEvaluationContext;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
@@ -28,12 +31,15 @@ import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.ParseException;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import top.osjf.optimize.idempotent.annotation.Idempotent;
 import top.osjf.optimize.idempotent.cache.IdempotentCache;
+import top.osjf.optimize.idempotent.decoder.Decoder;
+import top.osjf.optimize.idempotent.decoder.JSONDecoder;
 import top.osjf.optimize.idempotent.exception.IdempotentException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -54,7 +60,7 @@ import java.util.stream.Collectors;
  * @since 1.0.4
  */
 @Aspect
-public class IdempotentMethodAspect {
+public class IdempotentMethodAspect implements ApplicationContextAware {
 
     /**
      * Get the spring el expression for accessing the URI mapping path.
@@ -73,7 +79,14 @@ public class IdempotentMethodAspect {
 
     private final IdempotentCache cache = new IdempotentCache();
 
-    private final JSONSerializer jsonSerializer = new JSONSerializer();
+    private final JSONDecoder jsonDecoder = new JSONDecoder();
+
+    private ApplicationContext applicationContext;
+
+    @Override
+    public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
 
     @Around("@annotation(idempotentAnnotation)")
     public Object around(ProceedingJoinPoint pjp, Idempotent idempotentAnnotation) throws Throwable {
@@ -125,7 +138,7 @@ public class IdempotentMethodAspect {
             Assert.notEmpty(args, "No args"); // The expression is empty, and the parameter must exist.
             // If the expression is empty, then convert the method parameter array
             // to JSON and concatenate them as idempotent keys.
-            expressionValue =  Arrays.stream(pjp.getArgs()).map(jsonSerializer::toJSONString)
+            expressionValue =  Arrays.stream(pjp.getArgs()).map(jsonDecoder::decode)
                     .collect(Collectors.joining("-"));
         }
         else {
@@ -173,8 +186,11 @@ public class IdempotentMethodAspect {
                     ((ServletRequestAttributes) requestAttributes).getRequest());
         }
 
-        // Add JSON serialization support.
-        context.setVariable("json", jsonSerializer);
+        // Add JSON Decoder support.
+        context.setVariable("json", jsonDecoder);
+
+        // Add other Decoder support.
+        applicationContext.getBeansOfType(Decoder.class).forEach(context::setVariable);
         return context;
     }
 }
