@@ -20,6 +20,8 @@ package top.osjf.optimize.idempotent.annotation;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import top.osjf.optimize.idempotent.aspectj.IdempotentMethodAspect;
+import top.osjf.optimize.idempotent.decoder.Decoder;
+import top.osjf.optimize.idempotent.decoder.ToStringDecoder;
 
 /**
  * The idempotent {@link Configuration Configuration} that build a tangent class
@@ -33,5 +35,10 @@ public class IdempotentConfiguration {
     @Bean
     public IdempotentMethodAspect idempotentMethodAspect() {
         return new IdempotentMethodAspect();
+    }
+
+    @Bean("toString")
+    public Decoder decoder(){
+        return new ToStringDecoder();
     }
 }
