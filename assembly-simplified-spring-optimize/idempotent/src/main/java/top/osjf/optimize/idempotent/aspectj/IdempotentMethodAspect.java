@@ -89,7 +89,7 @@ public class IdempotentMethodAspect implements ApplicationContextAware {
     /**
      * The Global configuration.
      */
-    private IdempotentGlobalConfiguration globalConfiguration = new IdempotentGlobalConfiguration();
+    private IdempotentGlobalConfiguration globalConfiguration;
 
     /**
      * Set the global configuration {@link IdempotentGlobalConfiguration} as a global
@@ -141,7 +141,7 @@ public class IdempotentMethodAspect implements ApplicationContextAware {
      */
     private long getDuration(Idempotent idempotentAnnotation) {
         long duration = idempotentAnnotation.duration();
-        if (duration == -1) {
+        if (duration == -1 && globalConfiguration != null) {
             duration = globalConfiguration.getDuration();
         }
         return idempotentAnnotation.timeUnit().toNanos(duration);
@@ -155,7 +155,7 @@ public class IdempotentMethodAspect implements ApplicationContextAware {
      */
     private String getIdempotentFailedMessage(Idempotent idempotentAnnotation) {
         String message = idempotentAnnotation.message();
-        if ("".equals(message)) {
+        if ("".equals(message) && globalConfiguration != null) {
             message = globalConfiguration.getMessage();
         }
         return message;
