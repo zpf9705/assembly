@@ -141,7 +141,7 @@ public class IdempotentMethodAspect implements ApplicationContextAware {
      */
     private long getDuration(Idempotent idempotentAnnotation) {
         long duration = idempotentAnnotation.duration();
-        if (duration == -1 && globalConfiguration != null) {
+        if (duration == -1 && globalConfigExist()) {
             duration = globalConfiguration.getDuration();
         }
         return idempotentAnnotation.timeUnit().toNanos(duration);
@@ -155,12 +155,26 @@ public class IdempotentMethodAspect implements ApplicationContextAware {
      */
     private String getIdempotentFailedMessage(Idempotent idempotentAnnotation) {
         String message = idempotentAnnotation.message();
-        if ("".equals(message) && globalConfiguration != null) {
+        if ("".equals(message) && globalConfigExist()) {
             message = globalConfiguration.getMessage();
         }
         return message;
     }
 
+    /**
+     * @return The {@code boolean} flag that {@link #globalConfiguration} not {@literal null}.
+     */
+    private boolean globalConfigExist() {
+        return globalConfiguration != null;
+    }
+
+    /**
+     * Returns an idempotent key string generated based on idempotent annotation information
+     * and slice method information.
+     * @param pjp the aspectj sectional information object.
+     * @param idempotentAnnotation the idempotent annotation.
+     * @return the idempotent key.
+     */
     private String generateIdempotentKey(ProceedingJoinPoint pjp, Idempotent idempotentAnnotation) {
 
         // build the spEL context based on the current tangent point.
