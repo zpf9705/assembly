@@ -19,6 +19,7 @@ package top.osjf.optimize.idempotent.annotation;
 
 import org.intellij.lang.annotations.Language;
 import org.springframework.web.context.request.RequestContextHolder;
+import top.osjf.optimize.idempotent.global.config.IdempotentGlobalConfiguration;
 
 import java.lang.annotation.*;
 import java.util.concurrent.TimeUnit;
@@ -87,12 +88,14 @@ public @interface Idempotent {
      * If the business processing time exceeds this duration, the key can be reused.
      * </p>
      * <p>
-     * Default is 60 seconds. Adjust based on business requirements (e.g., longer TTL for payment scenarios).
+     * Default is -1 seconds indicating the need to use global configuration
+     * {@link IdempotentGlobalConfiguration#getDuration()},. Adjust based on business requirements (e.g.,
+     * longer TTL for payment scenarios).
      * </p>
      *
      * @return TTL duration of the idempotent key (numeric value).
      */
-    long duration() default 60;
+    long duration() default -1;
 
     /**
      * Time Unit for TTL.
@@ -109,7 +112,7 @@ public @interface Idempotent {
      * Error Message for Idempotency Check Failure.
      * <p>
      * The message returned to the client when idempotency check fails.
-     * Default is: "Repeated request, please try again later".
+     * Default is: "{@link IdempotentGlobalConfiguration#getMessage()}".
      * </p>
      * <p>
      * Customize based on business requirements (e.g., "Order already submitted, please do not repeat").
@@ -117,7 +120,7 @@ public @interface Idempotent {
      *
      * @return Error message for idempotency check failure
      */
-    String message() default "Repeated request, please try again later";
+    String message() default "";
 
     /**
      * Clear Key Immediately After Business Completion.
