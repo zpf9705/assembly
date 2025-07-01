@@ -17,11 +17,17 @@
 
 package top.osjf.spring.autoconfigure.idempotent;
 
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.util.Assert;
 import top.osjf.optimize.idempotent.annotation.EnableIdempotent;
 import top.osjf.optimize.idempotent.annotation.Idempotent;
+import top.osjf.optimize.idempotent.aspectj.IdempotentMethodAspect;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@code Idempotent}.
@@ -31,6 +37,31 @@ import top.osjf.optimize.idempotent.annotation.Idempotent;
  */
 @ConditionalOnClass(Idempotent.class)
 @Configuration(proxyBeanMethods = false)
+@EnableConfigurationProperties(IdempotentProperties.class)
 @EnableIdempotent
+@Import(IdempotentAutoConfiguration.IdempotentGlobalConfigInitializing.class)
 public class IdempotentAutoConfiguration {
+
+    /**
+     * Bean used to Initialize setting idempotent global configuration that a {@link IdempotentMethodAspect}
+     * exists and provide a more meaningful exception.
+     */
+    public static class IdempotentGlobalConfigInitializing implements InitializingBean {
+
+        private final ObjectProvider<IdempotentMethodAspect> provider;
+        private final IdempotentProperties idempotentProperties;
+
+        public IdempotentGlobalConfigInitializing(ObjectProvider<IdempotentMethodAspect> provider,
+                                                  IdempotentProperties idempotentProperties) {
+            this.provider = provider;
+            this.idempotentProperties = idempotentProperties;
+        }
+
+        @Override
+        public void afterPropertiesSet() {
+            IdempotentMethodAspect aspect = provider.getIfAvailable();
+            Assert.notNull(aspect,"No IdempotentMethodAspect could be auto-configured");
+            aspect.setGlobalConfiguration(idempotentProperties.getGlobal());
+        }
+    }
 }
