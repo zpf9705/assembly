@@ -42,12 +42,12 @@ import top.osjf.optimize.idempotent.cache.IdempotentCache;
 import top.osjf.optimize.idempotent.decoder.Decoder;
 import top.osjf.optimize.idempotent.decoder.JSONDecoder;
 import top.osjf.optimize.idempotent.exception.IdempotentException;
+import top.osjf.optimize.idempotent.global.config.IdempotentGlobalConfiguration;
 
 import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -86,6 +86,20 @@ public class IdempotentMethodAspect implements ApplicationContextAware {
     private ApplicationContext applicationContext;
     private BeanResolver beanResolver;
 
+    /**
+     * The Global configuration.
+     */
+    private IdempotentGlobalConfiguration globalConfiguration = new IdempotentGlobalConfiguration();
+
+    /**
+     * Set the global configuration {@link IdempotentGlobalConfiguration} as a global
+     * configuration property when certain properties do not have personalized configurations.
+     * @param globalConfiguration the specialized global config of idempotent.
+     */
+    public void setGlobalConfiguration(IdempotentGlobalConfiguration globalConfiguration) {
+        this.globalConfiguration = globalConfiguration;
+    }
+
     @Override
     public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
@@ -98,11 +112,9 @@ public class IdempotentMethodAspect implements ApplicationContextAware {
         String idempotentKey = generateIdempotentKey(pjp, idempotentAnnotation);
 
         // Verify if the current request is a duplicate request.
-        TimeUnit timeUnit = idempotentAnnotation.timeUnit();
-        long duration = idempotentAnnotation.duration();
-        boolean cacheSuccess = cache.cacheIdempotent(idempotentKey, timeUnit.toNanos(duration));
+        boolean cacheSuccess = cache.cacheIdempotent(idempotentKey, getDuration(idempotentAnnotation));
         Assert.isTrue(cacheSuccess, () -> {
-            throw new IdempotentException(idempotentAnnotation.message());
+            throw new IdempotentException(getIdempotentFailedMessage(idempotentAnnotation));
         });
 
         try {
@@ -119,6 +131,34 @@ public class IdempotentMethodAspect implements ApplicationContextAware {
             }
             throw e;
         }
+    }
+
+    /**
+     * Return the nanosecond value of the control gap for idempotent keys. If no annotation is
+     * provided, use the globally configured {@link IdempotentGlobalConfiguration#getDuration()}.
+     * @param idempotentAnnotation the idempotent annotation.
+     * @return the idempotent key cache duration nanos.
+     */
+    private long getDuration(Idempotent idempotentAnnotation) {
+        long duration = idempotentAnnotation.duration();
+        if (duration == -1) {
+            duration = globalConfiguration.getDuration();
+        }
+        return idempotentAnnotation.timeUnit().toNanos(duration);
+    }
+
+    /**
+     * Return a reminder message after idempotent parity failure. If no annotation is provided,
+     * use the global configuration {@link IdempotentGlobalConfiguration#getMessage()}.
+     * @param idempotentAnnotation the idempotent annotation.
+     * @return the reminder message for idempotent key verification failure.
+     */
+    private String getIdempotentFailedMessage(Idempotent idempotentAnnotation) {
+        String message = idempotentAnnotation.message();
+        if ("".equals(message)) {
+            message = globalConfiguration.getMessage();
+        }
+        return message;
     }
 
     private String generateIdempotentKey(ProceedingJoinPoint pjp, Idempotent idempotentAnnotation) {
