@@ -61,19 +61,14 @@ public class IdempotentCache {
     public boolean cacheIdempotent(String idempotentKey, long nanosDuration) {
         requireNonNull(idempotentKey, "idempotentKey");
         try {
+            // Set the expiration time of the current idempotent key.
             expiry.setDuration(nanosDuration);
-            // Check if the key exists in the cache
-            String value = this.cache.getIfPresent(idempotentKey);
-            if (value == null) {
-                // Store the idempotent key
-                this.cache.put(idempotentKey, idempotentKey);
-                // Key was successfully saved
-                return true;
-            }
-            // Key already exists
-            return false;
+            // Store the idempotent key if no exists .
+            return cache.asMap().putIfAbsent(idempotentKey, idempotentKey) == null;
         }
         finally {
+            // The expiration time of the current idempotent key is temporarily
+            // stored by the current thread and released after use.
             expiry.setDuration(null);
         }
     }
