@@ -47,12 +47,12 @@ public class CronCondition extends SpringBootCondition {
         ConditionMessage.Builder message = ConditionMessage.forCondition("Cron", sourceClass);
         Environment environment = context.getEnvironment();
         try {
-            BindResult<CronProperties.ClientType> specified = Binder.get(environment)
-                    .bind("spring.schedule.cron.client-type", CronProperties.ClientType.class);
+            BindResult<ClientType> specified = Binder.get(environment).bind("spring.schedule.cron.client-type",
+                    ClientType.class);
             if (!specified.isBound()) {
                 return ConditionOutcome.match(message.because("automatic cron client type"));
             }
-            CronProperties.ClientType required = CronAutoConfigurations.getType(((AnnotationMetadata) metadata)
+            ClientType required = CronAutoConfigurations.getType(((AnnotationMetadata) metadata)
                     .getClassName());
             if (specified.get() == required) {
                 return ConditionOutcome.match(message.because(specified.get() + " cron client type"));

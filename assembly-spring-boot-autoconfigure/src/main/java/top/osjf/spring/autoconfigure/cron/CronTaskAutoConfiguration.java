@@ -88,7 +88,7 @@ public class CronTaskAutoConfiguration {
     }
 
     /**
-     * {@link ImportSelector} to add {@link CronProperties.ClientType} configuration classes.
+     * {@link ImportSelector} to add {@link ClientType} configuration classes.
      * @since 1.0.4
      */
     public static class CronConfigurationImportSelector implements ImportSelector {
@@ -96,7 +96,7 @@ public class CronTaskAutoConfiguration {
         @Override
         @NotNull
         public String[] selectImports(@NotNull AnnotationMetadata importingClassMetadata) {
-            CronProperties.ClientType[] types = CronProperties.ClientType.values();
+            ClientType[] types = ClientType.values();
             String[] imports = new String[types.length];
             for (int i = 0; i < types.length; i++) {
                 imports[i] = CronAutoConfigurations.getConfigurationClass(types[i]);
