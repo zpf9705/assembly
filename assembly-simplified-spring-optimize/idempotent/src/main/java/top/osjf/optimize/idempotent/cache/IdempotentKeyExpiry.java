@@ -66,7 +66,7 @@ public class IdempotentKeyExpiry implements Expiry<String, String> {
     @Override
     public long expireAfterCreate(@NonNull String key, @NonNull String value, long currentTime) {
         Long duration = durations.get();
-        return duration != null ? duration : TimeUnit.SECONDS.toNanos(60);
+        return duration != null ? duration : TimeUnit.SECONDS.toNanos(10);
     }
 
     /**
