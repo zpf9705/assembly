@@ -24,37 +24,37 @@ import java.util.EnumMap;
 import java.util.Map;
 
 /**
- * Mappings between {@link CronProperties.ClientType} and {@code @Configuration}.
+ * Mappings between {@link ClientType} and {@code @Configuration}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
 final class CronAutoConfigurations {
 
-    private static final Map<CronProperties.ClientType, String> MAPPINGS;
+    private static final Map<ClientType, String> MAPPINGS;
 
     static {
-        Map<CronProperties.ClientType, String> mappings = new EnumMap<>(CronProperties.ClientType.class);
-        mappings.put(CronProperties.ClientType.SPRING_SCHEDULER, SpringSchedulerAutoConfiguration.class.getName());
-        mappings.put(CronProperties.ClientType.HUTOOL, HutoolCronTaskAutoConfiguration.class.getName());
-        mappings.put(CronProperties.ClientType.QUARTZ, QuartzCronTaskAutoConfiguration.class.getName());
-        mappings.put(CronProperties.ClientType.CRON4J, Cron4jCronTaskAutoConfiguration.class.getName());
-        mappings.put(CronProperties.ClientType.SIMPLE, SimpleCronTaskAutoConfiguration.class.getName());
-        mappings.put(CronProperties.ClientType.NONE, NoOpCornTaskAutoConfiguration.class.getName());
+        Map<ClientType, String> mappings = new EnumMap<>(ClientType.class);
+        mappings.put(ClientType.SPRING_SCHEDULER, SpringSchedulerAutoConfiguration.class.getName());
+        mappings.put(ClientType.HUTOOL, HutoolCronTaskAutoConfiguration.class.getName());
+        mappings.put(ClientType.QUARTZ, QuartzCronTaskAutoConfiguration.class.getName());
+        mappings.put(ClientType.CRON4J, Cron4jCronTaskAutoConfiguration.class.getName());
+        mappings.put(ClientType.SIMPLE, SimpleCronTaskAutoConfiguration.class.getName());
+        mappings.put(ClientType.NONE, NoOpCornTaskAutoConfiguration.class.getName());
         MAPPINGS = Collections.unmodifiableMap(mappings);
     }
 
     private CronAutoConfigurations() {
     }
 
-    static String getConfigurationClass(CronProperties.ClientType clientType) {
+    static String getConfigurationClass(ClientType clientType) {
         String configurationClassName = MAPPINGS.get(clientType);
         Assert.state(configurationClassName != null, () -> "Unknown client type " + clientType);
         return configurationClassName;
     }
 
-    static CronProperties.ClientType getType(String configurationClassName) {
-        for (Map.Entry<CronProperties.ClientType, String> entry : MAPPINGS.entrySet()) {
+    static ClientType getType(String configurationClassName) {
+        for (Map.Entry<ClientType, String> entry : MAPPINGS.entrySet()) {
             if (entry.getValue().equals(configurationClassName)) {
                 return entry.getKey();
             }
