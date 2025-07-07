@@ -200,6 +200,13 @@ public class IdempotentMethodAspect implements ApplicationContextAware , Applica
     }
 
     /**
+     * @return The {@link IdempotentCache} instance after loading.
+     */
+    public IdempotentCache getCache() {
+        return cache;
+    }
+
+    /**
      * Load the highest priority {@link IdempotentExceptionTranslator} in the Spring container.
      */
     public void loadIdempotentExceptionTranslator() {
