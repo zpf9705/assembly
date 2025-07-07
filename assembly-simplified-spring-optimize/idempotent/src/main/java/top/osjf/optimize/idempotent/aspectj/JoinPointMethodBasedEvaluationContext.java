@@ -116,8 +116,14 @@ public class JoinPointMethodBasedEvaluationContext extends MethodBasedEvaluation
                     return getBeanResolver().resolve(this, name); // maybe bean name
                 }
             }
-            catch (AccessException ignored){
-                // AccessException pass ...
+            catch (AccessException ex){
+                Throwable cause = ex.getCause();
+                if (cause instanceof RuntimeException) {
+                    throw (RuntimeException) cause;
+                }
+                else {
+                    throw new RuntimeException(cause);
+                }
             }
         }
         return o;
