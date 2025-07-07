@@ -17,32 +17,18 @@
 
 package top.osjf.optimize.idempotent.cache;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
-
-import static java.util.Objects.requireNonNull;
-
 /**
- * A {@code IdempotentCache} class that supports idempotent intervals, using {@link Cache}
- * to achieve idempotent control and removal.
+ * The {@code IdempotentCache} control interface provides periodic control of idempotent
+ * unique values, ensuring idempotent security for a certain period of time after idempotent
+ * validation.
+ *
+ * <p>At the same time, open the idempotent unique value clearing scheme in a timely manner,
+ * and users can also reasonably release idempotent control at the appropriate time.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
-public class IdempotentCache {
-
-    private final IdempotentKeyExpiry expiry;
-
-    private final Cache<String, String> cache;
-
-    /**
-     * Construct a {@link IdempotentCache} to build a {@link Cache}
-     * to control the validity period of idempotent information.
-     */
-    public IdempotentCache() {
-        this.expiry = new IdempotentKeyExpiry();
-        this.cache = Caffeine.newBuilder().expireAfter(expiry).build();
-    }
+public interface IdempotentCache {
 
     /**
      * After successfully setting the cache idempotent key within the specified
@@ -56,29 +42,14 @@ public class IdempotentCache {
      * @param idempotentKey The idempotent key to cache.
      * @param nanosDuration The number of nanoseconds controlled by idempotency.
      * @return The {@code Boolean} that idempotent setting successful，{@code true}
-     *         successful,{@code false} otherwise.
+     * successful,{@code false} otherwise.
      */
-    public boolean cacheIdempotent(String idempotentKey, long nanosDuration) {
-        requireNonNull(idempotentKey, "idempotentKey");
-        try {
-            // Set the expiration time of the current idempotent key.
-            expiry.setDuration(nanosDuration);
-            // Store the idempotent key if no exists .
-            return cache.asMap().putIfAbsent(idempotentKey, idempotentKey) == null;
-        }
-        finally {
-            // The expiration time of the current idempotent key is temporarily
-            // stored by the current thread and released after use.
-            expiry.setDuration(null);
-        }
-    }
+    boolean cacheIdempotent(String idempotentKey, long nanosDuration);
 
     /**
      * Proactively remove power-law values and release idempotent control.
+     *
      * @param idempotentKey The idempotent key to be removed.
      */
-    public void removeIdempotent(String idempotentKey) {
-        // Invalidate (remove) the key from the cache
-        this.cache.invalidate(idempotentKey);
-    }
+    void removeIdempotent(String idempotentKey);
 }
