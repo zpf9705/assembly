@@ -25,10 +25,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.expression.BeanFactoryResolver;
 import org.springframework.context.expression.MethodBasedEvaluationContext;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.expression.BeanResolver;
 import org.springframework.expression.ParseException;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
@@ -86,6 +88,7 @@ public class IdempotentMethodAspect implements ApplicationContextAware , Applica
     private final JSONDecoder jsonDecoder = new JSONDecoder();
 
     private ApplicationContext applicationContext;
+    private BeanResolver beanResolver;
 
     /**
      * The Global configuration.
@@ -106,6 +109,7 @@ public class IdempotentMethodAspect implements ApplicationContextAware , Applica
     @Override
     public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+        beanResolver = new BeanFactoryResolver(this.applicationContext);
     }
 
     @Override
@@ -275,7 +279,7 @@ public class IdempotentMethodAspect implements ApplicationContextAware , Applica
     private StandardEvaluationContext buildStandardEvaluationContext(ProceedingJoinPoint pjp) {
 
         StandardEvaluationContext context
-                = new JoinPointMethodBasedEvaluationContext(pjp, parameterNameDiscoverer);
+                = new JoinPointMethodBasedEvaluationContext(pjp, parameterNameDiscoverer, beanResolver);
 
         // If in a servlet environment, the request information is placed
         // in context for easy retrieval of request parameters.
