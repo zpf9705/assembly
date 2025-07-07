@@ -17,6 +17,8 @@
 
 package top.osjf.optimize.idempotent.cache;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 /**
  * The {@code IdempotentCache} control interface provides periodic control of idempotent
  * unique values, ensuring idempotent security for a certain period of time after idempotent
@@ -25,9 +27,12 @@ package top.osjf.optimize.idempotent.cache;
  * <p>At the same time, open the idempotent unique value clearing scheme in a timely manner,
  * and users can also reasonably release idempotent control at the appropriate time.
  *
+ * <p>NOTE:<strong>It should be noted that the implementation class must ensure thread safety
+ * with idempotent control</strong>
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
+@ThreadSafe
 public interface IdempotentCache {
 
     /**
