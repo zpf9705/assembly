@@ -86,7 +86,8 @@ public class JoinPointMethodBasedEvaluationContext extends MethodBasedEvaluation
      * instance
      * <p>Directly set method parameters in the expression call during construction as support.
      * @param joinPoint               the given {@link JoinPoint} instance.
-     * @param beanResolver             the given {@link BeanResolver} instance.
+     * @param parameterNameDiscoverer the given {@link ParameterNameDiscoverer} instance.
+     * @param beanResolver            the given {@link BeanResolver} instance.
      */
     public JoinPointMethodBasedEvaluationContext(JoinPoint joinPoint, ParameterNameDiscoverer parameterNameDiscoverer,
                                                  BeanResolver beanResolver) {
@@ -116,9 +117,9 @@ public class JoinPointMethodBasedEvaluationContext extends MethodBasedEvaluation
                 }
             }
             catch (AccessException ignored){
-                // return null ...
+                // AccessException pass ...
             }
         }
-        return null;
+        return o;
     }
 }
