@@ -23,11 +23,12 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.expression.BeanFactoryResolver;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.expression.MethodBasedEvaluationContext;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
-import org.springframework.expression.BeanResolver;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.expression.ParseException;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
@@ -41,10 +42,13 @@ import top.osjf.optimize.idempotent.cache.IdempotentCache;
 import top.osjf.optimize.idempotent.decoder.Decoder;
 import top.osjf.optimize.idempotent.decoder.JSONDecoder;
 import top.osjf.optimize.idempotent.exception.IdempotentException;
+import top.osjf.optimize.idempotent.exception.IdempotentExceptionTranslator;
 import top.osjf.optimize.idempotent.global.config.IdempotentGlobalConfiguration;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -59,7 +63,7 @@ import java.util.stream.Collectors;
  * @since 1.0.4
  */
 @Aspect
-public class IdempotentMethodAspect implements ApplicationContextAware {
+public class IdempotentMethodAspect implements ApplicationContextAware , ApplicationListener<ContextRefreshedEvent> {
 
     /**
      * Get the spring el expression for accessing the URI mapping path.
@@ -81,12 +85,13 @@ public class IdempotentMethodAspect implements ApplicationContextAware {
     private final JSONDecoder jsonDecoder = new JSONDecoder();
 
     private ApplicationContext applicationContext;
-    private BeanResolver beanResolver;
 
     /**
      * The Global configuration.
      */
     private IdempotentGlobalConfiguration globalConfiguration;
+
+    private IdempotentExceptionTranslator idempotentExceptionTranslator;
 
     /**
      * Set the global configuration {@link IdempotentGlobalConfiguration} as a global
@@ -100,7 +105,11 @@ public class IdempotentMethodAspect implements ApplicationContextAware {
     @Override
     public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
-        beanResolver = new BeanFactoryResolver(applicationContext);
+    }
+
+    @Override
+    public void onApplicationEvent(@NonNull ContextRefreshedEvent event) {
+        loadIdempotentExceptionTranslator();
     }
 
     @Around("@annotation(idempotentAnnotation)")
@@ -110,9 +119,13 @@ public class IdempotentMethodAspect implements ApplicationContextAware {
 
         // Verify if the current request is a duplicate request.
         boolean cacheSuccess = cache.cacheIdempotent(idempotentKey, getDuration(idempotentAnnotation));
-        Assert.isTrue(cacheSuccess, () -> {
-            throw new IdempotentException(getIdempotentFailedMessage(idempotentAnnotation));
-        });
+        if (!cacheSuccess) {
+            IdempotentException ex = new IdempotentException(getIdempotentFailedMessage(idempotentAnnotation));
+            if (idempotentExceptionTranslator != null) {
+                throw idempotentExceptionTranslator.translate(ex);
+            }
+            throw ex;
+        }
 
         try {
             Object result = pjp.proceed();
@@ -163,6 +176,21 @@ public class IdempotentMethodAspect implements ApplicationContextAware {
      */
     private boolean globalConfigExist() {
         return globalConfiguration != null;
+    }
+
+    /**
+     * Load the highest priority {@link IdempotentExceptionTranslator} in the Spring container.
+     */
+    public void loadIdempotentExceptionTranslator() {
+        List<IdempotentExceptionTranslator> translators
+                = new ArrayList<>(applicationContext.getBeansOfType(IdempotentExceptionTranslator.class).values());
+        if (translators.isEmpty()) {
+            return;
+        }
+        if (translators.size() > 1) {
+            AnnotationAwareOrderComparator.sort(translators);
+        }
+        idempotentExceptionTranslator = translators.get(0);
     }
 
     /**
