@@ -39,6 +39,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import top.osjf.optimize.idempotent.annotation.Idempotent;
 import top.osjf.optimize.idempotent.cache.IdempotentCache;
+import top.osjf.optimize.idempotent.cache.IdempotentCaffeineCache;
 import top.osjf.optimize.idempotent.decoder.Decoder;
 import top.osjf.optimize.idempotent.decoder.JSONDecoder;
 import top.osjf.optimize.idempotent.exception.IdempotentException;
@@ -80,7 +81,7 @@ public class IdempotentMethodAspect implements ApplicationContextAware , Applica
      */
     private final ParameterNameDiscoverer parameterNameDiscoverer = new LocalVariableTableParameterNameDiscoverer();
 
-    private final IdempotentCache cache = new IdempotentCache();
+    private IdempotentCache cache;
 
     private final JSONDecoder jsonDecoder = new JSONDecoder();
 
@@ -109,6 +110,7 @@ public class IdempotentMethodAspect implements ApplicationContextAware , Applica
 
     @Override
     public void onApplicationEvent(@NonNull ContextRefreshedEvent event) {
+        loadIdempotentCache();
         loadIdempotentExceptionTranslator();
     }
 
@@ -176,6 +178,25 @@ public class IdempotentMethodAspect implements ApplicationContextAware , Applica
      */
     private boolean globalConfigExist() {
         return globalConfiguration != null;
+    }
+
+    /**
+     * Load the highest priority {@link IdempotentCache} in the Spring container,
+     * If it does not exist in the container, the default {@link IdempotentCaffeineCache}
+     * will be used.
+     */
+    private void loadIdempotentCache() {
+        List<IdempotentCache> caches
+                = new ArrayList<>(applicationContext.getBeansOfType(IdempotentCache.class).values());
+        if (caches.isEmpty()) {
+            cache = new IdempotentCaffeineCache();
+        }
+        else {
+            if (caches.size() > 1) {
+                AnnotationAwareOrderComparator.sort(caches);
+            }
+            cache = caches.get(0);
+        }
     }
 
     /**
