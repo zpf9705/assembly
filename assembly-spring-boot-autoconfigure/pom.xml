@@ -7,7 +7,6 @@
         <groupId>top.osjf</groupId>
         <artifactId>assembly</artifactId>
         <version>${revision}</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>assembly-spring-boot-autoconfigure</artifactId>

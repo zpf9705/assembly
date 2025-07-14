@@ -7,7 +7,6 @@
         <groupId>top.osjf</groupId>
         <artifactId>assembly</artifactId>
         <version>${revision}</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>top.osjf.spring.optimize</groupId>
