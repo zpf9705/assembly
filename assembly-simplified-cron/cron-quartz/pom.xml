@@ -6,7 +6,7 @@
     <parent>
         <groupId>top.osjf.cron</groupId>
         <artifactId>assembly-simplified-cron</artifactId>
-        <version>1.0.4-alpha</version>
+        <version>${revision}</version>
     </parent>
 
     <artifactId>cron-quartz</artifactId>

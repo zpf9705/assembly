@@ -6,13 +6,13 @@
     <parent>
         <groupId>top.osjf</groupId>
         <artifactId>assembly</artifactId>
-        <version>2.0.5</version>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>top.osjf.cron</groupId>
     <artifactId>assembly-simplified-cron</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.4-alpha</version>
     <description>
         Parent of cron task.
     </description>
