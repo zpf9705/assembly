@@ -24,12 +24,32 @@
   <groupId>top.osjf.sdk</groupId>
   <artifactId>sdk-http-apache</artifactId>
   <version>3.0.0-Beat</version>
+  <name>sdk-http-apache 3.0.0-Beat</name>
+  <description>HTTP Apache Call in SDK Encapsulation Framework</description>
+  <url>https://github.com/zpf9705/assembly/assembly-simplified-sdk/sdk-http-apache</url>
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
       <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
     </license>
   </licenses>
+  <developers>
+    <developer>
+      <id>12039-xpc-oks</id>
+      <name>张鹏飞</name>
+      <email>929160069@qq.com</email>
+      <organization>Undetermined</organization>
+      <roles>
+        <role>Individual developer</role>
+      </roles>
+      <timezone>+8</timezone>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:https://github.com/zpf9705/assembly.git/assembly-simplified-sdk/sdk-http-apache</connection>
+    <developerConnection>scm:git:https://github.com/zpf9705/assembly.git/assembly-simplified-sdk/sdk-http-apache</developerConnection>
+    <url>https://github.com/zpf9705/assembly/assembly-simplified-sdk/sdk-http-apache</url>
+  </scm>
   <dependencies>
     <dependency>
       <groupId>top.osjf.sdk</groupId>

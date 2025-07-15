@@ -24,12 +24,32 @@
   <groupId>top.osjf.cron</groupId>
   <artifactId>cron-hutool</artifactId>
   <version>3.0.0-Beat</version>
+  <name>cron-hutool 3.0.0-Beat</name>
+  <description>Integration of hutool framework for cron expression timed task support.</description>
+  <url>https://github.com/zpf9705/assembly/assembly-simplified-cron/cron-hutool</url>
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
       <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
     </license>
   </licenses>
+  <developers>
+    <developer>
+      <id>12039-xpc-oks</id>
+      <name>张鹏飞</name>
+      <email>929160069@qq.com</email>
+      <organization>Undetermined</organization>
+      <roles>
+        <role>Individual developer</role>
+      </roles>
+      <timezone>+8</timezone>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:https://github.com/zpf9705/assembly.git/assembly-simplified-cron/cron-hutool</connection>
+    <developerConnection>scm:git:https://github.com/zpf9705/assembly.git/assembly-simplified-cron/cron-hutool</developerConnection>
+    <url>https://github.com/zpf9705/assembly/assembly-simplified-cron/cron-hutool</url>
+  </scm>
   <dependencies>
     <dependency>
       <groupId>top.osjf.cron</groupId>
