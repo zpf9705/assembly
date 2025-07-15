@@ -2,26 +2,30 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <!--maven of it info-->
     <modelVersion>4.0.0</modelVersion>
     <groupId>top.osjf</groupId>
     <artifactId>assembly</artifactId>
     <version>${revision}</version>
     <packaging>pom</packaging>
-    <name>assembly</name>
+    <name>assembly ${project.version}</name>
     <url>https://github.com/zpf9705/assembly</url>
+
+
+    <!-- Submodules -->
     <modules>
         <module>assembly-simplified-sdk</module>
         <module>assembly-simplified-cron</module>
         <module>assembly-simplified-spring-optimize</module>
         <module>assembly-spring-boot-autoconfigure</module>
     </modules>
+
+
     <!--less description-->
-    <description>
-        Java related compartmentalization projects further encapsulate cumbersome tools or functions
-        to gradually simplify their use. Using Java as a substrate and Spring related frameworks
-        as assistance, component simplification development is carried out.
-    </description>
+    <description> Java based software packaging framework toolkit. </description>
+
+
     <!--apache License-->
     <licenses>
         <license>
@@ -29,6 +33,8 @@
             <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
+
+
     <!--developer infos-->
     <developers>
         <developer>
@@ -42,18 +48,77 @@
             </roles>
         </developer>
     </developers>
+
+
     <!--scm connection-->
     <scm>
         <connection>scm:git:https://github.com/zpf9705/assembly.git</connection>
         <developerConnection>scm:git:https://github.com/zpf9705/assembly.git</developerConnection>
         <url>https://github.com/zpf9705/assembly</url>
     </scm>
+
     <!--Need to rely on the version-->
     <properties>
-        <revision>3.0.0-Beat</revision>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <revision>3.0.0-Beat</revision> <!-- Current Unified Version -->
         <java.version>1.8</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jsr305>3.0.2</jsr305>
+        <slf4j-api>1.7.32</slf4j-api>
+        <guava>32.1.3-jre</guava>
+        <spring>5.3.12</spring>
+        <spring.boot>2.5.6</spring.boot>
+        <fastjson2>2.0.41</fastjson2>
+        <jetbrains.annotation>26.0.2</jetbrains.annotation>
+        <gson>2.9.0</gson>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- util -->
+            <dependency>
+                <groupId>com.google.code.findbugs</groupId>
+                <artifactId>jsr305</artifactId>
+                <version>${jsr305}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j-api}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba.fastjson2</groupId>
+                <artifactId>fastjson2</artifactId>
+                <version>${fastjson2}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains</groupId>
+                <artifactId>annotations</artifactId>
+                <version>${jetbrains.annotation}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${gson}</version>
+            </dependency>
+
+            <!-- spring / spring-boot -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
     <!--Jar package uploaded maven central warehouse address-->
     <distributionManagement>
         <snapshotRepository>
@@ -82,6 +147,38 @@
                         <configuration>
                             <publishingServerId>central</publishingServerId>
                         </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>flatten-maven-plugin</artifactId>
+                        <version>1.5.0</version>
+                        <configuration>
+                            <updatePomFile>true</updatePomFile>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>flatten</id>
+                                <phase>process-resources</phase>
+                                <goals><goal>flatten</goal></goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>flatten-maven-plugin</artifactId>
+                        <version>1.5.0</version>
+                        <configuration>
+                            <updatePomFile>true</updatePomFile>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>flatten</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>flatten</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
