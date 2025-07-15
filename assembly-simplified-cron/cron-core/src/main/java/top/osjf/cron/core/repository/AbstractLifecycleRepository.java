@@ -38,7 +38,7 @@ public abstract class AbstractLifecycleRepository implements LifecycleRepository
      */
     @Override
     @PostConstruct
-    public final void initialize() throws Exception {
+    public void initialize() throws Exception {
         initializeInternal();
     }
 
@@ -93,6 +93,7 @@ public abstract class AbstractLifecycleRepository implements LifecycleRepository
 
     /**
      * Internal implementation methods of initialized subclasses.
+     *
      * @since 3.0.0
      */
     protected void initializeInternal() throws Exception {
