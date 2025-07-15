@@ -35,6 +35,8 @@ public abstract class AbstractLifecycleRepository implements LifecycleRepository
 
     /**
      * {@inheritDoc}
+     * <p>If you rewrite this method, please implement the initialization trigger logic yourself.
+     * @see #initializeInternal()
      */
     @Override
     @PostConstruct
