@@ -130,6 +130,28 @@
             <url>https://central.sonatype.com</url>
         </repository>
     </distributionManagement>
+
+    <!-- All environments are compatible with this plugin -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.5.0</version>
+                <configuration>
+                    <updatePomFile>true</updatePomFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals><goal>flatten</goal></goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
     <!--Upload the maven central repository configuration and plugins-->
     <profiles>
         <profile>
@@ -147,21 +169,6 @@
                         <configuration>
                             <publishingServerId>central</publishingServerId>
                         </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>flatten-maven-plugin</artifactId>
-                        <version>1.5.0</version>
-                        <configuration>
-                            <updatePomFile>true</updatePomFile>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>flatten</id>
-                                <phase>process-resources</phase>
-                                <goals><goal>flatten</goal></goals>
-                            </execution>
-                        </executions>
                     </plugin>
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
