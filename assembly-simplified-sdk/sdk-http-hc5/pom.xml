@@ -11,11 +11,10 @@
 
     <artifactId>sdk-http-hc5</artifactId>
     <packaging>jar</packaging>
+    <name>sdk-http-hc5 ${project.version}</name>
+    <description>HTTP Hc5 Call in SDK Encapsulation Framework</description>
 
     <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <hc5>5.4</hc5>
     </properties>
 
