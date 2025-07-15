@@ -19,6 +19,7 @@
         <module>assembly-simplified-cron</module>
         <module>assembly-simplified-spring-optimize</module>
         <module>assembly-spring-boot-autoconfigure</module>
+        <module>assembly-simplified-all</module>
     </modules>
 
 
