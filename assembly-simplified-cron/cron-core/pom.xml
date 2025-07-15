@@ -11,18 +11,10 @@
 
     <artifactId>cron-core</artifactId>
     <packaging>jar</packaging>
-
-    <description>
-        The core project of cron task is to define a set of standardized APIs.
-    </description>
+    <name>cron-core ${project.version}</name>
+    <description>Core packages supported by cron expression timed tasks</description>
 
     <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jsr305>3.0.2</jsr305>
-        <slf4j>1.7.32</slf4j>
-        <gson>2.9.0</gson>
         <cronutils>9.1.6</cronutils>
     </properties>
 
@@ -31,19 +23,16 @@
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
-            <version>${jsr305}</version>
         </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>${slf4j}</version>
         </dependency>
 
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>${gson}</version>
         </dependency>
 
         <dependency>
