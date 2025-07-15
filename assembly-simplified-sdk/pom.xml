@@ -8,10 +8,12 @@
         <groupId>top.osjf</groupId>
         <artifactId>assembly</artifactId>
         <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>top.osjf.sdk</groupId>
     <artifactId>assembly-simplified-sdk</artifactId>
+    <name>assembly-simplified-sdk ${project.version}</name>
     <packaging>pom</packaging>
 
     <modules>

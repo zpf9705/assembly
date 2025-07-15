@@ -7,10 +7,12 @@
         <groupId>top.osjf</groupId>
         <artifactId>assembly</artifactId>
         <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>assembly-spring-boot-autoconfigure</artifactId>
     <packaging>jar</packaging>
+    <name>assembly-spring-boot-autoconfigure ${project.version}</name>
     <description>
         The automatic assembly project of integrating springboot framework with related components.
     </description>

@@ -7,14 +7,14 @@
         <groupId>top.osjf</groupId>
         <artifactId>assembly</artifactId>
         <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>top.osjf.cron</groupId>
     <artifactId>assembly-simplified-cron</artifactId>
     <packaging>pom</packaging>
-    <description>
-        Parent of cron task.
-    </description>
+    <name>assembly-simplified-cron ${project.version}</name>
+    <description>Parent of cron task.</description>
 
     <modules>
         <module>cron-core</module>
