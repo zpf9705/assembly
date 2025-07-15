@@ -434,8 +434,6 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
      * Retrieve the host name from the environment variable and perform necessary
      * parsing and validation.
      *
-     * <p>Supports regular attribute definitions and el expressions for Spring.
-     *
      * @param hostProperty  the configuration attribute name of the host.
      * @param domainPattern the {@code Pattern} of verify domain name.
      * @param ipPattern     the {@code Pattern} of verify ip address.
