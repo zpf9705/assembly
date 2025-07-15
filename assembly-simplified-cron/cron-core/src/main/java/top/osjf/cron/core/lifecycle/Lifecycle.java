@@ -40,7 +40,7 @@ package top.osjf.cron.core.lifecycle;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public interface Lifecycle {
+public interface Lifecycle extends InitializeAble {
 
     /**
      * Start the scheduled task framework.
