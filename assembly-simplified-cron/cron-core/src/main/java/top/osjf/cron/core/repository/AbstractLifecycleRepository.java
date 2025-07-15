@@ -17,6 +17,7 @@
 
 package top.osjf.cron.core.repository;
 
+import javax.annotation.PostConstruct;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -31,6 +32,15 @@ public abstract class AbstractLifecycleRepository implements LifecycleRepository
      * Atomic flag to track whether the repository is started.
      */
     private final AtomicBoolean isStarted = new AtomicBoolean(false);
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @PostConstruct
+    public final void initialize() throws Exception {
+        initializeInternal();
+    }
 
     /**
      * {@inheritDoc}
@@ -79,5 +89,12 @@ public abstract class AbstractLifecycleRepository implements LifecycleRepository
                     "Repository(%s) has not been started yet, please startup first!", getClass()
                             .getSimpleName()));
         }
+    }
+
+    /**
+     * Internal implementation methods of initialized subclasses.
+     * @since 3.0.0
+     */
+    protected void initializeInternal() throws Exception {
     }
 }
