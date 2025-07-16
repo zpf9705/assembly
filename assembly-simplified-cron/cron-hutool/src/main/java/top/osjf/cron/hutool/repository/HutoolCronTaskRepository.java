@@ -30,8 +30,6 @@ import top.osjf.cron.core.listener.CronListenerCollector;
 import top.osjf.cron.core.repository.*;
 import top.osjf.cron.hutool.listener.TaskListenerImpl;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import java.util.List;
 import java.util.Objects;
 import java.util.TimeZone;
@@ -224,7 +222,7 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
      *
      * @since 1.0.3
      */
-    @PostConstruct
+    @Override
     public void initialize() {
         if (scheduler == null) {
             scheduler = new Scheduler();
@@ -364,7 +362,6 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
-    @PreDestroy
     public void stop() {
         if (!isStarted()) {
             throw new IllegalStateException("Scheduler not started !");
