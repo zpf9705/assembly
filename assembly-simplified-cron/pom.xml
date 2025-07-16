@@ -44,6 +44,9 @@
         <module>cron-mybatis-plus-datasource-driven-scheduled</module>
         <module>cron-yaml-config-datasource-driven-scheduled</module>
         <module>cron-spring</module>
+        <module>cron-spring-hutool</module>
+        <module>cron-spring-cron4j</module>
+        <module>cron-spring-quartz</module>
         <module>cron-spring-boot-starter</module>
     </modules>
 

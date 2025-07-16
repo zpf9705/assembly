@@ -26,6 +26,7 @@ import org.springframework.context.annotation.Import;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.core.repository.SimpleCronTaskRepository;
 import top.osjf.cron.spring.CronTaskConfiguration;
+import top.osjf.cron.spring.annotation.CronRepositoryBean;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -42,7 +43,7 @@ import java.util.concurrent.ScheduledExecutorService;
 @Conditional(CronCondition.class)
 public class SimpleCronTaskAutoConfiguration {
 
-    @Bean
+    @CronRepositoryBean
     public SimpleCronTaskRepository simpleCronTaskRepository(CronProperties cronProperties,
                                                              ScheduledExecutorService scheduledExecutorService) {
         CronProperties.Simple simple = cronProperties.getSimple();
