@@ -29,8 +29,6 @@ import top.osjf.cron.core.listener.CronListenerCollector;
 import top.osjf.cron.core.repository.*;
 import top.osjf.cron.cron4j.listener.SchedulerListenerImpl;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -185,7 +183,7 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
         }
     }
 
-    @PostConstruct
+    @Override
     public void initialize() {
         if (scheduler == null) {
             scheduler = new Scheduler();
@@ -377,7 +375,6 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
-    @PreDestroy
     public void stop() {
         scheduler.stop();
     }
