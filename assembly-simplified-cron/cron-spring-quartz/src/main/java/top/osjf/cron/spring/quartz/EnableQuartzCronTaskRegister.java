@@ -49,7 +49,7 @@ import java.lang.annotation.*;
  * for construction.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 3.0.0
  * @see QuartzCronTaskRepository
  * @see Cron
  * @see CronAnnotationPostProcessor

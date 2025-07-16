@@ -21,13 +21,13 @@ import org.quartz.SchedulerFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.core.repository.CronExecutorServiceSupplier;
 import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
 import top.osjf.cron.spring.CronAnnotationPostProcessor;
 import top.osjf.cron.spring.ObjectProviderUtils;
 import top.osjf.cron.spring.annotation.Cron;
+import top.osjf.cron.spring.annotation.CronRepositoryBean;
 
 /**
  * {@code @Configuration} class that registers a {@link CronAnnotationPostProcessor}
@@ -38,7 +38,7 @@ import top.osjf.cron.spring.annotation.Cron;
  * {@code @EnableQuartzCronTaskRegister}'s javadoc for complete usage details.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 3.0.0
  * @see EnableQuartzCronTaskRegister
  */
 @Configuration(proxyBeanMethods = false)
@@ -49,8 +49,7 @@ public class QuartzCronTaskConfiguration {
         return new SpringContainerGovernanceMethodLevelJobFactory();
     }
 
-    @Bean
-    @Order
+    @CronRepositoryBean
     public QuartzCronTaskRepository quartzCronTaskRepository(ObjectProvider<Scheduler> schedulerProvider,
                                                              ObjectProvider<SchedulerFactory> schedulerFactoryProvider,
                                                              ObjectProvider<SuperiorProperties> propertiesProvider,
