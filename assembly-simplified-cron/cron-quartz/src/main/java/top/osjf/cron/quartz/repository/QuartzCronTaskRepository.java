@@ -35,8 +35,6 @@ import top.osjf.cron.quartz.MethodLevelJobFactory;
 import top.osjf.cron.quartz.QuartzUtils;
 import top.osjf.cron.quartz.listener.JobListenerImpl;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.*;
@@ -238,8 +236,8 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      *                            during initialization process.
      * @since 1.0.3
      */
-    @PostConstruct
-    public void initialize() throws SchedulerException {
+    @Override
+    public void initialize() throws Exception {
         if (scheduler == null) {
             if (schedulerFactory != null) {
                 if (setSchedulerName) {
@@ -492,7 +490,6 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      * {@inheritDoc}
      */
     @Override
-    @PreDestroy
     public void stop() {
         try {
             scheduler.shutdown(waitForJobsToCompleteWhenStop);
