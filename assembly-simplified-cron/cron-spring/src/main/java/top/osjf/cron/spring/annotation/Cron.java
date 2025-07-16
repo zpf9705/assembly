@@ -18,9 +18,6 @@ package top.osjf.cron.spring.annotation;
 
 import org.springframework.core.annotation.AliasFor;
 import top.osjf.cron.spring.CronAnnotationPostProcessor;
-import top.osjf.cron.spring.cron4j.EnableCron4jCronTaskRegister;
-import top.osjf.cron.spring.hutool.EnableHutoolCronTaskRegister;
-import top.osjf.cron.spring.quartz.EnableQuartzCronTaskRegister;
 
 import java.lang.annotation.*;
 
@@ -37,9 +34,9 @@ import java.lang.annotation.*;
  * <p>This annotation is processed in {@link CronAnnotationPostProcessor} and can be
  * triggered for parsing based on the tags of the following annotations:
  * <ul>
- * <li>{@link EnableHutoolCronTaskRegister @EnableHutoolCronTaskRegister}</li>
- * <li>{@link EnableQuartzCronTaskRegister @EnableQuartzCronTaskRegister}</li>
- * <li>{@link EnableCron4jCronTaskRegister @EnableCron4jCronTaskRegister}</li>
+ * <li>{@code top.osjf.cron.spring.hutool.EnableHutoolCronTaskRegister}</li>
+ * <li>{@code top.osjf.cron.spring.quartz.EnableQuartzCronTaskRegister}</li>
+ * <li>{@code top.osjf.cron.spring.cron4j.EnableCron4jCronTaskRegister}</li>
  * </ul>
  *
  * <p>The attributes of {@link #value()} and {@link #expression()} are considered
