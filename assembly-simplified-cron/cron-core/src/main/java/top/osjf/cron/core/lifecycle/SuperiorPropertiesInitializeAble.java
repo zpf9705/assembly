@@ -28,10 +28,18 @@ public abstract class SuperiorPropertiesInitializeAble implements InitializeAble
 
     private SuperiorProperties superiorProperties;
 
+    /**
+     * Return the {@link SuperiorProperties} instance of the setting.
+     * @return the {@link SuperiorProperties} instance.
+     */
     public SuperiorProperties getSuperiorProperties() {
         return superiorProperties;
     }
 
+    /**
+     * Set a {@link SuperiorProperties} as Initialization reference.
+     * @param superiorProperties the {@link SuperiorProperties} instance.
+     */
     public void setSuperiorProperties(SuperiorProperties superiorProperties) {
         this.superiorProperties = superiorProperties;
     }
