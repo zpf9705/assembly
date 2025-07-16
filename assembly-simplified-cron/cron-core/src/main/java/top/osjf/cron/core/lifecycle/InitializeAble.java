@@ -31,7 +31,7 @@ import top.osjf.cron.core.repository.CronTaskRepository;
  * interface contracts, facilitating unified management of initialization processes in the
  * system.
  *
- * @author <ahref="mailto:929160069@qq.com">zhangpengfei</a>
+ * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.0
  */
 
