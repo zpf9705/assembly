@@ -29,7 +29,6 @@ import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.listener.ListenerContext;
 
 import javax.annotation.Nullable;
-import javax.annotation.PreDestroy;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
@@ -165,7 +164,6 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
     }
 
     @Override
-    @PreDestroy
     public void stop() {
         super.stop();
         if (awaitTermination) {
