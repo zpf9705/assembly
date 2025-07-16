@@ -17,6 +17,8 @@
 
 package top.osjf.cron.core.lifecycle;
 
+import top.osjf.cron.core.lang.Nullable;
+
 /**
  * An abstract class {@code SuperiorPropertiesInitializeAble} initialized based on
  * the {@link SuperiorProperties} instance.
@@ -32,6 +34,7 @@ public abstract class SuperiorPropertiesInitializeAble implements InitializeAble
      * Return the {@link SuperiorProperties} instance of the setting.
      * @return the {@link SuperiorProperties} instance.
      */
+    @Nullable
     public SuperiorProperties getSuperiorProperties() {
         return superiorProperties;
     }
@@ -40,7 +43,7 @@ public abstract class SuperiorPropertiesInitializeAble implements InitializeAble
      * Set a {@link SuperiorProperties} as Initialization reference.
      * @param superiorProperties the {@link SuperiorProperties} instance.
      */
-    public void setSuperiorProperties(SuperiorProperties superiorProperties) {
+    public void setSuperiorProperties(@Nullable SuperiorProperties superiorProperties) {
         this.superiorProperties = superiorProperties;
     }
 
