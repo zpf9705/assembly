@@ -112,6 +112,8 @@ class DefaultSuperiorProperties implements SuperiorProperties {
 
     @Override
     public Properties asProperties() {
-        return properties;
+        Properties rProperties = new Properties();
+        rProperties.putAll(properties);
+        return rProperties;
     }
 }
