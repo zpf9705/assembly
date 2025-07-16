@@ -54,7 +54,7 @@ public class Cron4jCronTaskConfiguration extends ImportAnnotationMetadataExtract
             return new Cron4jCronTaskRepository(scheduler);
         }
         Cron4jCronTaskRepository repository = new Cron4jCronTaskRepository();
-        repository.setProperties(SuperiorPropertiesUtils.compositeSuperiorProperties
+        repository.setSuperiorProperties(SuperiorPropertiesUtils.compositeSuperiorProperties
                 (getImportAnnotationSuperiorProperties(),
                         ObjectProviderUtils.getPriority(propertiesProvider)));
         return repository;

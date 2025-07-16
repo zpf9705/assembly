@@ -56,7 +56,7 @@ public class HutoolCronTaskConfiguration extends ImportAnnotationMetadataExtract
             return new HutoolCronTaskRepository(scheduler);
         }
         HutoolCronTaskRepository repository = new HutoolCronTaskRepository();
-        repository.setProperties(SuperiorPropertiesUtils.compositeSuperiorProperties
+        repository.setSuperiorProperties(SuperiorPropertiesUtils.compositeSuperiorProperties
                 (getImportAnnotationSuperiorProperties(),
                         ObjectProviderUtils.getPriority(propertiesProvider)));
         CronExecutorServiceSupplier executorServiceSupplier = ObjectProviderUtils.getPriority(executorServiceProvider);

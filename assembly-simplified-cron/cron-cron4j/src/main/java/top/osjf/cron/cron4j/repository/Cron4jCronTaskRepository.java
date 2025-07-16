@@ -164,7 +164,8 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
      *                           task scheduler.
      * @since 1.0.3
      */
-    public void setProperties(SuperiorProperties superiorProperties) {
+    @Override
+    public void setSuperiorProperties(SuperiorProperties superiorProperties) {
         if (superiorProperties != null && !superiorProperties.isEmpty()) {
             if (!setDaemon)
                 setDaemon(superiorProperties.getProperty(PROPERTY_NAME_OF_DAEMON, DEFAULT_VALUE_OF_DAEMON));
