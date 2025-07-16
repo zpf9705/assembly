@@ -66,21 +66,21 @@
     </dependency>
     <dependency>
       <groupId>top.osjf.cron</groupId>
-      <artifactId>cron-hutool</artifactId>
+      <artifactId>cron-spring-hutool</artifactId>
       <version>3.0.0-Beat</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>top.osjf.cron</groupId>
-      <artifactId>cron-quartz</artifactId>
+      <artifactId>cron-spring-quartz</artifactId>
       <version>3.0.0-Beat</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>top.osjf.cron</groupId>
-      <artifactId>cron-cron4j</artifactId>
+      <artifactId>cron-spring-cron4j</artifactId>
       <version>3.0.0-Beat</version>
       <scope>compile</scope>
       <optional>true</optional>
