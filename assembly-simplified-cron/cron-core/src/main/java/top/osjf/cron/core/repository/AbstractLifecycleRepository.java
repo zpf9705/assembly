@@ -17,7 +17,6 @@
 
 package top.osjf.cron.core.repository;
 
-import javax.annotation.PostConstruct;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -35,13 +34,9 @@ public abstract class AbstractLifecycleRepository implements LifecycleRepository
 
     /**
      * {@inheritDoc}
-     * <p>If you rewrite this method, please implement the initialization trigger logic yourself.
-     * @see #initializeInternal()
      */
     @Override
-    @PostConstruct
     public void initialize() throws Exception {
-        initializeInternal();
     }
 
     /**
@@ -91,13 +86,5 @@ public abstract class AbstractLifecycleRepository implements LifecycleRepository
                     "Repository(%s) has not been started yet, please startup first!", getClass()
                             .getSimpleName()));
         }
-    }
-
-    /**
-     * Internal implementation methods of initialized subclasses.
-     *
-     * @since 3.0.0
-     */
-    protected void initializeInternal() throws Exception {
     }
 }
