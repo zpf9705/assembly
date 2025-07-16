@@ -43,15 +43,15 @@ public interface InitializeAble {
      * This method should be called after {@link CronTaskRepository} creation and before
      * {@link Lifecycle} cycle execution to complete initialization preparation. The
      * specific implementation may include:
+     * <p>
+     * <strong>Loading and validation of resources (such as database connection, file reading)</strong>
      * <ul>
-     * Loading and validation of resources (such as database connection, file reading)
      * <li>Analysis and verification of configuration parameters</li>
      * <li>Dependency Object Injection and Validation</li>
      * <li>Initialization settings for state variables</li>
      * </ul>
-     * <p>
-     * Note: After calling this method, ensure that the object is in a usable state, otherwise
-     * throw the corresponding exception.
+     * <p>Note: After calling this method, ensure that the object is in a usable state,
+     * otherwise throw the corresponding exception.
      *
      * @throws Exception is thrown when any unrecoverable error occurs during initialization,
      *                   Including but not limited to configuration errors, resource unavailability,
