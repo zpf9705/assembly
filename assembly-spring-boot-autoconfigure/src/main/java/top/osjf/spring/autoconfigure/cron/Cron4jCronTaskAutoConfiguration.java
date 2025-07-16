@@ -36,8 +36,8 @@ import top.osjf.cron.spring.cron4j.Cron4jCronTaskConfiguration;
  * @since 1.0.3
  */
 @Configuration(proxyBeanMethods = false)
+@ConditionalOnClass({Cron4jCronTaskRepository.class, Cron4jCronTaskConfiguration.class})
 @Import({Cron4jCronTaskConfiguration.class, CronTaskConfiguration.class})
-@ConditionalOnClass({Cron4jCronTaskRepository.class})
 @ConditionalOnMissingBean(CronTaskRepository.class)
 @Conditional(CronCondition.class)
 public class Cron4jCronTaskAutoConfiguration {

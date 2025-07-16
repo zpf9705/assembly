@@ -27,6 +27,7 @@ import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
 import top.osjf.cron.spring.quartz.EnableQuartzCronTaskRegister;
+import top.osjf.cron.spring.quartz.QuartzCronTaskConfiguration;
 
 import java.util.List;
 
@@ -37,7 +38,7 @@ import java.util.List;
  * @since 1.0.3
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({QuartzCronTaskRepository.class})
+@ConditionalOnClass({QuartzCronTaskRepository.class, QuartzCronTaskConfiguration.class})
 @EnableQuartzCronTaskRegister
 @ConditionalOnMissingBean(CronTaskRepository.class)
 @Conditional(CronCondition.class)
