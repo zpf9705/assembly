@@ -18,7 +18,6 @@ package top.osjf.cron.spring.hutool;
 
 import cn.hutool.cron.Scheduler;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
@@ -29,6 +28,7 @@ import top.osjf.cron.spring.ImportAnnotationMetadataExtractor;
 import top.osjf.cron.spring.ObjectProviderUtils;
 import top.osjf.cron.spring.SuperiorPropertiesUtils;
 import top.osjf.cron.spring.annotation.Cron;
+import top.osjf.cron.spring.annotation.CronRepositoryBean;
 
 import java.lang.annotation.Annotation;
 
@@ -41,13 +41,13 @@ import java.lang.annotation.Annotation;
  * {@code @EnableHutoolCronTaskRegister}'s javadoc for complete usage details.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.0
+ * @since 3.0.0
  * @see EnableHutoolCronTaskRegister
  */
 @Configuration(proxyBeanMethods = false)
 public class HutoolCronTaskConfiguration extends ImportAnnotationMetadataExtractor {
 
-    @Bean
+    @CronRepositoryBean
     public HutoolCronTaskRepository hutoolCronTaskRepository(ObjectProvider<Scheduler> schedulerProvider,
                                                              ObjectProvider<SuperiorProperties> propertiesProvider,
                                                              ObjectProvider<CronExecutorServiceSupplier> executorServiceProvider) {
