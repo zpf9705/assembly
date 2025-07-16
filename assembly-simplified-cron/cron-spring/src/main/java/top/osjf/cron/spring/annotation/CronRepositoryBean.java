@@ -18,10 +18,27 @@
 package top.osjf.cron.spring.annotation;
 
 import org.springframework.context.annotation.Bean;
+import top.osjf.cron.core.lifecycle.InitializeAble;
+import top.osjf.cron.core.lifecycle.Lifecycle;
+import top.osjf.cron.core.repository.CronTaskRepository;
 
 import java.lang.annotation.*;
 
 /**
+ * {@code CronRepositoryBean} is a combination tag annotation with {@link Bean},
+ * indicating the use of Spring's container features to implement {@link Lifecycle}
+ * lifecycle management for {@link CronTaskRepository} after creating a
+ * {@link CronTaskRepository} instance in the container, including specifying
+ * initialization and destruction methods.
+ * <p>
+ * There is a comparative relationship as follows:
+ * <ul>
+ *     <li>{@link Bean#initMethod()} == 'initialize' refer to
+ *     {@link InitializeAble#initialize()}</li>
+ *     <li>{@link Bean#destroyMethod()} == 'stop' refer to
+ *     {@link Lifecycle#stop()}</li>
+ * </ul>
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.0
  */
