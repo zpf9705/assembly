@@ -63,8 +63,15 @@ import java.lang.annotation.*;
 public @interface EnableQuartzCronTaskRegister {
 
     /**
+     * The spring el expression that obtain the configuration of quartz.
      *
-     * @return
+     * <p>This property supports the parsing of Spring's el expression to
+     * call a method of a bean and obtain a type instance object with a
+     * return value of {@link SuperiorProperties} or {@code Map<String,Object>}
+     * or {@link java.util.Properties}, which will be used for configuration
+     * initialization of quartz timed calls.
+     * @return el expression that obtain the configuration of quartz.
+     * @since 3.0.0
      */
     @Language("SpEL") String propertiesReferTo() default "";
 }
