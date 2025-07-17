@@ -186,4 +186,81 @@ public interface SuperiorProperties {
     static SuperiorProperties of(Properties properties) {
         return new DefaultSuperiorProperties(properties);
     }
+
+    /**
+     * Default implementation class of {@link SuperiorProperties}.
+     */
+    class DefaultSuperiorProperties implements SuperiorProperties {
+
+        private final Properties properties = new Properties();
+
+        public DefaultSuperiorProperties() {
+        }
+
+        public DefaultSuperiorProperties(Map<String, Object> map) {
+            properties.putAll(map);
+        }
+
+        public DefaultSuperiorProperties(Properties properties) {
+            this.properties.putAll(properties);
+        }
+
+        @Override
+        @Nullable
+        public Object getProperty(String propertyName) {
+            return properties.get(propertyName);
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public <T> T getProperty(String propertyName, T def) {
+            Object o = getProperty(propertyName);
+            if (o == null) {
+                return def;
+            }
+            return (T) o;
+        }
+
+        @Override
+        public void addProperty(String propertyKey, String propertyValue) {
+            properties.setProperty(propertyKey, propertyValue);
+        }
+
+        @Override
+        public void addProperty(String propertyKey, Object propertyValue) {
+            properties.put(propertyKey, propertyValue);
+        }
+
+        @Override
+        public void addProperty(Object propertyKey, Object propertyValue) {
+            properties.put(propertyKey, propertyValue);
+        }
+
+        @Override
+        public void addProperties(Properties properties) {
+            this.properties.putAll(properties);
+        }
+
+        @Override
+        public void addProperties(Map<String, Object> properties) {
+            this.properties.putAll(properties);
+        }
+
+        @Override
+        public void addProperties(SuperiorProperties properties) {
+            this.properties.putAll(properties.asProperties());
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return properties.isEmpty();
+        }
+
+        @Override
+        public Properties asProperties() {
+            Properties rProperties = new Properties();
+            rProperties.putAll(properties);
+            return rProperties;
+        }
+    }
 }
