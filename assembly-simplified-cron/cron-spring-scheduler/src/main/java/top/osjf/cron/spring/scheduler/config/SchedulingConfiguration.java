@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.config.TaskManagementConfigUtils;
-import top.osjf.cron.spring.CronTaskInfoReadableConfiguration;
+import top.osjf.cron.spring.AbstractCronTaskConfiguration;
 import top.osjf.cron.spring.ObjectProviderUtils;
 import top.osjf.cron.spring.scheduler.SpringSchedulerTaskRepository;
 
@@ -48,7 +48,7 @@ import top.osjf.cron.spring.scheduler.SpringSchedulerTaskRepository;
  */
 @Configuration(proxyBeanMethods = false)
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-public class SchedulingConfiguration extends CronTaskInfoReadableConfiguration {
+public class SchedulingConfiguration extends AbstractCronTaskConfiguration {
 
     @Bean(name = TaskManagementConfigUtils.SCHEDULED_ANNOTATION_PROCESSOR_BEAN_NAME)
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
