@@ -70,7 +70,7 @@ public class QuartzCronTaskConfiguration {
         QuartzCronTaskRepository repository = new QuartzCronTaskRepository();
         repository.setJobFactory(jobFactory);
         SuperiorProperties properties = ObjectProviderUtils.getPriority(propertiesProvider);
-        repository.setProperties(properties);
+        repository.setSuperiorProperties(properties);
         CronExecutorServiceSupplier executorServiceSupplier = ObjectProviderUtils.getPriority(executorProvider);
         if (executorServiceSupplier != null){
             repository.setTaskExecutor(executorServiceSupplier.get());

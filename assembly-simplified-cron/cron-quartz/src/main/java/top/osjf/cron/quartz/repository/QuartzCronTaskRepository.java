@@ -178,9 +178,10 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      *
      * @param superiorProperties {@link SuperiorProperties} object for building the quartz
      *                           task factory.
-     * @since 1.0.3
+     * @since 3.0.0
      */
-    public void setProperties(SuperiorProperties superiorProperties) {
+    @Override
+    public void setSuperiorProperties(SuperiorProperties superiorProperties) {
         if (quartzProperties != null && !superiorProperties.isEmpty()) {
             this.quartzProperties = superiorProperties.asProperties();
             if (!setSchedulerFactoryClass)
