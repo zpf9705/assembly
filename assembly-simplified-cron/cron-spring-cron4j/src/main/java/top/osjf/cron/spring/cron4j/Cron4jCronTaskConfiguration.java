@@ -19,11 +19,10 @@ package top.osjf.cron.spring.cron4j;
 import it.sauronsoftware.cron4j.Scheduler;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Configuration;
-import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
+import top.osjf.cron.spring.AbstractCronTaskConfiguration;
 import top.osjf.cron.spring.CronAnnotationPostProcessor;
-import top.osjf.cron.spring.ImportAnnotationMetadataExtractor;
 import top.osjf.cron.spring.ObjectProviderUtils;
 import top.osjf.cron.spring.SuperiorPropertiesUtils;
 import top.osjf.cron.spring.annotation.Cron;
@@ -44,7 +43,7 @@ import java.lang.annotation.Annotation;
  * @see EnableCron4jCronTaskRegister
  */
 @Configuration(proxyBeanMethods = false)
-public class Cron4jCronTaskConfiguration extends ImportAnnotationMetadataExtractor {
+public class Cron4jCronTaskConfiguration extends AbstractCronTaskConfiguration {
 
     @CronRepositoryBean
     public Cron4jCronTaskRepository cron4jCronTaskRepository(ObjectProvider<Scheduler> schedulerProvider,
@@ -60,7 +59,6 @@ public class Cron4jCronTaskConfiguration extends ImportAnnotationMetadataExtract
         return repository;
     }
 
-    @NotNull
     @Override
     protected Class<? extends Annotation> enableImportAnnotationType() {
         return EnableCron4jCronTaskRegister.class;
