@@ -16,7 +16,6 @@
 
 package top.osjf.cron.spring.quartz;
 
-import org.intellij.lang.annotations.Language;
 import org.springframework.context.annotation.Import;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
@@ -61,17 +60,4 @@ import java.lang.annotation.*;
 @Import({QuartzCronTaskConfiguration.class,
         CronTaskConfiguration.class})
 public @interface EnableQuartzCronTaskRegister {
-
-    /**
-     * The spring el expression that obtain the configuration of quartz.
-     *
-     * <p>This property supports the parsing of Spring's el expression to
-     * call a method of a bean and obtain a type instance object with a
-     * return value of {@link SuperiorProperties} or {@code Map<String,Object>}
-     * or {@link java.util.Properties}, which will be used for configuration
-     * initialization of quartz timed calls.
-     * @return el expression that obtain the configuration of quartz.
-     * @since 3.0.0
-     */
-    @Language("SpEL") String propertiesReferTo() default "";
 }

@@ -61,12 +61,6 @@
             <artifactId>spring-context</artifactId>
             <optional>true</optional>
         </dependency>
-
-        <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-        </dependency>
-
     </dependencies>
 
 </project>

@@ -24,6 +24,7 @@ import org.springframework.context.annotation.Configuration;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.core.repository.CronExecutorServiceSupplier;
 import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
+import top.osjf.cron.spring.AbstractCronTaskConfiguration;
 import top.osjf.cron.spring.CronAnnotationPostProcessor;
 import top.osjf.cron.spring.ObjectProviderUtils;
 import top.osjf.cron.spring.annotation.Cron;
@@ -42,7 +43,7 @@ import top.osjf.cron.spring.annotation.CronRepositoryBean;
  * @see EnableQuartzCronTaskRegister
  */
 @Configuration(proxyBeanMethods = false)
-public class QuartzCronTaskConfiguration {
+public class QuartzCronTaskConfiguration extends AbstractCronTaskConfiguration {
 
     @Bean
     public SpringMethodLevelJobFactory springMethodLevelJobFactory() {
@@ -69,8 +70,7 @@ public class QuartzCronTaskConfiguration {
         }
         QuartzCronTaskRepository repository = new QuartzCronTaskRepository();
         repository.setJobFactory(jobFactory);
-        SuperiorProperties properties = ObjectProviderUtils.getPriority(propertiesProvider);
-        repository.setSuperiorProperties(properties);
+        repository.setSuperiorProperties(ObjectProviderUtils.getPriority(propertiesProvider));
         CronExecutorServiceSupplier executorServiceSupplier = ObjectProviderUtils.getPriority(executorProvider);
         if (executorServiceSupplier != null){
             repository.setTaskExecutor(executorServiceSupplier.get());
