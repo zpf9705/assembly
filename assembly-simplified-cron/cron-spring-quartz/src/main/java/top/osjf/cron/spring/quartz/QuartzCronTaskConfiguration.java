@@ -45,8 +45,8 @@ import top.osjf.cron.spring.annotation.CronRepositoryBean;
 public class QuartzCronTaskConfiguration {
 
     @Bean
-    public SpringContainerGovernanceMethodLevelJobFactory springContainerGovernanceMethodLevelJobFactory() {
-        return new SpringContainerGovernanceMethodLevelJobFactory();
+    public SpringMethodLevelJobFactory springMethodLevelJobFactory() {
+        return new SpringMethodLevelJobFactory();
     }
 
     @CronRepositoryBean
@@ -54,7 +54,7 @@ public class QuartzCronTaskConfiguration {
                                                              ObjectProvider<SchedulerFactory> schedulerFactoryProvider,
                                                              ObjectProvider<SuperiorProperties> propertiesProvider,
                                                              ObjectProvider<CronExecutorServiceSupplier> executorProvider,
-                                                             SpringContainerGovernanceMethodLevelJobFactory jobFactory) {
+                                                             SpringMethodLevelJobFactory jobFactory) {
         Scheduler scheduler = ObjectProviderUtils.getPriority(schedulerProvider);
         if (scheduler != null) {
             QuartzCronTaskRepository repository = new QuartzCronTaskRepository(scheduler);

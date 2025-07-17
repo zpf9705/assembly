@@ -16,6 +16,7 @@
 
 package top.osjf.cron.spring.quartz;
 
+import org.intellij.lang.annotations.Language;
 import org.springframework.context.annotation.Import;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
@@ -45,8 +46,8 @@ import java.lang.annotation.*;
  * that scans the relevant beans wearing the annotation {@link Cron} and registers the task.
  *
  * <p>There are too many core attribute configurations for quartz, which can be encapsulated
- * in {@link SuperiorProperties} and passed through using method {@link QuartzCronTaskRepository#setProperties}
- * for construction.
+ * in {@link SuperiorProperties} and passed through using method
+ * {@link QuartzCronTaskRepository#setSuperiorProperties}for construction.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.0
@@ -60,4 +61,10 @@ import java.lang.annotation.*;
 @Import({QuartzCronTaskConfiguration.class,
         CronTaskConfiguration.class})
 public @interface EnableQuartzCronTaskRegister {
+
+    /**
+     *
+     * @return
+     */
+    @Language("SpEL") String propertiesReferTo() default "";
 }

@@ -33,9 +33,9 @@ import top.osjf.cron.quartz.MethodLevelJobFactory;
 import java.lang.reflect.Method;
 
 /**
- * {@code SpringContainerGovernanceMethodLevelJobFactory} is an extension about
- * {@link MethodLevelJob} that inherits the Spring framework and uses the Spring
- * container to manage and execute tasks.
+ * {@code SpringMethodLevelJobFactory} is an extension about {@link MethodLevelJob}
+ * that inherits the Spring framework and uses the Spring container to manage and
+ * execute tasks.
  *
  * <p>Its callback method follows the {@link #newJob} convention, defining the
  * class as a bean in the container by default, and dynamically creating a
@@ -46,8 +46,8 @@ import java.lang.reflect.Method;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.0
  */
-public class SpringContainerGovernanceMethodLevelJobFactory extends MethodLevelJobFactory implements ApplicationContextAware,
-        BeanClassLoaderAware {
+public class SpringMethodLevelJobFactory
+        extends MethodLevelJobFactory implements ApplicationContextAware, BeanClassLoaderAware {
 
     private ApplicationContext applicationContext;
 
