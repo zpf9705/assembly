@@ -37,7 +37,7 @@ import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProc
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.config.TaskManagementConfigUtils;
 import top.osjf.cron.core.repository.CronTaskRepository;
-import top.osjf.cron.spring.CronTaskInfoReadableConfiguration;
+import top.osjf.cron.spring.AbstractCronTaskConfiguration;
 import top.osjf.cron.spring.scheduler.SpringSchedulerTaskRepository;
 import top.osjf.cron.spring.scheduler.config.EnableScheduling;
 
@@ -109,7 +109,7 @@ public class SpringSchedulerAutoConfiguration {
     @ConditionalOnBean(value = ScheduledAnnotationBeanPostProcessor.class,
             name = TaskManagementConfigUtils.SCHEDULED_ANNOTATION_PROCESSOR_BEAN_NAME)
     public static class SpringSchedulerConfirmLoadingSpringEnableSchedulingConfiguration
-            extends CronTaskInfoReadableConfiguration {
+            extends AbstractCronTaskConfiguration {
 
         @Bean(ScheduledAnnotationBeanPostProcessor.DEFAULT_TASK_SCHEDULER_BEAN_NAME)
         @ConditionalOnMissingBean(SpringSchedulerTaskRepository.class)
