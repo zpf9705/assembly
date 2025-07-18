@@ -30,6 +30,7 @@
 
     <artifactId>assembly-simplified-all</artifactId>
     <name>assembly-simplified-all ${project.version}</name>
+    <packaging>jar</packaging>
     <description>Assembly all.</description>
 
     <dependencies>

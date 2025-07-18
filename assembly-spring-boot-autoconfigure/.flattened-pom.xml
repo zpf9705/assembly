@@ -54,12 +54,6 @@
   <dependencies>
     <dependency>
       <groupId>top.osjf.cron</groupId>
-      <artifactId>cron-spring</artifactId>
-      <version>3.0.0-Beat</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>top.osjf.cron</groupId>
       <artifactId>cron-spring-scheduler</artifactId>
       <version>3.0.0-Beat</version>
       <scope>compile</scope>
