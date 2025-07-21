@@ -19,11 +19,11 @@ package top.osjf.spring.autoconfigure.cron;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.core.repository.NoOpCronTaskRepository;
+import top.osjf.cron.spring.annotation.CronRepositoryBean;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link NoOpCronTaskRepository}
@@ -37,7 +37,7 @@ import top.osjf.cron.core.repository.NoOpCronTaskRepository;
 @Conditional(CronCondition.class)
 public class NoOpCornTaskAutoConfiguration {
 
-    @Bean
+    @CronRepositoryBean
     public NoOpCronTaskRepository noOpCronTaskRepository() {
         return new NoOpCronTaskRepository();
     }
