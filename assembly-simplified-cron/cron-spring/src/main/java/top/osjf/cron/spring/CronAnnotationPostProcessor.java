@@ -218,19 +218,23 @@ public class CronAnnotationPostProcessor implements ApplicationContextAware,
         // Check the number of specific interface beans to determine their unique existence.
         checkRepositoryBeanNumber();
 
-        // Register and start the scheduled task collection.
+        // Register the scheduled task collection.
         CronTaskRepository cronTaskRepository = applicationContext.getBean(CronTaskRepository.class);
         for (CronTask cronTask : cronTasks) {
             cronTaskRepository.register(cronTask);
         }
+
+        // Register the scheduled task listener collection.
         for (CronListener listener : applicationContext.getBeansOfType(CronListener.class).values()) {
             cronTaskRepository.addListener(listener);
         }
+
+        // Start the scheduled task repository
         cronTaskRepository.start();
 
-        // Registration quantity result log input.
-        logger.info("The total number of timed tasks successfully registered by the post processor " +
-                "{} during this startup is <{}>.", getClass().getName(), cronTasks.size());
+        logger.info("A total of {} timed tasks were registered by the post processor [{}] during application startup.",
+                cronTasks.size(), getClass().getName());
+
         // clare registered task instances.
         cronTasks.clear();
     }
