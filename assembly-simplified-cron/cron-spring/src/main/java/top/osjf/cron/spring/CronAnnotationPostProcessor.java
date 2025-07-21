@@ -62,9 +62,12 @@ import java.util.concurrent.ScheduledExecutorService;
  * <p>This post-processor is automatically registered in the configuration
  * {@link CronTaskConfiguration} according to any of the following:
  * <ul>
- * <li>{@code top.osjf.cron.spring.hutool.EnableHutoolCronTaskRegister}</li>
- * <li>{@code top.osjf.cron.spring.quartz.EnableQuartzCronTaskRegister}</li>
- * <li>{@code top.osjf.cron.spring.cron4j.EnableCron4jCronTaskRegister}</li>
+ * <li>{@code top.osjf.cron.spring.hutool.EnableHutoolCronTaskRegister}
+ * <a href="https://central.sonatype.com/artifact/top.osjf.cron/cron-spring-hutool">here</a></li>
+ * <li>{@code top.osjf.cron.spring.quartz.EnableQuartzCronTaskRegister}
+ * <a href="https://central.sonatype.com/artifact/top.osjf.cron/cron-spring-quartz">here</a></li>
+ * <li>{@code top.osjf.cron.spring.cron4j.EnableCron4jCronTaskRegister}
+ * <a href="https://central.sonatype.com/artifact/top.osjf.cron/cron-spring-cron4j">here</a></li>
  * </ul>
  *
  * <p>Automatically detect instances of {@link CronTaskRepository CronTaskRepository},

@@ -34,9 +34,12 @@ import java.lang.annotation.*;
  * <p>This annotation is processed in {@link CronAnnotationPostProcessor} and can be
  * triggered for parsing based on the tags of the following annotations:
  * <ul>
- * <li>{@code top.osjf.cron.spring.hutool.EnableHutoolCronTaskRegister}</li>
- * <li>{@code top.osjf.cron.spring.quartz.EnableQuartzCronTaskRegister}</li>
- * <li>{@code top.osjf.cron.spring.cron4j.EnableCron4jCronTaskRegister}</li>
+ * <li>{@code top.osjf.cron.spring.hutool.EnableHutoolCronTaskRegister}
+ * <a href="https://central.sonatype.com/artifact/top.osjf.cron/cron-spring-hutool">here</a></li>
+ * <li>{@code top.osjf.cron.spring.quartz.EnableQuartzCronTaskRegister}
+ * <a href="https://central.sonatype.com/artifact/top.osjf.cron/cron-spring-quartz">here</a></li>
+ * <li>{@code top.osjf.cron.spring.cron4j.EnableCron4jCronTaskRegister}
+ * <a href="https://central.sonatype.com/artifact/top.osjf.cron/cron-spring-cron4j">here</a></li>
  * </ul>
  *
  * <p>The attributes of {@link #value()} and {@link #expression()} are considered
