@@ -23,8 +23,8 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>top.osjf.spring.optimize</groupId>
   <artifactId>service-bean</artifactId>
-  <version>3.0.0-Beat</version>
-  <name>service-bean 3.0.0-Beat</name>
+  <version>3.0.0-GA</version>
+  <name>service-bean 3.0.0-GA</name>
   <description>Package for optimizing spring bean naming and other related features.</description>
   <url>https://github.com/zpf9705/assembly/assembly-simplified-spring-optimize/service-bean</url>
   <licenses>

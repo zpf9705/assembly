@@ -23,8 +23,8 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>top.osjf.cron</groupId>
   <artifactId>cron-mybatis-plus-datasource-driven-scheduled</artifactId>
-  <version>3.0.0-Beat</version>
-  <name>cron-mybatis-plus-datasource-driven-scheduled 3.0.0-Beat</name>
+  <version>3.0.0-GA</version>
+  <name>cron-mybatis-plus-datasource-driven-scheduled 3.0.0-GA</name>
   <description>Mybatis plus is a data source implementation package for manipulating databases.</description>
   <url>https://github.com/zpf9705/assembly/assembly-simplified-cron/cron-mybatis-plus-datasource-driven-scheduled</url>
   <licenses>
@@ -55,7 +55,7 @@
     <dependency>
       <groupId>top.osjf.cron</groupId>
       <artifactId>cron-datasource-driven-scheduled</artifactId>
-      <version>3.0.0-Beat</version>
+      <version>3.0.0-GA</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

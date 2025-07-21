@@ -23,8 +23,8 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>top.osjf.spring.optimize</groupId>
   <artifactId>service-bean-boot-starter</artifactId>
-  <version>3.0.0-Beat</version>
-  <name>service-bean-boot-starter 3.0.0-Beat</name>
+  <version>3.0.0-GA</version>
+  <name>service-bean-boot-starter 3.0.0-GA</name>
   <description>An automated assembly package optimized for spring bean naming and other features.</description>
   <url>https://github.com/zpf9705/assembly/assembly-simplified-spring-optimize/service-bean-boot-starter</url>
   <licenses>
@@ -55,13 +55,13 @@
     <dependency>
       <groupId>top.osjf</groupId>
       <artifactId>assembly-spring-boot-autoconfigure</artifactId>
-      <version>3.0.0-Beat</version>
+      <version>3.0.0-GA</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>top.osjf.spring.optimize</groupId>
       <artifactId>service-bean</artifactId>
-      <version>3.0.0-Beat</version>
+      <version>3.0.0-GA</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

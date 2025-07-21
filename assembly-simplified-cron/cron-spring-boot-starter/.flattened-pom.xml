@@ -23,8 +23,8 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>top.osjf.cron</groupId>
   <artifactId>cron-spring-boot-starter</artifactId>
-  <version>3.0.0-Beat</version>
-  <name>cron-spring-boot-starter 3.0.0-Beat</name>
+  <version>3.0.0-GA</version>
+  <name>cron-spring-boot-starter 3.0.0-GA</name>
   <description>The cron task execution framework integrates packages from the Spring boot framework.</description>
   <url>https://github.com/zpf9705/assembly/assembly-simplified-cron/cron-spring-boot-starter</url>
   <licenses>
@@ -55,19 +55,19 @@
     <dependency>
       <groupId>top.osjf</groupId>
       <artifactId>assembly-spring-boot-autoconfigure</artifactId>
-      <version>3.0.0-Beat</version>
+      <version>3.0.0-GA</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>top.osjf.cron</groupId>
       <artifactId>cron-spring-scheduler</artifactId>
-      <version>3.0.0-Beat</version>
+      <version>3.0.0-GA</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>top.osjf.cron</groupId>
       <artifactId>cron-yaml-config-datasource-driven-scheduled</artifactId>
-      <version>3.0.0-Beat</version>
+      <version>3.0.0-GA</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

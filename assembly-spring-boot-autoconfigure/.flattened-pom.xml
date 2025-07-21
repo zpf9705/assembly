@@ -23,8 +23,8 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>top.osjf</groupId>
   <artifactId>assembly-spring-boot-autoconfigure</artifactId>
-  <version>3.0.0-Beat</version>
-  <name>assembly-spring-boot-autoconfigure 3.0.0-Beat</name>
+  <version>3.0.0-GA</version>
+  <name>assembly-spring-boot-autoconfigure 3.0.0-GA</name>
   <description>The automatic assembly project of integrating springboot framework with related components.</description>
   <url>https://github.com/zpf9705/assembly/assembly-spring-boot-autoconfigure</url>
   <licenses>
@@ -55,49 +55,49 @@
     <dependency>
       <groupId>top.osjf.cron</groupId>
       <artifactId>cron-spring-scheduler</artifactId>
-      <version>3.0.0-Beat</version>
+      <version>3.0.0-GA</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>top.osjf.cron</groupId>
       <artifactId>cron-spring-hutool</artifactId>
-      <version>3.0.0-Beat</version>
+      <version>3.0.0-GA</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>top.osjf.cron</groupId>
       <artifactId>cron-spring-quartz</artifactId>
-      <version>3.0.0-Beat</version>
+      <version>3.0.0-GA</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>top.osjf.cron</groupId>
       <artifactId>cron-spring-cron4j</artifactId>
-      <version>3.0.0-Beat</version>
+      <version>3.0.0-GA</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>top.osjf.cron</groupId>
       <artifactId>cron-mybatis-plus-datasource-driven-scheduled</artifactId>
-      <version>3.0.0-Beat</version>
+      <version>3.0.0-GA</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>top.osjf.cron</groupId>
       <artifactId>cron-yaml-config-datasource-driven-scheduled</artifactId>
-      <version>3.0.0-Beat</version>
+      <version>3.0.0-GA</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>top.osjf.spring.optimize</groupId>
       <artifactId>service-bean</artifactId>
-      <version>3.0.0-Beat</version>
+      <version>3.0.0-GA</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
@@ -125,7 +125,7 @@
     <dependency>
       <groupId>top.osjf.spring.optimize</groupId>
       <artifactId>idempotent</artifactId>
-      <version>3.0.0-Beat</version>
+      <version>3.0.0-GA</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>

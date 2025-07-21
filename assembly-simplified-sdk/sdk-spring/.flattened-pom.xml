@@ -23,8 +23,8 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>top.osjf.sdk</groupId>
   <artifactId>sdk-spring</artifactId>
-  <version>3.0.0-Beat</version>
-  <name>sdk-spring 3.0.0-Beat</name>
+  <version>3.0.0-GA</version>
+  <name>sdk-spring 3.0.0-GA</name>
   <description>The SDK encapsulation framework integrates with the Spring framework.</description>
   <url>https://github.com/zpf9705/assembly/assembly-simplified-sdk/sdk-spring</url>
   <licenses>
@@ -55,19 +55,19 @@
     <dependency>
       <groupId>top.osjf.sdk</groupId>
       <artifactId>sdk-proxy</artifactId>
-      <version>3.0.0-Beat</version>
+      <version>3.0.0-GA</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>top.osjf.sdk</groupId>
       <artifactId>sdk-http</artifactId>
-      <version>3.0.0-Beat</version>
+      <version>3.0.0-GA</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>top.osjf.sdk</groupId>
       <artifactId>sdk-http-feign-apache</artifactId>
-      <version>3.0.0-Beat</version>
+      <version>3.0.0-GA</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

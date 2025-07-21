@@ -23,8 +23,8 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>top.osjf.cron</groupId>
   <artifactId>cron-spring-hutool</artifactId>
-  <version>3.0.0-Beat</version>
-  <name>cron-spring-hutool 3.0.0-Beat</name>
+  <version>3.0.0-GA</version>
+  <name>cron-spring-hutool 3.0.0-GA</name>
   <description>Cron-hutool integrates the Spring framework to achieve annotation level configuration.</description>
   <url>https://github.com/zpf9705/assembly/assembly-simplified-cron/cron-spring-hutool</url>
   <licenses>
@@ -55,13 +55,13 @@
     <dependency>
       <groupId>top.osjf.cron</groupId>
       <artifactId>cron-spring</artifactId>
-      <version>3.0.0-Beat</version>
+      <version>3.0.0-GA</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>top.osjf.cron</groupId>
       <artifactId>cron-hutool</artifactId>
-      <version>3.0.0-Beat</version>
+      <version>3.0.0-GA</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

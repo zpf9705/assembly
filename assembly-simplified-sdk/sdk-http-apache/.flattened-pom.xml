@@ -23,8 +23,8 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>top.osjf.sdk</groupId>
   <artifactId>sdk-http-apache</artifactId>
-  <version>3.0.0-Beat</version>
-  <name>sdk-http-apache 3.0.0-Beat</name>
+  <version>3.0.0-GA</version>
+  <name>sdk-http-apache 3.0.0-GA</name>
   <description>HTTP Apache Call in SDK Encapsulation Framework</description>
   <url>https://github.com/zpf9705/assembly/assembly-simplified-sdk/sdk-http-apache</url>
   <licenses>
@@ -55,7 +55,7 @@
     <dependency>
       <groupId>top.osjf.sdk</groupId>
       <artifactId>sdk-http</artifactId>
-      <version>3.0.0-Beat</version>
+      <version>3.0.0-GA</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

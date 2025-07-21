@@ -23,9 +23,9 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>top.osjf.sdk</groupId>
   <artifactId>assembly-simplified-sdk</artifactId>
-  <version>3.0.0-Beat</version>
+  <version>3.0.0-GA</version>
   <packaging>pom</packaging>
-  <name>assembly-simplified-sdk 3.0.0-Beat</name>
+  <name>assembly-simplified-sdk 3.0.0-GA</name>
   <description>Parent of sdk.</description>
   <url>https://github.com/zpf9705/assembly/assembly-simplified-sdk</url>
   <licenses>
