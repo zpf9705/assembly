@@ -22,10 +22,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.ArrayList;
-import java.util.List;
-
-import static java.util.Objects.requireNonNull;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
@@ -36,41 +35,79 @@ public class FileWatchService implements Runnable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileWatchService.class);
 
-    private final String[] paths;
+    private static final WatchEvent.Kind<?>[] KINDS = {StandardWatchEventKinds.ENTRY_CREATE,
+            StandardWatchEventKinds.ENTRY_DELETE,
+            StandardWatchEventKinds.ENTRY_MODIFY,
+            StandardWatchEventKinds.OVERFLOW};
 
     private WatchService watchService;
 
-    private final List<FileWatchListener> listeners = new ArrayList<>();
+    /**
+     * Monitor the cache of key and path name comparison.
+     */
+    private final Map<WatchKey, String> watchKeyMap = new ConcurrentHashMap<>();
 
-    public FileWatchService(String[] paths) {
-        this.paths = requireNonNull(paths, "paths = null");
+    private final CopyOnWriteArrayList<FileWatchListener> listeners = new CopyOnWriteArrayList<>();
+
+    /**
+     * Constructs an empty {@link FileWatchService} to init a {@link WatchService}.
+     */
+    public FileWatchService() { initWatchService(); }
+
+    /**
+     * Init a {@link WatchService} to support monitoring file changes in specified file paths.
+     */
+    private void initWatchService() {
+        try {
+            watchService = FileSystems.getDefault().newWatchService();
+        }
+        catch (IOException ex) {
+            throw new FileWatchException("Failed to create java.nio.file.WatchService", ex);
+        }
     }
 
-    public void register() {
-        if (watchService == null) {
-            try {
-                watchService = FileSystems.getDefault().newWatchService();
-            } catch (IOException ex) {
-                throw new FileWatchException("Failed to create java.nio.file.WatchService", ex);
-            }
-        }
+    /**
+     * Register a {@link FileWatchListener listener} to call back information about
+     * changes in the specified path file.
+     * @param listener the specific {@link FileWatchService} to register.
+     */
+    public void registerListener(FileWatchListener listener) {
+        listeners.addIfAbsent(listener);
+    }
 
+    /**
+     * Register file change monitoring for multiple specified paths.
+     * @param paths the specific paths to register.
+     */
+    public void registerWatches(String... paths) {
         for (String path : paths) {
-            Path obtainPath;
-            try {
-                obtainPath = Paths.get(path);
-                obtainPath.register(watchService,
-                        StandardWatchEventKinds.ENTRY_CREATE,
-                        StandardWatchEventKinds.OVERFLOW,
-                        StandardWatchEventKinds.ENTRY_DELETE,
-                        StandardWatchEventKinds.ENTRY_MODIFY);
-            }
-            catch (InvalidPathException ex) {
-                throw new FileWatchException("Invalid path " + path, ex);
-            }
-            catch (IOException ex) {
-                throw new FileWatchException("Failed to register WatchService", ex);
-            }
+            registerWatch(path);
+        }
+    }
+
+    /**
+     * To register a file listener for {@link Path} with a specified path and detect
+     * callback awareness when the file path changes, it is necessary to ensure that
+     * it is a valid and traceable correct path.
+     * @param path the specific path to register.
+     * @throws NullPointerException If the path input is {@literal null}.
+     * @throws FileWatchException   If the input path is invalid or the registration
+     *                              listening fails.
+     */
+    public void registerWatch(String path) {
+        if (path == null) {
+            throw new NullPointerException("path");
+        }
+        Path obtainPath;
+        try {
+            obtainPath = Paths.get(path);
+            watchKeyMap.put(obtainPath.register(watchService, KINDS), path);
+        }
+        catch (InvalidPathException ex) {
+            throw new FileWatchException("Invalid path " + path, ex);
+        }
+        catch (IOException ex) {
+            throw new FileWatchException("Failed to register WatchService", ex);
         }
     }
 
@@ -78,13 +115,20 @@ public class FileWatchService implements Runnable {
     public void run() {
         while (true) {
             WatchKey key;
-            try {
-                key = watchService.take();
-            }
+            try { key = watchService.take(); }
             catch (InterruptedException ex) {
-                throw new FileWatchException("File watch service thread is already occupied.", ex);
+                LOGGER.error("File watch service thread is already occupied.", ex);
+                break;
             }
+            String path = watchKeyMap.get(key);
             for (WatchEvent<?> event : key.pollEvents()) {
+                if (event.kind() == StandardWatchEventKinds.OVERFLOW) {
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("A special event to indicate that events may have been lost or " +
+                                "discarded，do not perform callback processing.");
+                    }
+                    continue;
+                }
                 for (FileWatchListener listener : listeners) {
                     WatchEvent<Path> pathEvent = (WatchEvent<Path>) event;
                     if (listener.supports(pathEvent)) {
@@ -94,7 +138,11 @@ public class FileWatchService implements Runnable {
             }
             boolean valid = key.reset();
             if (!valid) {
-                break;
+                LOGGER.error("Watch key of {} could not be reset, because it is no longer valid.", path);
+                key.cancel();
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Monitoring of path {} has been cancelled.", path);
+                }
             }
         }
     }
