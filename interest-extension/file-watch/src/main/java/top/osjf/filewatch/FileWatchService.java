@@ -27,26 +27,53 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
+ /**
+ * A file monitoring service that watches registered directories for changes
+ * and notifies registered listeners when events occur.
+ *
+ * <p>Typical usage:
+ * <pre>{@code
+ * FileWatchService watchService = new FileWatchService();
+ * watchService.registerListener(new MyFileChangeListener());
+ * watchService.registerWatches("/path/to/watch", "/another/path");
+ * new Thread(watchService).start();
+ * }</pre>
+ *
+ * <p>This implementation uses Java NIO's {@link WatchService} API and supports
+ * concurrent event processing through a thread-safe listener registry.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
+ *
+ * @see FileWatchListener
+ * @see java.nio.file.WatchService
+ * @see java.nio.file.WatchEvent
+ * @see java.nio.file.StandardWatchEventKinds
  */
 @SuppressWarnings("unchecked")
 public class FileWatchService implements Runnable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileWatchService.class);
-
+    /**
+     * The event kinds to register for monitoring.
+     */
     private static final WatchEvent.Kind<?>[] KINDS = {StandardWatchEventKinds.ENTRY_CREATE,
             StandardWatchEventKinds.ENTRY_DELETE,
             StandardWatchEventKinds.ENTRY_MODIFY,
             StandardWatchEventKinds.OVERFLOW};
-
+    /**
+     * The underlying watch service instance.
+     */
     private WatchService watchService;
 
     /**
-     * Monitor the cache of key and path name comparison.
+     * A mapping between watch keys and their associated paths.
      */
     private final Map<WatchKey, String> watchKeyMap = new ConcurrentHashMap<>();
 
+    /**
+     * Thread-safe list of registered file watch listeners.
+     */
     private final CopyOnWriteArrayList<FileWatchListener> listeners = new CopyOnWriteArrayList<>();
 
     /**
@@ -111,6 +138,10 @@ public class FileWatchService implements Runnable {
         }
     }
 
+    /**
+     * Main monitoring loop that processes file system events.
+     * <p>This method runs indefinitely until the thread is interrupted.
+     */
     @Override
     public void run() {
         while (true) {
