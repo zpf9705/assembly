@@ -17,6 +17,7 @@
 
 package top.osjf.optimize.service_bean.context;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.lang.Nullable;
 
 import java.io.Closeable;
@@ -32,12 +33,23 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public class ServiceTypeRegistry implements Closeable {
+public class ServiceTypeRegistry implements InitializingBean, Closeable {
 
     /**
      * This is a thread-safe map that stores mappings of service names to their types.
      */
     private final Map<String, Class<?>> serviceTypeMap = new ConcurrentHashMap<>(64);
+
+    /**
+     * A unmodifiable {@link #serviceTypeMap}.
+     * @since 3.0.1
+     */
+    private Map<String, Class<?>> unmodifiableServiceTypeMap;
+
+    @Override
+    public void afterPropertiesSet() {
+        unmodifiableServiceTypeMap = Collections.unmodifiableMap(serviceTypeMap);
+    }
 
     /**
      * Registers the specified service name and type in the service type map.
@@ -70,7 +82,7 @@ public class ServiceTypeRegistry implements Closeable {
      * @return an unmodifiable view of the service type map.
      */
     public Map<String, Class<?>> getServiceTypeMap() {
-        return Collections.unmodifiableMap(serviceTypeMap);
+        return unmodifiableServiceTypeMap;
     }
 
     /**

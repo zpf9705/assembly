@@ -54,8 +54,6 @@ public abstract class AbstractServiceContext implements ConfigurableServiceConte
 
     private ServiceTypeRegistry serviceTypeRegistry;
 
-    private Map<String, Class<?>> serviceTypeMap;
-
     @Override
     public void setApplicationContext(@NonNull ApplicationContext context) throws BeansException {
         this.unwrapApplicationContext = new UnwrapApplicationContext(context);
@@ -73,7 +71,6 @@ public abstract class AbstractServiceContext implements ConfigurableServiceConte
             @Qualifier(ServiceBeanManagementConfigUtils.INTERNAL_SERVICE_TYPE_REGISTER_BEAN_NAME)
             ServiceTypeRegistry serviceTypeRegistry) {
         this.serviceTypeRegistry = serviceTypeRegistry;
-        this.serviceTypeMap = serviceTypeRegistry.getServiceTypeMap();
     }
 
     /**
@@ -85,7 +82,7 @@ public abstract class AbstractServiceContext implements ConfigurableServiceConte
      */
     @Override
     public int getServiceBeanCount() {
-        return serviceTypeMap.size();
+        return serviceTypeRegistry.getServiceTypeMap().size();
     }
 
     /**
@@ -97,7 +94,7 @@ public abstract class AbstractServiceContext implements ConfigurableServiceConte
      */
     @Override
     public String[] getServiceBeanNames() {
-        return StringUtils.toStringArray(serviceTypeMap.keySet());
+        return StringUtils.toStringArray(serviceTypeRegistry.getServiceTypeMap().keySet());
     }
 
     /**
@@ -113,7 +110,7 @@ public abstract class AbstractServiceContext implements ConfigurableServiceConte
             throw new NoAvailableServiceException(type);
         }
         List<String> names = new ArrayList<>();
-        serviceTypeMap.forEach((n, c) -> {
+        serviceTypeRegistry.getServiceTypeMap().forEach((n, c) -> {
             if (c == type) names.add(n);
         });
         return StringUtils.toStringArray(names);
@@ -128,6 +125,7 @@ public abstract class AbstractServiceContext implements ConfigurableServiceConte
      */
     @Override
     public Class<?> getTypeForServiceBeanName(String serviceName) throws NoAvailableServiceException {
+        Map<String, Class<?>> serviceTypeMap = serviceTypeRegistry.getServiceTypeMap();
         if (!ServiceDefinitionUtils.isEnhancementServiceName(serviceName)
                 || !serviceTypeMap.containsKey(serviceName)) {
             throw new NoAvailableServiceException(serviceName);
@@ -173,6 +171,6 @@ public abstract class AbstractServiceContext implements ConfigurableServiceConte
      * it is not.
      */
     protected boolean isRecordType(Class<?> type) {
-        return serviceTypeMap.containsValue(type);
+        return serviceTypeRegistry.getServiceTypeMap().containsValue(type);
     }
 }
