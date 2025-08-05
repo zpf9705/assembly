@@ -17,7 +17,7 @@
 
 package top.osjf.spring.autoconfigure.filewatch;
 
-import org.springframework.context.Lifecycle;
+import org.springframework.context.SmartLifecycle;
 import top.osjf.filewatch.FileWatchService;
 
 /**
@@ -26,7 +26,7 @@ import top.osjf.filewatch.FileWatchService;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
-public class FileWatchServiceLifecycle implements Lifecycle {
+public class FileWatchServiceLifecycle implements SmartLifecycle {
 
     private final Thread fileWatchServiceThread;
 
