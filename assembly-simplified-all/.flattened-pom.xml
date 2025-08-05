@@ -76,5 +76,11 @@
       <version>3.0.1</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>top.osjf.filewatch</groupId>
+      <artifactId>file-watch-boot-starter</artifactId>
+      <version>3.0.1</version>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 </project>
