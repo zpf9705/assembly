@@ -38,7 +38,7 @@ import top.osjf.filewatch.FileWatchService;
 @EnableConfigurationProperties(FileWatchProperties.class)
 public class FileWatchAutoConfiguration {
 
-    @Bean
+    @Bean(destroyMethod = "close")
     @ConditionalOnMissingBean
     public FileWatchService fileWatchService(ObjectProvider<FileWatchListener> provider,
                                              FileWatchProperties fileWatchProperties) {
