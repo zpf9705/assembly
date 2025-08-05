@@ -186,7 +186,7 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
                 for (FileWatchListener listener : listeners) {
                     if (listener.supports(pathEvent)) {
                         if (!waitCreateConfigurationMap.getOrDefault(pathContext.toString(),
-                                WaitCreateConfiguration.INSTANCE).waitComplete(pathContext, kind)) {
+                                WaitCreateConfiguration.INSTANCE).waitComplete(Paths.get(path, pathContext.toString()), kind)) {
                             if (LOGGER.isDebugEnabled()) {
                                 LOGGER.debug("Waiting for the completion of context {} creation timeout or " +
                                         "IO exception, please check if the corresponding path file exists or " +
