@@ -31,7 +31,7 @@ public class FileWatchServiceLifecycle implements Lifecycle {
     private final Thread fileWatchServiceThread;
 
     public FileWatchServiceLifecycle(FileWatchService fileWatchService) {
-        this.fileWatchServiceThread = new Thread(fileWatchService);
+        this.fileWatchServiceThread = fileWatchService.get();
     }
 
     @Override

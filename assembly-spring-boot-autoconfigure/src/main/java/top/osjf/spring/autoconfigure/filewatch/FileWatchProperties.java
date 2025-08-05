@@ -29,9 +29,22 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class FileWatchProperties {
 
     /**
+     * Enable tag configuration for dynamic file listening.
+     */
+    private boolean enable = true;
+
+    /**
      * Listen to the file path array.
      */
     private String[] paths = { System.getProperty("user.dir") };
+
+    public boolean isEnable() {
+        return enable;
+    }
+
+    public void setEnable(boolean enable) {
+        this.enable = enable;
+    }
 
     public String[] getPaths() {
         return paths;

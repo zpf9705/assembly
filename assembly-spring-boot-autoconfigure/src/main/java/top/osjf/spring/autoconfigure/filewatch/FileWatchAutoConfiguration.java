@@ -36,6 +36,7 @@ import top.osjf.filewatch.FileWatchService;
 @ConditionalOnClass(FileWatchService.class)
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(FileWatchProperties.class)
+@EnableFileWatch
 public class FileWatchAutoConfiguration {
 
     @Bean(destroyMethod = "close")
