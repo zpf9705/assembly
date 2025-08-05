@@ -41,11 +41,13 @@ public class FileWatchAutoConfiguration {
 
     @Bean(destroyMethod = "close")
     @ConditionalOnMissingBean
-    public FileWatchService fileWatchService(ObjectProvider<FileWatchListener> provider,
-                                             FileWatchProperties fileWatchProperties) {
+    public FileWatchService fileWatchService(FileWatchProperties fileWatchProperties,
+                                             ObjectProvider<FileWatchListener> listenerProvider,
+                                             ObjectProvider<FileWatchServiceCustomizer> customizerProvider) {
         FileWatchService fileWatchService = new FileWatchService();
-        provider.orderedStream().forEach(fileWatchService::registerListener);
         fileWatchService.registerWatches(fileWatchProperties.getPaths());
+        listenerProvider.orderedStream().forEach(fileWatchService::registerListener);
+        customizerProvider.orderedStream().forEach(c -> c.customize(fileWatchService));
         return fileWatchService;
     }
 
