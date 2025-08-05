@@ -145,14 +145,15 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
     /**
      * Register a specified file creation notification {@link StandardWatchEventKinds#ENTRY_CREATE}
      * and configure the waiting time for completion of creation {@code WaitCreateConfiguration}.
+     * @param pathContext   the specific pathContext to register.
      * @param configuration the specific waiting time for completion of creation {@code WaitCreateConfiguration}
      *                      to register.
      */
-    public void registerWaitCreateConfiguration(String path, WaitCreateConfiguration configuration) {
-        if (path == null || configuration == null) {
-            throw new NullPointerException("path or configuration");
+    public void registerWaitCreateConfiguration(String pathContext, WaitCreateConfiguration configuration) {
+        if (pathContext == null || configuration == null) {
+            throw new NullPointerException("pathContext or configuration");
         }
-        waitCreateConfigurationMap.putIfAbsent(path, configuration);
+        waitCreateConfigurationMap.putIfAbsent(pathContext, configuration);
     }
 
     /**
