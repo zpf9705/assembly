@@ -21,6 +21,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 import top.osjf.filewatch.WaitCreateConfiguration;
 
 import java.util.ArrayList;
@@ -65,6 +66,9 @@ public class FileWatchApplicationStartupProperties implements InitializingBean {
     @Override
     public void afterPropertiesSet() {
         Assert.notEmpty(elements, "elements not be null");
+        Assert.isTrue(elements.stream().allMatch(e -> StringUtils.hasText(e.jarFileName)), "jarFileName not be blank");
+        elements.forEach(e-> e.nonsDefaultByGlobal(global));
+        Assert.isTrue(elements.stream().noneMatch(e -> e.sortedStartupCommands.isEmpty()), "sortedStartupCommands not be empty");
     }
 
     public static class StartupJarGlobal {
@@ -84,7 +88,7 @@ public class FileWatchApplicationStartupProperties implements InitializingBean {
         /**
          * Specify the timeout duration for execution.
          */
-        private long timeout = 60;
+        private Long timeout = 60L;
 
         /**
          * Enumeration of timeout duration units for specified execution.
@@ -113,11 +117,11 @@ public class FileWatchApplicationStartupProperties implements InitializingBean {
             this.sortedStartupCommands = sortedStartupCommands;
         }
 
-        public long getTimeout() {
+        public Long getTimeout() {
             return timeout;
         }
 
-        public void setTimeout(long timeout) {
+        public void setTimeout(Long timeout) {
             this.timeout = timeout;
         }
 
@@ -160,7 +164,7 @@ public class FileWatchApplicationStartupProperties implements InitializingBean {
         /**
          * Specify the timeout duration for execution.
          */
-        private long timeout;
+        private Long timeout;
 
         /**
          * Enumeration of timeout duration units for specified execution.
@@ -197,11 +201,11 @@ public class FileWatchApplicationStartupProperties implements InitializingBean {
             this.sortedStartupCommands = sortedStartupCommands;
         }
 
-        public long getTimeout() {
+        public Long getTimeout() {
             return timeout;
         }
 
-        public void setTimeout(long timeout) {
+        public void setTimeout(Long timeout) {
             this.timeout = timeout;
         }
 
@@ -219,6 +223,15 @@ public class FileWatchApplicationStartupProperties implements InitializingBean {
 
         public void setConfiguration(WaitCreateConfiguration configuration) {
             this.configuration = configuration;
+        }
+
+        public StartupJarElement nonsDefaultByGlobal(StartupJarGlobal global) {
+            if (triggerKind == null) triggerKind = global.triggerKind;
+            if (sortedStartupCommands == null) sortedStartupCommands = global.sortedStartupCommands;
+            if (timeout == null) timeout = global.timeout;
+            if (unit == null) unit = global.unit;
+            if (configuration == null) configuration = global.configuration;
+            return this;
         }
     }
 }
