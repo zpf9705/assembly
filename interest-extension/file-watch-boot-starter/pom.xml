@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>top.osjf</groupId>
+        <artifactId>interest-extension</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <groupId>top.osjf.filewatch</groupId>
+    <artifactId>file-watch-boot-starter</artifactId>
+    <packaging>jar</packaging>
+    <name>file-watch-boot-starter ${project.version}</name>
+    <description>Integrate the file-watch auto assembly package of springboot.</description>
+
+
+    <dependencies>
+
+        <dependency>
+            <groupId>top.osjf.filewatch</groupId>
+            <artifactId>file-watch</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>top.osjf</groupId>
+            <artifactId>assembly-spring-boot-autoconfigure</artifactId>
+        </dependency>
+    </dependencies>
+</project>

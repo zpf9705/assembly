@@ -16,6 +16,31 @@
 
     <modules>
         <module>file-watch</module>
+        <module>file-watch-boot-starter</module>
     </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+
+                <groupId>top.osjf.filewatch</groupId>
+                <artifactId>file-watch</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>top.osjf.filewatch</groupId>
+                <artifactId>file-watch-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>top.osjf</groupId>
+                <artifactId>assembly-spring-boot-autoconfigure</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
 
 </project>
