@@ -2,13 +2,12 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>top.osjf</groupId>
-  <artifactId>assembly</artifactId>
+  <groupId>top.osjf.filewatch</groupId>
+  <artifactId>file-watch</artifactId>
   <version>3.0.1</version>
-  <packaging>pom</packaging>
-  <name>assembly 3.0.1</name>
-  <description>Java based software packaging framework toolkit.</description>
-  <url>https://github.com/zpf9705/assembly</url>
+  <name>file-watch 3.0.1</name>
+  <description>The monitor implementation for file changes comes from the native JDK.</description>
+  <url>https://github.com/zpf9705/assembly/interest-extension/file-watch</url>
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
@@ -29,8 +28,16 @@
     </developer>
   </developers>
   <scm>
-    <connection>scm:git:https://github.com/zpf9705/assembly.git</connection>
-    <developerConnection>scm:git:https://github.com/zpf9705/assembly.git</developerConnection>
-    <url>https://github.com/zpf9705/assembly</url>
+    <connection>scm:git:https://github.com/zpf9705/assembly.git/interest-extension/file-watch</connection>
+    <developerConnection>scm:git:https://github.com/zpf9705/assembly.git/interest-extension/file-watch</developerConnection>
+    <url>https://github.com/zpf9705/assembly/interest-extension/file-watch</url>
   </scm>
+  <dependencies>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.32</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
 </project>
