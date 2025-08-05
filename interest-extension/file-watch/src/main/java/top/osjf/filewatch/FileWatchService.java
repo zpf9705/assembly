@@ -78,6 +78,8 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
      */
     private final CopyOnWriteArrayList<FileWatchListener> listeners = new CopyOnWriteArrayList<>();
 
+    private final Map<String, WaitCreateConfiguration> waitCreateConfigurationMap = new ConcurrentHashMap<>();
+
     /**
      * Constructs an empty {@link FileWatchService} to init a {@link WatchService}.
      */
@@ -141,6 +143,19 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
     }
 
     /**
+     * Register a specified file creation notification {@link StandardWatchEventKinds#ENTRY_CREATE}
+     * and configure the waiting time for completion of creation {@code WaitCreateConfiguration}.
+     * @param configuration the specific waiting time for completion of creation {@code WaitCreateConfiguration}
+     *                      to register.
+     */
+    public void registerWaitCreateConfiguration(String path, WaitCreateConfiguration configuration) {
+        if (path == null || configuration == null) {
+            throw new NullPointerException("path or configuration");
+        }
+        waitCreateConfigurationMap.putIfAbsent(path, configuration);
+    }
+
+    /**
      * Main monitoring loop that processes file system events.
      * <p>This method runs indefinitely until the thread is interrupted.
      */
@@ -156,36 +171,50 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
             }
             String path = watchKeyMap.get(key);
             for (WatchEvent<?> event : key.pollEvents()) {
-                LOGGER.info("Watch event for path: {}, event type: {}", event.context(), event.kind());
+                WatchEvent<Path> pathEvent = (WatchEvent<Path>) event;
+                Path pathContext = pathEvent.context();
+                WatchEvent.Kind<Path> kind = pathEvent.kind();
+                LOGGER.info("Watch event for path: {}, event type: {}", pathContext, kind);
                 if (event.kind() == StandardWatchEventKinds.OVERFLOW) {
                     if (LOGGER.isDebugEnabled()) {
-                        LOGGER.debug("A special event to indicate that events may have been lost or " +
-                                "discarded，do not perform callback processing.");
+                        LOGGER.debug("{} event and event type {} to indicate that events may have been lost or " +
+                                "discarded，do not perform callback processing.", pathContext, kind);
                     }
                     continue;
                 }
                 for (FileWatchListener listener : listeners) {
-                    WatchEvent<Path> pathEvent = (WatchEvent<Path>) event;
                     if (listener.supports(pathEvent)) {
+                        if (!waitCreateConfigurationMap.getOrDefault(pathContext.toString(),
+                                WaitCreateConfiguration.INSTANCE).waitComplete(pathContext, kind)) {
+                            if (LOGGER.isDebugEnabled()) {
+                                LOGGER.debug("Waiting for the completion of context {} creation timeout or " +
+                                        "IO exception, please check if the corresponding path file exists or " +
+                                        "is too large (the latter, please readjust the timeout).", pathContext);
+                            }
+                            continue;
+                        }
                         try {
                             listener.onWatchEvent(pathEvent);
                         }
                         catch (Throwable ex) {
                             LOGGER.error("Failed to handle watch event for path: {}, event type: {}",
-                                    pathEvent.context(), pathEvent.kind(), ex);
+                                    pathContext, kind, ex);
                         }
+                    }
+                    else {
+                        LOGGER.info("Unsupported notification context {}, event type: {}", pathContext, kind);
                     }
                 }
             }
             boolean valid = key.reset();
             if (!valid) {
-                boolean warnEnabled = LOGGER.isWarnEnabled();
-                if (warnEnabled) {
+                boolean debugEnabled = LOGGER.isDebugEnabled();
+                if (debugEnabled) {
                     LOGGER.warn("Watch key cannot be reset, its corresponding {} is no longer valid, and " +
                             "listening will be canceled.", path);
                 }
                 key.cancel();
-                if (warnEnabled) {
+                if (debugEnabled) {
                     LOGGER.warn("Monitoring of path {} has been cancelled.", path);
                 }
             }
