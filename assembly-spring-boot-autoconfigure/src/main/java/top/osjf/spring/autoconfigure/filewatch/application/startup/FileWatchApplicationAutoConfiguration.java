@@ -45,7 +45,8 @@ public class FileWatchApplicationAutoConfiguration {
     }
 
     @Bean
-    public FileWatchServiceCustomizer register(FileWatchApplicationStartupProperties properties) {
+    public FileWatchServiceCustomizer registerWaitCreateConfigurationFileWatchServiceCustomizer
+            (FileWatchApplicationStartupProperties properties) {
         return fileWatchService -> {
             for (FileWatchApplicationStartupProperties.StartupJarElement element : properties.getElements()) {
                 fileWatchService.registerWaitCreateConfiguration(element.getJarFileName(), element.getConfiguration());
