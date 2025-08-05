@@ -43,12 +43,14 @@ public interface FileWatchListener {
      * processing. For example, a listener might only care about MODIFY events
      * for properties files.
      *
+     * <p><strong>NOTE:</strong>
+     * Implementations should not perform lengthy operations in this method
+     * as it's called synchronously during event dispatch and returns a fixed
+     * {@code boolean} type, and cannot throw exception information.
+     *
      * @param event the watch event to evaluate (never {@literal null});
      * @return {@code true} if this listener should handle the event, {@code false}
      *          to ignore it.
-     *
-     * @implSpec Implementations should not perform lengthy operations in this method
-     *           as it's called synchronously during event dispatch.
      */
     boolean supports(WatchEvent<Path> event);
 
