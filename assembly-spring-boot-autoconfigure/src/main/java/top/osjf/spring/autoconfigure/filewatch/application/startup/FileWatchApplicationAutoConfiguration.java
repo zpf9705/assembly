@@ -24,6 +24,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import top.osjf.filewatch.FileWatchListener;
 import top.osjf.spring.autoconfigure.filewatch.EnableFileWatch;
+import top.osjf.spring.autoconfigure.filewatch.FileWatchServiceCustomizer;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for file watch application startup.
@@ -41,5 +42,14 @@ public class FileWatchApplicationAutoConfiguration {
     public ApplicationStartupFileWatchListener applicationStartupFileWatchListener
             (FileWatchApplicationStartupProperties properties) {
         return new ApplicationStartupFileWatchListener(properties);
+    }
+
+    @Bean
+    public FileWatchServiceCustomizer register(FileWatchApplicationStartupProperties properties) {
+        return fileWatchService -> {
+            for (FileWatchApplicationStartupProperties.StartupJarElement element : properties.getElements()) {
+                fileWatchService.registerWaitCreateConfiguration(element.getJarFileName(), element.getConfiguration());
+            }
+        };
     }
 }
