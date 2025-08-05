@@ -148,7 +148,8 @@ public class FileWatchService implements Runnable {
             WatchKey key;
             try { key = watchService.take(); }
             catch (InterruptedException ex) {
-                LOGGER.error("File watch service thread is already occupied.", ex);
+                LOGGER.info("File watch service interrupted, shutting down...", ex);
+                Thread.currentThread().interrupt(); // interrupt action.
                 break;
             }
             String path = watchKeyMap.get(key);
@@ -163,16 +164,26 @@ public class FileWatchService implements Runnable {
                 for (FileWatchListener listener : listeners) {
                     WatchEvent<Path> pathEvent = (WatchEvent<Path>) event;
                     if (listener.supports(pathEvent)) {
-                        listener.onWatchEvent(pathEvent);
+                        try {
+                            listener.onWatchEvent(pathEvent);
+                        }
+                        catch (Throwable ex) {
+                            LOGGER.error("Failed to handle watch event for path: {}, event type: {}",
+                                    pathEvent.context(), pathEvent.kind(), ex);
+                        }
                     }
                 }
             }
             boolean valid = key.reset();
             if (!valid) {
-                LOGGER.error("Watch key of {} could not be reset, because it is no longer valid.", path);
+                boolean warnEnabled = LOGGER.isWarnEnabled();
+                if (warnEnabled) {
+                    LOGGER.warn("Watch key cannot be reset, its corresponding {} is no longer valid, and " +
+                            "listening will be canceled.", path);
+                }
                 key.cancel();
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Monitoring of path {} has been cancelled.", path);
+                if (warnEnabled) {
+                    LOGGER.warn("Monitoring of path {} has been cancelled.", path);
                 }
             }
         }
