@@ -22,7 +22,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import top.osjf.filewatch.FileWatchService;
+import top.osjf.filewatch.FileWatchListener;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for file watch application startup.
@@ -30,7 +30,7 @@ import top.osjf.filewatch.FileWatchService;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
-@ConditionalOnClass(FileWatchService.class)
+@ConditionalOnClass(FileWatchListener.class)
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(FileWatchApplicationStartupProperties.class)
 public class FileWatchApplicationAutoConfiguration {
