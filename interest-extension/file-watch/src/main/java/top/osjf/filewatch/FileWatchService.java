@@ -20,6 +20,7 @@ package top.osjf.filewatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.Map;
@@ -51,7 +52,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @see java.nio.file.StandardWatchEventKinds
  */
 @SuppressWarnings("unchecked")
-public class FileWatchService implements Runnable {
+public class FileWatchService implements Runnable, Closeable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileWatchService.class);
     /**
@@ -136,6 +137,15 @@ public class FileWatchService implements Runnable {
         catch (IOException ex) {
             throw new FileWatchException("Failed to register WatchService", ex);
         }
+    }
+
+    /**
+     * Closes this watch service.
+     * @throws IOException if an I/O error occurs.
+     */
+    @Override
+    public void close() throws IOException {
+        watchService.close();
     }
 
     /**
