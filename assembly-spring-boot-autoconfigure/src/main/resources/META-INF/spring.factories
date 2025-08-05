@@ -2,7 +2,9 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   top.osjf.spring.autoconfigure.cron.CronTaskAutoConfiguration,\
   top.osjf.spring.autoconfigure.optimize.service_bean.ServiceBeanAutoConfiguration,\
   top.osjf.spring.autoconfigure.ssh.SshClientAutoConfiguration,\
-  top.osjf.spring.autoconfigure.idempotent.IdempotentAutoConfiguration
+  top.osjf.spring.autoconfigure.idempotent.IdempotentAutoConfiguration,\
+  top.osjf.spring.autoconfigure.filewatch.FileWatchAutoConfiguration,\
+  top.osjf.spring.autoconfigure.filewatch.application.startup.FileWatchApplicationAutoConfiguration
 
 org.springframework.context.ApplicationContextInitializer=\
   top.osjf.spring.autoconfigure.optimize.service_bean.EarlyAllowCustomBeanNameGeneratorInitializer

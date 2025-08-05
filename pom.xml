@@ -20,6 +20,7 @@
         <module>assembly-simplified-spring-optimize</module>
         <module>assembly-spring-boot-autoconfigure</module>
         <module>assembly-simplified-all</module>
+        <module>interest-extension</module>
     </modules>
 
 
