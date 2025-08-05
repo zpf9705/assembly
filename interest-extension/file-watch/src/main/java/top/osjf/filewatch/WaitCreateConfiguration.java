@@ -48,13 +48,13 @@ public class WaitCreateConfiguration {
     };
 
     /** Internal check interval value */
-    private long waitCreateInternalTimeout = 1;
+    private Long waitCreateInternalTimeout = 1L;
 
     /** Internal check interval unit */
     private TimeUnit waitCreateInternalTimeUnit = TimeUnit.SECONDS;
 
     /** Total wait timeout value */
-    private long waitCreateTimeout = 60;
+    private Long waitCreateTimeout = 60L;
 
     /** Total wait timeout unit */
     private TimeUnit waitCreateTimeUnit = TimeUnit.SECONDS;
@@ -75,11 +75,11 @@ public class WaitCreateConfiguration {
         this.waitCreateInternalTimeUnit = waitCreateInternalTimeUnit;
     }
 
-    public long getWaitCreateTimeout() {
+    public Long getWaitCreateTimeout() {
         return waitCreateTimeout;
     }
 
-    public void setWaitCreateTimeout(long waitCreateTimeout) {
+    public void setWaitCreateTimeout(Long waitCreateTimeout) {
         this.waitCreateTimeout = waitCreateTimeout;
     }
 
