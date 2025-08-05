@@ -17,7 +17,11 @@
 
 package top.osjf.spring.autoconfigure.filewatch.application.startup;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.util.Assert;
+import top.osjf.filewatch.WaitCreateConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,72 +34,191 @@ import java.util.concurrent.TimeUnit;
  * @since 3.0.1
  */
 @ConfigurationProperties(prefix = "file-watch.application.startup")
-public class FileWatchApplicationStartupProperties {
+public class FileWatchApplicationStartupProperties implements InitializingBean {
 
     /**
-     * The jar file name that the listener needs to listen to changes in.
+     * Enable global configuration for application monitoring.
      */
-    private String jarFileName = "application.jar";
+    private StartupJarGlobal global = new StartupJarGlobal();
 
     /**
-     * What changes occur to the file corresponding to {@link #jarFileName} that
-     * trigger the enumeration type of {@link #sortedStartupCommands}.
+     * Specify the jar name and apply multiple supports for unique configurations.
      */
-    private TriggerKind triggerKind = TriggerKind.ALL;
+    private List<StartupJarElement> elements = new ArrayList<>();
 
-    /**
-     * Specify the collection of shell commands to be executed in the order
-     * of starting when monitoring changes in jar files.
-     */
-    private List<String> sortedStartupCommands = new ArrayList<>();
-
-    /**
-     * Specify the timeout duration for execution.
-     */
-    private long timeout = 60;
-
-    /**
-     * Enumeration of timeout duration units for specified execution.
-     */
-    private TimeUnit unit = TimeUnit.SECONDS;
-
-    public String getJarFileName() {
-        return jarFileName;
+    public StartupJarGlobal getGlobal() {
+        return global;
     }
 
-    public void setJarFileName(String jarFileName) {
-        this.jarFileName = jarFileName;
+    public void setGlobal(StartupJarGlobal global) {
+        this.global = global;
     }
 
-    public TriggerKind getTriggerKind() {
-        return triggerKind;
+    public List<StartupJarElement> getElements() {
+        return elements;
     }
 
-    public void setTriggerKind(TriggerKind triggerKind) {
-        this.triggerKind = triggerKind;
+    public void setElements(List<StartupJarElement> elements) {
+        this.elements = elements;
     }
 
-    public List<String> getSortedStartupCommands() {
-        return sortedStartupCommands;
+    @Override
+    public void afterPropertiesSet() {
+        Assert.notEmpty(elements, "elements not be null");
     }
 
-    public void setSortedStartupCommands(List<String> sortedStartupCommands) {
-        this.sortedStartupCommands = sortedStartupCommands;
+    public static class StartupJarGlobal {
+
+        /**
+         * What changes occur to the file corresponding to {@link StartupJarElement#jarFileName} that
+         * trigger the enumeration type of {@link #sortedStartupCommands}.
+         */
+        private TriggerKind triggerKind = TriggerKind.ALL;
+
+        /**
+         * Specify the collection of shell commands to be executed in the order
+         * of starting when monitoring changes in jar files.
+         */
+        private List<String> sortedStartupCommands = new ArrayList<>();
+
+        /**
+         * Specify the timeout duration for execution.
+         */
+        private long timeout = 60;
+
+        /**
+         * Enumeration of timeout duration units for specified execution.
+         */
+        private TimeUnit unit = TimeUnit.SECONDS;
+
+        /**
+         * The file creation completion detection configuration.
+         */
+        @NestedConfigurationProperty
+        private WaitCreateConfiguration configuration = new WaitCreateConfiguration();
+
+        public TriggerKind getTriggerKind() {
+            return triggerKind;
+        }
+
+        public void setTriggerKind(TriggerKind triggerKind) {
+            this.triggerKind = triggerKind;
+        }
+
+        public List<String> getSortedStartupCommands() {
+            return sortedStartupCommands;
+        }
+
+        public void setSortedStartupCommands(List<String> sortedStartupCommands) {
+            this.sortedStartupCommands = sortedStartupCommands;
+        }
+
+        public long getTimeout() {
+            return timeout;
+        }
+
+        public void setTimeout(long timeout) {
+            this.timeout = timeout;
+        }
+
+        public TimeUnit getUnit() {
+            return unit;
+        }
+
+        public void setUnit(TimeUnit unit) {
+            this.unit = unit;
+        }
+
+        public WaitCreateConfiguration getConfiguration() {
+            return configuration;
+        }
+
+        public void setConfiguration(WaitCreateConfiguration configuration) {
+            this.configuration = configuration;
+        }
     }
 
-    public long getTimeout() {
-        return timeout;
-    }
+    public static class StartupJarElement {
 
-    public void setTimeout(long timeout) {
-        this.timeout = timeout;
-    }
+        /**
+         * The jar file name that the listener needs to listen to changes in.
+         */
+        private String jarFileName = "application.jar";
 
-    public TimeUnit getUnit() {
-        return unit;
-    }
+        /**
+         * What changes occur to the file corresponding to {@link StartupJarElement#jarFileName} that
+         * trigger the enumeration type of {@link #sortedStartupCommands}.
+         */
+        private TriggerKind triggerKind;
 
-    public void setUnit(TimeUnit unit) {
-        this.unit = unit;
+        /**
+         * Specify the collection of shell commands to be executed in the order
+         * of starting when monitoring changes in jar files.
+         */
+        private List<String> sortedStartupCommands;
+
+        /**
+         * Specify the timeout duration for execution.
+         */
+        private long timeout;
+
+        /**
+         * Enumeration of timeout duration units for specified execution.
+         */
+        private TimeUnit unit;
+
+        /**
+         * The file creation completion detection configuration.
+         */
+        @NestedConfigurationProperty
+        private WaitCreateConfiguration configuration;
+
+        public String getJarFileName() {
+            return jarFileName;
+        }
+
+        public void setJarFileName(String jarFileName) {
+            this.jarFileName = jarFileName;
+        }
+
+        public TriggerKind getTriggerKind() {
+            return triggerKind;
+        }
+
+        public void setTriggerKind(TriggerKind triggerKind) {
+            this.triggerKind = triggerKind;
+        }
+
+        public List<String> getSortedStartupCommands() {
+            return sortedStartupCommands;
+        }
+
+        public void setSortedStartupCommands(List<String> sortedStartupCommands) {
+            this.sortedStartupCommands = sortedStartupCommands;
+        }
+
+        public long getTimeout() {
+            return timeout;
+        }
+
+        public void setTimeout(long timeout) {
+            this.timeout = timeout;
+        }
+
+        public TimeUnit getUnit() {
+            return unit;
+        }
+
+        public void setUnit(TimeUnit unit) {
+            this.unit = unit;
+        }
+
+        public WaitCreateConfiguration getConfiguration() {
+            return configuration;
+        }
+
+        public void setConfiguration(WaitCreateConfiguration configuration) {
+            this.configuration = configuration;
+        }
     }
 }

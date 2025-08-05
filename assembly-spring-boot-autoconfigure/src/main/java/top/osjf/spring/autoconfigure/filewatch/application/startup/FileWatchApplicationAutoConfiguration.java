@@ -40,9 +40,6 @@ public class FileWatchApplicationAutoConfiguration {
     @Bean
     public ApplicationStartupFileWatchListener applicationStartupFileWatchListener
             (FileWatchApplicationStartupProperties properties) {
-        return new ApplicationStartupFileWatchListener(properties.getJarFileName(),
-                properties.getTriggerKind(),
-                properties.getSortedStartupCommands(),
-                properties.getTimeout(), properties.getUnit());
+        return new ApplicationStartupFileWatchListener(properties);
     }
 }
