@@ -33,6 +33,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
+ * @see FileWatchService#registerWaitCreateConfiguration(String, WaitCreateConfiguration)
  */
 public class WaitCreateConfiguration {
 
