@@ -31,7 +31,7 @@ public class FileWatchProperties {
     /**
      * Listen to the file path array.
      */
-    private String[] paths;
+    private String[] paths = { System.getProperty("user.dir") };
 
     public String[] getPaths() {
         return paths;
