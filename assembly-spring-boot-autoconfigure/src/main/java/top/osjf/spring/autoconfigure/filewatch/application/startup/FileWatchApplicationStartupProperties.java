@@ -21,6 +21,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * File-watch application startup properties.
@@ -48,6 +49,16 @@ public class FileWatchApplicationStartupProperties {
      */
     private List<String> sortedStartupCommands = new ArrayList<>();
 
+    /**
+     * Specify the timeout duration for execution.
+     */
+    private long timeout = 60;
+
+    /**
+     * Enumeration of timeout duration units for specified execution.
+     */
+    private TimeUnit unit = TimeUnit.SECONDS;
+
     public String getJarFileName() {
         return jarFileName;
     }
@@ -70,5 +81,21 @@ public class FileWatchApplicationStartupProperties {
 
     public void setSortedStartupCommands(List<String> sortedStartupCommands) {
         this.sortedStartupCommands = sortedStartupCommands;
+    }
+
+    public long getTimeout() {
+        return timeout;
+    }
+
+    public void setTimeout(long timeout) {
+        this.timeout = timeout;
+    }
+
+    public TimeUnit getUnit() {
+        return unit;
+    }
+
+    public void setUnit(TimeUnit unit) {
+        this.unit = unit;
     }
 }
