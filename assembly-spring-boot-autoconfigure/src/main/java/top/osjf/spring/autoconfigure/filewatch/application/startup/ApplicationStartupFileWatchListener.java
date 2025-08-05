@@ -29,8 +29,10 @@ import java.nio.file.Path;
 import java.nio.file.WatchEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Listener for monitoring JAR file changes and triggering application startup commands.
@@ -45,44 +47,20 @@ public class ApplicationStartupFileWatchListener implements FileWatchListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationStartupFileWatchListener.class);
 
-    /** Target JAR filename to monitor */
-    private final String jarFileName;
-
-    /** Event types that trigger command execution */
-    private final TriggerKind triggerKind;
-
-    /** Pre-wrapped shell commands for process execution */
-    private final List<String> sortedStartupCommands;
-
-    /** Command execution timeout */
-    private final long timeout;
-
-    /** Command execution timeout unit*/
-    private final TimeUnit unit;
+    private Map<String, FileWatchApplicationStartupProperties.StartupJarElement> startupJarElementMap;
 
     /**
      * Constructs a new {@code ApplicationStartupFileWatchListener}.
-     *
-     * @param jarFileName           the jar file name to watch.
-     * @param triggerKind           the trigger condition type.
-     * @param sortedStartupCommands the commands to execute.
-     * @param timeout               command execution timeout.
-     * @param unit                  timeout unit.
-     * @throws IllegalArgumentException if commands list is empty.
+     * @param properties the specify file-watch application startup properties.
      */
-    public ApplicationStartupFileWatchListener(String jarFileName,
-                                               TriggerKind triggerKind,
-                                               List<String> sortedStartupCommands,
-                                               long timeout,
-                                               TimeUnit unit) {
-        if (CollectionUtils.isEmpty(sortedStartupCommands)) {
-            throw new IllegalArgumentException("Startup commands cannot be empty");
-        }
-        this.jarFileName = jarFileName;
-        this.triggerKind = triggerKind;
-        this.sortedStartupCommands = wrapWithBashShell(sortedStartupCommands);
-        this.timeout = timeout;
-        this.unit = unit;
+    public ApplicationStartupFileWatchListener(FileWatchApplicationStartupProperties properties) {
+        initStartupJarElementMap(properties);
+    }
+
+    void initStartupJarElementMap(FileWatchApplicationStartupProperties properties) {
+        startupJarElementMap = properties.getElements().stream()
+                .collect(Collectors.toConcurrentMap(FileWatchApplicationStartupProperties.StartupJarElement::getJarFileName,
+                        Function.identity()));
     }
 
     /**
@@ -91,8 +69,12 @@ public class ApplicationStartupFileWatchListener implements FileWatchListener {
      */
     @Override
     public boolean supports(WatchEvent<Path> event) {
-        return (triggerKind == TriggerKind.ALL || Objects.equals(triggerKind.name(), event.kind().name()))
-                && Objects.equals(event.context().toString(), jarFileName);
+        String jarFileName = event.context().toString();
+        FileWatchApplicationStartupProperties.StartupJarElement jarElement
+                = startupJarElementMap.getOrDefault(jarFileName, null);
+        return jarElement != null
+                && (jarElement.getTriggerKind() == TriggerKind.ALL
+                || Objects.equals(jarElement.getTriggerKind().name(), event.kind().name()));
     }
 
     /**
@@ -101,10 +83,14 @@ public class ApplicationStartupFileWatchListener implements FileWatchListener {
      */
     @Override
     public void onWatchEvent(WatchEvent<Path> event) {
+        FileWatchApplicationStartupProperties.StartupJarElement
+                jarElement = startupJarElementMap.get(event.context().toString());
+        String jarFileName = jarElement.getJarFileName();
+        List<String> sortedStartupCommands = wrapWithBashShell(jarElement.getSortedStartupCommands());
         try {
             Process process = new ProcessBuilder(sortedStartupCommands).start();
             try {
-                if (process.waitFor(timeout, unit)) {
+                if (process.waitFor(jarElement.getTimeout(), jarElement.getUnit())) {
                     // Read error stream before checking exit value
                     String errorOutput = StreamUtils.copyToString(process.getErrorStream(), StandardCharsets.UTF_8);
                     if (process.exitValue() == 0) {
