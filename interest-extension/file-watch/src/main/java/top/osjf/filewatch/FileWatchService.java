@@ -26,6 +26,7 @@ import java.nio.file.*;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Supplier;
 
 /**
  /**
@@ -52,7 +53,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @see java.nio.file.StandardWatchEventKinds
  */
 @SuppressWarnings("unchecked")
-public class FileWatchService implements Runnable, Closeable {
+public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileWatchService.class);
     /**
@@ -140,15 +141,6 @@ public class FileWatchService implements Runnable, Closeable {
     }
 
     /**
-     * Closes this watch service.
-     * @throws IOException if an I/O error occurs.
-     */
-    @Override
-    public void close() throws IOException {
-        watchService.close();
-    }
-
-    /**
      * Main monitoring loop that processes file system events.
      * <p>This method runs indefinitely until the thread is interrupted.
      */
@@ -164,6 +156,7 @@ public class FileWatchService implements Runnable, Closeable {
             }
             String path = watchKeyMap.get(key);
             for (WatchEvent<?> event : key.pollEvents()) {
+                LOGGER.info("Watch event for path: {}, event type: {}", event.context(), event.kind());
                 if (event.kind() == StandardWatchEventKinds.OVERFLOW) {
                     if (LOGGER.isDebugEnabled()) {
                         LOGGER.debug("A special event to indicate that events may have been lost or " +
@@ -197,5 +190,19 @@ public class FileWatchService implements Runnable, Closeable {
                 }
             }
         }
+    }
+
+    @Override
+    public Thread get() {
+        return new Thread(this);
+    }
+
+    /**
+     * Closes this watch service.
+     * @throws IOException if an I/O error occurs.
+     */
+    @Override
+    public void close() throws IOException {
+        watchService.close();
     }
 }
