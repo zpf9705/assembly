@@ -21,8 +21,11 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+import top.osjf.filewatch.TriggerKind;
 import top.osjf.filewatch.WaitCreateConfiguration;
+import top.osjf.spring.autoconfigure.filewatch.FileWatchProperties;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,18 +69,28 @@ public class FileWatchApplicationStartupProperties implements InitializingBean {
     @Override
     public void afterPropertiesSet() {
         Assert.notEmpty(elements, "elements not be null");
-        Assert.isTrue(elements.stream().allMatch(e -> StringUtils.hasText(e.jarFileName)), "jarFileName not be blank");
         elements.forEach(e-> e.nonsDefaultByGlobal(global));
-        Assert.isTrue(elements.stream().noneMatch(e -> e.sortedStartupCommands.isEmpty()), "sortedStartupCommands not be empty");
+        Assert.isTrue(elements.stream().allMatch(StartupJarElement::checkSelf), "StartupJarElement config error");
     }
 
     public static class StartupJarGlobal {
 
         /**
+         * The address of the bound listening service must be configured in
+         * {@link FileWatchProperties#getFileWatches()}, otherwise this {@link StartupJarElement}
+         * configuration will not take effect.
+         */
+        private String bindPath;
+
+        /**
          * What changes occur to the file corresponding to {@link StartupJarElement#jarFileName} that
          * trigger the enumeration type of {@link #sortedStartupCommands}.
+         * <p>The range of this configuration selection {@link TriggerKind} must be bound within the
+         * {@link FileWatchProperties#getFileWatches()} configuration of the listening address {@link #bindPath},
+         * otherwise it will be considered an invalid configuration.
          */
-        private TriggerKind triggerKind = TriggerKind.ALL;
+        private TriggerKind[] triggerKinds
+                = {TriggerKind.ENTRY_CREATE, TriggerKind.ENTRY_MODIFY, TriggerKind.ENTRY_DELETE};
 
         /**
          * Specify the collection of shell commands to be executed in the order
@@ -101,12 +114,20 @@ public class FileWatchApplicationStartupProperties implements InitializingBean {
         @NestedConfigurationProperty
         private WaitCreateConfiguration configuration = new WaitCreateConfiguration();
 
-        public TriggerKind getTriggerKind() {
-            return triggerKind;
+        public String getBindPath() {
+            return bindPath;
         }
 
-        public void setTriggerKind(TriggerKind triggerKind) {
-            this.triggerKind = triggerKind;
+        public void setBindPath(String bindPath) {
+            this.bindPath = bindPath;
+        }
+
+        public TriggerKind[] getTriggerKinds() {
+            return triggerKinds;
+        }
+
+        public void setTriggerKinds(TriggerKind[] triggerKinds) {
+            this.triggerKinds = triggerKinds;
         }
 
         public List<String> getSortedStartupCommands() {
@@ -145,15 +166,25 @@ public class FileWatchApplicationStartupProperties implements InitializingBean {
     public static class StartupJarElement {
 
         /**
+         * The address of the bound listening service must be configured in
+         * {@link FileWatchProperties#getFileWatches()}, otherwise this {@link StartupJarElement}
+         * configuration will not take effect.
+         */
+        private String bindPath;
+
+        /**
          * The jar file name that the listener needs to listen to changes in.
          */
-        private String jarFileName = "application.jar";
+        private String jarFileName;
 
         /**
          * What changes occur to the file corresponding to {@link StartupJarElement#jarFileName} that
          * trigger the enumeration type of {@link #sortedStartupCommands}.
+         * <p>The range of this configuration selection {@link TriggerKind} must be bound within the
+         * {@link FileWatchProperties#getFileWatches()} configuration of the listening address {@link #bindPath},
+         * otherwise it will be considered an invalid configuration.
          */
-        private TriggerKind triggerKind;
+        private TriggerKind[] triggerKinds;
 
         /**
          * Specify the collection of shell commands to be executed in the order
@@ -177,6 +208,14 @@ public class FileWatchApplicationStartupProperties implements InitializingBean {
         @NestedConfigurationProperty
         private WaitCreateConfiguration configuration;
 
+        public String getBindPath() {
+            return bindPath;
+        }
+
+        public void setBindPath(String bindPath) {
+            this.bindPath = bindPath;
+        }
+
         public String getJarFileName() {
             return jarFileName;
         }
@@ -185,12 +224,12 @@ public class FileWatchApplicationStartupProperties implements InitializingBean {
             this.jarFileName = jarFileName;
         }
 
-        public TriggerKind getTriggerKind() {
-            return triggerKind;
+        public TriggerKind[] getTriggerKinds() {
+            return triggerKinds;
         }
 
-        public void setTriggerKind(TriggerKind triggerKind) {
-            this.triggerKind = triggerKind;
+        public void setTriggerKinds(TriggerKind[] triggerKinds) {
+            this.triggerKinds = triggerKinds;
         }
 
         public List<String> getSortedStartupCommands() {
@@ -225,13 +264,17 @@ public class FileWatchApplicationStartupProperties implements InitializingBean {
             this.configuration = configuration;
         }
 
-        public StartupJarElement nonsDefaultByGlobal(StartupJarGlobal global) {
-            if (triggerKind == null) triggerKind = global.triggerKind;
+        public void nonsDefaultByGlobal(StartupJarGlobal global) {
+            if (bindPath == null) bindPath = global.bindPath;
+            if (triggerKinds == null) triggerKinds = global.triggerKinds;
             if (sortedStartupCommands == null) sortedStartupCommands = global.sortedStartupCommands;
             if (timeout == null) timeout = global.timeout;
             if (unit == null) unit = global.unit;
             if (configuration == null) configuration = global.configuration;
-            return this;
+        }
+
+        public boolean checkSelf() {
+            return StringUtils.hasText(jarFileName) && !CollectionUtils.isEmpty(sortedStartupCommands);
         }
     }
 }
