@@ -23,9 +23,13 @@ import org.slf4j.LoggerFactory;
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 
 /**
@@ -56,29 +60,28 @@ import java.util.function.Supplier;
 public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileWatchService.class);
-    /**
-     * The event kinds to register for monitoring.
-     */
-    private static final WatchEvent.Kind<?>[] KINDS = {StandardWatchEventKinds.ENTRY_CREATE,
-            StandardWatchEventKinds.ENTRY_DELETE,
-            StandardWatchEventKinds.ENTRY_MODIFY,
-            StandardWatchEventKinds.OVERFLOW};
-    /**
-     * The underlying watch service instance.
-     */
+
+    /** This is the mapping relationship from Path to {@code FileWatchService}. */
+    private final Map<Path, FileWatchService> pathToServiceMap = new ConcurrentHashMap<>();
+
+    /** The underlying watch service instance.*/
     private WatchService watchService;
 
-    /**
-     * A mapping between watch keys and their associated paths.
-     */
-    private final Map<WatchKey, String> watchKeyMap = new ConcurrentHashMap<>();
+    /** The lock of register path */
+    private final Lock lock = new ReentrantLock();
 
-    /**
-     * Thread-safe list of registered file watch listeners.
-     */
-    private final CopyOnWriteArrayList<FileWatchListener> listeners = new CopyOnWriteArrayList<>();
+    /** The list of registered listening paths. */
+    private final List<Path> registeredPaths = new ArrayList<>();
 
-    private final Map<String, WaitCreateConfiguration> waitCreateConfigurationMap = new ConcurrentHashMap<>();
+    /** Mapping between watch keys and their associated registered paths. */
+    private final Map<WatchKey, Path> watchKeyregisteredPathMap = new HashMap<>();
+
+    /** Management instance of listener {@link FileWatchListener}.*/
+    private FileWatchListeners fileWatchListeners;
+
+    /** The designated file created under the path is waiting for the completion of the
+     * configuration management instance. */
+    private WaitCreateConfigurations waitCreateConfigurations;
 
     /**
      * Constructs an empty {@link FileWatchService} to init a {@link WatchService}.
@@ -95,6 +98,79 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
         catch (IOException ex) {
             throw new FileWatchException("Failed to create java.nio.file.WatchService", ex);
         }
+        fileWatchListeners = new FileWatchListeners();
+        waitCreateConfigurations = new WaitCreateConfigurations();
+    }
+
+    /**
+     * Private Constructs a {@link FileWatchService} with given {@link FileWatchListeners}
+     * and {@link WaitCreateConfigurations}.
+     * @param fileWatchListeners        the given {@link FileWatchListeners} instance.
+     * @param waitCreateConfigurations  the given {@link WaitCreateConfigurations} instance.
+     */
+    private FileWatchService(FileWatchListeners fileWatchListeners,
+                             WaitCreateConfigurations waitCreateConfigurations) {
+        this.fileWatchListeners = fileWatchListeners;
+        this.waitCreateConfigurations = waitCreateConfigurations;
+    }
+
+    /**
+     * Registers a file path with the WatchService to monitor specified file system events.
+     * <p>
+     * This method registers the given path with the WatchService, enabling notification
+     * when any of the specified event types occur in the monitored directory.
+     *
+     * @param path                The file system path to monitor (absolute or relative path).
+     * @param peculiarWatchThread Whether to create a new independent {@link FileWatchService}.
+     * @param kinds               The array of event types to watch for (CREATE, MODIFY, DELETE, etc.).
+     * @throws NullPointerException if `path` or `kinds` is `null`.
+     * @throws FileWatchException in the following cases:
+     *                         - If the path is invalid (`InvalidPathException`)
+     *                         - If registration fails (`IOException`)
+     *
+     * <p>Example usage:
+     * {@code
+     * registerWatch("/var/log", TriggerKind.CREATE, TriggerKind.MODIFY);
+     * }
+     *
+     * @see java.nio.file.WatchService
+     * @see java.nio.file.StandardWatchEventKinds
+     */
+    public void registerWatch(String path, boolean peculiarWatchThread, TriggerKind... kinds) {
+        if (path == null || kinds == null) {
+            throw new NullPointerException("path or triggerKind");
+        }
+        Path registeredPath = Paths.get(path);
+        if (peculiarWatchThread) {
+            pathToServiceMap.compute(registeredPath, (key, fileWatchService) -> {
+                if (fileWatchService == null) {
+                    fileWatchService = new FileWatchService(fileWatchListeners, waitCreateConfigurations);
+                }
+                fileWatchService.registerWatch(path, false, kinds);
+                return fileWatchService;
+            });
+        }
+        else {
+            lock.lock();
+            try {
+                if (registeredPaths.contains(registeredPath)) {
+                    throw new IllegalArgumentException("Duplicate registration " + registeredPath);
+                }
+                WatchEvent.Kind<?>[] events = new WatchEvent.Kind[kinds.length];
+                for (int i = 0; i < kinds.length; i++) events[i] = kinds[i].kind;
+                registeredPaths.add(registeredPath);
+                watchKeyregisteredPathMap.put(registeredPath.register(watchService, events), registeredPath);
+            }
+            catch (InvalidPathException ex) {
+                throw new FileWatchException("Invalid path " + path, ex);
+            }
+            catch (IOException ex) {
+                throw new FileWatchException("Failed to register WatchService", ex);
+            }
+            finally {
+                lock.unlock();
+            }
+        }
     }
 
     /**
@@ -103,57 +179,19 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
      * @param listener the specific {@link FileWatchService} to register.
      */
     public void registerListener(FileWatchListener listener) {
-        listeners.addIfAbsent(listener);
-    }
-
-    /**
-     * Register file change monitoring for multiple specified paths.
-     * @param paths the specific paths to register.
-     */
-    public void registerWatches(String... paths) {
-        for (String path : paths) {
-            registerWatch(path);
-        }
-    }
-
-    /**
-     * To register a file listener for {@link Path} with a specified path and detect
-     * callback awareness when the file path changes, it is necessary to ensure that
-     * it is a valid and traceable correct path.
-     * @param path the specific path to register.
-     * @throws NullPointerException If the path input is {@literal null}.
-     * @throws FileWatchException   If the input path is invalid or the registration
-     *                              listening fails.
-     */
-    public void registerWatch(String path) {
-        if (path == null) {
-            throw new NullPointerException("path");
-        }
-        Path obtainPath;
-        try {
-            obtainPath = Paths.get(path);
-            watchKeyMap.put(obtainPath.register(watchService, KINDS), path);
-        }
-        catch (InvalidPathException ex) {
-            throw new FileWatchException("Invalid path " + path, ex);
-        }
-        catch (IOException ex) {
-            throw new FileWatchException("Failed to register WatchService", ex);
-        }
+        fileWatchListeners.registerListener(listener);
     }
 
     /**
      * Register a specified file creation notification {@link StandardWatchEventKinds#ENTRY_CREATE}
      * and configure the waiting time for completion of creation {@code WaitCreateConfiguration}.
-     * @param pathContext   the specific pathContext to register.
+     * @param parent        the parent directory path to register.
+     * @param pathContext   the context path for watching to register.
      * @param configuration the specific waiting time for completion of creation {@code WaitCreateConfiguration}
      *                      to register.
      */
-    public void registerWaitCreateConfiguration(String pathContext, WaitCreateConfiguration configuration) {
-        if (pathContext == null || configuration == null) {
-            throw new NullPointerException("pathContext or configuration");
-        }
-        waitCreateConfigurationMap.putIfAbsent(pathContext, configuration);
+    public void registerWaitCreateConfiguration(Path parent, Path pathContext, WaitCreateConfiguration configuration) {
+        waitCreateConfigurations.registerWaitCreateConfiguration(parent, pathContext, configuration);
     }
 
     /**
@@ -170,7 +208,7 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
                 Thread.currentThread().interrupt(); // interrupt action.
                 break;
             }
-            String path = watchKeyMap.get(key);
+            Path registeredPath = watchKeyregisteredPathMap.get(key);
             for (WatchEvent<?> event : key.pollEvents()) {
                 WatchEvent<Path> pathEvent = (WatchEvent<Path>) event;
                 Path pathContext = pathEvent.context();
@@ -183,17 +221,20 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
                     }
                     continue;
                 }
-                for (FileWatchListener listener : listeners) {
-                    if (listener.supports(pathEvent)) {
-                        if (!waitCreateConfigurationMap.getOrDefault(pathContext.toString(),
-                                WaitCreateConfiguration.INSTANCE).waitComplete(Paths.get(path, pathContext.toString()), kind)) {
-                            if (LOGGER.isDebugEnabled()) {
-                                LOGGER.debug("Waiting for the completion of context {} creation timeout or " +
-                                        "IO exception, please check if the corresponding path file exists or " +
-                                        "is too large (the latter, please readjust the timeout).", pathContext);
-                            }
-                            continue;
+                // wait file complete ...
+                if (waitCreateConfigurations.hasWaitCreateConfiguration(registeredPath, pathContext)) {
+                    if (!waitCreateConfigurations.getWaitCreateConfiguration(registeredPath, pathContext)
+                            .waitComplete(registeredPath.resolve(pathContext), kind)) {
+                        if (LOGGER.isDebugEnabled()) {
+                            LOGGER.debug("Waiting for the completion of context {} creation timeout or " +
+                                    "IO exception, please check if the corresponding path file exists or " +
+                                    "is too large (the latter, please readjust the timeout).", pathContext);
                         }
+                        continue;
+                    }
+                }
+                for (FileWatchListener listener : fileWatchListeners.getListeners()) {
+                    if (listener.supports(pathEvent)) {
                         try {
                             listener.onWatchEvent(pathEvent);
                         }
@@ -212,11 +253,11 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
                 boolean debugEnabled = LOGGER.isDebugEnabled();
                 if (debugEnabled) {
                     LOGGER.warn("Watch key cannot be reset, its corresponding {} is no longer valid, and " +
-                            "listening will be canceled.", path);
+                            "listening will be canceled.", registeredPath);
                 }
                 key.cancel();
                 if (debugEnabled) {
-                    LOGGER.warn("Monitoring of path {} has been cancelled.", path);
+                    LOGGER.warn("Monitoring of path {} has been cancelled.", registeredPath);
                 }
             }
         }
@@ -224,7 +265,7 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
 
     @Override
     public Thread get() {
-        return new Thread(this);
+        return new Thread(this,"File " + registeredPaths + " watch-thread");
     }
 
     /**
@@ -234,5 +275,8 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
     @Override
     public void close() throws IOException {
         watchService.close();
+        for (FileWatchService service : pathToServiceMap.values()) {
+            service.close();
+        }
     }
 }
