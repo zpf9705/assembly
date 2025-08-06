@@ -59,7 +59,7 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
     private static final Logger LOGGER = LoggerFactory.getLogger(FileWatchService.class);
 
     /** This is the mapping relationship from Path to {@code FileWatchService}. */
-    private final Map<Path, FileWatchService> pathToServiceMap = new ConcurrentHashMap<>();
+    private Map<Path, FileWatchService> pathToServiceMap;
 
     /** The underlying watch service instance.*/
     private WatchService watchService;
@@ -95,6 +95,7 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
         catch (IOException ex) {
             throw new FileWatchException("Failed to create java.nio.file.WatchService", ex);
         }
+        pathToServiceMap = new ConcurrentHashMap<>();
         fileWatchListeners = new FileWatchListeners();
         waitCreateConfigurations = new WaitCreateConfigurations();
     }
@@ -275,8 +276,10 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
     @Override
     public void close() throws IOException {
         watchService.close();
-        for (FileWatchService service : pathToServiceMap.values()) {
-            service.close();
+        if (pathToServiceMap != null) {
+            for (FileWatchService service : pathToServiceMap.values()) {
+                service.close();
+            }
         }
     }
 }
