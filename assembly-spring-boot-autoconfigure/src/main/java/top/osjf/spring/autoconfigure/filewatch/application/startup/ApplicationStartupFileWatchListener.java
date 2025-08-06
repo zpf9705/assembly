@@ -49,7 +49,7 @@ public class ApplicationStartupFileWatchListener implements FileWatchListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationStartupFileWatchListener.class);
 
-    private Map<String, Map<String, FileWatchApplicationStartupProperties.StartupJarElement>> startupJarElementMap;
+    private Map<Path, Map<Path, FileWatchApplicationStartupProperties.StartupJarElement>> startupJarElementMap;
 
     /**
      * Constructs a new {@code ApplicationStartupFileWatchListener}.
@@ -61,8 +61,8 @@ public class ApplicationStartupFileWatchListener implements FileWatchListener {
 
     void initStartupJarElementMap(FileWatchApplicationStartupProperties properties) {
         startupJarElementMap = properties.getElements().stream()
-                .collect(Collectors.groupingByConcurrent(FileWatchApplicationStartupProperties.StartupJarElement::getBindPath,
-                        Collectors.toMap(FileWatchApplicationStartupProperties.StartupJarElement::getJarFileName,
+                .collect(Collectors.groupingByConcurrent(startupJarElement -> Paths.get(startupJarElement.getBindPath()),
+                        Collectors.toMap(startupJarElement -> Paths.get(startupJarElement.getJarFileName()),
                                 Function.identity())));
     }
 
@@ -76,13 +76,13 @@ public class ApplicationStartupFileWatchListener implements FileWatchListener {
             return false;
         }
         Path parent = ((AmapleWatchEvent) event).getParent();
-        String jarFileName = event.context().toString();
+        Path jarFilePath = event.context();
 
         // First, find the main listening address, and then configure it according to the jar file.
-        Map<String, FileWatchApplicationStartupProperties.StartupJarElement> jarGroup =
-                startupJarElementMap.get(parent.toString());
+        Map<Path, FileWatchApplicationStartupProperties.StartupJarElement> jarGroup =
+                startupJarElementMap.get(parent);
         FileWatchApplicationStartupProperties.StartupJarElement jarElement;
-        if (jarGroup == null || (jarElement = jarGroup.get(jarFileName)) == null) {
+        if (jarGroup == null || (jarElement = jarGroup.get(jarFilePath)) == null) {
             return false;
         }
 
