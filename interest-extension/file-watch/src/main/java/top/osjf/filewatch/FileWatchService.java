@@ -23,10 +23,7 @@ import org.slf4j.LoggerFactory;
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -234,7 +231,9 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
                     }
                 }
                 for (FileWatchListener listener : fileWatchListeners.getListeners()) {
-                    if (listener.supports(pathEvent)) {
+                    boolean isParentPath = Optional.ofNullable(listener.getPath())
+                            .map(path -> path.equals(registeredPath)).orElse(true);
+                    if (isParentPath && listener.supports(pathEvent)) {
                         try {
                             listener.onWatchEvent(pathEvent);
                         }
