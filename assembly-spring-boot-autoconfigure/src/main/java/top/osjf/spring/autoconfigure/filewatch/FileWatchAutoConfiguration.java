@@ -45,7 +45,10 @@ public class FileWatchAutoConfiguration {
                                              ObjectProvider<FileWatchListener> listenerProvider,
                                              ObjectProvider<FileWatchServiceCustomizer> customizerProvider) {
         FileWatchService fileWatchService = new FileWatchService();
-        fileWatchService.registerWatches(fileWatchProperties.getPaths());
+        for (FileWatchProperties.FileWatch fileWatch : fileWatchProperties.getFileWatches()) {
+            fileWatchService.registerWatch(fileWatch.getPath(), fileWatch.isPeculiarWatchThread(),
+                    fileWatch.getTriggerKinds());
+        }
         listenerProvider.orderedStream().forEach(fileWatchService::registerListener);
         customizerProvider.orderedStream().forEach(c -> c.customize(fileWatchService));
         return fileWatchService;

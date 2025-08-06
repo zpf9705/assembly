@@ -18,6 +18,7 @@
 package top.osjf.spring.autoconfigure.filewatch;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import top.osjf.filewatch.TriggerKind;
 
 import java.util.List;
 
@@ -69,6 +70,11 @@ public class FileWatchProperties {
          */
         private boolean peculiarWatchThread = false;
 
+        /**
+         * This listening service supports a variable type enumeration array.
+         */
+        private TriggerKind[] triggerKinds;
+
         public String getPath() {
             return path;
         }
@@ -83,6 +89,14 @@ public class FileWatchProperties {
 
         public void setPeculiarWatchThread(boolean peculiarWatchThread) {
             this.peculiarWatchThread = peculiarWatchThread;
+        }
+
+        public TriggerKind[] getTriggerKinds() {
+            return triggerKinds;
+        }
+
+        public void setTriggerKinds(TriggerKind[] triggerKinds) {
+            this.triggerKinds = triggerKinds;
         }
     }
 }
