@@ -26,6 +26,8 @@ import top.osjf.filewatch.FileWatchListener;
 import top.osjf.spring.autoconfigure.filewatch.EnableFileWatch;
 import top.osjf.spring.autoconfigure.filewatch.FileWatchServiceCustomizer;
 
+import java.nio.file.Paths;
+
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for file watch application startup.
  *
@@ -49,7 +51,8 @@ public class FileWatchApplicationAutoConfiguration {
             (FileWatchApplicationStartupProperties properties) {
         return fileWatchService -> {
             for (FileWatchApplicationStartupProperties.StartupJarElement element : properties.getElements()) {
-                fileWatchService.registerWaitCreateConfiguration(element.getJarFileName(), element.getConfiguration());
+                fileWatchService.registerWaitCreateConfiguration(Paths.get(element.getBindPath()),
+                        Paths.get(element.getJarFileName()), element.getConfiguration());
             }
         };
     }
