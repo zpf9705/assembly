@@ -73,7 +73,8 @@ public class FileWatchProperties {
         /**
          * This listening service supports a variable type enumeration array.
          */
-        private TriggerKind[] triggerKinds;
+        private TriggerKind[] triggerKinds
+                = {TriggerKind.ENTRY_CREATE, TriggerKind.ENTRY_MODIFY, TriggerKind.ENTRY_DELETE};
 
         public String getPath() {
             return path;
