@@ -15,14 +15,20 @@
  */
 
 
-package top.osjf.spring.autoconfigure.filewatch.application.startup;
+package top.osjf.filewatch;
 
+import java.nio.file.Path;
+import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 
 /**
  * The trigger of the enumeration class specifies the change type value
  * of the application enable command.
+ *
+ * <p>Each {@link TriggerKind} is mapped to a constant value of each
+ * {@link java.nio.file.WatchEvent.Kind}, and then converted to each
+ * other. Here, suitability represents selection.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
@@ -35,8 +41,10 @@ public enum TriggerKind {
      * is queued when it is observed that an entry is created in the directory
      * or renamed into the directory. The event {@link WatchEvent#count count}
      * for this event is always {@code 1}.
+     *
+     * @see java.nio.file.StandardWatchEventKinds#ENTRY_CREATE
      */
-    ENTRY_CREATE,
+    ENTRY_CREATE(StandardWatchEventKinds.ENTRY_CREATE),
 
     /**
      * Directory entry modified.
@@ -45,8 +53,10 @@ public enum TriggerKind {
      * is queued when it is observed that an entry in the directory has been
      * modified. The event {@link WatchEvent#count count} for this event is
      * {@code 1} or greater.
+     *
+     * @see java.nio.file.StandardWatchEventKinds#ENTRY_MODIFY
      */
-    ENTRY_MODIFY,
+    ENTRY_MODIFY(StandardWatchEventKinds.ENTRY_MODIFY),
 
     /**
      * Directory entry deleted.
@@ -55,11 +65,24 @@ public enum TriggerKind {
      * is queued when it is observed that an entry is deleted or renamed out of
      * the directory. The event {@link WatchEvent#count count} for this event
      * is always {@code 1}.
+     *
+     * @see java.nio.file.StandardWatchEventKinds#ENTRY_DELETE
      */
-    ENTRY_DELETE,
+    ENTRY_DELETE(StandardWatchEventKinds.ENTRY_DELETE);
 
     /**
-     * Support all types of matching mentioned above.
+     * @see java.nio.file.WatchEvent.Kind
      */
-    ALL
+    final WatchEvent.Kind<Path> kind;
+
+    TriggerKind(WatchEvent.Kind<Path> kind) {
+        this.kind = kind;
+    }
+
+    /**
+     * @return a {@link java.nio.file.WatchEvent.Kind} map to {@link TriggerKind}.
+     */
+    public WatchEvent.Kind<Path> getKind() {
+        return kind;
+    }
 }
