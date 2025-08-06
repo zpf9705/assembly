@@ -17,9 +17,13 @@
 
 package top.osjf.spring.autoconfigure.filewatch;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 import top.osjf.filewatch.TriggerKind;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,7 +33,7 @@ import java.util.List;
  * @since 3.0.1
  */
 @ConfigurationProperties(prefix = "file-watch")
-public class FileWatchProperties {
+public class FileWatchProperties implements InitializingBean {
 
     /**
      * Enable tag configuration for dynamic file listening.
@@ -39,7 +43,7 @@ public class FileWatchProperties {
     /**
      * A list of path information for registering file listening services is required.
      */
-    private List<FileWatch> fileWatches;
+    private List<FileWatch> fileWatches = new ArrayList<>();
 
     public boolean isEnable() {
         return enable;
@@ -57,12 +61,20 @@ public class FileWatchProperties {
         this.fileWatches = fileWatches;
     }
 
+    @Override
+    public void afterPropertiesSet() {
+        if (enable) {
+            Assert.notEmpty(fileWatches, "fileWatches not empty");
+            Assert.isTrue(fileWatches.stream().allMatch(f -> StringUtils.hasText(f.path)), "path not be null");
+        }
+    }
+
     public static class FileWatch {
 
         /**
          * Listen to the file path array.
          */
-        private String path = System.getProperty("user.dir");
+        private String path;
 
         /**
          * This Boolean tag indicates whether there is an independent listener thread,
