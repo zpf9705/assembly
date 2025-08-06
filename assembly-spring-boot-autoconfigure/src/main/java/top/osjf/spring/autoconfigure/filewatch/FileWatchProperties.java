@@ -19,6 +19,8 @@ package top.osjf.spring.autoconfigure.filewatch;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.List;
+
 /**
  * File-watch properties.
  *
@@ -34,9 +36,9 @@ public class FileWatchProperties {
     private boolean enable = true;
 
     /**
-     * Listen to the file path array.
+     * A list of path information for registering file listening services is required.
      */
-    private String[] paths = { System.getProperty("user.dir") };
+    private List<FileWatch> fileWatches;
 
     public boolean isEnable() {
         return enable;
@@ -46,11 +48,41 @@ public class FileWatchProperties {
         this.enable = enable;
     }
 
-    public String[] getPaths() {
-        return paths;
+    public List<FileWatch> getFileWatches() {
+        return fileWatches;
     }
 
-    public void setPaths(String[] paths) {
-        this.paths = paths;
+    public void setFileWatches(List<FileWatch> fileWatches) {
+        this.fileWatches = fileWatches;
+    }
+
+    public static class FileWatch {
+
+        /**
+         * Listen to the file path array.
+         */
+        private String path = System.getProperty("user.dir");
+
+        /**
+         * This Boolean tag indicates whether there is an independent listener thread,
+         * which is not independently owned by default.
+         */
+        private boolean peculiarWatchThread = false;
+
+        public String getPath() {
+            return path;
+        }
+
+        public void setPath(String path) {
+            this.path = path;
+        }
+
+        public boolean isPeculiarWatchThread() {
+            return peculiarWatchThread;
+        }
+
+        public void setPeculiarWatchThread(boolean peculiarWatchThread) {
+            this.peculiarWatchThread = peculiarWatchThread;
+        }
     }
 }
