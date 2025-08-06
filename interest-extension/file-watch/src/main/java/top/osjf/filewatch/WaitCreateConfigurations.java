@@ -76,6 +76,30 @@ public final class WaitCreateConfigurations {
     }
 
     /**
+     * @param parent      the parent directory path.
+     * @param pathContext the context path for watching.
+     * @return the configuration if found, {@literal null} otherwise.
+     * @throws NullPointerException if any parameter is {@literal null}.
+     */
+    public boolean hasWaitCreateConfiguration(Path parent, Path pathContext) {
+        if (parent == null || pathContext == null) {
+            throw new NullPointerException("parent or pathContext");
+        }
+        final Lock readLock = lock.readLock();
+        readLock.lock();
+        try {
+            Map<Path, WaitCreateConfiguration> map = pathContextWaitCreateConfigurationMap.get(parent);
+            if (map != null) {
+                return map.containsKey(pathContext);
+            }
+            return false;
+        }
+        finally {
+            readLock.unlock();
+        }
+    }
+
+    /**
      * Retrieves wait-create configuration by parent path and context.
      * @param parent      the parent directory path.
      * @param pathContext the context path for watching.
