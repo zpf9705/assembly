@@ -29,6 +29,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
+ * @see FileWatchService#registerWaitCreateConfiguration(String, String, WaitCreateConfiguration)
  */
 public final class WaitCreateConfigurations {
 
