@@ -21,23 +21,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StreamUtils;
+import top.osjf.filewatch.AmapleWatchEvent;
 import top.osjf.filewatch.FileWatchListener;
+import top.osjf.filewatch.TriggerKind;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
  * Listener for monitoring JAR file changes and triggering application startup commands.
  *
- * <p>When the target JAR file is modified/created/deleted (configurable via {@link TriggerKind}),
+ * <p>When the target JAR file is modified/created/deleted (configurable via {@link top.osjf.filewatch.TriggerKind}),
  * this listener executes predefined shell commands to restart the application.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
@@ -47,7 +49,7 @@ public class ApplicationStartupFileWatchListener implements FileWatchListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationStartupFileWatchListener.class);
 
-    private Map<String, FileWatchApplicationStartupProperties.StartupJarElement> startupJarElementMap;
+    private Map<String, Map<String, FileWatchApplicationStartupProperties.StartupJarElement>> startupJarElementMap;
 
     /**
      * Constructs a new {@code ApplicationStartupFileWatchListener}.
@@ -59,8 +61,9 @@ public class ApplicationStartupFileWatchListener implements FileWatchListener {
 
     void initStartupJarElementMap(FileWatchApplicationStartupProperties properties) {
         startupJarElementMap = properties.getElements().stream()
-                .collect(Collectors.toConcurrentMap(FileWatchApplicationStartupProperties.StartupJarElement::getJarFileName,
-                        Function.identity()));
+                .collect(Collectors.groupingByConcurrent(FileWatchApplicationStartupProperties.StartupJarElement::getBindPath,
+                        Collectors.toMap(FileWatchApplicationStartupProperties.StartupJarElement::getJarFileName,
+                                Function.identity())));
     }
 
     /**
@@ -69,12 +72,34 @@ public class ApplicationStartupFileWatchListener implements FileWatchListener {
      */
     @Override
     public boolean supports(WatchEvent<Path> event) {
+        if (!(event instanceof AmapleWatchEvent)) {
+            return false;
+        }
+        Path parent = ((AmapleWatchEvent) event).getParent();
         String jarFileName = event.context().toString();
-        FileWatchApplicationStartupProperties.StartupJarElement jarElement
-                = startupJarElementMap.getOrDefault(jarFileName, null);
-        return jarElement != null
-                && (jarElement.getTriggerKind() == TriggerKind.ALL
-                || Objects.equals(jarElement.getTriggerKind().name(), event.kind().name()));
+
+        // First, find the main listening address, and then configure it according to the jar file.
+        Map<String, FileWatchApplicationStartupProperties.StartupJarElement> jarGroup =
+                startupJarElementMap.get(parent.toString());
+        FileWatchApplicationStartupProperties.StartupJarElement jarElement;
+        if (jarGroup == null || (jarElement = jarGroup.get(jarFileName)) == null) {
+            return false;
+        }
+
+        // Verify if the binding listening address is consistent.
+        boolean bindPathEq = parent.equals(Paths.get(jarElement.getBindPath()));
+
+        // Verify whether the trigger type set in the current subclass file is
+        // within the range of the parent listening trigger.
+        boolean triggerKindEq = false;
+        for (TriggerKind triggerKind : jarElement.getTriggerKinds()) {
+            if (triggerKind.getKind().name().equals(event.kind().name())) {
+                triggerKindEq = true;
+                break;
+            }
+        }
+
+        return bindPathEq && triggerKindEq;
     }
 
     /**
@@ -83,9 +108,12 @@ public class ApplicationStartupFileWatchListener implements FileWatchListener {
      */
     @Override
     public void onWatchEvent(WatchEvent<Path> event) {
+        Path parent = ((AmapleWatchEvent) event).getParent();
+        String jarFileName = event.context().toString();
+
         FileWatchApplicationStartupProperties.StartupJarElement
-                jarElement = startupJarElementMap.get(event.context().toString());
-        String jarFileName = jarElement.getJarFileName();
+                jarElement = startupJarElementMap.get(parent.toString()).get(jarFileName);
+
         List<String> sortedStartupCommands = wrapWithBashShell(jarElement.getSortedStartupCommands());
         try {
             Process process = new ProcessBuilder(sortedStartupCommands).start();
