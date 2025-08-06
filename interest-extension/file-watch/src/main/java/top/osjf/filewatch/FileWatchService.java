@@ -65,7 +65,7 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
     private WatchService watchService;
 
     /** The lock of register path */
-    private final Lock lock = new ReentrantLock();
+    private Lock lock;
 
     /** The list of registered listening paths. */
     private final List<Path> registeredPaths = new ArrayList<>();
@@ -96,6 +96,7 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
             throw new FileWatchException("Failed to create java.nio.file.WatchService", ex);
         }
         pathToServiceMap = new ConcurrentHashMap<>();
+        lock = new ReentrantLock();
         fileWatchListeners = new FileWatchListeners();
         waitCreateConfigurations = new WaitCreateConfigurations();
     }
@@ -149,7 +150,7 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
             });
         }
         else {
-            lock.lock();
+            if (lock != null) lock.lock();
             try {
                 if (registeredPaths.contains(registeredPath)) {
                     throw new IllegalArgumentException("Duplicate registration " + registeredPath);
@@ -166,7 +167,7 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
                 throw new FileWatchException("Failed to register WatchService", ex);
             }
             finally {
-                lock.unlock();
+                if (lock != null) lock.unlock();
             }
         }
     }
