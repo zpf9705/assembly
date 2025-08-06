@@ -187,8 +187,8 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
      * @param configuration the specific waiting time for completion of creation {@code WaitCreateConfiguration}
      *                      to register.
      */
-    public void registerWaitCreateConfiguration(Path parent, Path pathContext, WaitCreateConfiguration configuration) {
-        waitCreateConfigurations.registerWaitCreateConfiguration(parent, pathContext, configuration);
+    public void registerWaitCreateConfiguration(String parent, String pathContext, WaitCreateConfiguration configuration) {
+        waitCreateConfigurations.registerWaitCreateConfiguration(Paths.get(parent), Paths.get(pathContext), configuration);
     }
 
     /**
@@ -233,9 +233,10 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
                 for (FileWatchListener listener : fileWatchListeners.getListeners()) {
                     boolean isParentPath = Optional.ofNullable(listener.getPath())
                             .map(path -> path.equals(registeredPath)).orElse(true);
-                    if (isParentPath && listener.supports(pathEvent)) {
+                    AmapleWatchEvent amapleWatchEvent = new AmapleWatchEvent(registeredPath, pathEvent);
+                    if (isParentPath && listener.supports(amapleWatchEvent)) {
                         try {
-                            listener.onWatchEvent(pathEvent);
+                            listener.onWatchEvent(amapleWatchEvent);
                         }
                         catch (Throwable ex) {
                             LOGGER.error("Failed to handle watch event for path: {}, event type: {}",
