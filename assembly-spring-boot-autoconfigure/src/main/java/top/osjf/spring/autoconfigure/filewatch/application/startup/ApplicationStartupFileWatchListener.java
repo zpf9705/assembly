@@ -89,25 +89,20 @@ public class ApplicationStartupFileWatchListener implements FileWatchListener {
         List<String> sortedStartupCommands = wrapWithBashShell(jarElement.getSortedStartupCommands());
         try {
             Process process = new ProcessBuilder(sortedStartupCommands).start();
-            try {
-                if (process.waitFor(jarElement.getTimeout(), jarElement.getUnit())) {
-                    // Read error stream before checking exit value
-                    String errorOutput = StreamUtils.copyToString(process.getErrorStream(), StandardCharsets.UTF_8);
-                    if (process.exitValue() == 0) {
-                        LOGGER.info("Successfully launched {} via commands: {}", jarFileName, sortedStartupCommands);
-                    }
-                    else {
-                        LOGGER.info("Failed to start jar application {}, returning receipt error message {}.",
-                                jarFileName, errorOutput);
-                    }
+            if (process.waitFor(jarElement.getTimeout(), jarElement.getUnit())) {
+                // Read error stream before checking exit value
+                String errorOutput = StreamUtils.copyToString(process.getErrorStream(), StandardCharsets.UTF_8);
+                if (process.exitValue() == 0) {
+                    LOGGER.info("Successfully launched {} via commands: {}", jarFileName, sortedStartupCommands);
                 }
                 else {
-                    process.destroyForcibly().waitFor(); //Force termination upon timeout.
-                    LOGGER.error("Command {} execution timeout", sortedStartupCommands);
+                    LOGGER.info("Failed to start jar application {}, returning receipt error message {}.",
+                            jarFileName, errorOutput);
                 }
             }
-            finally {
-                process.destroy();
+            else {
+                process.destroyForcibly().waitFor(); //Force termination upon timeout.
+                LOGGER.error("Command {} execution timeout", sortedStartupCommands);
             }
         }
         catch (IOException ex) {
