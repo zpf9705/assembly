@@ -25,7 +25,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * Thread-safe container for managing wait-creation/modification configurations with path context.
+ * Thread-safe container for managing wait-creation/modification/deletion configurations with path context.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
@@ -54,7 +54,7 @@ public final class WaitConfigurations {
     }
 
     /**
-     * Registers a wait-create/modify configuration under specified parent path and context.
+     * Registers a wait-create/modify/delete configuration under specified parent path and context.
      * @param parent        the parent directory path.
      * @param pathContext   the context path for watching.
      * @param configuration the configuration to register.
@@ -77,7 +77,7 @@ public final class WaitConfigurations {
     }
 
     /**
-     * Checks if there is a wait-create/modify configuration under specified path.
+     * Checks if there is a wait-create/modify/delete configuration under specified path.
      * @param parent      the parent directory path.
      * @param pathContext the context path for watching.
      * @return the configuration if found, {@literal null} otherwise.
@@ -102,7 +102,7 @@ public final class WaitConfigurations {
     }
 
     /**
-     * Retrieves wait-create/modify configuration by parent path and context.
+     * Retrieves wait-create/modify/delete configuration by parent path and context.
      * @param parent      the parent directory path.
      * @param pathContext the context path for watching.
      * @return the configuration if found, {@literal null} otherwise.
