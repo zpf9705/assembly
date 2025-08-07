@@ -109,10 +109,10 @@ public class ApplicationStartupFileWatchListener implements FileWatchListener {
     @Override
     public void onWatchEvent(WatchEvent<Path> event) {
         Path parent = ((AmapleWatchEvent) event).getParent();
-        String jarFileName = event.context().toString();
+        Path jarFilePath = event.context();
 
         FileWatchApplicationStartupProperties.StartupJarElement
-                jarElement = startupJarElementMap.get(parent.toString()).get(jarFileName);
+                jarElement = startupJarElementMap.get(parent).get(jarFilePath);
 
         List<String> sortedStartupCommands = wrapWithBashShell(jarElement.getSortedStartupCommands());
         try {
@@ -121,11 +121,11 @@ public class ApplicationStartupFileWatchListener implements FileWatchListener {
                 // Read error stream before checking exit value
                 String errorOutput = StreamUtils.copyToString(process.getErrorStream(), StandardCharsets.UTF_8);
                 if (process.exitValue() == 0) {
-                    LOGGER.info("Successfully launched {} via commands: {}", jarFileName, sortedStartupCommands);
+                    LOGGER.info("Successfully launched {} via commands: {}", jarFilePath, sortedStartupCommands);
                 }
                 else {
                     LOGGER.info("Failed to start jar application {}, returning receipt error message {}.",
-                            jarFileName, errorOutput);
+                            jarFilePath, errorOutput);
                 }
             }
             else {
@@ -138,7 +138,7 @@ public class ApplicationStartupFileWatchListener implements FileWatchListener {
         }
         catch (InterruptedException ex) {
             Thread.currentThread().interrupt(); // Restore interrupt status.
-            LOGGER.error("Command execution interrupted for {}", jarFileName, ex);
+            LOGGER.error("Command execution interrupted for {}", jarFilePath, ex);
         }
     }
 
