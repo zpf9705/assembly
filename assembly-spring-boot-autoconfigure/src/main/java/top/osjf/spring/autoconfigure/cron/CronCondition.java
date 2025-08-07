@@ -19,7 +19,6 @@ package top.osjf.spring.autoconfigure.cron;
 
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
-import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.boot.context.properties.bind.Binder;
@@ -28,7 +27,7 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.core.type.ClassMetadata;
+import top.osjf.spring.autoconfigure.SourceClassMessageCondition;
 
 /**
  * Base of all {@link Condition} implementations used with Spring Boot. Provides sensible
@@ -37,14 +36,10 @@ import org.springframework.core.type.ClassMetadata;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
-public class CronCondition extends SpringBootCondition {
+public class CronCondition extends SourceClassMessageCondition {
     @Override
-    public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        String sourceClass = "";
-        if (metadata instanceof ClassMetadata) {
-            sourceClass = ((ClassMetadata) metadata).getClassName();
-        }
-        ConditionMessage.Builder message = ConditionMessage.forCondition("Cron", sourceClass);
+    public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata,
+                                            ConditionMessage.Builder message) {
         Environment environment = context.getEnvironment();
         try {
             BindResult<ClientType> specified = Binder.get(environment).bind("spring.schedule.cron.client-type",
