@@ -36,9 +36,22 @@ import java.util.List;
 public class FileWatchProperties implements InitializingBean {
 
     /**
+     * Enable tag configuration for dynamic file listening.
+     */
+    private boolean enable = true;
+
+    /**
      * A list of path information for registering file listening services is required.
      */
     private List<FileWatch> fileWatches = new ArrayList<>();
+
+    public boolean isEnable() {
+        return enable;
+    }
+
+    public void setEnable(boolean enable) {
+        this.enable = enable;
+    }
 
     public List<FileWatch> getFileWatches() {
         return fileWatches;
@@ -50,8 +63,10 @@ public class FileWatchProperties implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        Assert.notEmpty(fileWatches, "fileWatches not empty");
-        Assert.isTrue(fileWatches.stream().allMatch(f -> StringUtils.hasText(f.path)), "path not be null");
+        if (enable) {
+            Assert.notEmpty(fileWatches, "fileWatches not empty");
+            Assert.isTrue(fileWatches.stream().allMatch(f -> StringUtils.hasText(f.path)), "path not be null");
+        }
     }
 
     public static class FileWatch {

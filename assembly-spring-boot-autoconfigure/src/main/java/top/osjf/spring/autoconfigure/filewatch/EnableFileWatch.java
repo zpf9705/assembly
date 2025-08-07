@@ -32,6 +32,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
 @Documented
-@ConditionalOnProperty(prefix = "file-watch", name = "enable", havingValue = "true")
+@ConditionalOnProperty(prefix = "file-watch", name = "enable", havingValue = "true", matchIfMissing = true)
 public @interface EnableFileWatch {
 }
