@@ -109,7 +109,7 @@ public class FileWatchApplicationStartupProperties implements InitializingBean {
         private TimeUnit unit = TimeUnit.SECONDS;
 
         /**
-         * The file creation/modification completion detection configuration.
+         * The file creation/modification/deletion completion detection configuration.
          */
         @NestedConfigurationProperty
         private WaitConfiguration configuration = new WaitConfiguration();
@@ -203,7 +203,7 @@ public class FileWatchApplicationStartupProperties implements InitializingBean {
         private TimeUnit unit;
 
         /**
-         * The file creation/modification completion detection configuration.
+         * The file creation/modification/deletion completion detection configuration.
          */
         @NestedConfigurationProperty
         private WaitConfiguration configuration;
