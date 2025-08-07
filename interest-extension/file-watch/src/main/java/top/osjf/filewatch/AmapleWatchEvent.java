@@ -17,6 +17,7 @@
 
 package top.osjf.filewatch;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.WatchEvent;
 
@@ -55,6 +56,32 @@ public class AmapleWatchEvent implements WatchEvent<Path> {
      */
     public Path getParent() {
         return parent;
+    }
+
+    /**
+     * Gets the complete path of the change file.
+     * @return the complete path of the change file.
+     */
+    public Path getFullPath() {
+        return parent.resolve(context());
+    }
+
+    /**
+     * Gets the {@link File} object of the change file.
+     * @return the {@link File} object of the change file.
+     */
+    public File getFile() {
+        return getFullPath().toFile();
+    }
+
+    /**
+     * Gets the reference enumeration {@link TriggerKind} value for
+     * notification type {@link java.nio.file.WatchEvent.Kind}.
+     * @return the reference enumeration {@link TriggerKind} value for
+     * notification type {@link java.nio.file.WatchEvent.Kind}.
+     */
+    public TriggerKind getTriggerKind() {
+        return TriggerKind.valueOf(kind().name());
     }
 
     /**
