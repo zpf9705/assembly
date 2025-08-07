@@ -51,7 +51,7 @@ public abstract class BeanFactoryRequiredSpringBootCondition extends SourceClass
      * @param context     the condition context
      * @param metadata    the annotation metadata
      * @param builder     the source class {@link ConditionMessage} builder.
-     * @param beanFactory the {@link ConfigurableListableBeanFactory} instance.x
+     * @param beanFactory the bean of {@link ConfigurableListableBeanFactory}.
      * @return the condition outcome.
      */
     public abstract ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata,
