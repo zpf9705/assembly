@@ -25,6 +25,9 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.ClassMetadata;
 
 /**
+ * Abstract base class for condition implementations that need to evaluate
+ * based on the source class.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
@@ -32,7 +35,7 @@ public abstract class SourceClassMessageCondition extends SpringBootCondition {
     /**
      * Retrieve the original attribute of the annotation condition tag source class and
      * hand it over to the subsequent component condition execution.
-     * @param context {@inheritDoc}
+     * @param context  {@inheritDoc}
      * @param metadata {@inheritDoc}
      * @return {@inheritDoc}
      */
