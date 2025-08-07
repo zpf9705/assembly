@@ -23,7 +23,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StreamUtils;
 import top.osjf.filewatch.AmapleWatchEvent;
 import top.osjf.filewatch.FileWatchListener;
-import top.osjf.filewatch.TriggerKind;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -31,6 +30,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -75,7 +75,8 @@ public class ApplicationStartupFileWatchListener implements FileWatchListener {
         if (!(event instanceof AmapleWatchEvent)) {
             return false;
         }
-        Path parent = ((AmapleWatchEvent) event).getParent();
+        AmapleWatchEvent watchEvent = (AmapleWatchEvent) event;
+        Path parent = watchEvent.getParent();
         Path jarFilePath = event.context();
 
         // First, find the main listening address, and then configure it according to the jar file.
@@ -91,13 +92,7 @@ public class ApplicationStartupFileWatchListener implements FileWatchListener {
 
         // Verify whether the trigger type set in the current subclass file is
         // within the range of the parent listening trigger.
-        boolean triggerKindEq = false;
-        for (TriggerKind triggerKind : jarElement.getTriggerKinds()) {
-            if (triggerKind.getKind().name().equals(event.kind().name())) {
-                triggerKindEq = true;
-                break;
-            }
-        }
+        boolean triggerKindEq = Arrays.asList(jarElement.getTriggerKinds()).contains(watchEvent.getTriggerKind());
 
         return bindPathEq && triggerKindEq;
     }
