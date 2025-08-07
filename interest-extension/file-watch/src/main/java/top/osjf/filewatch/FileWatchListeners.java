@@ -97,7 +97,7 @@ public final class FileWatchListeners {
      */
     public void removeListener(int index) {
         if (index < 0 || index > getListenerSize() - 1) {
-            throw new IndexOutOfBoundsException("Size:" + getListenerSize() + ",Index:"+ getListenerSize());
+            throw new IndexOutOfBoundsException("Size:" + getListenerSize() + ",Index:"+ index);
         }
         final Lock writeLock = lock.writeLock();
         writeLock.lock();
@@ -132,7 +132,7 @@ public final class FileWatchListeners {
      */
     public FileWatchListener getListener(int index) {
         if (index < 0 || index > getListenerSize() - 1) {
-            throw new IndexOutOfBoundsException("Size:" + getListenerSize() + ",Index:"+ getListenerSize());
+            throw new IndexOutOfBoundsException("Size:" + getListenerSize() + ",Index:"+ index);
         }
         final Lock readLock = lock.readLock();
         readLock.lock();
