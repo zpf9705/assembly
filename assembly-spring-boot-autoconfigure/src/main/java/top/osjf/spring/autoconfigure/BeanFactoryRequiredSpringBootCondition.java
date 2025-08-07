@@ -41,7 +41,7 @@ public abstract class BeanFactoryRequiredSpringBootCondition extends SourceClass
                                             ConditionMessage.Builder builder) {
         ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
         if (beanFactory == null) {
-            return ConditionOutcome.noMatch(builder.because("Missing instance ConfigurableListableBeanFactory"));
+            return ConditionOutcome.noMatch(builder.because("Missing bean ConfigurableListableBeanFactory"));
         }
         return getMatchOutcome(context, metadata, builder, beanFactory);
     }
