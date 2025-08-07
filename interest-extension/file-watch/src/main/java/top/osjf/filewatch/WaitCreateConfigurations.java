@@ -77,6 +77,7 @@ public final class WaitCreateConfigurations {
     }
 
     /**
+     * Checks if there is a wait-create configuration under specified path.
      * @param parent      the parent directory path.
      * @param pathContext the context path for watching.
      * @return the configuration if found, {@literal null} otherwise.
