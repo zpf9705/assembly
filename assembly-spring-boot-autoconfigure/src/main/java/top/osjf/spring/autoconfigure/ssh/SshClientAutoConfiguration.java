@@ -61,7 +61,7 @@ import java.util.stream.Collectors;
 public class SshClientAutoConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean(SshClient.class)
+    @ConditionalOnMissingBean
     public SshClient sshClient(ClientBuilder clientBuilder,
                                Environment environment) {
         return clientBuilder.build(environment.getProperty("ssh-client.builder.is-fill-with-default-values",
@@ -69,7 +69,6 @@ public class SshClientAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean
     public ClientBuilder clientBuilder(
             ObjectProvider<ServerKeyVerifier> ServerKeyVerifierObjectProvider,
             ObjectProvider<HostConfigEntryResolver> hostConfigEntryResolverObjectProvider,
@@ -165,7 +164,6 @@ public class SshClientAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean
     public SshClientLifecycle sshClientLifecycle(SshClient sshClient) {
         return new SshClientLifecycle(sshClient);
     }
