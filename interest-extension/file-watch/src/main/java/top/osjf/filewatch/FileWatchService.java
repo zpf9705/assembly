@@ -76,9 +76,9 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
     /** Management instance of listener {@link FileWatchListener}.*/
     private FileWatchListeners fileWatchListeners;
 
-    /** The designated file created under the path is waiting for the completion of the
+    /** The designated file created/modified under the path is waiting for the completion of the
      * configuration management instance. */
-    private WaitCreateConfigurations waitCreateConfigurations;
+    private WaitConfigurations waitConfigurations;
 
     /**
      * Constructs an empty {@link FileWatchService} to init a {@link WatchService}.
@@ -98,19 +98,19 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
         pathToServiceMap = new ConcurrentHashMap<>();
         lock = new ReentrantLock();
         fileWatchListeners = new FileWatchListeners();
-        waitCreateConfigurations = new WaitCreateConfigurations();
+        waitConfigurations = new WaitConfigurations();
     }
 
     /**
      * Private Constructs a {@link FileWatchService} with given {@link FileWatchListeners}
-     * and {@link WaitCreateConfigurations}.
+     * and {@link WaitConfigurations}.
      * @param fileWatchListeners        the given {@link FileWatchListeners} instance.
-     * @param waitCreateConfigurations  the given {@link WaitCreateConfigurations} instance.
+     * @param waitConfigurations        the given {@link WaitConfigurations} instance.
      */
     private FileWatchService(FileWatchListeners fileWatchListeners,
-                             WaitCreateConfigurations waitCreateConfigurations) {
+                             WaitConfigurations waitConfigurations) {
         this.fileWatchListeners = fileWatchListeners;
-        this.waitCreateConfigurations = waitCreateConfigurations;
+        this.waitConfigurations = waitConfigurations;
     }
 
     /**
@@ -143,7 +143,7 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
         if (peculiarWatchThread) {
             pathToServiceMap.compute(registeredPath, (key, fileWatchService) -> {
                 if (fileWatchService == null) {
-                    fileWatchService = new FileWatchService(fileWatchListeners, waitCreateConfigurations);
+                    fileWatchService = new FileWatchService(fileWatchListeners, waitConfigurations);
                 }
                 fileWatchService.registerWatch(path, false, kinds);
                 return fileWatchService;
@@ -182,15 +182,15 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
     }
 
     /**
-     * Register a specified file creation notification {@link StandardWatchEventKinds#ENTRY_CREATE}
+     * Register a specified file creation/modification notification {@link StandardWatchEventKinds#ENTRY_CREATE}
      * and configure the waiting time for completion of creation {@code WaitCreateConfiguration}.
      * @param parent        the parent directory path to register.
      * @param pathContext   the context path for watching to register.
      * @param configuration the specific waiting time for completion of creation {@code WaitCreateConfiguration}
      *                      to register.
      */
-    public void registerWaitCreateConfiguration(String parent, String pathContext, WaitCreateConfiguration configuration) {
-        waitCreateConfigurations.registerWaitCreateConfiguration(Paths.get(parent), Paths.get(pathContext), configuration);
+    public void registerWaitConfiguration(String parent, String pathContext, WaitConfiguration configuration) {
+        waitConfigurations.registerWaitConfiguration(Paths.get(parent), Paths.get(pathContext), configuration);
     }
 
     /**
@@ -221,8 +221,8 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
                     continue;
                 }
                 // wait file complete ...
-                if (waitCreateConfigurations.hasWaitCreateConfiguration(registeredPath, pathContext)) {
-                    if (!waitCreateConfigurations.getWaitCreateConfiguration(registeredPath, pathContext)
+                if (waitConfigurations.hasWaitConfiguration(registeredPath, pathContext)) {
+                    if (!waitConfigurations.getWaitConfiguration(registeredPath, pathContext)
                             .waitComplete(registeredPath.resolve(pathContext), kind)) {
                         if (LOGGER.isDebugEnabled()) {
                             LOGGER.debug("Waiting for the completion of context {} creation timeout or " +

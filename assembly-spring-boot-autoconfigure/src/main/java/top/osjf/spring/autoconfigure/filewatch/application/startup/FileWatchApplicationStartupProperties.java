@@ -24,7 +24,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import top.osjf.filewatch.TriggerKind;
-import top.osjf.filewatch.WaitCreateConfiguration;
+import top.osjf.filewatch.WaitConfiguration;
 import top.osjf.spring.autoconfigure.filewatch.FileWatchProperties;
 
 import java.util.ArrayList;
@@ -109,10 +109,10 @@ public class FileWatchApplicationStartupProperties implements InitializingBean {
         private TimeUnit unit = TimeUnit.SECONDS;
 
         /**
-         * The file creation completion detection configuration.
+         * The file creation/modification completion detection configuration.
          */
         @NestedConfigurationProperty
-        private WaitCreateConfiguration configuration = new WaitCreateConfiguration();
+        private WaitConfiguration configuration = new WaitConfiguration();
 
         public String getBindPath() {
             return bindPath;
@@ -154,11 +154,11 @@ public class FileWatchApplicationStartupProperties implements InitializingBean {
             this.unit = unit;
         }
 
-        public WaitCreateConfiguration getConfiguration() {
+        public WaitConfiguration getConfiguration() {
             return configuration;
         }
 
-        public void setConfiguration(WaitCreateConfiguration configuration) {
+        public void setConfiguration(WaitConfiguration configuration) {
             this.configuration = configuration;
         }
     }
@@ -203,10 +203,10 @@ public class FileWatchApplicationStartupProperties implements InitializingBean {
         private TimeUnit unit;
 
         /**
-         * The file creation completion detection configuration.
+         * The file creation/modification completion detection configuration.
          */
         @NestedConfigurationProperty
-        private WaitCreateConfiguration configuration;
+        private WaitConfiguration configuration;
 
         public String getBindPath() {
             return bindPath;
@@ -256,11 +256,11 @@ public class FileWatchApplicationStartupProperties implements InitializingBean {
             this.unit = unit;
         }
 
-        public WaitCreateConfiguration getConfiguration() {
+        public WaitConfiguration getConfiguration() {
             return configuration;
         }
 
-        public void setConfiguration(WaitCreateConfiguration configuration) {
+        public void setConfiguration(WaitConfiguration configuration) {
             this.configuration = configuration;
         }
 

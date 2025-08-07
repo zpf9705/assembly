@@ -26,22 +26,22 @@ import java.nio.file.attribute.FileTime;
 import java.util.concurrent.TimeUnit;
 
 /**
- * File creation completion detection configuration.
+ * File creation/modification completion detection configuration.
  *
- * <p>Provides monitoring capability for file creation process, determines upload completion
- * by checking file size and modification time stability
+ * <p>Provides monitoring capability for file creation/modification process, determines upload
+ * completion by checking file size and modification time stability
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
- * @see FileWatchService#registerWaitCreateConfiguration(String, String, WaitCreateConfiguration)
- * @see WaitCreateConfigurations#registerWaitCreateConfiguration(Path, Path, WaitCreateConfiguration)
+ * @see FileWatchService#registerWaitConfiguration(String, String, WaitConfiguration)
+ * @see WaitConfigurations#registerWaitConfiguration(Path, Path, WaitConfiguration)
  */
-public class WaitCreateConfiguration {
+public class WaitConfiguration {
 
     /**
      * Default configuration instance (empty implementation, directly returns {@code true})
      */
-    public static final WaitCreateConfiguration INSTANCE = new WaitCreateConfiguration() {
+    public static final WaitConfiguration INSTANCE = new WaitConfiguration() {
         @Override
         public boolean waitComplete(Path filePath, WatchEvent.Kind<Path> kind) {
             return true;
@@ -60,47 +60,15 @@ public class WaitCreateConfiguration {
     /** Total wait timeout unit */
     private TimeUnit waitCreateTimeUnit = TimeUnit.SECONDS;
 
-    public long getWaitCreateInternalTimeout() {
-        return waitCreateInternalTimeout;
-    }
-
-    public void setWaitCreateInternalTimeout(long waitCreateInternalTimeout) {
-        this.waitCreateInternalTimeout = waitCreateInternalTimeout;
-    }
-
-    public TimeUnit getWaitCreateInternalTimeUnit() {
-        return waitCreateInternalTimeUnit;
-    }
-
-    public void setWaitCreateInternalTimeUnit(TimeUnit waitCreateInternalTimeUnit) {
-        this.waitCreateInternalTimeUnit = waitCreateInternalTimeUnit;
-    }
-
-    public Long getWaitCreateTimeout() {
-        return waitCreateTimeout;
-    }
-
-    public void setWaitCreateTimeout(Long waitCreateTimeout) {
-        this.waitCreateTimeout = waitCreateTimeout;
-    }
-
-    public TimeUnit getWaitCreateTimeUnit() {
-        return waitCreateTimeUnit;
-    }
-
-    public void setWaitCreateTimeUnit(TimeUnit waitCreateTimeUnit) {
-        this.waitCreateTimeUnit = waitCreateTimeUnit;
-    }
-
     /**
-     * Core method to detect file creation completion.
+     * Core method to detect file creation/modification completion.
      * @param path the specific path to monitor.
      * @param kind the specific file event type
-     * @return {@code true} indicates stable file creation, {@code false}
+     * @return {@code true} indicates stable file creation/modification, {@code false}
      *          means timeout or exception
      */
     public boolean waitComplete(Path path, WatchEvent.Kind<Path> kind) {
-        if (kind != StandardWatchEventKinds.ENTRY_CREATE) {
+        if (kind != StandardWatchEventKinds.ENTRY_CREATE || kind != StandardWatchEventKinds.ENTRY_MODIFY) {
             return true;
         }
         long timeoutMillis = waitCreateTimeUnit.toMillis(waitCreateTimeout);
@@ -135,5 +103,37 @@ public class WaitCreateConfiguration {
             }
         } while ((System.currentTimeMillis() - startMillis) < timeoutMillis);
         return false;
+    }
+
+    public long getWaitCreateInternalTimeout() {
+        return waitCreateInternalTimeout;
+    }
+
+    public void setWaitCreateInternalTimeout(long waitCreateInternalTimeout) {
+        this.waitCreateInternalTimeout = waitCreateInternalTimeout;
+    }
+
+    public TimeUnit getWaitCreateInternalTimeUnit() {
+        return waitCreateInternalTimeUnit;
+    }
+
+    public void setWaitCreateInternalTimeUnit(TimeUnit waitCreateInternalTimeUnit) {
+        this.waitCreateInternalTimeUnit = waitCreateInternalTimeUnit;
+    }
+
+    public Long getWaitCreateTimeout() {
+        return waitCreateTimeout;
+    }
+
+    public void setWaitCreateTimeout(Long waitCreateTimeout) {
+        this.waitCreateTimeout = waitCreateTimeout;
+    }
+
+    public TimeUnit getWaitCreateTimeUnit() {
+        return waitCreateTimeUnit;
+    }
+
+    public void setWaitCreateTimeUnit(TimeUnit waitCreateTimeUnit) {
+        this.waitCreateTimeUnit = waitCreateTimeUnit;
     }
 }

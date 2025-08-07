@@ -49,7 +49,7 @@ public class FileWatchApplicationAutoConfiguration {
             (FileWatchApplicationStartupProperties properties) {
         return fileWatchService -> {
             for (FileWatchApplicationStartupProperties.StartupJarElement element : properties.getElements()) {
-                fileWatchService.registerWaitCreateConfiguration(element.getBindPath(), element.getJarFileName(),
+                fileWatchService.registerWaitConfiguration(element.getBindPath(), element.getJarFileName(),
                         element.getConfiguration());
             }
         };

@@ -25,21 +25,21 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * Thread-safe container for managing wait-create configurations with path context.
+ * Thread-safe container for managing wait-creation/modification configurations with path context.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
- * @see FileWatchService#registerWaitCreateConfiguration(String, String, WaitCreateConfiguration)
+ * @see FileWatchService#registerWaitConfiguration(String, String, WaitConfiguration)
  */
-public final class WaitCreateConfigurations {
+public final class WaitConfigurations {
 
     private final ReadWriteLock lock;
-    private final Map<Path, Map<Path, WaitCreateConfiguration>> pathContextWaitCreateConfigurationMap;
+    private final Map<Path, Map<Path, WaitConfiguration>> pathContextWaitCreateConfigurationMap;
 
     /**
      * Constructs with default initial capacity (16).
      */
-    public WaitCreateConfigurations() {
+    public WaitConfigurations() {
         this(16);
     }
 
@@ -48,26 +48,26 @@ public final class WaitCreateConfigurations {
      *
      * @param initialCapacity initial capacity for the parent path map.
      */
-    public WaitCreateConfigurations(int initialCapacity) {
+    public WaitConfigurations(int initialCapacity) {
         lock = new ReentrantReadWriteLock();
         pathContextWaitCreateConfigurationMap = new HashMap<>(initialCapacity);
     }
 
     /**
-     * Registers a wait-create configuration under specified parent path and context.
+     * Registers a wait-create/modify configuration under specified parent path and context.
      * @param parent        the parent directory path.
      * @param pathContext   the context path for watching.
      * @param configuration the configuration to register.
      * @throws NullPointerException if any parameter is {@literal null}.
      */
-    public void registerWaitCreateConfiguration(Path parent, Path pathContext, WaitCreateConfiguration configuration) {
+    public void registerWaitConfiguration(Path parent, Path pathContext, WaitConfiguration configuration) {
         if (parent == null || pathContext == null || configuration == null) {
             throw new NullPointerException("parent or pathContext or configuration");
         }
         final Lock writeLock = lock.writeLock();
         writeLock.lock();
         try {
-            Map<Path, WaitCreateConfiguration> map
+            Map<Path, WaitConfiguration> map
                     = pathContextWaitCreateConfigurationMap.computeIfAbsent(parent, k -> new HashMap<>(16));
             map.put(pathContext, configuration);
         }
@@ -77,20 +77,20 @@ public final class WaitCreateConfigurations {
     }
 
     /**
-     * Checks if there is a wait-create configuration under specified path.
+     * Checks if there is a wait-create/modify configuration under specified path.
      * @param parent      the parent directory path.
      * @param pathContext the context path for watching.
      * @return the configuration if found, {@literal null} otherwise.
      * @throws NullPointerException if any parameter is {@literal null}.
      */
-    public boolean hasWaitCreateConfiguration(Path parent, Path pathContext) {
+    public boolean hasWaitConfiguration(Path parent, Path pathContext) {
         if (parent == null || pathContext == null) {
             throw new NullPointerException("parent or pathContext");
         }
         final Lock readLock = lock.readLock();
         readLock.lock();
         try {
-            Map<Path, WaitCreateConfiguration> map = pathContextWaitCreateConfigurationMap.get(parent);
+            Map<Path, WaitConfiguration> map = pathContextWaitCreateConfigurationMap.get(parent);
             if (map != null) {
                 return map.containsKey(pathContext);
             }
@@ -102,20 +102,20 @@ public final class WaitCreateConfigurations {
     }
 
     /**
-     * Retrieves wait-create configuration by parent path and context.
+     * Retrieves wait-create/modify configuration by parent path and context.
      * @param parent      the parent directory path.
      * @param pathContext the context path for watching.
      * @return the configuration if found, {@literal null} otherwise.
      * @throws NullPointerException if any parameter is {@literal null}.
      */
-    public WaitCreateConfiguration getWaitCreateConfiguration(Path parent, Path pathContext) {
+    public WaitConfiguration getWaitConfiguration(Path parent, Path pathContext) {
         if (parent == null || pathContext == null) {
             throw new NullPointerException("parent or pathContext");
         }
         final Lock readLock = lock.readLock();
         readLock.lock();
         try {
-            Map<Path, WaitCreateConfiguration> map = pathContextWaitCreateConfigurationMap.get(parent);
+            Map<Path, WaitConfiguration> map = pathContextWaitCreateConfigurationMap.get(parent);
             if (map != null) {
                 return map.get(pathContext);
             }
