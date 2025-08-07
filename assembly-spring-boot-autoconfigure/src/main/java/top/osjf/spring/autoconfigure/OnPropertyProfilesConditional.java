@@ -19,14 +19,12 @@ package top.osjf.spring.autoconfigure;
 
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
-import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
 import org.springframework.core.type.AnnotatedTypeMetadata;
-import org.springframework.core.type.ClassMetadata;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -40,17 +38,12 @@ import java.util.Map;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
-public class OnPropertyProfilesConditional extends SpringBootCondition {
+public class OnPropertyProfilesConditional extends SourceClassMessageCondition {
 
     @Override
-    public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        String sourceClass = "";
-        if (metadata instanceof ClassMetadata) {
-            sourceClass = ((ClassMetadata) metadata).getClassName();
-        }
+    public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata,
+                                            ConditionMessage.Builder message) {
         Environment environment = context.getEnvironment();
-        ConditionMessage.Builder message = ConditionMessage.forCondition(OnPropertyProfilesConditional.class.getName()
-                , sourceClass);
         Map<String, Object> attr
                 = metadata.getAnnotationAttributes(ConditionalOnPropertyProfiles.class.getCanonicalName());
         if (attr == null) {
