@@ -76,7 +76,7 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
     /** Management instance of listener {@link FileWatchListener}.*/
     private FileWatchListeners fileWatchListeners;
 
-    /** The designated file created/modified under the path is waiting for the completion of the
+    /** The designated file created/modified/deleted under the path is waiting for the completion of the
      * configuration management instance. */
     private WaitConfigurations waitConfigurations;
 
@@ -182,8 +182,10 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
     }
 
     /**
-     * Register a specified file creation/modification notification {@link StandardWatchEventKinds#ENTRY_CREATE}
-     * and configure the waiting time for completion of creation {@code WaitCreateConfiguration}.
+     * Register a specified file creation/modification/deletion notification
+     * {@link StandardWatchEventKinds#ENTRY_CREATE} {@link StandardWatchEventKinds#ENTRY_MODIFY}
+     * {@link StandardWatchEventKinds#ENTRY_DELETE} and configure the waiting time for completion
+     * of creation {@code WaitCreateConfiguration}.
      * @param parent        the parent directory path to register.
      * @param pathContext   the context path for watching to register.
      * @param configuration the specific waiting time for completion of creation {@code WaitCreateConfiguration}
@@ -223,7 +225,7 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
                 // wait file complete ...
                 if (waitConfigurations.hasWaitConfiguration(registeredPath, pathContext)) {
                     if (!waitConfigurations.getWaitConfiguration(registeredPath, pathContext)
-                            .waitComplete(registeredPath.resolve(pathContext), kind)) {
+                            .apply(registeredPath.resolve(pathContext), kind)) {
                         if (LOGGER.isDebugEnabled()) {
                             LOGGER.debug("Waiting for the completion of context {} creation timeout or " +
                                     "IO exception, please check if the corresponding path file exists or " +
