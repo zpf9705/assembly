@@ -39,5 +39,13 @@ public enum DataSource {
      *
      * @see top.osjf.cron.datasource.driven.scheduled.yaml.YamlDatasourceTaskElementsOperation
      */
-    YAML_CONFIG
+    YAML_CONFIG,
+
+    /**
+     * The task information data source relies on the ORM mapping of the spring jpa framework
+     * to database queries.
+     *
+     * @see top.osjf.cron.datasource.driven.scheduled.jpa.JpaDatasourceTaskElementsOperation
+     */
+    SPRING_JPA
 }

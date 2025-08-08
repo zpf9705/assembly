@@ -27,7 +27,7 @@ import top.osjf.cron.datasource.driven.scheduled.yaml.YamlDatasourceTaskElements
 import java.util.function.Consumer;
 
 /**
- * {@link Configuration Configuration} for {@link YamDatabaseDrivenScheduledConfiguration}.
+ * {@link Configuration Configuration} for {@link YamlDatasourceTaskElementsOperation}.
  *
  * <p>If the entry for {@code spring.schedule.cron.datasource.driven.yml.name} is not configured,
  * {@code task-config.yml} will be used as the default configuration file name.

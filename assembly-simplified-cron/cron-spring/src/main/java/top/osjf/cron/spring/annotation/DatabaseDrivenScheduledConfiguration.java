@@ -22,10 +22,7 @@ import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
 import top.osjf.cron.core.lang.NotNull;
-import top.osjf.cron.spring.datasource.driven.scheduled.DataSource;
-import top.osjf.cron.spring.datasource.driven.scheduled.MybatisPlusDatabaseDrivenScheduledConfiguration;
-import top.osjf.cron.spring.datasource.driven.scheduled.SpringDatasourceDrivenScheduled;
-import top.osjf.cron.spring.datasource.driven.scheduled.YamDatabaseDrivenScheduledConfiguration;
+import top.osjf.cron.spring.datasource.driven.scheduled.*;
 
 /**
  * {@link Configuration Configuration} for {@link SpringDatasourceDrivenScheduled}.
@@ -50,6 +47,9 @@ public class DatabaseDrivenScheduledConfiguration implements ImportSelector {
                             SpringDatasourceDrivenScheduled.class.getCanonicalName()};
                 case YAML_CONFIG:
                     return new String[]{YamDatabaseDrivenScheduledConfiguration.class.getCanonicalName(),
+                            SpringDatasourceDrivenScheduled.class.getCanonicalName()};
+                case SPRING_JPA:
+                    return new String[]{SpringJpaDatabaseDrivenScheduledConfiguration.class.getCanonicalName(),
                             SpringDatasourceDrivenScheduled.class.getCanonicalName()};
             }
         }

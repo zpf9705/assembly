@@ -26,7 +26,7 @@ import top.osjf.cron.datasource.driven.scheduled.mp.DatabaseTaskElement;
 import top.osjf.cron.datasource.driven.scheduled.mp.MybatisPlusDatasourceTaskElementsOperation;
 
 /**
- * {@link Configuration Configuration} for {@link MybatisPlusDatabaseDrivenScheduledConfiguration}.
+ * {@link Configuration Configuration} for {@link MybatisPlusDatasourceTaskElementsOperation}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
