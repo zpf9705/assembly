@@ -93,6 +93,9 @@ public interface DatasourceTaskElementsOperation {
      * updated) or {@link TaskElement#getUpdateSign()} is 0 and there is no {@link TaskElement#getTaskId()}
      * (this situation is a dynamically added task).
      *
+     * <p><b>Note:</b>Given the modification callback for obtaining data, it is recommended that the query
+     * return an immutable collection list.
+     *
      * @return the main task to check and update the relevant {@link TaskElement} dataset of the entry.
      */
     List<TaskElement> getRuntimeNeedCheckDatasourceTaskElements();
