@@ -90,7 +90,7 @@ public class DatabaseTaskElement implements TaskElement {
     /**
      * @see TaskElement#getProfiles()
      */
-    @Column(name = "TASK_NAME")
+    @Column(name = "PROFILES")
     private String profiles;
 
     /**

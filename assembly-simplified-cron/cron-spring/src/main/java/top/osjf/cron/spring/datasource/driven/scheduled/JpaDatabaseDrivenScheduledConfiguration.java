@@ -20,6 +20,7 @@ package top.osjf.cron.spring.datasource.driven.scheduled;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import top.osjf.cron.datasource.driven.scheduled.jpa.DatabaseTaskElementJpaRepository;
 import top.osjf.cron.datasource.driven.scheduled.jpa.JpaDatasourceTaskElementsOperation;
 
@@ -31,6 +32,7 @@ import top.osjf.cron.datasource.driven.scheduled.jpa.JpaDatasourceTaskElementsOp
  */
 @Configuration(proxyBeanMethods = false)
 @ComponentScan("top.osjf.cron.datasource.driven.scheduled.jpa")
+@EnableJpaRepositories("top.osjf.cron.datasource.driven.scheduled.jpa")
 public class JpaDatabaseDrivenScheduledConfiguration {
 
     @Bean
