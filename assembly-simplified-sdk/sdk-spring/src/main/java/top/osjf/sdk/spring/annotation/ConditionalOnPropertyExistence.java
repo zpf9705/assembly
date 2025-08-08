@@ -53,11 +53,13 @@ import java.util.Map;
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.2
+ * @deprecated {@code org.springframework.boot.autoconfigure.condition.ConditionalOnProperty}
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Documented
 @Conditional(ConditionalOnPropertyExistence.OnPropertyExistenceCondition.class)
+@Deprecated
 public @interface ConditionalOnPropertyExistence {
 
     /**
