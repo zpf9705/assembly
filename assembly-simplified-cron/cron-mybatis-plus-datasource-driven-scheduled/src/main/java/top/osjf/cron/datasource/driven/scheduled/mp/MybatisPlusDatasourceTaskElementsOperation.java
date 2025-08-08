@@ -92,7 +92,7 @@ public class MybatisPlusDatasourceTaskElementsOperation implements DatasourceTas
 
     @Override
     public List<TaskElement> getRuntimeNeedCheckDatasourceTaskElements() {
-        return new ArrayList<>(taskElementService.lambdaQuery()
+        return Collections.unmodifiableList(taskElementService.lambdaQuery()
                 .and(w -> w.eq(DatabaseTaskElement::getUpdateSign, 1)
                         .or(w2 -> w2.eq(DatabaseTaskElement::getUpdateSign, 0)
                                 .isNull(DatabaseTaskElement::getTaskId))).list());
