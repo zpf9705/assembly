@@ -84,6 +84,13 @@
         </dependency>
 
         <dependency>
+            <groupId>top.osjf.cron</groupId>
+            <artifactId>spring-jpa-datasource-driven-scheduled</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
             <groupId>top.osjf.spring.optimize</groupId>
             <artifactId>service-bean</artifactId>
             <version>${project.version}</version>
