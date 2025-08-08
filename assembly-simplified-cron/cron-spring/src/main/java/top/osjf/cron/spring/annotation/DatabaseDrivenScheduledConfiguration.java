@@ -42,13 +42,13 @@ public class DatabaseDrivenScheduledConfiguration implements ImportSelector {
         if (attributes != null){
             DataSource dataSource = attributes.getEnum("value");
             switch (dataSource){
-                case MY_BATIS_PLUS_ORM_DATABASE:
-                    return new String[]{MybatisPlusDatabaseDrivenScheduledConfiguration.class.getCanonicalName(),
-                            SpringDatasourceDrivenScheduled.class.getCanonicalName()};
                 case YAML_CONFIG:
                     return new String[]{YamDatabaseDrivenScheduledConfiguration.class.getCanonicalName(),
                             SpringDatasourceDrivenScheduled.class.getCanonicalName()};
-                case SPRING_JPA:
+                case MY_BATIS_PLUS_ORM_DATABASE:
+                    return new String[]{MybatisPlusDatabaseDrivenScheduledConfiguration.class.getCanonicalName(),
+                            SpringDatasourceDrivenScheduled.class.getCanonicalName()};
+                case SPRING_JPA_ORM_DATABASE:
                     return new String[]{SpringJpaDatabaseDrivenScheduledConfiguration.class.getCanonicalName(),
                             SpringDatasourceDrivenScheduled.class.getCanonicalName()};
             }
