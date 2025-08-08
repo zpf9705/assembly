@@ -30,4 +30,10 @@ public interface Constants {
      * of the main task is once every 10 minutes.
      */
     String MANAGER_TASK_CHECK_FREQUENCY_CRON = "0 0/10 * * * ?";
+
+    /**
+     * A fixed table name that needs to be set by the developer to match the name of the database table.
+     * @since 3.0.1
+     */
+    String TASK_NAME = "ZT_TASK_SCHEDULER";
 }
