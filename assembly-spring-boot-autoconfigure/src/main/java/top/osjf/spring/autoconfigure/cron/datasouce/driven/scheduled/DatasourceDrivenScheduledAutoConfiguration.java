@@ -31,7 +31,6 @@ import top.osjf.cron.datasource.driven.scheduled.NoOpDatasourceTaskElementsOpera
 import top.osjf.cron.spring.annotation.DatabaseDrivenScheduledConfiguration;
 import top.osjf.cron.spring.datasource.driven.scheduled.DataSource;
 import top.osjf.cron.spring.datasource.driven.scheduled.SpringDatasourceDrivenScheduled;
-import top.osjf.spring.autoconfigure.ConditionalOnPropertyProfiles;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link SpringDatasourceDrivenScheduled}.
@@ -43,12 +42,9 @@ import top.osjf.spring.autoconfigure.ConditionalOnPropertyProfiles;
 @ConditionalOnProperty(prefix = "spring.schedule.cron", name = "scheduled-driven.enable", havingValue = "true")
 public class DatasourceDrivenScheduledAutoConfiguration {
 
-    public static final String PROPERTY_NAME_OF_MATCHED_PROFILES
-            = "spring.schedule.cron.datasource.driven.active-profiles.matched";
-
     @Configuration(proxyBeanMethods = false)
     @Import({DatasourceDrivenConfigurationImportSelector.class, DatabaseDrivenScheduledConfiguration.class})
-    @ConditionalOnPropertyProfiles(propertyName = PROPERTY_NAME_OF_MATCHED_PROFILES)
+    @EnableDatasourceScheduledProfiles
     public static class DatasourceDrivenScheduledSelectiveAutoConfiguration {
     }
 
