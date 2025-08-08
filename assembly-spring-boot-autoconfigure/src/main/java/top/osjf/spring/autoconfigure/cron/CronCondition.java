@@ -31,7 +31,7 @@ import top.osjf.spring.autoconfigure.SourceClassMessageCondition;
 
 /**
  * Base of all {@link Condition} implementations used with Spring Boot. Provides sensible
- * logging to help the user diagnose what classes are loaded.
+ * logging to help the user diagnose what {@link ClientType} configuration classes are loaded.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4

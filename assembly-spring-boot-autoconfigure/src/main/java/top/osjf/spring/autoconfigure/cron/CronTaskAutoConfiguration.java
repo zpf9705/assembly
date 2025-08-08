@@ -31,6 +31,7 @@ import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.spring.annotation.Cron;
 import top.osjf.cron.spring.annotation.Crones;
+import top.osjf.spring.autoconfigure.cron.datasouce.driven.scheduled.DatasourceDrivenScheduledAutoConfiguration;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link CronTaskRepository}.
