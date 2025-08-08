@@ -32,7 +32,6 @@ import top.osjf.cron.spring.annotation.DatabaseDrivenScheduledConfiguration;
 import top.osjf.cron.spring.datasource.driven.scheduled.DataSource;
 import top.osjf.cron.spring.datasource.driven.scheduled.SpringDatasourceDrivenScheduled;
 import top.osjf.spring.autoconfigure.ConditionalOnPropertyProfiles;
-import top.osjf.spring.autoconfigure.cron.ClientType;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link SpringDatasourceDrivenScheduled}.
@@ -60,7 +59,7 @@ public class DatasourceDrivenScheduledAutoConfiguration {
     }
 
     /**
-     * {@link ImportSelector} to add {@link ClientType} configuration classes.
+     * {@link ImportSelector} to add {@link DataSource} configuration classes.
      * @since 1.0.4
      */
     public static class DatasourceDrivenConfigurationImportSelector implements ImportSelector {
