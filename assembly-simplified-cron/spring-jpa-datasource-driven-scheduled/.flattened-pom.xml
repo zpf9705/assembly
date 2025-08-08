@@ -2,7 +2,7 @@
 <!--
 
 /*
- * Copyright 2024-? the original author or authors.
+ * Copyright 2025-? the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,11 +22,11 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>top.osjf.cron</groupId>
-  <artifactId>cron-mybatis-plus-datasource-driven-scheduled</artifactId>
+  <artifactId>spring-jpa-datasource-driven-scheduled</artifactId>
   <version>3.0.1</version>
-  <name>cron-mybatis-plus-datasource-driven-scheduled 3.0.1</name>
-  <description>Mybatis plus is a data source implementation package for manipulating databases.</description>
-  <url>https://github.com/zpf9705/assembly/assembly-simplified-cron/cron-mybatis-plus-datasource-driven-scheduled</url>
+  <name>spring-jpa-datasource-driven-scheduled 3.0.1</name>
+  <description>Spring Jpa is a data source implementation package for manipulating databases.</description>
+  <url>https://github.com/zpf9705/assembly/assembly-simplified-cron/spring-jpa-datasource-driven-scheduled</url>
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
@@ -47,9 +47,9 @@
     </developer>
   </developers>
   <scm>
-    <connection>scm:git:https://github.com/zpf9705/assembly.git/assembly-simplified-cron/cron-mybatis-plus-datasource-driven-scheduled</connection>
-    <developerConnection>scm:git:https://github.com/zpf9705/assembly.git/assembly-simplified-cron/cron-mybatis-plus-datasource-driven-scheduled</developerConnection>
-    <url>https://github.com/zpf9705/assembly/assembly-simplified-cron/cron-mybatis-plus-datasource-driven-scheduled</url>
+    <connection>scm:git:https://github.com/zpf9705/assembly.git/assembly-simplified-cron/spring-jpa-datasource-driven-scheduled</connection>
+    <developerConnection>scm:git:https://github.com/zpf9705/assembly.git/assembly-simplified-cron/spring-jpa-datasource-driven-scheduled</developerConnection>
+    <url>https://github.com/zpf9705/assembly/assembly-simplified-cron/spring-jpa-datasource-driven-scheduled</url>
   </scm>
   <dependencies>
     <dependency>
@@ -59,29 +59,16 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>top.osjf</groupId>
-      <artifactId>assembly-codes</artifactId>
-      <version>1.1.6</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.baomidou</groupId>
-      <artifactId>mybatis-plus-annotation</artifactId>
-      <version>3.5.3.1</version>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-jpa</artifactId>
+      <version>2.5.6</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>com.baomidou</groupId>
-      <artifactId>mybatis-plus-extension</artifactId>
-      <version>3.5.3.1</version>
-      <scope>compile</scope>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-context</artifactId>
-      <version>5.3.12</version>
+      <groupId>jakarta.persistence</groupId>
+      <artifactId>jakarta.persistence-api</artifactId>
+      <version>2.2.3</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
