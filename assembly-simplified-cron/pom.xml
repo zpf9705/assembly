@@ -43,6 +43,7 @@
         <module>cron-datasource-driven-scheduled</module>
         <module>cron-mybatis-plus-datasource-driven-scheduled</module>
         <module>cron-yaml-config-datasource-driven-scheduled</module>
+        <module>spring-jpa-datasource-driven-scheduled</module>
         <module>cron-spring</module>
         <module>cron-spring-hutool</module>
         <module>cron-spring-cron4j</module>
@@ -97,6 +98,12 @@
             <dependency>
                 <groupId>top.osjf.cron</groupId>
                 <artifactId>cron-yaml-config-datasource-driven-scheduled</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>top.osjf.cron</groupId>
+                <artifactId>spring-jpa-datasource-driven-scheduled</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
