@@ -60,7 +60,7 @@ public class MybatisPlusDatasourceTaskElementsOperation implements DatasourceTas
     private final IService<DatabaseTaskElement> taskElementService;
 
     /**
-     * Constructs a new {@code MybatisPlusDatasourceTaskElementsOperation}{@code IService<DatabaseTaskElement>}
+     * Constructs a new {@code MybatisPlusDatasourceTaskElementsOperation}let {@code IService<DatabaseTaskElement>}
      * as its task information storage.
      *
      * @param taskElementService the task information storage service.
