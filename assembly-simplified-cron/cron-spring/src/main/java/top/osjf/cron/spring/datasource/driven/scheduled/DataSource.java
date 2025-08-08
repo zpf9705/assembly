@@ -27,6 +27,13 @@ package top.osjf.cron.spring.datasource.driven.scheduled;
 public enum DataSource {
 
     /**
+     * The task information data source relies on the local configuration file of YAML.
+     *
+     * @see top.osjf.cron.datasource.driven.scheduled.yaml.YamlDatasourceTaskElementsOperation
+     */
+    YAML_CONFIG,
+
+    /**
      * The task information data source relies on the ORM mapping of the mybatis plus framework
      * to database queries.
      *
@@ -35,17 +42,10 @@ public enum DataSource {
     MY_BATIS_PLUS_ORM_DATABASE,
 
     /**
-     * The task information data source relies on the local configuration file of YAML.
-     *
-     * @see top.osjf.cron.datasource.driven.scheduled.yaml.YamlDatasourceTaskElementsOperation
-     */
-    YAML_CONFIG,
-
-    /**
      * The task information data source relies on the ORM mapping of the spring jpa framework
      * to database queries.
      *
      * @see top.osjf.cron.datasource.driven.scheduled.jpa.JpaDatasourceTaskElementsOperation
      */
-    SPRING_JPA
+    SPRING_JPA_ORM_DATABASE
 }
