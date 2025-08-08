@@ -49,7 +49,7 @@ public class DatabaseDrivenScheduledConfiguration implements ImportSelector {
                     return new String[]{MybatisPlusDatabaseDrivenScheduledConfiguration.class.getCanonicalName(),
                             SpringDatasourceDrivenScheduled.class.getCanonicalName()};
                 case SPRING_JPA_ORM_DATABASE:
-                    return new String[]{SpringJpaDatabaseDrivenScheduledConfiguration.class.getCanonicalName(),
+                    return new String[]{JpaDatabaseDrivenScheduledConfiguration.class.getCanonicalName(),
                             SpringDatasourceDrivenScheduled.class.getCanonicalName()};
             }
         }

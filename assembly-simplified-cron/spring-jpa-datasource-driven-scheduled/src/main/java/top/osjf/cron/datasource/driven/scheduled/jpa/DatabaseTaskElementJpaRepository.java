@@ -52,7 +52,7 @@ public interface DatabaseTaskElementJpaRepository extends JpaRepository<Database
      * <p>
      * Implementation:
      * - Based on Spring Data JPA query method derivation
-     * - Auto-generated SQL: SELECT COUNT(*) > 0 FROM table WHERE task_id IS NOT NULL
+     * - Auto-generated SQL: SELECT COUNT(*) gt 0 FROM table WHERE task_id IS NOT NULL
      *
      * @return
      * {@code true} -  records meeting criteria exist
