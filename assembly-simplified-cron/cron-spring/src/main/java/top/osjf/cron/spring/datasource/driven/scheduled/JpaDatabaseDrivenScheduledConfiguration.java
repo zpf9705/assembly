@@ -31,7 +31,7 @@ import top.osjf.cron.datasource.driven.scheduled.jpa.JpaDatasourceTaskElementsOp
  */
 @Configuration(proxyBeanMethods = false)
 @EnableJpaRepositories("top.osjf.cron.datasource.driven.scheduled.jpa")
-public class SpringJpaDatabaseDrivenScheduledConfiguration {
+public class JpaDatabaseDrivenScheduledConfiguration {
 
     @Bean
     public JpaDatasourceTaskElementsOperation jpaDatasourceTaskElementsOperation(DatabaseTaskElementJpaRepository
