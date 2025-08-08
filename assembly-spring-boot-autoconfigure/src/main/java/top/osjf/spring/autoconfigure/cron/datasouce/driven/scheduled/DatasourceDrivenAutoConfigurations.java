@@ -19,7 +19,6 @@ package top.osjf.spring.autoconfigure.cron.datasouce.driven.scheduled;
 
 import org.springframework.util.Assert;
 import top.osjf.cron.spring.datasource.driven.scheduled.DataSource;
-import top.osjf.spring.autoconfigure.cron.QuartzCronTaskAutoConfiguration;
 
 import java.util.Collections;
 import java.util.EnumMap;
@@ -41,7 +40,8 @@ final class DatasourceDrivenAutoConfigurations {
                 YamlConfigDatasourceTaskElementsOperationAutoConfiguration.class.getName());
         mappings.put(DataSource.MY_BATIS_PLUS_ORM_DATABASE,
                 MybatisPlusDatasourceTaskElementsOperationAutoConfiguration.class.getName());
-        mappings.put(DataSource.SPRING_JPA_ORM_DATABASE, QuartzCronTaskAutoConfiguration.class.getName());
+        mappings.put(DataSource.SPRING_JPA_ORM_DATABASE,
+                JpaDatasourceTaskElementsOperationAutoConfiguration.class.getName());
         MAPPINGS = Collections.unmodifiableMap(mappings);
     }
 
