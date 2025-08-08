@@ -2,7 +2,7 @@
 <!--
 
 /*
- * Copyright 2025-? the original author or authors.
+ * Copyright 2024-? the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,9 +28,9 @@
         <version>${revision}</version>
     </parent>
 
-    <artifactId>spring-jpa-datasource-driven-scheduled</artifactId>
+    <artifactId>cron-spring-jpa-datasource-driven-scheduled</artifactId>
     <packaging>jar</packaging>
-    <name>spring-jpa-datasource-driven-scheduled ${project.version}</name>
+    <name>cron-spring-jpa-datasource-driven-scheduled ${project.version}</name>
     <description>Spring Jpa is a data source implementation package for manipulating databases.</description>
 
     <dependencies>

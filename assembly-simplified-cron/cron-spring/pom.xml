@@ -72,7 +72,7 @@
 
         <dependency>
             <groupId>top.osjf.cron</groupId>
-            <artifactId>spring-jpa-datasource-driven-scheduled</artifactId>
+            <artifactId>cron-spring-jpa-datasource-driven-scheduled</artifactId>
             <optional>true</optional>
         </dependency>
 
