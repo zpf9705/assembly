@@ -34,9 +34,7 @@
     <description>Mybatis plus is a data source implementation package for manipulating databases.</description>
 
     <properties>
-        <mp>3.5.3.1</mp>
         <codes>1.1.6</codes>
-        <mp>3.5.3.1</mp>
     </properties>
 
     <dependencies>
