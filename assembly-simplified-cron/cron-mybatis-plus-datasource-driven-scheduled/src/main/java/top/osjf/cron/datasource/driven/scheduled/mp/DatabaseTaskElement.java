@@ -20,11 +20,12 @@ package top.osjf.cron.datasource.driven.scheduled.mp;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import top.osjf.cron.datasource.driven.scheduled.Constants;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 import top.osjf.generated.mybatisplus.MybatisPlusCodeGenerate;
 
 /**
- * Database entity class for scheduled task configuration, mapped to the "ZT_TASK_SCHEDULER" table.
+ * Database entity class for scheduled task configuration, mapped to the {@link Constants#TASK_NAME} table.
  *
  * <p>This class implements the {@link TaskElement} interface to represent scheduled task configurations
  * persisted in relational database. It uses MyBatis-Plus annotations for ORM mapping and provides
@@ -61,14 +62,10 @@ import top.osjf.generated.mybatisplus.MybatisPlusCodeGenerate;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
-@TableName(DatabaseTaskElement.NAME)
+@TableName(Constants.TASK_NAME)
 @MybatisPlusCodeGenerate(noProviderPackageUseDefault = true, tableChineseName = "定时任务管理表")
 public class DatabaseTaskElement implements TaskElement {
     private static final long serialVersionUID = 6220853967182260722L;
-    /**
-     * A fixed table name that needs to be set by the developer to match the name of the database table.
-     */
-    public static final String NAME = "ZT_TASK_SCHEDULER";
 
     /**
      * @see TaskElement#getId()
