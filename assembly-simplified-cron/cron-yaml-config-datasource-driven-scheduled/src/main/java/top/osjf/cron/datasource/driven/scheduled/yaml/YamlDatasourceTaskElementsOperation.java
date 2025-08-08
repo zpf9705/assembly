@@ -131,10 +131,14 @@ public class YamlDatasourceTaskElementsOperation implements DatasourceTaskElemen
 
     @Override
     public List<TaskElement> getRuntimeNeedCheckDatasourceTaskElements() {
-        return getDatasourceTaskElements().stream()
+        List<TaskElement> datasourceTaskElements = getDatasourceTaskElements();
+
+        List<TaskElement> filteredDatasourceTaskElements =  datasourceTaskElements.stream()
                 .filter(t -> Objects.equals(t.getUpdateSign(), 1)
                         || (Objects.equals(t.getUpdateSign(), 1) && t.getTaskId() == null))
                 .collect(Collectors.toList());
+
+        return Collections.unmodifiableList(filteredDatasourceTaskElements);
     }
 
     @Override
