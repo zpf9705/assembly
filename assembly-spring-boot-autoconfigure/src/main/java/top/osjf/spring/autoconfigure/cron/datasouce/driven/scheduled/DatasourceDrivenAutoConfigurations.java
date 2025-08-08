@@ -26,6 +26,8 @@ import java.util.EnumMap;
 import java.util.Map;
 
 /**
+ * Mappings between {@link DataSource} and {@code @Configuration}.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
