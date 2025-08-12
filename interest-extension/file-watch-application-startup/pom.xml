@@ -10,11 +10,10 @@
     </parent>
 
     <groupId>top.osjf.filewatch</groupId>
-    <artifactId>file-watch-boot-starter</artifactId>
+    <artifactId>file-watch-application-startup</artifactId>
     <packaging>jar</packaging>
-    <name>file-watch-boot-starter ${project.version}</name>
-    <description>Integrate the file-watch auto assembly package of springboot.</description>
-
+    <name>file-watch-application-startup ${project.version}</name>
+    <description> The monitor implementation for file changes to start the jar package.</description>
 
     <dependencies>
 
@@ -23,14 +22,5 @@
             <artifactId>file-watch</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>top.osjf.filewatch</groupId>
-            <artifactId>file-watch-application-startup</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>top.osjf</groupId>
-            <artifactId>assembly-spring-boot-autoconfigure</artifactId>
-        </dependency>
     </dependencies>
 </project>

@@ -130,6 +130,13 @@
             <optional>true</optional>
         </dependency>
 
+        <dependency>
+            <groupId>top.osjf.filewatch</groupId>
+            <artifactId>file-watch-application-startup</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+
     </dependencies>
 
 </project>

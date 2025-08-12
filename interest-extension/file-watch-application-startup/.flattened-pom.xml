@@ -3,11 +3,11 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>top.osjf.filewatch</groupId>
-  <artifactId>file-watch-boot-starter</artifactId>
+  <artifactId>file-watch-application-startup</artifactId>
   <version>3.0.1</version>
-  <name>file-watch-boot-starter 3.0.1</name>
-  <description>Integrate the file-watch auto assembly package of springboot.</description>
-  <url>https://github.com/zpf9705/assembly/interest-extension/file-watch-boot-starter</url>
+  <name>file-watch-application-startup 3.0.1</name>
+  <description>The monitor implementation for file changes to start the jar package.</description>
+  <url>https://github.com/zpf9705/assembly/interest-extension/file-watch-application-startup</url>
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
@@ -28,26 +28,14 @@
     </developer>
   </developers>
   <scm>
-    <connection>scm:git:https://github.com/zpf9705/assembly.git/interest-extension/file-watch-boot-starter</connection>
-    <developerConnection>scm:git:https://github.com/zpf9705/assembly.git/interest-extension/file-watch-boot-starter</developerConnection>
-    <url>https://github.com/zpf9705/assembly/interest-extension/file-watch-boot-starter</url>
+    <connection>scm:git:https://github.com/zpf9705/assembly.git/interest-extension/file-watch-application-startup</connection>
+    <developerConnection>scm:git:https://github.com/zpf9705/assembly.git/interest-extension/file-watch-application-startup</developerConnection>
+    <url>https://github.com/zpf9705/assembly/interest-extension/file-watch-application-startup</url>
   </scm>
   <dependencies>
     <dependency>
       <groupId>top.osjf.filewatch</groupId>
       <artifactId>file-watch</artifactId>
-      <version>3.0.1</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>top.osjf.filewatch</groupId>
-      <artifactId>file-watch-application-startup</artifactId>
-      <version>3.0.1</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>top.osjf</groupId>
-      <artifactId>assembly-spring-boot-autoconfigure</artifactId>
       <version>3.0.1</version>
       <scope>compile</scope>
     </dependency>

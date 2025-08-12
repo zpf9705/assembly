@@ -16,6 +16,7 @@
 
     <modules>
         <module>file-watch</module>
+        <module>file-watch-application-startup</module>
         <module>file-watch-boot-starter</module>
     </modules>
 
@@ -25,6 +26,12 @@
 
                 <groupId>top.osjf.filewatch</groupId>
                 <artifactId>file-watch</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>top.osjf.filewatch</groupId>
+                <artifactId>file-watch-application-startup</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
