@@ -28,7 +28,7 @@ import java.io.Serializable;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
-public abstract class BindingConfiguration implements Serializable {
+public abstract class BindingConfiguration implements Comparable<BindingConfiguration>, Serializable {
 
     private static final long serialVersionUID = -924081876676893016L;
 
@@ -44,6 +44,20 @@ public abstract class BindingConfiguration implements Serializable {
      * @return the path context defined by the subclass.
      */
     public abstract String getPathContext();
+
+    @Override
+    public int compareTo(BindingConfiguration o) {
+        int bindPathComparison = bindPath.compareTo(o.bindPath);
+        if (bindPathComparison == 0) {
+            return getPathContext().compareTo(o.getPathContext());
+        }
+        return bindPathComparison;
+    }
+
+    @Override
+    public String toString() {
+        return bindPath + "@" + getPathContext();
+    }
 
     public String getBindPath() {
         return bindPath;
