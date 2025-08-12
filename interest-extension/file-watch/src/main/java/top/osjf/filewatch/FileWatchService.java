@@ -114,18 +114,38 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
     }
 
     /**
-     * Registers a file path with the WatchService to monitor specified file system events.
+     * Registers a file path with the {@code WatchService} to monitor specified file system events.
      * <p>
-     * This method registers the given path with the WatchService, enabling notification
+     * This method registers the given path with the {@code WatchService}, enabling notification
+     * when any of the specified event types occur in the monitored directory.
+     *
+     * @param watchPath            the specify {@code FileWatchPath} to register.
+     * @throws NullPointerException if {@code path} or {@code kinds} is {@literal null}.
+     * @throws FileWatchException in the following cases:
+     *                         - If the path is invalid ({@code InvalidPathException})
+     *                         - If registration fails ({@code IOException})
+     * @see #registerWatch(String, boolean, TriggerKind...)
+     *
+     * @see java.nio.file.WatchService
+     * @see java.nio.file.StandardWatchEventKinds
+     */
+    public void registerWatch(FileWatchPath watchPath) {
+        registerWatch(watchPath.getPath(), watchPath.isPeculiarWatchThread(), watchPath.getKinds());
+    }
+
+    /**
+     * Registers a file path with the {@code WatchService} to monitor specified file system events.
+     * <p>
+     * This method registers the given path with the {@code WatchService}, enabling notification
      * when any of the specified event types occur in the monitored directory.
      *
      * @param path                The file system path to monitor (absolute or relative path).
      * @param peculiarWatchThread Whether to create a new independent {@link FileWatchService}.
      * @param kinds               The array of event types to watch for (CREATE, MODIFY, DELETE, etc.).
-     * @throws NullPointerException if `path` or `kinds` is `null`.
+     * @throws NullPointerException if {@code path} or {@code kinds} is {@literal null}.
      * @throws FileWatchException in the following cases:
-     *                         - If the path is invalid (`InvalidPathException`)
-     *                         - If registration fails (`IOException`)
+     *                         - If the path is invalid ({@code InvalidPathException})
+     *                         - If registration fails ({@code IOException})
      *
      * <p>Example usage:
      * {@code
@@ -179,6 +199,18 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
      */
     public void registerListener(FileWatchListener listener) {
         fileWatchListeners.registerListener(listener);
+    }
+
+    /**
+     * Register a specified file creation/modification/deletion notification
+     * {@link StandardWatchEventKinds#ENTRY_CREATE} {@link StandardWatchEventKinds#ENTRY_MODIFY}
+     * {@link StandardWatchEventKinds#ENTRY_DELETE} and configure the waiting time for completion
+     * of creation {@code WaitCreateConfiguration}.
+     * @param configuration the specific bind wait configuration to register.
+     */
+    public void registerWaitConfiguration(BindWaitConfiguration configuration) {
+        registerWaitConfiguration(configuration.getBindPath(),
+                configuration.getPathContext(), configuration.getConfiguration());
     }
 
     /**
