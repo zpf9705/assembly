@@ -65,7 +65,7 @@ public class DatasourceDrivenScheduledAutoConfiguration {
             DataSource[] types = DataSource.values();
             String[] imports = new String[types.length];
             for (int i = 0; i < types.length; i++) {
-                imports[i] = DatasourceDrivenAutoConfigurations.getConfigurationClass(types[i]);
+                imports[i] = DatasourceDrivenConfigurations.getConfigurationClass(types[i]);
             }
             return imports;
         }

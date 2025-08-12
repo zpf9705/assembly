@@ -17,26 +17,27 @@
 
 package top.osjf.spring.autoconfigure.cron.datasouce.driven.scheduled;
 
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
-import top.osjf.cron.datasource.driven.scheduled.yaml.YamlDatasourceTaskElementsOperation;
-import top.osjf.cron.spring.datasource.driven.scheduled.YamDatabaseDrivenScheduledConfiguration;
+import top.osjf.cron.datasource.driven.scheduled.jpa.JpaDatasourceTaskElementsOperation;
+import top.osjf.cron.spring.datasource.driven.scheduled.JpaDatabaseDrivenScheduledConfiguration;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for {@link YamlDatasourceTaskElementsOperation}.
+ * {@link Configuration Configuration} for {@link JpaDatasourceTaskElementsOperation}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
 @Configuration(proxyBeanMethods = false)
-@Import(YamDatabaseDrivenScheduledConfiguration.class)
-@ConditionalOnClass(YamlDatasourceTaskElementsOperation.class)
+@Import(JpaDatabaseDrivenScheduledConfiguration.class)
+@ConditionalOnClass(JpaDatasourceTaskElementsOperation.class)
 @ConditionalOnMissingBean(DatasourceTaskElementsOperation.class)
+@EntityScan("top.osjf.cron.datasource.driven.scheduled.jpa")
 @Conditional(DatasourceDrivenCondition.class)
-public class YamlConfigDatasourceTaskElementsOperationAutoConfiguration {
+class JpaDatasourceTaskElementsOperationConfiguration {
 }

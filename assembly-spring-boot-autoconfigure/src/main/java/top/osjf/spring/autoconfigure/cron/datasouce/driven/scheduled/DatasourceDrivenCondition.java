@@ -49,7 +49,7 @@ public class DatasourceDrivenCondition extends SourceClassMessageCondition {
             if (!specified.isBound()) {
                 return ConditionOutcome.match(message.because("automatic cron dataSource type"));
             }
-            DataSource required = DatasourceDrivenAutoConfigurations.getType(((AnnotationMetadata) metadata)
+            DataSource required = DatasourceDrivenConfigurations.getType(((AnnotationMetadata) metadata)
                     .getClassName());
             if (specified.get() == required) {
                 return ConditionOutcome.match(message.because(specified.get() + " cron dataSource type"));

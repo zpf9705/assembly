@@ -30,22 +30,22 @@ import java.util.Map;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
-final class DatasourceDrivenAutoConfigurations {
+final class DatasourceDrivenConfigurations {
 
     private static final Map<DataSource, String> MAPPINGS;
 
     static {
         Map<DataSource, String> mappings = new EnumMap<>(DataSource.class);
         mappings.put(DataSource.YAML_CONFIG,
-                YamlConfigDatasourceTaskElementsOperationAutoConfiguration.class.getName());
+                YamlConfigDatasourceTaskElementsOperationConfiguration.class.getName());
         mappings.put(DataSource.MY_BATIS_PLUS_ORM_DATABASE,
-                MybatisPlusDatasourceTaskElementsOperationAutoConfiguration.class.getName());
+                MybatisPlusDatasourceTaskElementsOperationConfiguration.class.getName());
         mappings.put(DataSource.SPRING_JPA_ORM_DATABASE,
-                JpaDatasourceTaskElementsOperationAutoConfiguration.class.getName());
+                JpaDatasourceTaskElementsOperationConfiguration.class.getName());
         MAPPINGS = Collections.unmodifiableMap(mappings);
     }
 
-    private DatasourceDrivenAutoConfigurations() {
+    private DatasourceDrivenConfigurations() {
     }
 
     static String getConfigurationClass(DataSource dataSource) {
