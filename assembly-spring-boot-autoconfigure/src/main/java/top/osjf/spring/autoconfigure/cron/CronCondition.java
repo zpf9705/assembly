@@ -36,7 +36,7 @@ import top.osjf.spring.autoconfigure.SourceClassMessageCondition;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
-public class CronCondition extends SourceClassMessageCondition {
+class CronCondition extends SourceClassMessageCondition {
     @Override
     public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata,
                                             ConditionMessage.Builder message) {
