@@ -16,34 +16,39 @@
 
 package top.osjf.spring.autoconfigure.cron;
 
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.core.repository.CronTaskRepository;
-import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
-import top.osjf.cron.spring.CronTaskConfiguration;
-import top.osjf.cron.spring.cron4j.Cron4jCronTaskConfiguration;
+import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
+import top.osjf.cron.spring.quartz.EnableQuartzCronTaskRegister;
+import top.osjf.cron.spring.quartz.QuartzCronTaskConfiguration;
+
+import java.util.List;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for {@link Cron4jCronTaskRepository}.
+ * {@link Configuration Configuration} for {@link QuartzCronTaskRepository}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({Cron4jCronTaskRepository.class, Cron4jCronTaskConfiguration.class})
-@Import({Cron4jCronTaskConfiguration.class, CronTaskConfiguration.class})
+@ConditionalOnClass({QuartzCronTaskRepository.class, QuartzCronTaskConfiguration.class})
+@EnableQuartzCronTaskRegister
 @ConditionalOnMissingBean(CronTaskRepository.class)
 @Conditional(CronCondition.class)
-public class Cron4jCronTaskAutoConfiguration {
+class QuartzCronConfiguration {
 
     @Bean
-    public SuperiorProperties cron4jProperties(CronProperties cronProperties) {
-        return cronProperties.getCron4j().get();
+    public SuperiorProperties quartzProperties(ObjectProvider<List<QuartzPropertiesCustomizer>> provider,
+                                               CronProperties cronProperties) {
+        SuperiorProperties properties = cronProperties.getQuartz().get();
+        provider.orderedStream()
+                .forEach(customizers -> customizers.forEach(c -> c.customize(properties)));
+        return properties;
     }
 }

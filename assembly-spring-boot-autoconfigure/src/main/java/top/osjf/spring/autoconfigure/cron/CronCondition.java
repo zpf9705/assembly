@@ -47,7 +47,7 @@ public class CronCondition extends SourceClassMessageCondition {
             if (!specified.isBound()) {
                 return ConditionOutcome.match(message.because("automatic cron client type"));
             }
-            ClientType required = CronAutoConfigurations.getType(((AnnotationMetadata) metadata)
+            ClientType required = CronConfigurations.getType(((AnnotationMetadata) metadata)
                     .getClassName());
             if (specified.get() == required) {
                 return ConditionOutcome.match(message.because(specified.get() + " cron client type"));

@@ -29,22 +29,22 @@ import java.util.Map;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
-final class CronAutoConfigurations {
+final class CronConfigurations {
 
     private static final Map<ClientType, String> MAPPINGS;
 
     static {
         Map<ClientType, String> mappings = new EnumMap<>(ClientType.class);
-        mappings.put(ClientType.SPRING_SCHEDULER, SpringSchedulerAutoConfiguration.class.getName());
-        mappings.put(ClientType.HUTOOL, HutoolCronTaskAutoConfiguration.class.getName());
-        mappings.put(ClientType.QUARTZ, QuartzCronTaskAutoConfiguration.class.getName());
-        mappings.put(ClientType.CRON4J, Cron4jCronTaskAutoConfiguration.class.getName());
-        mappings.put(ClientType.SIMPLE, SimpleCronTaskAutoConfiguration.class.getName());
-        mappings.put(ClientType.NONE, NoOpCornTaskAutoConfiguration.class.getName());
+        mappings.put(ClientType.SPRING_SCHEDULER, SpringSchedulerConfiguration.class.getName());
+        mappings.put(ClientType.HUTOOL, HutoolCronConfiguration.class.getName());
+        mappings.put(ClientType.QUARTZ, QuartzCronConfiguration.class.getName());
+        mappings.put(ClientType.CRON4J, Cron4jCronConfiguration.class.getName());
+        mappings.put(ClientType.SIMPLE, SimpleCronConfiguration.class.getName());
+        mappings.put(ClientType.NONE, NoOpCornConfiguration.class.getName());
         MAPPINGS = Collections.unmodifiableMap(mappings);
     }
 
-    private CronAutoConfigurations() {
+    private CronConfigurations() {
     }
 
     static String getConfigurationClass(ClientType clientType) {

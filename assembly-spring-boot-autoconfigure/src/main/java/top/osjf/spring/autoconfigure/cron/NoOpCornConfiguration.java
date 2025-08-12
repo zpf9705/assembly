@@ -14,36 +14,30 @@
  * limitations under the License.
  */
 
+
 package top.osjf.spring.autoconfigure.cron;
 
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.core.repository.CronTaskRepository;
-import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
-import top.osjf.cron.spring.CronTaskConfiguration;
-import top.osjf.cron.spring.hutool.HutoolCronTaskConfiguration;
+import top.osjf.cron.core.repository.NoOpCronTaskRepository;
+import top.osjf.cron.spring.annotation.CronRepositoryBean;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for {@link HutoolCronTaskRepository}.
+ * {@link Configuration Configuration} for {@link NoOpCronTaskRepository}
+ * used to disable {@link CronTaskRepository} configuration.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.3
+ * @since 1.0.4
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({HutoolCronTaskRepository.class, HutoolCronTaskConfiguration.class})
-@Import({HutoolCronTaskConfiguration.class, CronTaskConfiguration.class})
 @ConditionalOnMissingBean(CronTaskRepository.class)
 @Conditional(CronCondition.class)
-public class HutoolCronTaskAutoConfiguration {
+class NoOpCornConfiguration {
 
-    @Bean
-    public SuperiorProperties hutoolProperties(CronProperties cronProperties) {
-        return cronProperties.getHutool().get();
+    @CronRepositoryBean
+    public NoOpCronTaskRepository noOpCronTaskRepository() {
+        return new NoOpCronTaskRepository();
     }
 }

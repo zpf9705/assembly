@@ -19,7 +19,6 @@ package top.osjf.spring.autoconfigure.cron;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -42,7 +41,7 @@ import top.osjf.cron.spring.scheduler.SpringSchedulerTaskRepository;
 import top.osjf.cron.spring.scheduler.config.EnableScheduling;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for {@link SpringSchedulerTaskRepository}.
+ * {@link Configuration Configuration} for {@link SpringSchedulerTaskRepository}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
@@ -53,7 +52,7 @@ import top.osjf.cron.spring.scheduler.config.EnableScheduling;
 @EnableConfigurationProperties(TaskSchedulingProperties.class)
 @ConditionalOnMissingBean(CronTaskRepository.class)
 @Conditional(CronCondition.class)
-public class SpringSchedulerAutoConfiguration {
+class SpringSchedulerConfiguration {
 
 
     ////////////////////////////////////////////////////////////////////////////////

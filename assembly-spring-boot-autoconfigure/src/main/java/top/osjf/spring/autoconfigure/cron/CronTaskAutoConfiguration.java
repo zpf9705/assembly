@@ -67,7 +67,7 @@ public class CronTaskAutoConfiguration {
      * exception.
      * @since 1.0.4
      */
-    public static class CronClientValidator implements InitializingBean {
+    static class CronClientValidator implements InitializingBean {
 
         private final CronProperties cronProperties;
 
@@ -92,7 +92,7 @@ public class CronTaskAutoConfiguration {
      * {@link ImportSelector} to add {@link ClientType} configuration classes.
      * @since 1.0.4
      */
-    public static class CronConfigurationImportSelector implements ImportSelector {
+    static class CronConfigurationImportSelector implements ImportSelector {
 
         @Override
         @NotNull
@@ -100,7 +100,7 @@ public class CronTaskAutoConfiguration {
             ClientType[] types = ClientType.values();
             String[] imports = new String[types.length];
             for (int i = 0; i < types.length; i++) {
-                imports[i] = CronAutoConfigurations.getConfigurationClass(types[i]);
+                imports[i] = CronConfigurations.getConfigurationClass(types[i]);
             }
             return imports;
         }

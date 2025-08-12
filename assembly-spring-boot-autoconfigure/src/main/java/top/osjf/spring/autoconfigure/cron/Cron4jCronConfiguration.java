@@ -14,31 +14,35 @@
  * limitations under the License.
  */
 
-
 package top.osjf.spring.autoconfigure.cron;
 
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.core.repository.CronTaskRepository;
-import top.osjf.cron.core.repository.NoOpCronTaskRepository;
-import top.osjf.cron.spring.annotation.CronRepositoryBean;
+import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
+import top.osjf.cron.spring.CronTaskConfiguration;
+import top.osjf.cron.spring.cron4j.Cron4jCronTaskConfiguration;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for {@link NoOpCronTaskRepository}
- * used to disable {@link CronTaskRepository} configuration.
+ * {@link Configuration Configuration} for {@link Cron4jCronTaskRepository}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.4
+ * @since 1.0.3
  */
 @Configuration(proxyBeanMethods = false)
+@ConditionalOnClass({Cron4jCronTaskRepository.class, Cron4jCronTaskConfiguration.class})
+@Import({Cron4jCronTaskConfiguration.class, CronTaskConfiguration.class})
 @ConditionalOnMissingBean(CronTaskRepository.class)
 @Conditional(CronCondition.class)
-public class NoOpCornTaskAutoConfiguration {
+class Cron4jCronConfiguration {
 
-    @CronRepositoryBean
-    public NoOpCronTaskRepository noOpCronTaskRepository() {
-        return new NoOpCronTaskRepository();
+    @Bean
+    public SuperiorProperties cron4jProperties(CronProperties cronProperties) {
+        return cronProperties.getCron4j().get();
     }
 }
