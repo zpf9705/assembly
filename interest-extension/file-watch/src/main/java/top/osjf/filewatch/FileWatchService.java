@@ -206,9 +206,9 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
      * {@link StandardWatchEventKinds#ENTRY_CREATE} {@link StandardWatchEventKinds#ENTRY_MODIFY}
      * {@link StandardWatchEventKinds#ENTRY_DELETE} and configure the waiting time for completion
      * of creation {@code WaitCreateConfiguration}.
-     * @param configuration the specific bind wait configuration to register.
+     * @param configuration the specific {@code BindingConfiguration} to register.
      */
-    public void registerWaitConfiguration(BindWaitConfiguration configuration) {
+    public void registerWaitConfiguration(BindingConfiguration configuration) {
         registerWaitConfiguration(configuration.getBindPath(),
                 configuration.getPathContext(), configuration.getConfiguration());
     }
