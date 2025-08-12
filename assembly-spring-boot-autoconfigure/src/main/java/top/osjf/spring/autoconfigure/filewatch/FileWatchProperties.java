@@ -21,7 +21,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-import top.osjf.filewatch.TriggerKind;
+import top.osjf.filewatch.FileWatchPath;
+import top.osjf.filewatch.application.startup.StartupJarElement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +48,12 @@ public class FileWatchProperties implements InitializingBean {
     /**
      * A list of path information for registering file listening services is required.
      */
-    private List<FileWatch> fileWatches = new ArrayList<>();
+    private List<FileWatchPath> fileWatchPaths = new ArrayList<>();
+
+    /**
+     * Configuration items for application startup.
+     */
+    private ApplicationStartup applicationStartup = new ApplicationStartup();
 
     public boolean isEnable() {
         return enable;
@@ -57,63 +63,55 @@ public class FileWatchProperties implements InitializingBean {
         this.enable = enable;
     }
 
-    public List<FileWatch> getFileWatches() {
-        return fileWatches;
+    public List<FileWatchPath> getFileWatchPaths() {
+        return fileWatchPaths;
     }
 
-    public void setFileWatches(List<FileWatch> fileWatches) {
-        this.fileWatches = fileWatches;
+    public void setFileWatchPaths(List<FileWatchPath> fileWatchPaths) {
+        this.fileWatchPaths = fileWatchPaths;
+    }
+
+    public ApplicationStartup getApplicationStartup() {
+        return applicationStartup;
+    }
+
+    public void setApplicationStartup(ApplicationStartup applicationStartup) {
+        this.applicationStartup = applicationStartup;
     }
 
     @Override
     public void afterPropertiesSet() {
-        if (enable) {
-            Assert.notEmpty(fileWatches, "fileWatches not empty");
-            Assert.isTrue(fileWatches.stream().allMatch(f -> StringUtils.hasText(f.path)), "path not be null");
-        }
+        if (!enable) return;
+        Assert.notEmpty(fileWatchPaths, "fileWatchPaths not empty");
+        Assert.isTrue(fileWatchPaths.stream().allMatch(f -> StringUtils.hasText(f.getPath())),
+                "path not be null");
+        applicationStartup.afterPropertiesSet();
     }
 
-    public static class FileWatch {
+    /**
+     * Application self-starting configuration class.
+     */
+    public static class ApplicationStartup implements InitializingBean {
 
         /**
-         * Listen to the file path array.
+         * Register the self-starting jar package information configuration collection.
          */
-        private String path;
+        private List<StartupJarElement> elements = new ArrayList<>();
 
-        /**
-         * This Boolean tag indicates whether there is an independent listener thread,
-         * which is not independently owned by default.
-         */
-        private boolean peculiarWatchThread = false;
-
-        /**
-         * This listening service supports a variable type enumeration array.
-         */
-        private TriggerKind[] triggerKinds
-                = {TriggerKind.ENTRY_CREATE, TriggerKind.ENTRY_MODIFY, TriggerKind.ENTRY_DELETE};
-
-        public String getPath() {
-            return path;
+        @Override
+        public void afterPropertiesSet() {
+            Assert.isTrue(elements.isEmpty() ||
+                    elements.stream().allMatch(startupJarElement -> startupJarElement.getJarFileName() != null
+                    && !startupJarElement.getSortedStartupCommands().isEmpty()),
+                    "Missing jarFileName or sortedStartupCommands");
         }
 
-        public void setPath(String path) {
-            this.path = path;
+        public List<StartupJarElement> getElements() {
+            return elements;
         }
 
-        public boolean isPeculiarWatchThread() {
-            return peculiarWatchThread;
-        }
-
-        public void setPeculiarWatchThread(boolean peculiarWatchThread) {
-            this.peculiarWatchThread = peculiarWatchThread;
-        }
-
-        public TriggerKind[] getTriggerKinds() {
-            return triggerKinds;
-        }
-
-        public void setTriggerKinds(TriggerKind[] triggerKinds) {
-            this.triggerKinds = triggerKinds;
+        public void setElements(List<StartupJarElement> elements) {
+            this.elements = elements;
         }
     }
 }
