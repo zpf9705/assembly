@@ -37,7 +37,7 @@ import top.osjf.spring.autoconfigure.SourceClassMessageCondition;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
-public class DatasourceDrivenCondition extends SourceClassMessageCondition {
+class DatasourceDrivenCondition extends SourceClassMessageCondition {
 
     @Override
     public ConditionOutcome getMatchOutcome(ConditionContext context,

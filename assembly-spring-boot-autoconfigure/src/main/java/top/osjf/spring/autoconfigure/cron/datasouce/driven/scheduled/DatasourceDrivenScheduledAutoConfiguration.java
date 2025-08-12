@@ -45,7 +45,7 @@ public class DatasourceDrivenScheduledAutoConfiguration {
     @Configuration(proxyBeanMethods = false)
     @Import({DatasourceDrivenConfigurationImportSelector.class, DatabaseDrivenScheduledConfiguration.class})
     @EnableDatasourceScheduledProfiles
-    public static class DatasourceDrivenScheduledSelectiveAutoConfiguration {
+    static class DatasourceDrivenScheduledSelectiveAutoConfiguration {
     }
 
     @Bean
@@ -58,7 +58,7 @@ public class DatasourceDrivenScheduledAutoConfiguration {
      * {@link ImportSelector} to add {@link DataSource} configuration classes.
      * @since 1.0.4
      */
-    public static class DatasourceDrivenConfigurationImportSelector implements ImportSelector {
+    static class DatasourceDrivenConfigurationImportSelector implements ImportSelector {
         @Override
         @NotNull
         public String[] selectImports(@NotNull AnnotationMetadata importingClassMetadata) {
