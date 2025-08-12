@@ -82,9 +82,9 @@ public class FileWatchProperties implements InitializingBean {
     @Override
     public void afterPropertiesSet() {
         if (!enable) return;
-        Assert.notEmpty(fileWatchPaths, "fileWatchPaths not empty");
+        Assert.notEmpty(fileWatchPaths, "File watch paths can not be empty");
         Assert.isTrue(fileWatchPaths.stream().allMatch(f -> StringUtils.hasText(f.getPath())),
-                "path not be null");
+                "All elements must has path");
         applicationStartup.afterPropertiesSet();
     }
 
@@ -103,7 +103,7 @@ public class FileWatchProperties implements InitializingBean {
             Assert.isTrue(elements.isEmpty() ||
                     elements.stream().allMatch(startupJarElement -> startupJarElement.getJarFileName() != null
                     && !startupJarElement.getSortedStartupCommands().isEmpty()),
-                    "Missing jarFileName or sortedStartupCommands");
+                    "Missing jar file name or sorted startup commands");
         }
 
         public List<StartupJarElement> getElements() {
