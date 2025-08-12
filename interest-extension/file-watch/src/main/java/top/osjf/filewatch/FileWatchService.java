@@ -179,6 +179,7 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
                 for (int i = 0; i < kinds.length; i++) events[i] = kinds[i].kind;
                 registeredPaths.add(registeredPath);
                 watchKeyregisteredPathMap.put(registeredPath.register(watchService, events), registeredPath);
+                LOGGER.info("File monitoring service for path {} has been registered.", registeredPath);
             }
             catch (InvalidPathException ex) {
                 throw new FileWatchException("Invalid path " + path, ex);

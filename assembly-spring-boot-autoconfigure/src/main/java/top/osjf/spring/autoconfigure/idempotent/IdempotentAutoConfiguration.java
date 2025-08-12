@@ -46,7 +46,7 @@ public class IdempotentAutoConfiguration {
      * Bean used to Initialize setting idempotent global configuration that a {@link IdempotentMethodAspect}
      * exists and provide a more meaningful exception.
      */
-    public static class IdempotentGlobalConfigInitializing implements InitializingBean {
+    static class IdempotentGlobalConfigInitializing implements InitializingBean {
 
         private final ObjectProvider<IdempotentMethodAspect> provider;
         private final IdempotentProperties idempotentProperties;
