@@ -17,6 +17,8 @@
 
 package top.osjf.spring.autoconfigure.filewatch;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
@@ -26,6 +28,7 @@ import top.osjf.filewatch.application.startup.StartupJarElement;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * File-watch properties.
@@ -35,6 +38,8 @@ import java.util.List;
  */
 @ConfigurationProperties(prefix = "file-watch")
 public class FileWatchProperties implements InitializingBean {
+
+    private final static Logger logger = LoggerFactory.getLogger(FileWatchProperties.class);
 
     /**
      * Enable tag configuration for dynamic file listening.
@@ -82,29 +87,40 @@ public class FileWatchProperties implements InitializingBean {
     @Override
     public void afterPropertiesSet() {
         if (!enable) return;
+
+        // Verification of fileWatchPaths.
         Assert.notEmpty(fileWatchPaths, "File watch paths can not be empty");
         Assert.isTrue(fileWatchPaths.stream().allMatch(f -> StringUtils.hasText(f.getPath())),
                 "All elements must has path");
-        applicationStartup.afterPropertiesSet();
+
+        // Verification of jar startup elements.
+        List<StartupJarElement> elements = applicationStartup.getElements();
+        Assert.isTrue(elements.isEmpty() ||
+                        elements.stream().allMatch(startupJarElement -> startupJarElement.getJarFileName() != null
+                                && !startupJarElement.getSortedStartupCommands().isEmpty()),
+                "Missing jar file name or sorted startup commands");
+
+        List<String> paths = fileWatchPaths.stream().map(FileWatchPath::getPath).collect(Collectors.toList());
+        for (StartupJarElement element : elements) {
+            if (!paths.contains(element.getBindPath())) {
+                if (logger.isWarnEnabled()) {
+                    logger.warn("Binding path {} configured by jar name {} is not in the registered listening" +
+                            " path list, and will lose the runtime auto start function. It is recommended to " +
+                            "check and restart!", element.getBindPath(), element.getJarFileName());
+                }
+            }
+        }
     }
 
     /**
      * Application self-starting configuration class.
      */
-    public static class ApplicationStartup implements InitializingBean {
+    public static class ApplicationStartup {
 
         /**
          * Register the self-starting jar package information configuration collection.
          */
         private List<StartupJarElement> elements = new ArrayList<>();
-
-        @Override
-        public void afterPropertiesSet() {
-            Assert.isTrue(elements.isEmpty() ||
-                    elements.stream().allMatch(startupJarElement -> startupJarElement.getJarFileName() != null
-                    && !startupJarElement.getSortedStartupCommands().isEmpty()),
-                    "Missing jar file name or sorted startup commands");
-        }
 
         public List<StartupJarElement> getElements() {
             return elements;
