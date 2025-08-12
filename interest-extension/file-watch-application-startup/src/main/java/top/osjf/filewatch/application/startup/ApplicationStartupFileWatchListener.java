@@ -17,7 +17,6 @@
 
 package top.osjf.filewatch.application.startup;
 
-import com.sun.istack.internal.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.osjf.filewatch.AmapleWatchEvent;
@@ -162,7 +161,7 @@ public class ApplicationStartupFileWatchListener implements FileWatchListener {
      * @return the String that has been copied to (possibly empty)
      * @throws IOException in case of I/O errors
      */
-    private static String copyToString(@Nullable InputStream in) throws IOException {
+    private static String copyToString(InputStream in) throws IOException {
         if (in == null) {
             return "";
         }
