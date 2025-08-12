@@ -18,13 +18,14 @@
 package top.osjf.spring.autoconfigure.filewatch;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.core.annotation.AliasFor;
 
 import java.lang.annotation.*;
 
 /**
  * This annotation maps the configuration {@link FileWatchProperties#isEnable()} to
- * indicate whether to load the corresponding configuration class when set to {@code true}
- * or not.
+ * indicate loading the corresponding configuration class when set to {@code true},
+ * {@code false} otherwise.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
@@ -32,6 +33,13 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
 @Documented
-@ConditionalOnProperty(prefix = "file-watch", name = "enable", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "file-watch", name = "enable", havingValue = "true")
 public @interface EnableFileWatch {
+    /**
+     * Specify if the condition should match if the property is not set. Defaults to
+     * {@code false}.
+     * @return if should match if the property is missing
+     */
+    @AliasFor(annotation = ConditionalOnProperty.class, attribute = "matchIfMissing")
+    boolean matchIfMissing() default false;
 }

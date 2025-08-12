@@ -37,8 +37,12 @@ public class FileWatchProperties implements InitializingBean {
 
     /**
      * Enable tag configuration for dynamic file listening.
+     * <p>
+     * This feature is an additional service and is not enabled by
+     * default. If necessary, automatic configuration needs to be
+     * manually enabled.
      */
-    private boolean enable = true;
+    private boolean enable = false;
 
     /**
      * A list of path information for registering file listening services is required.
