@@ -24,6 +24,9 @@ import org.springframework.core.type.AnnotationMetadata;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.spring.datasource.driven.scheduled.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * {@link Configuration Configuration} for {@link SpringDatasourceDrivenScheduled}.
  *
@@ -39,21 +42,20 @@ public class DatabaseDrivenScheduledConfiguration implements ImportSelector {
         AnnotationAttributes attributes
                 = AnnotationAttributes
                 .fromMap(metadata.getAnnotationAttributes(EnableDataSourceDrivenScheduled.class.getCanonicalName()));
-        if (attributes != null){
+        List<String> configs = new ArrayList<>();
+        configs.add(SpringDatasourceDrivenScheduled.class.getCanonicalName());
+        if (attributes != null) {
             DataSource dataSource = attributes.getEnum("value");
             switch (dataSource){
                 case YAML_CONFIG:
-                    return new String[]{YamDatabaseDrivenScheduledConfiguration.class.getCanonicalName(),
-                            SpringDatasourceDrivenScheduled.class.getCanonicalName()};
+                    configs.add(YamDatabaseDrivenScheduledConfiguration.class.getCanonicalName()); break;
                 case MY_BATIS_PLUS_ORM_DATABASE:
-                    return new String[]{MybatisPlusDatabaseDrivenScheduledConfiguration.class.getCanonicalName(),
-                            SpringDatasourceDrivenScheduled.class.getCanonicalName()};
+                    configs.add(MybatisPlusDatabaseDrivenScheduledConfiguration.class.getCanonicalName()); break;
                 case SPRING_JPA_ORM_DATABASE:
-                    return new String[]{JpaDatabaseDrivenScheduledConfiguration.class.getCanonicalName(),
-                            SpringDatasourceDrivenScheduled.class.getCanonicalName()};
+                    configs.add(JpaDatabaseDrivenScheduledConfiguration.class.getCanonicalName()); break;
             }
         }
 
-        return new String[]{SpringDatasourceDrivenScheduled.class.getCanonicalName()};
+        return configs.toArray(new String[]{});
     }
 }
