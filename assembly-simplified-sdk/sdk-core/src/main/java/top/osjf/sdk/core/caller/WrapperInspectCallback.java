@@ -37,6 +37,12 @@ import top.osjf.sdk.core.util.ReflectUtil;
 public abstract class WrapperInspectCallback<R extends Response> implements Callback {
 
     /**
+     * The expected {@code Response} type.
+     * @since 3.0.1
+     */
+    protected Class<R> responseType;
+
+    /**
      * {@inheritDoc}
      * {@code success} callback method with expected response type
      * conversion check.
@@ -58,7 +64,10 @@ public abstract class WrapperInspectCallback<R extends Response> implements Call
      */
     @NotNull
     public Class<R> getType() {
-        return ReflectUtil.getSuperGenericClass(getClass(), 0);
+        if (responseType == null) {
+            responseType =  ReflectUtil.getSuperGenericClass(getClass(), 0);
+        }
+        return responseType;
     }
 
     /**

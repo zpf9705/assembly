@@ -93,7 +93,10 @@ public abstract class ComprehensiveWrapperInspectCallback<REQ extends Request<RS
     @NotNull
     @Override
     public Class<RSP> getType() {
-        return ReflectUtil.getSuperGenericClass(getClass(), 1);
+        if (responseType == null) {
+            responseType = ReflectUtil.getSuperGenericClass(getClass(), 1);
+        }
+        return responseType;
     }
 
     /**
@@ -126,10 +129,6 @@ public abstract class ComprehensiveWrapperInspectCallback<REQ extends Request<RS
      */
     public void exceptionInternal(@NotNull REQ req, @NotNull Throwable e) {
         exception(req.matchSdkEnum().name(), e);
-    }
-
-    @Override
-    public void exception(@NotNull String name, @NotNull Throwable e) {
     }
 
     /**
