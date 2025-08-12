@@ -39,6 +39,9 @@ public class FileWatchPath implements Comparable<FileWatchPath>, Serializable {
     /** The array of event types to watch for (CREATE, MODIFY, DELETE, etc.).*/
     private TriggerKind[] kinds;
 
+    public FileWatchPath() {
+    }
+
     public FileWatchPath(String path, boolean peculiarWatchThread, TriggerKind[] kinds) {
         this.path = path;
         this.peculiarWatchThread = peculiarWatchThread;
