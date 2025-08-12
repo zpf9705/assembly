@@ -21,10 +21,12 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import top.osjf.filewatch.FileWatchListener;
+import org.springframework.context.annotation.Import;
+import top.osjf.filewatch.FileWatchPath;
 import top.osjf.filewatch.FileWatchService;
 
 /**
@@ -33,24 +35,27 @@ import top.osjf.filewatch.FileWatchService;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
-@ConditionalOnClass(FileWatchService.class)
 @Configuration(proxyBeanMethods = false)
+@ConditionalOnClass(FileWatchService.class)
 @EnableConfigurationProperties(FileWatchProperties.class)
-@EnableFileWatch
+@ConditionalOnProperty(prefix = "file-watch", name = "enable", havingValue = "true")
+@Import({ ApplicationStartupFileWatchConfiguration.class })
 public class FileWatchAutoConfiguration {
 
     @Bean(destroyMethod = "close")
     @ConditionalOnMissingBean
     public FileWatchService fileWatchService(FileWatchProperties fileWatchProperties,
-                                             ObjectProvider<FileWatchListener> listenerProvider,
                                              ObjectProvider<FileWatchServiceCustomizer> customizerProvider) {
         FileWatchService fileWatchService = new FileWatchService();
-        for (FileWatchProperties.FileWatch fileWatch : fileWatchProperties.getFileWatches()) {
-            fileWatchService.registerWatch(fileWatch.getPath(), fileWatch.isPeculiarWatchThread(),
-                    fileWatch.getTriggerKinds());
+
+        // Register fileWatchPath .
+        for (FileWatchPath fileWatchPath : fileWatchProperties.getFileWatchPaths()) {
+            fileWatchService.registerWatch(fileWatchPath);
         }
-        listenerProvider.orderedStream().forEach(fileWatchService::registerListener);
+
+        // Any customize beans .
         customizerProvider.orderedStream().forEach(c -> c.customize(fileWatchService));
+
         return fileWatchService;
     }
 
