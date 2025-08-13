@@ -26,7 +26,7 @@ import java.io.Serializable;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
-public class FileWatchPath implements Comparable<FileWatchPath>, Serializable {
+public class FileWatchPath extends TriggerKindProvider implements Comparable<FileWatchPath>, Serializable {
 
     private static final long serialVersionUID = -7019939522442013076L;
 
@@ -35,9 +35,6 @@ public class FileWatchPath implements Comparable<FileWatchPath>, Serializable {
 
     /** Whether to create a new independent {@link FileWatchService}.*/
     private boolean peculiarWatchThread;
-
-    /** The array of event types to watch for (CREATE, MODIFY, DELETE, etc.).*/
-    private TriggerKind[] triggerKinds;
 
     @Override
     public int compareTo(FileWatchPath o) {
@@ -63,13 +60,5 @@ public class FileWatchPath implements Comparable<FileWatchPath>, Serializable {
 
     public void setPeculiarWatchThread(boolean peculiarWatchThread) {
         this.peculiarWatchThread = peculiarWatchThread;
-    }
-
-    public TriggerKind[] getTriggerKinds() {
-        return triggerKinds;
-    }
-
-    public void setTriggerKinds(TriggerKind[] triggerKinds) {
-        this.triggerKinds = triggerKinds;
     }
 }
