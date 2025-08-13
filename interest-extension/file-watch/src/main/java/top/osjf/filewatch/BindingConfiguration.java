@@ -28,7 +28,8 @@ import java.io.Serializable;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
-public abstract class BindingConfiguration implements Comparable<BindingConfiguration>, Serializable {
+public abstract class BindingConfiguration
+        extends TriggerKindProvider implements Comparable<BindingConfiguration>, Serializable {
 
     private static final long serialVersionUID = -924081876676893016L;
 
