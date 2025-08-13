@@ -130,7 +130,7 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
      * @see java.nio.file.StandardWatchEventKinds
      */
     public void registerWatch(FileWatchPath watchPath) {
-        registerWatch(watchPath.getPath(), watchPath.isPeculiarWatchThread(), watchPath.getKinds());
+        registerWatch(watchPath.getPath(), watchPath.isPeculiarWatchThread(), watchPath.getTriggerKinds());
     }
 
     /**
@@ -141,7 +141,7 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
      *
      * @param path                The file system path to monitor (absolute or relative path).
      * @param peculiarWatchThread Whether to create a new independent {@link FileWatchService}.
-     * @param kinds               The array of event types to watch for (CREATE, MODIFY, DELETE, etc.).
+     * @param triggerKinds        The array of event types to watch for (CREATE, MODIFY, DELETE, etc.).
      * @throws NullPointerException if {@code path} or {@code kinds} is {@literal null}.
      * @throws FileWatchException in the following cases:
      *                         - If the path is invalid ({@code InvalidPathException})
@@ -155,8 +155,8 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
      * @see java.nio.file.WatchService
      * @see java.nio.file.StandardWatchEventKinds
      */
-    public void registerWatch(String path, boolean peculiarWatchThread, TriggerKind... kinds) {
-        if (path == null || kinds == null) {
+    public void registerWatch(String path, boolean peculiarWatchThread, TriggerKind... triggerKinds) {
+        if (path == null || triggerKinds == null) {
             throw new NullPointerException("path or triggerKind");
         }
         Path registeredPath = Paths.get(path);
@@ -165,7 +165,7 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
                 if (fileWatchService == null) {
                     fileWatchService = new FileWatchService(fileWatchListeners, waitConfigurations);
                 }
-                fileWatchService.registerWatch(path, false, kinds);
+                fileWatchService.registerWatch(path, false, triggerKinds);
                 return fileWatchService;
             });
         }
@@ -175,8 +175,8 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
                 if (registeredPaths.contains(registeredPath)) {
                     throw new IllegalArgumentException("Duplicate registration " + registeredPath);
                 }
-                WatchEvent.Kind<?>[] events = new WatchEvent.Kind[kinds.length];
-                for (int i = 0; i < kinds.length; i++) events[i] = kinds[i].kind;
+                WatchEvent.Kind<?>[] events = new WatchEvent.Kind[triggerKinds.length];
+                for (int i = 0; i < triggerKinds.length; i++) events[i] = triggerKinds[i].kind;
                 registeredPaths.add(registeredPath);
                 watchKeyregisteredPathMap.put(registeredPath.register(watchService, events), registeredPath);
                 LOGGER.info("File monitoring service for path {} has been registered.", registeredPath);

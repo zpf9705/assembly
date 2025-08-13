@@ -27,7 +27,7 @@ public abstract class TriggerKindProvider extends BindingConfiguration {
     private static final long serialVersionUID = -2311030807517552722L;
     /**
      * <p>The range of this configuration selection {@link TriggerKind} must be bound within the
-     * {@link FileWatchPath#getKinds()} configuration of the listening address {@link FileWatchPath#getPath()},
+     * {@link FileWatchPath#getTriggerKinds()} configuration of the listening address {@link FileWatchPath#getPath()},
      * otherwise it will be considered an invalid configuration.
      */
     private TriggerKind[] triggerKinds
