@@ -137,12 +137,6 @@
                 <version>${mp}</version>
             </dependency>
 
-            <dependency>
-                <groupId>org.yaml</groupId>
-                <artifactId>snakeyaml</artifactId>
-                <version>${ymal}</version>
-            </dependency>
-
         </dependencies>
     </dependencyManagement>
 
