@@ -48,6 +48,10 @@ public class DatasourceDrivenScheduledAutoConfiguration {
     static class DatasourceDrivenScheduledProfilesMatchedImportConfiguration {
     }
 
+    /**
+     * @return A default no operation {@link DatasourceTaskElementsOperation}.
+     * @since 3.0.1
+     */
     @Bean
     @ConditionalOnMissingBean(DatasourceTaskElementsOperation.class)
     public NoOpDatasourceTaskElementsOperation noOpDatasourceTaskElementsOperation() {
