@@ -20,8 +20,8 @@ package top.osjf.filewatch.application.startup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.osjf.filewatch.AmapleWatchEvent;
-import top.osjf.filewatch.AmpleFileWatchListener;
 import top.osjf.filewatch.TriggerKind;
+import top.osjf.filewatch.TriggerKindMatchedFileWatchListener;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,10 +29,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -45,7 +42,7 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
-public class ApplicationStartupFileWatchListener extends AmpleFileWatchListener {
+public class ApplicationStartupFileWatchListener extends TriggerKindMatchedFileWatchListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationStartupFileWatchListener.class);
 
@@ -73,23 +70,34 @@ public class ApplicationStartupFileWatchListener extends AmpleFileWatchListener 
     @Override
     public boolean supportsInternal(AmapleWatchEvent watchEvent) {
         Path parent = watchEvent.getParent();
-        Path jarFilePath = watchEvent.context();
 
-        // First, find the main listening address, and then configure it according to the jar file.
-        Map<Path, StartupJarElement> jarGroup = startupJarElementMap.get(parent);
-        StartupJarElement jarElement;
-        if (jarGroup == null || (jarElement = jarGroup.get(jarFilePath)) == null) {
-            return false;
-        }
+        StartupJarElement jarElement = getEventJarElement(watchEvent);
 
         // Verify if the binding listening address is consistent.
-        boolean bindPathEq = parent.equals(Paths.get(jarElement.getBindPath()));
+        boolean bindPathEq =
+                jarElement != null && parent.equals(Paths.get(jarElement.getBindPath()));
 
-        // Verify whether the trigger type set in the current subclass file is
-        // within the range of the parent listening trigger.
-        boolean triggerKindEq = Arrays.asList(jarElement.getTriggerKinds()).contains(watchEvent.getTriggerKind());
+        return bindPathEq && super.supportsInternal(watchEvent);
+    }
 
-        return bindPathEq && triggerKindEq;
+    @Override
+    protected List<TriggerKind> getSupportTriggerKinds(AmapleWatchEvent watchEvent) {
+        StartupJarElement jarElement = getEventJarElement(watchEvent);
+        return jarElement != null ? Arrays.asList(jarElement.getTriggerKinds()) : Collections.emptyList();
+    }
+
+    /**
+     * Obtain specify {@code StartupJarElement} by init {@link #startupJarElementMap}.
+     * @param watchEvent the given {@link AmapleWatchEvent}.
+     * @return the specify path query result of {@code StartupJarElement}.
+     */
+    private StartupJarElement getEventJarElement(AmapleWatchEvent watchEvent) {
+        Path parent = watchEvent.getParent();
+        Path jarFilePath = watchEvent.context();
+
+        // Find the main listening address, and then configure it according to the jar file.
+        Map<Path, StartupJarElement> jarGroup = startupJarElementMap.get(parent);
+        return jarGroup != null ? jarGroup.get(jarFilePath) : null;
     }
 
     /**
