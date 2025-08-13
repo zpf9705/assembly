@@ -35,6 +35,8 @@ public abstract class TriggerKindMatchedFileWatchListener extends AmpleFileWatch
      */
     @Override
     protected boolean supportsInternal(AmapleWatchEvent event) {
+        // Verify whether the trigger type set in the current subclass file is
+        // within the range of the parent listening trigger.
         return getSupportTriggerKinds(event).contains(event.getTriggerKind());
     }
 
