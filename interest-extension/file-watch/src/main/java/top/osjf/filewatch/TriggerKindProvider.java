@@ -27,16 +27,14 @@ import java.util.Arrays;
  */
 public abstract class TriggerKindProvider {
     /**
-     * <p>The range of this configuration selection {@link TriggerKind} must be bound within the
-     * {@link FileWatchPath#getTriggerKinds()} configuration of the listening address {@link FileWatchPath#getPath()},
-     * otherwise it will be considered an invalid configuration.
+     * The array of event types to watch for (CREATE, MODIFY, DELETE, etc.).
      */
     private TriggerKind[] triggerKinds
             = {TriggerKind.ENTRY_CREATE, TriggerKind.ENTRY_MODIFY, TriggerKind.ENTRY_DELETE};
 
     @Override
     public String toString() {
-        return super.toString() + "@triggerKinds" + Arrays.toString(triggerKinds);
+        return "triggerKinds" + Arrays.toString(triggerKinds);
     }
 
     /**
