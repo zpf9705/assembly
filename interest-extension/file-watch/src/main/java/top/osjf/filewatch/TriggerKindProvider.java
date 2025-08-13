@@ -28,6 +28,12 @@ import java.util.Arrays;
 public abstract class TriggerKindProvider {
     /**
      * The array of event types to watch for (CREATE, MODIFY, DELETE, etc.).
+     * <p>
+     * When setting up a special {@code TriggerKind} array, if it is not the setting of
+     * {@link FileWatchPath}, but the setting of its implementation and assembly, it is
+     * important to note that the setting range should be within the listening type
+     * {@link FileWatchPath#getTriggerKinds()} specified in the {@link FileWatchPath#getPath()}
+     * path.
      */
     private TriggerKind[] triggerKinds
             = {TriggerKind.ENTRY_CREATE, TriggerKind.ENTRY_MODIFY, TriggerKind.ENTRY_DELETE};
