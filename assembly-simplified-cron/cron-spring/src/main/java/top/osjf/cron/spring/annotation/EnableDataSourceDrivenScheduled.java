@@ -27,7 +27,7 @@ import java.lang.annotation.*;
  *
  * <p>This annotation serves as the activation switch for the datasource-driven scheduled
  * task system. When applied to a Spring configuration class, it imports the necessary
- * infrastructure beans through {@link DatabaseDrivenScheduledConfiguration} to enable:
+ * infrastructure beans through {@link DatasourceDrivenScheduledConfiguration} to enable:
  *
  * <ul>
  *   <li>MyBatis-Plus integrated task persistence</li>
