@@ -20,7 +20,7 @@ package top.osjf.filewatch.application.startup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.osjf.filewatch.AmapleWatchEvent;
-import top.osjf.filewatch.FileWatchListener;
+import top.osjf.filewatch.AmpleFileWatchListener;
 import top.osjf.filewatch.TriggerKind;
 
 import java.io.IOException;
@@ -29,7 +29,6 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.WatchEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -46,7 +45,7 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
-public class ApplicationStartupFileWatchListener implements FileWatchListener {
+public class ApplicationStartupFileWatchListener extends AmpleFileWatchListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationStartupFileWatchListener.class);
 
@@ -72,13 +71,9 @@ public class ApplicationStartupFileWatchListener implements FileWatchListener {
      * Determines if this listener supports the given watch event.
      */
     @Override
-    public boolean supports(WatchEvent<Path> event) {
-        if (!(event instanceof AmapleWatchEvent)) {
-            return false;
-        }
-        AmapleWatchEvent watchEvent = (AmapleWatchEvent) event;
+    public boolean supportsInternal(AmapleWatchEvent watchEvent) {
         Path parent = watchEvent.getParent();
-        Path jarFilePath = event.context();
+        Path jarFilePath = watchEvent.context();
 
         // First, find the main listening address, and then configure it according to the jar file.
         Map<Path, StartupJarElement> jarGroup = startupJarElementMap.get(parent);
@@ -102,9 +97,9 @@ public class ApplicationStartupFileWatchListener implements FileWatchListener {
      * Handles the file watch event by executing configured startup commands.
      */
     @Override
-    public void onWatchEvent(WatchEvent<Path> event) {
-        Path parent = ((AmapleWatchEvent) event).getParent();
-        Path jarFilePath = event.context();
+    public void onWatchEventInternal(AmapleWatchEvent watchEvent) {
+        Path parent = watchEvent.getParent();
+        Path jarFilePath = watchEvent.context();
 
         StartupJarElement jarElement = startupJarElementMap.get(parent).get(jarFilePath);
 
