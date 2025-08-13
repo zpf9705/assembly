@@ -17,8 +17,6 @@
 
 package top.osjf.filewatch.application.startup;
 
-import top.osjf.filewatch.FileWatchPath;
-import top.osjf.filewatch.TriggerKind;
 import top.osjf.filewatch.TriggerKindProvider;
 
 import java.util.ArrayList;
@@ -44,16 +42,6 @@ public class StartupJarElement extends TriggerKindProvider {
     private String jarFileName;
 
     /**
-     * What changes occur to the file corresponding to {@link StartupJarElement#jarFileName} that
-     * trigger the enumeration type of {@link #sortedStartupCommands}.
-     * <p>The range of this configuration selection {@link TriggerKind} must be bound within the
-     * {@link FileWatchPath#getKinds()} ()} configuration of the listening address {@link FileWatchPath#getPath()},
-     * otherwise it will be considered an invalid configuration.
-     */
-    private TriggerKind[] triggerKinds
-            = {TriggerKind.ENTRY_CREATE, TriggerKind.ENTRY_MODIFY, TriggerKind.ENTRY_DELETE};
-
-    /**
      * Specify the collection of shell commands to be executed in the order
      * of starting when monitoring changes in jar files.
      */
@@ -75,14 +63,6 @@ public class StartupJarElement extends TriggerKindProvider {
 
     public void setJarFileName(String jarFileName) {
         this.jarFileName = jarFileName;
-    }
-
-    public TriggerKind[] getTriggerKinds() {
-        return triggerKinds;
-    }
-
-    public void setTriggerKinds(TriggerKind[] triggerKinds) {
-        this.triggerKinds = triggerKinds;
     }
 
     public List<String> getSortedStartupCommands() {

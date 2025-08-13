@@ -30,16 +30,17 @@ public abstract class TriggerKindProvider extends BindingConfiguration {
      * {@link FileWatchPath#getKinds()} configuration of the listening address {@link FileWatchPath#getPath()},
      * otherwise it will be considered an invalid configuration.
      */
-    private TriggerKind[] kinds;
+    private TriggerKind[] triggerKinds
+            = {TriggerKind.ENTRY_CREATE, TriggerKind.ENTRY_MODIFY, TriggerKind.ENTRY_DELETE};
 
     /**
      * @return The range of {@code TriggerKind}.
      */
-    public TriggerKind[] getKinds() {
-        return kinds;
+    public TriggerKind[] getTriggerKinds() {
+        return triggerKinds;
     }
 
-    public void setKinds(TriggerKind[] kinds) {
-        this.kinds = kinds;
+    public void setTriggerKinds(TriggerKind[] triggerKinds) {
+        this.triggerKinds = triggerKinds;
     }
 }
