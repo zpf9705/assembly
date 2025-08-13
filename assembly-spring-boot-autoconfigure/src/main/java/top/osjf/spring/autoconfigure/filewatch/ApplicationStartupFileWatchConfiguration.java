@@ -29,7 +29,7 @@ import java.util.List;
  * {@link Configuration Configuration} for self start monitoring of application packages.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 2025.08.12
+ * @since 3.0.1
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ApplicationStartupFileWatchListener.class, StartupJarElement.class})
