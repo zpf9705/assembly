@@ -17,6 +17,8 @@
 
 package top.osjf.filewatch;
 
+import java.util.Arrays;
+
 /**
  * {@code TriggerKind} provider that set the trigger range for file notifications.
  *
@@ -32,6 +34,11 @@ public abstract class TriggerKindProvider extends BindingConfiguration {
      */
     private TriggerKind[] triggerKinds
             = {TriggerKind.ENTRY_CREATE, TriggerKind.ENTRY_MODIFY, TriggerKind.ENTRY_DELETE};
+
+    @Override
+    public String toString() {
+        return super.toString() + "@triggerKinds" + Arrays.toString(triggerKinds);
+    }
 
     /**
      * @return The range of {@code TriggerKind}.
