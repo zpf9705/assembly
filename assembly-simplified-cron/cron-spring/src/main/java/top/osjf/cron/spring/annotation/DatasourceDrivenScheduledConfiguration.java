@@ -34,7 +34,7 @@ import java.util.List;
  * @since 1.0.4
  */
 @Configuration(proxyBeanMethods = false)
-public class DatabaseDrivenScheduledConfiguration implements ImportSelector {
+public class DatasourceDrivenScheduledConfiguration implements ImportSelector {
 
     @Override
     @NotNull
