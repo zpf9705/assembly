@@ -28,7 +28,7 @@ import org.springframework.core.type.AnnotationMetadata;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.NoOpDatasourceTaskElementsOperation;
-import top.osjf.cron.spring.annotation.DatabaseDrivenScheduledConfiguration;
+import top.osjf.cron.spring.annotation.DatasourceDrivenScheduledConfiguration;
 import top.osjf.cron.spring.datasource.driven.scheduled.DataSource;
 import top.osjf.cron.spring.datasource.driven.scheduled.SpringDatasourceDrivenScheduled;
 
@@ -43,9 +43,9 @@ import top.osjf.cron.spring.datasource.driven.scheduled.SpringDatasourceDrivenSc
 public class DatasourceDrivenScheduledAutoConfiguration {
 
     @Configuration(proxyBeanMethods = false)
-    @Import({DatasourceDrivenConfigurationImportSelector.class, DatabaseDrivenScheduledConfiguration.class})
+    @Import({DatasourceDrivenConfigurationImportSelector.class, DatasourceDrivenScheduledConfiguration.class})
     @EnableDatasourceScheduledProfiles
-    static class DatasourceDrivenScheduledSelectiveAutoConfiguration {
+    static class DatasourceDrivenScheduledProfilesMatchedImportConfiguration {
     }
 
     @Bean
