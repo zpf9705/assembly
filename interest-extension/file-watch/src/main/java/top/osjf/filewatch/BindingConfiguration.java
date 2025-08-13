@@ -57,7 +57,7 @@ public abstract class BindingConfiguration
 
     @Override
     public String toString() {
-        return bindPath + "@" + getPathContext();
+        return bindPath + "@" + getPathContext() + super.toString();
     }
 
     public String getBindPath() {
