@@ -37,16 +37,7 @@ public class FileWatchPath implements Comparable<FileWatchPath>, Serializable {
     private boolean peculiarWatchThread;
 
     /** The array of event types to watch for (CREATE, MODIFY, DELETE, etc.).*/
-    private TriggerKind[] kinds;
-
-    public FileWatchPath() {
-    }
-
-    public FileWatchPath(String path, boolean peculiarWatchThread, TriggerKind[] kinds) {
-        this.path = path;
-        this.peculiarWatchThread = peculiarWatchThread;
-        this.kinds = kinds;
-    }
+    private TriggerKind[] triggerKinds;
 
     @Override
     public int compareTo(FileWatchPath o) {
@@ -74,11 +65,11 @@ public class FileWatchPath implements Comparable<FileWatchPath>, Serializable {
         this.peculiarWatchThread = peculiarWatchThread;
     }
 
-    public TriggerKind[] getKinds() {
-        return kinds;
+    public TriggerKind[] getTriggerKinds() {
+        return triggerKinds;
     }
 
-    public void setKinds(TriggerKind[] kinds) {
-        this.kinds = kinds;
+    public void setTriggerKinds(TriggerKind[] triggerKinds) {
+        this.triggerKinds = triggerKinds;
     }
 }
