@@ -17,7 +17,7 @@
 
 package top.osjf.filewatch.application.startup;
 
-import top.osjf.filewatch.TriggerKindProvider;
+import top.osjf.filewatch.BindingConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
-public class StartupJarElement extends TriggerKindProvider {
+public class StartupJarElement extends BindingConfiguration {
 
     private static final long serialVersionUID = 8028606232869488345L;
 
