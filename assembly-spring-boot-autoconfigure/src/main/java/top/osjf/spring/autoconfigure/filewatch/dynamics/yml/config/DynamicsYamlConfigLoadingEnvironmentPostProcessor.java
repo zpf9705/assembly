@@ -86,7 +86,7 @@ public class DynamicsYamlConfigLoadingEnvironmentPostProcessor implements Enviro
                         for (PropertySource<?> propertySource : propertySources) {
                             mutablePropertySources.addFirst(propertySource);
                             System.out.println("[ORIGIN CONFIG] Source YAML configuration loaded result : [" +
-                                    propertySource.getSource() + "] in file [" + file.getName() + "]");
+                                    propertySource.getSource() + "] in file [" + file.getPath() + "]");
                         }
                     }
                 }
