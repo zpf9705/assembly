@@ -81,6 +81,11 @@ public class DynamicsYamlConfigLoadingFileWatchListener extends AmpleFileWatchLi
 
     @Override
     protected void onWatchEventInternal(AmapleWatchEvent event) {
+        MutablePropertySources mutablePropertySources = environment.getPropertySources();
+        if (event.removedEvent()) {
+            mutablePropertySources.remove(event.context().toString());
+            return;
+        }
         YamlPropertySourceLoader loader = new YamlPropertySourceLoader();
         try {
             List<PropertySource<?>> propertySources = loader.load(event.context().toString(),
@@ -88,7 +93,6 @@ public class DynamicsYamlConfigLoadingFileWatchListener extends AmpleFileWatchLi
             if (propertySources.isEmpty()) {
                 return;
             }
-            MutablePropertySources mutablePropertySources = environment.getPropertySources();
             List<String> updatePropertyNames = new ArrayList<>();
 
             // Iterate through all property sources.
