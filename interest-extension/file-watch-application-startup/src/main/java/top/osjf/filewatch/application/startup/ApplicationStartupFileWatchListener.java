@@ -51,12 +51,16 @@ public class ApplicationStartupFileWatchListener extends TriggerKindMatchedFileW
     /**
      * Constructs a new {@code ApplicationStartupFileWatchListener}.
      * @param elements the specify file-watch application startup properties.
+     * @throws IllegalArgumentException if elements is null or empty.
      */
     public ApplicationStartupFileWatchListener(List<StartupJarElement> elements) {
         initStartupJarElementMap(elements);
     }
 
     void initStartupJarElementMap(List<StartupJarElement> elements) {
+        if (elements == null || elements.isEmpty()) {
+            throw new IllegalArgumentException("elements not be empty");
+        }
         startupJarElementMap = elements.stream()
                 .collect(Collectors.groupingByConcurrent(startupJarElement -> Paths.get(startupJarElement.getBindPath()),
                         Collectors.toMap(startupJarElement -> Paths.get(startupJarElement.getJarFileName()),
