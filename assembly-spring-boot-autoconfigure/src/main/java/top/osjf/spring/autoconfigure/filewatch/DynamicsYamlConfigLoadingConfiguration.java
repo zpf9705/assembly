@@ -17,9 +17,11 @@
 
 package top.osjf.spring.autoconfigure.filewatch;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import top.osjf.spring.autoconfigure.filewatch.dynamics.yml.config.ConfigLoadingCondition;
+import top.osjf.spring.autoconfigure.filewatch.dynamics.yml.config.DynamicsYamlConfigLoadingBeanPostProcessor;
 import top.osjf.spring.autoconfigure.filewatch.dynamics.yml.config.DynamicsYamlConfigLoadingFileWatchListener;
 
 import java.util.List;
@@ -34,15 +36,21 @@ import java.util.List;
 class DynamicsYamlConfigLoadingConfiguration {
 
     @Bean("dynamicsYamlLoadingFileWatchServiceCustomizer")
-    public FileWatchServiceCustomizer fileWatchServiceCustomizer(FileWatchProperties fileWatchProperties) {
+    public FileWatchServiceCustomizer fileWatchServiceCustomizer(FileWatchProperties fileWatchProperties,
+                                                                 ApplicationContext applicationContext) {
         return fileWatchService -> {
             List<ConfigLoadingCondition> conditions = fileWatchProperties.getDynamicsYamlLoading().getLoadingConditions();
             if (!conditions.isEmpty()) {
-                fileWatchService.registerListener(new DynamicsYamlConfigLoadingFileWatchListener(conditions));
-                for (ConfigLoadingCondition condition : conditions) {
-                    fileWatchService.registerWaitConfiguration(condition);
-                }
+                DynamicsYamlConfigLoadingFileWatchListener listener
+                        = new DynamicsYamlConfigLoadingFileWatchListener(conditions);
+                listener.setApplicationContext(applicationContext);
+                fileWatchService.registerListener(listener);
             }
         };
+    }
+
+    @Bean
+    public DynamicsYamlConfigLoadingBeanPostProcessor dynamicsYamlConfigLoadingBeanPostProcessor() {
+        return new DynamicsYamlConfigLoadingBeanPostProcessor();
     }
 }
