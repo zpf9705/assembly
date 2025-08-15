@@ -6,5 +6,8 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   top.osjf.spring.autoconfigure.idempotent.IdempotentAutoConfiguration,\
   top.osjf.spring.autoconfigure.filewatch.FileWatchAutoConfiguration
 
+org.springframework.boot.env.EnvironmentPostProcessor=\
+  top.osjf.spring.autoconfigure.filewatch.dynamics.yml.config.DynamicsYamlConfigLoadingEnvironmentPostProcessor
+
 org.springframework.context.ApplicationContextInitializer=\
   top.osjf.spring.autoconfigure.optimize.service_bean.EarlyAllowCustomBeanNameGeneratorInitializer
