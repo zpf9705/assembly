@@ -35,7 +35,7 @@ import java.util.List;
 @ConditionalOnClass({ApplicationStartupFileWatchListener.class, StartupJarElement.class})
 class ApplicationStartupFileWatchConfiguration {
 
-    @Bean
+    @Bean("applicationStartupFileWatchServiceCustomizer")
     public FileWatchServiceCustomizer fileWatchServiceCustomizer(FileWatchProperties fileWatchProperties) {
         return fileWatchService -> {
             List<StartupJarElement> elements = fileWatchProperties.getApplicationStartup().getElements();
