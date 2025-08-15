@@ -17,9 +17,12 @@
 
 package top.osjf.spring.autoconfigure.filewatch;
 
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Role;
 import top.osjf.filewatch.FileWatchPath;
 import top.osjf.spring.autoconfigure.filewatch.dynamics.yml.config.DynamicsYamlConfigLoadingBeanPostProcessor;
 import top.osjf.spring.autoconfigure.filewatch.dynamics.yml.config.DynamicsYamlConfigLoadingFileWatchListener;
@@ -33,6 +36,7 @@ import java.util.List;
  * @since 3.0.1
  */
 @Configuration(proxyBeanMethods = false)
+@Import(DynamicsYamlConfigLoadingConfiguration.DynamicsYamlConfigLoadingInternalConfiguration.class)
 class DynamicsYamlConfigLoadingConfiguration {
 
     @Bean("dynamicsYamlLoadingFileWatchServiceCustomizer")
@@ -49,8 +53,14 @@ class DynamicsYamlConfigLoadingConfiguration {
         };
     }
 
-    @Bean
-    public DynamicsYamlConfigLoadingBeanPostProcessor dynamicsYamlConfigLoadingBeanPostProcessor() {
-        return new DynamicsYamlConfigLoadingBeanPostProcessor();
+    @Configuration(proxyBeanMethods = false)
+    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+    static class DynamicsYamlConfigLoadingInternalConfiguration {
+
+        @Bean
+        @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+        public DynamicsYamlConfigLoadingBeanPostProcessor dynamicsYamlConfigLoadingBeanPostProcessor() {
+            return new DynamicsYamlConfigLoadingBeanPostProcessor();
+        }
     }
 }
