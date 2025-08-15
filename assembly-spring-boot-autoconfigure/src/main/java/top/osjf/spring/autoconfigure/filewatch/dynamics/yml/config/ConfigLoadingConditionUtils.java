@@ -17,37 +17,16 @@
 
 package top.osjf.spring.autoconfigure.filewatch.dynamics.yml.config;
 
-import top.osjf.filewatch.BindingConfiguration;
-
 import java.util.Objects;
 
 /**
- * The loading condition entity class configured in the YAML file.
+ * Yaml config loading utils.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
 
-public class ConfigLoadingCondition extends BindingConfiguration {
-
-    private static final long serialVersionUID = 1358161329578896179L;
-
-    /**
-     * @return The file name end with.
-     */
-    @Override
-    public String getPathContext() {
-        throw new UnsupportedOperationException("No fixed one");
-    }
-
-    /**
-     * Check is yaml file.
-     * @param fileName the given {@code fileName}.
-     * @return {@code true} is yaml file,{@code false} otherwise.
-     */
-    public boolean isYamlConfig(String fileName) {
-        return isYamlFile(fileName);
-    }
+public final class ConfigLoadingConditionUtils {
 
     /**
      * Check is yaml file.
