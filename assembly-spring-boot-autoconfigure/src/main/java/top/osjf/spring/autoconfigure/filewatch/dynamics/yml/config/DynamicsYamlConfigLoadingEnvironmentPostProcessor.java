@@ -52,6 +52,12 @@ public class DynamicsYamlConfigLoadingEnvironmentPostProcessor implements Enviro
         postProcessEnvironmentInternal(environment);
     }
 
+    /**
+     * Internal method of dynamically loading existing YAML configurations into
+     * {@link ConfigurableEnvironment#getPropertySources}, keeping them up-to-date
+     * and up-to-date.
+     * @param environment the application {@code ConfigurableEnvironment}.
+     */
     private void postProcessEnvironmentInternal(ConfigurableEnvironment environment) {
         if (!environment.getProperty("file-watch.enable", boolean.class, false)) {
             return;
