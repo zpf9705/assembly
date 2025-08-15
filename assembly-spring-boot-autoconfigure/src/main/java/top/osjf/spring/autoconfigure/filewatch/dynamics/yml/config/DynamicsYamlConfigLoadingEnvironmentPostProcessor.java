@@ -17,8 +17,6 @@
 
 package top.osjf.spring.autoconfigure.filewatch.dynamics.yml.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.env.YamlPropertySourceLoader;
@@ -44,8 +42,6 @@ import java.util.*;
  * @since 3.0.1
  */
 public class DynamicsYamlConfigLoadingEnvironmentPostProcessor implements EnvironmentPostProcessor {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(DynamicsYamlConfigLoadingEnvironmentPostProcessor.class);
 
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {

@@ -85,6 +85,14 @@ public class AmapleWatchEvent implements WatchEvent<Path> {
     }
 
     /**
+     * Check if it is a created event type.
+     * @return {@code true} is a created event,{@code false} otherwise.
+     */
+    public boolean createEvent() {
+        return getTriggerKind() == TriggerKind.ENTRY_DELETE;
+    }
+
+    /**
      * Check if it is a removed event type.
      * @return {@code true} is a removed event,{@code false} otherwise.
      */

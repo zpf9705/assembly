@@ -93,6 +93,15 @@ public class DynamicsYamlConfigLoadingFileWatchListener extends AmpleFileWatchLi
             if (propertySources.isEmpty()) {
                 return;
             }
+            // if create only add.
+            if (event.createEvent()) {
+                for (PropertySource<?> propertySource : propertySources) {
+                    mutablePropertySources.addFirst(propertySource);
+                    LOGGER.info("[ORIGIN CONFIG] Source YAML configuration loaded: \n{}",
+                            propertySource.getSource());
+                }
+                return;
+            }
             List<String> updatePropertyNames = new ArrayList<>();
 
             // Iterate through all property sources.
