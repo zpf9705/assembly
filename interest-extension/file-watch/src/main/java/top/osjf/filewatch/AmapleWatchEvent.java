@@ -85,6 +85,14 @@ public class AmapleWatchEvent implements WatchEvent<Path> {
     }
 
     /**
+     * Check if it is a removed event type.
+     * @return {@code true} is a removed event,{@code false} otherwise.
+     */
+    public boolean removedEvent() {
+        return getTriggerKind() == TriggerKind.ENTRY_DELETE;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
