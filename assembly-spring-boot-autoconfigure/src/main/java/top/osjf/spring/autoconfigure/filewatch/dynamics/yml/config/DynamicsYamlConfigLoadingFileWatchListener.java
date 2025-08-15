@@ -37,6 +37,7 @@ import org.springframework.util.SystemPropertyUtils;
 import top.osjf.filewatch.AmapleWatchEvent;
 import top.osjf.filewatch.AmpleFileWatchListener;
 import top.osjf.filewatch.FileWatchException;
+import top.osjf.filewatch.TriggerKind;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -82,8 +83,11 @@ public class DynamicsYamlConfigLoadingFileWatchListener extends AmpleFileWatchLi
     @Override
     protected void onWatchEventInternal(AmapleWatchEvent event) {
         MutablePropertySources mutablePropertySources = environment.getPropertySources();
-        if (event.removedEvent()) {
-            mutablePropertySources.remove(event.context().toString());
+        if (event.isHopeEvent(TriggerKind.ENTRY_DELETE)) {
+            PropertySource<?> removedPropertySource = mutablePropertySources.remove(event.context().toString());
+            if (removedPropertySource != null) {
+                LOGGER.info("PropertySource [{}] has been removed", removedPropertySource.getName());
+            }
             return;
         }
         YamlPropertySourceLoader loader = new YamlPropertySourceLoader();
@@ -91,15 +95,6 @@ public class DynamicsYamlConfigLoadingFileWatchListener extends AmpleFileWatchLi
             List<PropertySource<?>> propertySources = loader.load(event.context().toString(),
                     new FileUrlResource(event.getFullPath().toString()));
             if (propertySources.isEmpty()) {
-                return;
-            }
-            // if create only add.
-            if (event.createEvent()) {
-                for (PropertySource<?> propertySource : propertySources) {
-                    mutablePropertySources.addFirst(propertySource);
-                    LOGGER.info("[ORIGIN CONFIG] Source YAML configuration loaded: \n{}",
-                            propertySource.getSource());
-                }
                 return;
             }
             List<String> updatePropertyNames = new ArrayList<>();
@@ -137,7 +132,7 @@ public class DynamicsYamlConfigLoadingFileWatchListener extends AmpleFileWatchLi
                             LOGGER.info("[ORIGIN CONFIG] Detected a configuration change in the " +
                                             "configuration source file [{}]:\n" +
                                             "• {}: {} → {} (Trigger Mode：CREATED)",
-                                    event.getFullPath(), propertyName, "null", propertyValue);
+                                    event.getFullPath(), propertyName, "NULL", propertyValue);
                         }
                         canAdd = true;
                     }
