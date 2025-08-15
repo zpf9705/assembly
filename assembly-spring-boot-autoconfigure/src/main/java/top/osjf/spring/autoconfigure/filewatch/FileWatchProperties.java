@@ -25,6 +25,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import top.osjf.filewatch.FileWatchPath;
 import top.osjf.filewatch.application.startup.StartupJarElement;
+import top.osjf.spring.autoconfigure.filewatch.dynamics.yml.config.ConfigLoadingCondition;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,6 +61,11 @@ public class FileWatchProperties implements InitializingBean {
      */
     private ApplicationStartup applicationStartup = new ApplicationStartup();
 
+    /**
+     * Configuration items for dynamics loading yaml config.
+     */
+    public DynamicsYamlLoading dynamicsYamlLoading = new DynamicsYamlLoading();
+
     public boolean isEnable() {
         return enable;
     }
@@ -82,6 +88,14 @@ public class FileWatchProperties implements InitializingBean {
 
     public void setApplicationStartup(ApplicationStartup applicationStartup) {
         this.applicationStartup = applicationStartup;
+    }
+
+    public DynamicsYamlLoading getDynamicsYamlLoading() {
+        return dynamicsYamlLoading;
+    }
+
+    public void setDynamicsYamlLoading(DynamicsYamlLoading dynamicsYamlLoading) {
+        this.dynamicsYamlLoading = dynamicsYamlLoading;
     }
 
     @Override
@@ -128,6 +142,25 @@ public class FileWatchProperties implements InitializingBean {
 
         public void setElements(List<StartupJarElement> elements) {
             this.elements = elements;
+        }
+    }
+
+    /**
+     * Dynamics yaml config loading configuration class.
+     */
+    public static class DynamicsYamlLoading {
+
+        /**
+         * List of dynamics yaml config condition.
+         */
+        private List<ConfigLoadingCondition> loadingConditions;
+
+        public List<ConfigLoadingCondition> getLoadingConditions() {
+            return loadingConditions;
+        }
+
+        public void setLoadingConditions(List<ConfigLoadingCondition> loadingConditions) {
+            this.loadingConditions = loadingConditions;
         }
     }
 }
