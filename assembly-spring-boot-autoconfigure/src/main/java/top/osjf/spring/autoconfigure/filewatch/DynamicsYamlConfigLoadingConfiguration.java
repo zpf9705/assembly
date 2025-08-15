@@ -20,7 +20,7 @@ package top.osjf.spring.autoconfigure.filewatch;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import top.osjf.spring.autoconfigure.filewatch.dynamics.yml.config.ConfigLoadingCondition;
+import top.osjf.filewatch.FileWatchPath;
 import top.osjf.spring.autoconfigure.filewatch.dynamics.yml.config.DynamicsYamlConfigLoadingBeanPostProcessor;
 import top.osjf.spring.autoconfigure.filewatch.dynamics.yml.config.DynamicsYamlConfigLoadingFileWatchListener;
 
@@ -39,10 +39,10 @@ class DynamicsYamlConfigLoadingConfiguration {
     public FileWatchServiceCustomizer fileWatchServiceCustomizer(FileWatchProperties fileWatchProperties,
                                                                  ApplicationContext applicationContext) {
         return fileWatchService -> {
-            List<ConfigLoadingCondition> conditions = fileWatchProperties.getDynamicsYamlLoading().getLoadingConditions();
-            if (!conditions.isEmpty()) {
-                DynamicsYamlConfigLoadingFileWatchListener listener
-                        = new DynamicsYamlConfigLoadingFileWatchListener(conditions);
+            List<FileWatchPath> fileWatchPaths = fileWatchProperties.getFileWatchPaths();
+            if (!fileWatchPaths.isEmpty()) {
+                DynamicsYamlConfigLoadingFileWatchListener
+                        listener = new DynamicsYamlConfigLoadingFileWatchListener();
                 listener.setApplicationContext(applicationContext);
                 fileWatchService.registerListener(listener);
             }
