@@ -124,14 +124,14 @@ public class DynamicsYamlConfigLoadingFileWatchListener extends AmpleFileWatchLi
                                 updatePropertyNames.add(propertyName);
                                 LOGGER.info("[ORIGIN CONFIG] Detected a configuration change in the " +
                                                 "configuration source file [{}]:\n" +
-                                                "• {}: {} → {} (Trigger Mode：UPDATED)",
+                                                "• [{}]: [{}] → [{}] (Trigger Mode：UPDATED)",
                                         event.getFullPath(), propertyName, oldPropertyValue, propertyValue);
                             }
                         }
                         else {
                             LOGGER.info("[ORIGIN CONFIG] Detected a configuration change in the " +
                                             "configuration source file [{}]:\n" +
-                                            "• {}: {} → {} (Trigger Mode：CREATED)",
+                                            "• [{}]: [{}] → [{}] (Trigger Mode：CREATED)",
                                     event.getFullPath(), propertyName, "NULL", propertyValue);
                         }
                         canAdd = true;
@@ -144,11 +144,11 @@ public class DynamicsYamlConfigLoadingFileWatchListener extends AmpleFileWatchLi
                     .processInjection(updatePropertyNames);
         }
         catch (MalformedURLException ex) {
-            LOGGER.error("[ORIGIN CONFIG] URL {} specification is not valid", event.getFullPath(), ex);
+            LOGGER.error("[ORIGIN CONFIG] URL [{}] specification is not valid", event.getFullPath(), ex);
             throw new FileWatchException("URL " + event.getFullPath() + " specification is not valid", ex);
         }
         catch (IOException ex) {
-            LOGGER.error("[ORIGIN CONFIG] Failed to load {}", event.context(), ex);
+            LOGGER.error("[ORIGIN CONFIG] Failed to load [{}]", event.context(), ex);
             throw new FileWatchException("Failed to load " + event.context(), ex);
         }
         catch (IllegalArgumentException | ConversionException | BeanCreationException ex) {
