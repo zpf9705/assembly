@@ -25,6 +25,7 @@ import org.springframework.beans.factory.config.InstantiationAwareBeanPostProces
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.lang.NonNull;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
 
 import javax.annotation.Nonnull;
@@ -77,12 +78,16 @@ public class DynamicsYamlConfigLoadingBeanPostProcessor
      * @see AutowiredAnnotationBeanPostProcessor#processInjection
      */
     public void processInjection(List<String> updatePropertyNames) {
+        if (CollectionUtils.isEmpty(updatePropertyNames)) {
+            return;
+        }
         AutowiredAnnotationBeanPostProcessor postProcessor
                 = applicationContext.getBean(AutowiredAnnotationBeanPostProcessor.class);
         for (Map.Entry<String, Set<String>> entry : beanValueFieldsInjectPropertyMapping.entrySet()) {
+            String beanName = entry.getKey();
             if (entry.getValue().stream()
                     .anyMatch(regPropertyName -> updatePropertyNames.stream().anyMatch(regPropertyName::contains))) {
-                Object bean = applicationContext.getBean(entry.getKey());
+                Object bean = applicationContext.getBean(beanName);
                 postProcessor.processInjection(bean);
             }
         }
