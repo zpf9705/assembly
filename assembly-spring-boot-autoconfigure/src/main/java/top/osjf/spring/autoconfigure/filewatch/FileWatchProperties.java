@@ -153,7 +153,7 @@ public class FileWatchProperties implements InitializingBean {
         /**
          * List of dynamics yaml config condition.
          */
-        private List<ConfigLoadingCondition> loadingConditions;
+        private List<ConfigLoadingCondition> loadingConditions = new ArrayList<>();
 
         public List<ConfigLoadingCondition> getLoadingConditions() {
             return loadingConditions;

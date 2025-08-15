@@ -15,12 +15,12 @@
  */
 
 
-package top.osjf.spring.autoconfigure.filewatch.dynamics.yml.config;
+package top.osjf.spring.autoconfigure.filewatch;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import top.osjf.spring.autoconfigure.filewatch.FileWatchProperties;
-import top.osjf.spring.autoconfigure.filewatch.FileWatchServiceCustomizer;
+import top.osjf.spring.autoconfigure.filewatch.dynamics.yml.config.ConfigLoadingCondition;
+import top.osjf.spring.autoconfigure.filewatch.dynamics.yml.config.DynamicsYamlConfigLoadingFileWatchListener;
 
 import java.util.List;
 
