@@ -35,10 +35,10 @@ import java.util.*;
 /**
  * The implementation {@code DynamicsYamlConfigLoadingEnvironmentPostProcessor} that
  * implement the loading of relevant custom configurations from the specified
- * configuration {@code file-watch.dynamics-yaml-loading.loading-conditions[%s].bind-path}
- * during the initial startup of the application to overwrite the packaging configuration
- * of the current application, ensuring consistency with the changes detected by
- * {@link DynamicsYamlConfigLoadingFileWatchListener} after project restart.
+ * configuration {@code file-watch.file-watch-paths[%s].path} during the initial startup
+ * of the application to overwrite the packaging configuration of the current application,
+ * ensuring consistency with the changes detected by {@link DynamicsYamlConfigLoadingFileWatchListener}
+ * after project restart.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
@@ -62,7 +62,7 @@ public class DynamicsYamlConfigLoadingEnvironmentPostProcessor implements Enviro
         if (!environment.getProperty("file-watch.enable", boolean.class, false)) {
             return;
         }
-        final String prefix = "file-watch.dynamics-yaml-loading.loading-conditions[%s].bind-path";
+        final String prefix = "file-watch.file-watch-paths[%s].path";
         int index = 0;
         List<String> bindPaths = new ArrayList<>();
         String bindPathRefer;
@@ -81,7 +81,7 @@ public class DynamicsYamlConfigLoadingEnvironmentPostProcessor implements Enviro
         for (String bindPath : bindPaths) {
             for (File file :
                     Optional.ofNullable(new File(bindPath)
-                                    .listFiles(file -> ConfigLoadingCondition.isYamlFile(file.getName())))
+                                    .listFiles(file -> ConfigLoadingConditionUtils.isYamlFile(file.getName())))
                             .map(Arrays::asList).orElse(Collections.emptyList())) {
                 try {
                     List<PropertySource<?>> propertySources
