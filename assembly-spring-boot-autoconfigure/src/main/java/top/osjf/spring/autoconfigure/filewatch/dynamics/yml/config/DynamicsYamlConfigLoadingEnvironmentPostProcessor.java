@@ -58,6 +58,10 @@ public class DynamicsYamlConfigLoadingEnvironmentPostProcessor implements Enviro
         if (!environment.getProperty("file-watch.enable", boolean.class, false)) {
             return;
         }
+        if (!environment.getProperty("file-watch.enable-yaml-config-dynamic-loading", boolean.class,
+                false)) {
+            return;
+        }
         final String prefix = "file-watch.file-watch-paths[%s].path";
         int index = 0;
         List<String> bindPaths = new ArrayList<>();
