@@ -89,14 +89,16 @@ public class DynamicsYamlConfigLoadingEnvironmentPostProcessor implements Enviro
                     if (!propertySources.isEmpty()) {
                         for (PropertySource<?> propertySource : propertySources) {
                             mutablePropertySources.addFirst(propertySource);
+                            LOGGER.info("[ORIGIN CONFIG] Source YAML configuration loaded: \n{}",
+                                    propertySource.getSource());
                         }
                     }
                 }
                 catch (MalformedURLException ex) {
-                    LOGGER.error("URL {} specification is not valid", bindPath, ex);
+                    LOGGER.error("[ORIGIN CONFIG] URL {} specification is not valid", bindPath, ex);
                 }
                 catch (IOException ex) {
-                    LOGGER.error("Failed to load {}", file.getPath(), ex);
+                    LOGGER.error("[ORIGIN CONFIG] Failed to load {}", file.getPath(), ex);
                 }
             }
         }
