@@ -56,7 +56,7 @@ import java.util.Objects;
  */
 public class DynamicsYamlConfigLoadingFileWatchListener extends AmpleFileWatchListener implements ApplicationContextAware {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DynamicsYamlConfigLoadingFileWatchListener.class);
+    private static final Logger logger = LoggerFactory.getLogger(DynamicsYamlConfigLoadingFileWatchListener.class);
 
     private ApplicationContext applicationContext;
 
@@ -86,7 +86,7 @@ public class DynamicsYamlConfigLoadingFileWatchListener extends AmpleFileWatchLi
         if (event.isHopeEvent(TriggerKind.ENTRY_DELETE)) {
             PropertySource<?> removedPropertySource = mutablePropertySources.remove(event.context().toString());
             if (removedPropertySource != null) {
-                LOGGER.info("PropertySource [{}] has been removed", removedPropertySource.getName());
+                logger.info("PropertySource [{}] has been removed", removedPropertySource.getName());
             }
             return;
         }
@@ -122,14 +122,14 @@ public class DynamicsYamlConfigLoadingFileWatchListener extends AmpleFileWatchLi
                             Object oldPropertyValue = environment.getProperty(propertyName, propertyValue.getClass());
                             if (!Objects.equals(propertyValue, oldPropertyValue)) {
                                 updatePropertyNames.add(propertyName);
-                                LOGGER.info("[ORIGIN CONFIG] Detected a configuration change in the " +
+                                logger.info("[ORIGIN CONFIG] Detected a configuration change in the " +
                                                 "configuration source file [{}]:\n" +
                                                 "• [{}]: [{}] → [{}] (Trigger Mode：UPDATED)",
                                         event.getFullPath(), propertyName, oldPropertyValue, propertyValue);
                             }
                         }
                         else {
-                            LOGGER.info("[ORIGIN CONFIG] Detected a configuration change in the " +
+                            logger.info("[ORIGIN CONFIG] Detected a configuration change in the " +
                                             "configuration source file [{}]:\n" +
                                             "• [{}]: [{}] → [{}] (Trigger Mode：CREATED)",
                                     event.getFullPath(), propertyName, "NULL", propertyValue);
@@ -144,15 +144,15 @@ public class DynamicsYamlConfigLoadingFileWatchListener extends AmpleFileWatchLi
                     .processInjection(updatePropertyNames);
         }
         catch (MalformedURLException ex) {
-            LOGGER.error("[ORIGIN CONFIG] URL [{}] specification is not valid", event.getFullPath(), ex);
+            logger.error("[ORIGIN CONFIG] URL [{}] specification is not valid", event.getFullPath(), ex);
             throw new FileWatchException("URL " + event.getFullPath() + " specification is not valid", ex);
         }
         catch (IOException ex) {
-            LOGGER.error("[ORIGIN CONFIG] Failed to load [{}]", event.context(), ex);
+            logger.error("[ORIGIN CONFIG] Failed to load [{}]", event.context(), ex);
             throw new FileWatchException("Failed to load " + event.context(), ex);
         }
         catch (IllegalArgumentException | ConversionException | BeanCreationException ex) {
-            LOGGER.error(ex.getMessage(), ex);
+            logger.error(ex.getMessage(), ex);
             throw ex;
         }
     }
