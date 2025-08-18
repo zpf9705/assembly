@@ -30,6 +30,7 @@ import org.springframework.util.ReflectionUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.lang.reflect.Field;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +49,7 @@ public class DynamicsYamlConfigLoadingBeanPostProcessor
 
     private ApplicationContext applicationContext;
 
-    private final Map<String, Set<String>> beanValueFieldsInjectPropertyMapping = new ConcurrentHashMap<>(64);
+    private final Map<String, Set<Field>> beanValueFieldsInjectPropertyMapping = new ConcurrentHashMap<>(64);
 
     @Override
     public void setApplicationContext(@Nonnull ApplicationContext applicationContext) throws BeansException {
@@ -63,9 +64,9 @@ public class DynamicsYamlConfigLoadingBeanPostProcessor
         // Scan all fields with @Value annotation using Spring's ReflectionUtils.
 
         ReflectionUtils.doWithFields(beanClass, field -> {
-            Set<String> regPropertyNames
+            Set<Field> valueFields
                     = beanValueFieldsInjectPropertyMapping.computeIfAbsent(beanName, key -> new LinkedHashSet<>());
-            regPropertyNames.add(field.getAnnotation(Value.class).value());
+            valueFields.add(field);
         }, field -> field.isAnnotationPresent(Value.class));
 
         return InstantiationAwareBeanPostProcessor.super.postProcessBeforeInstantiation(beanClass, beanName);
@@ -81,15 +82,32 @@ public class DynamicsYamlConfigLoadingBeanPostProcessor
         if (CollectionUtils.isEmpty(updatePropertyNames)) {
             return;
         }
+        Map<Object, Set<Field>> beanReloadingConfigFieldMap = new ConcurrentHashMap<>();
         AutowiredAnnotationBeanPostProcessor postProcessor
                 = applicationContext.getBean(AutowiredAnnotationBeanPostProcessor.class);
-        for (Map.Entry<String, Set<String>> entry : beanValueFieldsInjectPropertyMapping.entrySet()) {
+        for (Map.Entry<String, Set<Field>> entry : beanValueFieldsInjectPropertyMapping.entrySet()) {
             String beanName = entry.getKey();
-            if (entry.getValue().stream()
-                    .anyMatch(regPropertyName -> updatePropertyNames.stream().anyMatch(regPropertyName::contains))) {
+
+            Set<Field> reloadingField = new LinkedHashSet<>();
+            for (Field field : entry.getValue()) {
+
+                // The similarity of expressions includes.
+                // Give an example : ${spring.application.name} contain spring.application.name.
+                String value = field.getAnnotation(Value.class).value();
+                if (updatePropertyNames.stream().anyMatch(value::contains)) {
+                    reloadingField.add(field);
+                }
+            }
+
+            // Process injection if it has config reloading field.
+            if (!reloadingField.isEmpty()) {
                 Object bean = applicationContext.getBean(beanName);
                 postProcessor.processInjection(bean);
+                beanReloadingConfigFieldMap.putIfAbsent(bean, reloadingField);
             }
         }
+
+        // Publish config reloading event.
+        applicationContext.publishEvent(new DynamicsYamlConfigLoadingEvent(this, beanReloadingConfigFieldMap));
     }
 }
