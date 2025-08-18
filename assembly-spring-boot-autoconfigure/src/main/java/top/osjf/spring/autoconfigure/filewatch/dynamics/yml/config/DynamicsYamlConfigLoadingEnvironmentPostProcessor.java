@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * The implementation {@code DynamicsYamlConfigLoadingEnvironmentPostProcessor} that
@@ -42,6 +43,8 @@ import java.util.*;
  * @since 3.0.1
  */
 public class DynamicsYamlConfigLoadingEnvironmentPostProcessor implements EnvironmentPostProcessor {
+
+    private static final Logger logger = Logger.getLogger(DynamicsYamlConfigLoadingEnvironmentPostProcessor.class.getName());
 
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
@@ -89,17 +92,17 @@ public class DynamicsYamlConfigLoadingEnvironmentPostProcessor implements Enviro
                     if (!propertySources.isEmpty()) {
                         for (PropertySource<?> propertySource : propertySources) {
                             mutablePropertySources.addFirst(propertySource);
-                            System.out.println("[ORIGIN CONFIG] Source YAML configuration loaded result : [" +
+                            logger.info("[ORIGIN CONFIG] Source YAML configuration loaded result : [" +
                                     propertySource.getSource() + "] in file [" + file.getPath() + "]");
                         }
                     }
                 }
                 catch (MalformedURLException ex) {
-                    System.err.println("[ORIGIN CONFIG] URL " + bindPath + " specification is not valid," +
+                    logger.severe("[ORIGIN CONFIG] URL " + bindPath + " specification is not valid," +
                             "cause: " + ex.getMessage());
                 }
                 catch (IOException ex) {
-                    System.err.println("[ORIGIN CONFIG] Failed to load " + file.getPath() + ", cause: "+
+                    logger.severe("[ORIGIN CONFIG] Failed to load " + file.getPath() + ", cause: "+
                             ex.getMessage());
                 }
             }
