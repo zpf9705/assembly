@@ -64,7 +64,7 @@ public class DynamicsYamlConfigLoadingBeanPostProcessor
 
         ReflectionUtils.doWithFields(beanClass, field -> {
             Set<String> regPropertyNames
-                    = beanValueFieldsInjectPropertyMapping.computeIfAbsent(beanName, key -> new LinkedHashSet<>(4));
+                    = beanValueFieldsInjectPropertyMapping.computeIfAbsent(beanName, key -> new LinkedHashSet<>());
             regPropertyNames.add(field.getAnnotation(Value.class).value());
         }, field -> field.isAnnotationPresent(Value.class));
 
