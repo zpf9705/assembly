@@ -104,7 +104,7 @@ final class EventDefineTypeResolver {
                 return constructor.newInstance(rawEvent);
             }
             catch (NoSuchMethodException ex) {
-                throw new FileWatchException("Missing constructor (Path.class, WatchEvent.class) or" +
+                throw new FileWatchException("Missing constructor (Path.class, WatchEvent.class) or " +
                         "(WatchEvent.class) in " + defineEventClass.getName(), ex);
             }
             catch (Exception ex) {
