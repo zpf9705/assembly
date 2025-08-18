@@ -47,6 +47,7 @@ final class EventDefineTypeResolver {
      * @param registeredPath the registered path to construct instantiation。
      * @param rawEvent       the raw {@code WatchEvent<Path>}.
      * @return Result of define {@code WatchEvent<Path>}.
+     * @throws FileWatchException if define {@code WatchEvent} instantiate failed.
      */
     public static WatchEvent<Path> resolveEvent(FileWatchListener listener, Path registeredPath,
                                                  WatchEvent<Path> rawEvent) {
