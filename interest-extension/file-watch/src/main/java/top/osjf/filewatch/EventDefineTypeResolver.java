@@ -35,7 +35,7 @@ import java.util.concurrent.ConcurrentMap;
  * @since 3.0.1
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
-final class EventDefineTypeResolver {
+public final class EventDefineTypeResolver {
 
     /** Cache of {@link #resolveEvent} result */
     private static final ConcurrentMap<Class<? extends FileWatchListener>, Class<? extends WatchEvent<Path>>>
