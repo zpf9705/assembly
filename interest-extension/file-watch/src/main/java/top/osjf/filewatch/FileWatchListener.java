@@ -31,11 +31,11 @@ import java.nio.file.WatchEvent;
  *
  * <p>The event notification entity will support {@code WatchEvent<Path>}
  * or its custom type implementation. If you choose the latter, you need to
- * select a constructor {@code WatchEventImpl(Path parent, WatchEvent<Path> event)}
- * or {WatchEventImpl(WatchEvent<Path> event)} such as {@link AmapleWatchEvent},
+ * select a constructor {@code WatchEventImpl(Path parent, WatchEvent&lt;Path&gt; event)}
+ * or {WatchEventImpl(WatchEvent&lt;Path&gt; event)} such as {@link AmapleWatchEvent},
  * otherwise it will throw an error that cannot be constructed.
  *
- * @param <E> {@code WatchEvent<Path>} or its subclass implementation.
+ * @param <E> {@code WatchEvent&lt;Path&gt;} or its subclass implementation.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  * @see java.nio.file.WatchService

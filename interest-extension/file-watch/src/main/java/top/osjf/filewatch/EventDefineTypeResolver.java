@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * {@code WatchEvent<Path>} defined resolver util class.
+ * {@code WatchEvent&lt;Path&gt;} defined resolver util class.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
@@ -41,13 +41,13 @@ final class EventDefineTypeResolver {
             defineEventMapping = new ConcurrentHashMap(16);
 
     /**
-     * Resolve the {@code FileWatchListener} generic of {@code WatchEvent<Path>} and
+     * Resolve the {@code FileWatchListener} generic of {@code WatchEvent&lt;Path&gt;} and
      * instantiated it to return.
      * @param listener       the {@code FileWatchListener} to resolve.
      * @param registeredPath the registered path to construct instantiation。
-     * @param rawEvent       the raw {@code WatchEvent<Path>}.
-     * @return Result of define {@code WatchEvent<Path>}.
-     * @throws FileWatchException if define {@code WatchEvent} instantiate failed.
+     * @param rawEvent       the raw {@code WatchEvent&lt;Path&gt;}.
+     * @return Result of define {@code WatchEvent&lt;Path&gt;}.
+     * @throws FileWatchException if define {@code WatchEvent&lt;Path&gt;} instantiate failed.
      */
     public static WatchEvent<Path> resolveEvent(FileWatchListener listener, Path registeredPath,
                                                  WatchEvent<Path> rawEvent) {
@@ -65,7 +65,7 @@ final class EventDefineTypeResolver {
         return instantiateDefineEvent(clazz, registeredPath, rawEvent);
     }
 
-    /** The default {@code WatchEvent<Path>} is used to directly return the source {@link WatchEvent} by default. */
+    /** The default {@code WatchEvent&lt;Path&gt;} is used to directly return the source {@link WatchEvent} by default. */
     interface DefaultWatchEvent extends WatchEvent<Path> { }
 
     private static final Class<? extends WatchEvent<Path>> CLASS = DefaultWatchEvent.class;
