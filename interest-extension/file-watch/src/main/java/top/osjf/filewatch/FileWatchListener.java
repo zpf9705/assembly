@@ -43,6 +43,8 @@ import java.nio.file.WatchEvent;
  * @see java.nio.file.StandardWatchEventKinds
  * @see FileWatchService#registerListener(FileWatchListener)
  * @see FileWatchListeners#registerListener(FileWatchListener)
+ * @see AmpleFileWatchListener
+ * @see EventDefineTypeResolver
  */
 public interface FileWatchListener<E extends WatchEvent<Path>> extends PathExclusive {
     /**

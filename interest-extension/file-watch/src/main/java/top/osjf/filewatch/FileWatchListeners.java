@@ -31,6 +31,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * @since 3.0.1
  * @see FileWatchService#registerListener(FileWatchListener)
  */
+@SuppressWarnings("rawtypes")
 public final class FileWatchListeners {
 
     private final ReadWriteLock lock;
