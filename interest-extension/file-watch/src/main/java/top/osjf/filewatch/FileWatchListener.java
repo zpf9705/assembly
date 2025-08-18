@@ -29,6 +29,13 @@ import java.nio.file.WatchEvent;
  * <p>Typical usage involves implementing both {@code supports()} to filter
  * relevant events and {@code onWatchEvent()} to handle them.
  *
+ * <p>The event notification entity will support {@code WatchEvent<Path>}
+ * or its custom type implementation. If you choose the latter, you need to
+ * select a constructor {@code WatchEventImpl(Path parent, WatchEvent<Path> event)}
+ * or {WatchEventImpl(WatchEvent<Path> event)} such as {@link AmapleWatchEvent},
+ * otherwise it will throw an error that cannot be constructed.
+ *
+ * @param <E> {@code WatchEvent<Path>} or its subclass implementation.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  * @see java.nio.file.WatchService
@@ -37,7 +44,7 @@ import java.nio.file.WatchEvent;
  * @see FileWatchService#registerListener(FileWatchListener)
  * @see FileWatchListeners#registerListener(FileWatchListener)
  */
-public interface FileWatchListener extends PathExclusive {
+public interface FileWatchListener<E extends WatchEvent<Path>> extends PathExclusive {
     /**
      * Determines whether this listener is interested in the given watch event.
      *
@@ -54,7 +61,7 @@ public interface FileWatchListener extends PathExclusive {
      * @return {@code true} if this listener should handle the event, {@code false}
      *          to ignore it.
      */
-    boolean supports(WatchEvent<Path> event);
+    boolean supports(E event);
 
     /**
      * Processes a watch event that passed the {@link #supports} check.
@@ -78,5 +85,5 @@ public interface FileWatchListener extends PathExclusive {
      * @see java.nio.file.StandardWatchEventKinds#ENTRY_MODIFY
      * @see java.nio.file.StandardWatchEventKinds#ENTRY_DELETE
      */
-    void onWatchEvent(WatchEvent<Path> event);
+    void onWatchEvent(E event);
 }
