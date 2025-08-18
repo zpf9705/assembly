@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * {@code WatchEvent&lt;Path&gt;} defined resolver util class.
@@ -37,7 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
 final class EventDefineTypeResolver {
 
     /** Cache of {@link #resolveEvent} result */
-    private static final ConcurrentHashMap<Class<? extends FileWatchListener>, Class<? extends WatchEvent<Path>>>
+    private static final ConcurrentMap<Class<? extends FileWatchListener>, Class<? extends WatchEvent<Path>>>
             defineEventMapping = new ConcurrentHashMap(16);
 
     /**
