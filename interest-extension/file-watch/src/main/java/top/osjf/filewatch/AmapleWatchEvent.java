@@ -24,7 +24,6 @@ import java.nio.file.WatchEvent;
 import static java.util.Objects.requireNonNull;
 
 /**
- /**
  * Enhanced watch event implementation that carries parent directory information.
  * <p>Wraps standard {@link WatchEvent} while adding parent path tracking capability.
  *
