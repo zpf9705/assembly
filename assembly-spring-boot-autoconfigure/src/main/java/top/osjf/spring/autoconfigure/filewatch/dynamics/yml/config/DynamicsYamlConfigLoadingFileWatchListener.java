@@ -76,12 +76,12 @@ public class DynamicsYamlConfigLoadingFileWatchListener extends AmpleFileWatchLi
     }
 
     @Override
-    protected boolean supportsInternal(AmapleWatchEvent event) {
+    public boolean supports(AmapleWatchEvent event) {
         return ConfigLoadingConditionUtils.isYamlFile(event.context().toString());
     }
 
     @Override
-    protected void onWatchEventInternal(AmapleWatchEvent event) {
+    public void onWatchEvent(AmapleWatchEvent event) {
         MutablePropertySources mutablePropertySources = environment.getPropertySources();
         if (event.isHopeEvent(TriggerKind.ENTRY_DELETE)) {
             PropertySource<?> removedPropertySource = mutablePropertySources.remove(event.context().toString());
