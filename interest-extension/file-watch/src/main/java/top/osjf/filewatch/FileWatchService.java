@@ -53,7 +53,7 @@ import java.util.function.Supplier;
  * @see java.nio.file.WatchEvent
  * @see java.nio.file.StandardWatchEventKinds
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileWatchService.class);
@@ -270,10 +270,25 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
                 for (FileWatchListener listener : fileWatchListeners.getListeners()) {
                     boolean isParentPath = Optional.ofNullable(listener.getPath())
                             .map(path -> path.equals(registeredPath)).orElse(true);
-                    AmapleWatchEvent amapleWatchEvent = new AmapleWatchEvent(registeredPath, pathEvent);
-                    if (isParentPath && listener.supports(amapleWatchEvent)) {
+                    if (!isParentPath) {
+                        if (LOGGER.isDebugEnabled()) {
+                            LOGGER.debug("Event path {} does not match the listener specified path {}," +
+                                    " invalid notification filtering.", registeredPath, listener.getPath());
+                        }
+                        continue;
+                    }
+                    // Resolve define event type.
+                    WatchEvent<Path> definedEvent;
+                    try {
+                        definedEvent = EventDefineTypeResolver.resolveEvent(listener, registeredPath, pathEvent);
+                    }
+                    catch (FileWatchException ex) {
+                        LOGGER.error("Failed to instantiate the defined event type", ex);
+                        continue;
+                    }
+                    if (listener.supports(definedEvent)) {
                         try {
-                            listener.onWatchEvent(amapleWatchEvent);
+                            listener.onWatchEvent(definedEvent);
                         }
                         catch (Throwable ex) {
                             LOGGER.error("Failed to handle watch event for path: {}, event type: {}",
