@@ -72,7 +72,7 @@ public class ApplicationStartupFileWatchListener extends TriggerKindMatchedFileW
      * Determines if this listener supports the given watch event.
      */
     @Override
-    public boolean supportsInternal(AmapleWatchEvent watchEvent) {
+    public boolean supports(AmapleWatchEvent watchEvent) {
         Path parent = watchEvent.getParent();
 
         StartupJarElement jarElement = getEventJarElement(watchEvent);
@@ -81,7 +81,7 @@ public class ApplicationStartupFileWatchListener extends TriggerKindMatchedFileW
         boolean bindPathEq =
                 jarElement != null && parent.equals(Paths.get(jarElement.getBindPath()));
 
-        return bindPathEq && super.supportsInternal(watchEvent);
+        return bindPathEq && super.supports(watchEvent);
     }
 
     @Override
@@ -109,7 +109,7 @@ public class ApplicationStartupFileWatchListener extends TriggerKindMatchedFileW
      * Handles the file watch event by executing configured startup commands.
      */
     @Override
-    public void onWatchEventInternal(AmapleWatchEvent watchEvent) {
+    public void onWatchEvent(AmapleWatchEvent watchEvent) {
         Path parent = watchEvent.getParent();
         Path jarFilePath = watchEvent.context();
 
