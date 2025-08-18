@@ -17,13 +17,12 @@
 
 package top.osjf.filewatch;
 
-import java.nio.file.WatchEvent;
 import java.util.List;
 
 /**
  * Abstract class of {@link FileWatchListener} that obtain the specified set of supported
  * {@link TriggerKind} and perform an include operation on {@link TriggerKind} at the current
- * notification time as the support result for {@link #supports(WatchEvent)}.
+ * notification time as the support result for {@link #supports(AmapleWatchEvent)}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
@@ -34,7 +33,7 @@ public abstract class TriggerKindMatchedFileWatchListener extends AmpleFileWatch
      * @throws NullPointerException if {@link #getSupportTriggerKinds(AmapleWatchEvent)} return {@literal null}.
      */
     @Override
-    protected boolean supportsInternal(AmapleWatchEvent event) {
+    public boolean supports(AmapleWatchEvent event) {
         // Verify whether the trigger type set in the current subclass file is
         // within the range of the parent listening trigger.
         return getSupportTriggerKinds(event).contains(event.getTriggerKind());
