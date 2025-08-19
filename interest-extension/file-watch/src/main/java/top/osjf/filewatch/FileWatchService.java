@@ -237,7 +237,7 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
             WatchKey key;
             try { key = watchService.take(); }
             catch (InterruptedException ex) {
-                LOGGER.info("File watch service interrupted, shutting down...", ex);
+                LOGGER.info("File watch service interrupted, shutting down...");
                 Thread.currentThread().interrupt(); // interrupt action.
                 break;
             }
