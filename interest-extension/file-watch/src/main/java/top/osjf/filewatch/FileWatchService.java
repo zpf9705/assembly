@@ -246,7 +246,7 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
                 WatchEvent<Path> pathEvent = (WatchEvent<Path>) event;
                 Path pathContext = pathEvent.context();
                 WatchEvent.Kind<Path> kind = pathEvent.kind();
-                LOGGER.info("Watch event for path: {}, event type: {}", pathContext, kind);
+                LOGGER.info("Watch event for context: {}, event type: {}", pathContext, kind);
                 if (event.kind() == StandardWatchEventKinds.OVERFLOW) {
                     if (LOGGER.isDebugEnabled()) {
                         LOGGER.debug("{} event and event type {} to indicate that events may have been lost or " +
@@ -290,12 +290,13 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
                             listener.onWatchEvent(definedEvent);
                         }
                         catch (Throwable ex) {
-                            LOGGER.error("Failed to handle watch event for path: {}, event type: {}",
+                            LOGGER.error("Failed to handle watch event for context: {}, event type: {}",
                                     pathContext, kind, ex);
                         }
                     }
                     else {
-                        LOGGER.info("Unsupported notification context {}, event type: {}", pathContext, kind);
+                        LOGGER.info("Unsupported notification context {}, event type: {}, for {}", pathContext, kind,
+                                listener.getClass().getName());
                     }
                 }
             }
