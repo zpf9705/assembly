@@ -15,7 +15,7 @@
  */
 
 
-package top.osjf.spring.autoconfigure.filewatch.dynamics.yml.config;
+package top.osjf.spring.autoconfigure.filewatch.config.refresh;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,16 +47,18 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * The implementation of this listener is used to dynamically listen for changes in YAML
- * configuration files in a specified folder and dynamically write/update them to
- * {@link ConfigurableEnvironment#getPropertySources()}.
+ * This listener is used to specify callback processing for changes in {@code .yaml/.yml}
+ * or {.properties} type files under the listening path, including adding, modifying, and
+ * deleting files, making timely changes to the initialization configuration properties of
+ * {@link ConfigurableEnvironment}, and dynamically refreshing the relevant injection
+ * configurations of dynamically injected beans.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
-public class DynamicsYamlConfigLoadingFileWatchListener extends AmpleFileWatchListener implements ApplicationContextAware {
+public class ConfigRefreshedFileWatchListener extends AmpleFileWatchListener implements ApplicationContextAware {
 
-    private static final Logger logger = LoggerFactory.getLogger(DynamicsYamlConfigLoadingFileWatchListener.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConfigRefreshedFileWatchListener.class);
 
     private ApplicationContext applicationContext;
 
@@ -77,7 +79,7 @@ public class DynamicsYamlConfigLoadingFileWatchListener extends AmpleFileWatchLi
 
     @Override
     public boolean supports(AmapleWatchEvent event) {
-        return ConfigLoadingConditionUtils.isYamlFile(event.context().toString());
+        return ConfigRefreshedUtils.isYamlFile(event.context().toString());
     }
 
     @Override
@@ -140,7 +142,7 @@ public class DynamicsYamlConfigLoadingFileWatchListener extends AmpleFileWatchLi
                 if (canAdd) mutablePropertySources.addFirst(propertySource);
             }
             // Trigger dependency updates.
-            applicationContext.getBean(DynamicsYamlConfigLoadingBeanPostProcessor.class)
+            applicationContext.getBean(ValueAnnotationBeanBeanPostProcessor.class)
                     .processInjection(updatePropertyNames);
         }
         catch (MalformedURLException ex) {
