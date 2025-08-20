@@ -17,6 +17,7 @@
 
 package top.osjf.filewatch;
 
+import com.sun.nio.file.SensitivityWatchEventModifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,13 +124,14 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
      * @throws FileWatchException in the following cases:
      *                         - If the path is invalid ({@code InvalidPathException})
      *                         - If registration fails ({@code IOException})
-     * @see #registerWatch(String, boolean, TriggerKind...)
+     * @see #registerWatch(String, boolean, SensitivityWatchEventModifier, TriggerKind...)
      *
      * @see java.nio.file.WatchService
      * @see java.nio.file.StandardWatchEventKinds
      */
     public void registerWatch(FileWatchPath watchPath) {
-        registerWatch(watchPath.getPath(), watchPath.isPeculiarWatchThread(), watchPath.getTriggerKinds());
+        registerWatch(watchPath.getPath(), watchPath.isPeculiarWatchThread(),
+                watchPath.getSensitivityModifier(), watchPath.getTriggerKinds());
     }
 
     /**
@@ -140,6 +142,7 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
      *
      * @param path                The file system path to monitor (absolute or relative path).
      * @param peculiarWatchThread Whether to create a new independent {@link FileWatchService}.
+     * @param sensitivityModifier Detecting sensitivity enumeration types.
      * @param triggerKinds        The array of event types to watch for (CREATE, MODIFY, DELETE, etc.).
      * @throws NullPointerException if {@code path} or {@code kinds} is {@literal null}.
      * @throws FileWatchException in the following cases:
@@ -154,7 +157,8 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
      * @see java.nio.file.WatchService
      * @see java.nio.file.StandardWatchEventKinds
      */
-    public void registerWatch(String path, boolean peculiarWatchThread, TriggerKind... triggerKinds) {
+    public void registerWatch(String path, boolean peculiarWatchThread,
+                              SensitivityWatchEventModifier sensitivityModifier, TriggerKind... triggerKinds) {
         if (path == null || triggerKinds == null) {
             throw new NullPointerException("path or triggerKind");
         }
@@ -164,7 +168,7 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
                 if (fileWatchService == null) {
                     fileWatchService = new FileWatchService(fileWatchListeners, waitConfigurations);
                 }
-                fileWatchService.registerWatch(path, false, triggerKinds);
+                fileWatchService.registerWatch(path, false, sensitivityModifier, triggerKinds);
                 return fileWatchService;
             });
         }
@@ -177,7 +181,8 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
                 WatchEvent.Kind<?>[] events = new WatchEvent.Kind[triggerKinds.length];
                 for (int i = 0; i < triggerKinds.length; i++) events[i] = triggerKinds[i].kind;
                 registeredPaths.add(registeredPath);
-                watchKeyregisteredPathMap.put(registeredPath.register(watchService, events), registeredPath);
+                watchKeyregisteredPathMap.put(registeredPath.register(watchService, events, sensitivityModifier),
+                        registeredPath);
                 LOGGER.info("File monitoring service for path {} has been registered.", registeredPath);
             }
             catch (InvalidPathException ex) {

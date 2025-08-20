@@ -17,6 +17,8 @@
 
 package top.osjf.filewatch;
 
+import com.sun.nio.file.SensitivityWatchEventModifier;
+
 import java.io.Serializable;
 
 /**
@@ -35,6 +37,10 @@ public class FileWatchPath extends TriggerKindProvider implements Comparable<Fil
 
     /** Whether to create a new independent {@link FileWatchService}.*/
     private boolean peculiarWatchThread;
+
+    /** Defines the <em>sensitivity levels</em> when registering objects with a
+     * watch service implementation that polls the file system.*/
+    private SensitivityWatchEventModifier sensitivityModifier = SensitivityWatchEventModifier.MEDIUM;
 
     @Override
     public int compareTo(FileWatchPath o) {
@@ -60,5 +66,13 @@ public class FileWatchPath extends TriggerKindProvider implements Comparable<Fil
 
     public void setPeculiarWatchThread(boolean peculiarWatchThread) {
         this.peculiarWatchThread = peculiarWatchThread;
+    }
+
+    public SensitivityWatchEventModifier getSensitivityModifier() {
+        return sensitivityModifier;
+    }
+
+    public void setSensitivityModifier(SensitivityWatchEventModifier sensitivityModifier) {
+        this.sensitivityModifier = sensitivityModifier;
     }
 }
