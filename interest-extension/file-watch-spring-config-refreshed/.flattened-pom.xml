@@ -22,11 +22,11 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>top.osjf.filewatch</groupId>
-  <artifactId>file-watch-boot-starter</artifactId>
+  <artifactId>file-watch-spring-config-refreshed</artifactId>
   <version>3.0.1</version>
-  <name>file-watch-boot-starter 3.0.1</name>
-  <description>Integrate the file-watch auto assembly package of springboot.</description>
-  <url>https://github.com/zpf9705/assembly/interest-extension/file-watch-boot-starter</url>
+  <name>file-watch-spring-config-refreshed 3.0.1</name>
+  <description>The monitor implementation for file changes to refresh spring env config.</description>
+  <url>https://github.com/zpf9705/assembly/interest-extension/file-watch-spring-config-refreshed</url>
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
@@ -47,9 +47,9 @@
     </developer>
   </developers>
   <scm>
-    <connection>scm:git:https://github.com/zpf9705/assembly.git/interest-extension/file-watch-boot-starter</connection>
-    <developerConnection>scm:git:https://github.com/zpf9705/assembly.git/interest-extension/file-watch-boot-starter</developerConnection>
-    <url>https://github.com/zpf9705/assembly/interest-extension/file-watch-boot-starter</url>
+    <connection>scm:git:https://github.com/zpf9705/assembly.git/interest-extension/file-watch-spring-config-refreshed</connection>
+    <developerConnection>scm:git:https://github.com/zpf9705/assembly.git/interest-extension/file-watch-spring-config-refreshed</developerConnection>
+    <url>https://github.com/zpf9705/assembly/interest-extension/file-watch-spring-config-refreshed</url>
   </scm>
   <dependencies>
     <dependency>
@@ -59,22 +59,18 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>top.osjf.filewatch</groupId>
-      <artifactId>file-watch-application-startup</artifactId>
-      <version>3.0.1</version>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot</artifactId>
+      <version>2.5.6</version>
       <scope>compile</scope>
+      <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>top.osjf.filewatch</groupId>
-      <artifactId>file-watch-spring-config-refreshed</artifactId>
-      <version>3.0.1</version>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+      <version>3.0.2</version>
       <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>top.osjf</groupId>
-      <artifactId>assembly-spring-boot-autoconfigure</artifactId>
-      <version>3.0.1</version>
-      <scope>compile</scope>
+      <optional>true</optional>
     </dependency>
   </dependencies>
 </project>
