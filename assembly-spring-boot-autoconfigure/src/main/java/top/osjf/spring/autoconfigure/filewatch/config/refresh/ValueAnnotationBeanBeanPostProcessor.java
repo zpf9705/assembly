@@ -76,6 +76,7 @@ public class ValueAnnotationBeanBeanPostProcessor
     /**
      * Processes dependency injection for beans whose config properties were updated.
      * @param updatePropertyNames list of changed property names.
+     * @param refreshConfigFilePath Configure the source file path for refreshing.
      * @throws BeanCreationException if autowiring failed
      * @see AutowiredAnnotationBeanPostProcessor#processInjection
      */
