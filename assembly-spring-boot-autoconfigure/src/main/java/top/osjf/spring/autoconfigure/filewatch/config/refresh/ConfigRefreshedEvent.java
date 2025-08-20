@@ -50,6 +50,7 @@ public class ConfigRefreshedEvent extends ApplicationEvent {
      * which the event is associated (never {@code null})
      * @param beanValueConfigFieldMap {@link #beanValueConfigFieldMap}
      *                                    suggest setting up a thread safe map.
+     * @param refreshConfigFilePath Configure the source file path for refreshing.
      */
     public ConfigRefreshedEvent(Object source, Map<Object, Set<Field>> beanValueConfigFieldMap,
                                 String refreshConfigFilePath) {
