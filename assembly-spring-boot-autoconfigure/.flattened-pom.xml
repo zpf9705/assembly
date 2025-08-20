@@ -150,5 +150,12 @@
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
+    <dependency>
+      <groupId>top.osjf.filewatch</groupId>
+      <artifactId>file-watch-spring-config-refreshed</artifactId>
+      <version>3.0.1</version>
+      <scope>compile</scope>
+      <optional>true</optional>
+    </dependency>
   </dependencies>
 </project>

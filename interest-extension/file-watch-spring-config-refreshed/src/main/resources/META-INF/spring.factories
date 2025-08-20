@@ -1,0 +1,2 @@
+org.springframework.boot.env.EnvironmentPostProcessor=\
+  top.osjf.filewatch.spring.config.refresh.ExternalConfigLoadingEnvironmentPostProcessor
