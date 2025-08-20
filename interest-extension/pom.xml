@@ -36,8 +36,8 @@
     <modules>
         <module>file-watch</module>
         <module>file-watch-application-startup</module>
-        <module>file-watch-boot-starter</module>
         <module>file-watch-spring-config-refreshed</module>
+        <module>file-watch-boot-starter</module>
     </modules>
 
     <dependencyManagement>
