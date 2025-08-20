@@ -25,11 +25,10 @@ import org.springframework.beans.factory.config.InstantiationAwareBeanPostProces
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -53,7 +52,7 @@ public class ValueAnnotationBeanBeanPostProcessor
     private final Map<String, Set<Field>> beanValueFieldsInjectPropertyMapping = new ConcurrentHashMap<>(64);
 
     @Override
-    public void setApplicationContext(@Nonnull ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
 
