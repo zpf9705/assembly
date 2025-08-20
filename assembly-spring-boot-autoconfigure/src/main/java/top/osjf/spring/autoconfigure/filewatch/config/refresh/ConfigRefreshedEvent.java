@@ -15,7 +15,7 @@
  */
 
 
-package top.osjf.spring.autoconfigure.filewatch.dynamics.yml.config;
+package top.osjf.spring.autoconfigure.filewatch.config.refresh;
 
 import org.springframework.context.ApplicationEvent;
 
@@ -32,26 +32,25 @@ import java.util.Set;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
-public class DynamicsYamlConfigLoadingEvent extends ApplicationEvent {
+public class ConfigRefreshedEvent extends ApplicationEvent {
 
     private static final long serialVersionUID = 9104976355076441852L;
 
     /** The mapping map of the refreshed bean configuration and its annotation
      * {@link org.springframework.beans.factory.annotation.Value} for the refreshed field. */
-    private final Map<Object, Set<Field>> beanReloadingConfigFieldMap;
+    private final Map<Object, Set<Field>> beanValueConfigFieldMap;
 
     /**
-     * Constructs a {@link DynamicsYamlConfigLoadingEvent} in source object with
-     * given {@link #beanReloadingConfigFieldMap}.
+     * Constructs a {@link ConfigRefreshedEvent} in source object with
+     * given {@link #beanValueConfigFieldMap}.
      * @param source the object on which the event initially occurred or with
      * which the event is associated (never {@code null})
-     * @param beanReloadingConfigFieldMap {@link #beanReloadingConfigFieldMap}
+     * @param beanValueConfigFieldMap {@link #beanValueConfigFieldMap}
      *                                    suggest setting up a thread safe map.
      */
-    public DynamicsYamlConfigLoadingEvent(Object source,
-                                          Map<Object, Set<Field>> beanReloadingConfigFieldMap) {
+    public ConfigRefreshedEvent(Object source, Map<Object, Set<Field>> beanValueConfigFieldMap) {
         super(source);
-        this.beanReloadingConfigFieldMap = beanReloadingConfigFieldMap;
+        this.beanValueConfigFieldMap = beanValueConfigFieldMap;
     }
 
     /**
@@ -70,20 +69,20 @@ public class DynamicsYamlConfigLoadingEvent extends ApplicationEvent {
      * @return {@code true} judge the input bean is the configuration bean instance,{@code false}
      *          otherwise.
      */
-    public boolean isConfigReloadingBean(Object bean) {
-        if (beanReloadingConfigFieldMap.isEmpty()) {
+    public boolean isConfigRefreshedBean(Object bean) {
+        if (beanValueConfigFieldMap.isEmpty()) {
             return false;
         }
-        return beanReloadingConfigFieldMap.containsKey(bean);
+        return beanValueConfigFieldMap.containsKey(bean);
     }
 
     /**
      * Return the set of fields in the input bean that have been refreshed and configured, and
-     * use them together with {@link #isConfigReloadingBean(Object)}.
+     * use them together with {@link #isConfigRefreshedBean(Object)}.
      * @param bean the input bean to refer.
      * @return Set of fields with refreshed values.
      */
-    public Set<Field> getConfigReloadingFields(Object bean) {
-        return beanReloadingConfigFieldMap.getOrDefault(bean, Collections.emptySet());
+    public Set<Field> getConfigRefreshedFields(Object bean) {
+        return beanValueConfigFieldMap.getOrDefault(bean, Collections.emptySet());
     }
 }
