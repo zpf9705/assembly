@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.env.OriginTrackedMapPropertySource;
-import org.springframework.boot.env.YamlPropertySourceLoader;
+import org.springframework.boot.env.PropertySourceLoader;
 import org.springframework.boot.origin.OriginTrackedValue;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -79,7 +79,7 @@ public class ConfigRefreshedFileWatchListener extends AmpleFileWatchListener imp
 
     @Override
     public boolean supports(AmapleWatchEvent event) {
-        return ConfigRefreshedUtils.isYamlFile(event.context().toString());
+        return ConfigRefreshedUtils.isConfigFile(event.context().toString());
     }
 
     @Override
@@ -92,7 +92,8 @@ public class ConfigRefreshedFileWatchListener extends AmpleFileWatchListener imp
             }
             return;
         }
-        YamlPropertySourceLoader loader = new YamlPropertySourceLoader();
+        String configFileName = event.context().toString();
+        PropertySourceLoader loader = ConfigRefreshedUtils.getPropertySourceLoader(configFileName);
         try {
             List<PropertySource<?>> propertySources = loader.load(event.context().toString(),
                     new FileUrlResource(event.getFullPath().toString()));
