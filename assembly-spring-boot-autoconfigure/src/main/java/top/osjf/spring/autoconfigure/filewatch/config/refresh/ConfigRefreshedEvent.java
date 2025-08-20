@@ -60,8 +60,8 @@ public class ConfigRefreshedEvent extends ApplicationEvent {
      * <pre>
      * {@code
      *     public class Example {
-     *         EventListener(condition = "event.isConfigReloadingBean(#example)")
-     *         public void onApplicationEvent(DynamicsYamlConfigLoadingEvent event) {
+     *         EventListener(condition = "event.isConfigRefreshedBean(#example)")
+     *         public void onApplicationEvent(ConfigRefreshedEvent event) {
      *         }
      *     }}
      * </pre>
