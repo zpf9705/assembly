@@ -15,7 +15,7 @@
  */
 
 
-package top.osjf.spring.autoconfigure.filewatch.dynamics.yml.config;
+package top.osjf.spring.autoconfigure.filewatch.config.refresh;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
@@ -38,13 +38,14 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Dynamic YAML configuration loader that processes {@link Value} annotations
- * and triggers re-injection when config properties change.
+ * This post processor is used in the early stage of bean initialization to find the fields
+ * that use annotation {@link Value} for configuration injection, and record them for targeted
+ * preparation for subsequent dynamic configuration refreshes.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
-public class DynamicsYamlConfigLoadingBeanPostProcessor
+public class ValueAnnotationBeanBeanPostProcessor
         implements InstantiationAwareBeanPostProcessor, ApplicationContextAware {
 
     private ApplicationContext applicationContext;
@@ -108,6 +109,6 @@ public class DynamicsYamlConfigLoadingBeanPostProcessor
         }
 
         // Publish config reloading event.
-        applicationContext.publishEvent(new DynamicsYamlConfigLoadingEvent(this, beanReloadingConfigFieldMap));
+        applicationContext.publishEvent(new ConfigRefreshedEvent(this, beanReloadingConfigFieldMap));
     }
 }
