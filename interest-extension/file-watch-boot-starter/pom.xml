@@ -48,6 +48,11 @@
         </dependency>
 
         <dependency>
+            <groupId>top.osjf.filewatch</groupId>
+            <artifactId>file-watch-spring-config-refreshed</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>top.osjf</groupId>
             <artifactId>assembly-spring-boot-autoconfigure</artifactId>
         </dependency>

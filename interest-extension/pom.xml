@@ -37,6 +37,7 @@
         <module>file-watch</module>
         <module>file-watch-application-startup</module>
         <module>file-watch-boot-starter</module>
+        <module>file-watch-spring-config-refreshed</module>
     </modules>
 
     <dependencyManagement>
@@ -51,6 +52,12 @@
             <dependency>
                 <groupId>top.osjf.filewatch</groupId>
                 <artifactId>file-watch-application-startup</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>top.osjf.filewatch</groupId>
+                <artifactId>file-watch-spring-config-refreshed</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
