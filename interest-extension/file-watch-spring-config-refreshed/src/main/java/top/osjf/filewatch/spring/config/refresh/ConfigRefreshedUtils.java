@@ -35,7 +35,7 @@ import static java.util.Objects.requireNonNull;
  * @see org.springframework.boot.env.YamlPropertySourceLoader
  * @see org.springframework.boot.env.PropertiesPropertySourceLoader
  */
-public final class ConfigRefreshedUtils {
+public abstract class ConfigRefreshedUtils {
 
     /** Yaml config resolver {@code PropertySourceLoader}.*/
     private static final PropertySourceLoader YAML_SOURCE_LOADER = new YamlPropertySourceLoader();
