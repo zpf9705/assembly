@@ -19,7 +19,7 @@ package top.osjf.spring.autoconfigure.filewatch.config.refresh;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;
-import org.springframework.boot.env.YamlPropertySourceLoader;
+import org.springframework.boot.env.PropertySourceLoader;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
@@ -81,12 +81,12 @@ public class ExternalConfigLoadingEnvironmentPostProcessor implements Environmen
             return;
         }
         MutablePropertySources mutablePropertySources = environment.getPropertySources();
-        YamlPropertySourceLoader loader = new YamlPropertySourceLoader();
         for (String bindPath : bindPaths) {
             for (File file :
                     Optional.ofNullable(new File(bindPath)
-                                    .listFiles(file -> ConfigRefreshedUtils.isYamlFile(file.getName())))
+                                    .listFiles(file -> ConfigRefreshedUtils.isConfigFile(file.getName())))
                             .map(Arrays::asList).orElse(Collections.emptyList())) {
+                PropertySourceLoader loader = ConfigRefreshedUtils.getPropertySourceLoader(file.getName());
                 try {
                     List<PropertySource<?>> propertySources
                             = loader.load(file.getName(), new FileUrlResource(file.toURI().toURL()));
