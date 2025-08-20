@@ -79,36 +79,37 @@ public class ValueAnnotationBeanBeanPostProcessor
      * @throws BeanCreationException if autowiring failed
      * @see AutowiredAnnotationBeanPostProcessor#processInjection
      */
-    public void processInjection(List<String> updatePropertyNames) {
+    public void processInjection(List<String> updatePropertyNames, String refreshConfigFilePath) {
         if (CollectionUtils.isEmpty(updatePropertyNames)) {
             return;
         }
-        Map<Object, Set<Field>> beanReloadingConfigFieldMap = new ConcurrentHashMap<>();
+        Map<Object, Set<Field>> beanValueConfigFieldMap = new ConcurrentHashMap<>();
         AutowiredAnnotationBeanPostProcessor postProcessor
                 = applicationContext.getBean(AutowiredAnnotationBeanPostProcessor.class);
         for (Map.Entry<String, Set<Field>> entry : beanValueFieldsInjectPropertyMapping.entrySet()) {
             String beanName = entry.getKey();
 
-            Set<Field> reloadingField = new LinkedHashSet<>();
+            Set<Field> configFields = new LinkedHashSet<>();
             for (Field field : entry.getValue()) {
 
                 // The similarity of expressions includes.
                 // Give an example : ${spring.application.name} contain spring.application.name.
                 String value = field.getAnnotation(Value.class).value();
                 if (updatePropertyNames.stream().anyMatch(value::contains)) {
-                    reloadingField.add(field);
+                    configFields.add(field);
                 }
             }
 
             // Process injection if it has config reloading field.
-            if (!reloadingField.isEmpty()) {
+            if (!configFields.isEmpty()) {
                 Object bean = applicationContext.getBean(beanName);
                 postProcessor.processInjection(bean);
-                beanReloadingConfigFieldMap.putIfAbsent(bean, reloadingField);
+                beanValueConfigFieldMap.putIfAbsent(bean, configFields);
             }
         }
 
         // Publish config reloading event.
-        applicationContext.publishEvent(new ConfigRefreshedEvent(this, beanReloadingConfigFieldMap));
+        applicationContext.publishEvent
+                (new ConfigRefreshedEvent(this, beanValueConfigFieldMap, refreshConfigFilePath));
     }
 }
