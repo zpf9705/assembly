@@ -21,6 +21,8 @@ import org.springframework.boot.env.PropertiesPropertySourceLoader;
 import org.springframework.boot.env.PropertySourceLoader;
 import org.springframework.boot.env.YamlPropertySourceLoader;
 
+import java.util.regex.Pattern;
+
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -41,6 +43,9 @@ public final class ConfigRefreshedUtils {
     /** Properties config resolver {@code PropertySourceLoader}.*/
     private static final PropertySourceLoader PROPERTIES_SOURCE_LOADER = new PropertiesPropertySourceLoader();
 
+    /** Check if the specified configuration value is a precompiled {@link Pattern} instance of a placeholder. */
+    private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("^\\$\\{[^\\s]+\\}$");
+
     /**
      * Return the {@link PropertySourceLoader} static instance that is suitable for parsing based on
      * the file name type (determined by the suffix).
@@ -60,7 +65,28 @@ public final class ConfigRefreshedUtils {
     }
 
     /**
-     * Check is supported config file.
+     * Check if the given config is a placeholder.
+     * <ul>
+     * <li>${xxx.xxx} - true</li>
+     * <li>${} - false</li>
+     * <li>${ } - false</li>
+     * <li>${xxx.xxx - false</li>
+     * <li>xxx.xxx} - false</li>
+     * <li>xxx.xxx - false</li>
+     * </ul>
+     * @param config the given config.
+     * @return {@code true} is placeholder config,{@code false} otherwise.
+     */
+    public static boolean isPlaceholderConfig(String config) {
+        if (config == null) {
+            return false;
+        }
+
+        return PLACEHOLDER_PATTERN.matcher(config).matches();
+    }
+
+    /**
+     * Check if the config file is support resolve.
      * @param fileName the given {@code fileName}.
      * @return {@code true} is supported config file,{@code false} otherwise.
      */
@@ -69,7 +95,7 @@ public final class ConfigRefreshedUtils {
     }
 
     /**
-     * Check is yaml file.
+     * Check if the given filename is yaml file.
      * @param fileName the given {@code fileName}.
      * @return {@code true} is yaml file,{@code false} otherwise.
      */
@@ -79,7 +105,7 @@ public final class ConfigRefreshedUtils {
     }
 
     /**
-     * Check is properties file.
+     * Check if the given filename is properties file.
      * @param fileName the given {@code fileName}.
      * @return {@code true} is properties file,{@code false} otherwise.
      */

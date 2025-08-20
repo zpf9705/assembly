@@ -33,7 +33,6 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.FileUrlResource;
 import org.springframework.lang.NonNull;
-import org.springframework.util.SystemPropertyUtils;
 import top.osjf.filewatch.AmapleWatchEvent;
 import top.osjf.filewatch.AmpleFileWatchListener;
 import top.osjf.filewatch.FileWatchException;
@@ -118,9 +117,8 @@ public class ConfigRefreshedFileWatchListener extends AmpleFileWatchListener imp
                         if (environment.containsProperty(propertyName)) {
                             String pvs = propertyValue.toString();
                             // Process placeholders.
-                            if (pvs.startsWith(SystemPropertyUtils.PLACEHOLDER_PREFIX)
-                            && pvs.endsWith(SystemPropertyUtils.PLACEHOLDER_SUFFIX)) {
-                                propertyValue = environment.resolveRequiredPlaceholders(pvs);
+                            if (ConfigRefreshedUtils.isPlaceholderConfig(pvs)) {
+                                propertyValue = environment.resolvePlaceholders(pvs);
                             }
                             Object oldPropertyValue = environment.getProperty(propertyName, propertyValue.getClass());
                             if (!Objects.equals(propertyValue, oldPropertyValue)) {
