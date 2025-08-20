@@ -15,7 +15,7 @@
  */
 
 
-package top.osjf.spring.autoconfigure.filewatch.dynamics.yml.config;
+package top.osjf.spring.autoconfigure.filewatch.config.refresh;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;
@@ -32,19 +32,19 @@ import java.util.*;
 import java.util.logging.Logger;
 
 /**
- * The implementation {@code DynamicsYamlConfigLoadingEnvironmentPostProcessor} that
+ * The implementation {@code ExternalConfigLoadingEnvironmentPostProcessor} that
  * implement the loading of relevant custom configurations from the specified
  * configuration {@code file-watch.file-watch-paths[%s].path} during the initial startup
  * of the application to overwrite the packaging configuration of the current application,
- * ensuring consistency with the changes detected by {@link DynamicsYamlConfigLoadingFileWatchListener}
+ * ensuring consistency with the changes detected by {@link ConfigRefreshedFileWatchListener}
  * after project restart.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
-public class DynamicsYamlConfigLoadingEnvironmentPostProcessor implements EnvironmentPostProcessor {
+public class ExternalConfigLoadingEnvironmentPostProcessor implements EnvironmentPostProcessor {
 
-    private static final Logger logger = Logger.getLogger(DynamicsYamlConfigLoadingEnvironmentPostProcessor.class.getName());
+    private static final Logger logger = Logger.getLogger(ExternalConfigLoadingEnvironmentPostProcessor.class.getName());
 
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
@@ -61,7 +61,8 @@ public class DynamicsYamlConfigLoadingEnvironmentPostProcessor implements Enviro
         if (!environment.getProperty("file-watch.enable", boolean.class, false)) {
             return;
         }
-        if (!environment.getProperty("file-watch.enable-yaml-config-dynamic-loading", boolean.class,
+        //enableConfigRefreshInWatchPath
+        if (!environment.getProperty("file-watch.enable-config-refresh-in-watch-path", boolean.class,
                 false)) {
             return;
         }
@@ -84,7 +85,7 @@ public class DynamicsYamlConfigLoadingEnvironmentPostProcessor implements Enviro
         for (String bindPath : bindPaths) {
             for (File file :
                     Optional.ofNullable(new File(bindPath)
-                                    .listFiles(file -> ConfigLoadingConditionUtils.isYamlFile(file.getName())))
+                                    .listFiles(file -> ConfigRefreshedUtils.isYamlFile(file.getName())))
                             .map(Arrays::asList).orElse(Collections.emptyList())) {
                 try {
                     List<PropertySource<?>> propertySources
