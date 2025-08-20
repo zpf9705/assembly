@@ -24,20 +24,21 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Role;
 import top.osjf.filewatch.FileWatchPath;
-import top.osjf.spring.autoconfigure.filewatch.dynamics.yml.config.DynamicsYamlConfigLoadingBeanPostProcessor;
-import top.osjf.spring.autoconfigure.filewatch.dynamics.yml.config.DynamicsYamlConfigLoadingFileWatchListener;
+import top.osjf.spring.autoconfigure.filewatch.config.refresh.ConfigRefreshedFileWatchListener;
+import top.osjf.spring.autoconfigure.filewatch.config.refresh.ValueAnnotationBeanBeanPostProcessor;
 
 import java.util.List;
 
 /**
- * {@link Configuration Configuration} for dynamics loading yaml config monitoring of application.
+ * {@link Configuration Configuration} for dynamically refreshing application configuration
+ * through external configuration files.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
 @Configuration(proxyBeanMethods = false)
-@Import(DynamicsYamlConfigLoadingConfiguration.DynamicsYamlConfigLoadingInternalConfiguration.class)
-class DynamicsYamlConfigLoadingConfiguration {
+@Import(ConfigRefreshedConfiguration.ConfigRefreshedInternalConfiguration.class)
+class ConfigRefreshedConfiguration {
 
     @Bean("dynamicsYamlLoadingFileWatchServiceCustomizer")
     public FileWatchServiceCustomizer fileWatchServiceCustomizer(FileWatchProperties fileWatchProperties,
@@ -45,8 +46,7 @@ class DynamicsYamlConfigLoadingConfiguration {
         return fileWatchService -> {
             List<FileWatchPath> fileWatchPaths = fileWatchProperties.getFileWatchPaths();
             if (!fileWatchPaths.isEmpty()) {
-                DynamicsYamlConfigLoadingFileWatchListener
-                        listener = new DynamicsYamlConfigLoadingFileWatchListener();
+                ConfigRefreshedFileWatchListener listener = new ConfigRefreshedFileWatchListener();
                 listener.setApplicationContext(applicationContext);
                 fileWatchService.registerListener(listener);
             }
@@ -55,12 +55,12 @@ class DynamicsYamlConfigLoadingConfiguration {
 
     @Configuration(proxyBeanMethods = false)
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-    static class DynamicsYamlConfigLoadingInternalConfiguration {
+    static class ConfigRefreshedInternalConfiguration {
 
         @Bean
         @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-        public DynamicsYamlConfigLoadingBeanPostProcessor dynamicsYamlConfigLoadingBeanPostProcessor() {
-            return new DynamicsYamlConfigLoadingBeanPostProcessor();
+        public ValueAnnotationBeanBeanPostProcessor valueAnnotationBeanBeanPostProcessor() {
+            return new ValueAnnotationBeanBeanPostProcessor();
         }
     }
 }

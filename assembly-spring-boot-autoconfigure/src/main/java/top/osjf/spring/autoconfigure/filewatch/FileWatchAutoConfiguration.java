@@ -39,7 +39,7 @@ import top.osjf.filewatch.FileWatchService;
 @ConditionalOnClass(FileWatchService.class)
 @EnableConfigurationProperties(FileWatchProperties.class)
 @ConditionalOnProperty(prefix = "file-watch", name = "enable", havingValue = "true")
-@Import({ ApplicationStartupFileWatchConfiguration.class , DynamicsYamlConfigLoadingConfiguration.class })
+@Import({ ApplicationStartupFileWatchConfiguration.class , ConfigRefreshedConfiguration.class })
 public class FileWatchAutoConfiguration {
 
     @Bean(destroyMethod = "close")
