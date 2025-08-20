@@ -144,7 +144,7 @@ public class ConfigRefreshedFileWatchListener extends AmpleFileWatchListener imp
             }
             // Trigger dependency updates.
             applicationContext.getBean(ValueAnnotationBeanBeanPostProcessor.class)
-                    .processInjection(updatePropertyNames);
+                    .processInjection(updatePropertyNames, configFileName);
         }
         catch (MalformedURLException ex) {
             logger.error("[ORIGIN CONFIG] URL [{}] specification is not valid", event.getFullPath(), ex);
