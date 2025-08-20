@@ -40,6 +40,9 @@ public class ConfigRefreshedEvent extends ApplicationEvent {
      * {@link org.springframework.beans.factory.annotation.Value} for the refreshed field. */
     private final Map<Object, Set<Field>> beanValueConfigFieldMap;
 
+    /** The content refreshed this time comes from the configuration file path.*/
+    private final String refreshConfigFilePath;
+
     /**
      * Constructs a {@link ConfigRefreshedEvent} in source object with
      * given {@link #beanValueConfigFieldMap}.
@@ -48,9 +51,18 @@ public class ConfigRefreshedEvent extends ApplicationEvent {
      * @param beanValueConfigFieldMap {@link #beanValueConfigFieldMap}
      *                                    suggest setting up a thread safe map.
      */
-    public ConfigRefreshedEvent(Object source, Map<Object, Set<Field>> beanValueConfigFieldMap) {
+    public ConfigRefreshedEvent(Object source, Map<Object, Set<Field>> beanValueConfigFieldMap,
+                                String refreshConfigFilePath) {
         super(source);
         this.beanValueConfigFieldMap = beanValueConfigFieldMap;
+        this.refreshConfigFilePath = refreshConfigFilePath;
+    }
+
+    /**
+     * @return The content refreshed this time comes from the configuration file path.
+     */
+    public String getRefreshConfigFilePath() {
+        return refreshConfigFilePath;
     }
 
     /**
