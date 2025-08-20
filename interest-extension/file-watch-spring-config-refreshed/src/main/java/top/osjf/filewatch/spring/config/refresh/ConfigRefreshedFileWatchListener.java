@@ -15,7 +15,7 @@
  */
 
 
-package top.osjf.spring.autoconfigure.filewatch.config.refresh;
+package top.osjf.filewatch.spring.config.refresh;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

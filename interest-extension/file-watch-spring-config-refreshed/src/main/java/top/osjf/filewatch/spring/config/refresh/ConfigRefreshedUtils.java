@@ -15,7 +15,7 @@
  */
 
 
-package top.osjf.spring.autoconfigure.filewatch.config.refresh;
+package top.osjf.filewatch.spring.config.refresh;
 
 import org.springframework.boot.env.PropertiesPropertySourceLoader;
 import org.springframework.boot.env.PropertySourceLoader;
