@@ -61,10 +61,10 @@ public class FileWatchProperties implements InitializingBean {
     private ApplicationStartup applicationStartup = new ApplicationStartup();
 
     /**
-     * Enable specific event monitoring and processing of the yaml configuration file
-     * under the registration path {@link #fileWatchPaths}.
+     * Enable dynamic refresh of YAML/Properties type configuration files stored in
+     * the designated listening path {@link #fileWatchPaths}.
      */
-    private boolean enableYamlConfigDynamicLoading = false;
+    private boolean enableConfigRefreshInWatchPath = false;
 
     public boolean isEnable() {
         return enable;
@@ -90,12 +90,12 @@ public class FileWatchProperties implements InitializingBean {
         this.applicationStartup = applicationStartup;
     }
 
-    public boolean isEnableYamlConfigDynamicLoading() {
-        return enableYamlConfigDynamicLoading;
+    public boolean isEnableConfigRefreshInWatchPath() {
+        return enableConfigRefreshInWatchPath;
     }
 
-    public void setEnableYamlConfigDynamicLoading(boolean enableYamlConfigDynamicLoading) {
-        this.enableYamlConfigDynamicLoading = enableYamlConfigDynamicLoading;
+    public void setEnableConfigRefreshInWatchPath(boolean enableConfigRefreshInWatchPath) {
+        this.enableConfigRefreshInWatchPath = enableConfigRefreshInWatchPath;
     }
 
     @Override
