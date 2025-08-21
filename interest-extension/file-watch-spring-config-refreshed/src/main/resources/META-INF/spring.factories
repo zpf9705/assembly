@@ -1,2 +1,5 @@
 org.springframework.boot.env.EnvironmentPostProcessor=\
   top.osjf.filewatch.spring.config.refresh.ExternalConfigLoadingEnvironmentPostProcessor
+
+org.springframework.boot.env.PropertySourceLoader=\
+  top.osjf.filewatch.spring.config.refresh.JacksonPropertySourceLoader
