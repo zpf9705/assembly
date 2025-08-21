@@ -36,6 +36,7 @@ import static java.util.Objects.requireNonNull;
  * @see PropertySourceLoader
  * @see org.springframework.boot.env.YamlPropertySourceLoader
  * @see org.springframework.boot.env.PropertiesPropertySourceLoader
+ * @see JacksonPropertySourceLoader
  */
 public abstract class ConfigRefreshedUtils {
 
