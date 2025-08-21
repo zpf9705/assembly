@@ -153,7 +153,7 @@ public class ConfigRefreshedFileWatchListener extends AmpleFileWatchListener imp
             throw new FileWatchException("Failed to load " + event.context(), ex);
         }
         catch (IllegalArgumentException | ConversionException | BeanCreationException ex) {
-            logger.error(ex.getMessage(), ex);
+            logger.error("[ORIGIN CONFIG] Failed to load or refresh config [{}]", event.context(), ex);
             throw ex;
         }
     }
