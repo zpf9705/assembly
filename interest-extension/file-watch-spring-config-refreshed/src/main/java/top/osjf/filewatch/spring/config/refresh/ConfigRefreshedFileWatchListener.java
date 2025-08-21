@@ -33,6 +33,7 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.FileUrlResource;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import top.osjf.filewatch.AmapleWatchEvent;
 import top.osjf.filewatch.AmpleFileWatchListener;
 import top.osjf.filewatch.FileWatchException;
@@ -103,22 +104,29 @@ public class ConfigRefreshedFileWatchListener extends AmpleFileWatchListener imp
 
             // Iterate through all property sources.
             for (PropertySource<?> propertySource : propertySources) {
-                OriginTrackedMapPropertySource mapPropertySource =
-                        (OriginTrackedMapPropertySource) propertySource;
-                Map<String, Object> source = mapPropertySource.getSource();
+                OriginTrackedMapPropertySource originPropertySource = toOriginPropertySource(propertySource);
+                if (originPropertySource == null) {
+                    logger.error("Failed to load property source [{}]. The provided property source must be an instance " +
+                            "of OriginTrackedMapPropertySource or its subclass. Actual type: [{}]. This restriction is " +
+                            "in place to ensure compatibility with origin tracking functionality.Please verify the " +
+                            "configuration and ensure that the correct property source type is being used.",
+                            propertySource.getName(), propertySource.getClass());
+                    continue;
+                }
+                Map<String, Object> source = originPropertySource.getSource();
 
                 // Check each configuration item.
                 boolean canAdd = false;
                 for (Map.Entry<String, Object> entry : source.entrySet()) {
                     String propertyName = entry.getKey();
-                    Object propertyValue = ((OriginTrackedValue) entry.getValue()).getValue();
+                    Object propertyValue = getRealPropertyValue(entry.getValue());
                     if (propertyValue != null) {
                         // Config change detection.
                         if (environment.containsProperty(propertyName)) {
-                            String pvs = propertyValue.toString();
+                            String propertyValueStr = propertyValue.toString();
                             // Process placeholders.
-                            if (ConfigRefreshedUtils.isPlaceholderConfig(pvs)) {
-                                propertyValue = environment.resolvePlaceholders(pvs);
+                            if (ConfigRefreshedUtils.isPlaceholderConfig(propertyValueStr)) {
+                                propertyValue = environment.resolvePlaceholders(propertyValueStr);
                             }
                             Object oldPropertyValue = environment.getProperty(propertyName, propertyValue.getClass());
                             if (!Objects.equals(propertyValue, oldPropertyValue)) {
@@ -156,5 +164,17 @@ public class ConfigRefreshedFileWatchListener extends AmpleFileWatchListener imp
             logger.error("[ORIGIN CONFIG] Failed to load or refresh config [{}]", event.context(), ex);
             throw ex;
         }
+    }
+
+    @Nullable
+    private static OriginTrackedMapPropertySource toOriginPropertySource(PropertySource<?> propertySource) {
+        if (propertySource instanceof OriginTrackedMapPropertySource) {
+            return (OriginTrackedMapPropertySource) propertySource;
+        }
+        return null;
+    }
+
+    private static Object getRealPropertyValue(Object value) {
+        return value instanceof OriginTrackedValue ? ((OriginTrackedValue) value).getValue() : value;
     }
 }
