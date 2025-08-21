@@ -17,10 +17,12 @@
 
 package top.osjf.filewatch.spring.config.refresh;
 
-import org.springframework.boot.env.PropertiesPropertySourceLoader;
 import org.springframework.boot.env.PropertySourceLoader;
-import org.springframework.boot.env.YamlPropertySourceLoader;
+import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.util.StringUtils;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import static java.util.Objects.requireNonNull;
@@ -37,31 +39,34 @@ import static java.util.Objects.requireNonNull;
  */
 public abstract class ConfigRefreshedUtils {
 
-    /** Yaml config resolver {@code PropertySourceLoader}.*/
-    private static final PropertySourceLoader YAML_SOURCE_LOADER = new YamlPropertySourceLoader();
-
-    /** Properties config resolver {@code PropertySourceLoader}.*/
-    private static final PropertySourceLoader PROPERTIES_SOURCE_LOADER = new PropertiesPropertySourceLoader();
+    /** Load the collection of {@link PropertySourceLoader} instances located under
+     * {@link SpringFactoriesLoader#FACTORIES_RESOURCE_LOCATION}.*/
+    private static final List<PropertySourceLoader> PROPERTY_SOURCE_LOADERS;
 
     /** Check if the specified configuration value is a precompiled {@link Pattern} instance of a placeholder. */
     private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("^\\$\\{[^\\s]+\\}$");
+
+    static {
+        PROPERTY_SOURCE_LOADERS
+                = SpringFactoriesLoader.loadFactories(PropertySourceLoader.class, ConfigRefreshedUtils.class.getClassLoader());
+    }
 
     /**
      * Return the {@link PropertySourceLoader} static instance that is suitable for parsing based on
      * the file name type (determined by the suffix).
      * @param fileName the given {@code fileName}.
      * @return Specify the file type to support parsing of {@link PropertySourceLoader} static instances.
-     * @see #isYamlFile(String)
-     * @see #isPropertiesFile(String)
      */
     public static PropertySourceLoader getPropertySourceLoader(String fileName) {
-        if (isYamlFile(fileName)) {
-            return YAML_SOURCE_LOADER;
+        requireNonNull(fileName, "fileName");
+        for (PropertySourceLoader loader : PROPERTY_SOURCE_LOADERS) {
+            if (canLoadFileExtension(loader, fileName)) {
+                return loader;
+            }
         }
-        else if (isPropertiesFile(fileName)) {
-            return PROPERTIES_SOURCE_LOADER;
-        }
-        throw new UnsupportedOperationException("Unsupported file type");
+        throw new IllegalStateException("File extension of config file location '" + fileName
+                + "' is not known to any PropertySourceLoader. If the location is meant to reference "
+                + "a directory, it must end in '/'");
     }
 
     /**
@@ -91,26 +96,16 @@ public abstract class ConfigRefreshedUtils {
      * @return {@code true} is supported config file,{@code false} otherwise.
      */
     public static boolean isConfigFile(String fileName) {
-        return isYamlFile(fileName) || isPropertiesFile(fileName);
+        for (PropertySourceLoader loader : PROPERTY_SOURCE_LOADERS) {
+            if (canLoadFileExtension(loader, fileName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    /**
-     * Check if the given filename is yaml file.
-     * @param fileName the given {@code fileName}.
-     * @return {@code true} is yaml file,{@code false} otherwise.
-     */
-    public static boolean isYamlFile(String fileName) {
-        requireNonNull(fileName, "fileName");
-        return fileName.endsWith(".yml") || fileName.endsWith(".yaml");
-    }
-
-    /**
-     * Check if the given filename is properties file.
-     * @param fileName the given {@code fileName}.
-     * @return {@code true} is properties file,{@code false} otherwise.
-     */
-    public static boolean isPropertiesFile(String fileName) {
-        requireNonNull(fileName, "fileName");
-        return fileName.endsWith(".properties");
+    private static boolean canLoadFileExtension(PropertySourceLoader loader, String name) {
+        return Arrays.stream(loader.getFileExtensions())
+                .anyMatch((fileExtension) -> StringUtils.endsWithIgnoreCase(name, fileExtension));
     }
 }

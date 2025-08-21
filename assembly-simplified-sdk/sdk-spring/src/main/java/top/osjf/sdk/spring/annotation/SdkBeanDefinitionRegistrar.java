@@ -86,15 +86,10 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
 
     protected final InternalLogger LOG = InternalLoggerFactory.getInstance(getClass());
 
-    /**
-     * Prefix for system property placeholders: "${".
-     */
-    private static final String PLACEHOLDER_PREFIX = "${";
-
-    /**
-     * Suffix for system property placeholders: "}".
-     */
-    private static final String PLACEHOLDER_SUFFIX = "}";
+    /** Check if the specified configuration value is a precompiled {@link Pattern} instance of a placeholder.
+     * @since 3.0.1
+     * */
+    private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("^\\$\\{[^\\s]+\\}$");
 
     /**
      * Value separator for system property placeholders: ":".
@@ -443,7 +438,7 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
         Assert.hasText(hostProperty, "Not set hostProperty");
         String host = environment.getProperty(hostProperty);
         if (host == null) {
-            if (isResolveRequiredPlaceholdersProperty(hostProperty)) {
+            if (isPlaceholderConfig(hostProperty)) {
                 host = environment.resolveRequiredPlaceholders(hostProperty);
             } else {
                 host = hostProperty;
@@ -456,21 +451,24 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
     }
 
     /**
-     * Determine whether the given attribute string needs to parse the
-     * Spring EL expression rules for placeholders.
-     *
-     * <p>The judgment criteria are starting with {@link #PLACEHOLDER_PREFIX}
-     * and ending with {@link #PLACEHOLDER_SUFFIX}.
-     *
-     * @param property configure attribute name.
-     * @return If {@literal true}, it is the Spring EL expression specification,
-     * otherwise it is not.
+     * Check if the given config is a placeholder.
+     * <ul>
+     * <li>${xxx.xxx} - true</li>
+     * <li>${} - false</li>
+     * <li>${ } - false</li>
+     * <li>${xxx.xxx - false</li>
+     * <li>xxx.xxx} - false</li>
+     * <li>xxx.xxx - false</li>
+     * </ul>
+     * @param config the given config.
+     * @return {@code true} is placeholder config,{@code false} otherwise.
      */
-    private boolean isResolveRequiredPlaceholdersProperty(String property) {
-        if (StringUtils.isNotBlank(property)) {
-            return property.startsWith(PLACEHOLDER_PREFIX) && property.endsWith(PLACEHOLDER_SUFFIX);
+    private static boolean isPlaceholderConfig(String config) {
+        if (config == null) {
+            return false;
         }
-        return false;
+
+        return PLACEHOLDER_PATTERN.matcher(config).matches();
     }
 
     /**
@@ -482,7 +480,7 @@ public class SdkBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar
      * @return If it is {@literal true}, the validation passes,
      * and it is a valid hostname, otherwise it is not.
      */
-    private boolean validationHost(String host, Pattern domainPattern, Pattern ipPattern) {
+    private static boolean validationHost(String host, Pattern domainPattern, Pattern ipPattern) {
         //Firstly, check if the host name starts with the local HTTP browser
         // host localhost:, and if so, return true directly.
         if (host.startsWith(LOCAL_HTTP_BROWSER_HOST + ":")) {
