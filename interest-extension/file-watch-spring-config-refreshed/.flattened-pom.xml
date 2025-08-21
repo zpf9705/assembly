@@ -25,7 +25,12 @@
   <artifactId>file-watch-spring-config-refreshed</artifactId>
   <version>3.0.1</version>
   <name>file-watch-spring-config-refreshed 3.0.1</name>
-  <description>The monitor implementation for file changes to refresh spring env config.</description>
+  <description>The monitor implementation for file changes to refresh spring env config.
+        Supports file type parsing of YAML, XML, JSON, and Properties for raw external
+        configurations. Developers can customize the relevant configuration types and
+        provide configuration files with corresponding suffixes. During initialization
+        and runtime, relevant configurations and dynamic refreshes for each component
+        are provided.</description>
   <url>https://github.com/zpf9705/assembly/interest-extension/file-watch-spring-config-refreshed</url>
   <licenses>
     <license>

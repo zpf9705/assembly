@@ -32,7 +32,14 @@
     <artifactId>file-watch-spring-config-refreshed</artifactId>
     <packaging>jar</packaging>
     <name>file-watch-spring-config-refreshed ${project.version}</name>
-    <description> The monitor implementation for file changes to refresh spring env config.</description>
+    <description>
+        The monitor implementation for file changes to refresh spring env config.
+        Supports file type parsing of YAML, XML, JSON, and Properties for raw external
+        configurations. Developers can customize the relevant configuration types and
+        provide configuration files with corresponding suffixes. During initialization
+        and runtime, relevant configurations and dynamic refreshes for each component
+        are provided.
+    </description>
 
     <dependencies>
 
