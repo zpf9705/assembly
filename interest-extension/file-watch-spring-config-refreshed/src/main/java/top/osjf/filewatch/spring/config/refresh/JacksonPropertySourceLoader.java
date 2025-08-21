@@ -20,8 +20,8 @@ package top.osjf.filewatch.spring.config.refresh;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.boot.env.OriginTrackedMapPropertySource;
 import org.springframework.boot.env.PropertySourceLoader;
-import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.ClassUtils;
@@ -80,6 +80,6 @@ public class JacksonPropertySourceLoader implements PropertySourceLoader {
         catch (JsonParseException | JsonMappingException ex) {
             throw new IOException(ex.getMessage(), ex);
         }
-        return Collections.singletonList(new MapPropertySource(name, source));
+        return Collections.singletonList(new OriginTrackedMapPropertySource(name, source, true));
     }
 }
