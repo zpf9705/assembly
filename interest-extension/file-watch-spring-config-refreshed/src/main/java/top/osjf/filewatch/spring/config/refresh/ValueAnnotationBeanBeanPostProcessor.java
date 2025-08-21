@@ -26,9 +26,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -49,7 +51,31 @@ public class ValueAnnotationBeanBeanPostProcessor
 
     private ApplicationContext applicationContext;
 
+    private final Set<Class<? extends Annotation>> valueAnnotationTypes = new LinkedHashSet<>(4);
+
     private final Map<String, Set<Field>> beanValueFieldsInjectPropertyMapping = new ConcurrentHashMap<>(64);
+
+    private final ReflectionUtils.FieldFilter fieldFilter
+            = field -> valueAnnotationTypes.stream().anyMatch(field::isAnnotationPresent);
+
+    /**
+     * Create a new {@code ValueAnnotationBeanBeanPostProcessor} for Spring's
+     * standard {@link Value @Value} annotations.
+     */
+    public ValueAnnotationBeanBeanPostProcessor() {
+        valueAnnotationTypes.add(Value.class);
+    }
+
+    /**
+     * Add a custom annotation type similar to {@link Value} annotation to initiate injection of
+     * relevant configurations, for re injecting new configuration values when dynamically refreshing
+     * configurations.
+     * @param valueAnnotationType the value annotation type to add.
+     */
+    public void addValueAnnotationType(Class<? extends Annotation> valueAnnotationType) {
+        Assert.notNull(valueAnnotationType, "'valueAnnotationType' must not be null");
+        this.valueAnnotationTypes.add(valueAnnotationType);
+    }
 
     @Override
     public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
@@ -67,7 +93,7 @@ public class ValueAnnotationBeanBeanPostProcessor
             Set<Field> valueFields
                     = beanValueFieldsInjectPropertyMapping.computeIfAbsent(beanName, key -> new LinkedHashSet<>());
             valueFields.add(field);
-        }, field -> field.isAnnotationPresent(Value.class));
+        }, fieldFilter);
 
         return InstantiationAwareBeanPostProcessor.super.postProcessBeforeInstantiation(beanClass, beanName);
     }
