@@ -27,6 +27,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.util.ClassUtils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -73,9 +74,10 @@ public class JacksonPropertySourceLoader implements PropertySourceLoader {
         if (!resource.exists()) {
             return Collections.emptyList();
         }
+
         Map<String, Object> source;
-        try {
-            source = objectMapper.readValue(resource.getInputStream(), Map.class);
+        try (InputStream inputStream = resource.getInputStream()) {
+            source = objectMapper.readValue(inputStream, Map.class);
         }
         catch (JsonParseException | JsonMappingException ex) {
             throw new IOException(ex.getMessage(), ex);
