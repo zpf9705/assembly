@@ -177,7 +177,7 @@ public abstract class AbstractCronTaskRepository extends AbstractLifecycleReposi
 
         if (shouldAddCheckedLast && cronListenerCollector.hasCronListener(checkedCronListener)) {
             // Remove checkedCronListener if it exists
-            removeListener(checkedCronListener);
+            cronListenerCollector.removeCronListener(checkedCronListener);
         }
 
         // Execute the next consumer
