@@ -157,8 +157,8 @@ public class ConfigRefreshedFileWatchListener extends AmpleFileWatchListener imp
             throw new FileWatchException("URL " + event.getFullPath() + " specification is not valid", ex);
         }
         catch (IOException ex) {
-            logger.error("[ORIGIN CONFIG] Failed to load [{}]", event.context(), ex);
-            throw new FileWatchException("Failed to load " + event.context(), ex);
+            logger.error("[ORIGIN CONFIG] Failed to load source [{}]", event.context(), ex);
+            throw new FileWatchException("Failed to load source " + event.context(), ex);
         }
         catch (IllegalArgumentException | ConversionException | BeanCreationException ex) {
             logger.error("[ORIGIN CONFIG] Failed to load or refresh config [{}]", event.context(), ex);
