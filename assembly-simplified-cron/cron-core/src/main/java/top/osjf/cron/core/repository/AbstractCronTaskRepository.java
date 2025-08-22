@@ -185,7 +185,8 @@ public abstract class AbstractCronTaskRepository extends AbstractLifecycleReposi
 
         if (shouldAddCheckedLast) {
             // Ensure checkedCronListener is the last
-            addLastListener(checkedCronListener);
+            // issue for 2025.08.22
+            cronListenerCollector.addLastCronListener(checkedCronListener);
         }
     }
 
@@ -205,7 +206,7 @@ public abstract class AbstractCronTaskRepository extends AbstractLifecycleReposi
      */
     private void addRegisterTimesCheckedCronListener() {
         if (addRegisterTimesCheckedCronListener.compareAndSet(false, true)) {
-            addLastListener(checkedCronListener);
+            getCronListenerCollector().addLastCronListener(checkedCronListener);
         }
     }
 
