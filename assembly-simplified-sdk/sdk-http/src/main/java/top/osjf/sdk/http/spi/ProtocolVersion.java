@@ -18,6 +18,7 @@
 package top.osjf.sdk.http.spi;
 
 import top.osjf.sdk.core.Wrapper;
+import top.osjf.sdk.core.lang.Nullable;
 
 /**
  * The protocol version temporary storage, acceptance, and conversion interface
@@ -28,4 +29,11 @@ import top.osjf.sdk.core.Wrapper;
  * @since 3.0.1
  */
 public interface ProtocolVersion extends Wrapper {
+    /**
+     * {@inheritDoc}
+     * @return Nullable ProtocolVersion.
+     */
+    @Override
+    @Nullable
+    <T> T unwrap(Class<T> clazz);
 }
