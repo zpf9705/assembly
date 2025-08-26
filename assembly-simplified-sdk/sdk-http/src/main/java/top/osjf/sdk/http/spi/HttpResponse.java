@@ -108,5 +108,5 @@ public interface HttpResponse extends Serializable {
      * @return The HTTP protocol version instance.
      */
     @Nullable
-    Object getProtocolVersion();
+    ProtocolVersion getProtocolVersion();
 }
