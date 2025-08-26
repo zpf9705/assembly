@@ -17,8 +17,6 @@
 
 package top.osjf.sdk.http.spi;
 
-import top.osjf.sdk.core.lang.Nullable;
-
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.Map;
@@ -107,6 +105,5 @@ public interface HttpResponse extends Serializable {
      * </ul>
      * @return The HTTP protocol version instance.
      */
-    @Nullable
     ProtocolVersion getProtocolVersion();
 }
