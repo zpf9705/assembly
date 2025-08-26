@@ -21,7 +21,7 @@ package top.osjf.cron.core.listener;
  * The default {@link CronListenerCollector} implementation class.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 2025.03.31
+ * @since 1.0.3
  */
 public class DefaultCronListenerCollector extends CronListenerCollector {
 }
