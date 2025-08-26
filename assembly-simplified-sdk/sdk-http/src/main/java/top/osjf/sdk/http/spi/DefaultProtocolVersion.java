@@ -17,6 +17,8 @@
 
 package top.osjf.sdk.http.spi;
 
+import top.osjf.sdk.core.lang.Nullable;
+
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -29,7 +31,7 @@ public class DefaultProtocolVersion implements ProtocolVersion {
 
     private final Object protocolVersion;
 
-    public DefaultProtocolVersion(Object protocolVersion) {
+    public DefaultProtocolVersion(@Nullable Object protocolVersion) {
         requireNonNull(protocolVersion, "protocolVersion");
         this.protocolVersion = protocolVersion;
     }
@@ -37,5 +39,11 @@ public class DefaultProtocolVersion implements ProtocolVersion {
     @Override
     public boolean isWrapperFor(Class<?> clazz) {
         return clazz.isInstance(protocolVersion);
+    }
+
+    @Nullable
+    @Override
+    public <T> T unwrap(Class<T> clazz) {
+        return protocolVersion != null ? clazz.cast(protocolVersion) : null;
     }
 }

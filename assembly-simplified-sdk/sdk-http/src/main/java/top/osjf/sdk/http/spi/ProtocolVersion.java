@@ -31,7 +31,7 @@ import top.osjf.sdk.core.lang.Nullable;
 public interface ProtocolVersion extends Wrapper {
     /**
      * {@inheritDoc}
-     * @return Nullable ProtocolVersion.
+     * @return Nullable ProtocolVersion if no real protocolVersion exists.
      */
     @Override
     @Nullable
