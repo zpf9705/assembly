@@ -23,7 +23,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * The {@code CronListenerCollector} abstract class is used to manage a set of {@code CronListener}
@@ -34,7 +35,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public abstract class CronListenerCollector {
 
-    private final Lock lock = new ReentrantLock();
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     private final LinkedList<CronListener> cronListeners = new LinkedList<>();
 
@@ -44,13 +45,14 @@ public abstract class CronListenerCollector {
      * @param cronListener The {@code CronListener}  instance to be added.
      */
     public void addCronListener(@NotNull CronListener cronListener) {
-        lock.lock();
+        final Lock writeLock = lock.writeLock();
+        writeLock.lock();
         try {
             if (!cronListeners.contains(cronListener)) {
                 cronListeners.add(cronListener);
             }
         } finally {
-            lock.unlock();
+            writeLock.unlock();
         }
     }
 
@@ -61,13 +63,14 @@ public abstract class CronListenerCollector {
      * @param cronListener The {@code CronListener}  instance to be added.
      */
     public void addFirstCronListener(@NotNull CronListener cronListener){
-        lock.lock();
+        final Lock writeLock = lock.writeLock();
+        writeLock.lock();
         try {
             if (!cronListeners.contains(cronListener)) {
                 cronListeners.addFirst(cronListener);
             }
         } finally {
-            lock.unlock();
+            writeLock.unlock();
         }
     }
 
@@ -78,13 +81,14 @@ public abstract class CronListenerCollector {
      * @param cronListener The {@code CronListener}  instance to be added.
      */
     public void addLastCronListener(@NotNull CronListener cronListener){
-        lock.lock();
+        final Lock writeLock = lock.writeLock();
+        writeLock.lock();
         try {
             if (!cronListeners.contains(cronListener)) {
                 cronListeners.addLast(cronListener);
             }
         } finally {
-            lock.unlock();
+            writeLock.unlock();
         }
     }
 
@@ -94,11 +98,12 @@ public abstract class CronListenerCollector {
      * @param cronListener {@code CronListener} instance to be removed.
      */
     public void removeCronListener(@NotNull CronListener cronListener) {
-        lock.lock();
+        final Lock writeLock = lock.writeLock();
+        writeLock.lock();
         try {
             cronListeners.remove(cronListener);
         } finally {
-            lock.unlock();
+            writeLock.unlock();
         }
     }
 
@@ -109,11 +114,12 @@ public abstract class CronListenerCollector {
      * @return the list of {@code CronListener} instances.
      */
     public List<CronListener> getCronListeners() {
-        lock.lock();
+        final Lock readLock = lock.readLock();
+        readLock.lock();
         try {
             return Collections.unmodifiableList(cronListeners);
         } finally {
-            lock.unlock();
+            readLock.unlock();
         }
     }
 
@@ -127,11 +133,12 @@ public abstract class CronListenerCollector {
      * @since 1.0.4
      */
     public boolean hasCronListener(CronListener cronListener) {
-        lock.lock();
+        final Lock readLock = lock.readLock();
+        readLock.lock();
         try {
             return cronListeners.contains(cronListener);
         } finally {
-            lock.unlock();
+            readLock.unlock();
         }
     }
 
