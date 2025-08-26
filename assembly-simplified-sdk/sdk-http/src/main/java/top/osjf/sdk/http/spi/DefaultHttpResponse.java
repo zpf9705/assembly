@@ -37,7 +37,7 @@ public class DefaultHttpResponse implements HttpResponse {
     private final Map<String, Object> headerMap;
     private final Charset charset;
     private final String body;
-    private final Object protocolVersion;
+    private final ProtocolVersion protocolVersion;
     /**
      * Creates a new {@code DefaultHttpRequest} by given original http request
      * and access url and a {@code HttpRequestOptions}.
@@ -60,7 +60,7 @@ public class DefaultHttpResponse implements HttpResponse {
         this.headerMap = Collections.unmodifiableMap(headerMap);
         this.charset = charset;
         this.body = body;
-        this.protocolVersion = protocolVersion;
+        this.protocolVersion = new DefaultProtocolVersion(protocolVersion);
     }
     @Override public int getStatusCode() {
         return statusCode;
@@ -77,7 +77,7 @@ public class DefaultHttpResponse implements HttpResponse {
     @Override public String getBody() {
         return body;
     }
-    @Nullable @Override public Object getProtocolVersion() {
+    @Nullable @Override public ProtocolVersion getProtocolVersion() {
         return protocolVersion;
     }
 }
