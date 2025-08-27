@@ -44,6 +44,7 @@
         <module>cron-mybatis-plus-datasource-driven-scheduled</module>
         <module>cron-yaml-config-datasource-driven-scheduled</module>
         <module>cron-spring-jpa-datasource-driven-scheduled</module>
+        <module>cron-excel-datasource-driven-scheduled</module>
         <module>cron-spring</module>
         <module>cron-spring-hutool</module>
         <module>cron-spring-cron4j</module>
@@ -53,7 +54,7 @@
 
     <properties>
         <mp>3.5.3.1</mp>
-        <ymal>1.28</ymal>
+        <easyexcel>3.1.2</easyexcel>
     </properties>
 
     <dependencyManagement>
@@ -135,6 +136,12 @@
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-extension</artifactId>
                 <version>${mp}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>easyexcel</artifactId>
+                <version>${easyexcel}</version>
             </dependency>
 
         </dependencies>
