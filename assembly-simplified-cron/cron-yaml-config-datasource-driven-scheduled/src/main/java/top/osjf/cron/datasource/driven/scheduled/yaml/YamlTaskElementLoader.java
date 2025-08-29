@@ -251,7 +251,7 @@ public class YamlTaskElementLoader {
      * Modify Yaml file based on {@link #loadingResult}.
      */
     private void dump() {
-        try (Writer writer = new FileWriter(getYamlFile().getPath())) {
+        try (Writer writer = new FileWriter(getYamlFile())) {
             yaml.dump(loadingResult, writer);
         }
         catch (Throwable ex) {
