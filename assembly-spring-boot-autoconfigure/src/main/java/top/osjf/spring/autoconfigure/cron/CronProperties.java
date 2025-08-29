@@ -332,6 +332,7 @@ public class CronProperties {
 
         /**
          * The datasource-driven matched profiles.
+         * @see org.springframework.core.env.Profiles
          */
         private boolean activeProfilesMatched;
 
