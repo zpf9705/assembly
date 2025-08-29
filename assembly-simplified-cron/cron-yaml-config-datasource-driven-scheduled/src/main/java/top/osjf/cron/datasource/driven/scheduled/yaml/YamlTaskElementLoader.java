@@ -49,7 +49,7 @@ public class YamlTaskElementLoader {
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
     /** The map of loading result. */
-    private Map<String, Map<String, String>> loadingResult;
+    private Map<Object, Map<Object, Object>> loadingResult;
 
     /** The list of {@link YamlTaskElement} through {@link #loadingResult} conversion. */
     private List<YamlTaskElement> taskElements;
@@ -200,13 +200,14 @@ public class YamlTaskElementLoader {
                         loadingResult = new HashMap<>();
                         taskElements = new ArrayList<>();
 
-                        if (!loadingFlag) {
-                            loadingFlag = true;
-                        }
                     }
                     else {
                         taskElements = loadingResult.values()
                                 .stream().map(YamlTaskElement::new).collect(Collectors.toList());
+                    }
+
+                    if (!loadingFlag) {
+                        loadingFlag = true;
                     }
 
                     return Optional.ofNullable(loadingElementsFilterFunction).map(lf -> lf.apply(taskElements))

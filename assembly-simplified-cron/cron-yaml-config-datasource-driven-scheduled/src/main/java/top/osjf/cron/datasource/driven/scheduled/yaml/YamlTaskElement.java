@@ -17,10 +17,12 @@
 
 package top.osjf.cron.datasource.driven.scheduled.yaml;
 
+import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.util.StringUtils;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * {@code YamlTaskElement} class implements the TaskElement interface, mapping data from
@@ -85,7 +87,7 @@ public class YamlTaskElement implements TaskElement {
     /**
      * Source yaml config map corresponds to {@link #getId()}.
      */
-    public final Map<String, String> sourceYamlConfig;
+    public final Map<Object, Object> sourceYamlConfig;
 
     /**
      * Constructs a {@code YamlTaskElement} with this {@link #getId()} corresponds to
@@ -93,18 +95,18 @@ public class YamlTaskElement implements TaskElement {
      *
      * @param sourceConfig the Source yaml config map.
      */
-    public YamlTaskElement(Map<String, String> sourceConfig) {
+    public YamlTaskElement(Map<Object, Object> sourceConfig) {
         this.sourceYamlConfig = sourceConfig;
     }
 
     @Override
     public String getId() {
-        return sourceYamlConfig.get(ID_KEY_NAME);
+        return getString(ID_KEY_NAME, false);
     }
 
     @Override
     public String getTaskId() {
-        return sourceYamlConfig.get(TASK_ID_KEY_NAME);
+        return getString(TASK_ID_KEY_NAME, false);
     }
 
     @Override
@@ -114,22 +116,22 @@ public class YamlTaskElement implements TaskElement {
 
     @Override
     public String getTaskName() {
-        return sourceYamlConfig.get(TASK_NAME_KEY_NAME);
+        return getString(TASK_NAME_KEY_NAME, false);
     }
 
     @Override
     public String getProfiles() {
-        return sourceYamlConfig.get(PROFILES_KEY_NAME);
+        return getString(PROFILES_KEY_NAME, true);
     }
 
     @Override
     public String getTaskDescription() {
-        return sourceYamlConfig.get(TASK_DESCRIPTION_KEY_NAME);
+        return getString(TASK_DESCRIPTION_KEY_NAME, false);
     }
 
     @Override
     public String getStatus() {
-        return sourceYamlConfig.get(STATUS_KEY_NAME);
+        return getString(STATUS_KEY_NAME, false);
     }
 
     @Override
@@ -139,7 +141,7 @@ public class YamlTaskElement implements TaskElement {
 
     @Override
     public String getStatusDescription() {
-        return sourceYamlConfig.get(STATUS_DESCRIPTION_KEY_NAME);
+        return getString(STATUS_DESCRIPTION_KEY_NAME, true);
     }
 
     @Override
@@ -149,12 +151,12 @@ public class YamlTaskElement implements TaskElement {
 
     @Override
     public String getExpression() {
-        return sourceYamlConfig.get(EXPRESSION_KEY_NANE);
+        return getString(EXPRESSION_KEY_NANE, false);
     }
 
     @Override
     public Integer getUpdateSign() {
-        return Integer.parseInt(sourceYamlConfig.get(UPDATE_SIGN_KEY_NAME));
+        return notNullAs(UPDATE_SIGN_KEY_NAME, false, Integer.class, o -> Integer.parseInt(o.toString()));
     }
 
     @Override
@@ -165,8 +167,39 @@ public class YamlTaskElement implements TaskElement {
     /**
      * @return Configure the relevant information corresponding to the unique ID of the task {@link #getId()}.
      */
-    public Map<String, String> getSourceYamlConfig() {
+    public Map<Object, Object> getSourceYamlConfig() {
         return sourceYamlConfig;
+    }
+
+    private String getString(String propertyName, boolean nullable) {
+        return notNullAs(propertyName, nullable, String.class, Object::toString);
+    }
+
+    @Nullable
+    private <T>T notNullAs(String propertyName, boolean nullable,
+                   Class<T> clazz, @Nullable Function<Object, T> notInstanceConvertFun) {
+        Object obj = sourceYamlConfig.get(propertyName);
+        if (obj == null) {
+            if (nullable) {
+                return null;
+            }
+            throw new IllegalArgumentException("<" + propertyName + ">" + "can not be null!");
+        }
+        if (clazz.isInstance(obj)) {
+            return clazz.cast(obj);
+        }
+        if (notInstanceConvertFun == null) {
+            return null;
+        }
+        try {
+            return notInstanceConvertFun.apply(obj);
+        }
+        catch (IllegalArgumentException ex) {
+            throw ex;
+        }
+        catch (Throwable ex) {
+            throw new IllegalArgumentException("notInstanceConvertFun apply error", ex);
+        }
     }
 
     /**
