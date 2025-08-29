@@ -41,9 +41,9 @@ import org.apache.sshd.server.forward.ForwardingFilter;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.util.CollectionUtils;
 import top.osjf.cron.core.lang.Nullable;
 
@@ -58,14 +58,13 @@ import java.util.stream.Collectors;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({SshClient.class})
+@EnableConfigurationProperties(SshClientProperties.class)
 public class SshClientAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public SshClient sshClient(ClientBuilder clientBuilder,
-                               Environment environment) {
-        return clientBuilder.build(environment.getProperty("ssh-client.builder.is-fill-with-default-values",
-                boolean.class, true));
+    public SshClient sshClient(ClientBuilder clientBuilder, SshClientProperties properties) {
+        return clientBuilder.build(properties.isFillWithDefaultValues());
     }
 
     @Bean
