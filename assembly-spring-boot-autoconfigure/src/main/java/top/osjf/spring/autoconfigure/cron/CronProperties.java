@@ -20,8 +20,10 @@ import com.cronutils.model.CronType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
+import top.osjf.cron.datasource.driven.scheduled.Constants;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
 import top.osjf.cron.spring.datasource.driven.scheduled.DataSource;
+import top.osjf.cron.spring.datasource.driven.scheduled.SpringDatasourceDrivenScheduled;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -334,7 +336,7 @@ public class CronProperties {
          * The datasource-driven matched profiles.
          * @see org.springframework.core.env.Profiles
          */
-        private boolean activeProfilesMatched;
+        private String activeProfilesMatched;
 
         /**
          * Select the data source type for dynamically enabling data source configuration.
@@ -344,26 +346,37 @@ public class CronProperties {
         private DataSource dataSource;
 
         /**
-         * The log name of the configuration.
+         * The name of the tool for printing logs related to dynamic data source driven
+         * task scheduling (for example {@link org.slf4j.Logger}).
+         * {@code SpringDatasourceDrivenScheduled#getLogger()}
          * @since 3.0.1
          */
         private String loggerName;
 
         /**
-         * The ID of the main task.
+         * Specify the main task ID array when scheduling tasks driven by dynamic data sources.
+         * @see SpringDatasourceDrivenScheduled#getManagerTaskUniqueIdentifiers()
          * @since 3.0.1
          */
-        private String mainTaskUniqueId;
+        private String[] mainTaskUniqueIds;
 
         /**
-         * When there is no main task information in the data source task information,
-         * you can configure the cron expression information of the main task by yourself.
+         * The definition of this cron expression is used to determine the execution frequency
+         * of using the default main task management when no relevant information about the
+         * main task is provided.
+         * {@code SpringDatasourceDrivenScheduled#getManagerTaskCheckFrequencyCronExpress()}
          * @since 3.0.1
          */
-        private String mainTaskExpress;
+        private String defaultMainTaskExpress = Constants.MANAGER_TASK_CHECK_FREQUENCY_CRON;
 
+        /**
+         * @see Yaml
+         */
         private Yaml yaml = new Yaml();
 
+        /**
+         * @see WebRequestAuthentication
+         */
         private WebRequestAuthentication webRequestAuthentication = new WebRequestAuthentication();
 
         public boolean isEnable() {
@@ -374,11 +387,11 @@ public class CronProperties {
             this.enable = enable;
         }
 
-        public boolean isActiveProfilesMatched() {
+        public String getActiveProfilesMatched() {
             return activeProfilesMatched;
         }
 
-        public void setActiveProfilesMatched(boolean activeProfilesMatched) {
+        public void setActiveProfilesMatched(String activeProfilesMatched) {
             this.activeProfilesMatched = activeProfilesMatched;
         }
 
@@ -398,20 +411,20 @@ public class CronProperties {
             this.loggerName = loggerName;
         }
 
-        public String getMainTaskUniqueId() {
-            return mainTaskUniqueId;
+        public String[] getMainTaskUniqueIds() {
+            return mainTaskUniqueIds;
         }
 
-        public void setMainTaskUniqueId(String mainTaskUniqueId) {
-            this.mainTaskUniqueId = mainTaskUniqueId;
+        public void setMainTaskUniqueIds(String[] mainTaskUniqueIds) {
+            this.mainTaskUniqueIds = mainTaskUniqueIds;
         }
 
-        public String getMainTaskExpress() {
-            return mainTaskExpress;
+        public String getDefaultMainTaskExpress() {
+            return defaultMainTaskExpress;
         }
 
-        public void setMainTaskExpress(String mainTaskExpress) {
-            this.mainTaskExpress = mainTaskExpress;
+        public void setDefaultMainTaskExpress(String defaultMainTaskExpress) {
+            this.defaultMainTaskExpress = defaultMainTaskExpress;
         }
 
         public Yaml getYaml() {
@@ -431,23 +444,26 @@ public class CronProperties {
         }
 
         /**
-         * The {@code ScheduledDriven} of yaml
+         * Yaml's data source dynamically drives task scheduling configuration.
          * @since 3.0.1
          */
         public static class Yaml {
 
             /**
              * The base directory path for resolving dynamic configuration files.
+             * @see top.osjf.cron.datasource.driven.scheduled.yaml.YamlTaskElementLoader#setBaseDir
              */
             private String baseDir;
 
             /**
-             * The name that needs to be configured after selecting DataSource.YAML_CONFIG as the data source.
+             * The yml config file name for resolving dynamic configuration files.
+             * @see top.osjf.cron.datasource.driven.scheduled.yaml.YamlTaskElementLoader#setConfigYamlFileName
              */
             private String configFileName = "task-config.yml";
 
             /**
-             * The boolean flog indicates first loading.
+             * The number of milliseconds cached since the last modification interval.
+             * @see top.osjf.cron.datasource.driven.scheduled.yaml.YamlTaskElementLoader#setIntervalMillAfterModified
              */
             private long intervalMillAfterModified = 2000;
 
