@@ -33,6 +33,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
+ * The Yaml loader for {@link YamlTaskElement} loading.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
