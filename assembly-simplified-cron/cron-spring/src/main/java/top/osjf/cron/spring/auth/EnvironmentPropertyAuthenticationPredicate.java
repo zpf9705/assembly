@@ -46,6 +46,6 @@ public class EnvironmentPropertyAuthenticationPredicate implements Authenticatio
 
     @Override
     public boolean test(@NotNull String token) {
-        return Objects.equals(environment.getProperty("spring.schedule.cron.web.request.authentication.token"), token);
+        return Objects.equals(environment.getProperty("spring.schedule.cron.web-request-authentication.token"), token);
     }
 }

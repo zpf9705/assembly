@@ -75,7 +75,7 @@ public class WebRequestAuthenticationInterceptor implements AuthenticationInterc
 
     /**
      * Authentication enable flag
-     * Read from configuration property: {@code spring.schedule.cron.web.request.authentication.enable}
+     * Read from configuration property: {@code spring.schedule.cron.web-request-authentication.enable}
      */
     private final boolean enableAuthentication;
 
@@ -91,7 +91,7 @@ public class WebRequestAuthenticationInterceptor implements AuthenticationInterc
 
     public WebRequestAuthenticationInterceptor(ObjectProvider<AuthenticationPredicate> provider, Environment environment) {
         enableAuthentication
-                = environment.getProperty("spring.schedule.cron.web.request.authentication.enable", boolean.class,
+                = environment.getProperty("spring.schedule.cron.web-request-authentication.enable", boolean.class,
                 false);
         if (enableAuthentication) {
             List<AuthenticationPredicate> authenticationPredicates = provider.orderedStream().collect(Collectors.toList());
