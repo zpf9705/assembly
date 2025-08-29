@@ -33,7 +33,7 @@ import java.lang.annotation.*;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-@ConditionalOnPropertyProfiles(propertyName = "spring.schedule.cron.datasource.driven.active-profiles.matched")
+@ConditionalOnPropertyProfiles(propertyName = "spring.schedule.cron.scheduled-driven.active-profiles-matched")
 @Documented
 public @interface EnableDatasourceScheduledProfiles {
 }

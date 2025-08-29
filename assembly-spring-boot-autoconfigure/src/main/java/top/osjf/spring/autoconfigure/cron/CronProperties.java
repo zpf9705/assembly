@@ -331,11 +331,39 @@ public class CronProperties {
         private boolean enable = false;
 
         /**
+         * The datasource-driven matched profiles.
+         */
+        private boolean activeProfilesMatched;
+
+        /**
          * Select the data source type for dynamically enabling data source configuration.
          *
          * <p>The configuration takes effect when {@link #enable} is {@code true}.
          */
         private DataSource dataSource;
+
+        /**
+         * The log name of the configuration.
+         * @since 3.0.1
+         */
+        private String loggerName;
+
+        /**
+         * The ID of the main task.
+         * @since 3.0.1
+         */
+        private String mainTaskUniqueId;
+
+        /**
+         * When there is no main task information in the data source task information,
+         * you can configure the cron expression information of the main task by yourself.
+         * @since 3.0.1
+         */
+        private String mainTaskExpress;
+
+        private Yaml yaml = new Yaml();
+
+        private WebRequestAuthentication webRequestAuthentication = new WebRequestAuthentication();
 
         public boolean isEnable() {
             return enable;
@@ -345,12 +373,140 @@ public class CronProperties {
             this.enable = enable;
         }
 
+        public boolean isActiveProfilesMatched() {
+            return activeProfilesMatched;
+        }
+
+        public void setActiveProfilesMatched(boolean activeProfilesMatched) {
+            this.activeProfilesMatched = activeProfilesMatched;
+        }
+
         public DataSource getDataSource() {
             return dataSource;
         }
 
         public void setDataSource(DataSource dataSource) {
             this.dataSource = dataSource;
+        }
+
+        public String getLoggerName() {
+            return loggerName;
+        }
+
+        public void setLoggerName(String loggerName) {
+            this.loggerName = loggerName;
+        }
+
+        public String getMainTaskUniqueId() {
+            return mainTaskUniqueId;
+        }
+
+        public void setMainTaskUniqueId(String mainTaskUniqueId) {
+            this.mainTaskUniqueId = mainTaskUniqueId;
+        }
+
+        public String getMainTaskExpress() {
+            return mainTaskExpress;
+        }
+
+        public void setMainTaskExpress(String mainTaskExpress) {
+            this.mainTaskExpress = mainTaskExpress;
+        }
+
+        public Yaml getYaml() {
+            return yaml;
+        }
+
+        public void setYaml(Yaml yaml) {
+            this.yaml = yaml;
+        }
+
+        public WebRequestAuthentication getWebRequestAuthentication() {
+            return webRequestAuthentication;
+        }
+
+        public void setWebRequestAuthentication(WebRequestAuthentication webRequestAuthentication) {
+            this.webRequestAuthentication = webRequestAuthentication;
+        }
+
+        /**
+         * The {@code ScheduledDriven} of yaml
+         * @since 3.0.1
+         */
+        public static class Yaml {
+
+            /**
+             * The base directory path for resolving dynamic configuration files.
+             */
+            private String baseDir;
+
+            /**
+             * The name that needs to be configured after selecting DataSource.YAML_CONFIG as the data source.
+             */
+            private String configFileName = "task-config.yml";
+
+            /**
+             * The boolean flog indicates first loading.
+             */
+            private long intervalMillAfterModified = 2000;
+
+            public String getBaseDir() {
+                return baseDir;
+            }
+
+            public void setBaseDir(String baseDir) {
+                this.baseDir = baseDir;
+            }
+
+            public String getConfigFileName() {
+                return configFileName;
+            }
+
+            public void setConfigFileName(String configFileName) {
+                this.configFileName = configFileName;
+            }
+
+            public long getIntervalMillAfterModified() {
+                return intervalMillAfterModified;
+            }
+
+            public void setIntervalMillAfterModified(long intervalMillAfterModified) {
+                this.intervalMillAfterModified = intervalMillAfterModified;
+            }
+        }
+    }
+
+    /**
+     * Authentication configuration for relevant open interfaces.
+     * @see top.osjf.cron.spring.auth.WebRequestAuthenticationInterceptor
+     * @since 3.0.1
+     */
+    public static class WebRequestAuthentication {
+
+        /**
+         * Whether to enable authentication of exposed interfaces.
+         */
+        private boolean enable = false;
+
+        /**
+         * Provide authentication verification tokens.
+         */
+        private String token;
+
+        public boolean isEnable() {
+            return enable;
+        }
+
+        public void setEnable(boolean enable) {
+            this.enable = enable;
+        }
+
+        public String getToken() {
+            return token;
+        }
+
+        public void setToken(String token) {
+            this.token = token;
         }
     }
 }
