@@ -71,7 +71,7 @@ public class IdempotentMethodAspect implements ApplicationContextAware , Applica
     /**
      * Get the spring el expression for accessing the URI mapping path.
      */
-    private static final String GET_URI_EXPRESSION = "@" + RequestAttributes.REFERENCE_REQUEST + ".getRequestURI()";
+    private static final String GET_URI_EXPRESSION = "#" + RequestAttributes.REFERENCE_REQUEST + ".getRequestURI()";
 
     /**
      * Shared SpEL expression parser instance.
