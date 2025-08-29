@@ -36,7 +36,7 @@ import java.util.function.Consumer;
  * @since 1.0.4
  */
 @Configuration(proxyBeanMethods = false)
-public class YamDatabaseDrivenScheduledConfiguration {
+public class YamlDatabaseDrivenScheduledConfiguration {
 
     @Bean
     public YamlDatasourceTaskElementsOperation yamlDatasourceTaskElementsOperation(ObjectProvider<Yaml> provider,
@@ -44,11 +44,11 @@ public class YamDatabaseDrivenScheduledConfiguration {
         YamlDatasourceTaskElementsOperation operation = new YamlDatasourceTaskElementsOperation();
         YamlTaskElementLoader loader = operation.getLoader();
         provider.orderedStream().findFirst().ifPresent(loader::setYaml);
-        notNullAccept(environment.getProperty("spring.schedule.cron.datasource.scheduled-driven.yml.config-file-name"),
+        notNullAccept(environment.getProperty("spring.schedule.cron.scheduled-driven.yaml.config-file-name"),
                 loader::setConfigYamlFileName);
-        notNullAccept(environment.getProperty("spring.schedule.cron.datasource.scheduled-driven.yml.base-dir"),
+        notNullAccept(environment.getProperty("spring.schedule.cron.scheduled-driven.yaml.base-dir"),
                 loader::setBaseDir);
-        notNullAccept(environment.getProperty("spring.schedule.cron.datasource.scheduled-driven.yml.interval-mill-after-modified",
+        notNullAccept(environment.getProperty("spring.schedule.cron.scheduled-driven.yaml.interval-mill-after-modified",
                         Long.class),
                 loader::setIntervalMillAfterModified);
         return operation;

@@ -201,7 +201,7 @@ public class SpringDatasourceDrivenScheduled
 
     private void initLogger() {
         String loggerName
-                = environment.getProperty("spring.schedule.cron.datasource.scheduled-driven.logger-name", "");
+                = environment.getProperty("spring.schedule.cron.scheduled-driven.logger-name", "");
         if (!StringUtils.isBlank(loggerName)) {
             logger = LoggerFactory.getLogger(loggerName);
         }
@@ -210,13 +210,13 @@ public class SpringDatasourceDrivenScheduled
     @Override
     @Nullable
     public String[] getManagerTaskUniqueIdentifiers() {
-        return environment.getProperty("spring.schedule.cron.datasource.scheduled-driven.main-task-unique-id",
+        return environment.getProperty("spring.schedule.cron.scheduled-driven.main-task-unique-id",
                 String[].class);
     }
 
     @Override
     protected String getManagerTaskCheckFrequencyCronExpress() {
-        return environment.getProperty("spring.schedule.cron.datasource.scheduled-driven.main-task-express",
+        return environment.getProperty("spring.schedule.cron.scheduled-driven.main-task-express",
                 super.getManagerTaskCheckFrequencyCronExpress());
     }
 }
