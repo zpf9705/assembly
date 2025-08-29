@@ -461,12 +461,6 @@ public class CronProperties {
              */
             private String configFileName = "task-config.yml";
 
-            /**
-             * The number of milliseconds cached since the last modification interval.
-             * @see top.osjf.cron.datasource.driven.scheduled.yaml.YamlTaskElementLoader#setIntervalMillAfterModified
-             */
-            private long intervalMillAfterModified = 2000;
-
             public String getBaseDir() {
                 return baseDir;
             }
@@ -481,14 +475,6 @@ public class CronProperties {
 
             public void setConfigFileName(String configFileName) {
                 this.configFileName = configFileName;
-            }
-
-            public long getIntervalMillAfterModified() {
-                return intervalMillAfterModified;
-            }
-
-            public void setIntervalMillAfterModified(long intervalMillAfterModified) {
-                this.intervalMillAfterModified = intervalMillAfterModified;
             }
         }
     }

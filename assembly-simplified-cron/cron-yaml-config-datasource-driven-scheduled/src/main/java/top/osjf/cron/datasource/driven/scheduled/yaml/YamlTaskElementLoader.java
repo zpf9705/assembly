@@ -43,9 +43,6 @@ public class YamlTaskElementLoader {
     /** Default {@link #configYamlFileName} named task-config.yml */
     private static final String DEFAULT_CONFIG_FILE_NAME = "task-config.yml";
 
-    /** Default {@link #intervalMillAfterModified} valued 2000 */
-    private static final long DEFAULT_INTERVAL_MILL = 2000;
-
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
     /** The map of loading result. */
@@ -60,7 +57,7 @@ public class YamlTaskElementLoader {
     private File yamlFile;
     private Yaml yaml;
 
-    private long intervalMillAfterModified = DEFAULT_INTERVAL_MILL;
+    private Long lastModifiedMill;
 
     /** The boolean flag indicates first loading. */
     private volatile boolean loadingFlag;
@@ -109,15 +106,6 @@ public class YamlTaskElementLoader {
      */
     public void setYaml(@NotNull Yaml yaml) {
         this.yaml = yaml;
-    }
-
-    /**
-     * Sets the number of milliseconds cached since the last modification interval.
-     * @param intervalMillAfterModified The number of milliseconds cached since the last
-     *                                  modification interval.
-     */
-    public void setIntervalMillAfterModified(long intervalMillAfterModified) {
-        this.intervalMillAfterModified = intervalMillAfterModified;
     }
 
     /**
@@ -187,7 +175,7 @@ public class YamlTaskElementLoader {
         readLock.lock();
 
         try {
-            if (loadingFlag && intervalMillAfterModifiedMoreThanHope()) {
+            if (loadingFlag && !isModifiedRecently()) {
 
                 return Optional.ofNullable(loadingElementsFilterFunction).map(lf -> lf.apply(taskElements))
                         .orElse(Collections.emptyList());
@@ -233,17 +221,21 @@ public class YamlTaskElementLoader {
     }
 
     /**
-     * Retrieve a {@code Boolean} variable indicating whether the last modification time of the
-     * file and the current interval are greater than or equal to the expected value.
-     * @return {@code true} hope that,{@code false} otherwise.
+     * Check if there have been any changes to {@link #getYamlFile()} that are
+     * inconsistent with {@link #lastModifiedMill}.
+     * @return {@code true} indicate changes have occurred,{@code false} otherwise.
      */
-    private boolean intervalMillAfterModifiedMoreThanHope() {
+    private boolean isModifiedRecently() {
         try {
-            return System.currentTimeMillis() - Files.getLastModifiedTime(getYamlFile().toPath()).toMillis()
-                    >= intervalMillAfterModified;
+            long modifiedMillis = Files.getLastModifiedTime(getYamlFile().toPath()).toMillis();
+            if (lastModifiedMill == null || lastModifiedMill.compareTo(modifiedMillis) != 0) {
+                lastModifiedMill = modifiedMillis;
+                return true;
+            }
+            return false;
         }
         catch (IOException ex) {
-            return false;
+            return true;
         }
     }
 

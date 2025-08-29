@@ -48,9 +48,6 @@ public class YamlDatabaseDrivenScheduledConfiguration {
                 loader::setConfigYamlFileName);
         notNullAccept(environment.getProperty("spring.schedule.cron.scheduled-driven.yaml.base-dir"),
                 loader::setBaseDir);
-        notNullAccept(environment.getProperty("spring.schedule.cron.scheduled-driven.yaml.interval-mill-after-modified",
-                        Long.class),
-                loader::setIntervalMillAfterModified);
         return operation;
     }
 
