@@ -101,12 +101,12 @@ public class YamlTaskElement implements TaskElement {
 
     @Override
     public String getId() {
-        return getString(ID_KEY_NAME, false);
+        return getStringConfig(ID_KEY_NAME, false);
     }
 
     @Override
     public String getTaskId() {
-        return getString(TASK_ID_KEY_NAME, false);
+        return getStringConfig(TASK_ID_KEY_NAME, false);
     }
 
     @Override
@@ -116,22 +116,22 @@ public class YamlTaskElement implements TaskElement {
 
     @Override
     public String getTaskName() {
-        return getString(TASK_NAME_KEY_NAME, false);
+        return getStringConfig(TASK_NAME_KEY_NAME, false);
     }
 
     @Override
     public String getProfiles() {
-        return getString(PROFILES_KEY_NAME, true);
+        return getStringConfig(PROFILES_KEY_NAME, true);
     }
 
     @Override
     public String getTaskDescription() {
-        return getString(TASK_DESCRIPTION_KEY_NAME, false);
+        return getStringConfig(TASK_DESCRIPTION_KEY_NAME, false);
     }
 
     @Override
     public String getStatus() {
-        return getString(STATUS_KEY_NAME, false);
+        return getStringConfig(STATUS_KEY_NAME, false);
     }
 
     @Override
@@ -141,7 +141,7 @@ public class YamlTaskElement implements TaskElement {
 
     @Override
     public String getStatusDescription() {
-        return getString(STATUS_DESCRIPTION_KEY_NAME, true);
+        return getStringConfig(STATUS_DESCRIPTION_KEY_NAME, true);
     }
 
     @Override
@@ -151,7 +151,7 @@ public class YamlTaskElement implements TaskElement {
 
     @Override
     public String getExpression() {
-        return getString(EXPRESSION_KEY_NANE, false);
+        return getStringConfig(EXPRESSION_KEY_NANE, false);
     }
 
     @Override
@@ -171,19 +171,60 @@ public class YamlTaskElement implements TaskElement {
         return sourceYamlConfig;
     }
 
-    private String getString(String propertyName, boolean nullable) {
-        return notNullAs(propertyName, nullable, String.class, Object::toString);
+    /**
+     * Purge potential task IDs, update tags, and task status descriptions from the data.
+     * @return if {@code true} has been purge out，{@code false} otherwise.
+     */
+    protected boolean purge() {
+        if (!StringUtils.isBlank(getTaskId())) {
+            sourceYamlConfig.put(TASK_ID_KEY_NAME, "");
+            sourceYamlConfig.put(UPDATE_SIGN_KEY_NAME, "0");
+            sourceYamlConfig.put(STATUS_DESCRIPTION_KEY_NAME, "");
+            return true;
+        }
+        return false;
     }
 
+    /**
+     * Gets a config by specify key name.
+     * @param keyName the specify key name.
+     * @return the config by specify key name.
+     * @since 3.0.1
+     */
+    public Object getSourceYamlConfig(String keyName) {
+        return sourceYamlConfig.get(keyName);
+    }
+
+    /**
+     * Gets a {@code String} config by the specify key name.
+     * @param keyName the specify key name.
+     * @param nullable is null able.
+     * @return the {@code String} config by specify key name.
+     * @since 3.0.1
+     */
+    private String getStringConfig(String keyName, boolean nullable) {
+        return notNullAs(keyName, nullable, String.class, Object::toString);
+    }
+
+    /*
+     * NON - JAVADOC
+     * @param keyName
+     * @param nullable
+     * @param clazz
+     * @param notInstanceConvertFun
+     * @return
+     * @param <T>
+     * @since 3.0.1
+     */
     @Nullable
-    private <T>T notNullAs(String propertyName, boolean nullable,
-                   Class<T> clazz, @Nullable Function<Object, T> notInstanceConvertFun) {
-        Object obj = sourceYamlConfig.get(propertyName);
+    private <T>T notNullAs(String keyName, boolean nullable,
+                           Class<T> clazz, @Nullable Function<Object, T> notInstanceConvertFun) {
+        Object obj = sourceYamlConfig.get(keyName);
         if (obj == null) {
             if (nullable) {
                 return null;
             }
-            throw new IllegalArgumentException("<" + propertyName + ">" + "can not be null!");
+            throw new IllegalArgumentException("<" + keyName + ">" + "can not be null!");
         }
         if (clazz.isInstance(obj)) {
             return clazz.cast(obj);
@@ -200,19 +241,5 @@ public class YamlTaskElement implements TaskElement {
         catch (Throwable ex) {
             throw new IllegalArgumentException("notInstanceConvertFun apply error", ex);
         }
-    }
-
-    /**
-     * Purge potential task IDs, update tags, and task status descriptions from the data.
-     * @return if {@code true} has been purge out，{@code false} otherwise.
-     */
-    protected boolean purge() {
-        if (!StringUtils.isBlank(getTaskId())) {
-            sourceYamlConfig.put(TASK_ID_KEY_NAME, "");
-            sourceYamlConfig.put(UPDATE_SIGN_KEY_NAME, "0");
-            sourceYamlConfig.put(STATUS_DESCRIPTION_KEY_NAME, "");
-            return true;
-        }
-        return false;
     }
 }

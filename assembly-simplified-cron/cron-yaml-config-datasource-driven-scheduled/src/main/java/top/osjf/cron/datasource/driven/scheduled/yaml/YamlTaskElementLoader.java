@@ -162,7 +162,9 @@ public class YamlTaskElementLoader {
         try {
             for (TaskElement updateElement : updateElements) {
                 if (updateElement instanceof YamlTaskElement) {
-                    loadingResult.put(updateElement.getId(),
+                    Object sourceId
+                            = ((YamlTaskElement) updateElement).getSourceYamlConfig(YamlTaskElement.ID_KEY_NAME);
+                    loadingResult.put(sourceId,
                             ((YamlTaskElement) updateElement).getSourceYamlConfig());
                 }
             }
