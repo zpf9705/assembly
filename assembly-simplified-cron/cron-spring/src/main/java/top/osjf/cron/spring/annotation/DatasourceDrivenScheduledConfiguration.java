@@ -48,7 +48,7 @@ public class DatasourceDrivenScheduledConfiguration implements ImportSelector {
             DataSource dataSource = attributes.getEnum("value");
             switch (dataSource){
                 case YAML_CONFIG:
-                    configs.add(YamDatabaseDrivenScheduledConfiguration.class.getCanonicalName()); break;
+                    configs.add(YamlDatabaseDrivenScheduledConfiguration.class.getCanonicalName()); break;
                 case MY_BATIS_PLUS_ORM_DATABASE:
                     configs.add(MybatisPlusDatabaseDrivenScheduledConfiguration.class.getCanonicalName()); break;
                 case SPRING_JPA_ORM_DATABASE:
