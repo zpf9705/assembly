@@ -130,35 +130,43 @@ public abstract class AbstractDatasourceDrivenScheduled
     @Override
     public void init() {
 
-        lockExecuteLifecycle(this::initInternal);
+        lockExecuteLifecycle(this::initInternal, false, null);
     }
 
     @Override
     public void start() {
 
-        lockExecuteLifecycle(this::startInternal);
+        lockExecuteLifecycle(this::startInternal, false, null);
     }
 
     @Override
     public void run() {
 
-        lockExecuteLifecycle(this::runInternal);
+        lockExecuteLifecycle(this::runInternal, true, "run");
     }
 
     @Override
     public void stop() {
 
-        lockExecuteLifecycle(this::stopInternal);
+        lockExecuteLifecycle(this::stopInternal, false, null);
     }
 
     /**
      * Synchronize the execution of various stages of the lifecycle.
      * @param r {@link DatasourceDrivenScheduledLifecycle} action.
+     * @param loggerCatch     the boolean flag of catch do error logger.
+     * @param lifecycleName   the specify lifecycle name.
      */
-    private void lockExecuteLifecycle(Runnable r) {
+    private void lockExecuteLifecycle(Runnable r, boolean loggerCatch, String lifecycleName) {
         lock.lock();
         try {
             r.run();
+        }
+        catch (Throwable ex) {
+            if (loggerCatch) {
+                getLogger().error("Failed to execute <{}> ", lifecycleName, ex);
+            }
+            else throw ex;
         }
         finally {
             lock.unlock();
