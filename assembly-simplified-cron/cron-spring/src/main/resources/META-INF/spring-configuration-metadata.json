@@ -21,6 +21,11 @@
       "description": "The base directory path for resolving dynamic configuration files."
     },
     {
+      "name": "spring.schedule.cron.datasource.driven.interval-mill-after-modified",
+      "type": "java.lang.Long",
+      "description": "The base directory path for resolving dynamic configuration files."
+    },
+    {
       "name": "spring.schedule.cron.datasource.driven.logger-name",
       "type": "java.lang.String",
       "description": "The log name of the configuration.."
