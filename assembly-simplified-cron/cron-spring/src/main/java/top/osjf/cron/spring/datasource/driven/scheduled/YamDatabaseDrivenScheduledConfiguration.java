@@ -21,8 +21,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.yaml.snakeyaml.Yaml;
-import top.osjf.cron.core.util.StringUtils;
 import top.osjf.cron.datasource.driven.scheduled.yaml.YamlDatasourceTaskElementsOperation;
+import top.osjf.cron.datasource.driven.scheduled.yaml.YamlTaskElementLoader;
 
 import java.util.function.Consumer;
 
@@ -42,16 +42,20 @@ public class YamDatabaseDrivenScheduledConfiguration {
     public YamlDatasourceTaskElementsOperation yamlDatasourceTaskElementsOperation(ObjectProvider<Yaml> provider,
                                                                                    Environment environment) {
         YamlDatasourceTaskElementsOperation operation = new YamlDatasourceTaskElementsOperation();
-        provider.orderedStream().findFirst().ifPresent(operation::setYaml);
-        ifNotBlankAccept(environment.getProperty("spring.schedule.cron.datasource.driven.yml-config-name"),
-                operation::setConfigYamlFileName);
-        ifNotBlankAccept(environment.getProperty("spring.schedule.cron.datasource.driven.yml-base-dir"),
-                operation::setBaseDir);
+        YamlTaskElementLoader loader = operation.getLoader();
+        provider.orderedStream().findFirst().ifPresent(loader::setYaml);
+        notNullAccept(environment.getProperty("spring.schedule.cron.datasource.driven.yml-config-name"),
+                loader::setConfigYamlFileName);
+        notNullAccept(environment.getProperty("spring.schedule.cron.datasource.driven.yml-base-dir"),
+                loader::setBaseDir);
+        notNullAccept(environment.getProperty("spring.schedule.cron.datasource.driven.interval-mill-after-modified",
+                        Long.class),
+                loader::setIntervalMillAfterModified);
         return operation;
     }
 
-    static void ifNotBlankAccept(String property, Consumer<String> consumer){
-        if (StringUtils.isBlank(property)){
+    static <T> void notNullAccept(T property, Consumer<T> consumer){
+        if (property == null){
             return;
         }
         consumer.accept(property);
