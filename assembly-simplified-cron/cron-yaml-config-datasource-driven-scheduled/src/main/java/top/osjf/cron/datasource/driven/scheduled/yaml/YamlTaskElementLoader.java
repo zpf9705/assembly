@@ -62,7 +62,7 @@ public class YamlTaskElementLoader {
 
     private long intervalMillAfterModified = DEFAULT_INTERVAL_MILL;
 
-    /** The boolean flog indicates first loading. */
+    /** The boolean flag indicates first loading. */
     private volatile boolean loadingFlag;
 
     /**

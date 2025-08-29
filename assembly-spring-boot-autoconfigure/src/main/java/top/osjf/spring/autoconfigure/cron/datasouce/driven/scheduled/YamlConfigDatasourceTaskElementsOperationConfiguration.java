@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.yaml.YamlDatasourceTaskElementsOperation;
-import top.osjf.cron.spring.datasource.driven.scheduled.YamDatabaseDrivenScheduledConfiguration;
+import top.osjf.cron.spring.datasource.driven.scheduled.YamlDatabaseDrivenScheduledConfiguration;
 
 /**
  * {@link Configuration Configuration} for {@link YamlDatasourceTaskElementsOperation}.
@@ -33,7 +33,7 @@ import top.osjf.cron.spring.datasource.driven.scheduled.YamDatabaseDrivenSchedul
  * @since 3.0.1
  */
 @Configuration(proxyBeanMethods = false)
-@Import(YamDatabaseDrivenScheduledConfiguration.class)
+@Import(YamlDatabaseDrivenScheduledConfiguration.class)
 @ConditionalOnClass(YamlDatasourceTaskElementsOperation.class)
 @ConditionalOnMissingBean(DatasourceTaskElementsOperation.class)
 @Conditional(DatasourceDrivenCondition.class)
