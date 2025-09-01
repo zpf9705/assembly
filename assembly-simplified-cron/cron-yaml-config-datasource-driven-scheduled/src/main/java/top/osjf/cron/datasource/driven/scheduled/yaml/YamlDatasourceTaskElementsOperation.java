@@ -22,10 +22,7 @@ import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -49,7 +46,7 @@ import java.util.stream.Collectors;
  *
  * <p>The configuration file name and public upper layer path of yaml default to {@code task-config.yml}
  * and {@code System.getProperty("user.dir")}, and developers can define them themselves through the
- * set method {@link YamlTaskElementLoader#setConfigYamlFileName} and {@link YamlTaskElementLoader#setBaseDir}.
+ * set method {@link YamlTaskElementLoader#setConfigFileName} and {@link YamlTaskElementLoader#setBaseDir}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
@@ -85,7 +82,7 @@ public class YamlDatasourceTaskElementsOperation implements DatasourceTaskElemen
 
     @Override
     public void afterStart(List<TaskElement> fulledDatasourceTaskElement) {
-        loader.dump(fulledDatasourceTaskElement);
+        loader.checkedUpdate(fulledDatasourceTaskElement);
     }
 
     @Override
@@ -101,7 +98,7 @@ public class YamlDatasourceTaskElementsOperation implements DatasourceTaskElemen
 
     @Override
     public void afterRun(List<TaskElement> runtimeCheckedDatasourceTaskElement) {
-        loader.dump(runtimeCheckedDatasourceTaskElement);
+        loader.checkedUpdate(runtimeCheckedDatasourceTaskElement);
     }
 
     @Override
