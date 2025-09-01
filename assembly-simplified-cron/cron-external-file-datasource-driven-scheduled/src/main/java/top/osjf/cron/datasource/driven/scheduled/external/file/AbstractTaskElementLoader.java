@@ -15,14 +15,18 @@
  */
 
 
-package top.osjf.cron.datasource.driven.scheduled;
+package top.osjf.cron.datasource.driven.scheduled.external.file;
 
 import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.util.CollectionUtils;
 import top.osjf.cron.core.util.StringUtils;
+import top.osjf.cron.datasource.driven.scheduled.DataSourceDrivenException;
+import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 
 import java.io.*;
+import java.lang.reflect.ParameterizedType;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -61,6 +65,8 @@ public abstract class AbstractTaskElementLoader<T extends TaskElement> {
 
     /** The list of {@link TaskElement} loading through {@link #loadingInternal(InputStream)}. */
     private List<T> taskElements;
+
+    private Class<T> rawType;
 
     /**
      * Sets the base directory path for resolving dynamic configuration files.
@@ -121,6 +127,49 @@ public abstract class AbstractTaskElementLoader<T extends TaskElement> {
     }
 
     /**
+     * Adapt and update batch task elements by checked using {@link #rawType}.
+     * @param updateElements Collection of task elements to be updated.
+     */
+    @SuppressWarnings("unchecked")
+    public void checkedUpdate(List<TaskElement> updateElements) {
+
+        obtainRawType();
+
+        List<T> elements = new ArrayList<>();
+        for (TaskElement updateElement : updateElements) {
+            if (rawType.isInstance(updateElement)) {
+                elements.add((T) updateElement);
+            }
+        }
+
+        update(elements);
+    }
+
+    /**
+     * Sets a {@link TaskElement} raw type.
+     * @param rawType a {@link TaskElement} raw type.
+     */
+    protected void setRawType(Class<T> rawType) {
+        this.rawType = rawType;
+    }
+
+    /**
+     * Dynamically obtain the primitive type of {@link TaskElement} when {@link #setRawType(Class)}
+     * is not actively set.
+     */
+    @SuppressWarnings("unchecked") void obtainRawType() {
+        if (rawType == null) {
+            try {
+                rawType = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass())
+                        .getActualTypeArguments()[0];
+            }
+            catch (Exception ex) {
+                throw new DataSourceDrivenException("Failed to obtain raw type", ex);
+            }
+        }
+    }
+
+    /**
      * Adapt and update batch task elements.
      * @param updateElements Collection of task elements to be updated.
      */
@@ -167,6 +216,7 @@ public abstract class AbstractTaskElementLoader<T extends TaskElement> {
      * Load the specified configuration file and filter the data.
      * @param loadingElementsFilterFunction the {@link Function} that filter the loaded data.
      * @return The dataset that has been loaded and filtered.
+     * @throws DataSourceDrivenException if loading fails to occur.
      */
     public List<T> loading(Function<List<T>, List<T>> loadingElementsFilterFunction) {
         final Lock readLock = readWriteLock.readLock();
@@ -215,8 +265,9 @@ public abstract class AbstractTaskElementLoader<T extends TaskElement> {
      * The method for implementing the internal loading results of a class.
      * @param is the configuration file {@link InputStream}.
      * @return Load the conversion {@link TaskElement} list of configuration content.
+     * @throws Throwable if loading fails to occur.
      */
-    protected abstract List<T> loadingInternal(InputStream is);
+    protected abstract List<T> loadingInternal(InputStream is) throws Throwable;
 
     /**
      * Retrieve the {@link File} object after configuration {@link #baseDir} and {@link #configFileName}.
