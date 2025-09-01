@@ -36,14 +36,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Function;
 
 /**
- * The abstract task element loading class aims to provide thread safe operations
- * and common operation methods for non file class loading when operating on unique
- * files.
- *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
-public abstract class AbstractTaskElementLoader<T extends TaskElement> {
+public abstract class ExternalFileTaskElementLoader<T extends TaskElement> {
 
     /** The path to the base directory.*/
     @Nullable
