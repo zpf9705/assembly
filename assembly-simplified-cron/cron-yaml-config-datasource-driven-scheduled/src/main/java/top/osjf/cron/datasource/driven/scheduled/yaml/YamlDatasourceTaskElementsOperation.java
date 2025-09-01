@@ -18,13 +18,8 @@
 package top.osjf.cron.datasource.driven.scheduled.yaml;
 
 import org.yaml.snakeyaml.Yaml;
-import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
-import top.osjf.cron.datasource.driven.scheduled.TaskElement;
-
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import top.osjf.cron.datasource.driven.scheduled.external.file.ExternalFileDatasourceTaskElementsOperation;
 
 /**
  * Abstract class for YAML-configured of scheduled task datasource operation.
@@ -44,70 +39,23 @@ import java.util.stream.Collectors;
  * Task configurations are encapsulated by {@link YamlTaskElement}, enabling runtime configuration
  * batch updates.
  *
- * <p>The configuration file name and public upper layer path of yaml default to {@code task-config.yml}
- * and {@code System.getProperty("user.dir")}, and developers can define them themselves through the
- * set method {@link YamlTaskElementLoader#setConfigFileName} and {@link YamlTaskElementLoader#setBaseDir}.
- *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
-public class YamlDatasourceTaskElementsOperation implements DatasourceTaskElementsOperation {
-
-    private final YamlTaskElementLoader loader;
+public class YamlDatasourceTaskElementsOperation extends ExternalFileDatasourceTaskElementsOperation<YamlTaskElement> {
 
     /**
      * Constructs an empty {@code YamlDatasourceTaskElementsOperation} and init
      * an {@link YamlTaskElementLoader} instance.
      */
     public YamlDatasourceTaskElementsOperation() {
-        loader = new YamlTaskElementLoader();
+        super(new YamlTaskElementLoader());
     }
 
     /**
      * @return The {@link YamlTaskElement} loader.
      */
     public YamlTaskElementLoader getLoader() {
-        return loader;
-    }
-
-    @Override
-    public void purgeDatasourceTaskElements() {
-        loader.purge();
-    }
-
-    @Override
-    public List<TaskElement> getDatasourceTaskElements() {
-        return Collections.unmodifiableList(loader.loading(Function.identity()));
-    }
-
-    @Override
-    public void afterStart(List<TaskElement> fulledDatasourceTaskElement) {
-        loader.checkedUpdate(fulledDatasourceTaskElement);
-    }
-
-    @Override
-    public List<TaskElement> getRuntimeNeedCheckDatasourceTaskElements() {
-
-        List<YamlTaskElement> filteredDatasourceTaskElements = loader.loading(yamlTaskElements -> yamlTaskElements.stream()
-                .filter(t -> Objects.equals(t.getUpdateSign(), 1)
-                        || (Objects.equals(t.getUpdateSign(), 1) && t.getTaskId() == null))
-                .collect(Collectors.toList()));
-
-        return Collections.unmodifiableList(filteredDatasourceTaskElements);
-    }
-
-    @Override
-    public void afterRun(List<TaskElement> runtimeCheckedDatasourceTaskElement) {
-        loader.checkedUpdate(runtimeCheckedDatasourceTaskElement);
-    }
-
-    @Override
-    @Nullable
-    public TaskElement getElementById(String id) {
-        return Optional.ofNullable(loader.loading(yamlTaskElements -> yamlTaskElements.stream()
-                        .filter(element -> Objects.equals(id, element.getTaskId()))
-                        .collect(Collectors.toList())))
-                .map(l -> l.get(0))
-                .orElse(null);
+        return (YamlTaskElementLoader) super.getLoader();
     }
 }

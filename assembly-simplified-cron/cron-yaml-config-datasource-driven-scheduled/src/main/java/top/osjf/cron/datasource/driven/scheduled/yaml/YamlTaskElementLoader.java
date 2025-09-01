@@ -20,7 +20,7 @@ package top.osjf.cron.datasource.driven.scheduled.yaml;
 import org.yaml.snakeyaml.Yaml;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.datasource.driven.scheduled.DataSourceDrivenException;
-import top.osjf.cron.datasource.driven.scheduled.external.file.AbstractTaskElementLoader;
+import top.osjf.cron.datasource.driven.scheduled.external.file.ExternalFileTaskElementLoader;
 
 import java.io.FileWriter;
 import java.io.InputStream;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
-public class YamlTaskElementLoader extends AbstractTaskElementLoader<YamlTaskElement> {
+public class YamlTaskElementLoader extends ExternalFileTaskElementLoader<YamlTaskElement> {
 
     /** Default config file named task-config.yml */
     private static final String DEFAULT_CONFIG_FILE_NAME = "task-config.yml";
