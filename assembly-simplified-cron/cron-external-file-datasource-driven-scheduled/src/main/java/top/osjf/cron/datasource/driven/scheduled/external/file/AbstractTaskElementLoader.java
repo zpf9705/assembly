@@ -218,7 +218,7 @@ public abstract class AbstractTaskElementLoader<T extends TaskElement> {
      * @return The dataset that has been loaded and filtered.
      * @throws DataSourceDrivenException if loading fails to occur.
      */
-    public List<T> loading(Function<List<T>, List<T>> loadingElementsFilterFunction) {
+    public List<T> loading(@Nullable Function<List<T>, List<T>> loadingElementsFilterFunction) {
         final Lock readLock = readWriteLock.readLock();
         readLock.lock();
 
