@@ -52,9 +52,8 @@ public class YamlDatasourceTaskElementsOperation extends ExternalFileDatasourceT
         super(new YamlTaskElementLoader());
     }
 
-    /**
-     * @return The {@link YamlTaskElement} loader.
-     */
+
+    @Override
     public YamlTaskElementLoader getLoader() {
         return (YamlTaskElementLoader) super.getLoader();
     }
