@@ -23,6 +23,7 @@ import top.osjf.cron.core.util.StringUtils;
 import top.osjf.cron.datasource.driven.scheduled.DataSourceDrivenException;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 
+import javax.annotation.PostConstruct;
 import java.io.*;
 import java.lang.reflect.ParameterizedType;
 import java.nio.file.Files;
@@ -32,7 +33,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Function;
 
 /**
@@ -57,7 +57,7 @@ public abstract class ExternalFileTaskElementLoader<T extends TaskElement> {
     /** The boolean flag indicates first loading. */
     private volatile boolean loadingFlag;
 
-    private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+    private ReadWriteLock readWriteLock;
 
     /** The list of {@link TaskElement} loading through {@link #loadingInternal(InputStream)}. */
     private List<T> taskElements;
@@ -92,6 +92,24 @@ public abstract class ExternalFileTaskElementLoader<T extends TaskElement> {
      */
     public void setConfigFileName(@Nullable String configFileName) {
         this.configFileName = configFileName;
+    }
+
+    /**
+     * Obtain and verify the existence of the configuration file and initialize the
+     * file lock for the initialization operation.
+     */
+    @PostConstruct
+    public void init() {
+        File configFile = getConfigFile();
+        if (!configFile.exists()) {
+            throw new DataSourceDrivenException("Missing file " + configFile.getPath());
+        }
+        try {
+            readWriteLock = new FileReadWriteLock(configFile);
+        }
+        catch (IOException ex) {
+            throw new DataSourceDrivenException("Failed to init file lock", ex);
+        }
     }
 
     /**
@@ -244,10 +262,10 @@ public abstract class ExternalFileTaskElementLoader<T extends TaskElement> {
                     throw ex;
                 }
                 catch (FileNotFoundException ex) {
-                    throw new DataSourceDrivenException("Missing Yaml file " + getConfigFile().getName());
+                    throw new DataSourceDrivenException("Missing Yaml file " + getConfigFile().getPath());
                 }
                 catch (Throwable ex) {
-                    throw new DataSourceDrivenException("Failed to load Yaml file : " + getConfigFile().getName(), ex);
+                    throw new DataSourceDrivenException("Failed to load Yaml file : " + getConfigFile().getPath(), ex);
                 }
             }
         }
