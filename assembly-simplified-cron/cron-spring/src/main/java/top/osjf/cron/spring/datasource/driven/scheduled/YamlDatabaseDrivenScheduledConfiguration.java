@@ -45,7 +45,7 @@ public class YamlDatabaseDrivenScheduledConfiguration {
         YamlTaskElementLoader loader = operation.getLoader();
         provider.orderedStream().findFirst().ifPresent(loader::setYaml);
         notNullAccept(environment.getProperty("spring.schedule.cron.scheduled-driven.yaml.config-file-name"),
-                loader::setConfigYamlFileName);
+                loader::setConfigFileName);
         notNullAccept(environment.getProperty("spring.schedule.cron.scheduled-driven.yaml.base-dir"),
                 loader::setBaseDir);
         return operation;
