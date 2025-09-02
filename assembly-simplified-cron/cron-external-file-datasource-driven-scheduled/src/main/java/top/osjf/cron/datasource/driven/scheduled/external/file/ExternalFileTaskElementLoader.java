@@ -21,6 +21,7 @@ import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.util.CollectionUtils;
 import top.osjf.cron.core.util.StringUtils;
 import top.osjf.cron.datasource.driven.scheduled.DataSourceDrivenException;
+import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 
 import javax.annotation.PostConstruct;
@@ -36,6 +37,37 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.function.Function;
 
 /**
+ * A functional abstract class that persistently loads changes to a
+ * specified type of external configuration file.
+ *
+ * <p>This class can set specific paths {@link #baseDir} and file names
+ * {@link #configFileName}, without distinguishing between specific file
+ * types, resolved based on subclass generics {@code T extends TaskElement}.
+ *
+ * <p>The introduction of this abstract class is mainly aimed at solving
+ * the related operations introduced by file class configuration (based on
+ * {@link DatasourceTaskElementsOperation}), centralizing its operation API,
+ * and mainly including the following functions:
+ * <ul>
+ * <li>{@link #purge()} corresponding to
+ * {@link DatasourceTaskElementsOperation#purgeDatasourceTaskElements()} needs.</li>
+ * <li>{@link #update(List)} corresponding to
+ * {@link DatasourceTaskElementsOperation#afterStart(List)} and
+ * {@link DatasourceTaskElementsOperation#afterStart(List)}</li>
+ * <li>{@link #loading(Function)} corresponding to
+ * {@link DatasourceTaskElementsOperation#getDatasourceTaskElements()} and
+ * {@link DatasourceTaskElementsOperation#getRuntimeNeedCheckDatasourceTaskElements()} and
+ * {@link DatasourceTaskElementsOperation#getElementById(String)}
+ * </li>
+ * </ul>
+ *
+ * <p>The aggregation implementation class needs to sequentially implement
+ * internal write operations ({@link #purgeInternal(TaskElement)} and
+ * {@link #updateInternal(TaskElement)} and {@link #refresh()}) based on the
+ * implementation method of the domain, while this abstract class only completes
+ * process level file operations and JVM access thread safety control (according
+ * to {@link FileReadWriteLock}).
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
