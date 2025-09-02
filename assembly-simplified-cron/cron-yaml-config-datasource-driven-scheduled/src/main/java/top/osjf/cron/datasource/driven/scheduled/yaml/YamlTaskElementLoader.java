@@ -81,7 +81,7 @@ public class YamlTaskElementLoader extends ExternalFileTaskElementLoader<YamlTas
             yaml.dump(loadingResult, writer);
         }
         catch (Throwable ex) {
-            throw new DataSourceDrivenException("Failed to dump file : " + getConfigFile().getName(), ex);
+            throw new DataSourceDrivenException("Failed to dump file : " + getConfigFile().getPath(), ex);
         }
     }
 
