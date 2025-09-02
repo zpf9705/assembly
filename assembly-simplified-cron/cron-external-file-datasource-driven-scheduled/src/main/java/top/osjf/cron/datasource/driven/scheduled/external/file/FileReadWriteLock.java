@@ -275,6 +275,7 @@ public class FileReadWriteLock implements ReadWriteLock, AutoCloseable {
             Optional.ofNullable(local.get()).ifPresent(fileLock -> {
                 try {
                     fileLock.release();
+                    threadLock.unlock();
                     local.remove();
                 } catch (IOException ex) {
                     throw new IllegalStateException("File lock release failed", ex);
