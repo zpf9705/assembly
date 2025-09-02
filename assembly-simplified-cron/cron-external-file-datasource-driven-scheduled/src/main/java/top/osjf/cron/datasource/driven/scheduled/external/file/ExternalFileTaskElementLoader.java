@@ -145,13 +145,23 @@ public abstract class ExternalFileTaskElementLoader<T extends TaskElement> {
     }
 
     /**
+     * @return The {@link FileReadWriteLock} instance.
+     */
+    ReadWriteLock getReadWriteLock() {
+        if (readWriteLock == null) {
+            throw new DataSourceDrivenException("Not initialized.");
+        }
+        return readWriteLock;
+    }
+
+    /**
      * Clean the data of the loaded task element list.
      */
     public void purge() {
 
         loading(null);
 
-        final Lock writeLock = readWriteLock.writeLock();
+        final Lock writeLock = getReadWriteLock().writeLock();
         writeLock.lock();
         try {
             if (CollectionUtils.isEmpty(taskElements)) {
@@ -223,7 +233,7 @@ public abstract class ExternalFileTaskElementLoader<T extends TaskElement> {
 
         loading(null);
 
-        final Lock writeLock = readWriteLock.writeLock();
+        final Lock writeLock = getReadWriteLock().writeLock();
         writeLock.lock();
         try {
             for (T updateElement : updateElements) {
@@ -265,7 +275,7 @@ public abstract class ExternalFileTaskElementLoader<T extends TaskElement> {
      * @throws DataSourceDrivenException if loading fails to occur.
      */
     public List<T> loading(@Nullable Function<List<T>, List<T>> loadingElementsFilterFunction) {
-        final Lock readLock = readWriteLock.readLock();
+        final Lock readLock = getReadWriteLock().readLock();
         readLock.lock();
 
         try {
