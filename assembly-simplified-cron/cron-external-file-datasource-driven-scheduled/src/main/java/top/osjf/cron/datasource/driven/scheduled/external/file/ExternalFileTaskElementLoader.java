@@ -25,6 +25,7 @@ import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.concurrent.ThreadSafe;
 import java.io.*;
 import java.lang.reflect.ParameterizedType;
 import java.nio.file.Files;
@@ -68,9 +69,11 @@ import java.util.function.Function;
  * process level file operations and JVM access thread safety control (according
  * to {@link FileReadWriteLock}).
  *
+ * @param <T> the type of task elements this operation handles, must extend {@link TaskElement}.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
+@ThreadSafe
 public abstract class ExternalFileTaskElementLoader<T extends TaskElement> {
 
     /** The path to the base directory.*/

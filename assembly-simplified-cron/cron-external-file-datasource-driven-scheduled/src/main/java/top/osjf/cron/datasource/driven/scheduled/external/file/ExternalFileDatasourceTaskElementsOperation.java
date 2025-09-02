@@ -29,8 +29,40 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
+ * An abstract base implementation of {@link DatasourceTaskElementsOperation} that
+ * provides file-based persistence for task elements. This class serves as an adapter
+ * between the task element operation interface and file-based storage through an
+ * {@link ExternalFileTaskElementLoader}.
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>Abstract template for file-based task element operations
+ *   {@code <T extends TaskElement>}</li>
+ *   <li>Delegates actual file I/O to configured loader implementation
+ *   {@link ExternalFileTaskElementLoader#loading(Function)}</li>
+ *   <li>Provides thread-safe operation through loader synchronization</li>
+ *   <li>Supports both batch and individual element operations
+ *   {@link #getDatasourceTaskElements()} and {@link #getElementById(String)}</li>
+ * </ul>
+ *
+ * <p>Typical usage:
+ * <pre>{@code
+ * // Create concrete implementation
+ * class MyFileOperation extends ExternalFileDatasourceTaskElementsOperation<MyTaskElement> {
+ *     // implement abstract methods
+ * }
+ *
+ * // Initialize with appropriate loader
+ * FileTaskElementLoader<MyTaskElement> loader = new YamlTaskElementLoader<>(file);
+ * DatasourceTaskElementsOperation op = new MyFileOperation(loader);
+ * }</pre>
+ *
+ * @param <T> the type of task elements this operation handles, must extend {@link TaskElement}.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
+ * @see DatasourceTaskElementsOperation
+ * @see ExternalFileTaskElementLoader
+ * @see TaskElement
  */
 public abstract
 class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement> implements DatasourceTaskElementsOperation {
