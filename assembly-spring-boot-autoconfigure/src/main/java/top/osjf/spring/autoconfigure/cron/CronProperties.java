@@ -451,13 +451,11 @@ public class CronProperties {
 
             /**
              * The base directory path for resolving dynamic configuration files.
-             * @see top.osjf.cron.datasource.driven.scheduled.yaml.YamlTaskElementLoader#setBaseDir
              */
             private String baseDir;
 
             /**
              * The yml config file name for resolving dynamic configuration files.
-             * @see top.osjf.cron.datasource.driven.scheduled.yaml.YamlTaskElementLoader#setConfigYamlFileName
              */
             private String configFileName = "task-config.yml";
 
