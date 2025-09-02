@@ -79,7 +79,7 @@ public class FileReadWriteLock implements ReadWriteLock, AutoCloseable {
     }
 
     /**
-     * Core constructor that initializes the file channel and {@code Lock} instances.
+     * Core constructor that initializes the file channel and {@code FileChannelLock} instances.
      *
      * @param path the path to the file to lock
      * @param fair true for fair ordering, false for non-fair
@@ -88,8 +88,8 @@ public class FileReadWriteLock implements ReadWriteLock, AutoCloseable {
     public FileReadWriteLock(Path path, boolean fair) throws IOException {
         channel = FileChannel.open(path, StandardOpenOption.READ, StandardOpenOption.WRITE);
         ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock(fair);
-        writeLock = new FileLockImpl(channel, readWriteLock.writeLock());
-        readLock = new FileLockImpl(channel, readWriteLock.readLock());
+        writeLock = new FileChannelLockImpl(channel, readWriteLock.writeLock());
+        readLock = new FileChannelLockImpl(channel, readWriteLock.readLock());
     }
 
     /**
@@ -143,7 +143,7 @@ public class FileReadWriteLock implements ReadWriteLock, AutoCloseable {
      * This class provides both exclusive and shared file locking capabilities based
      * on the underlying thread lock type.
      */
-    private static class FileLockImpl implements FileChannelLock {
+    private static class FileChannelLockImpl implements FileChannelLock {
         /**
          * Thread-local storage for file locks to ensure thread safety.
          * Each thread maintains its own file lock instance.
@@ -163,12 +163,12 @@ public class FileReadWriteLock implements ReadWriteLock, AutoCloseable {
         private final boolean isThreadRead;
 
         /**
-         * Constructs a new {@code FileLockImpl} with the specified file channel and thread lock.
+         * Constructs a new {@code FileChannelLockImpl} with the specified file channel and thread lock.
          *
          * @param fileChannel the file channel to lock
          * @param threadLock the thread-level lock to coordinate with
          */
-        public FileLockImpl(FileChannel fileChannel, Lock threadLock) {
+        public FileChannelLockImpl(FileChannel fileChannel, Lock threadLock) {
             this.fileChannel = fileChannel;
             this.threadLock = threadLock;
             isThreadRead = threadLock instanceof ReentrantReadWriteLock.ReadLock;
