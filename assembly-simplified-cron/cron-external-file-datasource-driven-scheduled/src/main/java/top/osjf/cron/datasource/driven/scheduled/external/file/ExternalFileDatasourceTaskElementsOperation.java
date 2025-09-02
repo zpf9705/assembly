@@ -32,8 +32,8 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
-public abstract class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement>
-        implements DatasourceTaskElementsOperation {
+public abstract
+class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement> implements DatasourceTaskElementsOperation {
 
     private final ExternalFileTaskElementLoader<T> loader;
 
@@ -44,6 +44,7 @@ public abstract class ExternalFileDatasourceTaskElementsOperation<T extends Task
      */
     public ExternalFileDatasourceTaskElementsOperation(ExternalFileTaskElementLoader<T> loader) {
         this.loader = loader;
+        this.loader.init();
     }
 
     /**
