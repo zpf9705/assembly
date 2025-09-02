@@ -277,7 +277,8 @@ public class FileReadWriteLock implements ReadWriteLock, AutoCloseable {
                     fileLock.release();
                     threadLock.unlock();
                     local.remove();
-                } catch (IOException ex) {
+                }
+                catch (IOException ex) {
                     throw new IllegalStateException("File lock release failed", ex);
                 }
             });
