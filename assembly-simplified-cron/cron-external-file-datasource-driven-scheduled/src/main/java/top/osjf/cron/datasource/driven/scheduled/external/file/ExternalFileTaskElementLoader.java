@@ -132,7 +132,7 @@ public abstract class ExternalFileTaskElementLoader<T extends TaskElement> imple
      * Obtain and verify the existence of the configuration file and initialize the
      * file lock for the initialization operation.
      */
-    public void init() {
+    public void initialize() {
         File configFile = getConfigFile();
         if (!configFile.exists()) {
             throw new DataSourceDrivenException("Missing file " + configFile.getPath());

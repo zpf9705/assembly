@@ -91,8 +91,8 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement> impleme
      * Init for {@link ExternalFileTaskElementLoader}.
      */
     @PostConstruct
-    public void init() {
-        loader.init();
+    public void initialize() {
+        loader.initialize();
     }
 
     /**
