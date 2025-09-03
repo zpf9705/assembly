@@ -100,7 +100,7 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement> impleme
      */
     @PreDestroy
     public void destroy() {
-        loader.destroy();
+        loader.close();
     }
 
     /**
