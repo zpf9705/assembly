@@ -76,7 +76,7 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement> impleme
      */
     public ExternalFileDatasourceTaskElementsOperation(ExternalFileTaskElementLoader<T> loader) {
         this.loader = loader;
-        this.loader.init();
+        LoaderLifecycle.handleLoaderLifecycle(loader);
     }
 
     /**
