@@ -18,8 +18,7 @@
 package top.osjf.cron.datasource.driven.scheduled.yaml;
 
 import top.osjf.cron.core.lang.Nullable;
-import top.osjf.cron.core.util.StringUtils;
-import top.osjf.cron.datasource.driven.scheduled.TaskElement;
+import top.osjf.cron.datasource.driven.scheduled.external.file.ExternalFileDatasourceTaskElement;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -35,54 +34,9 @@ import java.util.function.Function;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
-public class YamlTaskElement implements TaskElement {
+public class YamlTaskElement extends ExternalFileDatasourceTaskElement {
 
     private static final long serialVersionUID = -2374827664799945441L;
-
-    /**
-     * Source yaml config file key name of {@link TaskElement#getId()}.
-     */
-    public static final String ID_KEY_NAME = "id";
-
-    /**
-     * Source yaml config file key name of {@link TaskElement#getTaskId()}.
-     */
-    public static final String TASK_ID_KEY_NAME = "taskId";
-
-    /**
-     * Source yaml config file key name of {@link TaskElement#getTaskName()}.
-     */
-    public static final String TASK_NAME_KEY_NAME = "taskName";
-
-    /**
-     * Source yaml config file key name of {@link TaskElement#getProfiles()}.
-     */
-    public static final String PROFILES_KEY_NAME = "profiles";
-
-    /**
-     * Source yaml config file key name of {@link TaskElement#getTaskDescription()}.
-     */
-    public static final String TASK_DESCRIPTION_KEY_NAME = "taskDescription";
-
-    /**
-     * Source yaml config file key name of {@link TaskElement#getStatus()}.
-     */
-    public static final String STATUS_KEY_NAME = "status";
-
-    /**
-     * Source yaml config file key name of {@link TaskElement#getStatusDescription()}.
-     */
-    public static final String STATUS_DESCRIPTION_KEY_NAME = "statusDescription";
-
-    /**
-     * Source yaml config file key name of {@link TaskElement#getExpression()}.
-     */
-    public static final String EXPRESSION_KEY_NANE = "expression";
-
-    /**
-     * Source yaml config file key name of {@link TaskElement#getUpdateSign()}.
-     */
-    public static final String UPDATE_SIGN_KEY_NAME = "updateSign";
 
     /**
      * Source yaml config map corresponds to {@link #getId()}.
@@ -169,20 +123,6 @@ public class YamlTaskElement implements TaskElement {
      */
     public Map<Object, Object> getSourceYamlConfig() {
         return sourceYamlConfig;
-    }
-
-    /**
-     * Purge potential task IDs, update tags, and task status descriptions from the data.
-     * @return if {@code true} has been purge out，{@code false} otherwise.
-     */
-    protected boolean purge() {
-        if (!StringUtils.isBlank(getTaskId())) {
-            sourceYamlConfig.put(TASK_ID_KEY_NAME, "");
-            sourceYamlConfig.put(UPDATE_SIGN_KEY_NAME, "0");
-            sourceYamlConfig.put(STATUS_DESCRIPTION_KEY_NAME, "");
-            return true;
-        }
-        return false;
     }
 
     /**

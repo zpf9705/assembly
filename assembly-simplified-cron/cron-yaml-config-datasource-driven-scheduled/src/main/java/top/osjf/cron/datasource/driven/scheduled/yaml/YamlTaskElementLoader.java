@@ -64,11 +64,6 @@ public class YamlTaskElementLoader extends ExternalFileTaskElementLoader<YamlTas
     }
 
     @Override
-    protected boolean purgeInternal(YamlTaskElement taskElement) {
-        return taskElement.purge();
-    }
-
-    @Override
     protected void updateInternal(YamlTaskElement updateElement) {
         Object sourceId
                 = updateElement.getSourceYamlConfig(YamlTaskElement.ID_KEY_NAME);
