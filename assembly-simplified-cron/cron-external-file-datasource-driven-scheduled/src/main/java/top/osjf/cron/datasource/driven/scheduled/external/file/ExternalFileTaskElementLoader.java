@@ -24,8 +24,6 @@ import top.osjf.cron.datasource.driven.scheduled.DataSourceDrivenException;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.*;
 import java.lang.reflect.ParameterizedType;
@@ -134,7 +132,6 @@ public abstract class ExternalFileTaskElementLoader<T extends TaskElement> {
      * Obtain and verify the existence of the configuration file and initialize the
      * file lock for the initialization operation.
      */
-    @PostConstruct
     public void init() {
         File configFile = getConfigFile();
         if (!configFile.exists()) {
@@ -151,7 +148,6 @@ public abstract class ExternalFileTaskElementLoader<T extends TaskElement> {
     /**
      * Release relevant file resources promptly when the JVM is shut down.
      */
-    @PreDestroy
     public void destroy() {
         if (readWriteLock instanceof FileReadWriteLock) {
             try {
