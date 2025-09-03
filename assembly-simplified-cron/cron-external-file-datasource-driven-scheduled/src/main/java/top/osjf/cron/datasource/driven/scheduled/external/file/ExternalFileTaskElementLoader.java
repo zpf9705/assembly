@@ -25,6 +25,7 @@ import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.*;
 import java.lang.reflect.ParameterizedType;
@@ -144,6 +145,20 @@ public abstract class ExternalFileTaskElementLoader<T extends TaskElement> {
         }
         catch (IOException ex) {
             throw new DataSourceDrivenException("Failed to init file lock", ex);
+        }
+    }
+
+    /**
+     * Release relevant file resources promptly when the JVM is shut down.
+     */
+    @PreDestroy
+    public void destroy() {
+        if (readWriteLock instanceof FileReadWriteLock) {
+            try {
+                ((FileReadWriteLock) readWriteLock).close();
+            }
+            catch (IOException ignored) {
+            }
         }
     }
 
