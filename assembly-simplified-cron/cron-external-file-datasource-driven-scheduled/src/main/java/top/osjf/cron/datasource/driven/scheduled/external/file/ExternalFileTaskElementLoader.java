@@ -73,7 +73,7 @@ import java.util.function.Function;
  * @since 3.0.1
  */
 @ThreadSafe
-public abstract class ExternalFileTaskElementLoader<T extends TaskElement> {
+public abstract class ExternalFileTaskElementLoader<T extends TaskElement> implements Closeable {
 
     /** The path to the base directory.*/
     @Nullable
@@ -148,7 +148,8 @@ public abstract class ExternalFileTaskElementLoader<T extends TaskElement> {
     /**
      * Release relevant file resources promptly when the JVM is shut down.
      */
-    public void destroy() {
+    @Override
+    public void close() {
         if (readWriteLock instanceof FileReadWriteLock) {
             try {
                 ((FileReadWriteLock) readWriteLock).close();
