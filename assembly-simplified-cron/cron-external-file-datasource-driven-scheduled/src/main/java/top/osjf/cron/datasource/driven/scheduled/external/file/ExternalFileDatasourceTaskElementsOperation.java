@@ -21,6 +21,8 @@ import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -76,7 +78,6 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement> impleme
      */
     public ExternalFileDatasourceTaskElementsOperation(ExternalFileTaskElementLoader<T> loader) {
         this.loader = loader;
-        LoaderLifecycle.handleLoaderLifecycle(loader);
     }
 
     /**
@@ -84,6 +85,22 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement> impleme
      */
     public ExternalFileTaskElementLoader<T> getLoader() {
         return loader;
+    }
+
+    /**
+     * Init for {@link ExternalFileTaskElementLoader}.
+     */
+    @PostConstruct
+    public void init() {
+        loader.init();
+    }
+
+    /**
+     * Destroy for {@link ExternalFileTaskElementLoader}.
+     */
+    @PreDestroy
+    public void destroy() {
+        loader.destroy();
     }
 
     /**
