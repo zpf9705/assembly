@@ -42,7 +42,7 @@ public class YamlTaskElementLoader extends ExternalFileTaskElementLoader<YamlTas
     private static final String DEFAULT_CONFIG_FILE_NAME = "task-config.yml";
 
     /** The map of loading result. */
-    private Map<Object, Map<Object, Object>> loadingResult;
+    private List<Map<Object, Object>> loadingResult;
 
     private Yaml yaml;
 
@@ -64,13 +64,6 @@ public class YamlTaskElementLoader extends ExternalFileTaskElementLoader<YamlTas
     }
 
     @Override
-    protected void updateInternal(YamlTaskElement updateElement) {
-        Object sourceId
-                = updateElement.getSourceYamlConfig(YamlTaskElement.ID_KEY_NAME);
-        loadingResult.put(sourceId, updateElement.getSourceYamlConfig());
-    }
-
-    @Override
     protected void refresh() {
         try (Writer writer = new FileWriter(getConfigFile())) {
             yaml.dump(loadingResult, writer);
@@ -81,9 +74,10 @@ public class YamlTaskElementLoader extends ExternalFileTaskElementLoader<YamlTas
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected List<YamlTaskElement> loadingInternal(InputStream is) {
-        loadingResult = yaml.load(is);
-        return loadingResult == null ? Collections.emptyList() : loadingResult.values().stream()
+        loadingResult = yaml.loadAs(is, List.class);
+        return loadingResult == null ? Collections.emptyList() : loadingResult.stream()
                 .map(YamlTaskElement::new).collect(Collectors.toList());
     }
 
