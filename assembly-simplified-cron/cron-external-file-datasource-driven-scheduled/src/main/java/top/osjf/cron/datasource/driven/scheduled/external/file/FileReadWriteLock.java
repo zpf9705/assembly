@@ -19,6 +19,7 @@ package top.osjf.cron.datasource.driven.scheduled.external.file;
 
 import top.osjf.cron.core.lang.NotNull;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
@@ -35,12 +36,12 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * A thread-safe implementation of {@link ReadWriteLock} for file operations,
  * combining file-level locking with thread-level synchronization.
- * Implements {@link AutoCloseable} for resource management.
+ * Implements {@link Closeable} for resource management.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
-public class FileReadWriteLock implements ReadWriteLock, AutoCloseable {
+public class FileReadWriteLock implements ReadWriteLock, Closeable {
 
     /**
      * The underlying file channel for locking operations.
@@ -114,7 +115,7 @@ public class FileReadWriteLock implements ReadWriteLock, AutoCloseable {
      * {@inheritDoc}
      */
     @Override
-    public void close() throws Exception {
+    public void close() throws IOException {
         channel.close();
     }
 
