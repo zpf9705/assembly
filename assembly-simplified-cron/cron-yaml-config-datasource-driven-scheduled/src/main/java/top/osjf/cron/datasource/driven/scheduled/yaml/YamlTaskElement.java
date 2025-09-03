@@ -18,9 +18,11 @@
 package top.osjf.cron.datasource.driven.scheduled.yaml;
 
 import top.osjf.cron.core.lang.Nullable;
+import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 import top.osjf.cron.datasource.driven.scheduled.external.file.ExternalFileDatasourceTaskElement;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -36,12 +38,58 @@ import java.util.function.Function;
  */
 public class YamlTaskElement extends ExternalFileDatasourceTaskElement {
 
-    private static final long serialVersionUID = -2374827664799945441L;
+    private static final long serialVersionUID = -4605682572958271258L;
 
     /**
-     * Source yaml config map corresponds to {@link #getId()}.
+     * @see TaskElement#getId()
      */
-    public final Map<Object, Object> sourceYamlConfig;
+    private String id;
+
+    /**
+     * @see TaskElement#getTaskId()
+     */
+    private String taskId;
+
+    /**
+     * @see TaskElement#getTaskName()
+     */
+    private String taskName;
+
+    /**
+     * @see TaskElement#getProfiles()
+     */
+    private String profiles;
+
+    /**
+     * @see TaskElement#getTaskDescription()
+     */
+    private String taskDescription;
+
+    /**
+     * @see TaskElement#getStatus()
+     */
+    private String status;
+
+    /**
+     * @see TaskElement#getStatusDescription()
+     */
+    private String statusDescription;
+
+    /**
+     * @see TaskElement#getExpression()
+     */
+    private String expression;
+
+    /**
+     * @see TaskElement#getUpdateSign()
+     */
+    private Integer updateSign;
+
+    /**
+     * Constructs an empty {@code YamlTaskElement}.
+     */
+    public YamlTaskElement() {
+    }
 
     /**
      * Constructs a {@code YamlTaskElement} with this {@link #getId()} corresponds to
@@ -50,100 +98,114 @@ public class YamlTaskElement extends ExternalFileDatasourceTaskElement {
      * @param sourceConfig the Source yaml config map.
      */
     public YamlTaskElement(Map<Object, Object> sourceConfig) {
-        this.sourceYamlConfig = sourceConfig;
+        Objects.requireNonNull(sourceConfig, "sourceConfig");
+        this.id = getStringConfig(sourceConfig, ID_KEY_NAME, false);
+        this.taskId = getStringConfig(sourceConfig, TASK_ID_KEY_NAME, false);
+        this.taskName = getStringConfig(sourceConfig, TASK_NAME_KEY_NAME, false);
+        this.profiles = getStringConfig(sourceConfig, PROFILES_KEY_NAME, true);
+        this.taskDescription = getStringConfig(sourceConfig, TASK_DESCRIPTION_KEY_NAME, false);
+        this.status = getStringConfig(sourceConfig, STATUS_KEY_NAME, false);
+        this.statusDescription = getStringConfig(sourceConfig, STATUS_DESCRIPTION_KEY_NAME, true);
+        this.expression = getStringConfig(sourceConfig, EXPRESSION_KEY_NANE, false);
+        this.updateSign = notNullAs(sourceConfig, UPDATE_SIGN_KEY_NAME, false, Integer.class,
+                o -> Integer.parseInt(o.toString()));
     }
 
     @Override
     public String getId() {
-        return getStringConfig(ID_KEY_NAME, false);
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     @Override
     public String getTaskId() {
-        return getStringConfig(TASK_ID_KEY_NAME, false);
+        return taskId;
     }
 
     @Override
     public void setTaskId(String taskId) {
-        sourceYamlConfig.put(TASK_ID_KEY_NAME, taskId);
+        this.taskId = taskId;
     }
 
     @Override
     public String getTaskName() {
-        return getStringConfig(TASK_NAME_KEY_NAME, false);
+        return taskName;
+    }
+
+    public void setTaskName(String taskName) {
+        this.taskName = taskName;
     }
 
     @Override
     public String getProfiles() {
-        return getStringConfig(PROFILES_KEY_NAME, true);
+        return profiles;
+    }
+
+    public void setProfiles(String profiles) {
+        this.profiles = profiles;
     }
 
     @Override
     public String getTaskDescription() {
-        return getStringConfig(TASK_DESCRIPTION_KEY_NAME, false);
+        return taskDescription;
+    }
+
+    public void setTaskDescription(String taskDescription) {
+        this.taskDescription = taskDescription;
     }
 
     @Override
     public String getStatus() {
-        return getStringConfig(STATUS_KEY_NAME, false);
+        return status;
     }
 
     @Override
     public void setStatus(String status) {
-        sourceYamlConfig.put(STATUS_KEY_NAME, status);
+        this.status = status;
     }
 
     @Override
     public String getStatusDescription() {
-        return getStringConfig(STATUS_DESCRIPTION_KEY_NAME, true);
+        return statusDescription;
     }
 
     @Override
     public void setStatusDescription(String statusDescription) {
-        sourceYamlConfig.put(STATUS_DESCRIPTION_KEY_NAME, statusDescription);
+        this.statusDescription = statusDescription;
     }
 
     @Override
     public String getExpression() {
-        return getStringConfig(EXPRESSION_KEY_NANE, false);
+        return expression;
+    }
+
+    public void setExpression(String expression) {
+        this.expression = expression;
     }
 
     @Override
     public Integer getUpdateSign() {
-        return notNullAs(UPDATE_SIGN_KEY_NAME, false, Integer.class, o -> Integer.parseInt(o.toString()));
+        return updateSign;
     }
 
     @Override
     public void setUpdateSign(Integer updateSign) {
-        sourceYamlConfig.put(UPDATE_SIGN_KEY_NAME, updateSign.toString());
-    }
-
-    /**
-     * @return Configure the relevant information corresponding to the unique ID of the task {@link #getId()}.
-     */
-    public Map<Object, Object> getSourceYamlConfig() {
-        return sourceYamlConfig;
-    }
-
-    /**
-     * Gets a config by specify key name.
-     * @param keyName the specify key name.
-     * @return the config by specify key name.
-     * @since 3.0.1
-     */
-    public Object getSourceYamlConfig(String keyName) {
-        return sourceYamlConfig.get(keyName);
+        this.updateSign = updateSign;
     }
 
     /**
      * Gets a {@code String} config by the specify key name.
+     * @param sourceConfig the Source yaml config map.
      * @param keyName the specify key name.
      * @param nullable is null able.
      * @return the {@code String} config by specify key name.
      * @since 3.0.1
      */
-    private String getStringConfig(String keyName, boolean nullable) {
-        return notNullAs(keyName, nullable, String.class, Object::toString);
+    private String getStringConfig(Map<Object, Object> sourceConfig, String keyName, boolean nullable) {
+        return notNullAs(sourceConfig, keyName, nullable, String.class, Object::toString);
     }
 
     /*
@@ -157,9 +219,9 @@ public class YamlTaskElement extends ExternalFileDatasourceTaskElement {
      * @since 3.0.1
      */
     @Nullable
-    private <T>T notNullAs(String keyName, boolean nullable,
+    private <T>T notNullAs(Map<Object, Object> sourceConfig, String keyName, boolean nullable,
                            Class<T> clazz, @Nullable Function<Object, T> notInstanceConvertFun) {
-        Object obj = sourceYamlConfig.get(keyName);
+        Object obj = sourceConfig.get(keyName);
         if (obj == null) {
             if (nullable) {
                 return null;
