@@ -17,12 +17,16 @@
 
 package top.osjf.cron.datasource.driven.scheduled.yaml;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.yaml.snakeyaml.Yaml;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.datasource.driven.scheduled.DataSourceDrivenException;
 import top.osjf.cron.datasource.driven.scheduled.external.file.ExternalFileTaskElementLoader;
 
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
 import java.util.Collections;
@@ -39,18 +43,20 @@ import java.util.stream.Collectors;
 public class YamlTaskElementLoader extends ExternalFileTaskElementLoader<YamlTaskElement> {
 
     /** Default config file named task-config.yml */
-    private static final String DEFAULT_CONFIG_FILE_NAME = "task-config.yml";
-
-    /** The map of loading result. */
-    private List<Map<Object, Object>> loadingResult;
+    protected static final String DEFAULT_CONFIG_FILE_NAME = "task-config.yml";
 
     private Yaml yaml;
+
+    private JacksonYamlDeserializationHelper deserializationHelper;
 
     /**
      * Constructs an empty {@code YamlTaskElementLoader} and init a {@link Yaml} instance.
      */
     public YamlTaskElementLoader() {
         this.yaml = new Yaml();
+        if (isJacksonPresent()) {
+            deserializationHelper = new JacksonYamlDeserializationHelper();
+        }
     }
 
     /**
@@ -66,7 +72,7 @@ public class YamlTaskElementLoader extends ExternalFileTaskElementLoader<YamlTas
     @Override
     protected void refresh() {
         try (Writer writer = new FileWriter(getConfigFile())) {
-            yaml.dump(loadingResult, writer);
+            yaml.dump(taskElements, writer);
         }
         catch (Throwable ex) {
             throw new DataSourceDrivenException("Failed to dump file : " + getConfigFile().getPath(), ex);
@@ -74,9 +80,12 @@ public class YamlTaskElementLoader extends ExternalFileTaskElementLoader<YamlTas
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    protected List<YamlTaskElement> loadingInternal(InputStream is) {
-        loadingResult = yaml.loadAs(is, List.class);
+    protected List<YamlTaskElement> loadingInternal(InputStream is) throws IOException {
+        if (deserializationHelper != null) {
+            return deserializationHelper.loading(is);
+        }
+        @SuppressWarnings("unchecked")
+        List<Map<Object, Object>> loadingResult = yaml.loadAs(is, List.class);
         return loadingResult == null ? Collections.emptyList() : loadingResult.stream()
                 .map(YamlTaskElement::new).collect(Collectors.toList());
     }
@@ -84,5 +93,36 @@ public class YamlTaskElementLoader extends ExternalFileTaskElementLoader<YamlTas
     @Override
     protected String defaultConfigFileName() {
         return DEFAULT_CONFIG_FILE_NAME;
+    }
+
+    private static boolean isJacksonPresent() {
+        try {
+            Class.forName("com.fasterxml.jackson.databind.ObjectMapper");
+            Class.forName("com.fasterxml.jackson.dataformat.yaml.YAMLFactory");
+            return true;
+        }
+        catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
+    private static class JacksonYamlDeserializationHelper {
+
+        private final ObjectMapper objectMapper;
+
+        private final CollectionType collectionType;
+
+        /**
+         * Constructs an empty {@code YamlTaskElementLoader} and init a {@link Yaml} instance.
+         */
+        public JacksonYamlDeserializationHelper() {
+            this.objectMapper = new ObjectMapper(new YAMLFactory());
+            this.collectionType
+                    = objectMapper.getTypeFactory().constructCollectionType(List.class, YamlTaskElement.class);
+        }
+
+        public List<YamlTaskElement> loading(InputStream is) throws IOException {
+            return objectMapper.readValue(is, collectionType);
+        }
     }
 }
