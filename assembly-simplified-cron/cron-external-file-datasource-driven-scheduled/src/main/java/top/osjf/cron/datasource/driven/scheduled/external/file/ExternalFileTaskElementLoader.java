@@ -269,7 +269,12 @@ public abstract class ExternalFileTaskElementLoader<T extends TaskElement> imple
      * represents cleaning completion, then {@code false} is an irregular task
      * element.
      */
-    protected abstract boolean purgeInternal(T taskElement);
+    protected boolean purgeInternal(T taskElement) {
+        if (taskElement instanceof ExternalFileDatasourceTaskElement) {
+            return ((ExternalFileDatasourceTaskElement) taskElement).purge();
+        }
+        return false;
+    }
 
     /**
      * Update the internal implementation method of task elements.
