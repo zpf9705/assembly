@@ -94,7 +94,7 @@ public abstract class ExternalFileTaskElementLoader<T extends TaskElement> imple
     private ReadWriteLock readWriteLock;
 
     /** The list of {@link TaskElement} loading through {@link #loadingInternal(InputStream)}. */
-    private List<T> taskElements;
+    protected List<T> taskElements;
 
     private Class<T> rawType;
 
@@ -137,11 +137,13 @@ public abstract class ExternalFileTaskElementLoader<T extends TaskElement> imple
         if (!configFile.exists()) {
             throw new DataSourceDrivenException("Missing file " + configFile.getPath());
         }
+
         try {
+            lastModifiedMill = Files.getLastModifiedTime(configFile.toPath()).toMillis();
             readWriteLock = new FileReadWriteLock(configFile);
         }
         catch (IOException ex) {
-            throw new DataSourceDrivenException("Failed to init file lock", ex);
+            throw new DataSourceDrivenException("Failed to initialize " + getClass(), ex);
         }
     }
 
@@ -246,8 +248,6 @@ public abstract class ExternalFileTaskElementLoader<T extends TaskElement> imple
      */
     public void update(List<T> updateElements) {
 
-        loading(null);
-
         final Lock writeLock = getReadWriteLock().writeLock();
         writeLock.lock();
         try {
@@ -280,7 +280,8 @@ public abstract class ExternalFileTaskElementLoader<T extends TaskElement> imple
      * Update the internal implementation method of task elements.
      * @param updateElement Task elements to be updated.
      */
-    protected abstract void updateInternal(T updateElement);
+    protected void updateInternal(T updateElement) {
+    }
 
     /**
      * Refresh the latest content of the configuration file.
@@ -380,7 +381,7 @@ public abstract class ExternalFileTaskElementLoader<T extends TaskElement> imple
     private boolean isModifiedRecently() {
         try {
             long modifiedMillis = Files.getLastModifiedTime(getConfigFile().toPath()).toMillis();
-            if (lastModifiedMill == null || lastModifiedMill.compareTo(modifiedMillis) != 0) {
+            if (lastModifiedMill.compareTo(modifiedMillis) != 0) {
                 lastModifiedMill = modifiedMillis;
                 return true;
             }
