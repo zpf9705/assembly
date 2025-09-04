@@ -17,22 +17,19 @@
 
 package top.osjf.cron.datasource.driven.scheduled.yaml;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.CollectionType;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.nodes.Tag;
+import org.yaml.snakeyaml.representer.Representer;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.datasource.driven.scheduled.DataSourceDrivenException;
 import top.osjf.cron.datasource.driven.scheduled.external.file.ExternalFileTaskElementLoader;
 
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * The Yaml loader for {@link YamlTaskElement} loading.
@@ -47,16 +44,63 @@ public class YamlTaskElementLoader extends ExternalFileTaskElementLoader<YamlTas
 
     private Yaml yaml;
 
-    private JacksonYamlDeserializationHelper deserializationHelper;
-
     /**
      * Constructs an empty {@code YamlTaskElementLoader} and init a {@link Yaml} instance.
      */
     public YamlTaskElementLoader() {
-        this.yaml = new Yaml();
-        if (isJacksonPresent()) {
-            deserializationHelper = new JacksonYamlDeserializationHelper();
-        }
+        this.yaml = buildDefaultYaml();
+    }
+
+    /**
+     * Build a default {@link Yaml} instance.
+     *
+     * <p>Includes the following configuration items for {@link Yaml}:
+     * <ul>
+     *     <li>Configure the default data flow style as block.{@link DumperOptions.FlowStyle#BLOCK}</li>
+     *     <li>First line locked in 2</li>
+     *     <li>Optimize output</li>
+     *     <li>Optimize output</li>
+     *     <li>Maintain the format of the data itself without outputting the label of intermediary
+     *     type {@link YamlTaskElement}.</li>
+     * </ul>
+     *
+     * <p>So if there is no custom {@link Yaml} and the method {@link #setYaml(Yaml)} is called for
+     * setting, the default format that needs to be given is as follows:
+     * <ul>
+     * <li>- expression: 0/1 * * * * ?</li>
+     * <li>&nbsp&nbsp id: '3'</li>
+     * <li>&nbsp&nbsp profiles: local </li>
+     * <li>&nbsp&nbsp status: ACTIVE</li>
+     * <li>&nbsp&nbsp statusDescription: ACTIVE => Running</li>
+     * <li>&nbsp&nbsp taskDescription: xxx</li>
+     * <li>&nbsp&nbsp taskId: xxx</li>
+     * <li>&nbsp&nbsp taskName: '@myTask1.doTask()'</li>
+     * <li>&nbsp&nbsp updateSign: 0</li>
+     *
+     * <li>- expression: 0/1 * * * * ?</li>
+     * <li>&nbsp&nbsp id: '3'</li>
+     * <li>&nbsp&nbsp profiles: local </li>
+     * <li>&nbsp&nbsp status: ACTIVE</li>
+     * <li>&nbsp&nbsp statusDescription: ACTIVE => Running</li>
+     * <li>&nbsp&nbsp taskDescription: xxx</li>
+     * <li>&nbsp&nbsp taskId: xxx</li>
+     * <li>&nbsp&nbsp taskName: '@myTask2.doTask()'</li>
+     * <li>&nbsp&nbsp updateSign: 0</li>
+     * </ul>
+     *
+     * <p>The default format file is in
+     * {@literal top/osjf/cron/datasource/driven/scheduled/yaml/DefaultFormatExample.yml}.
+     *
+     * @return A default {@link Yaml} instance.
+     */
+    private static Yaml buildDefaultYaml() {
+        DumperOptions dumperOptions = new DumperOptions();
+        dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+        dumperOptions.setIndent(2);
+        dumperOptions.setPrettyFlow(true);
+        Representer representer = new Representer();
+        representer.addClassTag(YamlTaskElement.class, Tag.MAP);
+        return new Yaml(representer, dumperOptions);
     }
 
     /**
@@ -80,49 +124,14 @@ public class YamlTaskElementLoader extends ExternalFileTaskElementLoader<YamlTas
     }
 
     @Override
-    protected List<YamlTaskElement> loadingInternal(InputStream is) throws IOException {
-        if (deserializationHelper != null) {
-            return deserializationHelper.loading(is);
-        }
+    protected List<YamlTaskElement> loadingInternal(InputStream is) {
         @SuppressWarnings("unchecked")
-        List<Map<Object, Object>> loadingResult = yaml.loadAs(is, List.class);
-        return loadingResult == null ? Collections.emptyList() : loadingResult.stream()
-                .map(YamlTaskElement::new).collect(Collectors.toList());
+        List<YamlTaskElement> loadingResult = yaml.loadAs(is, List.class);
+        return loadingResult == null ? Collections.emptyList() : loadingResult;
     }
 
     @Override
     protected String defaultConfigFileName() {
         return DEFAULT_CONFIG_FILE_NAME;
-    }
-
-    private static boolean isJacksonPresent() {
-        try {
-            Class.forName("com.fasterxml.jackson.databind.ObjectMapper");
-            Class.forName("com.fasterxml.jackson.dataformat.yaml.YAMLFactory");
-            return true;
-        }
-        catch (ClassNotFoundException e) {
-            return false;
-        }
-    }
-
-    private static class JacksonYamlDeserializationHelper {
-
-        private final ObjectMapper objectMapper;
-
-        private final CollectionType collectionType;
-
-        /**
-         * Constructs an empty {@code YamlTaskElementLoader} and init a {@link Yaml} instance.
-         */
-        public JacksonYamlDeserializationHelper() {
-            this.objectMapper = new ObjectMapper(new YAMLFactory());
-            this.collectionType
-                    = objectMapper.getTypeFactory().constructCollectionType(List.class, YamlTaskElement.class);
-        }
-
-        public List<YamlTaskElement> loading(InputStream is) throws IOException {
-            return objectMapper.readValue(is, collectionType);
-        }
     }
 }
