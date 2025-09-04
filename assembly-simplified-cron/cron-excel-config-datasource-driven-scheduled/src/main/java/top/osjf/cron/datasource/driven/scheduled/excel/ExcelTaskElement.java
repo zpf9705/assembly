@@ -18,6 +18,7 @@
 package top.osjf.cron.datasource.driven.scheduled.excel;
 
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.alibaba.excel.annotation.write.style.ColumnWidth;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 import top.osjf.cron.datasource.driven.scheduled.external.file.ExternalFileDatasourceTaskElement;
 
@@ -35,54 +36,63 @@ public class ExcelTaskElement extends ExternalFileDatasourceTaskElement {
      * @see TaskElement#getId()
      */
     @ExcelProperty(value = ID_KEY_NAME, index = 0)
+    @ColumnWidth(value = 25)
     private String id;
 
     /**
      * @see TaskElement#getTaskId()
      */
     @ExcelProperty(value = TASK_ID_KEY_NAME, index = 1)
+    @ColumnWidth(value = 25)
     private String taskId;
 
     /**
      * @see TaskElement#getTaskName()
      */
     @ExcelProperty(value = TASK_NAME_KEY_NAME, index = 2)
+    @ColumnWidth(value = 25)
     private String taskName;
 
     /**
      * @see TaskElement#getProfiles()
      */
     @ExcelProperty(value = PROFILES_KEY_NAME, index = 3)
+    @ColumnWidth(value = 15)
     private String profiles;
 
     /**
      * @see TaskElement#getTaskDescription()
      */
     @ExcelProperty(value = TASK_DESCRIPTION_KEY_NAME, index = 4)
+    @ColumnWidth(value = 55)
     private String taskDescription;
 
     /**
      * @see TaskElement#getStatus()
      */
     @ExcelProperty(value = STATUS_KEY_NAME, index = 5)
+    @ColumnWidth(value = 15)
     private String status;
 
     /**
      * @see TaskElement#getStatusDescription()
      */
     @ExcelProperty(value = STATUS_DESCRIPTION_KEY_NAME, index = 6)
+    @ColumnWidth(value = 55)
     private String statusDescription;
 
     /**
      * @see TaskElement#getExpression()
      */
     @ExcelProperty(value = EXPRESSION_KEY_NANE, index = 7)
+    @ColumnWidth(value = 25)
     private String expression;
 
     /**
      * @see TaskElement#getUpdateSign()
      */
     @ExcelProperty(value = UPDATE_SIGN_KEY_NAME, index = 8)
+    @ColumnWidth(value = 15)
     private Integer updateSign;
 
     @Override
