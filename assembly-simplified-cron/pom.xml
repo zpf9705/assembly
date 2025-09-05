@@ -44,17 +44,14 @@
         <module>cron-mybatis-plus-datasource-driven-scheduled</module>
         <module>cron-yaml-config-datasource-driven-scheduled</module>
         <module>cron-spring-jpa-datasource-driven-scheduled</module>
+        <module>cron-excel-config-datasource-driven-scheduled</module>
+        <module>cron-external-file-datasource-driven-scheduled</module>
         <module>cron-spring</module>
         <module>cron-spring-hutool</module>
         <module>cron-spring-cron4j</module>
         <module>cron-spring-quartz</module>
         <module>cron-spring-boot-starter</module>
     </modules>
-
-    <properties>
-        <mp>3.5.3.1</mp>
-        <easyexcel>3.1.2</easyexcel>
-    </properties>
 
     <dependencyManagement>
         <dependencies>
@@ -109,6 +106,18 @@
 
             <dependency>
                 <groupId>top.osjf.cron</groupId>
+                <artifactId>cron-excel-config-datasource-driven-scheduled</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>top.osjf.cron</groupId>
+                <artifactId>cron-external-file-datasource-driven-scheduled</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>top.osjf.cron</groupId>
                 <artifactId>cron-spring</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -123,24 +132,6 @@
                 <groupId>top.osjf.cron</groupId>
                 <artifactId>cron-spring-boot-starter</artifactId>
                 <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.baomidou</groupId>
-                <artifactId>mybatis-plus-annotation</artifactId>
-                <version>${mp}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.baomidou</groupId>
-                <artifactId>mybatis-plus-extension</artifactId>
-                <version>${mp}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>easyexcel</artifactId>
-                <version>${easyexcel}</version>
             </dependency>
 
         </dependencies>
