@@ -29,9 +29,6 @@ import java.util.function.Consumer;
 /**
  * {@link Configuration Configuration} for {@link YamlDatasourceTaskElementsOperation}.
  *
- * <p>If the entry for {@code spring.schedule.cron.datasource.driven.yml.name} is not configured,
- * {@code task-config.yml} will be used as the default configuration file name.
- *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
