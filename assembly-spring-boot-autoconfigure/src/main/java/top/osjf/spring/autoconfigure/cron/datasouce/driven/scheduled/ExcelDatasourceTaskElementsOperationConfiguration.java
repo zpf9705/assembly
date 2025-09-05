@@ -30,7 +30,7 @@ import top.osjf.cron.spring.datasource.driven.scheduled.ExcelDatabaseDrivenSched
  * {@link Configuration Configuration} for {@link ExcelDatasourceTaskElementsOperation}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 2025.09.05
+ * @since 3.0.1
  */
 @Configuration(proxyBeanMethods = false)
 @Import(ExcelDatabaseDrivenScheduledConfiguration.class)
