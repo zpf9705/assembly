@@ -35,6 +35,9 @@
     Power by com.alibaba.excel.EasyExcel.
     </description>
 
+    <properties>
+        <easyexcel>3.1.2</easyexcel>
+    </properties>
 
     <dependencies>
 
@@ -51,7 +54,7 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>easyexcel</artifactId>
-            <optional>true</optional>
+            <version>${easyexcel}</version>
         </dependency>
 
     </dependencies>
