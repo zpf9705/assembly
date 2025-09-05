@@ -42,6 +42,8 @@ final class DatasourceDrivenConfigurations {
                 MybatisPlusDatasourceTaskElementsOperationConfiguration.class.getName());
         mappings.put(DataSource.SPRING_JPA_ORM_DATABASE,
                 JpaDatasourceTaskElementsOperationConfiguration.class.getName());
+        mappings.put(DataSource.EXCEL_CONFIG,
+                ExcelDatasourceTaskElementsOperationConfiguration.class.getName());
         MAPPINGS = Collections.unmodifiableMap(mappings);
     }
 
