@@ -24,17 +24,16 @@ import top.osjf.cron.datasource.driven.scheduled.excel.ExcelDatasourceTaskElemen
 /**
  * {@link Configuration Configuration} for {@link ExcelDatasourceTaskElementsOperation}.
  *
- * <p>If the entry for {@code spring.schedule.cron.datasource.driven.yml.name} is not configured,
- * {@code task-config.yml} will be used as the default configuration file name.
- *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
 @Configuration(proxyBeanMethods = false)
-public class ExcelDatabaseDrivenScheduledConfiguration {
+public class ExcelDatabaseDrivenScheduledConfiguration extends AbstractExternalFileDatabaseDrivenScheduledConfigure{
 
     @Bean
     public ExcelDatasourceTaskElementsOperation excelDatasourceTaskElementsOperation() {
-        return new ExcelDatasourceTaskElementsOperation();
+        ExcelDatasourceTaskElementsOperation operation = new ExcelDatasourceTaskElementsOperation();
+        configureExternalFileTaskElementLoader(operation.getLoader());
+        return operation;
     }
 }
