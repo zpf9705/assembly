@@ -46,8 +46,8 @@ public abstract class AbstractExternalFileDatabaseDrivenScheduledConfigure imple
 
     @Override
     public void setEnvironment(Environment environment) {
-        baseDir = environment.getProperty("");
-        configFileName = environment.getProperty("");
+        baseDir = environment.getProperty("spring.schedule.cron.scheduled-driven.external.base-dir");
+        configFileName = environment.getProperty("spring.schedule.cron.scheduled-driven.external.config-file-name");
     }
 
     /**

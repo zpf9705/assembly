@@ -47,5 +47,12 @@ public enum DataSource {
      *
      * @see top.osjf.cron.datasource.driven.scheduled.jpa.JpaDatasourceTaskElementsOperation
      */
-    SPRING_JPA_ORM_DATABASE
+    SPRING_JPA_ORM_DATABASE,
+
+    /**
+     * The task information data source relies on the local configuration file of Excel.
+     *
+     * @see top.osjf.cron.datasource.driven.scheduled.excel.ExcelDatasourceTaskElementsOperation
+     */
+    EXCEL_CONFIG
 }
