@@ -38,6 +38,7 @@
         <module>service-bean-boot-starter</module>
         <module>idempotent</module>
         <module>idempotent-boot-starter</module>
+        <module>spring-aware</module>
     </modules>
 
     <dependencyManagement>
