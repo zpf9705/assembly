@@ -53,6 +53,8 @@ public class DatasourceDrivenScheduledConfiguration implements ImportSelector {
                     configs.add(MybatisPlusDatabaseDrivenScheduledConfiguration.class.getCanonicalName()); break;
                 case SPRING_JPA_ORM_DATABASE:
                     configs.add(JpaDatabaseDrivenScheduledConfiguration.class.getCanonicalName()); break;
+                case EXCEL_CONFIG:
+                    configs.add(ExcelDatabaseDrivenScheduledConfiguration.class.getCanonicalName()); break;
             }
         }
 
