@@ -17,6 +17,9 @@
 
 package top.osjf.optimize.aware;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.MergedBeanDefinitionPostProcessor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -39,7 +42,7 @@ import java.util.List;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
-public class BeanAwareSupportBeanPostProcessor implements MergedBeanDefinitionPostProcessor {
+public class BeanAwareSupportBeanPostProcessor implements MergedBeanDefinitionPostProcessor, BeanFactoryPostProcessor {
 
     /**
      * Processes merged bean definition to inject bean reference for {@link BeanAware} generic types.
@@ -62,6 +65,11 @@ public class BeanAwareSupportBeanPostProcessor implements MergedBeanDefinitionPo
             beanDefinition.getPropertyValues()
                     .addPropertyValue("bean", new RuntimeBeanReference(beanAwareClass));
         }
+    }
+
+    @Override
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+        beanFactory.ignoreDependencyInterface(BeanAware.class);
     }
 
     /**
