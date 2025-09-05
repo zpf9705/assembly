@@ -370,9 +370,9 @@ public class CronProperties {
         private String defaultMainTaskExpress = Constants.MANAGER_TASK_CHECK_FREQUENCY_CRON;
 
         /**
-         * @see Yaml
+         * @see External
          */
-        private Yaml yaml = new Yaml();
+        private External external = new External();
 
         /**
          * @see WebRequestAuthentication
@@ -427,12 +427,12 @@ public class CronProperties {
             this.defaultMainTaskExpress = defaultMainTaskExpress;
         }
 
-        public Yaml getYaml() {
-            return yaml;
+        public External getExternal() {
+            return external;
         }
 
-        public void setYaml(Yaml yaml) {
-            this.yaml = yaml;
+        public void setExternal(External external) {
+            this.external = external;
         }
 
         public WebRequestAuthentication getWebRequestAuthentication() {
@@ -444,20 +444,26 @@ public class CronProperties {
         }
 
         /**
-         * Yaml's data source dynamically drives task scheduling configuration.
+         * Public configuration items for external configuration driven data sources.
+         * <p>
+         * This configuration is applicable to:
+         * <ul>
+         * <li>{@link DataSource#YAML_CONFIG}</li>
+         * <li>{@link DataSource#EXCEL_CONFIG}</li>
+         * </ul>
          * @since 3.0.1
          */
-        public static class Yaml {
+        public static class External {
 
             /**
-             * The base directory path for resolving dynamic configuration files.
+             * The external base directory path for resolving dynamic configuration files.
              */
             private String baseDir;
 
             /**
-             * The yml config file name for resolving dynamic configuration files.
+             * The external config file name for resolving dynamic configuration files.
              */
-            private String configFileName = "task-config.yml";
+            private String configFileName;
 
             public String getBaseDir() {
                 return baseDir;
