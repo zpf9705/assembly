@@ -87,6 +87,8 @@ import org.springframework.beans.factory.Aware;
  * @param <T> the type of bean that the implementing class should be aware of.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
+ *
+ * @see BeanAwareSupportBeanPostProcessor
  * @see org.springframework.context.ApplicationContextAware
  * @see org.springframework.beans.factory.BeanFactoryAware
  */
