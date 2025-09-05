@@ -19,12 +19,9 @@ package top.osjf.cron.spring.datasource.driven.scheduled;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.yaml.snakeyaml.Yaml;
 import top.osjf.cron.datasource.driven.scheduled.yaml.YamlDatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.yaml.YamlTaskElementLoader;
-
-import java.util.function.Consumer;
 
 /**
  * {@link Configuration Configuration} for {@link YamlDatasourceTaskElementsOperation}.
@@ -33,25 +30,14 @@ import java.util.function.Consumer;
  * @since 1.0.4
  */
 @Configuration(proxyBeanMethods = false)
-public class YamlDatabaseDrivenScheduledConfiguration {
+public class YamlDatabaseDrivenScheduledConfiguration extends AbstractExternalFileDatabaseDrivenScheduledConfigure {
 
     @Bean
-    public YamlDatasourceTaskElementsOperation yamlDatasourceTaskElementsOperation(ObjectProvider<Yaml> provider,
-                                                                                   Environment environment) {
+    public YamlDatasourceTaskElementsOperation yamlDatasourceTaskElementsOperation(ObjectProvider<Yaml> provider) {
         YamlDatasourceTaskElementsOperation operation = new YamlDatasourceTaskElementsOperation();
         YamlTaskElementLoader loader = operation.getLoader();
         provider.orderedStream().findFirst().ifPresent(loader::setYaml);
-        notNullAccept(environment.getProperty("spring.schedule.cron.scheduled-driven.yaml.config-file-name"),
-                loader::setConfigFileName);
-        notNullAccept(environment.getProperty("spring.schedule.cron.scheduled-driven.yaml.base-dir"),
-                loader::setBaseDir);
+        configureExternalFileTaskElementLoader(loader);
         return operation;
-    }
-
-    static <T> void notNullAccept(T property, Consumer<T> consumer){
-        if (property == null){
-            return;
-        }
-        consumer.accept(property);
     }
 }
