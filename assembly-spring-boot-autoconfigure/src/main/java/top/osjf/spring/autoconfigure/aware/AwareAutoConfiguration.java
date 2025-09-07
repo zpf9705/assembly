@@ -18,7 +18,9 @@
 package top.osjf.spring.autoconfigure.aware;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Configuration;
+import top.osjf.optimize.aware.BeanAware;
 import top.osjf.optimize.aware.EnableBeanAware;
 
 /**
@@ -28,6 +30,7 @@ import top.osjf.optimize.aware.EnableBeanAware;
  * @since 3.0.1
  */
 @Configuration(proxyBeanMethods = false)
+@ConditionalOnClass( { BeanAware.class } )
 @EnableBeanAware
 public class AwareAutoConfiguration {
 }
