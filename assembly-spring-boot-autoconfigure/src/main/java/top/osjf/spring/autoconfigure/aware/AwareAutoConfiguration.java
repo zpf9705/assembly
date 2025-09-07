@@ -17,13 +17,9 @@
 
 package top.osjf.spring.autoconfigure.aware;
 
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Role;
-import top.osjf.optimize.aware.BeanAwareSupportBeanPostProcessor;
+import top.osjf.optimize.aware.EnableBeanAware;
 
 /**
  * {@link EnableAutoConfiguration EnableAutoConfiguration} for {@link top.osjf.optimize.aware.BeanAware}.
@@ -32,17 +28,6 @@ import top.osjf.optimize.aware.BeanAwareSupportBeanPostProcessor;
  * @since 3.0.1
  */
 @Configuration(proxyBeanMethods = false)
-@Import(AwareAutoConfiguration.AwareConfiguration.class)
+@EnableBeanAware
 public class AwareAutoConfiguration {
-
-    @Configuration(proxyBeanMethods = false)
-    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-    static class AwareConfiguration {
-
-        @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-        @Bean
-        public BeanAwareSupportBeanPostProcessor beanAwareSupportBeanPostProcessor() {
-            return new BeanAwareSupportBeanPostProcessor();
-        }
-    }
 }
