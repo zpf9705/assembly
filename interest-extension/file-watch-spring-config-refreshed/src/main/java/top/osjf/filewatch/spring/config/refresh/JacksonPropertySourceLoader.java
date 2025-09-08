@@ -17,9 +17,9 @@
 
 package top.osjf.filewatch.spring.config.refresh;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.env.OriginTrackedMapPropertySource;
 import org.springframework.boot.env.PropertySourceLoader;
 import org.springframework.core.env.PropertySource;
@@ -39,6 +39,8 @@ import java.util.Map;
  * @since 3.0.1
  */
 public class JacksonPropertySourceLoader implements PropertySourceLoader {
+
+    private static final Logger logger = LoggerFactory.getLogger(JacksonPropertySourceLoader.class);
 
     private static final String[] FILE_EXTENSIONS = new String[]{"json"};
 
@@ -79,9 +81,9 @@ public class JacksonPropertySourceLoader implements PropertySourceLoader {
         try (InputStream inputStream = resource.getInputStream()) {
             source = objectMapper.readValue(inputStream, Map.class);
         }
-        catch (JsonParseException | JsonMappingException ex) {
-            throw new IOException("Failed to load file <" + resource.getFile().getPath() +"> using the Jackson loader."
-                    , ex);
+        catch (IOException ex) {
+            logger.error("Failed to load file <" + resource.getFile().getPath() +"> using the Jackson loader.", ex);
+            throw ex;
         }
         return Collections.singletonList(new OriginTrackedMapPropertySource(name, source, true));
     }
