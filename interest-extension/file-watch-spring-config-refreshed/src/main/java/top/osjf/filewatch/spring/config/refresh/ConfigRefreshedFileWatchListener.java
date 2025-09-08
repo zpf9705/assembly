@@ -73,7 +73,7 @@ public class ConfigRefreshedFileWatchListener extends AmpleFileWatchListener imp
         }
         else {
             throw new IllegalStateException("Not instanceof org.springframework.core.env.ConfigurableEnvironment" +
-                    " by callback org.springframework.context.EnvironmentAware");
+                    " by callback org.springframework.context.ApplicationContextAware");
         }
     }
 
