@@ -80,7 +80,8 @@ public class JacksonPropertySourceLoader implements PropertySourceLoader {
             source = objectMapper.readValue(inputStream, Map.class);
         }
         catch (JsonParseException | JsonMappingException ex) {
-            throw new IOException(ex.getMessage(), ex);
+            throw new IOException("Failed to load file <" + resource.getFile().getPath() +"> using the Jackson loader."
+                    , ex);
         }
         return Collections.singletonList(new OriginTrackedMapPropertySource(name, source, true));
     }
