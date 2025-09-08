@@ -41,6 +41,12 @@
         </dependency>
 
         <dependency>
+            <groupId>top.osjf.spring.optimize</groupId>
+            <artifactId>spring-aware</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>top.osjf.cron</groupId>
             <artifactId>cron-hutool</artifactId>
             <optional>true</optional>
