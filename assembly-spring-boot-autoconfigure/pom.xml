@@ -151,6 +151,8 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- Components that support dynamic configuration by default. -->
+
         <dependency>
             <groupId>top.osjf.spring.optimize</groupId>
             <artifactId>spring-aware</artifactId>
