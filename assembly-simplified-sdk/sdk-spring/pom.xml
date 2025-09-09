@@ -56,6 +56,11 @@
         </dependency>
 
         <dependency>
+            <groupId>top.osjf.spring.optimize</groupId>
+            <artifactId>spring-aware</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
             <optional>true</optional>
