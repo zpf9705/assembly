@@ -122,7 +122,7 @@
                 <type>pom</type>
             </dependency>
 
-            <!---->
+            <!-- Aware support -->
             <dependency>
                 <groupId>top.osjf.spring.optimize</groupId>
                 <artifactId>spring-aware</artifactId>
