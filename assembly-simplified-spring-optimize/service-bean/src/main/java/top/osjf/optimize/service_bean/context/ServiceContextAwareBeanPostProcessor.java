@@ -45,7 +45,9 @@ import org.springframework.lang.Nullable;
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
+ * @deprecated 3.0.1
  */
+@Deprecated
 public class ServiceContextAwareBeanPostProcessor implements BeanPostProcessor, BeanFactoryPostProcessor,
         ApplicationContextAware, Ordered {
 

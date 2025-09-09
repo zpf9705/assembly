@@ -52,6 +52,7 @@ public class ServiceContextConfiguration {
 
     @Bean
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+    @Deprecated
     public ServiceContextAwareBeanPostProcessor serviceContextAwareBeanPostProcessor() {
         return new ServiceContextAwareBeanPostProcessor();
     }

@@ -26,7 +26,9 @@ import org.springframework.lang.NonNull;
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
+ * @deprecated 3.0.1 {@link top.osjf.optimize.service_bean.aware.ServiceContextAware}
  */
+@Deprecated
 public interface ServiceContextAware extends Aware {
 
     /**
