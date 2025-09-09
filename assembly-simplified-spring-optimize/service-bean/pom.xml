@@ -51,6 +51,11 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>top.osjf.spring.optimize</groupId>
+            <artifactId>spring-aware</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>
