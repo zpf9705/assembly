@@ -40,8 +40,12 @@ import javax.annotation.Nullable;
  * <li>the name of the parameter as discovered by a configurable {@link ParameterNameDiscoverer}</li>
  * </ol>
  *
- * <p>{@link #lookupVariable(String)} will provide search support for {@link #getBeanResolver()}
- * when the value cannot be queried from the method.
+ * <p><strong>Note:</strong>
+ * When it is not possible to query values from a method, {@link #lookupVariable(String)}
+ * will provide search support for {@link #getBeanResolver()}. The use of '#' to obtain
+ * beans is not recommended, and this is also for more flexible retrieval, which obviously
+ * violates the original design intention of spring el. Please follow the usage of spring
+ * el in general and use it if necessary.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
