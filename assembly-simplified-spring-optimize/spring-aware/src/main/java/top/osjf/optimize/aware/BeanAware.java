@@ -17,6 +17,7 @@
 
 package top.osjf.optimize.aware;
 
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.Aware;
 
 /**
@@ -104,6 +105,7 @@ public interface BeanAware<T> extends Aware {
      * scope management rules.
      *
      * @param bean the bean instance to be injected, never {@code null}.
+     * @throws BeansException if a specified bean perception failure error occurs.
      */
-    void setBean(T bean);
+    void setBean(T bean) throws BeansException;
 }
