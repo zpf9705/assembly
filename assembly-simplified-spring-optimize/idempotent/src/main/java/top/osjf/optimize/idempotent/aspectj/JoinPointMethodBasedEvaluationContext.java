@@ -111,6 +111,13 @@ public class JoinPointMethodBasedEvaluationContext extends MethodBasedEvaluation
         Object o = super.lookupVariable(name);
         if (o == null) {
             try {
+
+                // According to the specification of spring el expressions, '@' is used to obtain bean objects,
+                // '#' is used to obtain configuration properties, and the callback here is for obtaining '#'.
+                // However, it will support attempting to obtain beans again. Although this violates the syntax
+                // requirements of spring, it provides a more flexible expression application. It is recommended
+                // to follow the rules of spin el syntax.
+
                 BeanResolver beanResolver = getBeanResolver();
                 if (beanResolver != null) {
                     return getBeanResolver().resolve(this, name); // maybe bean name
