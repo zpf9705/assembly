@@ -55,6 +55,14 @@ public final class CronTaskInfoView implements Serializable {
     private String sourceMethod;
 
     /**
+     * The remaining number of runs for this task.
+     * <p> The unlimited number of times is {@code -1}, and there are no tasks with {@code 0}.
+     * Otherwise, it is the remaining number of runs.
+     * @since 3.0.1
+     */
+    private final long remainingNumberOfRuns;
+
+    /**
      * Creates a new {@link CronTaskInfoView} by given {@link CronTaskInfo}.
      *
      * @param cronTaskInfo the given {@link CronTaskInfo} obj.
@@ -67,23 +75,43 @@ public final class CronTaskInfoView implements Serializable {
             this.sourceClassName = mod.getDeclaringClass().getName();
             this.sourceMethod = mod.toString();
         }
+        this.remainingNumberOfRuns = cronTaskInfo.getRemainingNumberOfRuns();
     }
 
+    /**
+     * @return {@link #id}
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * @return {@link #expression}
+     */
     public String getExpression() {
         return expression;
     }
 
+    /**
+     * @return {@link #sourceClassName}
+     */
     @Nullable
     public String getSourceClassName() {
         return sourceClassName;
     }
 
+    /**
+     * @return {@link #sourceMethod}
+     */
     @Nullable
     public String getSourceMethod() {
         return sourceMethod;
+    }
+
+    /**
+     * @return {@link #remainingNumberOfRuns}
+     */
+    public long getRemainingNumberOfRuns() {
+        return remainingNumberOfRuns;
     }
 }
