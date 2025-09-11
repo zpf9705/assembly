@@ -157,6 +157,27 @@ public abstract class AbstractCronTaskRepository extends AbstractLifecycleReposi
     }
 
     /**
+     * Return remaining number of runs of the specify id task.
+     * @param taskId the specify task id.
+     * @return Remaining number of runs of the specify id task,
+     * the unlimited number of times is {@code -1}, and there
+     * are no tasks with {@code 0}. Otherwise, it is the remaining
+     * number of runs.
+     * @since 3.0.1
+     */
+    public long getTaskRemainingNumberOfRuns(String taskId) {
+        AtomicInteger count = specifyTimesCountMap.getOrDefault(taskId, null);
+        return count == null ? getCronTaskInfo(taskId) != null ? -1 : 0 : count.get();
+    }
+    /**
+     * Query and update the remaining number of runs for the specified task.
+     * @param cronTaskInfo a specify {@link CronTaskInfo}.
+     */
+    protected void updateTaskRemainingNumberOfRuns(CronTaskInfo cronTaskInfo) {
+        cronTaskInfo.setRemainingNumberOfRuns(getTaskRemainingNumberOfRuns(cronTaskInfo.getId()));
+    }
+
+    /**
      * @return The listener collector for subclasses.
      */
     protected CronListenerCollector getCronListenerCollector() {
