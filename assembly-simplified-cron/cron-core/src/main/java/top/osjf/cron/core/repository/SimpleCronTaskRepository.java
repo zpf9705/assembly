@@ -304,7 +304,9 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
          * @return A new {@link CronTaskInfo} by this.
          */
         public CronTaskInfo toCronTaskInfo() {
-            return new CronTaskInfo(listenerContext.id, cron.asString(), rawRunnable);
+            CronTaskInfo cronTaskInfo = new CronTaskInfo(listenerContext.id, cron.asString(), rawRunnable);
+            updateTaskRemainingNumberOfRuns(cronTaskInfo);
+            return cronTaskInfo;
         }
 
         @Override
