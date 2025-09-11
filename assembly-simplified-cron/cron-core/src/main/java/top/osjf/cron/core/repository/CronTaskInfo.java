@@ -85,7 +85,18 @@ public class CronTaskInfo implements Serializable {
      * @param runnable                  {@link #runnable}
      */
     public CronTaskInfo(String id, String expression, Runnable runnable) {
-        this(id, expression, runnable, null, null, -1);
+        this(id, expression, runnable,  -1);
+    }
+
+    /**
+     * Constructs a {@code CronTaskInfo} with any task info.
+     * @param id                        {@link #id}
+     * @param expression                {@link #expression}
+     * @param runnable                  {@link #runnable}
+     * @param remainingNumberOfRuns     {@link #remainingNumberOfRuns}
+     */
+    public CronTaskInfo(String id, String expression, Runnable runnable, long remainingNumberOfRuns) {
+        this(id, expression, runnable, null, null, remainingNumberOfRuns);
     }
 
     /**
