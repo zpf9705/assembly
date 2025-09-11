@@ -321,7 +321,8 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
             target = cronMethodRunnable.getTarget();
             method = cronMethodRunnable.getMethod();
         }
-        return new CronTaskInfo(id, schedulingPattern.toString(), runnable, target, method);
+        return new CronTaskInfo(id, schedulingPattern.toString(), runnable, target, method,
+                getTaskRemainingNumberOfRuns(id));
     }
 
     /**

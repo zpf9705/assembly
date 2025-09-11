@@ -421,8 +421,9 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
                 target = cronMethodRunnable.getTarget();
                 method = cronMethodRunnable.getMethod();
             }
-            return new CronTaskInfo(QuartzUtils.getIdBySerializeJobKey(jobKey),
-                    expression, runnable, target, method);
+            String id = QuartzUtils.getIdBySerializeJobKey(jobKey);
+            return new CronTaskInfo(id,
+                    expression, runnable, target, method, getTaskRemainingNumberOfRuns(id));
         } catch (Exception e) {
             return null;
         }
