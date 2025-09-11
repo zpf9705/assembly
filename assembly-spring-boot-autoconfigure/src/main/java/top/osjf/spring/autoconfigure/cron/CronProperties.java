@@ -65,6 +65,11 @@ public class CronProperties {
         return clientType;
     }
 
+    /**
+     * @see WebRequestAuthentication
+     */
+    private WebRequestAuthentication webRequestAuthentication = new WebRequestAuthentication();
+
     public void setClientType(ClientType clientType) {
         this.clientType = clientType;
     }
@@ -91,6 +96,14 @@ public class CronProperties {
 
     public void setScheduledDriven(ScheduledDriven scheduledDriven) {
         this.scheduledDriven = scheduledDriven;
+    }
+
+    public WebRequestAuthentication getWebRequestAuthentication() {
+        return webRequestAuthentication;
+    }
+
+    public void setWebRequestAuthentication(WebRequestAuthentication webRequestAuthentication) {
+        this.webRequestAuthentication = webRequestAuthentication;
     }
 
     /**
@@ -374,11 +387,6 @@ public class CronProperties {
          */
         private External external = new External();
 
-        /**
-         * @see WebRequestAuthentication
-         */
-        private WebRequestAuthentication webRequestAuthentication = new WebRequestAuthentication();
-
         public boolean isEnable() {
             return enable;
         }
@@ -433,14 +441,6 @@ public class CronProperties {
 
         public void setExternal(External external) {
             this.external = external;
-        }
-
-        public WebRequestAuthentication getWebRequestAuthentication() {
-            return webRequestAuthentication;
-        }
-
-        public void setWebRequestAuthentication(WebRequestAuthentication webRequestAuthentication) {
-            this.webRequestAuthentication = webRequestAuthentication;
         }
 
         /**
