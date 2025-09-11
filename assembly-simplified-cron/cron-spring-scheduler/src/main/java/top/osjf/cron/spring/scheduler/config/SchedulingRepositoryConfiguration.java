@@ -17,14 +17,21 @@
 
 package top.osjf.cron.spring.scheduler.config;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import top.osjf.cron.core.lang.Nullable;
+import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.spring.AbstractCronTaskConfiguration;
+import top.osjf.cron.spring.CronTaskInfoReadableWebMvcHandlerController;
+import top.osjf.cron.spring.auth.AuthenticationPredicate;
+import top.osjf.cron.spring.auth.WebRequestAuthenticationInterceptor;
 import top.osjf.cron.spring.scheduler.SpringSchedulerTaskRepository;
 
 /**
@@ -52,5 +59,20 @@ public class SchedulingRepositoryConfiguration extends AbstractCronTaskConfigura
             return new SpringSchedulerTaskRepository(taskScheduler);
         }
         return new SpringSchedulerTaskRepository();
+    }
+
+    @Bean
+    @Override
+    public CronTaskInfoReadableWebMvcHandlerController cronTaskInfoReadableWebMvcHandlerController
+            (CronTaskRepository cronTaskRepository,
+             RequestMappingHandlerMapping requestMappingHandlerMapping) {
+        return super.cronTaskInfoReadableWebMvcHandlerController(cronTaskRepository, requestMappingHandlerMapping);
+    }
+
+    @Bean
+    @Override
+    public WebRequestAuthenticationInterceptor authenticationConfigurableBean
+            (ObjectProvider<AuthenticationPredicate> provider, Environment environment) {
+        return super.authenticationConfigurableBean(provider, environment);
     }
 }
