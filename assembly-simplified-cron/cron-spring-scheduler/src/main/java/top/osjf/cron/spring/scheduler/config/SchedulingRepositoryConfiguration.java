@@ -17,13 +17,14 @@
 
 package top.osjf.cron.spring.scheduler.config;
 
-import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor;
+import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.spring.AbstractCronTaskConfiguration;
-import top.osjf.cron.spring.ObjectProviderUtils;
 import top.osjf.cron.spring.scheduler.SpringSchedulerTaskRepository;
 
 /**
@@ -40,9 +41,13 @@ import top.osjf.cron.spring.scheduler.SpringSchedulerTaskRepository;
 @Configuration(proxyBeanMethods = false)
 public class SchedulingRepositoryConfiguration extends AbstractCronTaskConfiguration {
 
+    public static final String TASK_SCHEDULER_INTERNAL_BEAN_NAME
+            = "org.springframework.scheduling.concurrent.internalThreadPoolTaskScheduler";
+
     @Bean(ScheduledAnnotationBeanPostProcessor.DEFAULT_TASK_SCHEDULER_BEAN_NAME)
-    public SpringSchedulerTaskRepository springSchedulerTaskRepository(ObjectProvider<TaskScheduler> provider) {
-        TaskScheduler taskScheduler = ObjectProviderUtils.getPriority(provider);
+    public SpringSchedulerTaskRepository springSchedulerTaskRepository(
+            @Autowired(required = false) @Qualifier(TASK_SCHEDULER_INTERNAL_BEAN_NAME)
+            @Nullable TaskScheduler taskScheduler) {
         if (taskScheduler != null) {
             return new SpringSchedulerTaskRepository(taskScheduler);
         }
