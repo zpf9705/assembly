@@ -17,21 +17,11 @@
 
 package top.osjf.cron.spring.scheduler.config;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
-import org.springframework.core.env.Environment;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.config.TaskManagementConfigUtils;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
-import top.osjf.cron.core.repository.CronTaskRepository;
-import top.osjf.cron.spring.AbstractCronTaskConfiguration;
-import top.osjf.cron.spring.CronTaskInfoReadableWebMvcHandlerController;
-import top.osjf.cron.spring.ObjectProviderUtils;
-import top.osjf.cron.spring.auth.AuthenticationPredicate;
-import top.osjf.cron.spring.auth.WebRequestAuthenticationInterceptor;
 import top.osjf.cron.spring.scheduler.SpringSchedulerTaskRepository;
 
 /**
@@ -54,35 +44,11 @@ import top.osjf.cron.spring.scheduler.SpringSchedulerTaskRepository;
  */
 @Configuration(proxyBeanMethods = false)
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-public class SchedulingConfiguration extends AbstractCronTaskConfiguration {
+public class SchedulingConfiguration {
 
     @Bean(name = TaskManagementConfigUtils.SCHEDULED_ANNOTATION_PROCESSOR_BEAN_NAME)
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     public ScheduledAnnotationBeanPostProcessor scheduledAnnotationProcessor() {
         return new ScheduledAnnotationBeanPostProcessor();
-    }
-
-    @Bean(org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor
-            .DEFAULT_TASK_SCHEDULER_BEAN_NAME)
-    public SpringSchedulerTaskRepository springSchedulerTaskRepository(ObjectProvider<TaskScheduler> provider) {
-        TaskScheduler taskScheduler = ObjectProviderUtils.getPriority(provider);
-        if (taskScheduler != null) {
-            return new SpringSchedulerTaskRepository(taskScheduler);
-        }
-        return new SpringSchedulerTaskRepository();
-    }
-
-    @Override
-    @Bean
-    public CronTaskInfoReadableWebMvcHandlerController cronTaskInfoReadableWebMvcHandlerController
-            (CronTaskRepository cronTaskRepository, RequestMappingHandlerMapping requestMappingHandlerMapping) {
-        return super.cronTaskInfoReadableWebMvcHandlerController(cronTaskRepository, requestMappingHandlerMapping);
-    }
-
-    @Override
-    @Bean
-    public WebRequestAuthenticationInterceptor authenticationConfigurableBean
-            (ObjectProvider<AuthenticationPredicate> provider, Environment environment) {
-        return super.authenticationConfigurableBean(provider, environment);
     }
 }
