@@ -58,7 +58,7 @@ class SpringSchedulerConfiguration {
     @ConditionalOnMissingBean(value = ScheduledAnnotationBeanPostProcessor.class,
             name = TaskManagementConfigUtils.SCHEDULED_ANNOTATION_PROCESSOR_BEAN_NAME)
     @EnableScheduling
-    public static class CompatibilitySpringSchedulerConfiguration {
+    static class CompatibilitySpringSchedulerConfiguration {
     }
 
     @Configuration(proxyBeanMethods = false)
