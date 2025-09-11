@@ -76,7 +76,7 @@ public class CronTaskInfo implements Serializable {
      * The remaining number of runs for this task.
      * @since 3.0.1
      */
-    private final long remainingNumberOfRuns;
+    private long remainingNumberOfRuns;
 
     /**
      * Constructs a {@code CronTaskInfo} with any task info.
@@ -115,6 +115,16 @@ public class CronTaskInfo implements Serializable {
         this.runnable = runnable;
         this.target = target;
         this.method = method;
+        this.remainingNumberOfRuns = remainingNumberOfRuns;
+    }
+
+    /**
+     * Set the remaining number of runs  for this {@code CronTaskInfo}.
+     *
+     * @param remainingNumberOfRuns the remaining number of runs for this task.
+     * @since 3.0.1
+     */
+    public void setRemainingNumberOfRuns(long remainingNumberOfRuns) {
         this.remainingNumberOfRuns = remainingNumberOfRuns;
     }
 
