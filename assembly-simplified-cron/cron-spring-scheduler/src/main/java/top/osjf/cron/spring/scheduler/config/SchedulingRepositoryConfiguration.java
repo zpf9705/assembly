@@ -61,6 +61,9 @@ public class SchedulingRepositoryConfiguration extends AbstractCronTaskConfigura
         return new SpringSchedulerTaskRepository();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Bean
     @Override
     public CronTaskInfoReadableWebMvcHandlerController cronTaskInfoReadableWebMvcHandlerController
@@ -69,10 +72,13 @@ public class SchedulingRepositoryConfiguration extends AbstractCronTaskConfigura
         return super.cronTaskInfoReadableWebMvcHandlerController(cronTaskRepository, requestMappingHandlerMapping);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Bean
     @Override
-    public WebRequestAuthenticationInterceptor authenticationConfigurableBean
+    public WebRequestAuthenticationInterceptor webRequestAuthenticationInterceptor
             (ObjectProvider<AuthenticationPredicate> provider, Environment environment) {
-        return super.authenticationConfigurableBean(provider, environment);
+        return super.webRequestAuthenticationInterceptor(provider, environment);
     }
 }
