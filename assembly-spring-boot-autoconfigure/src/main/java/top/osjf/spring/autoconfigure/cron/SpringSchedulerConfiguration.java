@@ -16,17 +16,13 @@
 
 package top.osjf.spring.autoconfigure.cron;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration;
-import org.springframework.boot.autoconfigure.task.TaskSchedulingProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.task.TaskSchedulerBuilder;
-import org.springframework.boot.task.TaskSchedulerCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -49,41 +45,17 @@ import top.osjf.cron.spring.scheduler.config.EnableScheduling;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({SpringSchedulerTaskRepository.class})
 @AutoConfigureBefore(TaskSchedulingAutoConfiguration.class)
-@EnableConfigurationProperties(TaskSchedulingProperties.class)
 @ConditionalOnMissingBean(CronTaskRepository.class)
 @Conditional(CronCondition.class)
 class SpringSchedulerConfiguration {
 
-
-    ////////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////// Essential Configuration //////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////
-
     private static final String TASK_SCHEDULER_INTERNAL_BEAN_NAME
             = "org.springframework.scheduling.concurrent.internalThreadPoolTaskScheduler";
-
-    @Bean
-    @ConditionalOnMissingBean
-    public TaskSchedulerBuilder taskSchedulerBuilder(TaskSchedulingProperties properties,
-                                                     ObjectProvider<TaskSchedulerCustomizer> taskSchedulerCustomizers) {
-        TaskSchedulerBuilder builder = new TaskSchedulerBuilder();
-        builder = builder.poolSize(properties.getPool().getSize());
-        TaskSchedulingProperties.Shutdown shutdown = properties.getShutdown();
-        builder = builder.awaitTermination(shutdown.isAwaitTermination());
-        builder = builder.awaitTerminationPeriod(shutdown.getAwaitTerminationPeriod());
-        builder = builder.threadNamePrefix(properties.getThreadNamePrefix());
-        builder = builder.customizers(taskSchedulerCustomizers);
-        return builder;
-    }
 
     @Bean(TASK_SCHEDULER_INTERNAL_BEAN_NAME)
     public ThreadPoolTaskScheduler taskScheduler(TaskSchedulerBuilder builder) {
         return builder.build();
     }
-
-    ////////////////////////////////////////////////////////////////////////////////
-    //////////////// Configuration based on different situations ///////////////////
-    ////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Automatically configure the {@link EnableScheduling} of the OSJF framework without
