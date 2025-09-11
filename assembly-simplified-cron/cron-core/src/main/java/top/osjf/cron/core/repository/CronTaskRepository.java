@@ -370,6 +370,13 @@ public interface CronTaskRepository extends LifecycleRepository, Wrapper {
     void registerRunTimes(@NotNull CronTask task, int times) throws CronInternalException;
 
     /**
+     *
+     * @param id
+     * @return
+     */
+    boolean hasCronTaskInfo(@NotNull String id);
+
+    /**
      * Retrieves cron task information based on a given unique identifier.
      *
      * <p>This method is used to query the information of a registered cron task that matches

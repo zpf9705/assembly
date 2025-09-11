@@ -30,6 +30,7 @@ import top.osjf.cron.core.listener.CronListenerCollector;
 import top.osjf.cron.core.repository.*;
 import top.osjf.cron.hutool.listener.TaskListenerImpl;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Objects;
 import java.util.TimeZone;
@@ -302,6 +303,11 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
     @Override
     public String register(@NotNull CronTask task) {
         return register(task.getExpression(), new RunnableTaskBody(task.getRunnable()));
+    }
+
+    @Override
+    public boolean hasCronTaskInfo(@Nonnull String id) {
+        return scheduler.getTask(id) != null;
     }
 
     /**

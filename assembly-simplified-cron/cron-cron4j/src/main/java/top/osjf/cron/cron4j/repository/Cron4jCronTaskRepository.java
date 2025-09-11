@@ -29,6 +29,7 @@ import top.osjf.cron.core.listener.CronListenerCollector;
 import top.osjf.cron.core.repository.*;
 import top.osjf.cron.cron4j.listener.SchedulerListenerImpl;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -286,6 +287,11 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
     @Override
     public String register(@NotNull CronTask task) {
         return register(task.getExpression(), new RunnableTaskBody(task.getRunnable()));
+    }
+
+    @Override
+    public boolean hasCronTaskInfo(@Nonnull String id) {
+        return scheduler.getTask(id) != null;
     }
 
     /**

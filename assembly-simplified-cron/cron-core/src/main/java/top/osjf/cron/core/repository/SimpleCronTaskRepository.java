@@ -28,6 +28,7 @@ import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.listener.ListenerContext;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -426,6 +427,11 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
     @Override
     public String register(@NotNull CronTask task) throws CronInternalException {
         return register(task.getExpression(), task.getRunnable());
+    }
+
+    @Override
+    public boolean hasCronTaskInfo(@Nonnull String id) {
+        return futureCache.containsKey(id);
     }
 
     /**

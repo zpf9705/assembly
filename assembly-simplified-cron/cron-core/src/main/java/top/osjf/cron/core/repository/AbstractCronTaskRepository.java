@@ -167,7 +167,7 @@ public abstract class AbstractCronTaskRepository extends AbstractLifecycleReposi
      */
     public long getTaskRemainingNumberOfRuns(String taskId) {
         AtomicInteger count = specifyTimesCountMap.getOrDefault(taskId, null);
-        return count == null ? getCronTaskInfo(taskId) != null ? -1 : 0 : count.get();
+        return count == null ? hasCronTaskInfo(taskId) ? -1 : 0 : count.get();
     }
     /**
      * Query and update the remaining number of runs for the specified task.

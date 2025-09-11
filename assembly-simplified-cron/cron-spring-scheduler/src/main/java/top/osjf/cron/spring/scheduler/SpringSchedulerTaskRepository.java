@@ -37,6 +37,7 @@ import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.repository.*;
 import top.osjf.cron.core.util.GsonUtils;
 
+import javax.annotation.Nonnull;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Objects;
@@ -162,6 +163,11 @@ public class SpringSchedulerTaskRepository
     @Override
     public String register(@NotNull top.osjf.cron.core.repository.CronTask task) {
         return register(task.getExpression(), task.getRunnable());
+    }
+
+    @Override
+    public boolean hasCronTaskInfo(@Nonnull String id) {
+        return getFuture(id) != null;
     }
 
     /**

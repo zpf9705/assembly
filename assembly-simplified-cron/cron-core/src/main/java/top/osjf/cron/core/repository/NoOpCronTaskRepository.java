@@ -97,6 +97,11 @@ public class NoOpCronTaskRepository extends AbstractCronTaskRepository {
         return getWithoutOperationId();
     }
 
+    @Override
+    public boolean hasCronTaskInfo(@Nonnull String id) {
+        return false;
+    }
+
     static String getWithoutOperationId() { return UUID.randomUUID().toString(); }
 
     /**

@@ -358,6 +358,17 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
         }, ParseException.class);
     }
 
+    @Override
+    public boolean hasCronTaskInfo(@NotNull String id) {
+        JobKey jobKey = QuartzUtils.getJobKeyByDeSerializeId(id);
+        try {
+            return scheduler.checkExists(jobKey);
+        }
+        catch (SchedulerException e) {
+            return false;
+        }
+    }
+
     /**
      * {@inheritDoc}
      */
