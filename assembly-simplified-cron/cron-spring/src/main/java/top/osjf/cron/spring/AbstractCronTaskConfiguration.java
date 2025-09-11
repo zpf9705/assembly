@@ -99,7 +99,7 @@ public abstract class AbstractCronTaskConfiguration implements ImportAware {
     }
 
     /**
-     Return the authentication interceptor for accessing task scheduling information.
+     * Return the authentication interceptor for accessing task scheduling information.
      * @param provider     the lazy loader of {@link AuthenticationPredicate}.
      * @param environment  the {@link Environment} instance.
      * @return the configured {@link CronTaskInfoView} readable controller.
