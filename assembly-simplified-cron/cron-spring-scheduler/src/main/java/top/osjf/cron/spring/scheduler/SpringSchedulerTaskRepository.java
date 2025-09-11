@@ -25,6 +25,7 @@ import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.concurrent.DefaultManagedTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.scheduling.support.PeriodicTrigger;
+import org.springframework.scheduling.support.ScheduledMethodRunnable;
 import org.springframework.util.Assert;
 import org.springframework.util.IdGenerator;
 import org.springframework.util.SimpleIdGenerator;
@@ -212,6 +213,11 @@ public class SpringSchedulerTaskRepository
             CronMethodRunnable cronMethodRunnable = (CronMethodRunnable) runnable;
             target = cronMethodRunnable.getTarget();
             method = cronMethodRunnable.getMethod();
+        }
+        else if (runnable instanceof ScheduledMethodRunnable) {
+            ScheduledMethodRunnable scheduledMethodRunnable = (ScheduledMethodRunnable) runnable;
+            target = scheduledMethodRunnable.getTarget();
+            method = scheduledMethodRunnable.getMethod();
         }
         return new CronTaskInfo(id, expression, runnable, target, method);
     }
