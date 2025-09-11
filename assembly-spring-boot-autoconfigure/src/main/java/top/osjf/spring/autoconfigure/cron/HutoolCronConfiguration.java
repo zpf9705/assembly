@@ -16,6 +16,7 @@
 
 package top.osjf.spring.autoconfigure.cron;
 
+import cn.hutool.cron.Scheduler;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -42,6 +43,7 @@ import top.osjf.cron.spring.hutool.HutoolCronTaskConfiguration;
 class HutoolCronConfiguration {
 
     @Bean
+    @ConditionalOnMissingBean(Scheduler.class)
     public SuperiorProperties hutoolProperties(CronProperties cronProperties) {
         return cronProperties.getHutool().get();
     }
