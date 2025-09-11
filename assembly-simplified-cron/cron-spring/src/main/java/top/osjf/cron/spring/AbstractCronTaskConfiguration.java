@@ -85,6 +85,12 @@ public abstract class AbstractCronTaskConfiguration implements ImportAware {
         return null;
     }
 
+    /**
+     * Return the {@link CronTaskInfoView} readable controller, which is the HTTP access interface.
+     * @param cronTaskRepository            the configured {@link CronTaskRepository}.
+     * @param requestMappingHandlerMapping  the configured {@link RequestMappingHandlerMapping}.
+     * @return the configured {@link CronTaskInfoView} readable controller.
+     */
     @Bean
     public CronTaskInfoReadableWebMvcHandlerController cronTaskInfoReadableWebMvcHandlerController
             (CronTaskRepository cronTaskRepository,
@@ -92,8 +98,14 @@ public abstract class AbstractCronTaskConfiguration implements ImportAware {
         return new CronTaskInfoReadableWebMvcHandlerController(cronTaskRepository, requestMappingHandlerMapping);
     }
 
+    /**
+     Return the authentication interceptor for accessing task scheduling information.
+     * @param provider     the lazy loader of {@link AuthenticationPredicate}.
+     * @param environment  the {@link Environment} instance.
+     * @return the configured {@link CronTaskInfoView} readable controller.
+     */
     @Bean
-    public WebRequestAuthenticationInterceptor authenticationConfigurableBean
+    public WebRequestAuthenticationInterceptor webRequestAuthenticationInterceptor
             (ObjectProvider<AuthenticationPredicate> provider, Environment environment) {
         return new WebRequestAuthenticationInterceptor(provider, environment);
     }
