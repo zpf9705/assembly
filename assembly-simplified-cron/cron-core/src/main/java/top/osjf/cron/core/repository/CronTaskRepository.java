@@ -370,9 +370,11 @@ public interface CronTaskRepository extends LifecycleRepository, Wrapper {
     void registerRunTimes(@NotNull CronTask task, int times) throws CronInternalException;
 
     /**
-     *
-     * @param id
-     * @return
+     * Return a {@code Boolean} tag indicating whether there is a corresponding
+     * scheduled task {@link CronTaskInfo} for the given ID.
+     * @param id the unique identifier of the registered cron task.
+     * @return if {@code true} prove this id's task exist,{@code false} otherwise.
+     * @since 3.0.1
      */
     boolean hasCronTaskInfo(@NotNull String id);
 
