@@ -72,17 +72,39 @@ public class CronTaskInfo implements Serializable {
     @Nullable
     private Object[] args;
 
+    /**
+     * The remaining number of runs for this task.
+     * @since 3.0.1
+     */
+    private final long remainingNumberOfRuns;
+
+    /**
+     * Constructs a {@code CronTaskInfo} with any task info.
+     * @param id                        {@link #id}
+     * @param expression                {@link #expression}
+     * @param runnable                  {@link #runnable}
+     */
     public CronTaskInfo(String id, String expression, Runnable runnable) {
-        this(id, expression, runnable, null, null);
+        this(id, expression, runnable, null, null, -1);
     }
 
+    /**
+     * Constructs a {@code CronTaskInfo} with any task info.
+     * @param id                        {@link #id}
+     * @param expression                {@link #expression}
+     * @param runnable                  {@link #runnable}
+     * @param target                    {@link #target}
+     * @param method                    {@link #method}
+     * @param remainingNumberOfRuns     {@link #remainingNumberOfRuns}
+     */
     public CronTaskInfo(String id, String expression, Runnable runnable, @Nullable Object target,
-                        @Nullable Method method) {
+                        @Nullable Method method, long remainingNumberOfRuns) {
         this.id = id;
         this.expression = expression;
         this.runnable = runnable;
         this.target = target;
         this.method = method;
+        this.remainingNumberOfRuns = remainingNumberOfRuns;
     }
 
     /**
@@ -116,26 +138,48 @@ public class CronTaskInfo implements Serializable {
         return null;
     }
 
+    /**
+     * @return {@link #id}
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * @return {@link #expression}
+     */
     public String getExpression() {
         return expression;
     }
 
+    /**
+     * @return {@link #runnable}
+     */
     @Nullable
     public Runnable getRunnable() {
         return runnable;
     }
 
+    /**
+     * @return {@link #target}
+     */
     @Nullable
     public Object getTarget() {
         return target;
     }
 
+    /**
+     * @return {@link #method}
+     */
     @Nullable
     public Method getMethod() {
         return method;
+    }
+
+    /**
+     * @return {@link #remainingNumberOfRuns}
+     */
+    public long getRemainingNumberOfRuns() {
+        return remainingNumberOfRuns;
     }
 }
