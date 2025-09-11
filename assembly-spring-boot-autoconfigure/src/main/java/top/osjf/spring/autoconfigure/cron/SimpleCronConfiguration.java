@@ -39,7 +39,7 @@ import java.util.concurrent.ScheduledExecutorService;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnMissingBean(CronTaskRepository.class)
-@Import({CronTaskConfiguration.class, SimpleCronConfiguration.SimpleCronTaskConfiguration.class})
+@Import({CronTaskConfiguration.class})
 @Conditional(CronCondition.class)
 class SimpleCronConfiguration {
 
