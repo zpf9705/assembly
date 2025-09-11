@@ -74,6 +74,8 @@ public class CronTaskInfo implements Serializable {
 
     /**
      * The remaining number of runs for this task.
+     * <p> The unlimited number of times is {@code -1}, and there are no tasks with {@code 0}.
+     * Otherwise, it is the remaining number of runs.
      * @since 3.0.1
      */
     private long remainingNumberOfRuns;
