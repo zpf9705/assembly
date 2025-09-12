@@ -60,7 +60,7 @@ import top.osjf.cron.core.lifecycle.Lifecycle;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public interface LifecycleRepository extends Lifecycle {
+public interface LifecycleRepository extends Lifecycle, Repository {
 
     /**
      * A default method used to restart the repository component.
