@@ -19,6 +19,8 @@ package top.osjf.cron.core.lifecycle;
 
 import top.osjf.cron.core.lang.Nullable;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * An abstract class {@code SuperiorPropertiesInitializeAble} initialized based on
  * the {@link SuperiorProperties} instance.
@@ -29,6 +31,12 @@ import top.osjf.cron.core.lang.Nullable;
 public abstract class SuperiorPropertiesInitializeAble implements InitializeAble {
 
     private SuperiorProperties superiorProperties;
+
+    /**
+     * Atomic flag to track whether the repository is initialized.
+     * @since 3.0.1
+     */
+    private final AtomicBoolean isInitialized = new AtomicBoolean(false);
 
     /**
      * Return the {@link SuperiorProperties} instance of the setting.
@@ -52,5 +60,21 @@ public abstract class SuperiorPropertiesInitializeAble implements InitializeAble
      */
     @Override
     public void initialize() throws Exception {
+        if (isInitialized.compareAndSet(false, true)) {
+            return;
+        }
+        throw new IllegalStateException("this repository has initialized");
+    }
+
+    /**
+     * ensure the repository has been initialized before providing service.
+     * @since 3.0.1
+     */
+    protected void ensureInitialized() {
+        if (!isInitialized.get()) {
+            throw new IllegalStateException(String.format(
+                    "Repository(%s) has not been initialized yet, please initialize first!", getClass()
+                            .getSimpleName()));
+        }
     }
 }
