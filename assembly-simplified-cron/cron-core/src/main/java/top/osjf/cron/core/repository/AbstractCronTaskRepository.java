@@ -153,6 +153,14 @@ public abstract class AbstractCronTaskRepository extends AbstractLifecycleReposi
      * {@inheritDoc}
      */
     @Override
+    public boolean hasCronListener(@NotNull CronListener cronListener) {
+        return getCronListenerCollector().hasCronListener(cronListener);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void removeListener(@NotNull CronListener listener) {
         getCronListenerCollector().removeCronListener(listener);
     }
