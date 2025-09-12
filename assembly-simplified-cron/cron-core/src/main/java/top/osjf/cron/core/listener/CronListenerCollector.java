@@ -41,10 +41,11 @@ public abstract class CronListenerCollector {
 
     /**
      * Add a {@code CronListener} to the listener list if it does not already exist.
-     *
      * @param cronListener The {@code CronListener}  instance to be added.
+     * @throws NullPointerException if input {@code CronListener} is {@literal null}.
      */
     public void addCronListener(@NotNull CronListener cronListener) {
+        listenerNotNull(cronListener);
         final Lock writeLock = lock.writeLock();
         writeLock.lock();
         try {
@@ -59,10 +60,11 @@ public abstract class CronListenerCollector {
     /**
      * Add a {@code CronListener} instance to the beginning of the listener list
      * if it does not already exist.
-     *
      * @param cronListener The {@code CronListener}  instance to be added.
+     * @throws NullPointerException if input {@code CronListener} is {@literal null}.
      */
     public void addFirstCronListener(@NotNull CronListener cronListener){
+        listenerNotNull(cronListener);
         final Lock writeLock = lock.writeLock();
         writeLock.lock();
         try {
@@ -77,10 +79,11 @@ public abstract class CronListenerCollector {
     /**
      * Add a {@code CronListener} instance to the end of the listener list
      * if it does not already exist.
-     *
      * @param cronListener The {@code CronListener}  instance to be added.
+     * @throws NullPointerException if input {@code CronListener} is {@literal null}.
      */
     public void addLastCronListener(@NotNull CronListener cronListener){
+        listenerNotNull(cronListener);
         final Lock writeLock = lock.writeLock();
         writeLock.lock();
         try {
@@ -94,10 +97,11 @@ public abstract class CronListenerCollector {
 
     /**
      * Remove the specified {@code CronListener} from the listener list.
-     *
      * @param cronListener {@code CronListener} instance to be removed.
+     * @throws NullPointerException if input {@code CronListener} is {@literal null}.
      */
     public void removeCronListener(@NotNull CronListener cronListener) {
+        listenerNotNull(cronListener);
         final Lock writeLock = lock.writeLock();
         writeLock.lock();
         try {
@@ -110,7 +114,6 @@ public abstract class CronListenerCollector {
     /**
      * Return the unmodifiable list of {@code CronListener} instances saved by this collection
      * management instance.
-     *
      * @return the list of {@code CronListener} instances.
      */
     public List<CronListener> getCronListeners() {
@@ -126,13 +129,14 @@ public abstract class CronListenerCollector {
     /**
      * Return a {@code Boolean} flag that the input {@code CronListener} already registered
      * in {@link #cronListeners}.
-     *
      * @param cronListener {@code CronListener} instance for determining registration or not.
      * @return a {@code Boolean} flag that the input {@code CronListener} already registered
      *         in {@link #cronListeners}.
      * @since 1.0.4
+     * @throws NullPointerException if input {@code CronListener} is {@literal null}.
      */
-    public boolean hasCronListener(CronListener cronListener) {
+    public boolean hasCronListener(@NotNull CronListener cronListener) {
+        listenerNotNull(cronListener);
         final Lock readLock = lock.readLock();
         readLock.lock();
         try {
@@ -216,5 +220,14 @@ public abstract class CronListenerCollector {
      */
     private void doListeners(ListenerLifecycle listenerLifecycle, Object sourceContext, Throwable e) {
         listenerLifecycle.consumerListeners(sourceContext, e, this);
+    }
+
+    /**
+     * @param cronListener a specify {@link CronListener} to check.
+     */
+    private void listenerNotNull(CronListener cronListener) {
+        if (cronListener == null) {
+            throw new NullPointerException("cronListener");
+        }
     }
 }
