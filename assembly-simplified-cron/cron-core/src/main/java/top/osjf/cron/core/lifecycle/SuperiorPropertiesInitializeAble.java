@@ -17,6 +17,7 @@
 
 package top.osjf.cron.core.lifecycle;
 
+import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lang.Nullable;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -31,6 +32,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public abstract class SuperiorPropertiesInitializeAble implements InitializeAble {
 
     private SuperiorProperties superiorProperties;
+
+    /**
+     * The Scheduler instance.
+     */
+    private Object scheduler;
 
     /**
      * Atomic flag to track whether the repository is initialized.
@@ -64,6 +70,24 @@ public abstract class SuperiorPropertiesInitializeAble implements InitializeAble
             return;
         }
         throw new IllegalStateException("this repository has initialized");
+    }
+
+    /**
+     * @param scheduler the {@code scheduler} after {@link #initialize()}.
+     * @since 3.0.1
+     */
+    protected void setScheduler(@NotNull Object scheduler) {
+        this.scheduler = scheduler;
+    }
+
+    /**
+     * @return the {@code scheduler} after {@link #initialize()}.
+     * @since 3.0.1
+     */
+    @SuppressWarnings("unchecked")
+    protected <T>T getScheduler() {
+        ensureInitialized();
+        return (T) scheduler;
     }
 
     /**
