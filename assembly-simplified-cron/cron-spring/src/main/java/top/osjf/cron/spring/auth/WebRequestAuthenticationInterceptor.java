@@ -20,6 +20,7 @@ package top.osjf.cron.spring.auth;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.core.env.Environment;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.Assert;
 import org.springframework.util.PathMatcher;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.context.request.WebRequestInterceptor;
@@ -28,12 +29,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.util.CollectionUtils;
 import top.osjf.cron.core.util.StringUtils;
-import top.osjf.cron.spring.CronTaskInfoReadableWebMvcHandlerController;
-import top.osjf.cron.spring.datasource.driven.scheduled.SpringHandlerMappingDatasourceDrivenScheduled;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -62,16 +60,9 @@ public class WebRequestAuthenticationInterceptor implements AuthenticationInterc
     public static final String AUTHENTICATION_WEB_HEADER_NAME = "spring-cron-web-request-authentication";
 
     /**
-     * Authentication path pattern
-     * Uses regex to match requests ending with:
-     * 1. {@link CronTaskInfoReadableWebMvcHandlerController#REQUEST_MAPPING_PATH_OF_GET_CRON_TASK_LIST}
-     * 2. {@link SpringHandlerMappingDatasourceDrivenScheduled#RUNNING_MAPPING_PATH}
+     * Resource access requires a collection of registered and authenticated URLs.
      */
-    public static final String AUTHENTICATION_PATTERN = ".*("
-            + CronTaskInfoReadableWebMvcHandlerController.REQUEST_MAPPING_PATH_OF_GET_CRON_TASK_LIST
-            + "|"
-            + SpringHandlerMappingDatasourceDrivenScheduled.RUNNING_MAPPING_PATH
-            + ")$";
+    private final Set<String> authenticationPaths = new LinkedHashSet<>(16);
 
     /**
      * Authentication enable flag
@@ -89,7 +80,13 @@ public class WebRequestAuthenticationInterceptor implements AuthenticationInterc
      */
     private AuthenticationPredicate defaultAuthenticationPredicate;
 
-    public WebRequestAuthenticationInterceptor(ObjectProvider<AuthenticationPredicate> provider, Environment environment) {
+    /**
+     * Constructs a {@link WebRequestAuthenticationInterceptor} with given args.
+     * @param provider    the {@link ObjectProvider} of {@link AuthenticationPredicate}.
+     * @param environment the {@link Environment} instance.
+     */
+    public WebRequestAuthenticationInterceptor(ObjectProvider<AuthenticationPredicate> provider,
+                                               Environment environment) {
         enableAuthentication
                 = environment.getProperty("spring.schedule.cron.web-request-authentication.enable", boolean.class,
                 false);
@@ -103,11 +100,24 @@ public class WebRequestAuthenticationInterceptor implements AuthenticationInterc
         }
     }
 
+    /**
+     * Register a URL path that requires resource access authentication.
+     * @param authenticationPath a specify authentication path.
+     */
+    public void registerAuthenticationPath(String authenticationPath) {
+        Assert.hasText(authenticationPath, "authenticationPath");
+        authenticationPaths.add(authenticationPath);
+    }
+
+    private String asAuthenticationPattern() {
+        return ".*(" + String.join("|", authenticationPaths) +")$";
+    }
+
     @Override
     public void addInterceptors(@NotNull InterceptorRegistry registry) {
         if (enableAuthentication) {
             registry.addWebRequestInterceptor(this)
-                    .addPathPatterns(AUTHENTICATION_PATTERN)
+                    .addPathPatterns(asAuthenticationPattern())
                     .pathMatcher(new RegexPathMatcher());
         }
     }
@@ -169,5 +179,20 @@ public class WebRequestAuthenticationInterceptor implements AuthenticationInterc
         public String combine(@NotNull String pattern1, @NotNull String pattern2) {
             throw new UnsupportedOperationException();
         }
+    }
+
+    /**
+     * The resource access requires {@link WebRequestAuthenticationInterceptor} to provide
+     * an interface for registering and authenticating the URL collection.
+     */
+    public interface AuthenticationProvider extends Supplier<List<String>> {
+        /**
+         * Return the collection of URLs that require {@link WebRequestAuthenticationInterceptor}
+         * registration and authentication for resource access.
+         * @return Resource access requires a collection of registered and authenticated URLs.
+         */
+        @Override
+        @NotNull
+        List<String> get();
     }
 }

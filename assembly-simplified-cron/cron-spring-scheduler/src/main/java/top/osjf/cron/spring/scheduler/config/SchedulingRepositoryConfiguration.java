@@ -34,6 +34,8 @@ import top.osjf.cron.spring.auth.AuthenticationPredicate;
 import top.osjf.cron.spring.auth.WebRequestAuthenticationInterceptor;
 import top.osjf.cron.spring.scheduler.SpringSchedulerTaskRepository;
 
+import java.util.List;
+
 /**
  * {@link Configuration Configuration} for {@link SpringSchedulerTaskRepository}.
  *
@@ -78,7 +80,8 @@ public class SchedulingRepositoryConfiguration extends AbstractCronTaskConfigura
     @Bean
     @Override
     public WebRequestAuthenticationInterceptor webRequestAuthenticationInterceptor
-            (ObjectProvider<AuthenticationPredicate> provider, Environment environment) {
-        return super.webRequestAuthenticationInterceptor(provider, environment);
+            (ObjectProvider<AuthenticationPredicate> provider, Environment environment,
+             @Autowired(required = false) List<WebRequestAuthenticationInterceptor.AuthenticationProvider> providers) {
+        return super.webRequestAuthenticationInterceptor(provider, environment, providers);
     }
 }
