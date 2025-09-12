@@ -132,7 +132,8 @@ public interface CronTaskRepository extends LifecycleRepository, Wrapper {
      * @throws NullPointerException         if input expression or body is {@literal null}.
      * @throws UnsupportedTaskBodyException if input {@code TaskBody} is not supported.
      */
-    String register(@NotNull String expression, @NotNull TaskBody body) throws CronInternalException;
+    String register(@NotNull String expression, @NotNull TaskBody body) throws CronInternalException,
+            UnsupportedTaskBodyException;
 
     /**
      * Register a new scheduled task using the given {@code CronTask} object.
@@ -191,7 +192,8 @@ public interface CronTaskRepository extends LifecycleRepository, Wrapper {
      * @throws NullPointerException     if input expression or body is {@literal null}.
      * @since 1.0.3
      */
-    default void registerRunOnce(@NotNull String expression, @NotNull CronMethodRunnable runnable) throws CronInternalException {
+    default void registerRunOnce(@NotNull String expression, @NotNull CronMethodRunnable runnable)
+            throws CronInternalException {
         registerRunTimes(expression, runnable, 1);
     }
 
@@ -211,7 +213,8 @@ public interface CronTaskRepository extends LifecycleRepository, Wrapper {
      * @throws NullPointerException     if input expression or body is {@literal null}.
      * @since 1.0.3
      */
-    default void registerRunOnce(@NotNull String expression, @NotNull RunnableTaskBody body) throws CronInternalException {
+    default void registerRunOnce(@NotNull String expression, @NotNull RunnableTaskBody body)
+            throws CronInternalException {
         registerRunTimes(expression, body, 1);
     }
 
@@ -235,7 +238,8 @@ public interface CronTaskRepository extends LifecycleRepository, Wrapper {
      * @throws NullPointerException         if input expression or body is {@literal null}.
      * @throws UnsupportedTaskBodyException if input {@code TaskBody} is not supported.
      */
-    default void registerRunOnce(@NotNull String expression, @NotNull TaskBody body) throws CronInternalException {
+    default void registerRunOnce(@NotNull String expression, @NotNull TaskBody body) throws CronInternalException,
+            UnsupportedTaskBodyException {
         registerRunTimes(expression, body, 1);
     }
 
@@ -346,7 +350,8 @@ public interface CronTaskRepository extends LifecycleRepository, Wrapper {
      * @throws NullPointerException         if input expression or body is {@literal null}.
      * @throws UnsupportedTaskBodyException if input {@code TaskBody} is not supported.
      */
-    void registerRunTimes(@NotNull String expression, @NotNull TaskBody body, int times) throws CronInternalException;
+    void registerRunTimes(@NotNull String expression, @NotNull TaskBody body, int times) throws CronInternalException,
+            UnsupportedTaskBodyException;
 
     /**
      * Register a new scheduled task using the given {@code CronTask} object,
