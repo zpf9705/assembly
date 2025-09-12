@@ -82,6 +82,7 @@ public abstract class SuperiorPropertiesInitializeAble implements InitializeAble
 
     /**
      * @return the {@code scheduler} after {@link #initialize()}.
+     * @param <T> The type that the scheduler needs to convert.
      * @since 3.0.1
      */
     @SuppressWarnings("unchecked")
