@@ -39,19 +39,20 @@ import java.util.List;
  * register new tasks, update the Cron expressions of existing tasks, delete tasks, and
  * manage task listeners.
  *
- * <p>Task listeners {@code CronListener} allow for the execution of specific logic before
- * and after task execution, providing extension points during the task execution process.
- *
  * <p>All methods provide detailed exception handling to ensure that invalid input or internal
  * errors {@link CronInternalException} are correctly notified to the caller.
  *
  * <p>In version 1.0.3, the extension inherits the {@link LifecycleRepository} interface and
  * directly uses the repository class to control the lifecycle operations of the internal scheduler.
  *
+ * <p>In version 3.0.1, the management operations for {@link CronListener} were migrated to
+ * {@link CronListenerRepository} and inherited from {@link CronListenerRepository} to ensure
+ * support for {@link CronListener} management.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public interface CronTaskRepository extends Repository, LifecycleRepository, Wrapper {
+public interface CronTaskRepository extends Repository, LifecycleRepository, CronListenerRepository, Wrapper {
 
     /**
      * Register a new scheduled task using the given cron expression and a {@code Runnable}.
@@ -441,56 +442,4 @@ public interface CronTaskRepository extends Repository, LifecycleRepository, Wra
      * @throws NullPointerException  if input id is {@literal null}.
      */
     void remove(@NotNull String id) throws CronInternalException;
-
-    /**
-     * Add a task listener {@code CronListener} instance.
-     *
-     * <p>Task listeners are used to execute specific logic before and after task execution.
-     *
-     * <p>This method takes a task listener {@code CronListener} object as an input parameter
-     * and adds it to the listener list.
-     *
-     * @param listener the task listener {@code CronListener} object to be added.
-     * @throws NullPointerException if input listener is {@literal null}.
-     */
-    void addListener(@NotNull CronListener listener);
-
-    /**
-     * Add a task listener {@code CronListener} instance at the beginning.
-     *
-     * <p>Task listeners are used to execute specific logic before and after task execution.
-     *
-     * <p>This method takes a task listener {@code CronListener} object as an input parameter
-     * and adds it to the listener list.
-     *
-     * @param listener the task listener {@code CronListener} object to be added.
-     * @throws NullPointerException if input listener is {@literal null}.
-     * @since 1.0.3
-     */
-    void addFirstListener(@NotNull CronListener listener);
-
-    /**
-     * Add a task listener {@code CronListener} instance at the ending.
-     *
-     * <p>Task listeners are used to execute specific logic before and after task execution.
-     *
-     * <p>This method takes a task listener {@code CronListener} object as an input parameter
-     * and adds it to the listener list.
-     *
-     * @param listener the task listener {@code CronListener} object to be added.
-     * @throws NullPointerException if input listener is {@literal null}.
-     * @since 1.0.3
-     */
-    void addLastListener(@NotNull CronListener listener);
-
-    /**
-     * Remove a task listener {@code CronListener} instance.
-     *
-     * <p>This method takes a task listener {@code CronListener} object as an input parameter
-     * and removes it from the listener list.
-     *
-     * @param listener the task listener object to be removed.
-     * @throws NullPointerException if input listener is {@literal null}.
-     */
-    void removeListener(@NotNull CronListener listener);
 }
