@@ -87,18 +87,7 @@ public class CronTaskInfo implements Serializable {
      * @param runnable                  {@link #runnable}
      */
     public CronTaskInfo(String id, String expression, Runnable runnable) {
-        this(id, expression, runnable,  -1);
-    }
-
-    /**
-     * Constructs a {@code CronTaskInfo} with any task info.
-     * @param id                        {@link #id}
-     * @param expression                {@link #expression}
-     * @param runnable                  {@link #runnable}
-     * @param remainingNumberOfRuns     {@link #remainingNumberOfRuns}
-     */
-    public CronTaskInfo(String id, String expression, Runnable runnable, long remainingNumberOfRuns) {
-        this(id, expression, runnable, null, null, remainingNumberOfRuns);
+        this(id, expression, runnable, null, null);
     }
 
     /**
@@ -108,16 +97,14 @@ public class CronTaskInfo implements Serializable {
      * @param runnable                  {@link #runnable}
      * @param target                    {@link #target}
      * @param method                    {@link #method}
-     * @param remainingNumberOfRuns     {@link #remainingNumberOfRuns}
      */
-    public CronTaskInfo(String id, String expression, Runnable runnable, @Nullable Object target,
-                        @Nullable Method method, long remainingNumberOfRuns) {
+    public CronTaskInfo(String id, String expression, Runnable runnable,
+                        @Nullable Object target, @Nullable Method method) {
         this.id = id;
         this.expression = expression;
         this.runnable = runnable;
         this.target = target;
         this.method = method;
-        this.remainingNumberOfRuns = remainingNumberOfRuns;
     }
 
     /**

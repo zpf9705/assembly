@@ -40,14 +40,12 @@ public abstract class CronTaskInfoBuildUtils {
 
     /**
      * Build a new {@link CronTaskInfo} by given id and {@link Scheduler}.
-     *
      * @param id                    the given task id.
      * @param scheduler             the input {@link Scheduler} instance.
-     * @param remainingNumberOfRuns the remaining number of runs for this task.
      * @return a new {@link CronTaskInfo}.
      */
     @Nullable
-    public static CronTaskInfo buildCronTaskInfo(String id, Scheduler scheduler, long remainingNumberOfRuns) {
+    public static CronTaskInfo buildCronTaskInfo(String id, Scheduler scheduler) {
         Task task = scheduler.getTask(id);
         CronPattern pattern = scheduler.getPattern(id);
         if (task == null || pattern == null) {
@@ -88,6 +86,6 @@ public abstract class CronTaskInfoBuildUtils {
         if (runnable == null) {
             runnable = task::execute;
         }
-        return new CronTaskInfo(id, pattern.toString(), runnable, target, method, remainingNumberOfRuns);
+        return new CronTaskInfo(id, pattern.toString(), runnable, target, method);
     }
 }

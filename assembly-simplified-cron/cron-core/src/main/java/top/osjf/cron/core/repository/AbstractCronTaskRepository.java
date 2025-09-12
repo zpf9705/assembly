@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.lang.NotNull;
+import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.listener.CronListenerCollector;
 import top.osjf.cron.core.listener.DefaultCronListenerCollector;
@@ -169,12 +170,21 @@ public abstract class AbstractCronTaskRepository extends AbstractLifecycleReposi
         AtomicInteger count = specifyTimesCountMap.getOrDefault(taskId, null);
         return count == null ? hasCronTaskInfo(taskId) ? -1 : 0 : count.get();
     }
+
     /**
-     * Query and update the remaining number of runs for the specified task.
-     * @param cronTaskInfo a specify {@link CronTaskInfo}.
+     * Customize a specified {@link CronTaskInfo}.
+     * @param cronTaskInfo a specified {@link CronTaskInfo}.
+     * @since 3.0.1
      */
-    protected void updateTaskRemainingNumberOfRuns(CronTaskInfo cronTaskInfo) {
+    @Nullable
+    protected CronTaskInfo customizeCronTaskInfo(CronTaskInfo cronTaskInfo) {
+        if (cronTaskInfo == null) {
+            return null;
+        }
+        // Setting remaining number of runs.
         cronTaskInfo.setRemainingNumberOfRuns(getTaskRemainingNumberOfRuns(cronTaskInfo.getId()));
+
+        return cronTaskInfo;
     }
 
     /**

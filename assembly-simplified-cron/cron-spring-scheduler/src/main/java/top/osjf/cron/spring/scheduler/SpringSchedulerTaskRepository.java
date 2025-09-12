@@ -225,7 +225,7 @@ public class SpringSchedulerTaskRepository
             target = scheduledMethodRunnable.getTarget();
             method = scheduledMethodRunnable.getMethod();
         }
-        return new CronTaskInfo(id, expression, runnable, target, method, getTaskRemainingNumberOfRuns(id));
+        return customizeCronTaskInfo(new CronTaskInfo(id, expression, runnable, target, method));
     }
 
     /**

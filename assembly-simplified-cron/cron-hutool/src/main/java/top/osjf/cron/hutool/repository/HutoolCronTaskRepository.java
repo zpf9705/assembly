@@ -316,7 +316,7 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
     @Override
     @Nullable
     public CronTaskInfo getCronTaskInfo(@NotNull String id) {
-        return CronTaskInfoBuildUtils.buildCronTaskInfo(id, scheduler, getTaskRemainingNumberOfRuns(id));
+        return customizeCronTaskInfo(CronTaskInfoBuildUtils.buildCronTaskInfo(id, scheduler));
     }
 
     /**
