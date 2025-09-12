@@ -174,6 +174,7 @@ public abstract class AbstractCronTaskRepository extends AbstractLifecycleReposi
     /**
      * Customize a specified {@link CronTaskInfo}.
      * @param cronTaskInfo a specified {@link CronTaskInfo}.
+     * @return a specified {@link CronTaskInfo}.
      * @since 3.0.1
      */
     @Nullable
