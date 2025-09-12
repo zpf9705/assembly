@@ -384,6 +384,9 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
         return scheduler.isStarted();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void reStart() {
         if (isStarted()) {
