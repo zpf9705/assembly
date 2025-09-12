@@ -21,6 +21,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.LazyInitializationExcludeFilter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.SmartLifecycle;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -59,6 +60,11 @@ public class CronTaskAutoConfiguration {
     public CronClientValidator cronTaskAutoConfigurationValidator(CronProperties cronProperties,
                                                                   ObjectProvider<CronTaskRepository> cronTaskRepositories) {
         return new CronClientValidator(cronProperties, cronTaskRepositories);
+    }
+
+    @Bean
+    public CronTaskRepositorySmartLifecycle cronTaskRepositorySmartLifecycle(CronTaskRepository cronTaskRepository) {
+        return new CronTaskRepositorySmartLifecycle(cronTaskRepository);
     }
 
     /**
@@ -104,5 +110,33 @@ public class CronTaskAutoConfiguration {
             return imports;
         }
 
+    }
+
+    /**
+     * {@link CronTaskRepository}'s intelligent lifecycle manager.
+     * @since 3.0.1
+     */
+    static class CronTaskRepositorySmartLifecycle implements SmartLifecycle {
+
+        private final CronTaskRepository cronTaskRepository;
+
+        public CronTaskRepositorySmartLifecycle(CronTaskRepository cronTaskRepository) {
+            this.cronTaskRepository = cronTaskRepository;
+        }
+
+        @Override
+        public void start() {
+            cronTaskRepository.start();
+        }
+
+        @Override
+        public void stop() {
+            cronTaskRepository.stop();
+        }
+
+        @Override
+        public boolean isRunning() {
+            return cronTaskRepository.isStarted();
+        }
     }
 }
