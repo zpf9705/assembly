@@ -140,6 +140,9 @@ public class WebRequestAuthenticationInterceptor implements AuthenticationInterc
         }
     }
 
+    /**
+     * Implementation class of {@link PathMatcher} based on regular expression validation.
+     */
     private static class RegexPathMatcher implements PathMatcher {
         @Override
         public boolean isPattern(@NotNull String path) {
