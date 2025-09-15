@@ -280,7 +280,6 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
         }
         listenerManager = scheduler.getListenerManager();
         listenerManager.addJobListener(jobListener);
-        setScheduler(scheduler);
     }
 
     /**
@@ -355,7 +354,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
                     .withIdentity(triggerKey)
                     .startNow()
                     .withSchedule(CronScheduleBuilder.cronSchedule(expression));
-            super.<Scheduler> getScheduler().scheduleJob(jobDetail, triggerBuilder.build());
+            scheduler.scheduleJob(jobDetail, triggerBuilder.build());
             return QuartzUtils.getIdBySerializeJobKey(key);
         }, ParseException.class);
     }
@@ -364,7 +363,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
     public boolean hasCronTaskInfo(@NotNull String id) {
         JobKey jobKey = QuartzUtils.getJobKeyByDeSerializeId(id);
         try {
-            return super.<Scheduler> getScheduler().checkExists(jobKey);
+            return scheduler.checkExists(jobKey);
         }
         catch (SchedulerException e) {
             return false;
@@ -386,7 +385,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
     @Override
     public List<CronTaskInfo> getAllCronTaskInfo() {
         try {
-            return super.<Scheduler> getScheduler().getJobKeys(GroupMatcher.anyGroup())
+            return scheduler.getJobKeys(GroupMatcher.anyGroup())
                     .stream()
                     .map(this::buildCronTaskInfo)
                     .filter(Objects::nonNull)
@@ -418,8 +417,8 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
     private CronTaskInfo buildCronTaskInfo(JobKey jobKey) {
         String group = jobKey.getGroup();
         try {
-            Set<JobKey> jobKeys = super.<Scheduler> getScheduler().getJobKeys(GroupMatcher.groupEquals(group));
-            Trigger trigger = super.<Scheduler> getScheduler().getTrigger(new TriggerKey(jobKey.getName(),
+            Set<JobKey> jobKeys = scheduler.getJobKeys(GroupMatcher.groupEquals(group));
+            Trigger trigger = scheduler.getTrigger(new TriggerKey(jobKey.getName(),
                     jobKey.getGroup()));
             if (!jobKeys.contains(jobKey)) {
                 return null;
@@ -450,7 +449,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
     public void update(@NotNull String id, @NotNull String newExpression) {
         JobKey jobKey = QuartzUtils.getJobKeyByDeSerializeId(id);
         TriggerKey triggerKey = new TriggerKey(jobKey.getName(), jobKey.getGroup());
-        RepositoryUtils.doVoidInvoke(() -> super.<Scheduler> getScheduler().rescheduleJob(triggerKey,
+        RepositoryUtils.doVoidInvoke(() -> scheduler.rescheduleJob(triggerKey,
                 TriggerBuilder.newTrigger()
                 .withIdentity(triggerKey)
                 .startNow()
@@ -464,7 +463,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
     @Override
     public void remove(@NotNull String id) {
         RepositoryUtils.doVoidInvoke(() ->
-                super.<Scheduler> getScheduler().deleteJob(QuartzUtils.getJobKeyByDeSerializeId(id)),
+                        scheduler.deleteJob(QuartzUtils.getJobKeyByDeSerializeId(id)),
                 null);
     }
 
@@ -498,7 +497,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
     @Override
     public void start() {
         try {
-            super.<Scheduler> getScheduler().start();
+            scheduler.start();
         } catch (SchedulerException e) {
             throw new IllegalStateException(e);
         }
@@ -510,7 +509,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
     @Override
     public void stop() {
         try {
-            super.<Scheduler> getScheduler().shutdown(waitForJobsToCompleteWhenStop);
+            scheduler.shutdown(waitForJobsToCompleteWhenStop);
         } catch (SchedulerException e) {
             throw new IllegalStateException(e);
         }
@@ -522,7 +521,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
     @Override
     public boolean isStarted() {
         try {
-            return super.<Scheduler> getScheduler().isStarted();
+            return scheduler.isStarted();
         } catch (SchedulerException e) {
             return false;
         }
