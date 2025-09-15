@@ -17,7 +17,6 @@
 
 package top.osjf.cron.core.lifecycle;
 
-import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lang.Nullable;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -34,18 +33,15 @@ public abstract class SuperiorPropertiesInitializeAble implements InitializeAble
     private SuperiorProperties superiorProperties;
 
     /**
-     * The Scheduler instance.
-     */
-    private Object scheduler;
-
-    /**
      * Atomic flag to track whether the repository is initialized.
+     *
      * @since 3.0.1
      */
     private final AtomicBoolean isInitialized = new AtomicBoolean(false);
 
     /**
      * Return the {@link SuperiorProperties} instance of the setting.
+     *
      * @return the {@link SuperiorProperties} instance.
      */
     @Nullable
@@ -55,6 +51,7 @@ public abstract class SuperiorPropertiesInitializeAble implements InitializeAble
 
     /**
      * Set a {@link SuperiorProperties} as Initialization reference.
+     *
      * @param superiorProperties the {@link SuperiorProperties} instance.
      */
     public void setSuperiorProperties(@Nullable SuperiorProperties superiorProperties) {
@@ -71,26 +68,7 @@ public abstract class SuperiorPropertiesInitializeAble implements InitializeAble
         }
         throw new IllegalStateException("this repository has initialized");
     }
-
-    /**
-     * @param scheduler the {@code scheduler} after {@link #initialize()}.
-     * @since 3.0.1
-     */
-    protected void setScheduler(@NotNull Object scheduler) {
-        this.scheduler = scheduler;
-    }
-
-    /**
-     * @return the {@code scheduler} after {@link #initialize()}.
-     * @param <T> The type that the scheduler needs to convert.
-     * @since 3.0.1
-     */
-    @SuppressWarnings("unchecked")
-    protected <T>T getScheduler() {
-        ensureInitialized();
-        return (T) scheduler;
-    }
-
+    
     /**
      * ensure the repository has been initialized before providing service.
      * @since 3.0.1

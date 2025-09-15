@@ -17,6 +17,8 @@
 
 package top.osjf.cron.core.repository;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lang.Nullable;
@@ -45,6 +47,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @since 1.0.3
  */
 public abstract class AbstractCronTaskRepository extends AbstractCronListenerRepository implements CronTaskRepository {
+
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     /** Number of runs, task scheduling listener.*/
     private final RegisterTimesCheckedCronListener checkedCronListener = new RegisterTimesCheckedCronListener();
