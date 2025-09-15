@@ -75,7 +75,7 @@ public interface CronListenerRepository extends Repository {
      * @return if {@code true} already added,{@code false} otherwise.
      * @throws NullPointerException if input listener is {@literal null}.
      */
-    boolean hasCronListener(CronListener listener);
+    boolean hasListener(CronListener listener);
 
     /**
      * Remove a task listener {@code CronListener} instance.
