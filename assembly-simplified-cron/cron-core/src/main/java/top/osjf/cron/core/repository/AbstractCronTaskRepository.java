@@ -202,7 +202,7 @@ public abstract class AbstractCronTaskRepository extends AbstractCronListenerRep
      */
     private void addRegisterTimesCheckedCronListener() {
         if (addRegisterTimesCheckedCronListener.compareAndSet(false, true)) {
-            getCronListenerCollector().addLastCronListener(checkedCronListener);
+            super.addLastListener(checkedCronListener);
         }
     }
 
