@@ -68,7 +68,7 @@ public abstract class AbstractCronTaskRepository extends AbstractCronListenerRep
             throws CronInternalException {
         assertTimes(times);
         addRegisterTimesCheckedCronListener();
-//        specifyTimesCountMap.putIfAbsent(register(expression, runnable), new AtomicInteger(times));
+        specifyTimesCountMap.putIfAbsent(register(expression, runnable), new AtomicInteger(times));
     }
 
     /**
