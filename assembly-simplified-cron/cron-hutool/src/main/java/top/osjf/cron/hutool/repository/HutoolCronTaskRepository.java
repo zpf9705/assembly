@@ -243,7 +243,7 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
     @Override
     public String register(@NotNull String expression, @NotNull Runnable runnable) throws CronInternalException {
         return RepositoryUtils.doRegister(() ->
-                getScheduler().schedule(expression, runnable), CronException.class);
+                getInitializedScheduler().schedule(expression, runnable), CronException.class);
     }
 
     /**
@@ -275,26 +275,26 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
         if (body.isWrapperFor(DefineIDRunnableTaskBody.class)) {
             DefineIDRunnableTaskBody defineIDRunnableTaskBody = body.unwrap(DefineIDRunnableTaskBody.class);
             String id = defineIDRunnableTaskBody.getId();
-            Task task = getScheduler().getTask(id);
+            Task task = getInitializedScheduler().getTask(id);
             if (task != null) {
                 throw new CronInternalException("The task corresponding to id " + id + "already exists!");
             }
             return RepositoryUtils.doRegister(() -> {
-                getScheduler().schedule(id, expression, defineIDRunnableTaskBody.getRunnable());
+                getInitializedScheduler().schedule(id, expression, defineIDRunnableTaskBody.getRunnable());
                 return id;
             }, CronException.class);
         } else if (body.isWrapperFor(InvokeTaskBody.class)) {
             InvokeTask invokeTask = body.unwrap(InvokeTaskBody.class).getInvokeTask();
-            return RepositoryUtils.doRegister(() -> getScheduler().schedule(expression, invokeTask),
+            return RepositoryUtils.doRegister(() -> getInitializedScheduler().schedule(expression, invokeTask),
                     CronException.class);
         } else if (body.isWrapperFor(RunnableTaskBody.class)) {
             return register(expression, body.unwrap(RunnableTaskBody.class));
         } else if (body.isWrapperFor(SettingTaskBody.class)) {
             return RepositoryUtils.doRegister(() -> {
                 SettingTaskBody settingTaskBody = body.unwrap(SettingTaskBody.class);
-                getScheduler().schedule(settingTaskBody.getSetting());
+                getInitializedScheduler().schedule(settingTaskBody.getSetting());
                 /* the IDs in the order of configuration. */
-                return getScheduler().getTaskTable().getIds().stream()
+                return getInitializedScheduler().getTaskTable().getIds().stream()
                         .filter(id -> id.startsWith("id_"))
                         .collect(Collectors.joining(","));
             }, CronException.class);
@@ -309,7 +309,7 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
 
     @Override
     public boolean hasCronTaskInfo(@Nonnull String id) {
-        return getScheduler().getTask(id) != null;
+        return getInitializedScheduler().getTask(id) != null;
     }
 
     /**
@@ -318,7 +318,7 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
     @Override
     @Nullable
     public CronTaskInfo getCronTaskInfo(@NotNull String id) {
-        return customizeCronTaskInfo(CronTaskInfoBuildUtils.buildCronTaskInfo(id, getScheduler()));
+        return customizeCronTaskInfo(CronTaskInfoBuildUtils.buildCronTaskInfo(id, getInitializedScheduler()));
     }
 
     /**
@@ -326,7 +326,7 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
      */
     @Override
     public List<CronTaskInfo> getAllCronTaskInfo() {
-        return getScheduler().getTaskTable()
+        return getInitializedScheduler().getTaskTable()
                 .getIds()
                 .stream()
                 .map(this::getCronTaskInfo)
@@ -339,7 +339,7 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
     @Override
     public void update(@NotNull String taskId, @NotNull String newExpression) {
         RepositoryUtils.doVoidInvoke(() ->
-                getScheduler().updatePattern(taskId, new CronPattern(newExpression)), CronException.class);
+                getInitializedScheduler().updatePattern(taskId, new CronPattern(newExpression)), CronException.class);
     }
 
     /**
@@ -347,7 +347,7 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
      */
     @Override
     public void remove(@NotNull String taskId) {
-        RepositoryUtils.doVoidInvoke(() -> getScheduler().descheduleWithStatus(taskId),
+        RepositoryUtils.doVoidInvoke(() -> getInitializedScheduler().descheduleWithStatus(taskId),
                 null);
 
     }
@@ -365,7 +365,7 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
         if (isStarted()) {
             throw new IllegalStateException("Scheduler has been started, please stop it first!");
         }
-        getScheduler().start();
+        getInitializedScheduler().start();
     }
 
     /**
@@ -376,7 +376,7 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
         if (!isStarted()) {
             throw new IllegalStateException("Scheduler not started !");
         }
-        getScheduler().stop(ifStopClearTasks);
+        getInitializedScheduler().stop(ifStopClearTasks);
     }
 
     /**
@@ -384,7 +384,7 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
      */
     @Override
     public boolean isStarted() {
-        return getScheduler().isStarted();
+        return getInitializedScheduler().isStarted();
     }
 
     /**
@@ -405,7 +405,7 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
      * @return Return {@link Scheduler} after an initialization action {@link #initialize()}.
      * @since 3.0.1
      */
-    private Scheduler getScheduler() {
+    private Scheduler getInitializedScheduler() {
         ensureInitialized();
 
         return scheduler;

@@ -210,7 +210,7 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
      */
     @Override
     public String register(@NotNull String expression, @NotNull Runnable runnable) throws CronInternalException {
-        return RepositoryUtils.doRegister(() -> getScheduler().schedule(expression, runnable),
+        return RepositoryUtils.doRegister(() -> getInitializedScheduler().schedule(expression, runnable),
                 InvalidPatternException.class);
     }
 
@@ -265,7 +265,7 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
         if (body.isWrapperFor(FileTaskBody.class)) {
             FileTaskBody fileTaskBody = body.unwrap(FileTaskBody.class);
             File file = fileTaskBody.getFile();
-            getScheduler().scheduleFile(file);
+            getInitializedScheduler().scheduleFile(file);
             String fileID = FILE_ID_PREFIX + UUID.randomUUID();
             fileIdMap.putIfAbsent(fileID, file);
             return fileID;
@@ -293,7 +293,7 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
 
     @Override
     public boolean hasCronTaskInfo(@Nonnull String id) {
-        return getScheduler().getTask(id) != null;
+        return getInitializedScheduler().getTask(id) != null;
     }
 
     /**
@@ -309,19 +309,19 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
      */
     @Override
     public List<CronTaskInfo> getAllCronTaskInfo() {
-        return Arrays.stream(getScheduler().getExecutingTasks())
+        return Arrays.stream(getInitializedScheduler().getExecutingTasks())
                 .map(taskExecutor -> buildCronTaskInfo(taskExecutor.getGuid()))
                 .filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     @Nullable
     private CronTaskInfo buildCronTaskInfo(String id) {
-        Task task = getScheduler().getTask(id);
-        SchedulingPattern schedulingPattern = getScheduler().getSchedulingPattern(id);
+        Task task = getInitializedScheduler().getTask(id);
+        SchedulingPattern schedulingPattern = getInitializedScheduler().getSchedulingPattern(id);
         if (task == null || schedulingPattern == null) {
             return null;
         }
-        Runnable runnable = getScheduler().getTaskRunnable(id);
+        Runnable runnable = getInitializedScheduler().getTaskRunnable(id);
         Object target = null;
         Method method = null;
         if (runnable instanceof CronMethodRunnable) {
@@ -346,7 +346,7 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
     @Override
     public void update(@NotNull String taskId, @NotNull String newExpression) {
         RepositoryUtils.doVoidInvoke(() ->
-                getScheduler().reschedule(taskId, newExpression), InvalidPatternException.class);
+                getInitializedScheduler().reschedule(taskId, newExpression), InvalidPatternException.class);
     }
 
     /**
@@ -360,11 +360,11 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
         if (taskId.startsWith(FILE_ID_PREFIX)) {
             File file = fileIdMap.remove(taskId);
             if (file != null) {
-                getScheduler().descheduleFile(file);
+                getInitializedScheduler().descheduleFile(file);
             }
         }
         RepositoryUtils.doVoidInvoke(() ->
-                getScheduler().deschedule(taskId), null);
+                getInitializedScheduler().deschedule(taskId), null);
     }
 
     @Override
@@ -377,7 +377,7 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
      */
     @Override
     public void start() {
-        getScheduler().start();
+        getInitializedScheduler().start();
     }
 
     /**
@@ -385,7 +385,7 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
      */
     @Override
     public void stop() {
-        getScheduler().stop();
+        getInitializedScheduler().stop();
     }
 
     /**
@@ -393,14 +393,14 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
      */
     @Override
     public boolean isStarted() {
-        return getScheduler().isStarted();
+        return getInitializedScheduler().isStarted();
     }
 
     /**
      * @return Return {@link Scheduler} after an initialization action {@link #initialize()}.
      * @since 3.0.1
      */
-    private Scheduler getScheduler() {
+    private Scheduler getInitializedScheduler() {
         ensureInitialized();
 
         return scheduler;
