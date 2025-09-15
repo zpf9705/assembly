@@ -17,32 +17,21 @@
 
 package top.osjf.cron.core.repository;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.listener.CronListener;
-import top.osjf.cron.core.listener.CronListenerCollector;
-import top.osjf.cron.core.listener.DefaultCronListenerCollector;
 import top.osjf.cron.core.listener.SimpleCronListener;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
 
 /**
- * Abstract implementation of the {@link CronTaskRepository} interface.
- *
- * <p>This class primarily manages the registration of scheduled tasks and
- * the operation of listeners,providing a unified behavior pattern for subclasses
- * through abstract methods.
- *
- * <p>By obtaining the {@link CronListenerCollector} listener collector defined by
- * subclasses, the general implementation of listener addition and deletion functions
- * makes listener object management more convenient and unified.
+ * The abstract implementation of the {@link CronTaskRepository} interface utilizes
+ * the listener management and related registration scheduling task functions of
+ * {@link AbstractCronListenerRepository} to accomplish the following common functions.
  *
  * <p>For newly added APIs (such as {@link #registerRunTimes}) for registering tasks
  * a specified number of times, abstract implementation classes have added support
@@ -55,19 +44,16 @@ import java.util.function.Consumer;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public abstract class AbstractCronTaskRepository extends AbstractLifecycleRepository implements CronTaskRepository {
+public abstract class AbstractCronTaskRepository extends AbstractCronListenerRepository implements CronTaskRepository {
 
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
-
+    /** Number of runs, task scheduling listener.*/
     private final RegisterTimesCheckedCronListener checkedCronListener = new RegisterTimesCheckedCronListener();
 
+    /** Atomic {@code Boolean} flag is used to indicate whether a {@link #checkedCronListener} listener
+     * is registered. */
     private final AtomicBoolean addRegisterTimesCheckedCronListener = new AtomicBoolean(false);
 
-    private final CronListenerCollector listenerCollector = new DefaultCronListenerCollector();
-
-    /**
-     * Used to record tasks with specified running times.
-     */
+    /** Used to record tasks with specified running times. */
     private final ConcurrentMap<String, AtomicInteger> specifyTimesCountMap = new ConcurrentHashMap<>(16);
 
     /**
@@ -78,7 +64,7 @@ public abstract class AbstractCronTaskRepository extends AbstractLifecycleReposi
             throws CronInternalException {
         assertTimes(times);
         addRegisterTimesCheckedCronListener();
-        specifyTimesCountMap.putIfAbsent(register(expression, runnable), new AtomicInteger(times));
+//        specifyTimesCountMap.putIfAbsent(register(expression, runnable), new AtomicInteger(times));
     }
 
     /**
@@ -130,15 +116,7 @@ public abstract class AbstractCronTaskRepository extends AbstractLifecycleReposi
      */
     @Override
     public void addListener(@NotNull CronListener listener) {
-        ensureCheckedListenerIsLastIfRuntime(co -> co.addCronListener(listener));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void addFirstListener(@NotNull CronListener listener) {
-        getCronListenerCollector().addFirstCronListener(listener);
+        ensureCheckedListenerIsLastIfRuntime(() -> super.addListener(listener));
     }
 
     /**
@@ -146,23 +124,7 @@ public abstract class AbstractCronTaskRepository extends AbstractLifecycleReposi
      */
     @Override
     public void addLastListener(@NotNull CronListener listener) {
-        ensureCheckedListenerIsLastIfRuntime(co -> co.addLastCronListener(listener));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean hasCronListener(@NotNull CronListener cronListener) {
-        return getCronListenerCollector().hasCronListener(cronListener);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void removeListener(@NotNull CronListener listener) {
-        getCronListenerCollector().removeCronListener(listener);
+        ensureCheckedListenerIsLastIfRuntime(() -> super.addLastListener(listener));
     }
 
     /**
@@ -197,13 +159,6 @@ public abstract class AbstractCronTaskRepository extends AbstractLifecycleReposi
     }
 
     /**
-     * @return The listener collector for subclasses.
-     */
-    protected CronListenerCollector getCronListenerCollector() {
-        return listenerCollector;
-    }
-
-    /**
      * To ensure that {@link #checkedCronListener} is at the end of the queue and can be removed
      * after completing the registration task, and can go through all previous listeners, the
      * interception check method for the tail methods {@link #addLastListener} and {@link #addListener}
@@ -211,28 +166,25 @@ public abstract class AbstractCronTaskRepository extends AbstractLifecycleReposi
      *
      * @param next The next step is to add a real operation listener.
      */
-    private void ensureCheckedListenerIsLastIfRuntime(Consumer<CronListenerCollector> next) {
-        CronListenerCollector cronListenerCollector = getCronListenerCollector();
+    private void ensureCheckedListenerIsLastIfRuntime(Runnable next) {
         boolean shouldAddCheckedLast = addRegisterTimesCheckedCronListener.get();
 
-        if (shouldAddCheckedLast && cronListenerCollector.hasCronListener(checkedCronListener)) {
+        if (shouldAddCheckedLast && hasListener(checkedCronListener)) {
             // Remove checkedCronListener if it exists
-            cronListenerCollector.removeCronListener(checkedCronListener);
+            removeListener(checkedCronListener);
         }
 
         // Execute the next consumer
-        next.accept(cronListenerCollector);
+        next.run();
 
         if (shouldAddCheckedLast) {
             // Ensure checkedCronListener is the last
-            // issue for 2025.08.22
-            cronListenerCollector.addLastCronListener(checkedCronListener);
+            super.addLastListener(checkedCronListener);
         }
     }
 
     /**
      * Assert specify run times > 0.
-     *
      * @param times specify run times.
      */
     private void assertTimes(int times) {
