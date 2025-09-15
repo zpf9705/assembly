@@ -108,7 +108,7 @@ public class SpringSchedulerTaskRepository
     @Override
     public void onApplicationEvent(@NotNull ContextRefreshedEvent event) {
         event.getApplicationContext().getBeansOfType(CronListener.class)
-                .forEach((n, c) -> getCronListenerCollector().addLastCronListener(c));
+                .forEach((n, c) -> addListener(c));
     }
 
     /**
