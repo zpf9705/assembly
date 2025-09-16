@@ -20,8 +20,8 @@ package top.osjf.cron.core.lifecycle;
 import top.osjf.cron.core.repository.CronTaskRepository;
 
 /**
- * Define the standard interface for {@link CronTaskRepository} initialization
- * function.
+ * Define the standard interface functionality for initializing {@link CronTaskRepository}
+ * and related components.
  *
  * <p>This interface requires the implementation class to provide a {@link #initialize()}
  * method,used to perform necessary operations during object initialization, such as resource
