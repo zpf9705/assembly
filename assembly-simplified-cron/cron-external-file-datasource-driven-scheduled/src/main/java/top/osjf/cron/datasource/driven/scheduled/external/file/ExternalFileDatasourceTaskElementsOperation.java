@@ -18,6 +18,7 @@
 package top.osjf.cron.datasource.driven.scheduled.external.file;
 
 import top.osjf.cron.core.lang.Nullable;
+import top.osjf.cron.core.lifecycle.InitializeAble;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 
@@ -67,7 +68,8 @@ import java.util.stream.Collectors;
  * @see TaskElement
  */
 public abstract
-class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement> implements DatasourceTaskElementsOperation {
+class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement> implements DatasourceTaskElementsOperation,
+        InitializeAble {
 
     private final ExternalFileTaskElementLoader<T> loader;
 
@@ -91,6 +93,7 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement> impleme
      * Init for {@link ExternalFileTaskElementLoader}.
      */
     @PostConstruct
+    @Override
     public void initialize() {
         loader.initialize();
     }
