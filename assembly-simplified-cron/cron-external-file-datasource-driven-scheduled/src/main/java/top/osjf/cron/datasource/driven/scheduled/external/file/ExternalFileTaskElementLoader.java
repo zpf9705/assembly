@@ -18,6 +18,7 @@
 package top.osjf.cron.datasource.driven.scheduled.external.file;
 
 import top.osjf.cron.core.lang.Nullable;
+import top.osjf.cron.core.lifecycle.InitializeAble;
 import top.osjf.cron.core.util.CollectionUtils;
 import top.osjf.cron.core.util.StringUtils;
 import top.osjf.cron.datasource.driven.scheduled.DataSourceDrivenException;
@@ -73,7 +74,7 @@ import java.util.function.Function;
  * @since 3.0.1
  */
 @ThreadSafe
-public abstract class ExternalFileTaskElementLoader<T extends TaskElement> implements Closeable {
+public abstract class ExternalFileTaskElementLoader<T extends TaskElement> implements InitializeAble, Closeable {
 
     /** The path to the base directory.*/
     @Nullable
@@ -132,6 +133,7 @@ public abstract class ExternalFileTaskElementLoader<T extends TaskElement> imple
      * Obtain and verify the existence of the configuration file and initialize the
      * file lock for the initialization operation.
      */
+    @Override
     public void initialize() {
         File configFile = getConfigFile();
         if (!configFile.exists()) {
