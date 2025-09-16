@@ -71,7 +71,7 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
     /**
      * Map mapping between task ID and task running thread instance.
      */
-    private final Map<String, SimpleRunnabledScheduledFuture> futureCache = new ConcurrentHashMap<>();
+    private final Map<String, SimpleRunnabledScheduledFuture> futureCache = new ConcurrentHashMap<>(16);
 
     /**
      * Format instance of cron expression from {@code com.cronutils}.
