@@ -20,6 +20,7 @@ package top.osjf.cron.core.repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.osjf.cron.core.exception.CronInternalException;
+import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.listener.CronListener;
@@ -29,6 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 /**
  * The abstract implementation of the {@link CronTaskRepository} interface utilizes
@@ -55,10 +57,10 @@ public abstract class AbstractCronTaskRepository extends AbstractCronListenerRep
 
     /** Atomic {@code Boolean} flag is used to indicate whether a {@link #checkedCronListener} listener
      * is registered. */
-    private final AtomicBoolean addRegisterTimesCheckedCronListener = new AtomicBoolean(false);
+    private final AtomicBoolean isRunTimesCheckListenerRegistered = new AtomicBoolean(false);
 
     /** Used to record tasks with specified running times. */
-    private final ConcurrentMap<String, AtomicInteger> specifyTimesCountMap = new ConcurrentHashMap<>(16);
+    private final ConcurrentMap<String, AtomicInteger> taskRunTimesMap = new ConcurrentHashMap<>(16);
 
     /**
      * {@inheritDoc}
@@ -66,9 +68,7 @@ public abstract class AbstractCronTaskRepository extends AbstractCronListenerRep
     @Override
     public void registerRunTimes(@NotNull String expression, @NotNull Runnable runnable, int times)
             throws CronInternalException {
-        assertTimes(times);
-        addRegisterTimesCheckedCronListener();
-        specifyTimesCountMap.putIfAbsent(register(expression, runnable), new AtomicInteger(times));
+        registerRunTimes(() -> register(expression, runnable), times);
     }
 
     /**
@@ -77,9 +77,7 @@ public abstract class AbstractCronTaskRepository extends AbstractCronListenerRep
     @Override
     public void registerRunTimes(@NotNull String expression, @NotNull CronMethodRunnable runnable, int times)
             throws CronInternalException {
-        assertTimes(times);
-        addRegisterTimesCheckedCronListener();
-        specifyTimesCountMap.putIfAbsent(register(expression, runnable), new AtomicInteger(times));
+        registerRunTimes(() -> register(expression, runnable), times);
     }
 
     /**
@@ -88,9 +86,7 @@ public abstract class AbstractCronTaskRepository extends AbstractCronListenerRep
     @Override
     public void registerRunTimes(@NotNull String expression, @NotNull RunnableTaskBody body, int times)
             throws CronInternalException {
-        assertTimes(times);
-        addRegisterTimesCheckedCronListener();
-        specifyTimesCountMap.putIfAbsent(register(expression, body), new AtomicInteger(times));
+        registerRunTimes(() -> register(expression, body), times);
     }
 
     /**
@@ -98,21 +94,40 @@ public abstract class AbstractCronTaskRepository extends AbstractCronListenerRep
      */
     @Override
     public void registerRunTimes(@NotNull String expression, @NotNull TaskBody body, int times)
-            throws CronInternalException {
-        assertTimes(times);
-        addRegisterTimesCheckedCronListener();
-        specifyTimesCountMap.putIfAbsent(register(expression, body), new AtomicInteger(times));
+            throws CronInternalException, UnsupportedTaskBodyException {
+        registerRunTimes(() -> register(expression, body), times);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void registerRunTimes(@NotNull CronTask task, int times)
-            throws CronInternalException {
-        assertTimes(times);
-        addRegisterTimesCheckedCronListener();
-        specifyTimesCountMap.putIfAbsent(register(task), new AtomicInteger(times));
+    public void registerRunTimes(@NotNull CronTask task, int times) throws CronInternalException {
+        registerRunTimes(() -> register(task), times);
+    }
+
+    /**
+     * Register a public method for running a specified number of tasks.
+     * @param idSupplier the task registration function.
+     * @param times      the registration run times.
+     * @since 3.0.1
+     */
+    private void registerRunTimes(Supplier<String> idSupplier, int times) {
+
+        // The specified number of runs cannot be less than or equal to 0.
+        if (times <= 0) {
+            throw new IllegalArgumentException("Specify run times must be greater than 0");
+        }
+
+        // Added {@link #checkedCronListener} to the listener list?
+        if (isRunTimesCheckListenerRegistered.compareAndSet(false, true)) {
+            super.addLastListener(checkedCronListener);
+        }
+
+        // Get id by do register.
+        String id = idSupplier.get();
+        // Record run times.
+        taskRunTimesMap.putIfAbsent(id, new AtomicInteger(times));
     }
 
     /**
@@ -141,7 +156,7 @@ public abstract class AbstractCronTaskRepository extends AbstractCronListenerRep
      * @since 3.0.1
      */
     public long getTaskRemainingNumberOfRuns(String taskId) {
-        AtomicInteger count = specifyTimesCountMap.getOrDefault(taskId, null);
+        AtomicInteger count = taskRunTimesMap.getOrDefault(taskId, null);
         return count == null ? hasCronTaskInfo(taskId) ? -1 : 0 : count.get();
     }
 
@@ -171,7 +186,7 @@ public abstract class AbstractCronTaskRepository extends AbstractCronListenerRep
      * @param next The next step is to add a real operation listener.
      */
     private void ensureCheckedListenerIsLastIfRuntime(Runnable next) {
-        boolean shouldAddCheckedLast = addRegisterTimesCheckedCronListener.get();
+        boolean shouldAddCheckedLast = isRunTimesCheckListenerRegistered.get();
 
         if (shouldAddCheckedLast && hasListener(checkedCronListener)) {
             // Remove checkedCronListener if it exists
@@ -183,25 +198,6 @@ public abstract class AbstractCronTaskRepository extends AbstractCronListenerRep
 
         if (shouldAddCheckedLast) {
             // Ensure checkedCronListener is the last
-            super.addLastListener(checkedCronListener);
-        }
-    }
-
-    /**
-     * Assert specify run times > 0.
-     * @param times specify run times.
-     */
-    private void assertTimes(int times) {
-        if (times <= 0) {
-            throw new IllegalArgumentException("Specify run times must be greater than 0");
-        }
-    }
-
-    /**
-     * Added {@link #checkedCronListener} to the listener list?
-     */
-    private void addRegisterTimesCheckedCronListener() {
-        if (addRegisterTimesCheckedCronListener.compareAndSet(false, true)) {
             super.addLastListener(checkedCronListener);
         }
     }
@@ -221,7 +217,7 @@ public abstract class AbstractCronTaskRepository extends AbstractCronListenerRep
         }
 
         private void checkRunTimes(String id) {
-            specifyTimesCountMap.compute(id, (key, count) -> {
+            taskRunTimesMap.compute(id, (key, count) -> {
                 if (count == null) {
                     return null;
                 }
