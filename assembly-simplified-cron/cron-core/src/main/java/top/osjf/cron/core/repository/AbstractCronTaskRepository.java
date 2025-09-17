@@ -119,14 +119,15 @@ public abstract class AbstractCronTaskRepository extends AbstractCronListenerRep
             throw new IllegalArgumentException("Specify run times must be greater than 0");
         }
 
-        // Added {@link #checkedCronListener} to the listener list?
+        // Check if the listener for task frequency management has been registered.
         if (isRunTimesCheckListenerRegistered.compareAndSet(false, true)) {
             super.addLastListener(checkedCronListener);
         }
 
-        // Get id by do register.
+        // Register the task and obtain the ID.
         String id = idSupplier.get();
-        // Record run times.
+
+        // Record the association mapping between task ID and execution frequency.
         taskRunTimesMap.putIfAbsent(id, new AtomicInteger(times));
     }
 
@@ -223,7 +224,7 @@ public abstract class AbstractCronTaskRepository extends AbstractCronListenerRep
                 }
                 if (count.decrementAndGet() <= 0) {
                     remove(id);
-                    logger.info("Task {} has reached the specified number of runs and has been stopped!", id);
+                    logger.info("Task ID <{}> terminated: maximum run count reached.", id);
                     return null;
                 }
                 return count;
