@@ -23,9 +23,9 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>top.osjf.cron</groupId>
   <artifactId>assembly-simplified-cron</artifactId>
-  <version>3.0.1</version>
+  <version>3.0.1-beat</version>
   <packaging>pom</packaging>
-  <name>assembly-simplified-cron 3.0.1</name>
+  <name>assembly-simplified-cron 3.0.1-beat</name>
   <description>Parent of cron task.</description>
   <url>https://github.com/zpf9705/assembly/assembly-simplified-cron</url>
   <licenses>

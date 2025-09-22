@@ -23,8 +23,8 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>top.osjf.cron</groupId>
   <artifactId>cron-spring-cron4j</artifactId>
-  <version>3.0.1</version>
-  <name>cron-spring-cron4j 3.0.1</name>
+  <version>3.0.1-beat</version>
+  <name>cron-spring-cron4j 3.0.1-beat</name>
   <description>Cron-cron4j integrates the Spring framework to achieve annotation level configuration.</description>
   <url>https://github.com/zpf9705/assembly/assembly-simplified-cron/cron-spring-cron4j</url>
   <licenses>
@@ -55,13 +55,13 @@
     <dependency>
       <groupId>top.osjf.cron</groupId>
       <artifactId>cron-spring</artifactId>
-      <version>3.0.1</version>
+      <version>3.0.1-beat</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>top.osjf.cron</groupId>
       <artifactId>cron-cron4j</artifactId>
-      <version>3.0.1</version>
+      <version>3.0.1-beat</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

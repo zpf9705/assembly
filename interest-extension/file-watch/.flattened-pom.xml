@@ -23,8 +23,8 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>top.osjf.filewatch</groupId>
   <artifactId>file-watch</artifactId>
-  <version>3.0.1</version>
-  <name>file-watch 3.0.1</name>
+  <version>3.0.1-beat</version>
+  <name>file-watch 3.0.1-beat</name>
   <description>The monitor implementation for file changes comes from the native JDK.</description>
   <url>https://github.com/zpf9705/assembly/interest-extension/file-watch</url>
   <licenses>

@@ -23,8 +23,8 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>top.osjf.cron</groupId>
   <artifactId>cron-core</artifactId>
-  <version>3.0.1</version>
-  <name>cron-core 3.0.1</name>
+  <version>3.0.1-beat</version>
+  <name>cron-core 3.0.1-beat</name>
   <description>Core packages supported by cron expression timed tasks</description>
   <url>https://github.com/zpf9705/assembly/assembly-simplified-cron/cron-core</url>
   <licenses>
