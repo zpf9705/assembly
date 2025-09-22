@@ -23,9 +23,9 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>top.osjf</groupId>
   <artifactId>interest-extension</artifactId>
-  <version>3.0.1</version>
+  <version>3.0.1-beat</version>
   <packaging>pom</packaging>
-  <name>interest-extension 3.0.1</name>
+  <name>interest-extension 3.0.1-beat</name>
   <description>Parent of extension.</description>
   <url>https://github.com/zpf9705/assembly/interest-extension</url>
   <licenses>

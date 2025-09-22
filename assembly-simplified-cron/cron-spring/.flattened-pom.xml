@@ -23,8 +23,8 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>top.osjf.cron</groupId>
   <artifactId>cron-spring</artifactId>
-  <version>3.0.1</version>
-  <name>cron-spring 3.0.1</name>
+  <version>3.0.1-beat</version>
+  <name>cron-spring 3.0.1-beat</name>
   <description>The cron task execution framework integrates packages from the Spring framework.</description>
   <url>https://github.com/zpf9705/assembly/assembly-simplified-cron/cron-spring</url>
   <licenses>
@@ -55,61 +55,61 @@
     <dependency>
       <groupId>top.osjf.cron</groupId>
       <artifactId>cron-core</artifactId>
-      <version>3.0.1</version>
+      <version>3.0.1-beat</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>top.osjf.spring.optimize</groupId>
       <artifactId>spring-aware</artifactId>
-      <version>3.0.1</version>
+      <version>3.0.1-beat</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>top.osjf.cron</groupId>
       <artifactId>cron-hutool</artifactId>
-      <version>3.0.1</version>
+      <version>3.0.1-beat</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>top.osjf.cron</groupId>
       <artifactId>cron-quartz</artifactId>
-      <version>3.0.1</version>
+      <version>3.0.1-beat</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>top.osjf.cron</groupId>
       <artifactId>cron-cron4j</artifactId>
-      <version>3.0.1</version>
+      <version>3.0.1-beat</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>top.osjf.cron</groupId>
       <artifactId>cron-mybatis-plus-datasource-driven-scheduled</artifactId>
-      <version>3.0.1</version>
+      <version>3.0.1-beat</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>top.osjf.cron</groupId>
       <artifactId>cron-yaml-config-datasource-driven-scheduled</artifactId>
-      <version>3.0.1</version>
+      <version>3.0.1-beat</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>top.osjf.cron</groupId>
       <artifactId>cron-spring-jpa-datasource-driven-scheduled</artifactId>
-      <version>3.0.1</version>
+      <version>3.0.1-beat</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>top.osjf.cron</groupId>
       <artifactId>cron-excel-config-datasource-driven-scheduled</artifactId>
-      <version>3.0.1</version>
+      <version>3.0.1-beat</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
