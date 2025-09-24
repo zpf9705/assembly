@@ -30,6 +30,24 @@ import top.osjf.cron.core.exception.CronInternalException;
 public class RunningException extends CronInternalException {
 
     private static final long serialVersionUID = -6478314724385183507L;
+
+    /**
+     * Constructs a new {@code RunningException} with {@code null} as its
+     * detail message.
+     */
+    public RunningException() {
+        super();
+    }
+
+    /**
+     * Constructs a new {@code RunningException} with the specified detail message.
+     *
+     * @param message the internal detail message.
+     */
+    public RunningException(String message) {
+        super(message);
+    }
+
     /**
      * Constructs a new {@code RunningException} with the specified internal cause.
      *
