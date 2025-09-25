@@ -51,7 +51,7 @@ public interface RunTimeoutRegistrarRepository
      *                                  framework used for registration are detailed
      *                                  in {@link CronInternalException#getCause()}.
      * @throws IllegalArgumentException if input expression is invalid.
-     * @throws NullPointerException     if input expression or body is {@literal null}.
+     * @throws NullPointerException     if input expression or body or timeout is {@literal null}.
      */
     String register(@NotNull String expression, @NotNull Runnable runnable, @NotNull RunningTimeout timeout)
             throws CronInternalException;
@@ -72,7 +72,7 @@ public interface RunTimeoutRegistrarRepository
      *                                  framework used for registration are detailed
      *                                  in {@link CronInternalException#getCause()}.
      * @throws IllegalArgumentException if input expression is invalid.
-     * @throws NullPointerException     if input expression or body is {@literal null}.
+     * @throws NullPointerException     if input expression or body or timeout is {@literal null}.
      */
     String register(@NotNull String expression, @NotNull CronMethodRunnable runnable, @NotNull RunningTimeout timeout)
             throws CronInternalException;
@@ -92,7 +92,7 @@ public interface RunTimeoutRegistrarRepository
      *                                  framework used for registration are detailed
      *                                  in {@link CronInternalException#getCause()}.
      * @throws IllegalArgumentException if input expression is invalid.
-     * @throws NullPointerException     if input expression or body is {@literal null}.
+     * @throws NullPointerException     if input expression or body or timeout is {@literal null}.
      */
     String register(@NotNull String expression, @NotNull RunnableTaskBody body, @NotNull RunningTimeout timeout)
             throws CronInternalException;
@@ -115,7 +115,7 @@ public interface RunTimeoutRegistrarRepository
      *                                      framework used for registration are detailed
      *                                      in {@link CronInternalException#getCause()}.
      * @throws IllegalArgumentException     if input expression is invalid.
-     * @throws NullPointerException         if input expression or body is {@literal null}.
+     * @throws NullPointerException         if input expression or body or timeout is {@literal null}.
      * @throws UnsupportedTaskBodyException if input {@code TaskBody} is not supported.
      */
     String register(@NotNull String expression, @NotNull TaskBody body, @NotNull RunningTimeout timeout)
@@ -137,7 +137,7 @@ public interface RunTimeoutRegistrarRepository
      *                                  framework used for registration are detailed
      *                                  in {@link CronInternalException#getCause()}.
      * @throws IllegalArgumentException if input {@link CronTask#getExpression()} is invalid.
-     * @throws NullPointerException     if input {@code CronTask} or body is {@literal null}.
+     * @throws NullPointerException     if input {@code CronTask} or body or timeout is {@literal null}.
      */
     String register(@NotNull CronTask task, @NotNull RunningTimeout timeout) throws CronInternalException;
 
@@ -154,7 +154,7 @@ public interface RunTimeoutRegistrarRepository
      *                                  framework used for registration are detailed
      *                                  in {@link CronInternalException#getCause()}.
      * @throws IllegalArgumentException if input expression is invalid.
-     * @throws NullPointerException     if input expression or body is {@literal null}.
+     * @throws NullPointerException     if input expression or body or timeout is {@literal null}.
      */
     default void registerRunOnce(@NotNull String expression, @NotNull Runnable runnable,
                                  @NotNull RunningTimeout timeout) throws CronInternalException {
@@ -176,7 +176,7 @@ public interface RunTimeoutRegistrarRepository
      *                                  framework used for registration are detailed
      *                                  in {@link CronInternalException#getCause()}.
      * @throws IllegalArgumentException if input expression is invalid.
-     * @throws NullPointerException     if input expression or body is {@literal null}.
+     * @throws NullPointerException     if input expression or body or timeout is {@literal null}.
      */
     default void registerRunOnce(@NotNull String expression, @NotNull CronMethodRunnable runnable,
                                  @NotNull RunningTimeout timeout) throws CronInternalException {
@@ -197,7 +197,7 @@ public interface RunTimeoutRegistrarRepository
      *                                  framework used for registration are detailed
      *                                  in {@link CronInternalException#getCause()}.
      * @throws IllegalArgumentException if input expression is invalid.
-     * @throws NullPointerException     if input expression or body is {@literal null}.
+     * @throws NullPointerException     if input expression or body or timeout is {@literal null}.
      */
     default void registerRunOnce(@NotNull String expression, @NotNull RunnableTaskBody body,
                                  @NotNull RunningTimeout timeout) throws CronInternalException {
@@ -221,7 +221,7 @@ public interface RunTimeoutRegistrarRepository
      *                                      framework used for registration are detailed
      *                                      in {@link CronInternalException#getCause()}.
      * @throws IllegalArgumentException     if input expression is invalid.
-     * @throws NullPointerException         if input expression or body is {@literal null}.
+     * @throws NullPointerException         if input expression or body or timeout is {@literal null}.
      * @throws UnsupportedTaskBodyException if input {@code TaskBody} is not supported.
      */
     default void registerRunOnce(@NotNull String expression, @NotNull TaskBody body, @NotNull RunningTimeout timeout)
@@ -244,7 +244,7 @@ public interface RunTimeoutRegistrarRepository
      *                                  framework used for registration are detailed
      *                                  in {@link CronInternalException#getCause()}.
      * @throws IllegalArgumentException if input {@link CronTask#getExpression()} is invalid.
-     * @throws NullPointerException     if input {@code CronTask} or body is {@literal null}.
+     * @throws NullPointerException     if input {@code CronTask} or body or timeout is {@literal null}.
      */
     default void registerRunOnce(@NotNull CronTask task, @NotNull RunningTimeout timeout) throws CronInternalException {
         registerRunTimes(task, 1, timeout);
@@ -265,7 +265,7 @@ public interface RunTimeoutRegistrarRepository
      *                                  in {@link CronInternalException#getCause()}.
      * @throws IllegalArgumentException  if input expression is invalid or input times
      *                                   not be greater than 0.
-     * @throws NullPointerException     if input expression or body is {@literal null}.
+     * @throws NullPointerException     if input expression or body or timeout is {@literal null}.
      */
     void registerRunTimes(@NotNull String expression, @NotNull Runnable runnable, int times,
                           @NotNull RunningTimeout timeout)
@@ -288,7 +288,7 @@ public interface RunTimeoutRegistrarRepository
      *                                  in {@link CronInternalException#getCause()}.
      * @throws IllegalArgumentException  if input expression is invalid or input times
      *                                   not be greater than 0.
-     * @throws NullPointerException     if input expression or body is {@literal null}.
+     * @throws NullPointerException     if input expression or body or timeout is {@literal null}.
      */
     void registerRunTimes(@NotNull String expression, @NotNull CronMethodRunnable runnable, int times,
                           @NotNull RunningTimeout timeout)
@@ -310,7 +310,7 @@ public interface RunTimeoutRegistrarRepository
      *                                  in {@link CronInternalException#getCause()}.
      * @throws IllegalArgumentException  if input expression is invalid or input times
      *                                      not be greater than 0.
-     * @throws NullPointerException     if input expression or body is {@literal null}.
+     * @throws NullPointerException     if input expression or body or timeout is {@literal null}.
      */
     void registerRunTimes(@NotNull String expression, @NotNull RunnableTaskBody body, int times,
                           @NotNull RunningTimeout timeout)
@@ -335,7 +335,7 @@ public interface RunTimeoutRegistrarRepository
      *                                      in {@link CronInternalException#getCause()}.
      * @throws IllegalArgumentException     if input expression is invalid or input times
      *                                      not be greater than 0.
-     * @throws NullPointerException         if input expression or body is {@literal null}.
+     * @throws NullPointerException         if input expression or body or timeout is {@literal null}.
      * @throws UnsupportedTaskBodyException if input {@code TaskBody} is not supported.
      */
     void registerRunTimes(@NotNull String expression, @NotNull TaskBody body, int times,
@@ -358,7 +358,7 @@ public interface RunTimeoutRegistrarRepository
      *                                  in {@link CronInternalException#getCause()}.
      * @throws IllegalArgumentException if input {@link CronTask#getExpression()}
      *                                  is invalid or input times not be greater than 0.
-     * @throws NullPointerException     if input {@code CronTask} or body is {@literal null}.
+     * @throws NullPointerException     if input {@code CronTask} or body or timeout is {@literal null}.
      */
     void registerRunTimes(@NotNull CronTask task, int times, @NotNull RunningTimeout timeout)
             throws CronInternalException;
