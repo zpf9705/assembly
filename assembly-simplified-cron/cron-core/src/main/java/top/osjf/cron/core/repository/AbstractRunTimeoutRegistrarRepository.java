@@ -1,0 +1,132 @@
+/*
+ * Copyright 2025-? the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+package top.osjf.cron.core.repository;
+
+import top.osjf.cron.core.exception.CronInternalException;
+import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
+import top.osjf.cron.core.lang.NotNull;
+
+/**
+ * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
+ * @since 3.0.2
+ */
+public abstract class AbstractRunTimeoutRegistrarRepository
+        extends AbstractRunTimesRegistrarRepository implements RunTimeoutRegistrarRepository {
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String register(@NotNull String expression, @NotNull Runnable runnable, @NotNull RunningTimeout timeout)
+            throws CronInternalException {
+        return register(expression, new FutureTaskRunnable(runnable, timeout));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String register(@NotNull String expression, @NotNull CronMethodRunnable runnable,
+                           @NotNull RunningTimeout timeout) throws CronInternalException {
+        return register(expression, new FutureTaskRunnable(runnable, timeout));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String register(@NotNull String expression, @NotNull RunnableTaskBody body, @NotNull RunningTimeout timeout) throws CronInternalException {
+        return register(expression, body.getRunnable(), timeout);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String register(@NotNull String expression, @NotNull TaskBody body, @NotNull RunningTimeout timeout)
+            throws CronInternalException, UnsupportedTaskBodyException {
+        return register(expression, new FutureTaskRunnable(asRunnable(body), timeout));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String register(@NotNull CronTask task, @NotNull RunningTimeout timeout) throws CronInternalException {
+        return register(task.getExpression(), task.getRunnable(), timeout);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void registerRunTimes(@NotNull String expression, @NotNull Runnable runnable, int times,
+                                 @NotNull RunningTimeout timeout) throws CronInternalException {
+        registerRunTimes(expression, new FutureTaskRunnable(runnable, timeout), times);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void registerRunTimes(@NotNull String expression, @NotNull CronMethodRunnable runnable,
+                                 int times, @NotNull RunningTimeout timeout) throws CronInternalException {
+        registerRunTimes(expression, new FutureTaskRunnable(runnable, timeout), times);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void registerRunTimes(@NotNull String expression, @NotNull RunnableTaskBody body, int times,
+                                 @NotNull RunningTimeout timeout) throws CronInternalException {
+        registerRunTimes(expression, body.getRunnable(), times, timeout);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void registerRunTimes(@NotNull String expression, @NotNull TaskBody body, int times,
+                                 @NotNull RunningTimeout timeout) throws CronInternalException, UnsupportedTaskBodyException {
+        registerRunTimes(expression, asRunnable(body), times, timeout);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void registerRunTimes(@NotNull CronTask task, int times, @NotNull RunningTimeout timeout) throws CronInternalException {
+        registerRunTimes(task.getExpression(), task.getRunnable(), times, timeout);
+    }
+
+    /**
+     * Convert {@link TaskBody} as {@link Runnable}.
+     * @param body the {@link TaskBody}.
+     * @return  the {@link Runnable} result after convert.
+     */
+    protected Runnable asRunnable(TaskBody body) throws UnsupportedTaskBodyException {
+        if (body.isWrapperFor(Runnable.class)) {
+            return body.unwrap(Runnable.class);
+        }
+        else if (body.isWrapperFor(RunnableTaskBody.class)) {
+            return body.unwrap(RunnableTaskBody.class).getRunnable();
+        }
+        throw new UnsupportedTaskBodyException(body.getClass());
+    }
+}
