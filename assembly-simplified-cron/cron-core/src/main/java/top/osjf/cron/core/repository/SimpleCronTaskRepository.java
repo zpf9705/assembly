@@ -300,7 +300,7 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
         /**
          * @since 3.0.2
          */
-        private void cancelFuture() {
+        private void setCancelFutureFlag() {
             canceledFlag.set(true);
         }
 
@@ -363,7 +363,7 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
          */
         @Override
         public boolean cancel(boolean mayInterruptIfRunning) {
-            cancelFuture();
+            setCancelFutureFlag();
             return getFuture().cancel(mayInterruptIfRunning);
         }
 
