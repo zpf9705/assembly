@@ -27,8 +27,11 @@ package top.osjf.cron.core.repository;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  * @see CronTaskRepository
- * @see LifecycleRepository
+ * @see RunTimesRegistrarRepository
+ * @see RunTimeoutRegistrarRepository
+ * @see ListableRepository
  * @see CronListenerRepository
+ * @see LifecycleRepository
  */
 public interface Repository {
 }
