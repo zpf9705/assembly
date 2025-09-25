@@ -32,6 +32,15 @@ public class CronInternalException extends RuntimeException {
     private static final long serialVersionUID = 1460657936213652266L;
 
     /**
+     * Constructs a new {@code CronInternalException} with {@code null} as its
+     * detail message.
+     * @since 3.0.2
+     */
+    public CronInternalException() {
+        super();
+    }
+
+    /**
      * Constructs a new {@code CronInternalException} with the specified detail message.
      *
      * @param message the internal detail message.
