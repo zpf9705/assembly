@@ -34,6 +34,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 /**
+ * An abstract implementation class of {@link RunTimesRegistrarRepository} that inherits
+ * {@link AbstractCronListenerRepository} to set the call frequency listener
+ * {@link RunTimesCheckedCronListener}, decrements the set maximum number of runs, and
+ * removes related tasks when the frequency is 0.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
  */
