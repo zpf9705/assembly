@@ -17,6 +17,9 @@
 
 package top.osjf.cron.core.repository;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -30,6 +33,8 @@ import java.util.concurrent.TimeoutException;
  * @since 3.0.2
  */
 class FutureTaskRunnable implements Runnable {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(FutureTaskRunnable.class);
 
     /** the real {@link Runnable}.*/
     private final Runnable real;
@@ -49,28 +54,61 @@ class FutureTaskRunnable implements Runnable {
         this.timeout =  timeout;
     }
 
+    /**
+     * @throws RunningException if running fails occurs.
+     */
     @Override
-    public void run() {
+    public void run() throws RunningException {
 
         // Create a new java.util.concurrent.FutureTask each time to
         // calculate the running time and wait.
-        FutureTask<Object> futureTask = new FutureTask<>(real, null);
+        FutureTask<Void> futureTask = new FutureTask<>(real, null);
 
         try {
             futureTask.get(timeout.getTimeout(), timeout.getTimeUnit());
         }
         catch (TimeoutException ex) {
-            if (futureTask.cancel(true)) {
-                if (timeout.getPolicy() == RunningTimeoutPolicy.THROW) {
-                    throw new RunningException(ex);
-                }
-            }
+            handlerTimeoutPolicy(futureTask);
         }
         catch (Exception ex) {
             if (ex instanceof InterruptedException) {
                 Thread.currentThread().interrupt();
             }
             throw new RunningException(ex);
+        }
+    }
+
+    /**
+     * Process {@link FutureTask} according to the processing strategy.
+     * @param futureTask the input {@link FutureTask}.
+     */
+    void handlerTimeoutPolicy(FutureTask<Void> futureTask) {
+        RunningTimeoutPolicy policy = timeout.getPolicy();
+        switch (policy) {
+            case INTERRUPT: cancel(futureTask); break;
+            case THROW: throw new RunningTimeoutException();
+            case CANCEL_THROW: {
+                cancel(futureTask);
+                throw new RunningTimeoutException();
+            }
+            case IGNORE: break;
+        }
+    }
+
+    /**
+     * Cancel the input {@link FutureTask}.
+     * @param futureTask the input {@link FutureTask}.
+     */
+    void cancel(FutureTask<Void> futureTask) {
+        if (!futureTask.cancel(true)) {
+            if (futureTask.isDone()) {
+                LOGGER.warn("Cannot cancel task because it has already completed.");
+            } else if (futureTask.isCancelled()) {
+                LOGGER.debug("Task was already cancelled by another thread.");
+            } else {
+                LOGGER.error("Failed to cancel task that is still running and non-interruption. " +
+                        "Check if the task properly handles InterruptedException.");
+            }
         }
     }
 }
