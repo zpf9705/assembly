@@ -17,8 +17,6 @@
 
 package top.osjf.cron.core.repository;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 import top.osjf.cron.core.lang.NotNull;
@@ -48,8 +46,6 @@ import java.util.function.Supplier;
  */
 public abstract class AbstractRunTimesRegistrarRepository
         extends AbstractCronListenerRepository implements RunTimesRegistrarRepository {
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * Number of runs, task scheduling listener.
