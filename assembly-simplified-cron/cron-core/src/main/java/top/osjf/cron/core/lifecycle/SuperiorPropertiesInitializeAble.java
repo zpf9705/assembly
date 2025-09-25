@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.0
  */
-public abstract class SuperiorPropertiesInitializeAble implements InitializeAble {
+public abstract class SuperiorPropertiesInitializeAble extends ClassLogger implements InitializeAble {
 
     private SuperiorProperties superiorProperties;
 
