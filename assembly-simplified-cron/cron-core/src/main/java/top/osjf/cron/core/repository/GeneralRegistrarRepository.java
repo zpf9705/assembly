@@ -33,7 +33,7 @@ import top.osjf.cron.core.lang.NotNull;
  * <pre>{@code
  * repository.register("0 0 12 * * ?", () -> System.out.println("Execute at 12:00 noon"));
  * }</pre>
- * </p>Each method returns a unique ID of the scheduled task, which can be used for query
+ * Each method returns a unique ID of the scheduled task, which can be used for query
  * operations on interface {@link ListableRepository} and modification operations on interface
  * {@link ModifiableRepository}.
  *
