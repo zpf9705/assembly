@@ -16,430 +16,57 @@
 
 package top.osjf.cron.core.repository;
 
-import top.osjf.cron.core.exception.CronInternalException;
-import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
-import top.osjf.cron.core.lang.NotNull;
-import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.lang.Wrapper;
-import top.osjf.cron.core.listener.CronListener;
 
-import java.util.List;
+import javax.annotation.concurrent.ThreadSafe;
 
 /**
- * {@code CronTaskRepository} Interface is a dedicated repository for managing scheduled
- * tasks based on Cron expressions.
+ * <p>{@code CronTaskRepository} is a composite interface that defines the core management
+ * capabilities for cron-triggered tasks within the system. By extending multiple well-defined
+ * sub-interfaces,it forms a comprehensive and extensible framework for task persistence and
+ * runtime control.
  *
- * <p>This interface provides a set of methods for registering, updating, deleting scheduled
- * tasks,and allows for the addition and removal of task listeners. It is designed as a
- * general-purpose task management interface suitable for systems requiring task scheduling
- * based on Cron expressions.
+ * <p>This interface is primarily used to support platform-level functionalities such as
+ * dynamic task registration,execution monitoring, lifecycle management, run-time tracking,
+ * timeout handling, and event listening.Typical use cases include: dynamically adding or
+ * removing scheduled tasks, monitoring execution frequency and duration,reacting to task
+ * state changes, and controlling task startup/shutdown behavior.
  *
- * <p>Scheduled tasks are defined by their execution schedules through Cron expressions,
- * which specify when tasks should be run. The methods in this interface allow users to
- * register new tasks, update the Cron expressions of existing tasks, delete tasks, and
- * manage task listeners.
+ * <p>The responsibilities of the extended interfaces are as follows:
+ * <ul>
+ *   <li>{@link Repository}: Used to mark it as a resource operation interface.</li>
+ *   <li>{@link RunTimesRegistrarRepository}: Manages the registration and persistence of
+ *   task execution counts,used for statistics and scheduling decisions.</li>
+ *   <li>{@link RunTimeoutRegistrarRepository}: Handles maximum allowed execution time (timeout
+ *   thresholds) for tasks,enabling timeout detection and interruption mechanisms.</li>
+ *   <li>{@link ListableRepository}: Provide task scheduling list access capability to dynamically
+ *   obtain relevant information.</li>
+ *   <li>{@link CronListenerRepository}: Allows registration and management of event listeners
+ *   related to cron tasks (e.g., on-start, on-completion, on-failure), facilitating an event-driven
+ *   architecture.</li>
+ *   <li>{@link LifecycleRepository}: Defines lifecycle control methods such as start, stop, and
+ *   restart.</li>
+ *   <li>{@link Wrapper}: Enables decorator pattern support, allowing task instances to be wrapped
+ *   with cross-cutting concerns like logging, monitoring, retry logic, etc.</li>
+ * </ul>
  *
- * <p>All methods provide detailed exception handling to ensure that invalid input or internal
- * errors {@link CronInternalException} are correctly notified to the caller.
- *
- * <p>In version 1.0.3, the extension inherits the {@link LifecycleRepository} interface and
- * directly uses the repository class to control the lifecycle operations of the internal scheduler.
- *
- * <p>In version 3.0.1, the management operations for {@link CronListener} were migrated to
- * {@link CronListenerRepository} and inherited from {@link CronListenerRepository} to ensure
- * support for {@link CronListener} management.
+ * <p>The differentiation and combination of the above modules were gathered in version 3.0.2,
+ * aiming to provide developers with different feature choices for task scheduling based on
+ * cron expressions. This solution fully covers all inherited functions of the interface and
+ * helps developers quickly understand the collaborative relationships of multiple blocks
+ * through structured display.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
+ * @see Repository
+ * @see RunTimesRegistrarRepository
+ * @see RunTimeoutRegistrarRepository
+ * @see ListableRepository
+ * @see CronListenerRepository
+ * @see LifecycleRepository
+ * @see Wrapper
  */
-public interface CronTaskRepository extends Repository, LifecycleRepository, CronListenerRepository, Wrapper {
-
-    /**
-     * Register a new scheduled task using the given cron expression and a {@code Runnable}.
-     *
-     * <p>This method receives a valid cron expression and a {@code Runnable} as input
-     * parameters,and return the unique identifier of the task after successful registration.
-     *
-     * @param expression a valid cron expression.
-     * @param runnable   the {@code Runnable} executed when cron expression expects time.
-     * @return After successful registration, return the unique ID of the registration task,
-     * which can be used for subsequent updates and deletions.
-     * @throws CronInternalException    the internal exceptions generated by the
-     *                                  framework used for registration are detailed
-     *                                  in {@link CronInternalException#getCause()}.
-     * @throws IllegalArgumentException if input expression is invalid.
-     * @throws NullPointerException     if input expression or body is {@literal null}.
-     * @since 1.0.3
-     */
-    String register(@NotNull String expression, @NotNull Runnable runnable) throws CronInternalException;
-
-    /**
-     * Register a new scheduled task using the given cron expression and a {@code CronMethodRunnable}.
-     *
-     * <p>This method receives a valid cron expression and a {@code CronMethodRunnable}
-     * as input parameters,and return the unique identifier of the task after successful
-     * registration.
-     *
-     * @param expression a valid cron expression.
-     * @param runnable   the {@code CronMethodRunnable} executed when cron expression expects time.
-     * @return After successful registration, return the unique ID of the registration task,
-     * which can be used for subsequent updates and deletions.
-     * @throws CronInternalException    the internal exceptions generated by the
-     *                                  framework used for registration are detailed
-     *                                  in {@link CronInternalException#getCause()}.
-     * @throws IllegalArgumentException if input expression is invalid.
-     * @throws NullPointerException     if input expression or body is {@literal null}.
-     * @since 1.0.3
-     */
-    String register(@NotNull String expression, @NotNull CronMethodRunnable runnable) throws CronInternalException;
-
-    /**
-     * Register a new scheduled task using the given cron expression and a {@code RunnableTaskBody}.
-     *
-     * <p>This method receives a valid cron expression and a {@code RunnableTaskBody} as input
-     * parameters,and return the unique identifier of the task after successful registration.
-     *
-     * @param expression a valid cron expression.
-     * @param body       the {@code RunnableTaskBody} executed when cron expression expects time.
-     * @return After successful registration, return the unique ID of the registration task,
-     * which can be used for subsequent updates and deletions.
-     * @throws CronInternalException    the internal exceptions generated by the
-     *                                  framework used for registration are detailed
-     *                                  in {@link CronInternalException#getCause()}.
-     * @throws IllegalArgumentException if input expression is invalid.
-     * @throws NullPointerException     if input expression or body is {@literal null}.
-     * @since 1.0.3
-     */
-    String register(@NotNull String expression, @NotNull RunnableTaskBody body) throws CronInternalException;
-
-    /**
-     * Register a new scheduled task using the given cron expression and a {@code TaskBody}.
-     *
-     * <p>This method receives a valid cron expression and a {@code TaskBody} as input
-     * parameters,and return the unique identifier of the task after successful registration.
-     *
-     * <p>The execution parameter {@code TaskBody} is a custom parameter, which is determined
-     * based on the framework implementation used. Developers can create and pass custom
-     * parameters based on this.
-     *
-     * @param expression a valid cron expression.
-     * @param body       the {@code TaskBody} executed when cron expression expects time.
-     * @return After successful registration, return the unique ID of the registration task,
-     * which can be used for subsequent updates and deletions.
-     * @throws CronInternalException        the internal exceptions generated by the
-     *                                      framework used for registration are detailed
-     *                                      in {@link CronInternalException#getCause()}.
-     * @throws IllegalArgumentException     if input expression is invalid.
-     * @throws NullPointerException         if input expression or body is {@literal null}.
-     * @throws UnsupportedTaskBodyException if input {@code TaskBody} is not supported.
-     */
-    String register(@NotNull String expression, @NotNull TaskBody body) throws CronInternalException,
-            UnsupportedTaskBodyException;
-
-    /**
-     * Register a new scheduled task using the given {@code CronTask} object.
-     *
-     * <p>The {@code CronTask} object encapsulates the cron expression and task body
-     * information of the task.
-     *
-     * <p>This method takes a {@code CronTask} object as an input parameter and returns
-     * the unique identifier of the task after successful registration.
-     *
-     * @param task a task metadata encapsulation object {@code CronTask}.
-     * @return After successful registration, return the unique ID of the registration task,
-     * which can be used for subsequent updates and deletions.
-     * @throws CronInternalException    the internal exceptions generated by the
-     *                                  framework used for registration are detailed
-     *                                  in {@link CronInternalException#getCause()}.
-     * @throws IllegalArgumentException if input {@link CronTask#getExpression()} is invalid.
-     * @throws NullPointerException     if input {@code CronTask} or body is {@literal null}.
-     */
-    String register(@NotNull CronTask task) throws CronInternalException;
-
-    /**
-     * Register a new scheduled task using the given cron expression and a {@code Runnable},
-     * and it will be automatically cleared after running once.
-     *
-     * <p>This method receives a valid cron expression and a {@code Runnable} as input
-     * parameters,and return the unique identifier of the task after successful registration.
-     *
-     * @param expression a valid cron expression.
-     * @param runnable   the {@code Runnable} executed when cron expression expects time.
-     * @throws CronInternalException    the internal exceptions generated by the
-     *                                  framework used for registration are detailed
-     *                                  in {@link CronInternalException#getCause()}.
-     * @throws IllegalArgumentException if input expression is invalid.
-     * @throws NullPointerException     if input expression or body is {@literal null}.
-     * @since 1.0.3
-     */
-    default void registerRunOnce(@NotNull String expression, @NotNull Runnable runnable) throws CronInternalException {
-        registerRunTimes(expression, runnable, 1);
-    }
-
-    /**
-     * Register a new scheduled task using the given cron expression and a {@code CronMethodRunnable},
-     * and it will be automatically cleared after running once.
-     *
-     * <p>This method receives a valid cron expression and a {@code CronMethodRunnable}
-     * as input parameters,and return the unique identifier of the task after successful
-     * registration.
-     *
-     * @param expression a valid cron expression.
-     * @param runnable   the {@code CronMethodRunnable} executed when cron expression expects time.
-     * @throws CronInternalException    the internal exceptions generated by the
-     *                                  framework used for registration are detailed
-     *                                  in {@link CronInternalException#getCause()}.
-     * @throws IllegalArgumentException if input expression is invalid.
-     * @throws NullPointerException     if input expression or body is {@literal null}.
-     * @since 1.0.3
-     */
-    default void registerRunOnce(@NotNull String expression, @NotNull CronMethodRunnable runnable)
-            throws CronInternalException {
-        registerRunTimes(expression, runnable, 1);
-    }
-
-    /**
-     * Register a new scheduled task using the given cron expression and a {@code RunnableTaskBody},
-     * and it will be automatically cleared after running once.
-     *
-     * <p>This method receives a valid cron expression and a {@code RunnableTaskBody} as input
-     * parameters,and return the unique identifier of the task after successful registration.
-     *
-     * @param expression a valid cron expression.
-     * @param body       the {@code RunnableTaskBody} executed when cron expression expects time.
-     * @throws CronInternalException    the internal exceptions generated by the
-     *                                  framework used for registration are detailed
-     *                                  in {@link CronInternalException#getCause()}.
-     * @throws IllegalArgumentException if input expression is invalid.
-     * @throws NullPointerException     if input expression or body is {@literal null}.
-     * @since 1.0.3
-     */
-    default void registerRunOnce(@NotNull String expression, @NotNull RunnableTaskBody body)
-            throws CronInternalException {
-        registerRunTimes(expression, body, 1);
-    }
-
-    /**
-     * Register a new scheduled task using the given cron expression and a {@code TaskBody},
-     * and it will be automatically cleared after running once.
-     *
-     * <p>This method receives a valid cron expression and a {@code TaskBody} as input
-     * parameters,and return the unique identifier of the task after successful registration.
-     *
-     * <p>The execution parameter {@code TaskBody} is a custom parameter, which is determined
-     * based on the framework implementation used. Developers can create and pass custom
-     * parameters based on this.
-     *
-     * @param expression a valid cron expression.
-     * @param body       the {@code TaskBody} executed when cron expression expects time.
-     * @throws CronInternalException        the internal exceptions generated by the
-     *                                      framework used for registration are detailed
-     *                                      in {@link CronInternalException#getCause()}.
-     * @throws IllegalArgumentException     if input expression is invalid.
-     * @throws NullPointerException         if input expression or body is {@literal null}.
-     * @throws UnsupportedTaskBodyException if input {@code TaskBody} is not supported.
-     */
-    default void registerRunOnce(@NotNull String expression, @NotNull TaskBody body) throws CronInternalException,
-            UnsupportedTaskBodyException {
-        registerRunTimes(expression, body, 1);
-    }
-
-    /**
-     * Register a new scheduled task using the given {@code CronTask} object,
-     * and it will be automatically cleared after running once.
-     *
-     * <p>The {@code CronTask} object encapsulates the cron expression and task body
-     * information of the task.
-     *
-     * <p>This method takes a {@code CronTask} object as an input parameter and returns
-     * the unique identifier of the task after successful registration.
-     *
-     * @param task a task metadata encapsulation object {@code CronTask}.
-     * @throws CronInternalException    the internal exceptions generated by the
-     *                                  framework used for registration are detailed
-     *                                  in {@link CronInternalException#getCause()}.
-     * @throws IllegalArgumentException if input {@link CronTask#getExpression()} is invalid.
-     * @throws NullPointerException     if input {@code CronTask} or body is {@literal null}.
-     */
-    default void registerRunOnce(@NotNull CronTask task) throws CronInternalException {
-        registerRunTimes(task, 1);
-    }
-
-    /**
-     * Register a new scheduled task using the given cron expression and {@code Runnable},
-     * and automatically clear it after running the specified number of times.
-     *
-     * <p>This method receives a valid cron expression and a {@code Runnable} as input
-     * parameters,and return the unique identifier of the task after successful registration.
-     *
-     * @param expression a valid cron expression.
-     * @param runnable   the {@code Runnable} executed when cron expression expects time.
-     * @param times      the number of runs specified based on the expression's runtime.
-     * @throws CronInternalException    the internal exceptions generated by the
-     *                                  framework used for registration are detailed
-     *                                  in {@link CronInternalException#getCause()}.
-     * @throws IllegalArgumentException if input expression is invalid.
-     * @throws IllegalArgumentException if input times not be greater than 0.
-     * @throws NullPointerException     if input expression or body is {@literal null}.
-     * @since 1.0.3
-     */
-    void registerRunTimes(@NotNull String expression, @NotNull Runnable runnable, int times)
-            throws CronInternalException;
-
-    /**
-     * Register a new scheduled task using the given cron expression and a {@code CronMethodRunnable},
-     * and automatically clear it after running the specified number of times.
-     *
-     * <p>This method receives a valid cron expression and a {@code CronMethodRunnable}
-     * as input parameters,and return the unique identifier of the task after successful
-     * registration.
-     *
-     * @param expression a valid cron expression.
-     * @param runnable   the {@code CronMethodRunnable} executed when cron expression expects time.
-     * @param times      the number of runs specified based on the expression's runtime.
-     * @throws CronInternalException    the internal exceptions generated by the
-     *                                  framework used for registration are detailed
-     *                                  in {@link CronInternalException#getCause()}.
-     * @throws IllegalArgumentException if input expression is invalid.
-     * @throws IllegalArgumentException if input times not be greater than 0.
-     * @throws NullPointerException     if input expression or body is {@literal null}.
-     * @since 1.0.3
-     */
-    void registerRunTimes(@NotNull String expression, @NotNull CronMethodRunnable runnable, int times)
-            throws CronInternalException;
-
-    /**
-     * Register a new scheduled task using the given cron expression and a {@code RunnableTaskBody},
-     * and automatically clear it after running the specified number of times.
-     *
-     * <p>This method receives a valid cron expression and a {@code RunnableTaskBody} as input
-     * parameters,and return the unique identifier of the task after successful registration.
-     *
-     * @param expression a valid cron expression.
-     * @param body       the {@code RunnableTaskBody} executed when cron expression expects time.
-     * @param times      the number of runs specified based on the expression's runtime.
-     * @throws CronInternalException    the internal exceptions generated by the
-     *                                  framework used for registration are detailed
-     *                                  in {@link CronInternalException#getCause()}.
-     * @throws IllegalArgumentException if input expression is invalid.
-     * @throws IllegalArgumentException if input times not be greater than 0.
-     * @throws NullPointerException     if input expression or body is {@literal null}.
-     * @since 1.0.3
-     */
-    void registerRunTimes(@NotNull String expression, @NotNull RunnableTaskBody body, int times)
-            throws CronInternalException;
-
-    /**
-     * Register a new scheduled task using the given cron expression and a {@code TaskBody},
-     * and automatically clear it after running the specified number of times.
-     *
-     * <p>This method receives a valid cron expression and a {@code TaskBody} as input
-     * parameters,and return the unique identifier of the task after successful registration.
-     *
-     * <p>The execution parameter {@code TaskBody} is a custom parameter, which is determined
-     * based on the framework implementation used. Developers can create and pass custom
-     * parameters based on this.
-     *
-     * @param expression a valid cron expression.
-     * @param body       the {@code TaskBody} executed when cron expression expects time.
-     * @param times      the number of runs specified based on the expression's runtime.
-     * @throws CronInternalException        the internal exceptions generated by the
-     *                                      framework used for registration are detailed
-     *                                      in {@link CronInternalException#getCause()}.
-     * @throws IllegalArgumentException     if input expression is invalid.
-     * @throws IllegalArgumentException     if input times not be greater than 0.
-     * @throws NullPointerException         if input expression or body is {@literal null}.
-     * @throws UnsupportedTaskBodyException if input {@code TaskBody} is not supported.
-     */
-    void registerRunTimes(@NotNull String expression, @NotNull TaskBody body, int times) throws CronInternalException,
-            UnsupportedTaskBodyException;
-
-    /**
-     * Register a new scheduled task using the given {@code CronTask} object,
-     * and automatically clear it after running the specified number of times.
-     *
-     * <p>The {@code CronTask} object encapsulates the cron expression and task body
-     * information of the task.
-     *
-     * <p>This method takes a {@code CronTask} object as an input parameter and returns
-     * the unique identifier of the task after successful registration.
-     *
-     * @param task  a task metadata encapsulation object {@code CronTask}.
-     * @param times the number of runs specified based on the expression's runtime.
-     * @throws CronInternalException    the internal exceptions generated by the
-     *                                  framework used for registration are detailed
-     *                                  in {@link CronInternalException#getCause()}.
-     * @throws IllegalArgumentException if input {@link CronTask#getExpression()} is invalid.
-     * @throws IllegalArgumentException if input times not be greater than 0.
-     * @throws NullPointerException     if input {@code CronTask} or body is {@literal null}.
-     */
-    void registerRunTimes(@NotNull CronTask task, int times) throws CronInternalException;
-
-    /**
-     * Return a {@code Boolean} tag indicating whether there is a corresponding
-     * scheduled task {@link CronTaskInfo} for the given ID.
-     * @param id the unique identifier of the registered cron task.
-     * @return if {@code true} prove this id's task exist,{@code false} otherwise.
-     * @since 3.0.1
-     */
-    boolean hasCronTaskInfo(@NotNull String id);
-
-    /**
-     * Retrieves cron task information based on a given unique identifier.
-     *
-     * <p>This method is used to query the information of a registered cron task that matches
-     * the specified ID. If a cron task with this ID exists in the system,it returns the task's
-     * information; otherwise, it returns null.
-     *
-     * @param id the unique identifier of the registered cron task.
-     * @return The cron task information object that matches the given ID (if exists); otherwise,
-     * returns {@literal null}.
-     * @throws NullPointerException if input id is {@literal null}.
-     * @since 1.0.3
-     */
-    @Nullable
-    CronTaskInfo getCronTaskInfo(@NotNull String id);
-
-    /**
-     * Retrieves information for all registered cron tasks.
-     *
-     * <p>This method returns a list of information for all registered cron tasks in the system.
-     * If no cron tasks are registered in the system,it returns an empty list.
-     *
-     * @return A list containing information for all registered cron tasks. If the list is empty,
-     * it indicates that no cron tasks are registered.
-     * @since 1.0.3
-     */
-    List<CronTaskInfo> getAllCronTaskInfo();
-
-    /**
-     * Update the cron expression for registered scheduled tasks.
-     *
-     * <p>This method takes the unique identifier of the task and a new cron expression
-     * as input parameters, and updates the execution time of the task based on the new
-     * cron expression.
-     *
-     * @param id            the Unique ID of the registered task.
-     * @param newExpression a valid new cron expression.
-     * @throws CronInternalException    the internal exceptions generated by the
-     *                                  framework used for updating are detailed
-     *                                  in {@link CronInternalException#getCause()}.
-     * @throws IllegalArgumentException if input newExpression is invalid.
-     * @throws NullPointerException     if input id or newExpression is {@literal null}.
-     */
-    void update(@NotNull String id, @NotNull String newExpression) throws CronInternalException;
-
-    /**
-     * Delete registered scheduled tasks.
-     *
-     * <p>This method receives the unique identifier of the task as an input parameter
-     * and deletes the corresponding scheduled task based on that identifier.
-     *
-     * @param id the Unique ID of the registered task.
-     * @throws CronInternalException the internal exceptions generated by the
-     *                               framework used for removing are detailed
-     *                               in {@link CronInternalException#getCause()}.
-     * @throws NullPointerException  if input id is {@literal null}.
-     */
-    void remove(@NotNull String id) throws CronInternalException;
+@ThreadSafe
+public interface CronTaskRepository extends Repository, RunTimesRegistrarRepository, RunTimeoutRegistrarRepository,
+        ListableRepository, CronListenerRepository, LifecycleRepository, Wrapper {
 }
