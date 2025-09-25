@@ -22,28 +22,26 @@ import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 import top.osjf.cron.core.lang.NotNull;
 
 /**
- * Timing task execution timeout control repository interface, extends from {@link CronTaskRunTimesRepository}.
+ * {@code RunTimeoutRegistrarRepository} is a task scheduling runtime that specifies the
+ * timeout period for a single run.
  *
- * <p>This interface extends the basic timing task functionality by adding timeout control configuration
- * during task execution, suitable for scenarios that require strict limits on task execution time.
- *
- * <p>Provides multiple registration methods supporting different types of task bodies ({@link Runnable},
- * {@link CronMethodRunnable}, {@link RunnableTaskBody}, {@link TaskBody}) combined with timeout configuration,
- * including variants for single-run and multiple-run scenarios.
+ * <p>This interface is compatible with the APIs of {@link GeneralRegistrarRepository}
+ * and {@link RunTimesRegistrarRepository}, and adds a {@link RunningTimeout} parameter
+ * on top of them to control the timeout of task execution, limit the number of joint runs,
+ * and add more precise control to task execution. It is often used in temporary scheduling
+ * tasks for precise control.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
  */
-public interface CronTaskRunTimeoutRepository extends CronTaskRunTimesRepository, Repository {
+public interface RunTimeoutRegistrarRepository
+        extends Repository, RunTimesRegistrarRepository, GeneralRegistrarRepository {
 
     /**
      * Register a new scheduled task using the given cron expression and a {@code Runnable}
      * and an instance of timeout control configuration during task execution.
-     *
-     *
      * <p>This method receives a valid cron expression and a {@code Runnable} as input
      * parameters,and return the unique identifier of the task after successful registration.
-     *
      * @param expression a valid cron expression.
      * @param runnable   the {@code Runnable} executed when cron expression expects time.
      * @param timeout    configure instance for timeout control during task execution.
@@ -61,7 +59,6 @@ public interface CronTaskRunTimeoutRepository extends CronTaskRunTimesRepository
     /**
      * Register a new scheduled task using the given cron expression and a {@code CronMethodRunnable}
      * and an instance of timeout control configuration during task execution.
-     *
      * <p>This method receives a valid cron expression and a {@code CronMethodRunnable}
      * as input parameters,and return the unique identifier of the task after successful
      * registration.
@@ -83,7 +80,6 @@ public interface CronTaskRunTimeoutRepository extends CronTaskRunTimesRepository
     /**
      * Register a new scheduled task using the given cron expression and a {@code RunnableTaskBody}
      * and an instance of timeout control configuration during task execution.
-     *
      * <p>This method receives a valid cron expression and a {@code RunnableTaskBody} as input
      * parameters,and return the unique identifier of the task after successful registration.
      *
@@ -104,10 +100,8 @@ public interface CronTaskRunTimeoutRepository extends CronTaskRunTimesRepository
     /**
      * Register a new scheduled task using the given cron expression and a {@code TaskBody}.
      * and an instance of timeout control configuration during task execution.
-     *
      * <p>This method receives a valid cron expression and a {@code TaskBody} as input
      * parameters,and return the unique identifier of the task after successful registration.
-     *
      * <p>The execution parameter {@code TaskBody} is a custom parameter, which is determined
      * based on the framework implementation used. Developers can create and pass custom
      * parameters based on this.
@@ -132,7 +126,6 @@ public interface CronTaskRunTimeoutRepository extends CronTaskRunTimesRepository
      * and an instance of timeout control configuration during task execution.
      * <p>The {@code CronTask} object encapsulates the cron expression and task body
      * information of the task.
-     *
      * <p>This method takes a {@code CronTask} object as an input parameter and returns
      * the unique identifier of the task after successful registration.
      *
@@ -152,7 +145,6 @@ public interface CronTaskRunTimeoutRepository extends CronTaskRunTimesRepository
      * Register a new scheduled task using the given cron expression and a {@code Runnable}
      * and an instance of timeout control configuration during task execution,and it will
      * be automatically cleared after running once
-     *
      * <p>This method receives a valid cron expression and a {@code Runnable} as input
      * parameters,and return the unique identifier of the task after successful registration.
      *
@@ -173,7 +165,6 @@ public interface CronTaskRunTimeoutRepository extends CronTaskRunTimesRepository
      * Register a new scheduled task using the given cron expression and a {@code CronMethodRunnable}
      * and an instance of timeout control configuration during task execution, and it will be
      * automatically cleared after running once.
-     *
      * <p>This method receives a valid cron expression and a {@code CronMethodRunnable}
      * as input parameters,and return the unique identifier of the task after successful
      * registration.
@@ -196,7 +187,6 @@ public interface CronTaskRunTimeoutRepository extends CronTaskRunTimesRepository
      * Register a new scheduled task using the given cron expression and a {@code RunnableTaskBody}
      * and an instance of timeout control configuration during task execution, and it will be
      * automatically cleared after running once.
-     *
      * <p>This method receives a valid cron expression and a {@code RunnableTaskBody} as input
      * parameters,and return the unique identifier of the task after successful registration.
      *
@@ -218,10 +208,8 @@ public interface CronTaskRunTimeoutRepository extends CronTaskRunTimesRepository
      * Register a new scheduled task using the given cron expression and a {@code TaskBody}
      * and an instance of timeout control configuration during task execution, and it will
      * be automatically cleared after running once.
-     *
      * <p>This method receives a valid cron expression and a {@code TaskBody} as input
      * parameters,and return the unique identifier of the task after successful registration.
-     *
      * <p>The execution parameter {@code TaskBody} is a custom parameter, which is determined
      * based on the framework implementation used. Developers can create and pass custom
      * parameters based on this.
@@ -245,10 +233,8 @@ public interface CronTaskRunTimeoutRepository extends CronTaskRunTimesRepository
      * Register a new scheduled task using the given {@code CronTask} object and an instance of
      * timeout control configuration during task execution, and it will be automatically cleared
      * after running once.
-     *
      * <p>The {@code CronTask} object encapsulates the cron expression and task body
      * information of the task.
-     *
      * <p>This method takes a {@code CronTask} object as an input parameter and returns
      * the unique identifier of the task after successful registration.
      *
@@ -268,7 +254,6 @@ public interface CronTaskRunTimeoutRepository extends CronTaskRunTimesRepository
      * Register a new scheduled task using the given cron expression and {@code Runnable}
      * and an instance of timeout control configuration during task execution,and automatically
      * clear it after running the specified number of times.
-     *
      * <p>This method receives a valid cron expression and a {@code Runnable} as input
      * parameters,and return the unique identifier of the task after successful registration.
      *
@@ -278,8 +263,8 @@ public interface CronTaskRunTimeoutRepository extends CronTaskRunTimesRepository
      * @throws CronInternalException    the internal exceptions generated by the
      *                                  framework used for registration are detailed
      *                                  in {@link CronInternalException#getCause()}.
-     * @throws IllegalArgumentException if input expression is invalid.
-     * @throws IllegalArgumentException if input times not be greater than 0.
+     * @throws IllegalArgumentException  if input expression is invalid or input times
+     *                                   not be greater than 0.
      * @throws NullPointerException     if input expression or body is {@literal null}.
      */
     void registerRunTimes(@NotNull String expression, @NotNull Runnable runnable, int times,
@@ -290,7 +275,6 @@ public interface CronTaskRunTimeoutRepository extends CronTaskRunTimesRepository
      * Register a new scheduled task using the given cron expression and a {@code CronMethodRunnable}
      * and an instance of timeout control configuration during task execution, and automatically clear
      * it after running the specified number of times.
-     *
      * <p>This method receives a valid cron expression and a {@code CronMethodRunnable}
      * as input parameters,and return the unique identifier of the task after successful
      * registration.
@@ -302,8 +286,8 @@ public interface CronTaskRunTimeoutRepository extends CronTaskRunTimesRepository
      * @throws CronInternalException    the internal exceptions generated by the
      *                                  framework used for registration are detailed
      *                                  in {@link CronInternalException#getCause()}.
-     * @throws IllegalArgumentException if input expression is invalid.
-     * @throws IllegalArgumentException if input times not be greater than 0.
+     * @throws IllegalArgumentException  if input expression is invalid or input times
+     *                                   not be greater than 0.
      * @throws NullPointerException     if input expression or body is {@literal null}.
      */
     void registerRunTimes(@NotNull String expression, @NotNull CronMethodRunnable runnable, int times,
@@ -314,7 +298,6 @@ public interface CronTaskRunTimeoutRepository extends CronTaskRunTimesRepository
      * Register a new scheduled task using the given cron expression and a {@code RunnableTaskBody},
      * and an instance of timeout control configuration during task execution and automatically
      * clear it after running the specified number of times.
-     *
      * <p>This method receives a valid cron expression and a {@code RunnableTaskBody} as input
      * parameters,and return the unique identifier of the task after successful registration.
      *
@@ -325,8 +308,8 @@ public interface CronTaskRunTimeoutRepository extends CronTaskRunTimesRepository
      * @throws CronInternalException    the internal exceptions generated by the
      *                                  framework used for registration are detailed
      *                                  in {@link CronInternalException#getCause()}.
-     * @throws IllegalArgumentException if input expression is invalid.
-     * @throws IllegalArgumentException if input times not be greater than 0.
+     * @throws IllegalArgumentException  if input expression is invalid or input times
+     *                                      not be greater than 0.
      * @throws NullPointerException     if input expression or body is {@literal null}.
      */
     void registerRunTimes(@NotNull String expression, @NotNull RunnableTaskBody body, int times,
@@ -337,10 +320,8 @@ public interface CronTaskRunTimeoutRepository extends CronTaskRunTimesRepository
      * Register a new scheduled task using the given cron expression and a {@code TaskBody}
      * and an instance of timeout control configuration during task execution and automatically
      * clear it after running the specified number of times.
-     *
      * <p>This method receives a valid cron expression and a {@code TaskBody} as input
      * parameters,and return the unique identifier of the task after successful registration.
-     *
      * <p>The execution parameter {@code TaskBody} is a custom parameter, which is determined
      * based on the framework implementation used. Developers can create and pass custom
      * parameters based on this.
@@ -352,8 +333,8 @@ public interface CronTaskRunTimeoutRepository extends CronTaskRunTimesRepository
      * @throws CronInternalException        the internal exceptions generated by the
      *                                      framework used for registration are detailed
      *                                      in {@link CronInternalException#getCause()}.
-     * @throws IllegalArgumentException     if input expression is invalid.
-     * @throws IllegalArgumentException     if input times not be greater than 0.
+     * @throws IllegalArgumentException     if input expression is invalid or input times
+     *                                      not be greater than 0.
      * @throws NullPointerException         if input expression or body is {@literal null}.
      * @throws UnsupportedTaskBodyException if input {@code TaskBody} is not supported.
      */
@@ -364,10 +345,8 @@ public interface CronTaskRunTimeoutRepository extends CronTaskRunTimesRepository
      * Register a new scheduled task using the given {@code CronTask} object
      * and an instance of timeout control configuration during task execution,
      * and automatically clear it after running the specified number of times.
-     *
      * <p>The {@code CronTask} object encapsulates the cron expression and task body
      * information of the task.
-     *
      * <p>This method takes a {@code CronTask} object as an input parameter and returns
      * the unique identifier of the task after successful registration.
      *
@@ -377,8 +356,8 @@ public interface CronTaskRunTimeoutRepository extends CronTaskRunTimesRepository
      * @throws CronInternalException    the internal exceptions generated by the
      *                                  framework used for registration are detailed
      *                                  in {@link CronInternalException#getCause()}.
-     * @throws IllegalArgumentException if input {@link CronTask#getExpression()} is invalid.
-     * @throws IllegalArgumentException if input times not be greater than 0.
+     * @throws IllegalArgumentException if input {@link CronTask#getExpression()}
+     *                                  is invalid or input times not be greater than 0.
      * @throws NullPointerException     if input {@code CronTask} or body is {@literal null}.
      */
     void registerRunTimes(@NotNull CronTask task, int times, @NotNull RunningTimeout timeout)
