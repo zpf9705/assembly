@@ -22,6 +22,10 @@ import top.osjf.cron.core.lang.Nullable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
+ * The abstract implementation of {@link CronTaskRepository} inherits a series of classes
+ * such as {@link AbstractRunTimeoutRegistrarRepository} to give {@link CronTaskRepository}
+ * a default implementation.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
