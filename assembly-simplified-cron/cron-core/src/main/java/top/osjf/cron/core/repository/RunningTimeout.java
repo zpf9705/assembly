@@ -60,7 +60,7 @@ public class RunningTimeout {
      * @param timeUnit longest waiting time for a single trigger run timeout unit.
      */
     public RunningTimeout(long timeout, TimeUnit timeUnit) {
-        this(timeout, timeUnit, RunningTimeoutPolicy.BREAK);
+        this(timeout, timeUnit, RunningTimeoutPolicy.INTERRUPT);
     }
 
     /**
