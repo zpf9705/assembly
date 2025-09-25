@@ -410,4 +410,13 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
 
         return scheduler;
     }
+
+    @Override
+    protected Runnable asRunnable(TaskBody body) throws UnsupportedTaskBodyException {
+        if (body instanceof InvokeTaskBody) {
+            return () -> ((InvokeTaskBody) body).getInvokeTask().execute();
+        }
+
+        return super.asRunnable(body);
+    }
 }
