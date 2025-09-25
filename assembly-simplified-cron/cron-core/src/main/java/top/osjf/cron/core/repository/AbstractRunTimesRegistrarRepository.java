@@ -107,7 +107,7 @@ public abstract class AbstractRunTimesRegistrarRepository
      */
     @Override
     public void addListener(@NotNull CronListener listener) {
-        ensureCheckedListenerIsLastIfRuntime(() -> addListener(listener));
+        ensureCheckedListenerIsLastIfRuntime(() -> super.addListener(listener));
     }
 
     /**
@@ -115,7 +115,7 @@ public abstract class AbstractRunTimesRegistrarRepository
      */
     @Override
     public void addLastListener(@NotNull CronListener listener) {
-        ensureCheckedListenerIsLastIfRuntime(() -> addLastListener(listener));
+        ensureCheckedListenerIsLastIfRuntime(() -> super.addLastListener(listener));
     }
 
     /**
@@ -134,7 +134,7 @@ public abstract class AbstractRunTimesRegistrarRepository
 
         // Check if the listener for task frequency management has been registered.
         if (isRunTimesCheckListenerRegistered.compareAndSet(false, true)) {
-            addLastListener(checkedCronListener);
+            super.addLastListener(checkedCronListener);
         }
 
         // Register the task and obtain the ID.
