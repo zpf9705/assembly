@@ -34,10 +34,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 /**
- * An abstract implementation class of {@link RunTimesRegistrarRepository} that inherits
- * {@link AbstractCronListenerRepository} to set the call frequency listener
- * {@link RunTimesCheckedCronListener}, decrements the set maximum number of runs, and
- * removes related tasks when the frequency is 0.
+ * The abstract implementation class of {@link RunTimesRegistrarRepository} implements
+ * monitoring of the number of runs.
+ *
+ * <p>This abstract class uses atomic Boolean notation {@link #isRunTimesCheckListenerRegistered}
+ * to specify whether a {@link #checkedCronListener} task runtime listener has been placed when
+ * registering related API tasks based on the number of runs, ensuring that it always processes
+ * the last check bit to ensure post-processing. Use a thread safe map {@link #taskRunTimesMap} to
+ * incrementally decrease the specified number of executions to implement the relevant API logic.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
@@ -173,6 +177,7 @@ public abstract class AbstractRunTimesRegistrarRepository
             addLastListener(checkedCronListener);
         }
     }
+
     /**
      * @return Return an immutable run count record map.
      */
