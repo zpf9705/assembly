@@ -37,7 +37,7 @@ public abstract class AbstractCronTaskRepository
      * number of runs.
      * @since 3.0.1
      */
-    public long getTaskRemainingNumberOfRuns(String taskId) {
+    protected long getTaskRemainingNumberOfRuns(String taskId) {
         AtomicInteger count = getTaskRunTimesMap().getOrDefault(taskId, null);
         return count == null ? hasCronTaskInfo(taskId) ? -1 : 0 : count.get();
     }
