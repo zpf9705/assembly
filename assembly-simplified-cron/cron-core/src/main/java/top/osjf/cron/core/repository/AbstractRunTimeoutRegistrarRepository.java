@@ -22,6 +22,13 @@ import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 import top.osjf.cron.core.lang.NotNull;
 
 /**
+ * An abstract implementation class of {@link RunTimeoutRegistrarRepository} that adds
+ * a single timeout run on top of regular registration and run limit registration.
+ *
+ * <p>Relying on {@link FutureTaskRunnable} to achieve operational control over
+ * {@link Runnable}, regular registration still uses APIs for {@link RunTimesRegistrarRepository}
+ * and {@link GeneralRegistrarRepository}.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
  */
