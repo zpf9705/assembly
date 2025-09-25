@@ -21,8 +21,7 @@ import top.osjf.cron.core.exception.CronInternalException;
 
 /**
  * Throwing this exception indicates a runtime exception during
- * task scheduling execution. Please refer to {@link #getCause()}
- * for the specific type.
+ * task scheduling execution.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
