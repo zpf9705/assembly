@@ -22,24 +22,30 @@ import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 import top.osjf.cron.core.lang.NotNull;
 
 /**
- * General cron task repository interface providing multiple registration implementations.
+ * {@code GeneralRegistrarRepository} is a universal and fundamental task resource interface.
  *
- * <p>This interface extends {@link CronTaskRepository} and {@link Repository}, defines
- * various methods for registering cron tasks,supporting different task body types ({@link Runnable},
- * {@link CronMethodRunnable}, etc.) and parameter forms (separate parameters or {@link CronTask} object).
- * All registration methods return a unique task identifier for subsequent task management and operations.
+ * <p>This interface is used for registering task scheduling and running using specified
+ * information, which requires direct implementation by components and is the most basic
+ * method of task scheduling. In this interface, you can specify a cron expression and
+ * perform task editing with {@link Runnable}/{@link CronMethodRunnable}/{@link TaskBody}
+ * /{@link CronTask}, etc. Here is a simple example of API {@link #register(String, Runnable)}
+ * code:
+ * <pre>{@code
+ * repository.register("0 0 12 * * ?", () -> System.out.println("Execute at 12:00 noon"));
+ * }</pre>
+ * </p>Each method returns a unique ID of the scheduled task, which can be used for query
+ * operations on interface {@link ListableRepository} and modification operations on interface
+ * {@link ModifiableRepository}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
  */
-public interface CronTaskGeneralRepository extends CronTaskRepository, Repository {
+public interface GeneralRegistrarRepository extends Repository {
 
     /**
      * Register a new scheduled task using the given cron expression and a {@code Runnable}.
-     *
      * <p>This method receives a valid cron expression and a {@code Runnable} as input
      * parameters,and return the unique identifier of the task after successful registration.
-     *
      * @param expression a valid cron expression.
      * @param runnable   the {@code Runnable} executed when cron expression expects time.
      * @return After successful registration, return the unique ID of the registration task,
@@ -54,11 +60,9 @@ public interface CronTaskGeneralRepository extends CronTaskRepository, Repositor
 
     /**
      * Register a new scheduled task using the given cron expression and a {@code CronMethodRunnable}.
-     *
      * <p>This method receives a valid cron expression and a {@code CronMethodRunnable}
      * as input parameters,and return the unique identifier of the task after successful
      * registration.
-     *
      * @param expression a valid cron expression.
      * @param runnable   the {@code CronMethodRunnable} executed when cron expression expects time.
      * @return After successful registration, return the unique ID of the registration task,
@@ -73,10 +77,8 @@ public interface CronTaskGeneralRepository extends CronTaskRepository, Repositor
 
     /**
      * Register a new scheduled task using the given cron expression and a {@code RunnableTaskBody}.
-     *
      * <p>This method receives a valid cron expression and a {@code RunnableTaskBody} as input
      * parameters,and return the unique identifier of the task after successful registration.
-     *
      * @param expression a valid cron expression.
      * @param body       the {@code RunnableTaskBody} executed when cron expression expects time.
      * @return After successful registration, return the unique ID of the registration task,
@@ -91,14 +93,11 @@ public interface CronTaskGeneralRepository extends CronTaskRepository, Repositor
 
     /**
      * Register a new scheduled task using the given cron expression and a {@code TaskBody}.
-     *
      * <p>This method receives a valid cron expression and a {@code TaskBody} as input
      * parameters,and return the unique identifier of the task after successful registration.
-     *
      * <p>The execution parameter {@code TaskBody} is a custom parameter, which is determined
      * based on the framework implementation used. Developers can create and pass custom
      * parameters based on this.
-     *
      * @param expression a valid cron expression.
      * @param body       the {@code TaskBody} executed when cron expression expects time.
      * @return After successful registration, return the unique ID of the registration task,
@@ -115,13 +114,10 @@ public interface CronTaskGeneralRepository extends CronTaskRepository, Repositor
 
     /**
      * Register a new scheduled task using the given {@code CronTask} object.
-     *
      * <p>The {@code CronTask} object encapsulates the cron expression and task body
      * information of the task.
-     *
      * <p>This method takes a {@code CronTask} object as an input parameter and returns
      * the unique identifier of the task after successful registration.
-     *
      * @param task a task metadata encapsulation object {@code CronTask}.
      * @return After successful registration, return the unique ID of the registration task,
      * which can be used for subsequent updates and deletions.
