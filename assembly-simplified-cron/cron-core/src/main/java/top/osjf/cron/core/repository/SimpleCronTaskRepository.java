@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -168,9 +169,6 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
     public void stop() {
         super.stop();
         if (awaitTermination) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Closed Pool");
-            }
             scheduledExecutorService.shutdown();
             try {
                 if (!scheduledExecutorService.awaitTermination(awaitTerminationTimeout, awaitTerminationTimeoutUnit)) {
@@ -240,7 +238,14 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
          */
         private final Lock scheduleLock = new ReentrantLock();
 
-        private ScheduledFuture<?> scheduledFuture;
+        /**
+         * The atomic Boolean tag indicates that there should be no more {@link #schedule()}
+         * after {@link #cancel(boolean)}, indicating that the current task has been interrupted.
+         * @since 3.0.2
+         */
+        private final AtomicBoolean canceledFlag = new AtomicBoolean(false);
+
+        private volatile ScheduledFuture<?> scheduledFuture;
 
         /**
          * Creates a new {@link SimpleRunnabledScheduledFuture} with ron expression
@@ -254,6 +259,7 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
             this.listenerContext = new SimpleListenerContext(getNextId(), this);
             this.cron = parseToCron(expression);
             schedule();
+            futureCache.putIfAbsent(listenerContext.id, this);
         }
 
         // Parse cron express to {@link Cron} instance.
@@ -272,6 +278,9 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
         private void schedule() {
             scheduleLock.lock();
             try {
+                if (canceledFlag.get()) {
+                    return;
+                }
                 this.scheduledFuture
                         = scheduledExecutorService.schedule(this, getNextDelaySeconds(), TimeUnit.SECONDS);
             } finally {
@@ -286,6 +295,13 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
             } finally {
                 scheduleLock.unlock();
             }
+        }
+
+        /**
+         * @since 3.0.2
+         */
+        private void cancelFuture() {
+            canceledFlag.set(true);
         }
 
         /**
@@ -347,6 +363,7 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
          */
         @Override
         public boolean cancel(boolean mayInterruptIfRunning) {
+            cancelFuture();
             return getFuture().cancel(mayInterruptIfRunning);
         }
 
