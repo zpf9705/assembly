@@ -20,9 +20,7 @@ package top.osjf.cron.core.repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 
 /**
  * Internally using {@link FutureTask} timeout calculation API
@@ -42,16 +40,21 @@ class TimeoutMonitoringRunnable implements Runnable {
     /** the configure instance {@link RunningTimeout}.*/
     private final RunningTimeout timeout;
 
+    /** the monitoring {@link ExecutorService}..*/
+    private final ExecutorService monitoringExecutor;
+
     /**
      * Construct a {@code TimeoutMonitoringRunnable} with given real {@link Runnable}
      * and the configure instance {@link RunningTimeout}.
      *
-     * @param real       the real {@link Runnable}.
-     * @param timeout    configure instance for timeout control during task execution.
+     * @param real                the real {@link Runnable}.
+     * @param timeout             configure instance for timeout control during task execution.
+     * @param monitoringExecutor  the monitoring {@link ExecutorService}.
      */
-    public TimeoutMonitoringRunnable(Runnable real, RunningTimeout timeout) {
+    public TimeoutMonitoringRunnable(Runnable real, RunningTimeout timeout, ExecutorService monitoringExecutor) {
         this.real =  real;
         this.timeout =  timeout;
+        this.monitoringExecutor =  monitoringExecutor;
     }
 
     /**
@@ -60,15 +63,13 @@ class TimeoutMonitoringRunnable implements Runnable {
     @Override
     public void run() throws RunningException {
 
-        // Create a new java.util.concurrent.FutureTask each time to
-        // calculate the running time and wait.
-        FutureTask<Void> futureTask = new FutureTask<>(real, null);
+        Future<?> future = monitoringExecutor.submit(real);
 
         try {
-            futureTask.get(timeout.getTimeout(), timeout.getTimeUnit());
+            future.get(timeout.getTimeout(), timeout.getTimeUnit());
         }
         catch (TimeoutException ex) {
-            handlerTimeoutPolicy(futureTask);
+            handlerTimeoutPolicy(future);
         }
         catch (Exception ex) {
             if (ex instanceof InterruptedException) {
@@ -79,16 +80,16 @@ class TimeoutMonitoringRunnable implements Runnable {
     }
 
     /**
-     * Process {@link FutureTask} according to the processing strategy.
-     * @param futureTask the input {@link FutureTask}.
+     * Process {@link Future} according to the processing strategy.
+     * @param future the input {@link Future}.
      */
-    void handlerTimeoutPolicy(FutureTask<Void> futureTask) {
+    void handlerTimeoutPolicy(Future<?> future) {
         RunningTimeoutPolicy policy = timeout.getPolicy();
         switch (policy) {
-            case INTERRUPT: cancel(futureTask); break;
+            case INTERRUPT: cancel(future); break;
             case THROW: throw new RunningTimeoutException();
             case CANCEL_THROW: {
-                cancel(futureTask);
+                cancel(future);
                 throw new RunningTimeoutException();
             }
             case IGNORE: break;
@@ -96,14 +97,14 @@ class TimeoutMonitoringRunnable implements Runnable {
     }
 
     /**
-     * Cancel the input {@link FutureTask}.
-     * @param futureTask the input {@link FutureTask}.
+     * Cancel the input {@link Future}.
+     * @param future the input {@link Future}.
      */
-    void cancel(FutureTask<Void> futureTask) {
-        if (!futureTask.cancel(true)) {
-            if (futureTask.isDone()) {
+    void cancel(Future<?> future) {
+        if (!future.cancel(true)) {
+            if (future.isDone()) {
                 LOGGER.warn("Cannot cancel task because it has already completed.");
-            } else if (futureTask.isCancelled()) {
+            } else if (future.isCancelled()) {
                 LOGGER.debug("Task was already cancelled by another thread.");
             } else {
                 LOGGER.error("Failed to cancel task that is still running and non-interruption. " +
