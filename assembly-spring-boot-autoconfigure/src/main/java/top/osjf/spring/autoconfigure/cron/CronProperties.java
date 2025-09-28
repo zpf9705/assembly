@@ -25,6 +25,7 @@ import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
 import top.osjf.cron.spring.datasource.driven.scheduled.DataSource;
 import top.osjf.cron.spring.datasource.driven.scheduled.SpringDatasourceDrivenScheduled;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
@@ -70,6 +71,11 @@ public class CronProperties {
      */
     private WebRequestAuthentication webRequestAuthentication = new WebRequestAuthentication();
 
+    /**
+     * @see RunTimeoutMonitoring
+     */
+    private RunTimeoutMonitoring runTimeoutMonitoring = new RunTimeoutMonitoring();
+
     public void setClientType(ClientType clientType) {
         this.clientType = clientType;
     }
@@ -104,6 +110,14 @@ public class CronProperties {
 
     public void setWebRequestAuthentication(WebRequestAuthentication webRequestAuthentication) {
         this.webRequestAuthentication = webRequestAuthentication;
+    }
+
+    public RunTimeoutMonitoring getRunTimeoutMonitoring() {
+        return runTimeoutMonitoring;
+    }
+
+    public void setRunTimeoutMonitoring(RunTimeoutMonitoring runTimeoutMonitoring) {
+        this.runTimeoutMonitoring = runTimeoutMonitoring;
     }
 
     /**
@@ -514,6 +528,106 @@ public class CronProperties {
 
         public void setToken(String token) {
             this.token = token;
+        }
+    }
+
+    /**
+     *
+     */
+    public static class RunTimeoutMonitoring {
+        private final Pool pool = new Pool();
+        private final Shutdown shutdown = new Shutdown();
+        private String threadNamePrefix = "Monitoring-task-";
+
+        public Pool getPool() {
+            return this.pool;
+        }
+
+        public Shutdown getShutdown() {
+            return this.shutdown;
+        }
+
+        public String getThreadNamePrefix() {
+            return this.threadNamePrefix;
+        }
+
+        public void setThreadNamePrefix(String threadNamePrefix) {
+            this.threadNamePrefix = threadNamePrefix;
+        }
+
+        public static class Shutdown {
+            private boolean awaitTermination;
+            private Duration awaitTerminationPeriod;
+
+            public Shutdown() {
+            }
+
+            public boolean isAwaitTermination() {
+                return this.awaitTermination;
+            }
+
+            public void setAwaitTermination(boolean awaitTermination) {
+                this.awaitTermination = awaitTermination;
+            }
+
+            public Duration getAwaitTerminationPeriod() {
+                return this.awaitTerminationPeriod;
+            }
+
+            public void setAwaitTerminationPeriod(Duration awaitTerminationPeriod) {
+                this.awaitTerminationPeriod = awaitTerminationPeriod;
+            }
+        }
+
+        public static class Pool {
+            private int queueCapacity = Integer.MAX_VALUE;
+            private int coreSize = 8;
+            private int maxSize = Integer.MAX_VALUE;
+            private boolean allowCoreThreadTimeout = true;
+            private Duration keepAlive = Duration.ofSeconds(60L);
+
+            public Pool() {
+            }
+
+            public int getQueueCapacity() {
+                return this.queueCapacity;
+            }
+
+            public void setQueueCapacity(int queueCapacity) {
+                this.queueCapacity = queueCapacity;
+            }
+
+            public int getCoreSize() {
+                return this.coreSize;
+            }
+
+            public void setCoreSize(int coreSize) {
+                this.coreSize = coreSize;
+            }
+
+            public int getMaxSize() {
+                return this.maxSize;
+            }
+
+            public void setMaxSize(int maxSize) {
+                this.maxSize = maxSize;
+            }
+
+            public boolean isAllowCoreThreadTimeout() {
+                return this.allowCoreThreadTimeout;
+            }
+
+            public void setAllowCoreThreadTimeout(boolean allowCoreThreadTimeout) {
+                this.allowCoreThreadTimeout = allowCoreThreadTimeout;
+            }
+
+            public Duration getKeepAlive() {
+                return this.keepAlive;
+            }
+
+            public void setKeepAlive(Duration keepAlive) {
+                this.keepAlive = keepAlive;
+            }
         }
     }
 }
