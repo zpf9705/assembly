@@ -182,6 +182,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      */
     @Override
     public void setSuperiorProperties(SuperiorProperties superiorProperties) {
+        super.setSuperiorProperties(superiorProperties);
         if (quartzProperties != null && !superiorProperties.isEmpty()) {
             this.quartzProperties = superiorProperties.asProperties();
             if (!setSchedulerFactoryClass)

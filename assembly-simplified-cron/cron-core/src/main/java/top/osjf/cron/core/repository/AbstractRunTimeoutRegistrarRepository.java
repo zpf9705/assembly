@@ -40,6 +40,9 @@ public abstract class AbstractRunTimeoutRegistrarRepository
 
     private SuperiorPropertiesParsedThreadPoolExecutor monitoringExecutor;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setSuperiorProperties(SuperiorProperties superiorProperties) {
         super.setSuperiorProperties(superiorProperties);
@@ -145,6 +148,9 @@ public abstract class AbstractRunTimeoutRegistrarRepository
         registerRunTimes(task.getExpression(), task.getRunnable(), times, timeout);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void stop() {
         super.stop();
