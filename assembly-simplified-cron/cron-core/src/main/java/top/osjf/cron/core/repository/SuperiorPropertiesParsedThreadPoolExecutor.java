@@ -25,6 +25,10 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
+ * {@code SuperiorPropertiesParsedThreadPoolExecutor} is an inheritance implementation
+ * class of {@link ThreadPoolExecutor}, which uses {@link SuperiorProperties}'s configuration
+ * loading to configure a thread pool instance.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
  */
