@@ -25,7 +25,7 @@ import top.osjf.cron.core.lang.NotNull;
  * An abstract implementation class of {@link RunTimeoutRegistrarRepository} that adds
  * a single timeout run on top of regular registration and run limit registration.
  *
- * <p>Relying on {@link FutureTaskRunnable} to achieve operational control over
+ * <p>Relying on {@link TimeoutMonitoringRunnable} to achieve operational control over
  * {@link Runnable}, regular registration still uses APIs for {@link RunTimesRegistrarRepository}
  * and {@link GeneralRegistrarRepository}.
  *
@@ -41,7 +41,7 @@ public abstract class AbstractRunTimeoutRegistrarRepository
     @Override
     public String register(@NotNull String expression, @NotNull Runnable runnable, @NotNull RunningTimeout timeout)
             throws CronInternalException {
-        return register(expression, new FutureTaskRunnable(runnable, timeout));
+        return register(expression, new TimeoutMonitoringRunnable(runnable, timeout));
     }
 
     /**
@@ -50,7 +50,7 @@ public abstract class AbstractRunTimeoutRegistrarRepository
     @Override
     public String register(@NotNull String expression, @NotNull CronMethodRunnable runnable,
                            @NotNull RunningTimeout timeout) throws CronInternalException {
-        return register(expression, new FutureTaskRunnable(runnable, timeout));
+        return register(expression, new TimeoutMonitoringRunnable(runnable, timeout));
     }
 
     /**
@@ -67,7 +67,7 @@ public abstract class AbstractRunTimeoutRegistrarRepository
     @Override
     public String register(@NotNull String expression, @NotNull TaskBody body, @NotNull RunningTimeout timeout)
             throws CronInternalException, UnsupportedTaskBodyException {
-        return register(expression, new FutureTaskRunnable(asRunnable(body), timeout));
+        return register(expression, new TimeoutMonitoringRunnable(asRunnable(body), timeout));
     }
 
     /**
@@ -84,7 +84,7 @@ public abstract class AbstractRunTimeoutRegistrarRepository
     @Override
     public void registerRunTimes(@NotNull String expression, @NotNull Runnable runnable, int times,
                                  @NotNull RunningTimeout timeout) throws CronInternalException {
-        registerRunTimes(expression, new FutureTaskRunnable(runnable, timeout), times);
+        registerRunTimes(expression, new TimeoutMonitoringRunnable(runnable, timeout), times);
     }
 
     /**
@@ -93,7 +93,7 @@ public abstract class AbstractRunTimeoutRegistrarRepository
     @Override
     public void registerRunTimes(@NotNull String expression, @NotNull CronMethodRunnable runnable,
                                  int times, @NotNull RunningTimeout timeout) throws CronInternalException {
-        registerRunTimes(expression, new FutureTaskRunnable(runnable, timeout), times);
+        registerRunTimes(expression, new TimeoutMonitoringRunnable(runnable, timeout), times);
     }
 
     /**

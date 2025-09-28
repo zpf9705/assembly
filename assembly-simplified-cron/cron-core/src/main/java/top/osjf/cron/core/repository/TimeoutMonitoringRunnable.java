@@ -32,9 +32,9 @@ import java.util.concurrent.TimeoutException;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
  */
-class FutureTaskRunnable implements Runnable {
+class TimeoutMonitoringRunnable implements Runnable {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FutureTaskRunnable.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TimeoutMonitoringRunnable.class);
 
     /** the real {@link Runnable}.*/
     private final Runnable real;
@@ -43,13 +43,13 @@ class FutureTaskRunnable implements Runnable {
     private final RunningTimeout timeout;
 
     /**
-     * Construct a {@link FutureTaskRunnable} with given real {@link Runnable}
+     * Construct a {@code TimeoutMonitoringRunnable} with given real {@link Runnable}
      * and the configure instance {@link RunningTimeout}.
      *
      * @param real       the real {@link Runnable}.
      * @param timeout    configure instance for timeout control during task execution.
      */
-    public FutureTaskRunnable(Runnable real, RunningTimeout timeout) {
+    public TimeoutMonitoringRunnable(Runnable real, RunningTimeout timeout) {
         this.real =  real;
         this.timeout =  timeout;
     }
