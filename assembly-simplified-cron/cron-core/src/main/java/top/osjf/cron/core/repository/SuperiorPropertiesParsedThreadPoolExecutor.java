@@ -173,10 +173,12 @@ public class SuperiorPropertiesParsedThreadPoolExecutor extends ThreadPoolExecut
             }
             try {
                 if (!pool.getQueue().offer(r, rejectRetryTimeout, rejectRetryTimeoutUnit)) {
-                    throw new RunningTimeoutException("Rejected running entity re queued timeout!");
+                    throw new RunningTimeoutException("Rejected running entity re queued timeout");
                 }
-            } catch (InterruptedException ex) {
+            }
+            catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
+                throw new RunningException("Thread interrupt");
             }
         }
     }
