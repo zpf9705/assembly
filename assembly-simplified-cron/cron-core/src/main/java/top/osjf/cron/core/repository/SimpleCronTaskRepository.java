@@ -27,6 +27,7 @@ import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.listener.ListenerContext;
+import top.osjf.cron.core.util.ExecutorUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -171,26 +172,8 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
         if (logger.isDebugEnabled()) {
             logger.debug("Close Pool...");
         }
-        if (awaitTermination) {
-            scheduledExecutorService.shutdown();
-            try {
-                if (!scheduledExecutorService.awaitTermination(awaitTerminationTimeout, awaitTerminationTimeoutUnit)) {
-                    // If the timeout is not completed, force termination.
-                    scheduledExecutorService.shutdownNow();
-                }
-            } catch (InterruptedException ex) {
-                // Restore interrupted state.
-                Thread.currentThread().interrupt();
-            } finally {
-                // Ensure that the service has been completely terminated.
-                if (!scheduledExecutorService.isTerminated()) {
-                    scheduledExecutorService.shutdownNow();
-                }
-            }
-        } else {
-            // Directly force termination.
-            scheduledExecutorService.shutdownNow();
-        }
+        ExecutorUtils.shutdownExecutor(scheduledExecutorService, awaitTermination, awaitTerminationTimeout,
+                awaitTerminationTimeoutUnit);
     }
 
     /**
