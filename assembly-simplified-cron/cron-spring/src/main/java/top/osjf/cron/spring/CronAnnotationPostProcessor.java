@@ -40,9 +40,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import top.osjf.cron.core.lifecycle.Lifecycle;
 import top.osjf.cron.core.listener.CronListener;
-import top.osjf.cron.core.repository.CronMethodRunnable;
-import top.osjf.cron.core.repository.CronTask;
-import top.osjf.cron.core.repository.CronTaskRepository;
+import top.osjf.cron.core.repository.*;
 import top.osjf.cron.core.support.ExpressionSupport;
 import top.osjf.cron.core.util.ArrayUtils;
 import top.osjf.cron.core.util.StringUtils;
@@ -96,7 +94,7 @@ public class CronAnnotationPostProcessor implements ApplicationContextAware,
 
     private final Set<Class<?>> nonAnnotatedClasses = Collections.newSetFromMap(new ConcurrentHashMap<>(16));
 
-    private final Set<CronTask> cronTasks = Collections.newSetFromMap(new ConcurrentHashMap<>(16));
+    private final Set<CronTaskRegistrar> cronTasks = Collections.newSetFromMap(new ConcurrentHashMap<>(16));
 
     private static final boolean isCron4j;
 
@@ -192,7 +190,8 @@ public class CronAnnotationPostProcessor implements ApplicationContextAware,
             // to the current activated environment.
             if (ArrayUtils.isEmpty(profiles) ||
                     Arrays.stream(profiles).anyMatch(activeProfiles::contains)) {
-                CronTask cronTask = new CronTask(expression, runnable);
+                CronTaskRegistrar cronTask
+                        = new CronTaskRegistrar(new CronTask(expression, runnable), method);
                 cronTasks.add(cronTask);
             }
         }
@@ -223,8 +222,8 @@ public class CronAnnotationPostProcessor implements ApplicationContextAware,
 
         // Register the scheduled task collection.
         CronTaskRepository cronTaskRepository = applicationContext.getBean(CronTaskRepository.class);
-        for (CronTask cronTask : cronTasks) {
-            cronTaskRepository.register(cronTask);
+        for (CronTaskRegistrar cronTask : cronTasks) {
+            cronTask.doRegister(cronTaskRepository);
         }
 
         // Register the scheduled task listener collection.
