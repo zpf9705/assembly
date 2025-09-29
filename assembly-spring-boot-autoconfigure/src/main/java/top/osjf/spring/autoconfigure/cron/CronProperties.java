@@ -32,6 +32,8 @@ import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+import static top.osjf.cron.core.repository.SuperiorPropertiesParsedThreadPoolExecutor.*;
+
 /**
  * Cron schedule properties.
  *
@@ -560,18 +562,46 @@ public class CronProperties {
         @Override
         public SuperiorProperties get() {
             SuperiorProperties properties = SuperiorProperties.of();
-
+            properties.addProperty(PROPERTY_OF_CORE_SIZE, pool.coreSize);
+            properties.addProperty(PROPERTY_OF_MAX_SIZE, pool.maxSize);
+            properties.addProperty(PROPERTY_OF_KEEP_ALIVE, pool.keepAlive);
+            properties.addProperty(PROPERTY_OF_KEEP_ALIVE_UNIT, pool.keepAliveUnit);
+            properties.addProperty(PROPERTY_OF_QUEUE_CAPACITY, pool.queueCapacity);
+            properties.addProperty(PROPERTY_OF_THREAD_NAME_PREFIX, threadNamePrefix);
+            properties.addProperty(PROPERTY_OF_ALLOW_CORE_THREAD_TIMEOUT, pool.allowCoreThreadTimeout);
+            properties.addProperty(PROPERTY_OF_AWAIT_TERMINATION, shutdown.awaitTermination);
+            properties.addProperty(PROPERTY_OF_AWAIT_TERMINATION_TIMEOUT, shutdown.awaitTerminationTimeout);
+            properties.addProperty(PROPERTY_OF_AWAIT_TERMINATION_TIMEOUT_UNIT, shutdown.awaitTerminationTimeoutUnit);
+            properties.addProperty(PROPERTY_OF_REJECT_RETRY_TIMEOUT, pool.rejectRetryTimeout);
+            properties.addProperty(PROPERTY_OF_REJECT_RETRY_TIMEOUT_UNIT, pool.rejectRetryTimeoutUnit);
             return properties;
         }
 
+        /**
+         * Configure the behavior of thread pool when closed.
+         * @since 3.0.2
+         */
         public static class Shutdown {
+
+            /**
+             * This {@code Boolean} value is used to control whether to wait for the tasks
+             * in the thread pool to complete before completing the shutdown operation.
+             */
             private boolean awaitTermination;
+
+            /**
+             * Specify the maximum time (numerical part) to wait for the thread pool to
+             * terminate. This value only takes effect when awaitTermination is {@code true},
+             * default value: 10 (representing 10 time units).
+             */
             private long awaitTerminationTimeout = 10;
 
+            /**
+             * Used in conjunction with awaitTerminationTimeout, specify the time unit.
+             * Default value: {@code TimeUnit.SECONDS} → indicates that the above 10
+             * is 10 seconds.
+             */
             private TimeUnit awaitTerminationTimeoutUnit = TimeUnit.SECONDS;
-
-            public Shutdown() {
-            }
 
             public boolean isAwaitTermination() {
                 return this.awaitTermination;
@@ -598,16 +628,54 @@ public class CronProperties {
             }
         }
 
+        /**
+         * @since 3.0.2
+         */
         public static class Pool {
+            /**
+             * Specify the maximum capacity of the task queue used by the thread pool.
+             */
             private int queueCapacity = 1000;
+
+            /**
+             * Set the core thread count for the thread pool.
+             * <p>
+             * The default value is the number of CPU cores in the current system.
+             */
             private int coreSize = Runtime.getRuntime().availableProcessors();
+
+            /**
+             * Set the maximum pool size for threads allowed in the thread pool.
+             * <p>
+             * The default value is the number of CPU cores plus 1
+             */
             private int maxSize = Runtime.getRuntime().availableProcessors() + 1;
+
+            /**
+             * Allow core threads to time out and exit when idle.
+             */
             private boolean allowCoreThreadTimeout = true;
+
+            /**
+             * The idle survival time values of non-core threads and (when {@link #allowCoreThreadTimeout} =
+             * {@code true}) core threads.
+             */
             private long keepAlive = 60;
+
+            /**
+             * Used in conjunction with {@link #keepAlive}, specify its time unit.
+             */
             private TimeUnit keepAliveUnit = TimeUnit.SECONDS;
 
-            public Pool() {
-            }
+            /**
+             * The total waiting time for attempting to resubmit a task after it has been rejected.
+             */
+            private long rejectRetryTimeout;
+
+            /**
+             * Specify the time unit for {@link #rejectRetryTimeout}.
+             */
+            private TimeUnit rejectRetryTimeoutUnit;
 
             public int getQueueCapacity() {
                 return this.queueCapacity;
@@ -655,6 +723,22 @@ public class CronProperties {
 
             public void setKeepAliveUnit(TimeUnit keepAliveUnit) {
                 this.keepAliveUnit = keepAliveUnit;
+            }
+
+            public long getRejectRetryTimeout() {
+                return rejectRetryTimeout;
+            }
+
+            public void setRejectRetryTimeout(long rejectRetryTimeout) {
+                this.rejectRetryTimeout = rejectRetryTimeout;
+            }
+
+            public TimeUnit getRejectRetryTimeoutUnit() {
+                return rejectRetryTimeoutUnit;
+            }
+
+            public void setRejectRetryTimeoutUnit(TimeUnit rejectRetryTimeoutUnit) {
+                this.rejectRetryTimeoutUnit = rejectRetryTimeoutUnit;
             }
         }
     }
