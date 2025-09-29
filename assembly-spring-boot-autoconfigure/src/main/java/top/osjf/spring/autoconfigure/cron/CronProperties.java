@@ -566,6 +566,10 @@ public class CronProperties {
     public static class RunTimeoutMonitoring implements Supplier<SuperiorProperties> {
         private final Pool pool = new Pool();
         private final Shutdown shutdown = new Shutdown();
+
+        /**
+         * The thread name prefix.
+         */
         private String threadNamePrefix = "Monitoring-task-";
 
         public Pool getPool() {
