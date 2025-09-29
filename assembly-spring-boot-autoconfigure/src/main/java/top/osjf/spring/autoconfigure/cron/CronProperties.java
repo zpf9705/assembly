@@ -623,7 +623,7 @@ public class CronProperties {
              * terminate. This value only takes effect when awaitTermination is {@code true},
              * default value: 10 (representing 10 time units).
              */
-            private long awaitTerminationTimeout = 10;
+            private long awaitTerminationTimeout = 10L;
 
             /**
              * Used in conjunction with awaitTerminationTimeout, specify the time unit.
@@ -689,7 +689,7 @@ public class CronProperties {
              * The idle survival time values of non-core threads and (when {@link #allowCoreThreadTimeout} =
              * {@code true}) core threads.
              */
-            private long keepAlive = 60;
+            private long keepAlive = 60L;
 
             /**
              * Used in conjunction with {@link #keepAlive}, specify its time unit.
@@ -699,12 +699,12 @@ public class CronProperties {
             /**
              * The total waiting time for attempting to resubmit a task after it has been rejected.
              */
-            private long rejectRetryTimeout;
+            private long rejectRetryTimeout = 10L;
 
             /**
              * Specify the time unit for {@link #rejectRetryTimeout}.
              */
-            private TimeUnit rejectRetryTimeoutUnit;
+            private TimeUnit rejectRetryTimeoutUnit = TimeUnit.SECONDS;
 
             public int getQueueCapacity() {
                 return this.queueCapacity;
