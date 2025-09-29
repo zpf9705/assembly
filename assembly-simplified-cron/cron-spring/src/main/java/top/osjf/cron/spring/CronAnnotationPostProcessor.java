@@ -191,7 +191,7 @@ public class CronAnnotationPostProcessor implements ApplicationContextAware,
             if (ArrayUtils.isEmpty(profiles) ||
                     Arrays.stream(profiles).anyMatch(activeProfiles::contains)) {
                 CronTaskRegistrar cronTask
-                        = new CronTaskRegistrar(new CronTask(expression, runnable), method);
+                        = new CronTaskRegistrar(new CronTask(expression, runnable));
                 cronTasks.add(cronTask);
             }
         }
@@ -223,7 +223,7 @@ public class CronAnnotationPostProcessor implements ApplicationContextAware,
         // Register the scheduled task collection.
         CronTaskRepository cronTaskRepository = applicationContext.getBean(CronTaskRepository.class);
         for (CronTaskRegistrar cronTask : cronTasks) {
-            cronTask.doRegister(cronTaskRepository);
+            cronTask.registerFor(cronTaskRepository);
         }
 
         // Register the scheduled task listener collection.
