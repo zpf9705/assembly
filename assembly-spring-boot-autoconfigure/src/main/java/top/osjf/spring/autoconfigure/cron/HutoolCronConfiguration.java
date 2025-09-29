@@ -45,6 +45,6 @@ class HutoolCronConfiguration {
     @Bean
     @ConditionalOnMissingBean(Scheduler.class)
     public SuperiorProperties hutoolProperties(CronProperties cronProperties) {
-        return cronProperties.getHutool().get();
+        return cronProperties.getClientProperties(ClientType.HUTOOL);
     }
 }

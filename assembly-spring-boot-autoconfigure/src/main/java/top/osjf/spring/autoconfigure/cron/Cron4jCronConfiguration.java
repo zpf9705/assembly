@@ -43,6 +43,6 @@ class Cron4jCronConfiguration {
 
     @Bean
     public SuperiorProperties cron4jProperties(CronProperties cronProperties) {
-        return cronProperties.getCron4j().get();
+        return cronProperties.getClientProperties(ClientType.CRON4J);
     }
 }

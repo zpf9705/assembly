@@ -78,6 +78,31 @@ public class CronProperties {
      */
     private RunTimeoutMonitoring runTimeoutMonitoring = new RunTimeoutMonitoring();
 
+    /**
+     * Get the configuration of the specified {@link ClientType}.
+     * @param clientType the input {@link ClientType}.
+     * @return the {@link SuperiorProperties} created by {@link ClientType}.
+     * @since 3.0.2
+     */
+    public SuperiorProperties getClientProperties(ClientType clientType) {
+        SuperiorProperties superiorProperties = null;
+        if (clientType == ClientType.HUTOOL) {
+            superiorProperties = hutool.get();
+        }
+        else if (clientType == ClientType.CRON4J) {
+            superiorProperties = cron4j.get();
+        }
+        else if (clientType == ClientType.QUARTZ) {
+            superiorProperties = quartz.get();
+        }
+
+        if (superiorProperties != null) {
+            superiorProperties.addProperties(runTimeoutMonitoring.get());
+        }
+
+        return superiorProperties;
+    }
+
     public void setClientType(ClientType clientType) {
         this.clientType = clientType;
     }

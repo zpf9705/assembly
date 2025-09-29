@@ -48,7 +48,7 @@ class QuartzCronConfiguration {
     @ConditionalOnMissingBean(Scheduler.class)
     public SuperiorProperties quartzProperties(ObjectProvider<List<QuartzPropertiesCustomizer>> provider,
                                                CronProperties cronProperties) {
-        SuperiorProperties properties = cronProperties.getQuartz().get();
+        SuperiorProperties properties = cronProperties.getClientProperties(ClientType.QUARTZ);
         provider.orderedStream()
                 .forEach(customizers -> customizers.forEach(c -> c.customize(properties)));
         return properties;
