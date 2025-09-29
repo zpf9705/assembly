@@ -25,11 +25,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor;
+import org.springframework.scheduling.annotation.SchedulingConfigurer;
+import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
-import top.osjf.cron.core.lang.Nullable;
+import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.spring.AbstractCronTaskConfiguration;
 import top.osjf.cron.spring.CronTaskInfoReadableWebMvcHandlerController;
+import top.osjf.cron.spring.ObjectProviderUtils;
 import top.osjf.cron.spring.auth.AuthenticationPredicate;
 import top.osjf.cron.spring.auth.WebRequestAuthenticationInterceptor;
 import top.osjf.cron.spring.scheduler.SpringSchedulerTaskRepository;
@@ -50,17 +53,34 @@ import java.util.List;
 @Configuration(proxyBeanMethods = false)
 public class SchedulingRepositoryConfiguration extends AbstractCronTaskConfiguration {
 
+    /**
+     * Internal bean name of {@link TaskScheduler}.
+     */
     public static final String TASK_SCHEDULER_INTERNAL_BEAN_NAME
             = "org.springframework.scheduling.concurrent.internalThreadPoolTaskScheduler";
 
-    @Bean(ScheduledAnnotationBeanPostProcessor.DEFAULT_TASK_SCHEDULER_BEAN_NAME)
+    @Bean
     public SpringSchedulerTaskRepository springSchedulerTaskRepository(
-            @Autowired(required = false) @Qualifier(TASK_SCHEDULER_INTERNAL_BEAN_NAME)
-            @Nullable TaskScheduler taskScheduler) {
-        if (taskScheduler != null) {
-            return new SpringSchedulerTaskRepository(taskScheduler);
+            @Autowired(required = false) @Qualifier(TASK_SCHEDULER_INTERNAL_BEAN_NAME) TaskScheduler taskScheduler,
+            ObjectProvider<SuperiorProperties> provider) {
+        SpringSchedulerTaskRepository repository = taskScheduler != null ?
+                new SpringSchedulerTaskRepository(taskScheduler) : new SpringSchedulerTaskRepository();
+        SuperiorProperties properties = ObjectProviderUtils.getPriority(provider);
+        if (properties != null) {
+            repository.setSuperiorProperties(properties);
         }
-        return new SpringSchedulerTaskRepository();
+        return repository;
+    }
+
+    /**
+     * @since 3.0.2
+     * @param repository {@link SpringSchedulerTaskRepository}
+     * @return a {@link SchedulingConfigurer} to set a {@link SpringSchedulerTaskRepository}
+     * for {@link ScheduledTaskRegistrar}.
+     */
+    @Bean
+    public SchedulingConfigurer repositorySchedulingConfigurer(SpringSchedulerTaskRepository repository) {
+        return taskRegistrar -> taskRegistrar.setTaskScheduler(repository);
     }
 
     /**
