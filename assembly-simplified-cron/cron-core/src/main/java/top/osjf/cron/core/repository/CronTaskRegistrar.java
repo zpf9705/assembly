@@ -17,6 +17,8 @@
 
 package top.osjf.cron.core.repository;
 
+import top.osjf.cron.core.lang.Nullable;
+
 import java.lang.reflect.Method;
 
 /**
@@ -53,8 +55,11 @@ public class CronTaskRegistrar {
      * Register {@link #cronTask} into the given {@link CronTaskRepository}, while
      * simultaneously configuring annotations {@link RunTimes} and {@link RunTimeout}.
      * @param cronTaskRepository the {@link CronTaskRepository}.
+     * @return The unique ID for scheduling task registration, when running times
+     * related to API registration, returns {@literal null}.
      */
-    public void doRegister(CronTaskRepository cronTaskRepository) {
+    @Nullable
+    public String registerFor(CronTaskRepository cronTaskRepository) {
 
         boolean needSpecifyRuntimes = targetMethod.isAnnotationPresent(RunTimes.class);
         boolean needSpecifyRunTimeout = targetMethod.isAnnotationPresent(RunTimeout.class);
@@ -72,7 +77,16 @@ public class CronTaskRegistrar {
             }
         }
         else {
-            cronTaskRepository.register(cronTask);
+            if (needSpecifyRunTimeout) {
+                RunTimeout runTimeout = targetMethod.getAnnotation(RunTimeout.class);
+                return cronTaskRepository.register(cronTask,
+                        new RunningTimeout(runTimeout.timeout(), runTimeout.timeUnit(),
+                                runTimeout.policy()));
+            }
+            else {
+                return cronTaskRepository.register(cronTask);
+            }
         }
+        return null;
     }
 }
