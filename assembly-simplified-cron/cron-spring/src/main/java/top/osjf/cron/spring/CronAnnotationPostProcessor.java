@@ -231,8 +231,10 @@ public class CronAnnotationPostProcessor implements ApplicationContextAware,
             cronTaskRepository.addListener(listener);
         }
 
-        // Start the scheduled task repository
-        cronTaskRepository.start();
+        // Start the scheduled task repository if not start.
+        if (!cronTaskRepository.isStarted()) {
+            cronTaskRepository.start();
+        }
 
         logger.info("A total of {} timed tasks were registered by the post processor [{}] during application startup.",
                 cronTasks.size(), getClass().getName());
