@@ -19,13 +19,13 @@ package top.osjf.spring.autoconfigure.cron;
 import com.cronutils.model.CronType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
+import top.osjf.cron.core.repository.RunTimeoutRegistrarRepository;
 import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
 import top.osjf.cron.datasource.driven.scheduled.Constants;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
 import top.osjf.cron.spring.datasource.driven.scheduled.DataSource;
 import top.osjf.cron.spring.datasource.driven.scheduled.SpringDatasourceDrivenScheduled;
 
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
@@ -532,9 +532,11 @@ public class CronProperties {
     }
 
     /**
-     *
+     * Copy from {@link org.springframework.boot.autoconfigure.task.TaskExecutionProperties} and make slight modifications.
+     * <p>Support monitoring thread pool configuration object for {@link RunTimeoutRegistrarRepository} API.
+     * @since 3.0.2
      */
-    public static class RunTimeoutMonitoring {
+    public static class RunTimeoutMonitoring implements Supplier<SuperiorProperties> {
         private final Pool pool = new Pool();
         private final Shutdown shutdown = new Shutdown();
         private String threadNamePrefix = "Monitoring-task-";
@@ -555,9 +557,18 @@ public class CronProperties {
             this.threadNamePrefix = threadNamePrefix;
         }
 
+        @Override
+        public SuperiorProperties get() {
+            SuperiorProperties properties = SuperiorProperties.of();
+
+            return properties;
+        }
+
         public static class Shutdown {
             private boolean awaitTermination;
-            private Duration awaitTerminationPeriod;
+            private long awaitTerminationTimeout = 10;
+
+            private TimeUnit awaitTerminationTimeoutUnit = TimeUnit.SECONDS;
 
             public Shutdown() {
             }
@@ -570,21 +581,30 @@ public class CronProperties {
                 this.awaitTermination = awaitTermination;
             }
 
-            public Duration getAwaitTerminationPeriod() {
-                return this.awaitTerminationPeriod;
+            public long getAwaitTerminationTimeout() {
+                return awaitTerminationTimeout;
             }
 
-            public void setAwaitTerminationPeriod(Duration awaitTerminationPeriod) {
-                this.awaitTerminationPeriod = awaitTerminationPeriod;
+            public void setAwaitTerminationTimeout(long awaitTerminationTimeout) {
+                this.awaitTerminationTimeout = awaitTerminationTimeout;
+            }
+
+            public TimeUnit getAwaitTerminationTimeoutUnit() {
+                return awaitTerminationTimeoutUnit;
+            }
+
+            public void setAwaitTerminationTimeoutUnit(TimeUnit awaitTerminationTimeoutUnit) {
+                this.awaitTerminationTimeoutUnit = awaitTerminationTimeoutUnit;
             }
         }
 
         public static class Pool {
-            private int queueCapacity = Integer.MAX_VALUE;
-            private int coreSize = 8;
-            private int maxSize = Integer.MAX_VALUE;
+            private int queueCapacity = 1000;
+            private int coreSize = Runtime.getRuntime().availableProcessors();
+            private int maxSize = Runtime.getRuntime().availableProcessors() + 1;
             private boolean allowCoreThreadTimeout = true;
-            private Duration keepAlive = Duration.ofSeconds(60L);
+            private long keepAlive = 60;
+            private TimeUnit keepAliveUnit = TimeUnit.SECONDS;
 
             public Pool() {
             }
@@ -621,12 +641,20 @@ public class CronProperties {
                 this.allowCoreThreadTimeout = allowCoreThreadTimeout;
             }
 
-            public Duration getKeepAlive() {
-                return this.keepAlive;
+            public long getKeepAlive() {
+                return keepAlive;
             }
 
-            public void setKeepAlive(Duration keepAlive) {
+            public void setKeepAlive(long keepAlive) {
                 this.keepAlive = keepAlive;
+            }
+
+            public TimeUnit getKeepAliveUnit() {
+                return keepAliveUnit;
+            }
+
+            public void setKeepAliveUnit(TimeUnit keepAliveUnit) {
+                this.keepAliveUnit = keepAliveUnit;
             }
         }
     }
