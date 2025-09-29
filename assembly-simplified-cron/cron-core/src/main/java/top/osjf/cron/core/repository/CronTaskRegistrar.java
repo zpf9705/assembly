@@ -44,11 +44,10 @@ public class CronTaskRegistrar {
     /**
      * Construct a {@link CronTaskRegistrar} with given arguments.
      * @param cronTask       the pending registration {@link CronTask}.
-     * @param targetMethod   the target method .
      */
-    public CronTaskRegistrar(CronTask cronTask, Method targetMethod) {
+    public CronTaskRegistrar(CronTask cronTask) {
         this.cronTask = cronTask;
-        this.targetMethod = targetMethod;
+        this.targetMethod = cronTask.getRunnable().getMethod();
     }
 
     /**
