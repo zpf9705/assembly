@@ -20,9 +20,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.scheduling.Trigger;
 import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.listener.ListenerContext;
-import top.osjf.cron.core.util.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -52,7 +50,7 @@ public class DefaultListenableRunnable implements ListenableRunnable {
     /**
      * The list of eavesdroppers for the execution of this task.
      */
-    private final List<CronListener> cronListeners = new ArrayList<>();
+    private final List<CronListener> cronListeners;
     /**
      * The listening context information for this task.
      */
@@ -68,13 +66,11 @@ public class DefaultListenableRunnable implements ListenableRunnable {
      * @param cronListeners the list of eavesdroppers for the execution of this task.
      */
     public DefaultListenableRunnable(String id, Runnable runnable, @Nullable Trigger trigger,
-                                     @Nullable List<CronListener> cronListeners) {
+                                     List<CronListener> cronListeners) {
         this.id = id;
         this.runnable = runnable;
         this.trigger = trigger;
-        if (CollectionUtils.isNotEmpty(cronListeners)) {
-            this.cronListeners.addAll(cronListeners);
-        }
+        this.cronListeners = cronListeners;
         this.listenerContext = new ListenerContextImpl(this);
     }
 
