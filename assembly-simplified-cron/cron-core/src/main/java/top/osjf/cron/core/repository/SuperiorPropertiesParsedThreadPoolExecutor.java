@@ -96,7 +96,7 @@ public class SuperiorPropertiesParsedThreadPoolExecutor extends ThreadPoolExecut
 
     private boolean awaitTermination = false;
 
-    private long awaitTerminationTimeout = 10;
+    private long awaitTerminationTimeout = 10L;
 
     private TimeUnit awaitTerminationTimeoutUnit = TimeUnit.SECONDS;
 
@@ -109,7 +109,7 @@ public class SuperiorPropertiesParsedThreadPoolExecutor extends ThreadPoolExecut
         super(
                 getProperty(properties, PROPERTY_OF_CORE_SIZE, Runtime.getRuntime().availableProcessors()),
                 getProperty(properties, PROPERTY_OF_MAX_SIZE, Runtime.getRuntime().availableProcessors() + 1),
-                getProperty(properties, PROPERTY_OF_KEEP_ALIVE, 60),
+                getProperty(properties, PROPERTY_OF_KEEP_ALIVE, 60L),
                 getProperty(properties, PROPERTY_OF_KEEP_ALIVE_UNIT, TimeUnit.SECONDS),
                 new ArrayBlockingQueue<>(getProperty(properties, PROPERTY_OF_QUEUE_CAPACITY, 1000)),
                 new SuperiorPropertiesParsedThreadFactoryImpl(properties),
@@ -162,7 +162,7 @@ public class SuperiorPropertiesParsedThreadPoolExecutor extends ThreadPoolExecut
         private final TimeUnit rejectRetryTimeoutUnit;
 
         public SuperiorPropertiesParsedRejectedExecutionHandler(SuperiorProperties properties) {
-            this.rejectRetryTimeout = properties.getProperty(PROPERTY_OF_REJECT_RETRY_TIMEOUT, 10);
+            this.rejectRetryTimeout = properties.getProperty(PROPERTY_OF_REJECT_RETRY_TIMEOUT, 10L);
             this.rejectRetryTimeoutUnit = properties.getProperty(PROPERTY_OF_REJECT_RETRY_TIMEOUT_UNIT, TimeUnit.SECONDS);
         }
 
