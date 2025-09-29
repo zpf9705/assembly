@@ -67,6 +67,23 @@ import java.lang.annotation.*;
  * timed tasks that can be executed according to specified cron expressions and environment
  * configurations.
  *
+ * <p>In order to provide more fine-grained control over task scheduling runtime, the 3.0.2
+ * version introduced relevant configurations for task scheduling run times {@link RunTimes}
+ * and word run timeout limits {@link RunTimeout}, which must be used in conjunction with
+ * this annotation. Then, relying on the above annotation information and corresponding
+ * registered repositories, this function can be implemented. For specific details, please
+ * refer to the following case studies:
+ * <h2>Example usage</h2>
+ * <pre>
+ * &#64;Cron(expression = "0 0/5 * * * ?", profiles = {"dev"})
+ * &#64;RunTimes(3)
+ * &#64;RunTimeout(timeout = 3,timeUnit = TimeUnit.HOURS,policy = RunningTimeoutPolicy.THROW)
+ * public void myCronTask() {
+ *     // Implementation logic of timed tasks
+ *     System.out.println("Hello, Cron framework!");
+ * }
+ * </pre>
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  * @see RunTimes
