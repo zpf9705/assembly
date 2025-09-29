@@ -16,6 +16,7 @@
 
 package top.osjf.spring.autoconfigure.cron;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -28,10 +29,13 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor;
+import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.config.TaskManagementConfigUtils;
+import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.spring.AbstractCronTaskConfiguration;
+import top.osjf.cron.spring.ObjectProviderUtils;
 import top.osjf.cron.spring.scheduler.SpringSchedulerTaskRepository;
 import top.osjf.cron.spring.scheduler.config.EnableScheduling;
 import top.osjf.cron.spring.scheduler.config.SchedulingRepositoryConfiguration;
@@ -50,8 +54,13 @@ import top.osjf.cron.spring.scheduler.config.SchedulingRepositoryConfiguration;
 class SpringSchedulerConfiguration {
 
     @Bean(SchedulingRepositoryConfiguration.TASK_SCHEDULER_INTERNAL_BEAN_NAME)
-    public ThreadPoolTaskScheduler taskScheduler(TaskSchedulerBuilder builder) {
+    public ThreadPoolTaskScheduler threadPoolTaskScheduler(TaskSchedulerBuilder builder) {
         return builder.build();
+    }
+
+    @Bean
+    public SuperiorProperties springSchedulerProperties(CronProperties cronProperties) {
+        return cronProperties.getRunTimeoutMonitoring().get();
     }
 
     @Configuration(proxyBeanMethods = false)
@@ -66,10 +75,21 @@ class SpringSchedulerConfiguration {
             name = TaskManagementConfigUtils.SCHEDULED_ANNOTATION_PROCESSOR_BEAN_NAME)
     static class AdaptedSpringSchedulerConfiguration extends AbstractCronTaskConfiguration {
 
-        @Bean(ScheduledAnnotationBeanPostProcessor.DEFAULT_TASK_SCHEDULER_BEAN_NAME)
+        @Bean
         public SpringSchedulerTaskRepository springSchedulerTaskRepository(
-                @Qualifier(SchedulingRepositoryConfiguration.TASK_SCHEDULER_INTERNAL_BEAN_NAME) TaskScheduler taskScheduler) {
-            return new SpringSchedulerTaskRepository(taskScheduler);
+                @Qualifier(SchedulingRepositoryConfiguration.TASK_SCHEDULER_INTERNAL_BEAN_NAME)
+                TaskScheduler taskScheduler, ObjectProvider<SuperiorProperties> provider) {
+            SpringSchedulerTaskRepository repository = new SpringSchedulerTaskRepository(taskScheduler);
+            SuperiorProperties properties = ObjectProviderUtils.getPriority(provider);
+            if (properties != null) {
+                repository.setSuperiorProperties(properties);
+            }
+            return repository;
+        }
+
+        @Bean
+        public SchedulingConfigurer repositorySchedulingConfigurer(SpringSchedulerTaskRepository repository) {
+            return taskRegistrar -> taskRegistrar.setTaskScheduler(repository);
         }
     }
 }
