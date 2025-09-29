@@ -170,7 +170,7 @@ public abstract class AbstractRunTimesRegistrarRepository
 
         if (shouldAddCheckedLast) {
             // Ensure checkedCronListener is the last
-            addLastListener(checkedCronListener);
+            super.addLastListener(checkedCronListener);
         }
     }
 
