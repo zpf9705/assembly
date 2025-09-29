@@ -64,28 +64,25 @@ public class CronTaskRegistrar {
         boolean needSpecifyRuntimes = targetMethod.isAnnotationPresent(RunTimes.class);
         boolean needSpecifyRunTimeout = targetMethod.isAnnotationPresent(RunTimeout.class);
 
-        if (needSpecifyRuntimes) {
+        if (needSpecifyRuntimes && needSpecifyRunTimeout) {
             RunTimes runTimes = targetMethod.getAnnotation(RunTimes.class);
-            if (needSpecifyRunTimeout) {
-                RunTimeout runTimeout = targetMethod.getAnnotation(RunTimeout.class);
-                cronTaskRepository.registerRunTimes(cronTask, runTimes.value(),
-                        new RunningTimeout(runTimeout.timeout(), runTimeout.timeUnit(),
-                                runTimeout.policy()));
-            }
-            else {
-                cronTaskRepository.registerRunTimes(cronTask, runTimes.value());
-            }
+            RunTimeout runTimeout = targetMethod.getAnnotation(RunTimeout.class);
+            cronTaskRepository.registerRunTimes(cronTask, runTimes.value(),
+                    new RunningTimeout(runTimeout.timeout(), runTimeout.timeUnit(),
+                            runTimeout.policy()));
+        }
+        else if (needSpecifyRuntimes) {
+            RunTimes runTimes = targetMethod.getAnnotation(RunTimes.class);
+            cronTaskRepository.registerRunTimes(cronTask, runTimes.value());
+        }
+        else if (needSpecifyRunTimeout) {
+            RunTimeout runTimeout = targetMethod.getAnnotation(RunTimeout.class);
+            return cronTaskRepository.register(cronTask,
+                    new RunningTimeout(runTimeout.timeout(), runTimeout.timeUnit(),
+                            runTimeout.policy()));
         }
         else {
-            if (needSpecifyRunTimeout) {
-                RunTimeout runTimeout = targetMethod.getAnnotation(RunTimeout.class);
-                return cronTaskRepository.register(cronTask,
-                        new RunningTimeout(runTimeout.timeout(), runTimeout.timeUnit(),
-                                runTimeout.policy()));
-            }
-            else {
-                return cronTaskRepository.register(cronTask);
-            }
+            return cronTaskRepository.register(cronTask);
         }
         return null;
     }
