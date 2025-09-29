@@ -17,6 +17,8 @@
 package top.osjf.cron.spring.annotation;
 
 import org.springframework.core.annotation.AliasFor;
+import top.osjf.cron.core.repository.RunTimeout;
+import top.osjf.cron.core.repository.RunTimes;
 import top.osjf.cron.spring.CronAnnotationPostProcessor;
 
 import java.lang.annotation.*;
@@ -67,6 +69,8 @@ import java.lang.annotation.*;
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
+ * @see RunTimes
+ * @see RunTimeout
  */
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
