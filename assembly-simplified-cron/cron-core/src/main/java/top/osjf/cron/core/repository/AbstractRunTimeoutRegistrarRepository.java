@@ -58,6 +58,7 @@ public abstract class AbstractRunTimeoutRegistrarRepository
      */
     @Override
     public void initialize() throws Exception {
+        super.initialize();
         if (initIdentityMonitoringExecutor) {
             SuperiorProperties superiorProperties = getSuperiorProperties();
             if (superiorProperties == null) {
