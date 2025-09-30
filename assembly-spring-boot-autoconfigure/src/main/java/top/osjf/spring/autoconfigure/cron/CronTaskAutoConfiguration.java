@@ -20,6 +20,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.LazyInitializationExcludeFilter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.context.annotation.Bean;
@@ -29,7 +30,9 @@ import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.Assert;
 import top.osjf.cron.core.lang.NotNull;
+import top.osjf.cron.core.repository.CronExecutorServiceSupplier;
 import top.osjf.cron.core.repository.CronTaskRepository;
+import top.osjf.cron.core.repository.ExecuteTimeoutCronExecutorServiceSupplier;
 import top.osjf.cron.spring.annotation.Cron;
 import top.osjf.cron.spring.annotation.Crones;
 
@@ -65,6 +68,13 @@ public class CronTaskAutoConfiguration {
     @Bean
     public CronTaskRepositorySmartLifecycle cronTaskRepositorySmartLifecycle(CronTaskRepository cronTaskRepository) {
         return new CronTaskRepositorySmartLifecycle(cronTaskRepository);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CronExecutorServiceSupplier.class)
+    public ExecuteTimeoutCronExecutorServiceSupplier executeTimeoutCronExecutorServiceSupplier
+            (CronProperties cronProperties) {
+        return new ExecuteTimeoutCronExecutorServiceSupplier(cronProperties.getRunTimeoutMonitoring().get());
     }
 
     /**
