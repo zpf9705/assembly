@@ -19,7 +19,6 @@ package top.osjf.cron.core.repository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import top.osjf.cron.core.lang.Nullable;
 
 import java.util.concurrent.*;
 
@@ -42,8 +41,18 @@ public class TimeoutMonitoringRunnable implements Runnable {
     private final RunningTimeout timeout;
 
     /** the monitoring {@link ExecutorService}..*/
-    @Nullable
-    private final ExecutorService monitoringExecutor;
+    private ExecutorService monitoringExecutor;
+
+    /**
+     * Construct a {@code TimeoutMonitoringRunnable} with given real {@link Runnable}
+     * and the configure instance {@link RunningTimeout}.
+     *
+     * @param real                the real {@link Runnable}.
+     * @param timeout             configure instance for timeout control during task execution.
+     */
+    public TimeoutMonitoringRunnable(Runnable real, RunningTimeout timeout) {
+        this(real, timeout, null);
+    }
 
     /**
      * Construct a {@code TimeoutMonitoringRunnable} with given real {@link Runnable}
@@ -53,33 +62,20 @@ public class TimeoutMonitoringRunnable implements Runnable {
      * @param timeout             configure instance for timeout control during task execution.
      * @param monitoringExecutor  the monitoring {@link ExecutorService}.
      */
-    public TimeoutMonitoringRunnable(Runnable real, RunningTimeout timeout,
-                                     @Nullable ExecutorService monitoringExecutor) {
+    public TimeoutMonitoringRunnable(Runnable real, RunningTimeout timeout, ExecutorService monitoringExecutor) {
         this.real =  real;
         this.timeout =  timeout;
         this.monitoringExecutor =  monitoringExecutor;
     }
 
     /**
-     * @return the real {@link Runnable}.
+     * Set a monitoring {@link ExecutorService} if {@link #monitoringExecutor} is {@literal null}.
+     * @param monitoringExecutor the monitoring {@link ExecutorService}.
      */
-    public Runnable getReal() {
-        return real;
-    }
-
-    /**
-     * @return the configure instance {@link RunningTimeout}.
-     */
-    public RunningTimeout getTimeout() {
-        return timeout;
-    }
-
-    /**
-     * @return the monitoring {@link ExecutorService}.
-     */
-    @Nullable
-    public ExecutorService getMonitoringExecutor() {
-        return monitoringExecutor;
+    public void setExecutorIfAbsent(ExecutorService monitoringExecutor) {
+        if (this.monitoringExecutor == null) {
+            this.monitoringExecutor = monitoringExecutor;
+        }
     }
 
     /**
@@ -88,21 +84,20 @@ public class TimeoutMonitoringRunnable implements Runnable {
     @Override
     public void run() throws RunningException {
 
-        if (monitoringExecutor != null) {
-            Future<?> future = monitoringExecutor.submit(real);
+        if (monitoringExecutor == null) {
+            throw new RunningException("No MonitoringExecutor");
+        }
 
-            get(future);
-        }
-        else {
-            real.run();
-        }
+        Future<?> future = monitoringExecutor.submit(real);
+
+        get(future);
     }
 
     /**
      * Monitor task execution time and handle related exceptions.
      * @param future the input {@link Future}.
      */
-    void get(Future<?> future) {
+    public void get(Future<?> future) {
         try {
             future.get(timeout.getTimeout(), timeout.getTimeUnit());
         }
