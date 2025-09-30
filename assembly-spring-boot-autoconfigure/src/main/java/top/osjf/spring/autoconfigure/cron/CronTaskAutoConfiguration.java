@@ -72,6 +72,7 @@ public class CronTaskAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(CronExecutorServiceSupplier.class)
+    @ConditionalOnClient({ ClientType.HUTOOL, ClientType.QUARTZ })
     public ExecuteTimeoutCronExecutorServiceSupplier executeTimeoutCronExecutorServiceSupplier
             (CronProperties cronProperties) {
         return new ExecuteTimeoutCronExecutorServiceSupplier(cronProperties.getRunTimeoutMonitoring().get());
