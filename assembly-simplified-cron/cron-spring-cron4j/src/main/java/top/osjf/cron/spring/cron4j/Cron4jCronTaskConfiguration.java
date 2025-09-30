@@ -56,6 +56,7 @@ public class Cron4jCronTaskConfiguration extends AbstractCronTaskConfiguration {
         repository.setSuperiorProperties(SuperiorPropertiesUtils.compositeSuperiorProperties
                 (getImportAnnotationSuperiorProperties(),
                         ObjectProviderUtils.getPriority(propertiesProvider)));
+        repository.setInitIdentityMonitoringExecutor(true);
         return repository;
     }
 
