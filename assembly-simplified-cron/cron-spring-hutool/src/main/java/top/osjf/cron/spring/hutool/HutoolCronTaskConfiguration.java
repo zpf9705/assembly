@@ -62,7 +62,7 @@ public class HutoolCronTaskConfiguration extends AbstractCronTaskConfiguration {
         if (executorServiceSupplier != null) {
             repository.setThreadExecutor(executorServiceSupplier.get());
         }
-        return repository;
+        return customizeRepository(repository);
     }
 
     @Override

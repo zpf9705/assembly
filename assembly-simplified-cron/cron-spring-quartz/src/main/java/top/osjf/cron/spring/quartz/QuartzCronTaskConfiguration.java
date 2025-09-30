@@ -75,6 +75,6 @@ public class QuartzCronTaskConfiguration extends AbstractCronTaskConfiguration {
         if (executorServiceSupplier != null){
             repository.setTaskExecutor(executorServiceSupplier.get());
         }
-        return repository;
+        return customizeRepository(repository);
     }
 }
