@@ -19,7 +19,9 @@ package top.osjf.cron.core.repository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import top.osjf.cron.core.lang.Nullable;
 
+import java.util.UUID;
 import java.util.concurrent.*;
 
 /**
@@ -41,7 +43,7 @@ public class TimeoutMonitoringRunnable implements Runnable {
     private final RunningTimeout timeout;
 
     /** the monitoring {@link ExecutorService}..*/
-    private ExecutorService monitoringExecutor;
+    @Nullable private ExecutorService monitoringExecutor;
 
     /**
      * Construct a {@code TimeoutMonitoringRunnable} with given real {@link Runnable}
@@ -62,7 +64,7 @@ public class TimeoutMonitoringRunnable implements Runnable {
      * @param timeout             configure instance for timeout control during task execution.
      * @param monitoringExecutor  the monitoring {@link ExecutorService}.
      */
-    public TimeoutMonitoringRunnable(Runnable real, RunningTimeout timeout, ExecutorService monitoringExecutor) {
+    public TimeoutMonitoringRunnable(Runnable real, RunningTimeout timeout, @Nullable ExecutorService monitoringExecutor) {
         this.real =  real;
         this.timeout =  timeout;
         this.monitoringExecutor =  monitoringExecutor;
@@ -72,10 +74,11 @@ public class TimeoutMonitoringRunnable implements Runnable {
      * Set a monitoring {@link ExecutorService} if {@link #monitoringExecutor} is {@literal null}.
      * @param monitoringExecutor the monitoring {@link ExecutorService}.
      */
-    public void setExecutorIfAbsent(ExecutorService monitoringExecutor) {
+    public Runnable setExecutorIfAbsent(ExecutorService monitoringExecutor) {
         if (this.monitoringExecutor == null) {
             this.monitoringExecutor = monitoringExecutor;
         }
+        return this;
     }
 
     /**
@@ -84,13 +87,28 @@ public class TimeoutMonitoringRunnable implements Runnable {
     @Override
     public void run() throws RunningException {
 
-        if (monitoringExecutor == null) {
-            throw new RunningException("No MonitoringExecutor");
+        Future<?> future;
+        if (monitoringExecutor != null) {
+            future = monitoringExecutor.submit(real);
+        }
+        else {
+            FutureTask<Void> futureTask = new FutureTask<>(real, null);
+            future = futureTask;
+            newMonitoringThread(futureTask).start();
         }
 
-        Future<?> future = monitoringExecutor.submit(real);
-
         get(future);
+    }
+
+    /**
+     * Create a new timeout monitoring thread.
+     * @param futureTask the input {@link FutureTask}.
+     * @return a new {@link Thread}.
+     */
+    static Thread newMonitoringThread(FutureTask<Void> futureTask) {
+        Thread thread = new Thread(futureTask);
+        thread.setName("Monitoring-Thread-" + UUID.randomUUID());
+        return thread;
     }
 
     /**
