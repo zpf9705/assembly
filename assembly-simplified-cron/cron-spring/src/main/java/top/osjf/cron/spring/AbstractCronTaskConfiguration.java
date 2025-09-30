@@ -17,8 +17,11 @@
 
 package top.osjf.cron.spring;
 
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportAware;
@@ -28,6 +31,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
+import top.osjf.cron.core.repository.AbstractRunTimeoutRegistrarRepository;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.core.util.CollectionUtils;
 import top.osjf.cron.spring.auth.AuthenticationPredicate;
@@ -48,7 +52,7 @@ import java.util.List;
  * @since 3.0.0
  */
 @Configuration(proxyBeanMethods = false)
-public abstract class AbstractCronTaskConfiguration implements ImportAware {
+public abstract class AbstractCronTaskConfiguration implements ImportAware, ApplicationContextAware {
 
     /**
      * Store the relevant attributes extracted from {@link AnnotationMetadata} that
@@ -56,6 +60,8 @@ public abstract class AbstractCronTaskConfiguration implements ImportAware {
      */
     @Nullable
     private SuperiorProperties superiorProperties;
+
+    private ApplicationContext applicationContext;
 
     @Override
     public void setImportMetadata(@NotNull AnnotationMetadata importMetadata) {
@@ -67,6 +73,11 @@ public abstract class AbstractCronTaskConfiguration implements ImportAware {
             superiorProperties = SuperiorProperties.of(importMetadata.getAnnotationAttributes
                     (annotationType.getCanonicalName()));
         }
+    }
+
+    @Override
+    public void setApplicationContext(@NotNull ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 
     /**
@@ -134,5 +145,22 @@ public abstract class AbstractCronTaskConfiguration implements ImportAware {
         }
 
         return authenticationInterceptor;
+    }
+
+    /**
+     * Customize a configured {@link CronTaskRepository}.
+     * @param repository a configured {@link CronTaskRepository}.
+     */
+    protected <C extends CronTaskRepository> C customizeRepository(C repository) {
+
+        // Check if there is a bean for 'executeTimeoutCronExecutorServiceSupplier', and
+        // if there is a listener thread pool that can be initialized to true.
+        if (repository instanceof AbstractRunTimeoutRegistrarRepository) {
+            if (!applicationContext.containsBeanDefinition("executeTimeoutCronExecutorServiceSupplier")) {
+                ((AbstractRunTimeoutRegistrarRepository) repository).setInitIdentityMonitoringExecutor(true);
+            }
+        }
+
+        return repository;
     }
 }
