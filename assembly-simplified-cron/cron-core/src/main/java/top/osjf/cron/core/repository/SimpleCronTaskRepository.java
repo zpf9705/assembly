@@ -269,6 +269,7 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
                 }
                 this.scheduledFuture
                         = scheduledExecutorService.schedule(this, getNextDelaySeconds(), TimeUnit.SECONDS);
+                willGet();
             } finally {
                 scheduleLock.unlock();
             }
@@ -280,6 +281,12 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
                 return scheduledFuture;
             } finally {
                 scheduleLock.unlock();
+            }
+        }
+
+        private void willGet() {
+            if (rawRunnable instanceof TimeoutMonitoringRunnable) {
+                ((TimeoutMonitoringRunnable) rawRunnable).get(scheduledFuture);
             }
         }
 
