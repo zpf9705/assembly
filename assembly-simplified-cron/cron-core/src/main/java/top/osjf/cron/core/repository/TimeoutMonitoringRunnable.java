@@ -42,7 +42,7 @@ public class TimeoutMonitoringRunnable implements Runnable {
     /** the configure instance {@link RunningTimeout}.*/
     private final RunningTimeout timeout;
 
-    /** the monitoring {@link ExecutorService}..*/
+    /** the monitoring {@link ExecutorService}.*/
     @Nullable private ExecutorService monitoringExecutor;
 
     /**
@@ -80,6 +80,28 @@ public class TimeoutMonitoringRunnable implements Runnable {
             this.monitoringExecutor = monitoringExecutor;
         }
         return this;
+    }
+
+    /**
+     * @return the real {@link Runnable}.
+     */
+    public Runnable getReal() {
+        return real;
+    }
+
+    /**
+     * @return the configure instance {@link RunningTimeout}.
+     */
+    public RunningTimeout getTimeout() {
+        return timeout;
+    }
+
+    /**
+     * @return the monitoring {@link ExecutorService}.
+     */
+    @Nullable
+    public ExecutorService getMonitoringExecutor() {
+        return monitoringExecutor;
     }
 
     /**
