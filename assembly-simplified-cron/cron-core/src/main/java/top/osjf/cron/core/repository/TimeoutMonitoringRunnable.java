@@ -74,7 +74,7 @@ public class TimeoutMonitoringRunnable implements Runnable {
      * Set a monitoring {@link ExecutorService} if {@link #monitoringExecutor} is {@literal null}.
      * @param monitoringExecutor the monitoring {@link ExecutorService}.
      */
-    public Runnable setExecutorIfAbsent(ExecutorService monitoringExecutor) {
+    public Runnable setMonitoringExecutorIfAbsent(ExecutorService monitoringExecutor) {
         if (this.monitoringExecutor == null) {
             this.monitoringExecutor = monitoringExecutor;
         }
