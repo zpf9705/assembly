@@ -47,8 +47,10 @@ public class TimeoutMonitoringJobListener implements JobListener {
 
     @Override
     public void jobToBeExecuted(JobExecutionContext context) {
-        TimeoutMonitoringRunnableContext
-                .set((TimeoutMonitoringRunnable) context.getJobDetail().getJobDataMap().get(TIMEOUT_PROPERTY));
+        Object o = context.getJobDetail().getJobDataMap().get(TIMEOUT_PROPERTY);
+        if (o != null) {
+            TimeoutMonitoringRunnableContext.set((TimeoutMonitoringRunnable) o);
+        }
     }
 
     @Override
