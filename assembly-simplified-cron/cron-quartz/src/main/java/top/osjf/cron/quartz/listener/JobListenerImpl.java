@@ -45,7 +45,7 @@ public class JobListenerImpl extends DefaultCronListenerCollector implements Job
 
     @Override
     public void jobExecutionVetoed(JobExecutionContext context) {
-        // do noting....
+        doFailedListener(context, new JobExecutionVetoedException());
     }
 
     @Override
