@@ -40,7 +40,7 @@ public abstract class AbstractRunTimeoutRegistrarRepository
     @Nullable
     private SuperiorPropertiesParsedThreadPoolExecutor monitoringExecutor;
 
-    private boolean initIdentityMonitoringExecutor;
+    private boolean initIdentityMonitoringExecutor = true;
 
     /**
      * Set a {@code Boolean} variable to determine whether to initialize a monitoring thread pool
