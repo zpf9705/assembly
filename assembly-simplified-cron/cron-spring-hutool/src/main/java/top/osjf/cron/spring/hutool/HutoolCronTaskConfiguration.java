@@ -50,18 +50,23 @@ public class HutoolCronTaskConfiguration extends AbstractCronTaskConfiguration {
     public HutoolCronTaskRepository hutoolCronTaskRepository(ObjectProvider<Scheduler> schedulerProvider,
                                                              ObjectProvider<SuperiorProperties> propertiesProvider,
                                                              ObjectProvider<CronExecutorServiceSupplier> executorServiceProvider) {
+
+        HutoolCronTaskRepository repository;
         Scheduler scheduler = ObjectProviderUtils.getPriority(schedulerProvider);
         if (scheduler != null) {
-            return new HutoolCronTaskRepository(scheduler);
+            repository =  new HutoolCronTaskRepository(scheduler);
         }
-        HutoolCronTaskRepository repository = new HutoolCronTaskRepository();
-        repository.setSuperiorProperties(SuperiorPropertiesUtils.compositeSuperiorProperties
-                (getImportAnnotationSuperiorProperties(),
-                        ObjectProviderUtils.getPriority(propertiesProvider)));
-        CronExecutorServiceSupplier executorServiceSupplier = ObjectProviderUtils.getPriority(executorServiceProvider);
-        if (executorServiceSupplier != null) {
-            repository.setThreadExecutor(executorServiceSupplier.get());
+        else {
+            repository = new HutoolCronTaskRepository();
+            repository.setSuperiorProperties(SuperiorPropertiesUtils.compositeSuperiorProperties
+                    (getImportAnnotationSuperiorProperties(),
+                            ObjectProviderUtils.getPriority(propertiesProvider)));
+            CronExecutorServiceSupplier executorServiceSupplier = ObjectProviderUtils.getPriority(executorServiceProvider);
+            if (executorServiceSupplier != null) {
+                repository.setThreadExecutor(executorServiceSupplier.get());
+            }
         }
+
         return customizeRepository(repository);
     }
 
