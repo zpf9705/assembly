@@ -156,8 +156,8 @@ public abstract class AbstractCronTaskConfiguration implements ImportAware, Appl
         // Check if there is a bean for 'executeTimeoutCronExecutorServiceSupplier', and
         // if there is a listener thread pool that can be initialized to true.
         if (repository instanceof AbstractRunTimeoutRegistrarRepository) {
-            if (!applicationContext.containsBeanDefinition("executeTimeoutCronExecutorServiceSupplier")) {
-                ((AbstractRunTimeoutRegistrarRepository) repository).setInitIdentityMonitoringExecutor(true);
+            if (applicationContext.containsBeanDefinition("executeTimeoutCronExecutorServiceSupplier")) {
+                ((AbstractRunTimeoutRegistrarRepository) repository).setInitIdentityMonitoringExecutor(false);
             }
         }
 
