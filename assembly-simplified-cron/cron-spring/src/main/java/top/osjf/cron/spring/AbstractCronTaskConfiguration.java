@@ -150,6 +150,8 @@ public abstract class AbstractCronTaskConfiguration implements ImportAware, Appl
     /**
      * Customize a configured {@link CronTaskRepository}.
      * @param repository a configured {@link CronTaskRepository}.
+     * @param <C> type of {@link CronTaskRepository}.
+     * @return  a configured {@link CronTaskRepository}.
      */
     protected <C extends CronTaskRepository> C customizeRepository(C repository) {
 
