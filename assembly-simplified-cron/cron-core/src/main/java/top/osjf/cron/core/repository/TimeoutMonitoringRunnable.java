@@ -31,7 +31,7 @@ import java.util.concurrent.*;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
  */
-class TimeoutMonitoringRunnable implements Runnable {
+public class TimeoutMonitoringRunnable implements Runnable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TimeoutMonitoringRunnable.class);
 
