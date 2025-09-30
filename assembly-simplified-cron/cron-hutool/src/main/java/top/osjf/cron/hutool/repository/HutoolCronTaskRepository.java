@@ -29,6 +29,7 @@ import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.core.listener.CronListenerCollector;
 import top.osjf.cron.core.repository.*;
 import top.osjf.cron.hutool.listener.TaskListenerImpl;
+import top.osjf.cron.hutool.listener.TimeoutMonitoringTaskListener;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -236,6 +237,9 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
             scheduler.setThreadExecutor(executorService);
         }
         scheduler.addListener(taskListener);
+        if (!initIdentityMonitoringExecutor) {
+            scheduler.addListener(new TimeoutMonitoringTaskListener());
+        }
     }
 
     /**
