@@ -20,9 +20,8 @@ package top.osjf.cron.core.repository;
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 import top.osjf.cron.core.lang.NotNull;
+import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
-
-import java.util.concurrent.ExecutorService;
 
 /**
  * An abstract implementation class of {@link RunTimeoutRegistrarRepository} that adds
@@ -38,26 +37,35 @@ import java.util.concurrent.ExecutorService;
 public abstract class AbstractRunTimeoutRegistrarRepository
         extends AbstractRunTimesRegistrarRepository implements RunTimeoutRegistrarRepository {
 
+    @Nullable
     private SuperiorPropertiesParsedThreadPoolExecutor monitoringExecutor;
+
+    private boolean initIdentityMonitoringExecutor;
+
+    /**
+     * Set a {@code Boolean} variable to determine whether to initialize a monitoring thread pool
+     * {@link SuperiorPropertiesParsedThreadPoolExecutor}.
+     * @param initIdentityMonitoringExecutor {@code Boolean} variables determine whether to
+     *                                       initialize a monitoring thread pool
+     *                                       {@link SuperiorPropertiesParsedThreadPoolExecutor}.
+     */
+    public void setInitIdentityMonitoringExecutor(boolean initIdentityMonitoringExecutor) {
+        this.initIdentityMonitoringExecutor = initIdentityMonitoringExecutor;
+    }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void setSuperiorProperties(SuperiorProperties superiorProperties) {
-        super.setSuperiorProperties(superiorProperties);
-        monitoringExecutor = new SuperiorPropertiesParsedThreadPoolExecutor(superiorProperties);
-    }
-
-    /**
-     * @return the {@link #monitoringExecutor}.
-     * @throws IllegalArgumentException if {@link #monitoringExecutor} is not set or set {@literal null}.
-     */
-    private ExecutorService getMonitoringExecutor() {
-        if (monitoringExecutor == null) {
-            throw new IllegalArgumentException("monitoringExecutor must not be null !");
+    public void initialize() throws Exception {
+        if (initIdentityMonitoringExecutor) {
+            SuperiorProperties superiorProperties = getSuperiorProperties();
+            if (superiorProperties == null) {
+                throw new IllegalArgumentException
+                        ("superiorProperties is null, unable to initialize the monitoring thread pool.");
+            }
+            monitoringExecutor = new SuperiorPropertiesParsedThreadPoolExecutor(getSuperiorProperties());
         }
-        return monitoringExecutor;
     }
 
     /**
@@ -66,7 +74,7 @@ public abstract class AbstractRunTimeoutRegistrarRepository
     @Override
     public String register(@NotNull String expression, @NotNull Runnable runnable, @NotNull RunningTimeout timeout)
             throws CronInternalException {
-        return register(expression, new TimeoutMonitoringRunnable(runnable, timeout, getMonitoringExecutor()));
+        return register(expression, new TimeoutMonitoringRunnable(runnable, timeout, monitoringExecutor));
     }
 
     /**
@@ -75,7 +83,7 @@ public abstract class AbstractRunTimeoutRegistrarRepository
     @Override
     public String register(@NotNull String expression, @NotNull CronMethodRunnable runnable,
                            @NotNull RunningTimeout timeout) throws CronInternalException {
-        return register(expression, new TimeoutMonitoringRunnable(runnable, timeout, getMonitoringExecutor()));
+        return register(expression, new TimeoutMonitoringRunnable(runnable, timeout, monitoringExecutor));
     }
 
     /**
@@ -93,7 +101,7 @@ public abstract class AbstractRunTimeoutRegistrarRepository
     @Override
     public String register(@NotNull String expression, @NotNull TaskBody body, @NotNull RunningTimeout timeout)
             throws CronInternalException, UnsupportedTaskBodyException {
-        return register(expression, new TimeoutMonitoringRunnable(asRunnable(body), timeout, getMonitoringExecutor()));
+        return register(expression, new TimeoutMonitoringRunnable(asRunnable(body), timeout, monitoringExecutor));
     }
 
     /**
@@ -110,7 +118,7 @@ public abstract class AbstractRunTimeoutRegistrarRepository
     @Override
     public void registerRunTimes(@NotNull String expression, @NotNull Runnable runnable, int times,
                                  @NotNull RunningTimeout timeout) throws CronInternalException {
-        registerRunTimes(expression, new TimeoutMonitoringRunnable(runnable, timeout, getMonitoringExecutor()), times);
+        registerRunTimes(expression, new TimeoutMonitoringRunnable(runnable, timeout, monitoringExecutor), times);
     }
 
     /**
@@ -119,7 +127,7 @@ public abstract class AbstractRunTimeoutRegistrarRepository
     @Override
     public void registerRunTimes(@NotNull String expression, @NotNull CronMethodRunnable runnable,
                                  int times, @NotNull RunningTimeout timeout) throws CronInternalException {
-        registerRunTimes(expression, new TimeoutMonitoringRunnable(runnable, timeout, getMonitoringExecutor()), times);
+        registerRunTimes(expression, new TimeoutMonitoringRunnable(runnable, timeout, monitoringExecutor), times);
     }
 
     /**
@@ -162,13 +170,12 @@ public abstract class AbstractRunTimeoutRegistrarRepository
     /**
      * Convert {@link TaskBody} as {@link Runnable}.
      * @param body the {@link TaskBody}.
-     * @return  the {@link Runnable} result after convert.
+     * @return the {@link Runnable} result after convert.
      */
     protected Runnable asRunnable(TaskBody body) throws UnsupportedTaskBodyException {
         if (body.isWrapperFor(Runnable.class)) {
             return body.unwrap(Runnable.class);
-        }
-        else if (body.isWrapperFor(RunnableTaskBody.class)) {
+        } else if (body.isWrapperFor(RunnableTaskBody.class)) {
             return body.unwrap(RunnableTaskBody.class).getRunnable();
         }
         throw new UnsupportedTaskBodyException(body.getClass());
