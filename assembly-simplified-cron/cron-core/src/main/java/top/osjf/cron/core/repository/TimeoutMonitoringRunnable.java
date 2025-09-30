@@ -19,6 +19,7 @@ package top.osjf.cron.core.repository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import top.osjf.cron.core.lang.Nullable;
 
 import java.util.concurrent.*;
 
@@ -41,6 +42,7 @@ class TimeoutMonitoringRunnable implements Runnable {
     private final RunningTimeout timeout;
 
     /** the monitoring {@link ExecutorService}..*/
+    @Nullable
     private final ExecutorService monitoringExecutor;
 
     /**
@@ -51,7 +53,8 @@ class TimeoutMonitoringRunnable implements Runnable {
      * @param timeout             configure instance for timeout control during task execution.
      * @param monitoringExecutor  the monitoring {@link ExecutorService}.
      */
-    public TimeoutMonitoringRunnable(Runnable real, RunningTimeout timeout, ExecutorService monitoringExecutor) {
+    public TimeoutMonitoringRunnable(Runnable real, RunningTimeout timeout,
+                                     @Nullable ExecutorService monitoringExecutor) {
         this.real =  real;
         this.timeout =  timeout;
         this.monitoringExecutor =  monitoringExecutor;
@@ -74,6 +77,7 @@ class TimeoutMonitoringRunnable implements Runnable {
     /**
      * @return the monitoring {@link ExecutorService}.
      */
+    @Nullable
     public ExecutorService getMonitoringExecutor() {
         return monitoringExecutor;
     }
@@ -84,9 +88,14 @@ class TimeoutMonitoringRunnable implements Runnable {
     @Override
     public void run() throws RunningException {
 
-        Future<?> future = monitoringExecutor.submit(real);
+        if (monitoringExecutor != null) {
+            Future<?> future = monitoringExecutor.submit(real);
 
-        get(future);
+            get(future);
+        }
+        else {
+            real.run();
+        }
     }
 
     /**
