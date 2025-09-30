@@ -17,15 +17,22 @@
 
 package top.osjf.cron.spring.scheduler;
 
+import org.springframework.core.NamedThreadLocal;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.scheduling.support.CronTrigger;
+import org.springframework.scheduling.support.ScheduledMethodRunnable;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lang.Nullable;
-import top.osjf.cron.core.repository.AbstractCronTaskRepository;
+import top.osjf.cron.core.repository.*;
+import top.osjf.cron.core.util.StringUtils;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.function.Function;
@@ -80,6 +87,43 @@ public abstract class ListenableTaskScheduler extends AbstractCronTaskRepository
     @Override
     @NotNull
     public ListenableScheduledFuture schedule(@NotNull Runnable task, @NotNull Trigger trigger) {
+
+        if (task instanceof ScheduledMethodRunnable && trigger instanceof CronTrigger) {
+
+            // Related APIs for compatibility registration and timeout monitoring.
+            CronTask cronTask = new CronTask(((CronTrigger) trigger).getExpression()
+                    , new CronMethodRunnable(((ScheduledMethodRunnable) task).getTarget(),
+                    ((ScheduledMethodRunnable) task).getMethod()));
+            String id = new CronTaskRegistrar(cronTask).registerFor(this);
+
+            // If the ID is returned, it will continue to be pulled directly from the
+            // cache, otherwise it will be retrieved from the current context.
+            try {
+                if (StringUtils.isBlank(id)) {
+                    return ListenableScheduledFutureContext.local.get();
+                }
+                else {
+                    return futureCache.get(id);
+                }
+            }
+            finally {
+                ListenableScheduledFutureContext.local.remove();
+            }
+        }
+
+        return triggerScheduleInternal(task, trigger);
+    }
+
+    /**
+     * Internal method of {@link #schedule(Runnable, Trigger)}.
+     * @since 3.0.2
+     * @param task the Runnable to execute whenever the trigger fires
+     * @param trigger an implementation of the {@link Trigger} interface,
+     * @return a {@link ScheduledFuture} representing pending completion of the task,
+     * or {@code null} if the given Trigger object never fires (i.e. returns
+     * {@code null} from {@link Trigger#nextExecutionTime})
+     */
+    private ListenableScheduledFuture triggerScheduleInternal(@NotNull Runnable task, @NotNull Trigger trigger) {
         return execute(r -> {
             ScheduledFuture<?> scheduledFuture = taskScheduler.schedule(r, trigger);
             if (scheduledFuture == null) {
@@ -90,37 +134,37 @@ public abstract class ListenableTaskScheduler extends AbstractCronTaskRepository
                                 " execute the task.");
             }
             return scheduledFuture;
-        }, task, trigger);
+        }, task, trigger, true);
     }
 
     @Override
     @NotNull
     public ListenableScheduledFuture schedule(@NotNull Runnable task, @NotNull Date startTime) {
-        return execute(r -> taskScheduler.schedule(r, startTime), task, null);
+        return execute(r -> taskScheduler.schedule(r, startTime), task, null, false);
     }
 
     @Override
     @NotNull
     public ListenableScheduledFuture scheduleAtFixedRate(@NotNull Runnable task, @NotNull Date startTime, long period) {
-        return execute(r -> taskScheduler.scheduleAtFixedRate(r, startTime, period), task, null);
+        return execute(r -> taskScheduler.scheduleAtFixedRate(r, startTime, period), task, null, false);
     }
 
     @Override
     @NotNull
     public ListenableScheduledFuture scheduleAtFixedRate(@NotNull Runnable task, long period) {
-        return execute(r -> taskScheduler.scheduleAtFixedRate(r, period), task, null);
+        return execute(r -> taskScheduler.scheduleAtFixedRate(r, period), task, null, false);
     }
 
     @Override
     @NotNull
     public ListenableScheduledFuture scheduleWithFixedDelay(@NotNull Runnable task, @NotNull Date startTime, long delay) {
-        return execute(r -> taskScheduler.scheduleWithFixedDelay(r, startTime, delay), task, null);
+        return execute(r -> taskScheduler.scheduleWithFixedDelay(r, startTime, delay), task, null, false);
     }
 
     @Override
     @NotNull
     public ListenableScheduledFuture scheduleWithFixedDelay(@NotNull Runnable task, long delay) {
-        return execute(r -> taskScheduler.scheduleWithFixedDelay(r, delay), task, null);
+        return execute(r -> taskScheduler.scheduleWithFixedDelay(r, delay), task, null, false);
     }
 
     /**
@@ -198,19 +242,31 @@ public abstract class ListenableTaskScheduler extends AbstractCronTaskRepository
      * into a {@link ListenableScheduledFuture} object with an ID tag cached in {@link #futureCache}
      * for later management.
      *
-     * @param func     get the function object of the {@link ScheduledFuture} instance.
-     * @param runnable the Runnable to execute whenever the trigger fires
-     * @param trigger  an implementation of the {@link Trigger} interface,
+     * @param func         get the function object of the {@link ScheduledFuture} instance.
+     * @param runnable     the Runnable to execute whenever the trigger fires
+     * @param trigger      an implementation of the {@link Trigger} interface,
+     * @param exposeFuture Whether to expose the current {@link ListenableScheduledFuture} in context.
      * @return An instance of {@link ListenableScheduledFuture} with added listening function.
      */
     @NotNull
     private ListenableScheduledFuture execute(Function<Runnable, ScheduledFuture<?>> func, Runnable runnable,
-                                              Trigger trigger) {
+                                              Trigger trigger, boolean exposeFuture) {
         ListenableRunnable listenableRunnable = wrapperRunnableToListenable(runnable, trigger);
         ScheduledFuture<?> scheduledFuture = func.apply(listenableRunnable);
         ListenableScheduledFuture listenableScheduledFuture
                 = new ListenableScheduledFuture(listenableRunnable, scheduledFuture);
         futureCache.putIfAbsent(listenableRunnable.getId(), listenableScheduledFuture);
+        if (exposeFuture) {
+            ListenableScheduledFutureContext.local.set(listenableScheduledFuture);
+        }
         return listenableScheduledFuture;
+    }
+
+    /**
+     * {@link ListenableScheduledFuture} threadLocal context.
+     * @since 3.0.2
+     */
+    static class ListenableScheduledFutureContext {
+        static ThreadLocal<ListenableScheduledFuture> local = new NamedThreadLocal<>("ListenableScheduledFuture local");
     }
 }
