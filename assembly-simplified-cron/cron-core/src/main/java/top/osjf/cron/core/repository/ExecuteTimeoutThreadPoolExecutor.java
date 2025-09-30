@@ -52,8 +52,15 @@ public class ExecuteTimeoutThreadPoolExecutor extends SuperiorPropertiesParsedTh
             ((TimeoutMonitoringRunnable) command).setMonitoringExecutorIfAbsent(this).run();
         }
         else {
-
-            super.execute(command);
+            TimeoutMonitoringRunnable ti = TimeoutMonitoringRunnableContext.get();
+            if (ti != null) {
+                Future<?> future = submit(command);
+                ti.get(future);
+            }
+            else {
+                super.execute(command);
+            }
         }
+
     }
 }
