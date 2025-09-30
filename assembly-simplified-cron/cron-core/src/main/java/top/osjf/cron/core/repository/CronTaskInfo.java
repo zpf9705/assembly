@@ -21,6 +21,8 @@ import top.osjf.cron.core.lang.Nullable;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * The {@code CronTaskInfo} class encapsulates the relevant information of
@@ -191,5 +193,35 @@ public class CronTaskInfo implements Serializable {
      */
     public long getRemainingNumberOfRuns() {
         return remainingNumberOfRuns;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CronTaskInfo that = (CronTaskInfo) o;
+        return Objects.equals(expression, that.expression)
+                && Objects.equals(target, that.target)
+                && Objects.equals(method, that.method);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(expression, target, method);
+        result = 31 * result + Arrays.hashCode(args);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "CronTaskInfo{" +
+                "id='" + id + '\'' +
+                ", expression='" + expression + '\'' +
+                ", runnable=" + runnable +
+                ", target=" + target +
+                ", method=" + method +
+                ", args=" + Arrays.toString(args) +
+                ", remainingNumberOfRuns=" + remainingNumberOfRuns +
+                '}';
     }
 }
