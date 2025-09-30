@@ -34,6 +34,7 @@ import top.osjf.cron.quartz.MethodLevelJob;
 import top.osjf.cron.quartz.MethodLevelJobFactory;
 import top.osjf.cron.quartz.QuartzUtils;
 import top.osjf.cron.quartz.listener.JobListenerImpl;
+import top.osjf.cron.quartz.listener.TimeoutMonitoringJobListener;
 
 import java.lang.reflect.Method;
 import java.text.ParseException;
@@ -281,6 +282,9 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
         }
         listenerManager = scheduler.getListenerManager();
         listenerManager.addJobListener(jobListener);
+        if (!initIdentityMonitoringExecutor) {
+            listenerManager.addJobListener(new TimeoutMonitoringJobListener());
+        }
     }
 
     /**
@@ -305,6 +309,11 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
         String group = method.getDeclaringClass().getName();
         JobKey jobKey = new JobKey(name, group);
         JobDetail jobDetail = QuartzUtils.buildStandardJobDetail(name, group);
+
+        if (runnable instanceof TimeoutMonitoringRunnable) {
+            jobDetail.getJobDataMap().put(TimeoutMonitoringJobListener.TIMEOUT_PROPERTY, runnable);
+        }
+
         return doRegister(expression, jobKey, jobDetail);
     }
 
