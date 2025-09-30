@@ -58,6 +58,27 @@ class TimeoutMonitoringRunnable implements Runnable {
     }
 
     /**
+     * @return the real {@link Runnable}.
+     */
+    public Runnable getReal() {
+        return real;
+    }
+
+    /**
+     * @return the configure instance {@link RunningTimeout}.
+     */
+    public RunningTimeout getTimeout() {
+        return timeout;
+    }
+
+    /**
+     * @return the monitoring {@link ExecutorService}.
+     */
+    public ExecutorService getMonitoringExecutor() {
+        return monitoringExecutor;
+    }
+
+    /**
      * @throws RunningException if running fails occurs.
      */
     @Override
@@ -65,6 +86,14 @@ class TimeoutMonitoringRunnable implements Runnable {
 
         Future<?> future = monitoringExecutor.submit(real);
 
+        get(future);
+    }
+
+    /**
+     * Monitor task execution time and handle related exceptions.
+     * @param future the input {@link Future}.
+     */
+    void get(Future<?> future) {
         try {
             future.get(timeout.getTimeout(), timeout.getTimeUnit());
         }
