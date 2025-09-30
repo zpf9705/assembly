@@ -288,6 +288,9 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      */
     @Override
     public String register(@NotNull String expression, @NotNull Runnable runnable) throws CronInternalException {
+        if (runnable instanceof TimeoutMonitoringRunnable) {
+            runnable = ((TimeoutMonitoringRunnable) runnable).getReal();
+        }
         Method method = null;
         if (runnable instanceof CronMethodRunnable) {
             CronMethodRunnable cronMethodRunnable = (CronMethodRunnable) runnable;
@@ -296,7 +299,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
             method = ((MethodProviderRunnable) runnable).getMethod();
         }
         if (method == null) {
-            throw new CronInternalException("Only supported resolve " + runnable.getClass());
+            throw new CronInternalException("Unable resolve " + runnable.getClass());
         }
         String name = method.getName();
         String group = method.getDeclaringClass().getName();
