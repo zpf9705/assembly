@@ -45,6 +45,9 @@ public class TimeoutMonitoringRunnable implements Runnable {
     /** the monitoring {@link ExecutorService}.*/
     @Nullable private ExecutorService monitoringExecutor;
 
+    /** should we adopt our own {@link #run()} operation monitoring.*/
+    private boolean identityRun = true;
+
     /**
      * Construct a {@code TimeoutMonitoringRunnable} with given real {@link Runnable}
      * and the configure instance {@link RunningTimeout}.
@@ -83,6 +86,14 @@ public class TimeoutMonitoringRunnable implements Runnable {
     }
 
     /**
+     * Set a {@link Boolean} flag that should we adopt our own {@link #run()} operation monitoring.
+     * @param identityRun should we adopt our own {@link #run()} operation monitoring.
+     */
+    public void setIdentityRun(boolean identityRun) {
+        this.identityRun = identityRun;
+    }
+
+    /**
      * @return the real {@link Runnable}.
      */
     public Runnable getReal() {
@@ -102,6 +113,13 @@ public class TimeoutMonitoringRunnable implements Runnable {
     @Nullable
     public ExecutorService getMonitoringExecutor() {
         return monitoringExecutor;
+    }
+
+    /**
+     * @return should we adopt our own {@link #run()} operation monitoring.
+     */
+    public boolean isIdentityRun() {
+        return identityRun;
     }
 
     /**
