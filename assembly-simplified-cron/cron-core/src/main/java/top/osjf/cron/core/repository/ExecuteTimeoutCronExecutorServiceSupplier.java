@@ -17,6 +17,7 @@
 
 package top.osjf.cron.core.repository;
 
+import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
 
 import javax.annotation.Nonnull;
@@ -31,19 +32,27 @@ import java.util.concurrent.ExecutorService;
  */
 public class ExecuteTimeoutCronExecutorServiceSupplier implements CronExecutorServiceSupplier {
 
-    private final SuperiorProperties superiorProperties;
+    private final ExecuteTimeoutThreadPoolExecutor executor;
 
     /**
      * Constructs a {@link ExecuteTimeoutCronExecutorServiceSupplier} by given initial {@link SuperiorProperties}.
      * @param superiorProperties the given initial {@link SuperiorProperties}.
      */
     public ExecuteTimeoutCronExecutorServiceSupplier(SuperiorProperties superiorProperties) {
-        this.superiorProperties = superiorProperties;
+        this.executor = new ExecuteTimeoutThreadPoolExecutor(superiorProperties);
+    }
+
+    /**
+     * @see ExecuteTimeoutThreadPoolExecutor#setExtractor(ExecuteTimeoutThreadPoolExecutor.TimeoutMonitoringRunnableExtractor)
+     * @param extractor {@link ExecuteTimeoutThreadPoolExecutor.TimeoutMonitoringRunnableExtractor}
+     */
+    public void setExtractor(@Nullable ExecuteTimeoutThreadPoolExecutor.TimeoutMonitoringRunnableExtractor extractor) {
+        executor.setExtractor(extractor);
     }
 
     @Nonnull
     @Override
     public ExecutorService get() {
-        return new ExecuteTimeoutThreadPoolExecutor(superiorProperties);
+        return executor;
     }
 }
