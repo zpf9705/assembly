@@ -19,6 +19,7 @@ package top.osjf.cron.quartz;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import top.osjf.cron.core.repository.CronMethodRunnable;
+import top.osjf.cron.quartz.repository.RunnableJob;
 
 import java.lang.reflect.Method;
 
@@ -29,7 +30,9 @@ import java.lang.reflect.Method;
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
+ * @deprecated {@link RunnableJob}
  */
+@Deprecated
 public class MethodLevelJob implements Job {
     private final CronMethodRunnable cronMethodRunnable;
 

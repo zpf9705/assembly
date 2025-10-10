@@ -22,6 +22,7 @@ import org.quartz.impl.JobExecutionContextImpl;
 import org.quartz.spi.JobFactory;
 import org.quartz.spi.TriggerFiredBundle;
 import top.osjf.cron.core.util.ReflectUtils;
+import top.osjf.cron.quartz.repository.RunnableJobFactory;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
@@ -46,7 +47,9 @@ import java.util.concurrent.ConcurrentMap;
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
+ * @deprecated {@link RunnableJobFactory}
  */
+@Deprecated
 public class MethodLevelJobFactory implements JobFactory {
 
     /**
