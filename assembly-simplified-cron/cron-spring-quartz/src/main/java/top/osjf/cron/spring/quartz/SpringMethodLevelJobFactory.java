@@ -45,7 +45,9 @@ import java.lang.reflect.Method;
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.0
+ * @deprecated {@link SpringRunnableJobFactory}
  */
+@Deprecated
 public class SpringMethodLevelJobFactory
         extends MethodLevelJobFactory implements ApplicationContextAware, BeanClassLoaderAware {
 
