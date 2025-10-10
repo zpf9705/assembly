@@ -34,6 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class RunnableJobFactory implements JobFactory {
 
+    /** {@link Map} caching for {@link RunnableJob}.*/
     private final Map<String, RunnableJob> jobMap = new ConcurrentHashMap<>(64);
 
     @Override
@@ -51,8 +52,13 @@ public class RunnableJobFactory implements JobFactory {
         return newJobInternal(id, runnable);
     }
 
-
-    protected Job newJobInternal(String id, Runnable runnable) {
+    /**
+     * Internal method of creating a new {@link RunnableJob}.
+     * @param id        the task id.
+     * @param runnable  the task {@link Runnable}.
+     * @return  new {@link RunnableJob} instance.
+     */
+    protected RunnableJob newJobInternal(String id, Runnable runnable) {
         RunnableJob job = jobMap.get(id);
         if (job != null) {
             return job;
@@ -61,6 +67,11 @@ public class RunnableJobFactory implements JobFactory {
         return jobMap.computeIfAbsent(id, s -> new RunnableJob(runnable));
     }
 
+    /**
+     * Returns a {@link RunnableJob} getting by given id if existed.
+     * @param id        the task id.
+     * @return a {@link RunnableJob} getting by given id.
+     */
     @Nullable protected RunnableJob getJob(String id) {
         return jobMap.getOrDefault(id, null);
     }
