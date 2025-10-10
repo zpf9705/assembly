@@ -24,6 +24,8 @@ import top.osjf.cron.core.util.ReflectUtils;
 import top.osjf.cron.core.util.StringUtils;
 
 import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Coordinate Quartz's easy-to-use tool class and provide relevant
@@ -33,6 +35,8 @@ import java.lang.reflect.Method;
  * @since 1.0.3
  */
 public abstract class QuartzUtils {
+
+    private static final Map<String, JobKey> JOB_KEY_MAP = new ConcurrentHashMap<>(16);
 
     /**
      * This is a rule method check that specifies the framework setting {@link JobDetail#getJobClass()}.
@@ -44,6 +48,7 @@ public abstract class QuartzUtils {
      * @throws NullPointerException     if input {@code jobClass} is null.
      * @throws IllegalArgumentException if input {@code jobClass} does not meet the above rules.¬
      */
+    @Deprecated
     public static void checkJobClassRules(Class<? extends Job> jobClass) {
         if (!MethodLevelJob.class.isAssignableFrom(jobClass)) {
             throw new IllegalArgumentException
@@ -71,6 +76,7 @@ public abstract class QuartzUtils {
      * @throws IllegalArgumentException If input {@link JobKey} does not meet the above rules.
      * @throws IllegalStateException    If the relevant attributes of {@link JobKey} cannot be found.
      */
+    @Deprecated
     public static void checkJobKeyRules(JobKey key) {
         String declaringClassName = key.getGroup();
         if (StringUtils.isBlank(declaringClassName)) {
@@ -109,6 +115,7 @@ public abstract class QuartzUtils {
      * @param declaringClassName the declare class name.
      * @return {@link JobDetail} instance after standard build.
      */
+    @Deprecated
     public static JobDetail buildStandardJobDetail(String methodName, String declaringClassName) {
         return JobBuilder.newJob(MethodLevelJob.class).withIdentity(methodName, declaringClassName).build();
     }
@@ -121,7 +128,20 @@ public abstract class QuartzUtils {
      * @throws NullPointerException if input {@code JobKey} is {@literal null}.
      */
     public static String getJobIdentity(JobKey jobKey) {
-        return jobKey.getName() + "@" + jobKey.getGroup();
+        String id = jobKey.getName() + "@" + jobKey.getGroup();
+        JOB_KEY_MAP.putIfAbsent(id, jobKey);
+        return id;
+    }
+
+    /**
+     * Returns a {@link JobKey} string formatted according to input id.
+     *
+     * @param id the input id.
+     * @return the cache {@link JobKey}.
+     * @throws NullPointerException if input {@code id} is {@literal null}.
+     */
+    public static JobKey getJobKey(String id) {
+        return JOB_KEY_MAP.getOrDefault(id, null);
     }
 
     /**
@@ -130,6 +150,7 @@ public abstract class QuartzUtils {
      * @param jobKey the input resolve {@link JobKey}.
      * @return Serialize the ID of {@link JobKey} json.
      */
+    @Deprecated
     public static String getIdBySerializeJobKey(JobKey jobKey) {
         return GsonUtils.toJson(jobKey);
     }
@@ -140,6 +161,7 @@ public abstract class QuartzUtils {
      * @param id the input resolve id.
      * @return Deserialize the {@link JobKey} of id.
      */
+    @Deprecated
     public static JobKey getJobKeyByDeSerializeId(String id) {
         return GsonUtils.fromJson(id, JobKey.class);
     }
