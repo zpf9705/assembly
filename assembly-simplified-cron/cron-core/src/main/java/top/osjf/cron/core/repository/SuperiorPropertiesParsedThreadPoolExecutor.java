@@ -35,62 +35,62 @@ import java.util.concurrent.atomic.AtomicLong;
 public class SuperiorPropertiesParsedThreadPoolExecutor extends ThreadPoolExecutor implements AutoCloseable {
 
     /**
-     * The {@link SuperiorProperties} configuration attribute name of {@code #corePoolSize}
+     * The {@link SuperiorProperties} configuration attribute name of {@code ThreadPoolExecutor#corePoolSize}
      */
     public static final String PROPERTY_OF_CORE_SIZE = "corePoolSize";
 
     /**
-     * The {@link SuperiorProperties} configuration attribute name of {@code #maximumPoolSize}
+     * The {@link SuperiorProperties} configuration attribute name of {@code ThreadPoolExecutor#maximumPoolSize}
      */
     public static final String PROPERTY_OF_MAX_SIZE = "maximumPoolSize";
 
     /**
-     * The {@link SuperiorProperties} configuration attribute name of {@code #keepAliveTime}
+     * The {@link SuperiorProperties} configuration attribute name of {@code ThreadPoolExecutor#keepAliveTime}
      */
     public static final String PROPERTY_OF_KEEP_ALIVE = "keepAlive";
 
     /**
-     * The {@link SuperiorProperties} configuration attribute name of {@code #keepAliveTime}
+     * The {@link SuperiorProperties} configuration attribute name of {@code ThreadPoolExecutor#keepAliveTime}
      */
     public static final String PROPERTY_OF_KEEP_ALIVE_UNIT = "keepAliveUnit";
 
     /**
-     * The {@link SuperiorProperties} configuration attribute name of {@code #workQueue}
+     * The {@link SuperiorProperties} configuration attribute name of {@code ThreadPoolExecutor#workQueue}
      */
     public static final String PROPERTY_OF_QUEUE_CAPACITY = "queueCapacity";
 
     /**
-     * The {@link SuperiorProperties} configuration attribute name of {@code #threadFactory}
+     * The {@link SuperiorProperties} configuration attribute name of {@code ThreadPoolExecutor#threadFactory}
      */
     public static final String PROPERTY_OF_THREAD_NAME_PREFIX = "threadNamePrefix";
 
     /**
-     * The {@link SuperiorProperties} configuration attribute name of {@code #allowCoreThreadTimeOut}
+     * The {@link SuperiorProperties} configuration attribute name of {@code ThreadPoolExecutor#allowCoreThreadTimeOut}
      */
     public static final String PROPERTY_OF_ALLOW_CORE_THREAD_TIMEOUT = "allowCoreThreadTimeout";
 
     /**
-     * The {@link SuperiorProperties} configuration attribute name of {@code #awaitTermination(long, TimeUnit)}
+     * The {@link SuperiorProperties} configuration attribute name of {@link ThreadPoolExecutor#awaitTermination}
      */
     public static final String PROPERTY_OF_AWAIT_TERMINATION = "awaitTermination";
 
     /**
-     * The {@link SuperiorProperties} configuration attribute name of {@code #awaitTermination(long, TimeUnit)}
+     * The {@link SuperiorProperties} configuration attribute name of {@link ThreadPoolExecutor#awaitTermination}
      */
     public static final String PROPERTY_OF_AWAIT_TERMINATION_TIMEOUT = "awaitTerminationTimeout";
 
     /**
-     * The {@link SuperiorProperties} configuration attribute name of {@code #awaitTermination(long, TimeUnit)}
+     * The {@link SuperiorProperties} configuration attribute name of {@link ThreadPoolExecutor#awaitTermination}
      */
     public static final String PROPERTY_OF_AWAIT_TERMINATION_TIMEOUT_UNIT = "awaitTerminationTimeoutUnit";
 
     /**
-     * The {@link SuperiorProperties} configuration attribute name of {@code #handler}
+     * The {@link SuperiorProperties} configuration attribute name of {@code ThreadPoolExecutor#handler}
      */
     public static final String PROPERTY_OF_REJECT_RETRY_TIMEOUT = "rejectRetryTimeout";
 
     /**
-     * The {@link SuperiorProperties} configuration attribute name of {@code #handler}
+     * The {@link SuperiorProperties} configuration attribute name of {@code ThreadPoolExecutor#handler}
      */
     public static final String PROPERTY_OF_REJECT_RETRY_TIMEOUT_UNIT = "rejectRetryTimeoutUnit";
 
