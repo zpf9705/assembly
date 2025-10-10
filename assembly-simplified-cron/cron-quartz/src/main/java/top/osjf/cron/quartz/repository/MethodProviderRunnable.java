@@ -25,6 +25,7 @@ import java.lang.reflect.Method;
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
+ * @deprecated 3.0.2
  */
 @Deprecated
 public interface MethodProviderRunnable extends Runnable {
