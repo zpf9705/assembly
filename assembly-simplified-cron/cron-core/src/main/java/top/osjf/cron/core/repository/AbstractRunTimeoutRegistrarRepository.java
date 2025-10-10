@@ -20,7 +20,6 @@ package top.osjf.cron.core.repository;
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 import top.osjf.cron.core.lang.NotNull;
-import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
 
 /**
@@ -37,21 +36,7 @@ import top.osjf.cron.core.lifecycle.SuperiorProperties;
 public abstract class AbstractRunTimeoutRegistrarRepository
         extends AbstractRunTimesRegistrarRepository implements RunTimeoutRegistrarRepository {
 
-    @Nullable
     private SuperiorPropertiesParsedThreadPoolExecutor monitoringExecutor;
-
-    protected boolean initIdentityMonitoringExecutor = true;
-
-    /**
-     * Set a {@code Boolean} variable to determine whether to initialize a monitoring thread pool
-     * {@link SuperiorPropertiesParsedThreadPoolExecutor}.
-     * @param initIdentityMonitoringExecutor {@code Boolean} variables determine whether to
-     *                                       initialize a monitoring thread pool
-     *                                       {@link SuperiorPropertiesParsedThreadPoolExecutor}.
-     */
-    public void setInitIdentityMonitoringExecutor(boolean initIdentityMonitoringExecutor) {
-        this.initIdentityMonitoringExecutor = initIdentityMonitoringExecutor;
-    }
 
     /**
      * {@inheritDoc}
@@ -59,14 +44,12 @@ public abstract class AbstractRunTimeoutRegistrarRepository
     @Override
     public void initialize() throws Exception {
         super.initialize();
-        if (initIdentityMonitoringExecutor) {
-            SuperiorProperties superiorProperties = getSuperiorProperties();
-            if (superiorProperties == null) {
-                throw new IllegalArgumentException
-                        ("superiorProperties is null, unable to initialize the monitoring thread pool.");
-            }
-            monitoringExecutor = new SuperiorPropertiesParsedThreadPoolExecutor(getSuperiorProperties());
+        SuperiorProperties superiorProperties = getSuperiorProperties();
+        if (superiorProperties == null) {
+            throw new IllegalArgumentException
+                    ("superiorProperties is null, unable to initialize the monitoring thread pool.");
         }
+        monitoringExecutor = new SuperiorPropertiesParsedThreadPoolExecutor(getSuperiorProperties());
     }
 
     /**
