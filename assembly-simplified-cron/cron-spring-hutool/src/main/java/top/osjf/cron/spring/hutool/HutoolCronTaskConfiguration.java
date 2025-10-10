@@ -16,7 +16,6 @@
 
 package top.osjf.cron.spring.hutool;
 
-import cn.hutool.cron.Scheduler;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Configuration;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
@@ -47,27 +46,19 @@ import java.lang.annotation.Annotation;
 public class HutoolCronTaskConfiguration extends AbstractCronTaskConfiguration {
 
     @CronRepositoryBean
-    public HutoolCronTaskRepository hutoolCronTaskRepository(ObjectProvider<Scheduler> schedulerProvider,
-                                                             ObjectProvider<SuperiorProperties> propertiesProvider,
+    public HutoolCronTaskRepository hutoolCronTaskRepository(ObjectProvider<SuperiorProperties> propertiesProvider,
                                                              ObjectProvider<CronExecutorServiceSupplier> executorServiceProvider) {
 
-        HutoolCronTaskRepository repository;
-        Scheduler scheduler = ObjectProviderUtils.getPriority(schedulerProvider);
-        if (scheduler != null) {
-            repository =  new HutoolCronTaskRepository(scheduler);
-        }
-        else {
-            repository = new HutoolCronTaskRepository();
-            repository.setSuperiorProperties(SuperiorPropertiesUtils.compositeSuperiorProperties
-                    (getImportAnnotationSuperiorProperties(),
-                            ObjectProviderUtils.getPriority(propertiesProvider)));
-            CronExecutorServiceSupplier executorServiceSupplier = ObjectProviderUtils.getPriority(executorServiceProvider);
-            if (executorServiceSupplier != null) {
-                repository.setThreadExecutor(executorServiceSupplier.get());
-            }
+        HutoolCronTaskRepository repository = new HutoolCronTaskRepository();
+        repository.setSuperiorProperties(SuperiorPropertiesUtils.compositeSuperiorProperties
+                (getImportAnnotationSuperiorProperties(),
+                        ObjectProviderUtils.getPriority(propertiesProvider)));
+        CronExecutorServiceSupplier executorServiceSupplier = ObjectProviderUtils.getPriority(executorServiceProvider);
+        if (executorServiceSupplier != null) {
+            repository.setThreadExecutor(executorServiceSupplier.get());
         }
 
-        return customizeRepository(repository);
+        return repository;
     }
 
     @Override
