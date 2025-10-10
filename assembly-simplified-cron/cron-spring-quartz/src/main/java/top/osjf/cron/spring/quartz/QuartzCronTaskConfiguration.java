@@ -16,8 +16,6 @@
 
 package top.osjf.cron.spring.quartz;
 
-import org.quartz.Scheduler;
-import org.quartz.SchedulerFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,28 +44,14 @@ import top.osjf.cron.spring.annotation.CronRepositoryBean;
 public class QuartzCronTaskConfiguration extends AbstractCronTaskConfiguration {
 
     @Bean
-    public SpringMethodLevelJobFactory springMethodLevelJobFactory() {
-        return new SpringMethodLevelJobFactory();
+    public SpringRunnableJobFactory springMethodLevelJobFactory() {
+        return new SpringRunnableJobFactory();
     }
 
     @CronRepositoryBean
-    public QuartzCronTaskRepository quartzCronTaskRepository(ObjectProvider<Scheduler> schedulerProvider,
-                                                             ObjectProvider<SchedulerFactory> schedulerFactoryProvider,
-                                                             ObjectProvider<SuperiorProperties> propertiesProvider,
+    public QuartzCronTaskRepository quartzCronTaskRepository(ObjectProvider<SuperiorProperties> propertiesProvider,
                                                              ObjectProvider<CronExecutorServiceSupplier> executorProvider,
-                                                             SpringMethodLevelJobFactory jobFactory) {
-        Scheduler scheduler = ObjectProviderUtils.getPriority(schedulerProvider);
-        if (scheduler != null) {
-            QuartzCronTaskRepository repository = new QuartzCronTaskRepository(scheduler);
-            repository.setJobFactory(jobFactory);
-            return repository;
-        }
-        SchedulerFactory schedulerFactory = ObjectProviderUtils.getPriority(schedulerFactoryProvider);
-        if (schedulerFactory != null) {
-            QuartzCronTaskRepository repository = new QuartzCronTaskRepository(schedulerFactory);
-            repository.setJobFactory(jobFactory);
-            return repository;
-        }
+                                                             SpringRunnableJobFactory jobFactory) {
         QuartzCronTaskRepository repository = new QuartzCronTaskRepository();
         repository.setJobFactory(jobFactory);
         repository.setSuperiorProperties(ObjectProviderUtils.getPriority(propertiesProvider));
@@ -75,6 +59,6 @@ public class QuartzCronTaskConfiguration extends AbstractCronTaskConfiguration {
         if (executorServiceSupplier != null){
             repository.setTaskExecutor(executorServiceSupplier.get());
         }
-        return customizeRepository(repository);
+        return repository;
     }
 }
