@@ -110,6 +110,7 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
      *                  initialize.
      * @since 1.0.3
      */
+    @Deprecated
     public HutoolCronTaskRepository(Scheduler scheduler) {
         this.scheduler = scheduler;
     }
@@ -228,13 +229,11 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
     @Override
     public void initialize() throws Exception {
         super.initialize();
-        if (scheduler == null) {
-            scheduler = new Scheduler();
-            scheduler.setDaemon(daemon);
-            scheduler.setMatchSecond(isMatchSecond);
-            scheduler.setTimeZone(timeZone);
-            scheduler.setThreadExecutor(executorService);
-        }
+        scheduler = new Scheduler();
+        scheduler.setDaemon(daemon);
+        scheduler.setMatchSecond(isMatchSecond);
+        scheduler.setTimeZone(timeZone);
+        scheduler.setThreadExecutor(executorService);
         scheduler.addListener(taskListener);
     }
 
