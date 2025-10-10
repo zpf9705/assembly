@@ -45,9 +45,6 @@ public class TimeoutMonitoringRunnable implements Runnable {
     /** the monitoring {@link ExecutorService}.*/
     @Nullable private ExecutorService monitoringExecutor;
 
-    /** should we adopt our own {@link #run()} operation monitoring.*/
-    private boolean identityRun = true;
-
     /**
      * Construct a {@code TimeoutMonitoringRunnable} with given real {@link Runnable}
      * and the configure instance {@link RunningTimeout}.
@@ -76,50 +73,9 @@ public class TimeoutMonitoringRunnable implements Runnable {
     /**
      * Set a monitoring {@link ExecutorService} if {@link #monitoringExecutor} is {@literal null}.
      * @param monitoringExecutor the monitoring {@link ExecutorService}.
-     * @return this.
      */
-    public Runnable setMonitoringExecutorIfAbsent(ExecutorService monitoringExecutor) {
-        if (this.monitoringExecutor == null) {
-            this.monitoringExecutor = monitoringExecutor;
-        }
-        return this;
-    }
-
-    /**
-     * Set a {@link Boolean} flag that should we adopt our own {@link #run()} operation monitoring.
-     * @param identityRun should we adopt our own {@link #run()} operation monitoring.
-     */
-    public void setIdentityRun(boolean identityRun) {
-        this.identityRun = identityRun;
-    }
-
-    /**
-     * @return the real {@link Runnable}.
-     */
-    public Runnable getReal() {
-        return real;
-    }
-
-    /**
-     * @return the configure instance {@link RunningTimeout}.
-     */
-    public RunningTimeout getTimeout() {
-        return timeout;
-    }
-
-    /**
-     * @return the monitoring {@link ExecutorService}.
-     */
-    @Nullable
-    public ExecutorService getMonitoringExecutor() {
-        return monitoringExecutor;
-    }
-
-    /**
-     * @return should we adopt our own {@link #run()} operation monitoring.
-     */
-    public boolean isIdentityRun() {
-        return identityRun;
+    public void setMonitoringExecutor(@Nullable ExecutorService monitoringExecutor) {
+        this.monitoringExecutor = monitoringExecutor;
     }
 
     /**
