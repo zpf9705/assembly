@@ -20,7 +20,6 @@ package top.osjf.cron.quartz.repository;
 import org.quartz.*;
 import org.quartz.spi.JobFactory;
 import org.quartz.spi.TriggerFiredBundle;
-import top.osjf.cron.core.lang.Nullable;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -65,14 +64,5 @@ public class RunnableJobFactory implements JobFactory {
         }
 
         return jobMap.computeIfAbsent(id, s -> new RunnableJob(runnable));
-    }
-
-    /**
-     * Returns a {@link RunnableJob} getting by given id if existed.
-     * @param id        the task id.
-     * @return a {@link RunnableJob} getting by given id.
-     */
-    @Nullable protected RunnableJob getJob(String id) {
-        return jobMap.getOrDefault(id, null);
     }
 }
