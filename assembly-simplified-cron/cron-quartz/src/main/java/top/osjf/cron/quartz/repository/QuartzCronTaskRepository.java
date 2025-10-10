@@ -17,7 +17,6 @@
 package top.osjf.cron.quartz.repository;
 
 import org.quartz.*;
-import org.quartz.impl.StdScheduler;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.simpl.SimpleThreadPool;
@@ -28,13 +27,9 @@ import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.core.listener.CronListenerCollector;
 import top.osjf.cron.core.repository.*;
-import top.osjf.cron.core.util.ReflectUtils;
 import top.osjf.cron.core.util.StringUtils;
-import top.osjf.cron.quartz.MethodLevelJob;
-import top.osjf.cron.quartz.MethodLevelJobFactory;
 import top.osjf.cron.quartz.QuartzUtils;
 import top.osjf.cron.quartz.listener.JobListenerImpl;
-import top.osjf.cron.quartz.listener.TimeoutMonitoringJobListener;
 
 import java.lang.reflect.Method;
 import java.text.ParseException;
@@ -67,6 +62,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
     /**
      * The factory class property name.
      */
+    @Deprecated
     public static final String PROP_NAME_OF_FACTORY_CLASS = "quartz.customize.schedulerFactoryClass";
 
     /**
@@ -79,16 +75,19 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      */
     public static final boolean DEFAULT_IF_STOP_WAIT_JOB_COMPLETE_VALUE = false;
 
+    @Deprecated
     private String schedulerName = Scheduler.class.getName() + UUID.randomUUID();
 
     private Properties quartzProperties = System.getProperties();
 
     private Executor taskExecutor;
 
-    private MethodLevelJobFactory jobFactory = new MethodLevelJobFactory();
+    private RunnableJobFactory jobFactory = new RunnableJobFactory();
 
+    @Deprecated
     private SchedulerFactory schedulerFactory;
 
+    @Deprecated
     private Class<? extends SchedulerFactory> schedulerFactoryClass = StdSchedulerFactory.class;
 
     /**
@@ -103,9 +102,15 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
 
     private boolean waitForJobsToCompleteWhenStop;
 
+    @Deprecated
     private boolean setSchedulerName;
+
+    @Deprecated
     private boolean setSchedulerFactoryClass;
+
     private boolean setWaitForJobsToCompleteWhenStop;
+
+    @Deprecated
     private boolean jobFactorySet;
 
     /**
@@ -124,7 +129,9 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      *
      * @param scheduler quartz task scheduler instance after initialize.
      * @since 1.0.3
+     * @deprecated 3.0.2
      */
+    @Deprecated
     public QuartzCronTaskRepository(Scheduler scheduler) {
         this.scheduler = scheduler;
     }
@@ -135,7 +142,9 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      * @param schedulerFactory quartz {@code Scheduler} product factory instance after
      *                         initialize.
      * @since 1.0.3
+     * @deprecated 3.0.2
      */
+    @Deprecated
     public QuartzCronTaskRepository(SchedulerFactory schedulerFactory) {
         this.schedulerFactory = schedulerFactory;
     }
@@ -147,6 +156,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      * @param schedulerName the unique name of the Scheduler.
      * @since 1.0.3
      */
+    @Deprecated
     public void setSchedulerName(String schedulerName) {
         if (!StringUtils.isBlank(schedulerName)) {
             this.schedulerName = schedulerName;
@@ -163,6 +173,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      *                              implementation class.
      * @since 1.0.3
      */
+    @Deprecated
     public void setSchedulerFactoryClass(Class<? extends SchedulerFactory> schedulerFactoryClass) {
         if (schedulerFactoryClass != null) {
             this.schedulerFactoryClass = schedulerFactoryClass;
@@ -186,9 +197,6 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
         super.setSuperiorProperties(superiorProperties);
         if (quartzProperties != null && !superiorProperties.isEmpty()) {
             this.quartzProperties = superiorProperties.asProperties();
-            if (!setSchedulerFactoryClass)
-                setSchedulerFactoryClass(superiorProperties
-                        .getProperty(PROP_NAME_OF_FACTORY_CLASS, StdSchedulerFactory.class));
             if (!setWaitForJobsToCompleteWhenStop)
                 setWaitForJobsToCompleteWhenStop(superiorProperties
                         .getProperty(PROP_NAME_OF_IF_STOP_WAIT_JOB_COMPLETE, DEFAULT_IF_STOP_WAIT_JOB_COMPLETE_VALUE));
@@ -206,15 +214,15 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
     }
 
     /**
-     * Set inheritance and subclass factory instance of {@link MethodLevelJobFactory}.
+     * Set inheritance and subclass factory instance of {@link RunnableJobFactory}.
      * <p>The {@link JobDetail} building rules must follow the specifications
-     * in {@link MethodLevelJobFactory#newJob}.
+     * in {@link RunnableJobFactory#newJob}.
      *
      * @param jobFactory inheritance and subclass factory instance of
-     *                   {@link MethodLevelJobFactory}.
+     *                   {@link RunnableJobFactory}.
      * @since 1.0.3
      */
-    public void setJobFactory(MethodLevelJobFactory jobFactory) {
+    public void setJobFactory(RunnableJobFactory jobFactory) {
         if (jobFactory != null) {
             this.jobFactory = jobFactory;
         }
@@ -242,49 +250,25 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
     @Override
     public void initialize() throws Exception {
         super.initialize();
-        if (scheduler == null) {
-            if (schedulerFactory != null) {
-                if (setSchedulerName) {
-                    scheduler = schedulerFactory.getScheduler(schedulerName);
-                } else {
-                    scheduler = schedulerFactory.getScheduler();
-                }
+        if (!quartzProperties.containsKey(StdSchedulerFactory.PROP_THREAD_POOL_CLASS)) {
+            if (taskExecutor != null) {
+                TaskExecutorDelegateThreadPool.setTaskExecutor(taskExecutor);
+                quartzProperties.setProperty(StdSchedulerFactory.PROP_THREAD_POOL_CLASS,
+                        TaskExecutorDelegateThreadPool.class.getName());
             } else {
-                SchedulerFactory schedulerFactory = ReflectUtils.newInstance(schedulerFactoryClass);
-                if (schedulerFactory instanceof StdSchedulerFactory) {
-                    if (!quartzProperties.containsKey(StdSchedulerFactory.PROP_THREAD_POOL_CLASS)) {
-                        if (this.taskExecutor != null) {
-                            // Set the thread pool instance for proxy task execution and assign values
-                            // during the initialization phase.
-                            TaskExecutorDelegateThreadPool.setTaskExecutor(taskExecutor);
-                            quartzProperties.setProperty(StdSchedulerFactory.PROP_THREAD_POOL_CLASS,
-                                    TaskExecutorDelegateThreadPool.class.getName());
-                        } else {
-                            // Set necessary default properties here, as Quartz will not apply
-                            // its default configuration when explicitly given properties.
-                            quartzProperties.setProperty(StdSchedulerFactory.PROP_THREAD_POOL_CLASS,
-                                    SimpleThreadPool.class.getName());
-                            quartzProperties.setProperty(PROP_THREAD_COUNT, Integer.toString(DEFAULT_THREAD_COUNT));
-                        }
-                    }
-                    // Set the name of the production task manager for the factory instance created
-                    // in this class and specify it for retrieval later.
-                    quartzProperties.putIfAbsent(StdSchedulerFactory.PROP_SCHED_INSTANCE_NAME, schedulerName);
-                    ((StdSchedulerFactory) schedulerFactory).initialize(quartzProperties);
-                    schedulerFactory.getScheduler();
-                    scheduler = schedulerFactory.getScheduler(schedulerName);
-                }
+                quartzProperties.setProperty(StdSchedulerFactory.PROP_THREAD_POOL_CLASS,
+                        SimpleThreadPool.class.getName());
+                quartzProperties.setProperty(PROP_THREAD_COUNT, Integer.toString(DEFAULT_THREAD_COUNT));
             }
         }
-        if (scheduler instanceof StdScheduler) {
-            scheduler.setJobFactory(jobFactory);
-            jobFactorySet = true;
+        if (!quartzProperties.containsKey(StdSchedulerFactory.PROP_SCHED_INSTANCE_NAME)) {
+            quartzProperties.putIfAbsent(StdSchedulerFactory.PROP_SCHED_INSTANCE_NAME,
+                    Scheduler.class.getName() + UUID.randomUUID());
         }
+        scheduler = new StdSchedulerFactory(quartzProperties).getScheduler();
+        scheduler.setJobFactory(jobFactory);
         listenerManager = scheduler.getListenerManager();
         listenerManager.addJobListener(jobListener);
-        if (!initIdentityMonitoringExecutor) {
-            listenerManager.addJobListener(new TimeoutMonitoringJobListener());
-        }
     }
 
     /**
@@ -292,29 +276,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      */
     @Override
     public String register(@NotNull String expression, @NotNull Runnable runnable) throws CronInternalException {
-        if (runnable instanceof TimeoutMonitoringRunnable) {
-            runnable = ((TimeoutMonitoringRunnable) runnable).getReal();
-        }
-        Method method = null;
-        if (runnable instanceof CronMethodRunnable) {
-            CronMethodRunnable cronMethodRunnable = (CronMethodRunnable) runnable;
-            method = cronMethodRunnable.getMethod();
-        } else if (runnable instanceof MethodProviderRunnable) {
-            method = ((MethodProviderRunnable) runnable).getMethod();
-        }
-        if (method == null) {
-            throw new CronInternalException("Unable resolve " + runnable.getClass());
-        }
-        String name = method.getName();
-        String group = method.getDeclaringClass().getName();
-        JobKey jobKey = new JobKey(name, group);
-        JobDetail jobDetail = QuartzUtils.buildStandardJobDetail(name, group);
-
-        if (runnable instanceof TimeoutMonitoringRunnable) {
-            jobDetail.getJobDataMap().put(TimeoutMonitoringJobListener.TIMEOUT_PROPERTY, runnable);
-        }
-
-        return doRegister(expression, jobKey, jobDetail);
+        return doRegister(expression, new JobKeyWrapperdRunnable(runnable));
     }
 
     /**
@@ -338,16 +300,10 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      */
     @Override
     public String register(@NotNull String expression, @NotNull TaskBody body) {
-        JobDetail jobDetail;
-        if (body.isWrapperFor(JobDetailTaskBody.class)) {
-            jobDetail = body.unwrap(JobDetailTaskBody.class).getJobDetail();
-        } else {
-            throw new UnsupportedTaskBodyException(body.getClass());
+        if (body.isWrapperFor(RunnableTaskBody.class)) {
+            return register(expression, ((RunnableTaskBody) body).getRunnable());
         }
-        QuartzUtils.checkJobClassRules(jobDetail.getJobClass());
-        JobKey key = jobDetail.getKey();
-        QuartzUtils.checkJobKeyRules(key);
-        return doRegister(expression, key, jobDetail);
+        throw new UnsupportedTaskBodyException(body.getClass());
     }
 
     /**
@@ -355,30 +311,34 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      */
     @Override
     public String register(@NotNull CronTask task) {
-        Method method = task.getRunnable().getMethod();
-        return register(task.getExpression(), new JobDetailTaskBody(
-                QuartzUtils.buildStandardJobDetail(method.getName(), method.getDeclaringClass().getName())));
+        return register(task.getExpression(), task.getRunnable());
     }
 
-    private String doRegister(String expression, JobKey key, JobDetail jobDetail) {
+    private String doRegister(String expression, JobKeyWrapperdRunnable runnable) {
         return RepositoryUtils.doRegister(() -> {
-            TriggerKey triggerKey = new TriggerKey(key.getName(), key.getGroup());
+            JobKey jobKey = runnable.getJobKey();
+            TriggerKey triggerKey = new TriggerKey(jobKey.getName(), jobKey.getGroup());
             TriggerBuilder<CronTrigger> triggerBuilder = TriggerBuilder.newTrigger()
                     .withIdentity(triggerKey)
                     .startNow()
                     .withSchedule(CronScheduleBuilder.cronSchedule(expression));
+            JobDetail jobDetail = JobBuilder.newJob(RunnableJob.class)
+                            .withIdentity(jobKey.getName(), jobKey.getGroup()).build();
+            String jobId = QuartzUtils.getJobIdentity(jobKey);
+            JobDataMap jobDataMap = jobDetail.getJobDataMap();
+            jobDataMap.put(JobConstants.RUNNABLE_PROPERTY, runnable);
+            jobDataMap.put(JobConstants.ID_PROPERTY, jobId);
             getInitializedScheduler().scheduleJob(jobDetail, triggerBuilder.build());
-            return QuartzUtils.getIdBySerializeJobKey(key);
+            return jobId;
         }, ParseException.class);
     }
 
     @Override
     public boolean hasCronTaskInfo(@NotNull String id) {
-        JobKey jobKey = QuartzUtils.getJobKeyByDeSerializeId(id);
+        JobKey jobKey = QuartzUtils.getJobKey(id);
         try {
             return getInitializedScheduler().checkExists(jobKey);
-        }
-        catch (SchedulerException e) {
+        } catch (SchedulerException e) {
             return false;
         }
     }
@@ -416,7 +376,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      */
     @Nullable
     private CronTaskInfo buildCronTaskInfo(String id) {
-        JobKey jobKey = QuartzUtils.getJobKeyByDeSerializeId(id);
+        JobKey jobKey = QuartzUtils.getJobKey(id);
         return buildCronTaskInfo(jobKey);
     }
 
@@ -436,21 +396,24 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
             if (!jobKeys.contains(jobKey)) {
                 return null;
             }
+
             String expression = QuartzUtils.getTriggerExpression(trigger);
-            Runnable runnable = null;
+            JobDetail jobDetail = scheduler.getJobDetail(jobKey);
+            JobDataMap jobDataMap = jobDetail.getJobDataMap();
+            String id = (String) jobDataMap.get(JobConstants.ID_PROPERTY);
+            JobKeyWrapperdRunnable jobKeyWrapperdRunnable
+                    = (JobKeyWrapperdRunnable) jobDataMap.get(JobConstants.RUNNABLE_PROPERTY);
+            Runnable runnable = jobKeyWrapperdRunnable.getRaw();
             Object target = null;
             Method method = null;
-            if (jobFactorySet) {
-                MethodLevelJob job = jobFactory.getJob(jobKey);
-                CronMethodRunnable cronMethodRunnable = job.getCronMethodRunnable();
-                runnable = cronMethodRunnable;
-                target = cronMethodRunnable.getTarget();
-                method = cronMethodRunnable.getMethod();
+            if (runnable instanceof CronMethodRunnable) {
+                CronMethodRunnable cr = (CronMethodRunnable) runnable;
+                target = cr.getTarget();
+                method = cr.getMethod();
             }
-            String id = QuartzUtils.getIdBySerializeJobKey(jobKey);
             return customizeCronTaskInfo(new CronTaskInfo(id, expression, runnable, target, method));
         }
-        catch (Exception e) {
+        catch (SchedulerException ex) {
             return null;
         }
     }
@@ -460,14 +423,14 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      */
     @Override
     public void update(@NotNull String id, @NotNull String newExpression) {
-        JobKey jobKey = QuartzUtils.getJobKeyByDeSerializeId(id);
+        JobKey jobKey = QuartzUtils.getJobKey(id);
         TriggerKey triggerKey = new TriggerKey(jobKey.getName(), jobKey.getGroup());
         RepositoryUtils.doVoidInvoke(() -> getInitializedScheduler().rescheduleJob(triggerKey,
                 TriggerBuilder.newTrigger()
-                .withIdentity(triggerKey)
-                .startNow()
-                .withSchedule(CronScheduleBuilder.cronSchedule(newExpression))
-                .build()), ParseException.class);
+                        .withIdentity(triggerKey)
+                        .startNow()
+                        .withSchedule(CronScheduleBuilder.cronSchedule(newExpression))
+                        .build()), ParseException.class);
     }
 
     /**
@@ -476,7 +439,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
     @Override
     public void remove(@NotNull String id) {
         RepositoryUtils.doVoidInvoke(() ->
-                        getInitializedScheduler().deleteJob(QuartzUtils.getJobKeyByDeSerializeId(id)),
+                        getInitializedScheduler().deleteJob(QuartzUtils.getJobKey(id)),
                 null);
     }
 
