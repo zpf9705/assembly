@@ -30,7 +30,7 @@ import top.osjf.cron.core.lang.NotNull;
  */
 public class RunnableJob implements Job {
 
-    @NotNull protected final Runnable runnable;
+    @NotNull private final Runnable runnable;
 
     /**
      * Creates a {@code RunnableJob} by given {@code Runnable}.
