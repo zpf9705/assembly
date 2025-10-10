@@ -46,10 +46,10 @@ public abstract class AbstractRunTimeoutRegistrarRepository
         super.initialize();
         SuperiorProperties superiorProperties = getSuperiorProperties();
         if (superiorProperties == null) {
-            throw new IllegalArgumentException
-                    ("superiorProperties is null, unable to initialize the monitoring thread pool.");
+            superiorProperties = SuperiorProperties.of(System.getProperties());
+            setSuperiorProperties(superiorProperties);
         }
-        monitoringExecutor = new SuperiorPropertiesParsedThreadPoolExecutor(getSuperiorProperties());
+        monitoringExecutor = new SuperiorPropertiesParsedThreadPoolExecutor(superiorProperties);
     }
 
     /**
