@@ -16,7 +16,6 @@
 
 package top.osjf.cron.spring.cron4j;
 
-import it.sauronsoftware.cron4j.Scheduler;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Configuration;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
@@ -46,12 +45,7 @@ import java.lang.annotation.Annotation;
 public class Cron4jCronTaskConfiguration extends AbstractCronTaskConfiguration {
 
     @CronRepositoryBean
-    public Cron4jCronTaskRepository cron4jCronTaskRepository(ObjectProvider<Scheduler> schedulerProvider,
-                                                             ObjectProvider<SuperiorProperties> propertiesProvider) {
-        Scheduler scheduler = ObjectProviderUtils.getPriority(schedulerProvider);
-        if (scheduler != null) {
-            return new Cron4jCronTaskRepository(scheduler);
-        }
+    public Cron4jCronTaskRepository cron4jCronTaskRepository(ObjectProvider<SuperiorProperties> propertiesProvider) {
         Cron4jCronTaskRepository repository = new Cron4jCronTaskRepository();
         repository.setSuperiorProperties(SuperiorPropertiesUtils.compositeSuperiorProperties
                 (getImportAnnotationSuperiorProperties(),

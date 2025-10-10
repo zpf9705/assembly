@@ -104,6 +104,7 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
      * @param scheduler the given {@code Scheduler} instance after initialize.
      * @since 1.0.3
      */
+    @Deprecated
     public Cron4jCronTaskRepository(Scheduler scheduler) {
         this.scheduler = scheduler;
     }
@@ -189,11 +190,9 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
     @Override
     public void initialize() throws Exception {
         super.initialize();
-        if (scheduler == null) {
-            scheduler = new Scheduler();
-            scheduler.setDaemon(daemon);
-            scheduler.setTimeZone(timezone);
-        }
+        scheduler = new Scheduler();
+        scheduler.setDaemon(daemon);
+        scheduler.setTimeZone(timezone);
         scheduler.addSchedulerListener(schedulerListener);
     }
 
