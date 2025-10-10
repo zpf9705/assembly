@@ -26,6 +26,7 @@ import top.osjf.cron.core.repository.TaskBody;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
+@Deprecated
 public class JobDetailTaskBody implements TaskBody {
 
     private final JobDetail jobDetail;
