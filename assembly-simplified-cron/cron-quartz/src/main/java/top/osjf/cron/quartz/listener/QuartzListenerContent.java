@@ -18,9 +18,8 @@
 package top.osjf.cron.quartz.listener;
 
 import org.quartz.JobExecutionContext;
-import org.quartz.JobKey;
 import top.osjf.cron.core.listener.ListenerContext;
-import top.osjf.cron.quartz.QuartzUtils;
+import top.osjf.cron.quartz.repository.JobConstants;
 
 /**
  * The listening context object of {@code Quartz}.
@@ -38,8 +37,7 @@ public class QuartzListenerContent implements ListenerContext {
      * @param context the Quartz scheduler listener obj.
      */
     public QuartzListenerContent(JobExecutionContext context) {
-        JobKey key = context.getJobDetail().getKey();
-        this.id = QuartzUtils.getIdBySerializeJobKey(key);
+        this.id = (String) context.getJobDetail().getJobDataMap().get(JobConstants.ID_PROPERTY);
         this.context = context;
     }
 
