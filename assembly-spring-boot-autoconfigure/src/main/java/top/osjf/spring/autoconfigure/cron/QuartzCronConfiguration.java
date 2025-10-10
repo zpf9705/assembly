@@ -16,7 +16,6 @@
 
 package top.osjf.spring.autoconfigure.cron;
 
-import org.quartz.Scheduler;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -45,7 +44,6 @@ import java.util.List;
 class QuartzCronConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean(Scheduler.class)
     public SuperiorProperties quartzProperties(ObjectProvider<List<QuartzPropertiesCustomizer>> provider,
                                                CronProperties cronProperties) {
         SuperiorProperties properties = cronProperties.getClientProperties(ClientType.QUARTZ);
