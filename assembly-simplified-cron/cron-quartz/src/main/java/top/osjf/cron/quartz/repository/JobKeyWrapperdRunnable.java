@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class JobKeyWrapperdRunnable implements Runnable {
 
     /** The default generator with incremental data as the task name.*/
-    private static final AtomicLong DEFAULT_NAME_COUNTER = new AtomicLong(1);
+    private static final AtomicLong DEFAULT_NAME_COUNTER = new AtomicLong(0);
 
     /** Unique {@link JobKey} generated based on the input {@link Runnable} or default mechanism.*/
     @NotNull private final JobKey jobKey;
