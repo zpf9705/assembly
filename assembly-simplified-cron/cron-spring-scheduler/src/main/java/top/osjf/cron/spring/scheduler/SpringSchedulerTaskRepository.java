@@ -95,7 +95,8 @@ public class SpringSchedulerTaskRepository
     }
 
     @Override
-    public void afterPropertiesSet() {
+    public void afterPropertiesSet() throws Exception {
+        super.initialize();
         super.start();
     }
 
