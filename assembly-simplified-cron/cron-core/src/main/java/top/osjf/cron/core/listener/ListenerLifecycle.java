@@ -96,6 +96,6 @@ public enum ListenerLifecycle {
      */
     @FunctionalInterface
     interface Consumer {
-        void accept(CronListener cronListener, ListenerContext listenerContext, Throwable e);
+        void accept(CronListener cronListener, ListenerContext listenerContext, @Nullable Throwable e);
     }
 }
