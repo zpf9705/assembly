@@ -36,7 +36,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import top.osjf.filewatch.AmapleWatchEvent;
 import top.osjf.filewatch.AmpleFileWatchListener;
-import top.osjf.filewatch.FileWatchException;
 import top.osjf.filewatch.TriggerKind;
 
 import java.io.IOException;
@@ -83,7 +82,7 @@ public class ConfigRefreshedFileWatchListener extends AmpleFileWatchListener imp
     }
 
     @Override
-    public void onWatchEvent(AmapleWatchEvent event) {
+    public void onWatchEvent(AmapleWatchEvent event) throws Throwable {
         MutablePropertySources mutablePropertySources = environment.getPropertySources();
         if (event.isHopeEvent(TriggerKind.ENTRY_DELETE)) {
             PropertySource<?> removedPropertySource = mutablePropertySources.remove(event.context().toString());
@@ -154,11 +153,11 @@ public class ConfigRefreshedFileWatchListener extends AmpleFileWatchListener imp
         }
         catch (MalformedURLException ex) {
             logger.error("[ORIGIN CONFIG] URL [{}] specification is not valid", event.getFullPath(), ex);
-            throw new FileWatchException("URL " + event.getFullPath() + " specification is not valid", ex);
+            throw ex;
         }
         catch (IOException ex) {
             logger.error("[ORIGIN CONFIG] Failed to load source [{}]", event.context(), ex);
-            throw new FileWatchException("Failed to load source " + event.context(), ex);
+            throw ex;
         }
         catch (IllegalArgumentException | ConversionException | BeanCreationException ex) {
             logger.error("[ORIGIN CONFIG] Failed to load or refresh config [{}]", event.context(), ex);
