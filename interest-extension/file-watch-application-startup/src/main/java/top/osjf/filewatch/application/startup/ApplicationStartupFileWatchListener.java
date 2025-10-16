@@ -109,7 +109,7 @@ public class ApplicationStartupFileWatchListener extends TriggerKindMatchedFileW
      * Handles the file watch event by executing configured startup commands.
      */
     @Override
-    public void onWatchEvent(AmapleWatchEvent watchEvent) {
+    public void onWatchEvent(AmapleWatchEvent watchEvent) throws Throwable {
         Path parent = watchEvent.getParent();
         Path jarFilePath = watchEvent.context();
 
@@ -136,10 +136,12 @@ public class ApplicationStartupFileWatchListener extends TriggerKindMatchedFileW
         }
         catch (IOException ex) {
             LOGGER.error("IO error executing commands {}", sortedStartupCommands, ex);
+            throw ex;
         }
         catch (InterruptedException ex) {
             Thread.currentThread().interrupt(); // Restore interrupt status.
             LOGGER.error("Command execution interrupted for {}", jarFilePath, ex);
+            throw ex;
         }
     }
 
