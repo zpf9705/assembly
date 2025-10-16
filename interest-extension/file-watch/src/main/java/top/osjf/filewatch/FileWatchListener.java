@@ -80,12 +80,12 @@ public interface FileWatchListener<E extends WatchEvent<Path>> extends PathExclu
      * </ul>
      *
      * @param event the watch event to process (never {@literal null})
-     * @throws RuntimeException if event processing fails. Implementations should
+     * @throws Throwable if event processing fails. Implementations should
      *         generally handle their own exceptions and only throw for fatal errors.
      *
      * @see java.nio.file.StandardWatchEventKinds#ENTRY_CREATE
      * @see java.nio.file.StandardWatchEventKinds#ENTRY_MODIFY
      * @see java.nio.file.StandardWatchEventKinds#ENTRY_DELETE
      */
-    void onWatchEvent(E event);
+    void onWatchEvent(E event) throws Throwable;
 }
