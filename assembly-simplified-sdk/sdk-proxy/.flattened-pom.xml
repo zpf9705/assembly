@@ -23,8 +23,8 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>top.osjf.sdk</groupId>
   <artifactId>sdk-proxy</artifactId>
-  <version>3.0.1-beat</version>
-  <name>sdk-proxy 3.0.1-beat</name>
+  <version>3.0.1-GA</version>
+  <name>sdk-proxy 3.0.1-GA</name>
   <description>Proxy execution package for SDK encapsulation framework.</description>
   <url>https://github.com/zpf9705/assembly/assembly-simplified-sdk/sdk-proxy</url>
   <licenses>
@@ -55,7 +55,7 @@
     <dependency>
       <groupId>top.osjf.sdk</groupId>
       <artifactId>sdk-core</artifactId>
-      <version>3.0.1-beat</version>
+      <version>3.0.1-GA</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

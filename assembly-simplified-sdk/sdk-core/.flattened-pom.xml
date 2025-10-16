@@ -23,8 +23,8 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>top.osjf.sdk</groupId>
   <artifactId>sdk-core</artifactId>
-  <version>3.0.1-beat</version>
-  <name>sdk-core 3.0.1-beat</name>
+  <version>3.0.1-GA</version>
+  <name>sdk-core 3.0.1-GA</name>
   <description>The core package of the SDK encapsulation framework.</description>
   <url>https://github.com/zpf9705/assembly/assembly-simplified-sdk/sdk-core</url>
   <licenses>

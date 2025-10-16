@@ -23,8 +23,8 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>top.osjf.cron</groupId>
   <artifactId>cron-spring-quartz</artifactId>
-  <version>3.0.1-beat</version>
-  <name>cron-spring-quartz 3.0.1-beat</name>
+  <version>3.0.1-GA</version>
+  <name>cron-spring-quartz 3.0.1-GA</name>
   <description>Cron-quartz integrates the Spring framework to achieve annotation level configuration.</description>
   <url>https://github.com/zpf9705/assembly/assembly-simplified-cron/cron-spring-quartz</url>
   <licenses>
@@ -55,13 +55,13 @@
     <dependency>
       <groupId>top.osjf.cron</groupId>
       <artifactId>cron-spring</artifactId>
-      <version>3.0.1-beat</version>
+      <version>3.0.1-GA</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>top.osjf.cron</groupId>
       <artifactId>cron-quartz</artifactId>
-      <version>3.0.1-beat</version>
+      <version>3.0.1-GA</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

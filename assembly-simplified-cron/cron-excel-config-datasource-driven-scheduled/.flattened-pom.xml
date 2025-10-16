@@ -23,8 +23,8 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>top.osjf.cron</groupId>
   <artifactId>cron-excel-config-datasource-driven-scheduled</artifactId>
-  <version>3.0.1-beat</version>
-  <name>cron-excel-config-datasource-driven-scheduled 3.0.1-beat</name>
+  <version>3.0.1-GA</version>
+  <name>cron-excel-config-datasource-driven-scheduled 3.0.1-GA</name>
   <description>Excel file（xls/xlsx/csv） is a data source implementation package for manipulating databases.
     Power by com.alibaba.excel.EasyExcel.</description>
   <url>https://github.com/zpf9705/assembly/assembly-simplified-cron/cron-excel-config-datasource-driven-scheduled</url>
@@ -56,13 +56,13 @@
     <dependency>
       <groupId>top.osjf.cron</groupId>
       <artifactId>cron-datasource-driven-scheduled</artifactId>
-      <version>3.0.1-beat</version>
+      <version>3.0.1-GA</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>top.osjf.cron</groupId>
       <artifactId>cron-external-file-datasource-driven-scheduled</artifactId>
-      <version>3.0.1-beat</version>
+      <version>3.0.1-GA</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

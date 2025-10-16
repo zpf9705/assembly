@@ -23,8 +23,8 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>top.osjf.filewatch</groupId>
   <artifactId>file-watch-boot-starter</artifactId>
-  <version>3.0.1-beat</version>
-  <name>file-watch-boot-starter 3.0.1-beat</name>
+  <version>3.0.1-GA</version>
+  <name>file-watch-boot-starter 3.0.1-GA</name>
   <description>Integrate the file-watch auto assembly package of springboot.</description>
   <url>https://github.com/zpf9705/assembly/interest-extension/file-watch-boot-starter</url>
   <licenses>
@@ -55,25 +55,25 @@
     <dependency>
       <groupId>top.osjf.filewatch</groupId>
       <artifactId>file-watch</artifactId>
-      <version>3.0.1-beat</version>
+      <version>3.0.1-GA</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>top.osjf.filewatch</groupId>
       <artifactId>file-watch-application-startup</artifactId>
-      <version>3.0.1-beat</version>
+      <version>3.0.1-GA</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>top.osjf.filewatch</groupId>
       <artifactId>file-watch-spring-config-refreshed</artifactId>
-      <version>3.0.1-beat</version>
+      <version>3.0.1-GA</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>top.osjf</groupId>
       <artifactId>assembly-spring-boot-autoconfigure</artifactId>
-      <version>3.0.1-beat</version>
+      <version>3.0.1-GA</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

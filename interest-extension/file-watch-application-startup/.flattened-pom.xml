@@ -23,8 +23,8 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>top.osjf.filewatch</groupId>
   <artifactId>file-watch-application-startup</artifactId>
-  <version>3.0.1-beat</version>
-  <name>file-watch-application-startup 3.0.1-beat</name>
+  <version>3.0.1-GA</version>
+  <name>file-watch-application-startup 3.0.1-GA</name>
   <description>The monitor implementation for file changes to start the jar package.</description>
   <url>https://github.com/zpf9705/assembly/interest-extension/file-watch-application-startup</url>
   <licenses>
@@ -55,7 +55,7 @@
     <dependency>
       <groupId>top.osjf.filewatch</groupId>
       <artifactId>file-watch</artifactId>
-      <version>3.0.1-beat</version>
+      <version>3.0.1-GA</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

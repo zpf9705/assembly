@@ -23,8 +23,8 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>top.osjf.cron</groupId>
   <artifactId>cron-cron4j</artifactId>
-  <version>3.0.1-beat</version>
-  <name>cron-cron4j 3.0.1-beat</name>
+  <version>3.0.1-GA</version>
+  <name>cron-cron4j 3.0.1-GA</name>
   <description>Integration of cron4j framework for cron expression timed task support.</description>
   <url>https://github.com/zpf9705/assembly/assembly-simplified-cron/cron-cron4j</url>
   <licenses>
@@ -55,7 +55,7 @@
     <dependency>
       <groupId>top.osjf.cron</groupId>
       <artifactId>cron-core</artifactId>
-      <version>3.0.1-beat</version>
+      <version>3.0.1-GA</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>
