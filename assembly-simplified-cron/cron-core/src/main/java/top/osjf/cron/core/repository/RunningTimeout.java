@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
  * after timeout.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 3.0.2
+ * @since 3.0.1
  */
 public class RunningTimeout {
 

@@ -28,7 +28,7 @@ import org.quartz.SchedulerException;
  * blocked, which is part of the normal control process and not an error situation.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 3.0.2
+ * @since 3.0.1
  */
 public class JobExecutionVetoedException extends SchedulerException {
     private static final long serialVersionUID = -7791668488556391297L;

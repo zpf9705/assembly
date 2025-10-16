@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
  * A simple utility class for {@link java.util.concurrent.Executor}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 3.0.2
+ * @since 3.0.1
  */
 public abstract class ExecutorUtils {
 

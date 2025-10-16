@@ -67,7 +67,7 @@ import java.lang.annotation.*;
  * timed tasks that can be executed according to specified cron expressions and environment
  * configurations.
  *
- * <p>In order to provide more fine-grained control over task scheduling runtime, the 3.0.2
+ * <p>In order to provide more fine-grained control over task scheduling runtime, the 3.0.1
  * version introduced relevant configurations for task scheduling run times {@link RunTimes}
  * and word run timeout limits {@link RunTimeout}, which must be used in conjunction with
  * this annotation. Then, relying on the above annotation information and corresponding

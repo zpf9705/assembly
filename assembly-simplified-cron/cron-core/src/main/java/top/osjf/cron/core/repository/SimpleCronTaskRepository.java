@@ -227,7 +227,7 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
         /**
          * The atomic Boolean tag indicates that there should be no more {@link #schedule()}
          * after {@link #cancel(boolean)}, indicating that the current task has been interrupted.
-         * @since 3.0.2
+         * @since 3.0.1
          */
         private final AtomicBoolean canceledFlag = new AtomicBoolean(false);
 
@@ -291,7 +291,7 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
         }
 
         /**
-         * @since 3.0.2
+         * @since 3.0.1
          */
         private void setCancelFutureFlag() {
             canceledFlag.set(true);

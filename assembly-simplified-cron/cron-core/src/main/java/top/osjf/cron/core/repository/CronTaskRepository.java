@@ -50,7 +50,7 @@ import javax.annotation.concurrent.ThreadSafe;
  *   with cross-cutting concerns like logging, monitoring, retry logic, etc.</li>
  * </ul>
  *
- * <p>The differentiation and combination of the above modules were gathered in version 3.0.2,
+ * <p>The differentiation and combination of the above modules were gathered in version 3.0.1,
  * aiming to provide developers with different feature choices for task scheduling based on
  * cron expressions. This solution fully covers all inherited functions of the interface and
  * helps developers quickly understand the collaborative relationships of multiple blocks

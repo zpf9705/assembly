@@ -73,7 +73,7 @@ public class SchedulingRepositoryConfiguration extends AbstractCronTaskConfigura
     }
 
     /**
-     * @since 3.0.2
+     * @since 3.0.1
      * @param repository {@link SpringSchedulerTaskRepository}
      * @return a {@link SchedulingConfigurer} to set a {@link SpringSchedulerTaskRepository}
      * for {@link ScheduledTaskRegistrar}.

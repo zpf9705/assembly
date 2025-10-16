@@ -129,7 +129,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      *
      * @param scheduler quartz task scheduler instance after initialize.
      * @since 1.0.3
-     * @deprecated 3.0.2
+     * @deprecated 3.0.1
      */
     @Deprecated
     public QuartzCronTaskRepository(Scheduler scheduler) {
@@ -142,7 +142,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      * @param schedulerFactory quartz {@code Scheduler} product factory instance after
      *                         initialize.
      * @since 1.0.3
-     * @deprecated 3.0.2
+     * @deprecated 3.0.1
      */
     @Deprecated
     public QuartzCronTaskRepository(SchedulerFactory schedulerFactory) {

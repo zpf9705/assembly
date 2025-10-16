@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * loading to configure a thread pool instance.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 3.0.2
+ * @since 3.0.1
  */
 public class SuperiorPropertiesParsedThreadPoolExecutor extends ThreadPoolExecutor implements AutoCloseable {
 

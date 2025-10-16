@@ -30,7 +30,7 @@ import java.util.concurrent.*;
  * monitoring classes for each scheduled task {@link Runnable}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 3.0.2
+ * @since 3.0.1
  */
 public class TimeoutMonitoringRunnable implements Runnable {
 

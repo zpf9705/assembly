@@ -21,7 +21,7 @@ package top.osjf.cron.core.repository;
  * Execution strategy after task scheduling execution timeout.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 3.0.2
+ * @since 3.0.1
  */
 public enum RunningTimeoutPolicy {
 

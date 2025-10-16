@@ -34,7 +34,7 @@ public class CronInternalException extends RuntimeException {
     /**
      * Constructs a new {@code CronInternalException} with {@code null} as its
      * detail message.
-     * @since 3.0.2
+     * @since 3.0.1
      */
     public CronInternalException() {
         super();

@@ -35,7 +35,7 @@ import static java.lang.annotation.ElementType.*;
  * from blocking for a long time.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 3.0.2
+ * @since 3.0.1
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

@@ -116,7 +116,7 @@ public abstract class ListenableTaskScheduler extends AbstractCronTaskRepository
 
     /**
      * Internal method of {@link #schedule(Runnable, Trigger)}.
-     * @since 3.0.2
+     * @since 3.0.1
      * @param task the Runnable to execute whenever the trigger fires
      * @param trigger an implementation of the {@link Trigger} interface,
      * @return a {@link ScheduledFuture} representing pending completion of the task,
@@ -264,7 +264,7 @@ public abstract class ListenableTaskScheduler extends AbstractCronTaskRepository
 
     /**
      * {@link ListenableScheduledFuture} threadLocal context.
-     * @since 3.0.2
+     * @since 3.0.1
      */
     static class ListenableScheduledFutureContext {
         static ThreadLocal<ListenableScheduledFuture> local = new NamedThreadLocal<>("ListenableScheduledFuture local");

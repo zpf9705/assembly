@@ -26,7 +26,7 @@ import top.osjf.cron.core.lang.NotNull;
  * single {@link Runnable} execution of {@link Job}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 3.0.2
+ * @since 3.0.1
  */
 public class RunnableJob implements Job {
 

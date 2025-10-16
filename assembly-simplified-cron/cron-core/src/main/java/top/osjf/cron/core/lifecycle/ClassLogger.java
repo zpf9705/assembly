@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
  * {@link #getClass()} slf4j logger.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 3.0.2
+ * @since 3.0.1
  */
 class ClassLogger {
 

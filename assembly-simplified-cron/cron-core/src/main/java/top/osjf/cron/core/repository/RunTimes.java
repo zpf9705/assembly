@@ -30,7 +30,7 @@ import static java.lang.annotation.ElementType.METHOD;
  * can be defined by setting the value attribute, with a default of 1 execution.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 3.0.2
+ * @since 3.0.1
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

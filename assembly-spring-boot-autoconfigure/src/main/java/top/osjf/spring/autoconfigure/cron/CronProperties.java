@@ -82,7 +82,7 @@ public class CronProperties {
      * Get the configuration of the specified {@link ClientType}.
      * @param clientType the input {@link ClientType}.
      * @return the {@link SuperiorProperties} created by {@link ClientType}.
-     * @since 3.0.2
+     * @since 3.0.1
      */
     public SuperiorProperties getClientProperties(ClientType clientType) {
         SuperiorProperties superiorProperties = null;
@@ -560,7 +560,7 @@ public class CronProperties {
     /**
      * Copy from {@link org.springframework.boot.autoconfigure.task.TaskExecutionProperties} and make slight modifications.
      * <p>Support monitoring thread pool configuration object for {@link RunTimeoutRegistrarRepository} API.
-     * @since 3.0.2
+     * @since 3.0.1
      */
     public static class RunTimeoutMonitoring implements Supplier<SuperiorProperties> {
         private final Pool pool = new Pool();
@@ -607,7 +607,7 @@ public class CronProperties {
 
         /**
          * Configure the behavior of thread pool when closed.
-         * @since 3.0.2
+         * @since 3.0.1
          */
         public static class Shutdown {
 
@@ -657,7 +657,7 @@ public class CronProperties {
         }
 
         /**
-         * @since 3.0.2
+         * @since 3.0.1
          */
         public static class Pool {
             /**
