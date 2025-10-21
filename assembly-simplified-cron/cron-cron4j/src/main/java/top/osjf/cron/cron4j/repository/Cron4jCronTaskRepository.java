@@ -386,6 +386,7 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
     @Override
     public void stop() {
         getInitializedScheduler().stop();
+        closeMonitoringExecutor();
     }
 
     /**

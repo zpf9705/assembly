@@ -377,6 +377,7 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
             throw new IllegalStateException("Scheduler not started !");
         }
         getInitializedScheduler().stop(ifStopClearTasks);
+        closeMonitoringExecutor();
     }
 
     /**

@@ -146,6 +146,13 @@ public abstract class AbstractRunTimeoutRegistrarRepository
     @Override
     public void stop() {
         super.stop();
+        closeMonitoringExecutor();
+    }
+
+    /**
+     * Close {@link #monitoringExecutor}.
+     */
+    protected void closeMonitoringExecutor() {
         if (monitoringExecutor != null) {
             monitoringExecutor.close();
         }

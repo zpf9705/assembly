@@ -486,9 +486,11 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
     public void stop() {
         try {
             getInitializedScheduler().shutdown(waitForJobsToCompleteWhenStop);
-        } catch (SchedulerException e) {
-            throw new IllegalStateException(e);
         }
+        catch (SchedulerException ex) {
+            throw new IllegalStateException(ex);
+        }
+        closeMonitoringExecutor();
     }
 
     /**
