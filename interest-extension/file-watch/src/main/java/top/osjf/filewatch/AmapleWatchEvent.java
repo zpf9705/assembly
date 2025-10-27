@@ -36,18 +36,18 @@ public class AmapleWatchEvent implements WatchEvent<Path> {
     private final Path parent;
 
     /** Original watch event being wrapped */
-    private final WatchEvent<Path> event;
+    private final WatchEvent<Path> original;
 
     /**
      * Constructs enhanced watch event.
      *
-     * @param parent parent directory path.
-     * @param event original watch event.
+     * @param parent   parent directory path.
+     * @param original original watch event.
      * @throws NullPointerException if any parameter is null.
      */
-    public AmapleWatchEvent(Path parent, WatchEvent<Path> event) {
+    public AmapleWatchEvent(Path parent, WatchEvent<Path> original) {
         this.parent = requireNonNull(parent, "parent");
-        this.event = requireNonNull(event, "event");;
+        this.original = requireNonNull(original, "original");;
     }
     /**
      * Gets parent directory of the event
@@ -97,20 +97,20 @@ public class AmapleWatchEvent implements WatchEvent<Path> {
      */
     @Override
     public Kind<Path> kind() {
-        return event.kind();
+        return original.kind();
     }
     /**
      * {@inheritDoc}
      */
     @Override
     public int count() {
-        return event.count();
+        return original.count();
     }
     /**
      * {@inheritDoc}
      */
     @Override
     public Path context() {
-        return event.context();
+        return original.context();
     }
 }
