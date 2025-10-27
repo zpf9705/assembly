@@ -128,6 +128,7 @@ public class FileWatchService implements Runnable, Closeable {
     /**
      * Set a {@link Executor} for executing the listener task.
      * @param executor the thread pool instance that executes the listener task.
+     * @since 3.0.2
      */
     public void setExecutor(ExecutorService executor) {
         this.executor = Objects.requireNonNull(executor, "executor == null");
@@ -135,6 +136,7 @@ public class FileWatchService implements Runnable, Closeable {
 
     /**
      * @return Return the thread pool instance that executes the listener task.
+     * @since 3.0.2
      */
     public ExecutorService getExecutor() {
         if (executor != null) {
@@ -365,6 +367,7 @@ public class FileWatchService implements Runnable, Closeable {
      * and the unique file listener for the special path, and convert it to {@link Thread}
      * for execution.
      * @throws IllegalStateException If it has already started.
+     * @since 3.0.2
      */
     public void start() throws IllegalStateException {
         if (!isStarted.compareAndSet(false, true)) {
@@ -379,6 +382,7 @@ public class FileWatchService implements Runnable, Closeable {
     /**
      * Stop the currently running file listener and the dedicated path file listener.
      * @throws IllegalStateException if it has already stopped.
+     * @since 3.0.2
      */
     public void stop() throws IllegalStateException {
         if (!isStarted.compareAndSet(true, false)) {
@@ -390,6 +394,7 @@ public class FileWatchService implements Runnable, Closeable {
         isStarted.set(false);
     }
 
+    /* @since 3.0.2 */
     private void closeWatchService(WatchService service) {
         try {
             service.close();
@@ -399,6 +404,7 @@ public class FileWatchService implements Runnable, Closeable {
         }
     }
 
+    /* @since 3.0.2 */
     private void peculiarFileWatchConsumer(Consumer<FileWatchService> consumer) {
         if (pathToServiceMap != null) {
             for (FileWatchService service : pathToServiceMap.values()) {
@@ -410,6 +416,7 @@ public class FileWatchService implements Runnable, Closeable {
 
     /**
      * @return The {@code Boolean} flag that indicates whether the file listener has been started.
+     * @since 3.0.2
      */
     public boolean isStarted() {
         return isStarted.get();
