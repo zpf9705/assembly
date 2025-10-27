@@ -21,31 +21,31 @@ import org.springframework.context.SmartLifecycle;
 import top.osjf.filewatch.FileWatchService;
 
 /**
- * Bean for intelligent lifecycle management of {@link FileWatchService FileWatchService Thread}.
+ * Bean for intelligent lifecycle management of {@link FileWatchService FileWatchService}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
 public class FileWatchServiceLifecycle implements SmartLifecycle {
 
-    private final Thread fileWatchServiceThread;
+    private final FileWatchService fileWatchService;
 
     public FileWatchServiceLifecycle(FileWatchService fileWatchService) {
-        this.fileWatchServiceThread = fileWatchService.get();
+        this.fileWatchService = fileWatchService;
     }
 
     @Override
     public void start() {
-        fileWatchServiceThread.start();
+        fileWatchService.start();
     }
 
     @Override
     public void stop() {
-        fileWatchServiceThread.interrupt();
+        fileWatchService.stop();
     }
 
     @Override
     public boolean isRunning() {
-        return fileWatchServiceThread.getState() != Thread.State.NEW;
+        return fileWatchService.isStarted();
     }
 }
