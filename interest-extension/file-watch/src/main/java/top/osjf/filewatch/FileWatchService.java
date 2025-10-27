@@ -25,10 +25,11 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Supplier;
+import java.util.function.Consumer;
 
 /**
  * A file monitoring service that watches registered directories for changes
@@ -54,7 +55,7 @@ import java.util.function.Supplier;
  * @see java.nio.file.StandardWatchEventKinds
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
+public class FileWatchService implements Runnable, Closeable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileWatchService.class);
 
@@ -80,25 +81,35 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
      * configuration management instance. */
     private WaitConfigurations waitConfigurations;
 
+    /** The {@code Boolean} flag that indicates whether the template instance has been started.*/
+    private AtomicBoolean isStarted;
+
+    /** A thread pool used to support asynchronous execution of file listener change tasks {@link #run()}.*/
+    private ExecutorService executor;
+
     /**
      * Constructs an empty {@link FileWatchService} to init a {@link WatchService}.
      */
-    public FileWatchService() { initWatchService(); }
+    public FileWatchService() { initWatchService(true); }
 
     /**
      * Init a {@link WatchService} to support monitoring file changes in specified file paths.
+     * @param isTemplate Is it a template prototype for {@link FileWatchService}.
      */
-    private void initWatchService() {
+    private void initWatchService(boolean isTemplate) {
         try {
             watchService = FileSystems.getDefault().newWatchService();
         }
         catch (IOException ex) {
             throw new FileWatchException("Failed to create java.nio.file.WatchService", ex);
         }
-        pathToServiceMap = new ConcurrentHashMap<>();
-        lock = new ReentrantLock();
-        fileWatchListeners = new FileWatchListeners();
-        waitConfigurations = new WaitConfigurations();
+        if (isTemplate) {
+            pathToServiceMap = new ConcurrentHashMap<>();
+            lock = new ReentrantLock();
+            fileWatchListeners = new FileWatchListeners();
+            waitConfigurations = new WaitConfigurations();
+            isStarted = new AtomicBoolean(false);
+        }
     }
 
     /**
@@ -109,8 +120,37 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
      */
     private FileWatchService(FileWatchListeners fileWatchListeners,
                              WaitConfigurations waitConfigurations) {
+        initWatchService(false);
         this.fileWatchListeners = fileWatchListeners;
         this.waitConfigurations = waitConfigurations;
+    }
+
+    /**
+     * Set a {@link Executor} for executing the listener task.
+     * @param executor the thread pool instance that executes the listener task.
+     */
+    public void setExecutor(ExecutorService executor) {
+        this.executor = Objects.requireNonNull(executor, "executor == null");
+    }
+
+    /**
+     * @return Return the thread pool instance that executes the listener task.
+     */
+    public ExecutorService getExecutor() {
+        if (executor != null) {
+            return executor;
+        }
+        lock.lock();
+        try {
+            int availableProcessors = Runtime.getRuntime().availableProcessors();
+            executor = new ThreadPoolExecutor(availableProcessors,
+                    availableProcessors + 1, 60, TimeUnit.SECONDS,
+                    new ArrayBlockingQueue<>(1000), r -> new Thread(r, r.toString()));
+        }
+        finally {
+            lock.unlock();
+        }
+        return executor;
     }
 
     /**
@@ -320,22 +360,68 @@ public class FileWatchService implements Runnable, Supplier<Thread>, Closeable {
         }
     }
 
-    @Override
-    public Thread get() {
-        return new Thread(this,"File " + registeredPaths + " watch-thread");
+    /**
+     * Activate the task of running the file listener for the current template instance
+     * and the unique file listener for the special path, and convert it to {@link Thread}
+     * for execution.
+     * @throws IllegalStateException If it has already started.
+     */
+    public void start() throws IllegalStateException {
+        if (!isStarted.compareAndSet(false, true)) {
+            throw new IllegalStateException("The file listener has started running!");
+        }
+        ExecutorService executor = getExecutor();
+        executor.execute(this);
+        peculiarFileWatchConsumer(executor::execute);
+        isStarted.set(true);
     }
 
     /**
-     * Closes this watch service.
-     * @throws IOException if an I/O error occurs.
+     * Stop the currently running file listener and the dedicated path file listener.
+     * @throws IllegalStateException if it has already stopped.
      */
-    @Override
-    public void close() throws IOException {
-        watchService.close();
+    public void stop() throws IllegalStateException {
+        if (!isStarted.compareAndSet(true, false)) {
+            throw new IllegalStateException("The file listener has stopped running!");
+        }
+        getExecutor().shutdownNow();
+        closeWatchService(watchService);
+        peculiarFileWatchConsumer(service -> closeWatchService(service.watchService));
+        isStarted.set(false);
+    }
+
+    private void closeWatchService(WatchService service) {
+        try {
+            service.close();
+        }
+        catch (IOException ex) {
+            LOGGER.error("Close watchService occurs error", ex);
+        }
+    }
+
+    private void peculiarFileWatchConsumer(Consumer<FileWatchService> consumer) {
         if (pathToServiceMap != null) {
             for (FileWatchService service : pathToServiceMap.values()) {
-                service.close();
+                consumer.accept(service);
             }
         }
+    }
+
+
+    /**
+     * @return The {@code Boolean} flag that indicates whether the file listener has been started.
+     */
+    public boolean isStarted() {
+        return isStarted.get();
+    }
+
+    @Override
+    public void close() {
+        stop();
+    }
+
+    @Override
+    public String toString() {
+        return "File " + registeredPaths + " watch-thread";
     }
 }
