@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.nio.file.attribute.FileTime;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 
@@ -178,6 +179,53 @@ public class WaitConfiguration implements BiFunction<Path, WatchEvent.Kind<Path>
         return null;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        WaitConfiguration that = (WaitConfiguration) o;
+        return Objects.equals(waitCreateInternalTimeout, that.waitCreateInternalTimeout)
+                && waitCreateInternalTimeUnit == that.waitCreateInternalTimeUnit
+                && Objects.equals(waitCreateTimeout, that.waitCreateTimeout)
+                && waitCreateTimeUnit == that.waitCreateTimeUnit
+                && Objects.equals(waitCreateInspectionFrequency, that.waitCreateInspectionFrequency)
+                && Objects.equals(waitModifyInternalTimeout, that.waitModifyInternalTimeout)
+                && waitModifyInternalTimeUnit == that.waitModifyInternalTimeUnit
+                && Objects.equals(waitModifyTimeout, that.waitModifyTimeout)
+                && waitModifyTimeUnit == that.waitModifyTimeUnit
+                && Objects.equals(waitModifyInspectionFrequency, that.waitModifyInspectionFrequency)
+                && Objects.equals(waitDeleteInternalTimeout, that.waitDeleteInternalTimeout)
+                && waitDeleteInternalTimeUnit == that.waitDeleteInternalTimeUnit
+                && Objects.equals(waitDeleteTimeout, that.waitDeleteTimeout)
+                && waitDeleteTimeUnit == that.waitDeleteTimeUnit
+                && Objects.equals(waitDeleteInspectionFrequency, that.waitDeleteInspectionFrequency);
+    }
+
+    @Override
+    public int hashCode() {
+        return System.identityHashCode(this);
+    }
+
+    @Override
+    public String toString() {
+        return "WaitConfiguration{" +
+                "waitCreateInternalTimeout=" + waitCreateInternalTimeout +
+                ", waitCreateInternalTimeUnit=" + waitCreateInternalTimeUnit +
+                ", waitCreateTimeout=" + waitCreateTimeout +
+                ", waitCreateTimeUnit=" + waitCreateTimeUnit +
+                ", waitCreateInspectionFrequency=" + waitCreateInspectionFrequency +
+                ", waitModifyInternalTimeout=" + waitModifyInternalTimeout +
+                ", waitModifyInternalTimeUnit=" + waitModifyInternalTimeUnit +
+                ", waitModifyTimeout=" + waitModifyTimeout +
+                ", waitModifyTimeUnit=" + waitModifyTimeUnit +
+                ", waitModifyInspectionFrequency=" + waitModifyInspectionFrequency +
+                ", waitDeleteInternalTimeout=" + waitDeleteInternalTimeout +
+                ", waitDeleteInternalTimeUnit=" + waitDeleteInternalTimeUnit +
+                ", waitDeleteTimeout=" + waitDeleteTimeout +
+                ", waitDeleteTimeUnit=" + waitDeleteTimeUnit +
+                ", waitDeleteInspectionFrequency=" + waitDeleteInspectionFrequency +
+                '}';
+    }
     /* Set and Get */
 
     public Long getWaitCreateInternalTimeout() {
