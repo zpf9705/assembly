@@ -376,7 +376,6 @@ public class FileWatchService implements Runnable, Closeable {
         ExecutorService executor = getExecutor();
         executor.execute(this);
         peculiarFileWatchConsumer(executor::execute);
-        isStarted.set(true);
     }
 
     /**
@@ -391,7 +390,6 @@ public class FileWatchService implements Runnable, Closeable {
         getExecutor().shutdownNow();
         closeWatchService(watchService);
         peculiarFileWatchConsumer(service -> closeWatchService(service.watchService));
-        isStarted.set(false);
     }
 
     /* @since 3.0.2 */
