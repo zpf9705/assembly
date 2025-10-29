@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
@@ -82,10 +81,21 @@ public class FileWatchService implements Runnable, Closeable {
     private WaitConfigurations waitConfigurations;
 
     /** The {@code Boolean} flag that indicates whether the template instance has been started.*/
-    private AtomicBoolean isStarted;
+    private boolean isStarted = false;
 
     /** A thread pool used to support asynchronous execution of file listener change tasks {@link #run()}.*/
-    private ExecutorService executor;
+    private ExecutorService executor = defaultExecutor();
+
+    /**
+     * @return The default configured thread pool.
+     * @since 3.0.2
+     */
+    static ExecutorService defaultExecutor() {
+        int availableProcessors = Runtime.getRuntime().availableProcessors();
+        return new ThreadPoolExecutor(availableProcessors,
+                availableProcessors + 1, 60, TimeUnit.SECONDS,
+                new ArrayBlockingQueue<>(256), r -> new Thread(r, r.toString()));
+    }
 
     /**
      * Constructs an empty {@link FileWatchService} to init a {@link WatchService}.
@@ -108,7 +118,6 @@ public class FileWatchService implements Runnable, Closeable {
             lock = new ReentrantLock();
             fileWatchListeners = new FileWatchListeners();
             waitConfigurations = new WaitConfigurations();
-            isStarted = new AtomicBoolean(false);
         }
     }
 
@@ -131,28 +140,16 @@ public class FileWatchService implements Runnable, Closeable {
      * @since 3.0.2
      */
     public void setExecutor(ExecutorService executor) {
-        this.executor = Objects.requireNonNull(executor, "executor == null");
-    }
-
-    /**
-     * @return Return the thread pool instance that executes the listener task.
-     * @since 3.0.2
-     */
-    public ExecutorService getExecutor() {
-        if (executor != null) {
-            return executor;
-        }
+        Objects.requireNonNull(executor, "executor");
         lock.lock();
         try {
-            int availableProcessors = Runtime.getRuntime().availableProcessors();
-            executor = new ThreadPoolExecutor(availableProcessors,
-                    availableProcessors + 1, 60, TimeUnit.SECONDS,
-                    new ArrayBlockingQueue<>(1000), r -> new Thread(r, r.toString()));
+            checkStarted();
+            this.executor = executor;
         }
         finally {
             lock.unlock();
         }
-        return executor;
+
     }
 
     /**
@@ -370,26 +367,42 @@ public class FileWatchService implements Runnable, Closeable {
      * @since 3.0.2
      */
     public void start() throws IllegalStateException {
-        if (!isStarted.compareAndSet(false, true)) {
-            throw new IllegalStateException("The file listener has started running!");
+        lock.lock();
+        try {
+            checkStarted();
+            executor.execute(this);
+            peculiarFileWatchConsumer(executor::execute);
+            isStarted = true;
         }
-        ExecutorService executor = getExecutor();
-        executor.execute(this);
-        peculiarFileWatchConsumer(executor::execute);
+        finally {
+            lock.unlock();
+        }
+    }
+
+    private void checkStarted() {
+        if (isStarted) {
+            throw new IllegalStateException("File listener already started!");
+        }
     }
 
     /**
      * Stop the currently running file listener and the dedicated path file listener.
-     * @throws IllegalStateException if it has already stopped.
+     * @throws IllegalStateException if it has not started.
      * @since 3.0.2
      */
     public void stop() throws IllegalStateException {
-        if (!isStarted.compareAndSet(true, false)) {
-            throw new IllegalStateException("The file listener has stopped running!");
+        lock.lock();
+        try {
+            if (!isStarted) {
+                throw new IllegalStateException("File listener not started!");
+            }
+            executor.shutdownNow();
+            closeWatchService(watchService);
+            peculiarFileWatchConsumer(service -> closeWatchService(service.watchService));
         }
-        getExecutor().shutdownNow();
-        closeWatchService(watchService);
-        peculiarFileWatchConsumer(service -> closeWatchService(service.watchService));
+        finally {
+            lock.unlock();
+        }
     }
 
     /* @since 3.0.2 */
@@ -417,7 +430,7 @@ public class FileWatchService implements Runnable, Closeable {
      * @since 3.0.2
      */
     public boolean isStarted() {
-        return isStarted.get();
+        return isStarted;
     }
 
     @Override
