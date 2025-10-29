@@ -64,7 +64,8 @@ public class FileWatchService implements Runnable, Closeable {
     /** The underlying watch service instance.*/
     private WatchService watchService;
 
-    /** The lock of register path */
+    /** {@link Lock} is used to ensure thread safety for property settings, startup,
+     *  and shutdown.*/
     private Lock lock;
 
     /** The list of registered listening paths. */
