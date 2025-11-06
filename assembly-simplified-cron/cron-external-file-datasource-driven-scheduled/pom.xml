@@ -40,5 +40,11 @@
             <artifactId>cron-datasource-driven-scheduled</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>top.osjf.filewatch</groupId>
+            <artifactId>file-watch</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
     </dependencies>
 </project>
