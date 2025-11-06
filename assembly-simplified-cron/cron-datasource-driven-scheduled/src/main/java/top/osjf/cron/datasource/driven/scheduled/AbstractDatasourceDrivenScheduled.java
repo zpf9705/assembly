@@ -125,6 +125,7 @@ public abstract class AbstractDatasourceDrivenScheduled
                                              DatasourceTaskElementsOperation datasourceTaskElementsOperation) {
         this.cronTaskRepository = cronTaskRepository;
         this.datasourceTaskElementsOperation = datasourceTaskElementsOperation;
+        this.datasourceTaskElementsOperation.setAbstractDatasourceDrivenScheduled(this);
     }
 
     @Override
@@ -220,7 +221,8 @@ public abstract class AbstractDatasourceDrivenScheduled
             }
         }
 
-        if (!managerTaskRegisterFlag) {
+        if (!managerTaskRegisterFlag
+                && datasourceTaskElementsOperation.registerDefaultIfMainTaskInfoNotProvided()) {
 
             // Execute at a self configured fixed frequency without a designated main task management.
             this.mangerTaskUniqueIds
@@ -389,7 +391,8 @@ public abstract class AbstractDatasourceDrivenScheduled
      * otherwise it is not.
      */
     protected boolean isManagerTask(TaskElement taskElement) {
-        return Arrays.binarySearch(mangerTaskUniqueIds, taskElement.getId()) >= 0;
+        return mangerTaskUniqueIds != null
+                && Arrays.binarySearch(mangerTaskUniqueIds, taskElement.getId()) >= 0;
     }
 
     /**
@@ -420,6 +423,9 @@ public abstract class AbstractDatasourceDrivenScheduled
      * @return {@code true} indicates that the environment matches, otherwise it does not match.
      */
     protected boolean profilesMatch(String profiles) {
+        if (StringUtils.isBlank(profiles)) {
+            return true;
+        }
         return SYSTEM_PROFILES.contains(profiles);
     }
 
