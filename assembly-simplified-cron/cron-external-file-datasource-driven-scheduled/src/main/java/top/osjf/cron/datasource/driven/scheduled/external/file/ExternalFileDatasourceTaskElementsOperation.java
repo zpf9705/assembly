@@ -89,7 +89,7 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement> impleme
 
     private final ExternalFileTaskElementLoader<T> loader;
 
-    private final FileWatchService fileWatchService = new FileWatchService();
+    private FileWatchService fileWatchService;
 
     private AbstractDatasourceDrivenScheduled scheduled;
 
@@ -116,6 +116,7 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement> impleme
     @Override
     public void initialize() {
         loader.initialize();
+        fileWatchService = new FileWatchService();
         File configFile = loader.getConfigFile();
         fileWatchService.registerWatch(configFile.getParent(),
                 false, SensitivityWatchEventModifier.MEDIUM, TriggerKind.ENTRY_MODIFY);
