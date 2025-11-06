@@ -123,4 +123,27 @@ public interface DatasourceTaskElementsOperation {
      */
     @Nullable
     TaskElement getElementById(String id);
+
+    /**
+     * Return a {@code Boolean} variable indicating that when the data source does not provide
+     * main task information, this class of {@link AbstractDatasourceDrivenScheduled#run()} is
+     * registered by default as the main task running check strategy scheme.
+     * @return If it is {@code true}, register {@link AbstractDatasourceDrivenScheduled#run()}
+     * as the main task for checking, otherwise it will be based on the provided information.
+     * @since 3.0.2
+     */
+    default boolean registerDefaultIfMainTaskInfoNotProvided() {
+        return true;
+    }
+
+    /**
+     * Set the task scheduling data source management instance object {@link AbstractDatasourceDrivenScheduled
+     * AbstractDatasourceDrivenScheduled } to the {@link DatasourceTaskElementsOperation
+     * DatasourceTaskElementsOperation } instance in order to implement related extended operations
+     * in a specific way, and the specific behavior depends on the requirements of the implementation class.
+     * @param scheduled task scheduling data source management instance object.
+     * @since 3.0.2
+     */
+    default void setAbstractDatasourceDrivenScheduled(AbstractDatasourceDrivenScheduled scheduled) {
+    }
 }
