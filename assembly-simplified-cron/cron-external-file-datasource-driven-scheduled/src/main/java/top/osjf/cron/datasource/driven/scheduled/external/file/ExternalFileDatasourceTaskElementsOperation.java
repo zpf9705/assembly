@@ -17,13 +17,20 @@
 
 package top.osjf.cron.datasource.driven.scheduled.external.file;
 
+import com.sun.nio.file.SensitivityWatchEventModifier;
 import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.lifecycle.InitializeAble;
+import top.osjf.cron.datasource.driven.scheduled.AbstractDatasourceDrivenScheduled;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
+import top.osjf.filewatch.AmapleWatchEvent;
+import top.osjf.filewatch.AmpleFileWatchListener;
+import top.osjf.filewatch.FileWatchService;
+import top.osjf.filewatch.TriggerKind;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -58,6 +65,7 @@ import java.util.stream.Collectors;
  * // Initialize with appropriate loader
  * FileTaskElementLoader<MyTaskElement> loader = new YamlTaskElementLoader<>(file);
  * DatasourceTaskElementsOperation op = new MyFileOperation(loader);
+ * op.initialize()
  * }</pre>
  *
  * @param <T> the type of task elements this operation handles, must extend {@link TaskElement}.
@@ -72,6 +80,10 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement> impleme
         InitializeAble {
 
     private final ExternalFileTaskElementLoader<T> loader;
+
+    private final FileWatchService fileWatchService = new FileWatchService();
+
+    private AbstractDatasourceDrivenScheduled scheduled;
 
     /**
      * Constructs an {@code ExternalFileDatasourceTaskElementsOperation} with the given
@@ -96,6 +108,11 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement> impleme
     @Override
     public void initialize() {
         loader.initialize();
+        File configFile = loader.getConfigFile();
+        fileWatchService.registerWatch(configFile.getParent(),
+                false, SensitivityWatchEventModifier.MEDIUM, TriggerKind.ENTRY_MODIFY);
+        fileWatchService.registerListener(new ExternalFileModifyListener());
+        fileWatchService.start();
     }
 
     /**
@@ -104,6 +121,7 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement> impleme
     @PreDestroy
     public void destroy() {
         loader.close();
+        fileWatchService.close();
     }
 
     /**
@@ -176,4 +194,39 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement> impleme
                 .map(l -> l.get(0))
                 .orElse(null);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean registerDefaultIfMainTaskInfoNotProvided() {
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setAbstractDatasourceDrivenScheduled(AbstractDatasourceDrivenScheduled scheduled) {
+        this.scheduled = scheduled;
+    }
+
+    /**
+     * The {@link top.osjf.filewatch.FileWatchListener} listener implementation class for external
+     * configuration file changes.
+     * @since 3.0.2
+     */
+    private class ExternalFileModifyListener extends AmpleFileWatchListener {
+
+        @Override
+        public boolean supports(AmapleWatchEvent event) {
+            return loader.getConfigFile().equals(event.getFile());
+        }
+
+        @Override
+        public void onWatchEvent(AmapleWatchEvent event) {
+            scheduled.run();
+        }
+    }
+
 }
