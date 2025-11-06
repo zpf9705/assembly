@@ -68,6 +68,14 @@ import java.util.stream.Collectors;
  * op.initialize()
  * }</pre>
  *
+ * <p>The scheduled configuration changes of file types are no longer the responsibility
+ * of the main task check {@link ExternalFileDatasourceTaskElement#getUpdateSign()},
+ * but the introduction of the {@link FileWatchService} file listener service to monitor
+ * real-time modifications of related scheduled configuration files {@link ExternalFileModifyListener}.
+ * This is a convenience update for file system configuration scheduled tasks introduced
+ * in version 3.0.2, where developers only need to modify the configuration file without
+ * changing the value of {@link ExternalFileDatasourceTaskElement#getUpdateSign()}.
+ *
  * @param <T> the type of task elements this operation handles, must extend {@link TaskElement}.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
