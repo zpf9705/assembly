@@ -22,6 +22,7 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 import top.osjf.cron.core.lang.NotNull;
+import top.osjf.cron.core.util.CollectionUtils;
 import top.osjf.cron.datasource.driven.scheduled.DataSourceDrivenException;
 import top.osjf.cron.datasource.driven.scheduled.external.file.ExternalFileTaskElementLoader;
 
@@ -30,6 +31,8 @@ import java.io.InputStream;
 import java.io.Writer;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * The Yaml loader for {@link YamlTaskElement} loading.
@@ -124,10 +127,25 @@ public class YamlTaskElementLoader extends ExternalFileTaskElementLoader<YamlTas
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected List<YamlTaskElement> loadingInternal(InputStream is) {
-        @SuppressWarnings("unchecked")
-        List<YamlTaskElement> loadingResult = yaml.loadAs(is, List.class);
-        return loadingResult == null ? Collections.emptyList() : loadingResult;
+        List<Object> loadingResult = yaml.load(is);
+        if (CollectionUtils.isEmpty(loadingResult)) {
+            return Collections.emptyList();
+        }
+        return loadingResult.stream().map(o -> {
+            YamlTaskElement element;
+            if (o instanceof YamlTaskElement) {
+                element = (YamlTaskElement) o;
+            }
+            else if (o instanceof Map) {
+                element = new YamlTaskElement((Map<Object, Object>) o);
+            }
+            else {
+                throw new UnsupportedOperationException("Unsupported type " + o.getClass());
+            }
+            return element;
+        }).collect(Collectors.toList());
     }
 
     @Override
