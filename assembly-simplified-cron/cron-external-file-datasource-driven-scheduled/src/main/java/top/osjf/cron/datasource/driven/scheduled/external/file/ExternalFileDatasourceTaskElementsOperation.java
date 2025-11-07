@@ -123,12 +123,6 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement> impleme
     @Override
     public void initialize() {
         loader.initialize();
-        fileWatchService = new FileWatchService();
-        File configFile = loader.getConfigFile();
-        fileWatchService.registerWatch(configFile.getParent(),
-                false, SensitivityWatchEventModifier.MEDIUM, TriggerKind.ENTRY_MODIFY);
-        fileWatchService.registerListener(new ExternalFileModifyListener());
-        fileWatchService.start();
     }
 
     /**
@@ -234,6 +228,19 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement> impleme
     @Override
     public void setAbstractDatasourceDrivenScheduled(AbstractDatasourceDrivenScheduled scheduled) {
         this.scheduled = scheduled;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void notifyMainTaskInfoNotProvidedAndNoDefaultUsed() {
+        fileWatchService = new FileWatchService();
+        File configFile = loader.getConfigFile();
+        fileWatchService.registerWatch(configFile.getParent(),
+                false, SensitivityWatchEventModifier.MEDIUM, TriggerKind.ENTRY_MODIFY);
+        fileWatchService.registerListener(new ExternalFileModifyListener());
+        fileWatchService.start();
     }
 
     /**
