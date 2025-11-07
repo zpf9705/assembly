@@ -401,6 +401,11 @@ public abstract class AbstractDatasourceDrivenScheduled
      * independently registers the cron expression used for the main management task, and
      * developers can also define this value themselves.
      *
+     * <p>If the detailed running task of the main inspection task is not provided and
+     * {@link DatasourceTaskElementsOperation#registerDefaultIfMainTaskInfoNotProvided()}
+     * returns {@code true}, {@link DatasourceTaskElementsOperation} will independently
+     * implement the main task inspection, and this class will not provide inspection.
+     *
      * @return the default cron expression for the execution frequency of the main management task.
      */
     protected String getManagerTaskCheckFrequencyCronExpress() {
