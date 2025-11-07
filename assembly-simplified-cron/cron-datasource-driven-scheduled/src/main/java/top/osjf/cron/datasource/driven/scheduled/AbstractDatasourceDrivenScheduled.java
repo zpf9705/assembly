@@ -227,6 +227,13 @@ public abstract class AbstractDatasourceDrivenScheduled
             // Execute at a self configured fixed frequency without a designated main task management.
             this.mangerTaskUniqueIds
                     = new String[]{cronTaskRepository.register(getManagerTaskCheckFrequencyCronExpress(), this)};
+
+            managerTaskRegisterFlag = true;
+        }
+
+        // Notify the data source operation class that there is no main check task running.
+        if (!managerTaskRegisterFlag) {
+            datasourceTaskElementsOperation.notifyMainTaskInfoNotProvidedAndNoDefaultUsed();
         }
 
         datasourceTaskElementsOperation.afterStart(taskElements);
