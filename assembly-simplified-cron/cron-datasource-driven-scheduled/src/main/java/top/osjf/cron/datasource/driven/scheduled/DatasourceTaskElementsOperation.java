@@ -146,4 +146,12 @@ public interface DatasourceTaskElementsOperation {
      */
     default void setAbstractDatasourceDrivenScheduled(AbstractDatasourceDrivenScheduled scheduled) {
     }
+
+    /**
+     * Notify the data source operation class that there is currently no main check task provided
+     * during registration and the default check task is not being used.
+     * @since 3.0.2
+     */
+    default void notifyMainTaskInfoNotProvidedAndNoDefaultUsed() {
+    }
 }
