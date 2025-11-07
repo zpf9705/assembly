@@ -70,13 +70,12 @@ import java.util.stream.Collectors;
  * op.initialize()
  * }</pre>
  *
- * <p><strong>NOTE:The scheduled configuration changes of file types are no longer the responsibility
- * of the main task check {@link ExternalFileDatasourceTaskElement#getUpdateSign()},</strong>
- * but the introduction of the {@link FileWatchService} file listener service to monitor
- * real-time modifications of related scheduled configuration files {@link ExternalFileModifyListener}.
- * This is a convenience update for file system configuration scheduled tasks introduced
- * in version 3.0.2, where developers only need to modify the configuration file without
- * changing the value of {@link ExternalFileDatasourceTaskElement#getUpdateSign()}.
+ * <p>If the file timing task data source does not provide the main task information
+ * check, the default value of {@link #registerDefaultIfMainTaskInfoNotProvided()}
+ * in this abstract class is {@code false}, which means that the trigger of the main
+ * task {@link AbstractDatasourceDrivenScheduled#run()} is handed over to {@link #fileWatchService}
+ * for execution, and the original logic remains unchanged. We recommend this usage when
+ * there is no autonomous check logic.
  *
  * @param <T> the type of task elements this operation handles, must extend {@link TaskElement}.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
