@@ -153,13 +153,9 @@ public abstract class ExternalFileTaskElementLoader<T extends TaskElement> imple
      * Release relevant file resources promptly when the JVM is shut down.
      */
     @Override
-    public void close() {
+    public void close() throws IOException {
         if (readWriteLock instanceof FileReadWriteLock) {
-            try {
-                ((FileReadWriteLock) readWriteLock).close();
-            }
-            catch (IOException ignored) {
-            }
+            ((FileReadWriteLock) readWriteLock).close();
         }
     }
 
