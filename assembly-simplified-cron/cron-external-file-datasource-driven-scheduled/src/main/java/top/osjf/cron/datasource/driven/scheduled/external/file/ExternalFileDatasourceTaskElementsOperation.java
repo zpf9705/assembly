@@ -91,8 +91,14 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement> impleme
 
     private final ExternalFileTaskElementLoader<T> loader;
 
+    /**
+     * @since 3.0.2
+     */
     private FileWatchService fileWatchService;
 
+    /**
+     * @since 3.0.2
+     */
     private AbstractDatasourceDrivenScheduled scheduled;
 
     /**
@@ -136,6 +142,7 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement> impleme
 
     /**
      * Close {@link #loader} and {@link #fileWatchService}.
+     * @since 3.0.2
      */
     @Override
     public void close() throws IOException {
