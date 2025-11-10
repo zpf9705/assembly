@@ -93,7 +93,7 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement> impleme
     /**
      * @since 3.0.2
      */
-    private FileWatchService fileWatchService;
+    @Nullable private FileWatchService fileWatchService;
 
     /**
      * @since 3.0.2
@@ -140,7 +140,7 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement> impleme
     @Override
     public void close() throws IOException {
         loader.close();
-        fileWatchService.close();
+        if (fileWatchService != null) fileWatchService.close();
     }
 
     /**
