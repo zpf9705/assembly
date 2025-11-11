@@ -91,9 +91,10 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement> impleme
     private final ExternalFileTaskElementLoader<T> loader;
 
     /**
+     * Lazy-initialized when main task info is not provided.
      * @since 3.0.2
      */
-    @Nullable private FileWatchService fileWatchService;
+    private FileWatchService fileWatchService;
 
     /**
      * @since 3.0.2
