@@ -17,6 +17,7 @@
 
 package top.osjf.cron.datasource.driven.scheduled.nacosconfig;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import top.osjf.cron.datasource.driven.scheduled.DefaultTaskElement;
 
 /**
@@ -42,4 +43,16 @@ import top.osjf.cron.datasource.driven.scheduled.DefaultTaskElement;
 public class NacosConfigTaskElement extends DefaultTaskElement {
 
     private static final long serialVersionUID = 2576911210334659473L;
+
+    @Override
+    @JsonIgnore
+    public boolean isAfterUpdate() {
+        return super.isAfterUpdate();
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isAfterInsert() {
+        return super.isAfterInsert();
+    }
 }
