@@ -20,6 +20,22 @@ package top.osjf.cron.datasource.driven.scheduled.nacosconfig;
 import top.osjf.cron.datasource.driven.scheduled.DefaultTaskElement;
 
 /**
+ * Represents a task element configured in Nacos configuration center.
+ * This class extends {@link DefaultTaskElement}, inheriting common task properties
+ * such as task name, execution interval, enable status, etc., and can be further
+ * extended with Nacos-specific attributes.
+ *
+ * <p>This class is typically used for:
+ * <ul>
+ *   <li>Deserializing task configurations from Nacos config files</li>
+ *   <li>Transferring and manipulating task instances in memory</li>
+ *   <li>Serializing task lists back to configuration storage or remote services</li>
+ * </ul>
+ *
+ * Note: This class implements Serializable and declares a fixed serialVersionUID
+ * to ensure version compatibility during serialization and deserialization,
+ * especially in distributed environments or RPC scenarios.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
  */
