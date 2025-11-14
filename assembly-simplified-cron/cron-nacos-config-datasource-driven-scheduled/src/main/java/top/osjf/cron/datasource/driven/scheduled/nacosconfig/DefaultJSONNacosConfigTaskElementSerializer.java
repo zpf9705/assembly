@@ -24,6 +24,16 @@ import java.io.IOException;
 import java.util.List;
 
 /**
+ * JSON format serializer for Nacos configuration task elements.
+ *
+ * <p>This implementation uses {@link ObjectMapper} from the Jackson library to serialize
+ * a list of configuration task elements into a JSON string, or deserialize a JSON string
+ * back into a list of elements. It supports conversion of complex object structures and ensures type safety.
+ *
+ * <p>During serialization, the entire {@link List} is converted into a standard JSON array.
+ * During deserialization, {@link TypeReference} is used to preserve generic type information,
+ * preventing conversion errors due to Java's type erasure.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
  */
