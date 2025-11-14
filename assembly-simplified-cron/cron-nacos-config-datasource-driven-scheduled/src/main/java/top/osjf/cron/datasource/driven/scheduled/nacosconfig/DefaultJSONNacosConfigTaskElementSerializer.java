@@ -17,14 +17,12 @@
 
 package top.osjf.cron.datasource.driven.scheduled.nacosconfig;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import top.osjf.cron.core.lang.NotNull;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * JSON format serializer for Nacos configuration task elements.
@@ -46,9 +44,7 @@ public class DefaultJSONNacosConfigTaskElementSerializer implements NacosConfigT
 
     @Override
     public String serialize(@NotNull List<NacosConfigTaskElement> elements) throws IOException {
-        List<JSONNacosConfigTaskElement> jElements
-                = elements.stream().map(JSONNacosConfigTaskElement::new).collect(Collectors.toList());
-        return objectMapper.writeValueAsString(jElements);
+        return objectMapper.writeValueAsString(elements);
     }
 
     @Override
@@ -59,34 +55,5 @@ public class DefaultJSONNacosConfigTaskElementSerializer implements NacosConfigT
     @Override
     public ConfigFormat getConfigFormat() {
         return ConfigFormat.JSON;
-    }
-
-    static class JSONNacosConfigTaskElement extends NacosConfigTaskElement {
-
-        private static final long serialVersionUID = -826552181140068263L;
-
-        public JSONNacosConfigTaskElement(NacosConfigTaskElement source) {
-            setId(source.getId());
-            setTaskId(source.getTaskId());
-            setTaskName(source.getTaskName());
-            setProfiles(source.getProfiles());
-            setTaskDescription(source.getTaskDescription());
-            setStatus(source.getStatus());
-            setStatusDescription(source.getStatusDescription());
-            setExpression(source.getExpression());
-            setUpdateSign(source.getUpdateSign());
-        }
-
-        @Override
-        @JsonIgnore
-        public boolean isAfterUpdate() {
-            return super.isAfterUpdate();
-        }
-
-        @Override
-        @JsonIgnore
-        public boolean isAfterInsert() {
-            return super.isAfterInsert();
-        }
     }
 }
