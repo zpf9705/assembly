@@ -131,13 +131,13 @@ public abstract class AbstractDatasourceDrivenScheduled
     @Override
     public void init() {
 
-        lockExecuteLifecycle(this::initInternal, false, null);
+        lockExecuteLifecycle(this::initInternal, false, "init");
     }
 
     @Override
     public void start() {
 
-        lockExecuteLifecycle(this::startInternal, false, null);
+        lockExecuteLifecycle(this::startInternal, false, "start");
     }
 
     @Override
@@ -149,7 +149,14 @@ public abstract class AbstractDatasourceDrivenScheduled
     @Override
     public void stop() {
 
-        lockExecuteLifecycle(this::stopInternal, false, null);
+        lockExecuteLifecycle(this::stopInternal, false, "stop");
+    }
+
+    /**
+     * @since 3.0.2
+     */
+    interface ThrowableRunnable {
+        void run() throws Throwable;
     }
 
     /**
@@ -158,7 +165,7 @@ public abstract class AbstractDatasourceDrivenScheduled
      * @param loggerCatch     the boolean flag of catch do error logger.
      * @param lifecycleName   the specify lifecycle name.
      */
-    private void lockExecuteLifecycle(Runnable r, boolean loggerCatch, String lifecycleName) {
+    private void lockExecuteLifecycle(ThrowableRunnable r, boolean loggerCatch, String lifecycleName) {
         lock.lock();
         try {
             r.run();
@@ -167,7 +174,7 @@ public abstract class AbstractDatasourceDrivenScheduled
             if (loggerCatch) {
                 getLogger().error("Failed to execute <{}> ", lifecycleName, ex);
             }
-            else throw ex;
+            else throw new DataSourceDrivenException(lifecycleName, ex);
         }
         finally {
             lock.unlock();
@@ -329,7 +336,7 @@ public abstract class AbstractDatasourceDrivenScheduled
     /**
      * The internal method of {@link #stop()}.
      */
-    private void stopInternal() {
+    private void stopInternal() throws Exception {
 
         assertStarted();
 
@@ -344,6 +351,9 @@ public abstract class AbstractDatasourceDrivenScheduled
             }
         }
         datasourceTaskElementsOperation.purgeDatasourceTaskElements();
+
+        // Close datasourceTaskElementsOperation.
+        datasourceTaskElementsOperation.close();
 
         // The marking has been stopped.
         started = false;
