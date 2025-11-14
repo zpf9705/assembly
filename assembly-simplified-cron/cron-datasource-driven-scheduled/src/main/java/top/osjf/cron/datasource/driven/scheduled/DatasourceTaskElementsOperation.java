@@ -41,7 +41,7 @@ import java.util.List;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
-public interface DatasourceTaskElementsOperation {
+public interface DatasourceTaskElementsOperation extends AutoCloseable {
 
     /**
      * Cleans up task information data in the datasource to prevent dirty data during registration.
@@ -154,4 +154,13 @@ public interface DatasourceTaskElementsOperation {
      */
     default void notifyMainTaskInfoNotProvidedAndNoDefaultUsed() {
     }
+
+    /**
+     * Close this data resource. It is recommended to manually close it if there is
+     * no automatic shutdown support and the data source cannot automatically release
+     * the occupied resources.
+     * @throws Exception if this data source cannot be closed
+     */
+    @Override
+    default void close() throws Exception {}
 }
