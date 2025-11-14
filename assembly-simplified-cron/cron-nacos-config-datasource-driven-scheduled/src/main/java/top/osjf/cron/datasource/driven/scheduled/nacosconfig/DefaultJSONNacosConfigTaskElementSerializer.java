@@ -20,6 +20,7 @@ package top.osjf.cron.datasource.driven.scheduled.nacosconfig;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import top.osjf.cron.core.lang.NotNull;
 
 import java.io.IOException;
 import java.util.List;
@@ -44,14 +45,14 @@ public class DefaultJSONNacosConfigTaskElementSerializer implements NacosConfigT
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public String serialize(List<NacosConfigTaskElement> elements) throws IOException {
+    public String serialize(@NotNull List<NacosConfigTaskElement> elements) throws IOException {
         List<JSONNacosConfigTaskElement> jElements
                 = elements.stream().map(JSONNacosConfigTaskElement::new).collect(Collectors.toList());
         return objectMapper.writeValueAsString(jElements);
     }
 
     @Override
-    public List<NacosConfigTaskElement> deserialize(String configInfo) throws IOException {
+    public List<NacosConfigTaskElement> deserialize(@NotNull String configInfo) throws IOException {
         return objectMapper.readValue(configInfo, new TypeReference<List<NacosConfigTaskElement>>() { });
     }
 
