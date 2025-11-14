@@ -291,4 +291,19 @@ public interface TaskElement extends Serializable {
         String status = getStatus();
         return getTaskId() == null && getUpdateSign() == 0 && (status == null || Status.isActive(status));
     }
+
+    /**
+     * Purge potential task IDs, update tags, and task status descriptions from the data.
+     * @return if {@code true} has been purge out，{@code false} otherwise.
+     * @since 3.0.2
+     */
+    default boolean purge() {
+        if (!StringUtils.isBlank(getTaskId())) {
+            setTaskId("");
+            setUpdateSign(0);
+            setStatusDescription("");
+            return true;
+        }
+        return false;
+    }
 }
