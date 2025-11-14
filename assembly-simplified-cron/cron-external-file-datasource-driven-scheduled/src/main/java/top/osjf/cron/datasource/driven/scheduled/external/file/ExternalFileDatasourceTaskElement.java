@@ -17,7 +17,6 @@
 
 package top.osjf.cron.datasource.driven.scheduled.external.file;
 
-import top.osjf.cron.core.util.StringUtils;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 
 /**
@@ -85,17 +84,8 @@ public abstract class ExternalFileDatasourceTaskElement implements TaskElement {
      */
     public static final String UPDATE_SIGN_KEY_NAME = "updateSign";
 
-    /**
-     * Purge potential task IDs, update tags, and task status descriptions from the data.
-     * @return if {@code true} has been purge out，{@code false} otherwise.
-     */
+    @Override
     public boolean purge() {
-        if (!StringUtils.isBlank(getTaskId())) {
-            setTaskId("");
-            setUpdateSign(0);
-            setStatusDescription("");
-            return true;
-        }
-        return false;
+        return TaskElement.super.purge();
     }
 }
