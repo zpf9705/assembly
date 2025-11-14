@@ -29,8 +29,6 @@ import top.osjf.filewatch.FileWatchService;
 import top.osjf.filewatch.TriggerKind;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -86,7 +84,7 @@ import java.util.stream.Collectors;
  */
 public abstract
 class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement> implements DatasourceTaskElementsOperation,
-        InitializeAble , Closeable {
+        InitializeAble {
 
     private final ExternalFileTaskElementLoader<T> loader;
 
@@ -124,14 +122,6 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement> impleme
     @Override
     public void initialize() {
         loader.initialize();
-    }
-
-    /**
-     * Destroy for {@link ExternalFileTaskElementLoader}.
-     */
-    @PreDestroy
-    public void destroy() throws IOException {
-        close();
     }
 
     /**
