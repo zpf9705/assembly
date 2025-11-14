@@ -112,7 +112,10 @@ public class DefaultPropertiesNacosConfigTaskElementSerializer implements NacosC
                 if (line.isEmpty() || line.startsWith("#")) continue;
 
                 Matcher matcher = LINE_PATTERN.matcher(line);
-                if (!matcher.matches()) continue;
+                if (!matcher.matches()) {
+                    throw new IOException("Invalid configuration line format: \"" + line + "\". Expected pattern: " +
+                            "elements[<index>].<fieldName>=<value>");
+                }
 
                 int index = Integer.parseInt(matcher.group(1));
                 String fieldName = matcher.group(2);
