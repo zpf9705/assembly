@@ -17,6 +17,8 @@
 
 package top.osjf.cron.datasource.driven.scheduled.nacosconfig;
 
+import top.osjf.cron.core.lang.NotNull;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -41,7 +43,7 @@ public interface NacosConfigTaskElementSerializer extends ConfigFormatProvider {
      * @return the serialized string representation, not {@literal null}.
      * @throws IOException if io error occur when serialized.
      */
-    String serialize(List<NacosConfigTaskElement> elements) throws IOException;
+    String serialize(@NotNull List<NacosConfigTaskElement> elements) throws IOException;
 
     /**
      * Deserializes a string into a list of Nacos configuration task elements.
@@ -50,5 +52,5 @@ public interface NacosConfigTaskElementSerializer extends ConfigFormatProvider {
      * @return the deserialized list of configuration task elements, not {@literal null}.
      * @throws IOException if io error occur when deserialized.
      */
-    List<NacosConfigTaskElement> deserialize(String configInfo) throws IOException;
+    List<NacosConfigTaskElement> deserialize(@NotNull String configInfo) throws IOException;
 }
