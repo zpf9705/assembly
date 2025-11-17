@@ -23,8 +23,6 @@ import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.common.executor.NameThreadFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.util.AssertUtils;
 import top.osjf.cron.datasource.driven.scheduled.DataSourceDrivenException;
@@ -50,8 +48,6 @@ import java.util.stream.Collectors;
  * @since 3.0.2
  */
 public class NacosConfigDatasourceTaskElementsOperation extends ConfigFormatDatasourceTaskElementsOperation {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(NacosConfigDatasourceTaskElementsOperation.class);
 
     /**
      * Single-thread pool. Once the thread pool is blocked, we throw up the old task.
@@ -119,7 +115,7 @@ public class NacosConfigDatasourceTaskElementsOperation extends ConfigFormatData
             this.configService = NacosFactory.createConfigService(this.properties);
         }
         catch (Exception ex) {
-            LOGGER.warn("[NacosConfigDatasourceTaskElementsOperation] Error occurred when initializing " +
+            logger.warn("[NacosConfigDatasourceTaskElementsOperation] Error occurred when initializing " +
                     "Nacos data source", ex);
         }
     }
@@ -192,7 +188,7 @@ public class NacosConfigDatasourceTaskElementsOperation extends ConfigFormatData
                 configService.shutDown();
             }
             catch (Exception ex) {
-                LOGGER.warn("[NacosConfigDatasourceTaskElementsOperation] Error occurred when closing " +
+                logger.warn("[NacosConfigDatasourceTaskElementsOperation] Error occurred when closing " +
                         "Nacos data source", ex);
             }
         }
@@ -207,7 +203,7 @@ public class NacosConfigDatasourceTaskElementsOperation extends ConfigFormatData
             configService.addListener(dataId, groupId, new ConfigRefreshListener());
         }
         catch (NacosException ex) {
-            LOGGER.warn("[NacosConfigDatasourceTaskElementsOperation] Error occurred when add " +
+            logger.warn("[NacosConfigDatasourceTaskElementsOperation] Error occurred when add " +
                     "config listener", ex);
 
             throw new DataSourceDrivenException("Failed to add configuration and refresh listener", ex);
@@ -237,7 +233,7 @@ public class NacosConfigDatasourceTaskElementsOperation extends ConfigFormatData
             configInfo = configService.getConfig(dataId, groupId, DEFAULT_TIMEOUT);
         }
         catch (NacosException ex) {
-            LOGGER.warn("[NacosConfigDatasourceTaskElementsOperation] Error occurred when get " +
+            logger.warn("[NacosConfigDatasourceTaskElementsOperation] Error occurred when get " +
                     "config info ", ex);
 
             throw new DataSourceDrivenException("[NacosConfigDatasourceTaskElementsOperation] Error occurred when get " +
@@ -260,7 +256,7 @@ public class NacosConfigDatasourceTaskElementsOperation extends ConfigFormatData
         }
 
         if (nacosConfigTaskElements.isEmpty()) {
-            LOGGER.warn("There is no {} instance in the update item collection, so the configuration " +
+            logger.warn("There is no {} instance in the update item collection, so the configuration " +
                     "cannot be updated.", ConfigurableTaskElement.class.getName());
             return;
         }
@@ -285,7 +281,7 @@ public class NacosConfigDatasourceTaskElementsOperation extends ConfigFormatData
         }
         catch (NacosException ex) {
 
-            LOGGER.warn("[NacosConfigDatasourceTaskElementsOperation] Error occurred when " +
+            logger.warn("[NacosConfigDatasourceTaskElementsOperation] Error occurred when " +
                     "publish config {}", newConfig, ex);
 
             throw new DataSourceDrivenException("[NacosConfigDatasourceTaskElementsOperation] Error occurred when " +
@@ -314,7 +310,7 @@ public class NacosConfigDatasourceTaskElementsOperation extends ConfigFormatData
 
         @Override
         public void receiveConfigInfo(String configInfo) {
-            LOGGER.info("[NacosDataSource] New property value received for (properties: {}) " +
+            logger.info("[NacosDataSource] New property value received for (properties: {}) " +
                     "(dataId: {}, groupId: {}): {}", properties, dataId, groupId, configInfo);
             elements = deserialize(configInfo);
         }
