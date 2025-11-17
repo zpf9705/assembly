@@ -58,7 +58,7 @@ import java.util.List;
 public abstract class ConfigFormatDatasourceTaskElementsOperation
         implements ConfigFormatProvider, DatasourceTaskElementsOperation, ConfigTaskElementSerializer {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final ConfigFormat configFormat;
 
