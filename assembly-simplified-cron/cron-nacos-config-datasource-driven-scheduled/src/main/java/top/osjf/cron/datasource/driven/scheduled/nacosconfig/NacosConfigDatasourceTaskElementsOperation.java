@@ -32,10 +32,8 @@ import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 import top.osjf.cron.datasource.driven.scheduled.serialization.ConfigFormat;
 import top.osjf.cron.datasource.driven.scheduled.serialization.ConfigFormatDatasourceTaskElementsOperation;
-import top.osjf.cron.datasource.driven.scheduled.serialization.ConfigTaskElementSerializerManager;
 import top.osjf.cron.datasource.driven.scheduled.serialization.ConfigurableTaskElement;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -249,26 +247,6 @@ public class NacosConfigDatasourceTaskElementsOperation extends ConfigFormatData
     }
 
     /**
-     * Deserializes config text into a list of task element objects.
-     *
-     * @param configInfo Configuration content string
-     * @return Parsed list of task elements
-     * @throws DataSourceDrivenException if deserialization fails
-     */
-    private List<ConfigurableTaskElement> deserialize(String configInfo) {
-        try {
-            return ConfigTaskElementSerializerManager.deserialize(getConfigFormat(), configInfo);
-        }
-        catch (IOException ex) {
-
-            LOGGER.error("Failed to deserialize {} using {} format", configInfo, getConfigFormat(), ex);
-
-            throw new DataSourceDrivenException("Failed to deserialize " + configInfo +
-                    " using " + getConfigFormat() + " format", ex);
-        }
-    }
-
-    /**
      * Updates configuration: synchronizes the given task elements to Nacos.
      * @param elements Collection of task elements to update
      */
@@ -301,16 +279,9 @@ public class NacosConfigDatasourceTaskElementsOperation extends ConfigFormatData
         String newConfig = null;
 
         try {
-            newConfig = ConfigTaskElementSerializerManager.serialize(getConfigFormat(), nacosConfigTaskElements);
+            newConfig = serialize(nacosConfigTaskElements);
 
             configService.publishConfig(dataId, groupId, newConfig);
-        }
-        catch (IOException ex) {
-
-            LOGGER.error("Failed to serialize {} using {} format", nacosConfigTaskElements, getConfigFormat(), ex);
-
-            throw new DataSourceDrivenException("Failed to serialize " + nacosConfigTaskElements +
-                    " using " + getConfigFormat() + " format", ex);
         }
         catch (NacosException ex) {
 
