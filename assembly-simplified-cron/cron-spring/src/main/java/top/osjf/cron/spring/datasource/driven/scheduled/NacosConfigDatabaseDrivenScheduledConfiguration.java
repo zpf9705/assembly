@@ -20,8 +20,8 @@ package top.osjf.cron.spring.datasource.driven.scheduled;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import top.osjf.cron.datasource.driven.scheduled.nacosconfig.ConfigFormat;
 import top.osjf.cron.datasource.driven.scheduled.nacosconfig.NacosConfigDatasourceTaskElementsOperation;
+import top.osjf.cron.datasource.driven.scheduled.serialization.ConfigFormat;
 
 /**
  * {@link Configuration Configuration} for {@link NacosConfigDatasourceTaskElementsOperation}.
