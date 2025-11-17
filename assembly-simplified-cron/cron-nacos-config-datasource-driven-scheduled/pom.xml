@@ -42,7 +42,7 @@
 
         <dependency>
             <groupId>top.osjf.cron</groupId>
-            <artifactId>cron-datasource-driven-scheduled</artifactId>
+            <artifactId>cron-datasource-driven-scheduled-serialization</artifactId>
         </dependency>
 
         <dependency>
