@@ -44,6 +44,8 @@ final class DatasourceDrivenConfigurations {
                 JpaDatasourceTaskElementsOperationConfiguration.class.getName());
         mappings.put(DataSource.EXCEL_CONFIG,
                 ExcelDatasourceTaskElementsOperationConfiguration.class.getName());
+        mappings.put(DataSource.NACOS_CONFIG,
+                NaocsConfigDatasourceTaskElementsOperationConfiguration.class.getName());
         MAPPINGS = Collections.unmodifiableMap(mappings);
     }
 
