@@ -74,10 +74,22 @@ public class DefaultYamlNacosConfigTaskElementSerializer implements NacosConfigT
 
     private final ObjectMapper objectMapper;
 
+    /**
+     * Constructs a new {@code DefaultYamlNacosConfigTaskElementSerializer} to init a {@link ObjectMapper}
+     * with any default settings.
+     */
     public DefaultYamlNacosConfigTaskElementSerializer() {
         YAMLFactory yamlFactory = new YAMLFactory();
         yamlFactory.disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER);
         objectMapper = new ObjectMapper(yamlFactory);
+    }
+
+    /**
+     * Constructs a new {@code DefaultYamlNacosConfigTaskElementSerializer} by given {@link ObjectMapper}.
+     * @param objectMapper the given {@link ObjectMapper}.
+     */
+    public DefaultYamlNacosConfigTaskElementSerializer(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
     }
 
     @Override
