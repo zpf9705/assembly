@@ -53,6 +53,15 @@ public enum DataSource {
      * The task information data source relies on the local configuration file of Excel.
      *
      * @see top.osjf.cron.datasource.driven.scheduled.excel.ExcelDatasourceTaskElementsOperation
+     * @since 3.0.1
      */
-    EXCEL_CONFIG
+    EXCEL_CONFIG,
+
+    /**
+     * The task information data source depends on the remote configuration of Nacos config.
+     *
+     * @see top.osjf.cron.datasource.driven.scheduled.nacosconfig.NacosConfigDatasourceTaskElementsOperation
+     * @since 3.0.2
+     */
+    NACOS_CONFIG
 }
