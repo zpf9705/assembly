@@ -40,7 +40,23 @@ import java.util.List;
  */
 public class DefaultJSONNacosConfigTaskElementSerializer implements NacosConfigTaskElementSerializer {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
+
+    /**
+     * Constructs a new {@code DefaultJSONNacosConfigTaskElementSerializer} to init a {@link ObjectMapper}
+     * with any default settings.
+     */
+    public DefaultJSONNacosConfigTaskElementSerializer() {
+        this.objectMapper = new ObjectMapper();
+    }
+
+    /**
+     * Constructs a new {@code DefaultJSONNacosConfigTaskElementSerializer} by given {@link ObjectMapper}.
+     * @param objectMapper the given {@link ObjectMapper}.
+     */
+    public DefaultJSONNacosConfigTaskElementSerializer(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
     @Override
     public String serialize(@NotNull List<NacosConfigTaskElement> elements) throws IOException {
