@@ -88,6 +88,12 @@
         </dependency>
 
         <dependency>
+            <groupId>top.osjf.cron</groupId>
+            <artifactId>cron-nacos-config-datasource-driven-scheduled</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
             <optional>true</optional>

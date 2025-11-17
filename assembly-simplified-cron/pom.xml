@@ -119,6 +119,12 @@
 
             <dependency>
                 <groupId>top.osjf.cron</groupId>
+                <artifactId>cron-nacos-config-datasource-driven-scheduled</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>top.osjf.cron</groupId>
                 <artifactId>cron-spring</artifactId>
                 <version>${project.version}</version>
             </dependency>
