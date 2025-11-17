@@ -73,8 +73,8 @@ public class NacosConfigDatasourceTaskElementsOperation implements DatasourceTas
     private ConfigService configService;
 
     /**
-     * Constructs an read-only DataSource with Nacos backend.
-     *
+     * Constructs a {@code NacosConfigDatasourceTaskElementsOperation} to init {@link ConfigService} with
+     * any nacos setting.
      * @param serverAddr   server address of Nacos, cannot be empty
      * @param groupId      group ID, cannot be empty
      * @param dataId       data ID, cannot be empty
@@ -86,8 +86,10 @@ public class NacosConfigDatasourceTaskElementsOperation implements DatasourceTas
     }
 
     /**
-     *
-     * @param properties properties for construct {@link ConfigService} using {@link NacosFactory#createConfigService(Properties)}
+     * Constructs a {@code NacosConfigDatasourceTaskElementsOperation} to init {@link ConfigService} with
+     * any nacos setting.
+     * @param properties properties for construct {@link ConfigService} using
+     *                   {@link NacosFactory#createConfigService(Properties)}
      * @param groupId    group ID, cannot be empty
      * @param dataId     data ID, cannot be empty
      * @param configFormat config format, cannot be null.
