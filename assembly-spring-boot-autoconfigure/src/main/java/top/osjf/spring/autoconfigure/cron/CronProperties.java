@@ -427,6 +427,11 @@ public class CronProperties {
          */
         private External external = new External();
 
+        /**
+         * @see External
+         */
+        private NacosConfig nacosConfig = new NacosConfig();
+
         public boolean isEnable() {
             return enable;
         }
@@ -483,6 +488,14 @@ public class CronProperties {
             this.external = external;
         }
 
+        public NacosConfig getNacosConfig() {
+            return nacosConfig;
+        }
+
+        public void setNacosConfig(NacosConfig nacosConfig) {
+            this.nacosConfig = nacosConfig;
+        }
+
         /**
          * Public configuration items for external configuration driven data sources.
          * <p>
@@ -519,6 +532,55 @@ public class CronProperties {
 
             public void setConfigFileName(String configFileName) {
                 this.configFileName = configFileName;
+            }
+        }
+
+        /**
+         * Nacos config configuration.
+         * @since 3.0.2
+         */
+        public static class NacosConfig {
+
+            /**
+             * The server address of Nacos, used to connect to the configuration center.
+             * Format is host:port, for example: localhost:8848.
+             */
+            private String serverAddr = "localhost:8848";
+
+            /**
+             * Configuration group ID, used for logically grouping and managing configurations.
+             * Configurations of the same business module are usually placed under the same groupId.
+             */
+            private String groupId = "DEFAULT_GROUP";
+
+            /**
+             * The data ID of the configuration item, serving as a unique identifier for the configuration.
+             * In Nacos, dataId usually corresponds to the specific configuration file name.
+             */
+            private String dataId;
+
+            public String getServerAddr() {
+                return serverAddr;
+            }
+
+            public void setServerAddr(String serverAddr) {
+                this.serverAddr = serverAddr;
+            }
+
+            public String getGroupId() {
+                return groupId;
+            }
+
+            public void setGroupId(String groupId) {
+                this.groupId = groupId;
+            }
+
+            public String getDataId() {
+                return dataId;
+            }
+
+            public void setDataId(String dataId) {
+                this.dataId = dataId;
             }
         }
     }
