@@ -81,6 +81,14 @@ public class DefaultXmlNacosConfigTaskElementSerializer implements NacosConfigTa
         xstream.alias(NODE, NacosConfigTaskElement.class);
     }
 
+    /**
+     * Constructs a new {@code DefaultXmlNacosConfigTaskElementSerializer} by given {@link XStream}.
+     * @param xstream the given {@link XStream}.
+     */
+    public DefaultXmlNacosConfigTaskElementSerializer(XStream xstream) {
+        this.xstream = xstream;
+    }
+
     @Override
     public String serialize(@NotNull List<NacosConfigTaskElement> elements) {
         return xstream.toXML(elements);
