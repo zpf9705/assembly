@@ -27,11 +27,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.util.AssertUtils;
-import top.osjf.cron.core.util.StringUtils;
 import top.osjf.cron.datasource.driven.scheduled.DataSourceDrivenException;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 import top.osjf.cron.datasource.driven.scheduled.serialization.ConfigFormat;
+import top.osjf.cron.datasource.driven.scheduled.serialization.ConfigFormatDatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.serialization.ConfigTaskElementSerializerManager;
 import top.osjf.cron.datasource.driven.scheduled.serialization.ConfigurableTaskElement;
 
@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
  */
-public class NacosConfigDatasourceTaskElementsOperation implements DatasourceTaskElementsOperation {
+public class NacosConfigDatasourceTaskElementsOperation extends ConfigFormatDatasourceTaskElementsOperation {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NacosConfigDatasourceTaskElementsOperation.class);
 
@@ -69,7 +69,6 @@ public class NacosConfigDatasourceTaskElementsOperation implements DatasourceTas
     private final String groupId;
     private final String dataId;
     private final Properties properties;
-    private final ConfigFormat configFormat;
 
     /**
      * Note: The Nacos config might be null if its initialization failed.
@@ -100,17 +99,14 @@ public class NacosConfigDatasourceTaskElementsOperation implements DatasourceTas
      */
     public NacosConfigDatasourceTaskElementsOperation(final Properties properties, final String groupId,
                                                       final String dataId, final ConfigFormat configFormat) {
-        if (StringUtils.isBlank(groupId) || StringUtils.isBlank(dataId)) {
-            throw new IllegalArgumentException(String.format("Bad argument: groupId=[%s], dataId=[%s]",
-                    groupId, dataId));
-        }
+        super(configFormat);
+        AssertUtils.assertNotBlank(groupId, "Bad argument: groupId=[%s]" + groupId);
+        AssertUtils.assertNotBlank(dataId, "Bad argument: groupId=[%s]" + dataId);
         AssertUtils.assertNotNull(properties,
                 "Nacos properties must not be null, you could put some keys from PropertyKeyConst");
-        AssertUtils.assertNotNull(configFormat, "Nacos configFormat must not be null");
         this.groupId = groupId;
         this.dataId = dataId;
         this.properties = properties;
-        this.configFormat = configFormat;
         initNacosListener();
     }
 
@@ -261,14 +257,14 @@ public class NacosConfigDatasourceTaskElementsOperation implements DatasourceTas
      */
     private List<ConfigurableTaskElement> deserialize(String configInfo) {
         try {
-            return ConfigTaskElementSerializerManager.deserialize(configFormat, configInfo);
+            return ConfigTaskElementSerializerManager.deserialize(getConfigFormat(), configInfo);
         }
         catch (IOException ex) {
 
-            LOGGER.error("Failed to deserialize {} using {} format", configInfo, configFormat, ex);
+            LOGGER.error("Failed to deserialize {} using {} format", configInfo, getConfigFormat(), ex);
 
             throw new DataSourceDrivenException("Failed to deserialize " + configInfo +
-                    " using " + configFormat + " format", ex);
+                    " using " + getConfigFormat() + " format", ex);
         }
     }
 
@@ -305,16 +301,16 @@ public class NacosConfigDatasourceTaskElementsOperation implements DatasourceTas
         String newConfig = null;
 
         try {
-            newConfig = ConfigTaskElementSerializerManager.serialize(configFormat, nacosConfigTaskElements);
+            newConfig = ConfigTaskElementSerializerManager.serialize(getConfigFormat(), nacosConfigTaskElements);
 
             configService.publishConfig(dataId, groupId, newConfig);
         }
         catch (IOException ex) {
 
-            LOGGER.error("Failed to serialize {} using {} format", nacosConfigTaskElements, configFormat, ex);
+            LOGGER.error("Failed to serialize {} using {} format", nacosConfigTaskElements, getConfigFormat(), ex);
 
             throw new DataSourceDrivenException("Failed to serialize " + nacosConfigTaskElements +
-                    " using " + configFormat + " format", ex);
+                    " using " + getConfigFormat() + " format", ex);
         }
         catch (NacosException ex) {
 
