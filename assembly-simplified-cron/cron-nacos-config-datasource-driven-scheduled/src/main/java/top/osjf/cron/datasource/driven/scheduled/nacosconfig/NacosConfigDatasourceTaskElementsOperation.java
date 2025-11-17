@@ -26,10 +26,14 @@ import com.alibaba.nacos.common.executor.NameThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.osjf.cron.core.lang.Nullable;
+import top.osjf.cron.core.util.AssertUtils;
 import top.osjf.cron.core.util.StringUtils;
 import top.osjf.cron.datasource.driven.scheduled.DataSourceDrivenException;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
+import top.osjf.cron.datasource.driven.scheduled.serialization.ConfigFormat;
+import top.osjf.cron.datasource.driven.scheduled.serialization.ConfigTaskElementSerializerManager;
+import top.osjf.cron.datasource.driven.scheduled.serialization.ConfigurableTaskElement;
 
 import java.io.IOException;
 import java.util.*;
@@ -100,9 +104,9 @@ public class NacosConfigDatasourceTaskElementsOperation implements DatasourceTas
             throw new IllegalArgumentException(String.format("Bad argument: groupId=[%s], dataId=[%s]",
                     groupId, dataId));
         }
-        Objects.requireNonNull(properties,
+        AssertUtils.assertNotNull(properties,
                 "Nacos properties must not be null, you could put some keys from PropertyKeyConst");
-        Objects.requireNonNull(configFormat, "Nacos configFormat must not be null");
+        AssertUtils.assertNotNull(configFormat, "Nacos configFormat must not be null");
         this.groupId = groupId;
         this.dataId = dataId;
         this.properties = properties;
@@ -129,9 +133,9 @@ public class NacosConfigDatasourceTaskElementsOperation implements DatasourceTas
 
     @Override
     public void purgeDatasourceTaskElements() {
-        List<NacosConfigTaskElement> elements = getElements();
+        List<ConfigurableTaskElement> elements = getElements();
 
-        for (NacosConfigTaskElement element : elements) {
+        for (ConfigurableTaskElement element : elements) {
             element.purge();
         }
         publishConfig(elements);
@@ -151,7 +155,7 @@ public class NacosConfigDatasourceTaskElementsOperation implements DatasourceTas
     @Override
     public List<TaskElement> getRuntimeNeedCheckDatasourceTaskElements() {
 
-        List<NacosConfigTaskElement> elements = getElements();
+        List<ConfigurableTaskElement> elements = getElements();
 
         if (elements.isEmpty()) {
             return Collections.emptyList();
@@ -174,7 +178,7 @@ public class NacosConfigDatasourceTaskElementsOperation implements DatasourceTas
     @Nullable
     @Override
     public TaskElement getElementById(String id) {
-        List<NacosConfigTaskElement> elements = getElements();
+        List<ConfigurableTaskElement> elements = getElements();
         return elements.isEmpty() ? null : elements.stream()
                 .filter(e-> Objects.equals(e.getTaskId(), id)).findFirst().orElse(null);
     }
@@ -222,7 +226,7 @@ public class NacosConfigDatasourceTaskElementsOperation implements DatasourceTas
      *
      * @return Current valid list of task elements
      */
-    private List<NacosConfigTaskElement> getElements() {
+    private List<ConfigurableTaskElement> getElements() {
         if (configListener != null) {
             return configListener.elements;
         }
@@ -233,7 +237,7 @@ public class NacosConfigDatasourceTaskElementsOperation implements DatasourceTas
      * Fetches the latest config string from Nacos and deserializes it into a list of task elements.
      * @return Deserialized list of task elements
      */
-    private List<NacosConfigTaskElement> getRemoteElements() {
+    private List<ConfigurableTaskElement> getRemoteElements() {
         String configInfo;
         try {
             configInfo = configService.getConfig(dataId, groupId, DEFAULT_TIMEOUT);
@@ -255,9 +259,9 @@ public class NacosConfigDatasourceTaskElementsOperation implements DatasourceTas
      * @return Parsed list of task elements
      * @throws DataSourceDrivenException if deserialization fails
      */
-    private List<NacosConfigTaskElement> deserialize(String configInfo) {
+    private List<ConfigurableTaskElement> deserialize(String configInfo) {
         try {
-            return NacosConfigTaskElementSerializerManager.deserialize(configFormat, configInfo);
+            return ConfigTaskElementSerializerManager.deserialize(configFormat, configInfo);
         }
         catch (IOException ex) {
 
@@ -273,17 +277,17 @@ public class NacosConfigDatasourceTaskElementsOperation implements DatasourceTas
      * @param elements Collection of task elements to update
      */
     private void updateConfig(List<TaskElement> elements) {
-        List<NacosConfigTaskElement> nacosConfigTaskElements = new ArrayList<>();
+        List<ConfigurableTaskElement> nacosConfigTaskElements = new ArrayList<>();
 
         for (TaskElement taskElement : elements) {
-            if (taskElement instanceof NacosConfigTaskElement) {
-                nacosConfigTaskElements.add((NacosConfigTaskElement) taskElement);
+            if (taskElement instanceof ConfigurableTaskElement) {
+                nacosConfigTaskElements.add((ConfigurableTaskElement) taskElement);
             }
         }
 
         if (nacosConfigTaskElements.isEmpty()) {
             LOGGER.warn("There is no {} instance in the update item collection, so the configuration " +
-                    "cannot be updated.", NacosConfigTaskElement.class.getName());
+                    "cannot be updated.", ConfigurableTaskElement.class.getName());
             return;
         }
 
@@ -296,12 +300,12 @@ public class NacosConfigDatasourceTaskElementsOperation implements DatasourceTas
      * @param nacosConfigTaskElements List of task elements to publish
      * @throws DataSourceDrivenException if serialization or publishing fails
      */
-    private void publishConfig(List<NacosConfigTaskElement> nacosConfigTaskElements) {
+    private void publishConfig(List<ConfigurableTaskElement> nacosConfigTaskElements) {
 
         String newConfig = null;
 
         try {
-            newConfig = NacosConfigTaskElementSerializerManager.serialize(configFormat, nacosConfigTaskElements);
+            newConfig = ConfigTaskElementSerializerManager.serialize(configFormat, nacosConfigTaskElements);
 
             configService.publishConfig(dataId, groupId, newConfig);
         }
@@ -330,7 +334,7 @@ public class NacosConfigDatasourceTaskElementsOperation implements DatasourceTas
      */
     private class ConfigRefreshListener implements Listener {
 
-       volatile List<NacosConfigTaskElement> elements;
+       volatile List<ConfigurableTaskElement> elements;
 
         public ConfigRefreshListener() {
             elements = getRemoteElements();
