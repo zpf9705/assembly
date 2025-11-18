@@ -55,8 +55,9 @@ import java.util.List;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
  */
-public abstract class ConfigFormatDatasourceTaskElementsOperation
-        implements ConfigFormatProvider, DatasourceTaskElementsOperation, ConfigTaskElementSerializer {
+public abstract
+class ConfigFormatDatasourceTaskElementsOperation extends NullableResolvedConfigTaskElementSerializer
+        implements ConfigFormatProvider, DatasourceTaskElementsOperation {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -90,7 +91,7 @@ public abstract class ConfigFormatDatasourceTaskElementsOperation
      * @return the serialized string in the configured format
      * @throws DataSourceDrivenException if serialization fails due to I/O error
      */
-    public String serialize(@NotNull List<ConfigurableTaskElement> elements) {
+    public String serializeInternal(@NotNull List<ConfigurableTaskElement> elements) {
         try {
             return ConfigTaskElementSerializerManager.serialize(configFormat, elements);
         }
@@ -121,7 +122,7 @@ public abstract class ConfigFormatDatasourceTaskElementsOperation
      * @return the list of deserialized task elements
      * @throws DataSourceDrivenException if deserialization fails due to I/O error
      */
-    public List<ConfigurableTaskElement> deserialize(@NotNull String configInfo) {
+    public List<ConfigurableTaskElement> deserializeInternal(@NotNull String configInfo) {
         try {
             return ConfigTaskElementSerializerManager.deserialize(getConfigFormat(), configInfo);
         }
