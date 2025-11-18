@@ -55,7 +55,7 @@ public abstract class RemoteListener {
      * with the operation's state and configuration handling.
      * </p>
      */
-    private final RemoteDatasourceTaskElementsOperation remoteOperation;
+    protected final RemoteDatasourceTaskElementsOperation remoteOperation;
 
     /**
      * Constructs a new remote listener with the given operation instance.
