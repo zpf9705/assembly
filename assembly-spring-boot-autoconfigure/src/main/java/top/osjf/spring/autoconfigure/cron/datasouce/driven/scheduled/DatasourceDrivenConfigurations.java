@@ -46,6 +46,8 @@ final class DatasourceDrivenConfigurations {
                 ExcelDatasourceTaskElementsOperationConfiguration.class.getName());
         mappings.put(DataSource.NACOS_CONFIG,
                 NaocsConfigDatasourceTaskElementsOperationConfiguration.class.getName());
+        mappings.put(DataSource.REDIS,
+                RedisDatasourceTaskElementsOperationConfiguration.class.getName());
         MAPPINGS = Collections.unmodifiableMap(mappings);
     }
 
