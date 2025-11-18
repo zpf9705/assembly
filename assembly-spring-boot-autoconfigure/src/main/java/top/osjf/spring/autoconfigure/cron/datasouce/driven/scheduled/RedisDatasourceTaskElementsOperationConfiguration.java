@@ -23,19 +23,19 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
-import top.osjf.cron.datasource.driven.scheduled.nacosconfig.NacosConfigDatasourceTaskElementsOperation;
-import top.osjf.cron.spring.datasource.driven.scheduled.NacosConfigDatabaseDrivenScheduledConfiguration;
+import top.osjf.cron.datasource.driven.scheduled.redis.RedisDatasourceTaskElementsOperation;
+import top.osjf.cron.spring.datasource.driven.scheduled.RedisDatabaseDrivenScheduledConfiguration;
 
 /**
- * {@link Configuration Configuration} for {@link NacosConfigDatasourceTaskElementsOperation}.
+ * {@link Configuration Configuration} for {@link RedisDatasourceTaskElementsOperation}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
  */
 @Configuration(proxyBeanMethods = false)
-@Import(NacosConfigDatabaseDrivenScheduledConfiguration.class)
-@ConditionalOnClass(NacosConfigDatasourceTaskElementsOperation.class)
+@Import(RedisDatabaseDrivenScheduledConfiguration.class)
+@ConditionalOnClass(RedisDatasourceTaskElementsOperation.class)
 @ConditionalOnMissingBean(DatasourceTaskElementsOperation.class)
 @Conditional(DatasourceDrivenCondition.class)
-class NaocsConfigDatasourceTaskElementsOperationConfiguration {
+class RedisDatasourceTaskElementsOperationConfiguration {
 }
