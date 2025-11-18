@@ -18,10 +18,13 @@ package top.osjf.spring.autoconfigure.cron;
 
 import com.cronutils.model.CronType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.core.repository.RunTimeoutRegistrarRepository;
 import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
 import top.osjf.cron.datasource.driven.scheduled.Constants;
+import top.osjf.cron.datasource.driven.scheduled.redis.config.RedisConnectionConfig;
+import top.osjf.cron.datasource.driven.scheduled.serialization.ConfigFormat;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
 import top.osjf.cron.spring.datasource.driven.scheduled.DataSource;
 import top.osjf.cron.spring.datasource.driven.scheduled.SpringDatasourceDrivenScheduled;
@@ -432,6 +435,11 @@ public class CronProperties {
          */
         private NacosConfig nacosConfig = new NacosConfig();
 
+        /**
+         * @see External
+         */
+        private Redis redis = new Redis();
+
         public boolean isEnable() {
             return enable;
         }
@@ -494,6 +502,14 @@ public class CronProperties {
 
         public void setNacosConfig(NacosConfig nacosConfig) {
             this.nacosConfig = nacosConfig;
+        }
+
+        public Redis getRedis() {
+            return redis;
+        }
+
+        public void setRedis(Redis redis) {
+            this.redis = redis;
         }
 
         /**
@@ -559,6 +575,8 @@ public class CronProperties {
              */
             private String dataId;
 
+            private ConfigFormat configFormat;
+
             public String getServerAddr() {
                 return serverAddr;
             }
@@ -581,6 +599,76 @@ public class CronProperties {
 
             public void setDataId(String dataId) {
                 this.dataId = dataId;
+            }
+
+            public ConfigFormat getConfigFormat() {
+                return configFormat;
+            }
+
+            public void setConfigFormat(ConfigFormat configFormat) {
+                this.configFormat = configFormat;
+            }
+        }
+
+        /**
+         * Redis config configuration.
+         * @since 3.0.2
+         */
+        public static class Redis {
+
+            /**
+             * The Redis connection configuration containing host, port, password, timeout, SSL settings,
+             * and deployment mode (standalone, sentinel, or cluster). This determines how the client
+             * connects to the Redis server.
+             */
+            @NestedConfigurationProperty
+            private RedisConnectionConfig config = new RedisConnectionConfig();
+
+            /**
+             * The Redis key used to store rule or configuration data. Used for reading and writing
+             * remote configuration content. All instances should share the same key to ensure consistency.
+             */
+            private String ruleKey;
+
+            /**
+             * The Redis Pub/Sub channel name used to publish and subscribe to configuration change events.
+             * When a configuration update is published, a message is sent to this channel, triggering
+             * real-time reloads on other nodes.
+             */
+            private String channel;
+
+            private ConfigFormat configFormat;
+
+            public RedisConnectionConfig getConfig() {
+                return config;
+            }
+
+            public void setConfig(RedisConnectionConfig config) {
+                this.config = config;
+            }
+
+            public String getRuleKey() {
+                return ruleKey;
+            }
+
+            public void setRuleKey(String ruleKey) {
+                this.ruleKey = ruleKey;
+            }
+
+            public String getChannel() {
+                return channel;
+            }
+
+            public void setChannel(String channel) {
+                this.channel = channel;
+            }
+
+            public ConfigFormat getConfigFormat() {
+                return configFormat;
+            }
+
+            public void setConfigFormat(ConfigFormat configFormat) {
+                this.configFormat = configFormat;
             }
         }
     }
