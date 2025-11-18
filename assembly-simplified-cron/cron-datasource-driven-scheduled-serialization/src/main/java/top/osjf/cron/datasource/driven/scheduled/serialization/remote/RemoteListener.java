@@ -46,7 +46,7 @@ public abstract class RemoteListener {
     /**
      * Holds the current list of configurable task elements.
      */
-    volatile List<ConfigurableTaskElement> elements;
+    protected volatile List<ConfigurableTaskElement> elements;
 
     /**
      * Reference to the associated remote operation that handles deserialization and shared config format.
