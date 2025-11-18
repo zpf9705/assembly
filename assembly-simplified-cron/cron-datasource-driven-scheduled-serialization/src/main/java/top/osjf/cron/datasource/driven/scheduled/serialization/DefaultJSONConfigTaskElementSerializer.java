@@ -41,7 +41,7 @@ import java.util.List;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
  */
-public class DefaultJSONConfigTaskElementSerializer implements ConfigTaskElementSerializer {
+public class DefaultJSONConfigTaskElementSerializer extends NullableResolvedConfigTaskElementSerializer {
 
     private final ObjectMapper objectMapper;
 
@@ -67,12 +67,12 @@ public class DefaultJSONConfigTaskElementSerializer implements ConfigTaskElement
     }
 
     @Override
-    public String serialize(@NotNull List<ConfigurableTaskElement> elements) throws IOException {
+    public String serializeInternal(@NotNull List<ConfigurableTaskElement> elements) throws IOException {
         return objectMapper.writeValueAsString(elements);
     }
 
     @Override
-    public List<ConfigurableTaskElement> deserialize(@NotNull String configInfo) throws IOException {
+    public List<ConfigurableTaskElement> deserializeInternal(@NotNull String configInfo) throws IOException {
         return objectMapper.readValue(configInfo, new TypeReference<List<ConfigurableTaskElement>>() { });
     }
 
