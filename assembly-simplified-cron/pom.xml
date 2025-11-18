@@ -46,7 +46,9 @@
         <module>cron-spring-jpa-datasource-driven-scheduled</module>
         <module>cron-excel-config-datasource-driven-scheduled</module>
         <module>cron-external-file-datasource-driven-scheduled</module>
+        <module>cron-datasource-driven-scheduled-serialization</module>
         <module>cron-nacos-config-datasource-driven-scheduled</module>
+        <module>cron-redis-datasource-driven-scheduled</module>
         <module>cron-spring</module>
         <module>cron-spring-hutool</module>
         <module>cron-spring-cron4j</module>
@@ -114,6 +116,12 @@
             <dependency>
                 <groupId>top.osjf.cron</groupId>
                 <artifactId>cron-external-file-datasource-driven-scheduled</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>top.osjf.cron</groupId>
+                <artifactId>cron-datasource-driven-scheduled-serialization</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
