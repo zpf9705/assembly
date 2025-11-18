@@ -38,7 +38,7 @@ import java.util.List;
 public abstract class NullableResolvedConfigTaskElementSerializer implements ConfigTaskElementSerializer {
 
     @Override
-    public String serialize(List<ConfigurableTaskElement> elements) throws IOException {
+    public final String serialize(List<ConfigurableTaskElement> elements) throws IOException {
         if (CollectionUtils.isEmpty(elements)) {
             return "";
         }
@@ -46,7 +46,7 @@ public abstract class NullableResolvedConfigTaskElementSerializer implements Con
     }
 
     @Override
-    public List<ConfigurableTaskElement> deserialize(String configInfo) throws IOException {
+    public final List<ConfigurableTaskElement> deserialize(String configInfo) throws IOException {
         if (StringUtils.isBlank(configInfo)) {
             return Collections.emptyList();
         }
