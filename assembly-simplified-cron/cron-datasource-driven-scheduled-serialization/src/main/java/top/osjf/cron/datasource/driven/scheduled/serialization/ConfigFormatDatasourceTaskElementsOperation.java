@@ -19,7 +19,6 @@ package top.osjf.cron.datasource.driven.scheduled.serialization;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.util.AssertUtils;
 import top.osjf.cron.datasource.driven.scheduled.DataSourceDrivenException;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
@@ -55,9 +54,8 @@ import java.util.List;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
  */
-public abstract
-class ConfigFormatDatasourceTaskElementsOperation extends NullableResolvedConfigTaskElementSerializer
-        implements ConfigFormatProvider, DatasourceTaskElementsOperation {
+public abstract class ConfigFormatDatasourceTaskElementsOperation
+        implements ConfigFormatProvider, DatasourceTaskElementsOperation, ConfigTaskElementSerializer {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -91,7 +89,7 @@ class ConfigFormatDatasourceTaskElementsOperation extends NullableResolvedConfig
      * @return the serialized string in the configured format
      * @throws DataSourceDrivenException if serialization fails due to I/O error
      */
-    public String serializeInternal(@NotNull List<ConfigurableTaskElement> elements) {
+    public String serialize(List<ConfigurableTaskElement> elements) {
         try {
             return ConfigTaskElementSerializerManager.serialize(configFormat, elements);
         }
@@ -122,7 +120,7 @@ class ConfigFormatDatasourceTaskElementsOperation extends NullableResolvedConfig
      * @return the list of deserialized task elements
      * @throws DataSourceDrivenException if deserialization fails due to I/O error
      */
-    public List<ConfigurableTaskElement> deserializeInternal(@NotNull String configInfo) {
+    public List<ConfigurableTaskElement> deserialize(String configInfo) {
         try {
             return ConfigTaskElementSerializerManager.deserialize(getConfigFormat(), configInfo);
         }
