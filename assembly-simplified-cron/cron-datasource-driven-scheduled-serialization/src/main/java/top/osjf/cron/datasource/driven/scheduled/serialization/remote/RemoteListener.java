@@ -17,6 +17,8 @@
 
 package top.osjf.cron.datasource.driven.scheduled.serialization.remote;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import top.osjf.cron.datasource.driven.scheduled.serialization.ConfigurableTaskElement;
 
 import java.util.List;
@@ -38,6 +40,8 @@ import java.util.List;
  * @since 3.0.2
  */
 public abstract class RemoteListener {
+
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * Holds the current list of configurable task elements.
