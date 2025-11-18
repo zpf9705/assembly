@@ -59,7 +59,7 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
  */
-public class DefaultPropertiesConfigTaskElementSerializer implements ConfigTaskElementSerializer {
+public class DefaultPropertiesConfigTaskElementSerializer extends NullableResolvedConfigTaskElementSerializer {
 
     /** Prefix used to identify each element in the configuration. */
     private static final String PREFIX = "elements";
@@ -81,7 +81,7 @@ public class DefaultPropertiesConfigTaskElementSerializer implements ConfigTaskE
     private static final Pattern LINE_PATTERN = Pattern.compile("^" + PREFIX + "\\[(\\d+)\\]\\.(\\w+)=(.*)$");
 
     @Override
-    public String serialize(@NotNull List<ConfigurableTaskElement> elements) throws IOException {
+    public String serializeInternal(@NotNull List<ConfigurableTaskElement> elements) throws IOException {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < elements.size(); i++) {
             ConfigurableTaskElement element = elements.get(i);
@@ -101,7 +101,7 @@ public class DefaultPropertiesConfigTaskElementSerializer implements ConfigTaskE
     }
 
     @Override
-    public List<ConfigurableTaskElement> deserialize(@NotNull String configInfo) throws IOException {
+    public List<ConfigurableTaskElement> deserializeInternal(@NotNull String configInfo) throws IOException {
 
         List<ConfigurableTaskElement> elements = new ArrayList<>();
 
