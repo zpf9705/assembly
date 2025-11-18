@@ -17,8 +17,6 @@
 
 package top.osjf.cron.datasource.driven.scheduled.serialization;
 
-import top.osjf.cron.core.lang.NotNull;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -47,7 +45,7 @@ public interface ConfigTaskElementSerializer extends ConfigFormatProvider {
      * @throws IOException if an I/O error occurs during serialization
      *
      */
-    String serialize(@NotNull List<ConfigurableTaskElement> elements) throws IOException;
+    String serialize(List<ConfigurableTaskElement> elements) throws IOException;
 
     /**
      * Deserializes a string into a list of configurable task elements.
@@ -61,5 +59,5 @@ public interface ConfigTaskElementSerializer extends ConfigFormatProvider {
      * @throws IOException if an I/O error occurs during deserialization.
      *
      */
-    List<ConfigurableTaskElement> deserialize(@NotNull String configInfo) throws IOException;
+    List<ConfigurableTaskElement> deserialize(String configInfo) throws IOException;
 }
