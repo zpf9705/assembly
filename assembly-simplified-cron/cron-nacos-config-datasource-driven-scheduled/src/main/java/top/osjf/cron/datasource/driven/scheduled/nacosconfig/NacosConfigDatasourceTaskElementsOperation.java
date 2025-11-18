@@ -20,14 +20,19 @@ package top.osjf.cron.datasource.driven.scheduled.nacosconfig;
 import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.PropertyKeyConst;
 import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.common.executor.NameThreadFactory;
 import top.osjf.cron.core.util.AssertUtils;
 import top.osjf.cron.datasource.driven.scheduled.DataSourceDrivenException;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.serialization.ConfigFormat;
 import top.osjf.cron.datasource.driven.scheduled.serialization.remote.RemoteDatasourceTaskElementsOperation;
+import top.osjf.cron.datasource.driven.scheduled.serialization.remote.RemoteListener;
 
+import java.io.Closeable;
 import java.util.Properties;
+import java.util.concurrent.*;
 
 /**
  * A data source operation implementation based on the Nacos configuration center.
@@ -146,5 +151,64 @@ public class NacosConfigDatasourceTaskElementsOperation extends RemoteDatasource
     @Override
     protected void publishConfig(String configInfo) throws Throwable {
         configService.publishConfig(dataId, groupId, configInfo);
+    }
+
+    /**
+     * Listener for Nacos configuration changes, used to receive remote config updates and trigger hot-reload of
+     * task elements.
+     * <p>
+     * Implements Nacos's {@link Listener} interface and extends {@link RemoteListener},
+     * asynchronously processes received configuration strings via a dedicated thread pool,
+     * invoking the parent's {@link RemoteListener#refresh(String)} method to update the in-memory list of task
+     * elements, enabling dynamic configuration reload without restarting the application.
+     * </p>
+     * <p>
+     * Uses a single-threaded executor with a bounded queue (size=1) and {@code DiscardOldestPolicy} to ensure:
+     * <ul>
+     *   <li>Configuration events are processed sequentially, avoiding race conditions.</li>
+     *   <li>If the system is overwhelmed, older pending updates are discarded, keeping only the latest config —
+     *   preventing backlog and ensuring freshness.</li>
+     * </ul>
+     * </p>
+     * <p>
+     * Implements {@link Closeable} so that underlying resources (thread pool) can be properly released when no
+     * longer needed.
+     * </p>
+     *
+     * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
+     * @since 3.0.2
+     */
+    private static class ConfigRefreshListener extends RemoteListener implements Listener, Closeable {
+
+        /**
+         * Single-thread pool. Once the thread pool is blocked, we throw up the old task.
+         */
+        private final ExecutorService pool = new ThreadPoolExecutor(1, 1, 0,
+                TimeUnit.MILLISECONDS,
+                new ArrayBlockingQueue<>(1), new NameThreadFactory("cron-nacos-datasource-update"),
+                new ThreadPoolExecutor.DiscardOldestPolicy());
+
+        public ConfigRefreshListener(NacosConfigDatasourceTaskElementsOperation operation) {
+            super(operation);
+        }
+
+        @Override
+        public Executor getExecutor() {
+            return pool;
+        }
+
+        @Override
+        public void receiveConfigInfo(String configInfo) {
+            NacosConfigDatasourceTaskElementsOperation nacosRemoteOperation
+                    = (NacosConfigDatasourceTaskElementsOperation) remoteOperation;
+            logger.info("[NacosDataSource] New property value received for (properties: {}) (dataId: {}, groupId: {}): {}",
+                    nacosRemoteOperation.properties , nacosRemoteOperation.dataId, nacosRemoteOperation.groupId, configInfo);
+            refresh(configInfo);
+        }
+
+        @Override
+        public void close() {
+            pool.shutdownNow();
+        }
     }
 }
