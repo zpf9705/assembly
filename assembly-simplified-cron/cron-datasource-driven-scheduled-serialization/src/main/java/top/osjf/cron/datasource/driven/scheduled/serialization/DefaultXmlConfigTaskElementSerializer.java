@@ -52,7 +52,7 @@ import java.util.List;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
  */
-public class DefaultXmlConfigTaskElementSerializer implements ConfigTaskElementSerializer {
+public class DefaultXmlConfigTaskElementSerializer extends NullableResolvedConfigTaskElementSerializer {
 
     /**
      * Root element tag name in the generated or parsed XML document.
@@ -90,13 +90,13 @@ public class DefaultXmlConfigTaskElementSerializer implements ConfigTaskElementS
     }
 
     @Override
-    public String serialize(@NotNull List<ConfigurableTaskElement> elements) {
+    public String serializeInternal(@NotNull List<ConfigurableTaskElement> elements) {
         return xstream.toXML(elements);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<ConfigurableTaskElement> deserialize(@NotNull String configInfo) {
+    public List<ConfigurableTaskElement> deserializeInternal(@NotNull String configInfo) {
         return (List<ConfigurableTaskElement>) xstream.fromXML(configInfo);
     }
 
