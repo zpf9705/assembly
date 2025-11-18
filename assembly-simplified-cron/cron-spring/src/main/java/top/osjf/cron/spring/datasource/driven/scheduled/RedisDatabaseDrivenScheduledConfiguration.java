@@ -37,16 +37,16 @@ public class RedisDatabaseDrivenScheduledConfiguration {
 
     @Bean
     public RedisDatasourceTaskElementsOperation redisDatasourceTaskElementsOperation
-            (ObjectProvider<RedisConnectionConfig.Builder> builders, Environment environment) {
-        RedisConnectionConfig.Builder builder = ObjectProviderUtils.getPriority(builders);
-        if (builder == null) {
-            builder = RedisConnectionConfig.builder();
+            (ObjectProvider<RedisConnectionConfig> builders, Environment environment) {
+        RedisConnectionConfig config = ObjectProviderUtils.getPriority(builders);
+        if (config == null) {
+            config = RedisConnectionConfig.builder().build();
         }
         String ruleKey = environment.getProperty("${spring.schedule.cron.scheduled-driven.redis.rule-key}");
         String channel = environment.getProperty("${spring.schedule.cron.scheduled-driven.redis.channel}");
         ConfigFormat configFormat = environment
                 .getProperty("${spring.schedule.cron.scheduled-driven.redis.config-format}", ConfigFormat.class);
-        return new RedisDatasourceTaskElementsOperation(builder.build(), ruleKey, channel, configFormat);
+        return new RedisDatasourceTaskElementsOperation(config, ruleKey, channel, configFormat);
     }
 
 }
