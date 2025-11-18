@@ -19,12 +19,15 @@ package top.osjf.spring.autoconfigure.cron.datasouce.driven.scheduled;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.redis.RedisDatasourceTaskElementsOperation;
+import top.osjf.cron.datasource.driven.scheduled.redis.config.RedisConnectionConfig;
 import top.osjf.cron.spring.datasource.driven.scheduled.RedisDatabaseDrivenScheduledConfiguration;
+import top.osjf.spring.autoconfigure.cron.CronProperties;
 
 /**
  * {@link Configuration Configuration} for {@link RedisDatasourceTaskElementsOperation}.
@@ -38,4 +41,9 @@ import top.osjf.cron.spring.datasource.driven.scheduled.RedisDatabaseDrivenSched
 @ConditionalOnMissingBean(DatasourceTaskElementsOperation.class)
 @Conditional(DatasourceDrivenCondition.class)
 class RedisDatasourceTaskElementsOperationConfiguration {
+
+    @Bean
+    public RedisConnectionConfig config(CronProperties cronProperties) {
+        return cronProperties.getScheduledDriven().getRedis().getConfig();
+    }
 }
