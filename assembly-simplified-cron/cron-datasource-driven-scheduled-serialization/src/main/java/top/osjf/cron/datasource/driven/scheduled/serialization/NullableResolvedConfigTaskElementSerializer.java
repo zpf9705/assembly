@@ -37,10 +37,12 @@ import java.util.List;
  */
 public abstract class NullableResolvedConfigTaskElementSerializer implements ConfigTaskElementSerializer {
 
+    private static final String SERIALIZE_DEF = "";
+
     @Override
     public final String serialize(List<ConfigurableTaskElement> elements) throws IOException {
         if (CollectionUtils.isEmpty(elements)) {
-            return "";
+            return SERIALIZE_DEF;
         }
         return serializeInternal(elements);
     }
