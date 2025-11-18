@@ -63,5 +63,13 @@ public enum DataSource {
      * @see top.osjf.cron.datasource.driven.scheduled.nacosconfig.NacosConfigDatasourceTaskElementsOperation
      * @since 3.0.2
      */
-    NACOS_CONFIG
+    NACOS_CONFIG,
+
+    /**
+     * The task information data source depends on the remote configuration of Redis.
+     *
+     * @see top.osjf.cron.datasource.driven.scheduled.redis.RedisDatasourceTaskElementsOperation
+     * @since 3.0.2
+     */
+    REDIS
 }
