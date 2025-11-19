@@ -156,7 +156,14 @@ public abstract class RemoteDatasourceTaskElementsOperation extends ConfigFormat
 
     @Override
     public void setAbstractDatasourceDrivenScheduled(AbstractDatasourceDrivenScheduled scheduled) {
-        listener.setAbstractDatasourceDrivenScheduled(scheduled);
+        Supplier<RemoteListener> origin = this.lazyListener;
+        if (origin != null) {
+            this.lazyListener = () -> {
+                RemoteListener remoteListener = origin.get();
+                remoteListener.setAbstractDatasourceDrivenScheduled(scheduled);
+                return remoteListener;
+            };
+        }
     }
 
     @Override
