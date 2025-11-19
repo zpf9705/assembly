@@ -387,7 +387,7 @@ public class RedisDatasourceTaskElementsOperation extends RemoteDatasourceTaskEl
      *
      * <p><b>Typical Flow:</b></p>
      * <pre>
-     * Redis Publish → message(channel, message) → refresh(message) → Configuration Reload
+     * Redis Set and Publish → message(channel, message) → refresh(message) → Configuration Reload
      * </pre>
      * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
      * @since 3.0.2
