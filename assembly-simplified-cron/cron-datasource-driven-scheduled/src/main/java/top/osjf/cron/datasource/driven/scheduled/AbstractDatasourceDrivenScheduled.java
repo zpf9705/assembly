@@ -238,12 +238,12 @@ public abstract class AbstractDatasourceDrivenScheduled
             managerTaskRegisterFlag = true;
         }
 
+        datasourceTaskElementsOperation.afterStart(taskElements);
+
         // Notify the data source operation class that there is no main check task running.
         if (!managerTaskRegisterFlag) {
             datasourceTaskElementsOperation.notifyMainTaskInfoNotProvidedAndNoDefaultUsed();
         }
-
-        datasourceTaskElementsOperation.afterStart(taskElements);
 
         // The marking has been start.
         started = true;
