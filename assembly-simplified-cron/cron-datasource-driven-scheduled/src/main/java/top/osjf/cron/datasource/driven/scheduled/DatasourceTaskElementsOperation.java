@@ -156,10 +156,11 @@ public interface DatasourceTaskElementsOperation extends AutoCloseable {
     }
 
     /**
-     * Close this data resource. It is recommended to manually close it if there is
-     * no automatic shutdown support and the data source cannot automatically release
-     * the occupied resources.
+     * If necessary, close the resources occupied by this operation implementation.
+     * Periodic closure management has been performed in {@link AbstractDatasourceDrivenScheduled},
+     * and developers do not need to manually call it.
      * @throws Exception if this data source cannot be closed
+     * @since 3.0.2
      */
     @Override
     default void close() throws Exception {}
