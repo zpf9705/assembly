@@ -83,8 +83,8 @@ public class NacosConfigDatasourceTaskElementsOperation extends RemoteDatasource
     public NacosConfigDatasourceTaskElementsOperation(final Properties properties, final String groupId,
                                                       final String dataId, final ConfigFormat configFormat) {
         super(configFormat);
-        AssertUtils.assertNotBlank(groupId, "Bad argument: groupId=[%s]" + groupId);
-        AssertUtils.assertNotBlank(dataId, "Bad argument: groupId=[%s]" + dataId);
+        AssertUtils.assertNotBlank(groupId, String.format("Bad argument: groupId=[%s]", groupId));
+        AssertUtils.assertNotBlank(dataId, String.format("Bad argument: dataId=[%s]", dataId));
         AssertUtils.assertNotNull(properties,
                 "Nacos properties must not be null, you could put some keys from PropertyKeyConst");
         this.groupId = groupId;
@@ -95,6 +95,7 @@ public class NacosConfigDatasourceTaskElementsOperation extends RemoteDatasource
     }
 
     private static Properties buildProperties(String serverAddr) {
+        AssertUtils.assertNotBlank(serverAddr, String.format("Bad argument: serverAddr=[%s]", serverAddr));
         Properties properties = new Properties();
         properties.setProperty(PropertyKeyConst.SERVER_ADDR, serverAddr);
         return properties;
