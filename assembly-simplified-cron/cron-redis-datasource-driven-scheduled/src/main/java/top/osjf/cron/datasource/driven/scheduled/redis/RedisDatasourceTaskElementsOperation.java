@@ -123,7 +123,7 @@ import java.util.List;
  * String currentConfig = redisSource.getRemoteConfigInfo();
  *
  * // Start listening (triggers lazy subscription)
- * redisSource.startListen();
+ * redisSource.notifyMainTaskInfoNotProvidedAndNoDefaultUsed();
  *
  * // Publish new config (other instances will receive notification)
  * redisSource.publishConfig("{\"rateLimit\": 1000}");
