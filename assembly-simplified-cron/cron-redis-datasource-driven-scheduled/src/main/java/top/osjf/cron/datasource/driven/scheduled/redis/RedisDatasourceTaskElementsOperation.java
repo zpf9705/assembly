@@ -20,6 +20,7 @@ package top.osjf.cron.datasource.driven.scheduled.redis;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.SslOptions;
+import io.lettuce.core.api.sync.BaseRedisCommands;
 import io.lettuce.core.api.sync.RedisCommands;
 import io.lettuce.core.cluster.ClusterClientOptions;
 import io.lettuce.core.cluster.RedisClusterClient;
@@ -42,7 +43,6 @@ import java.util.List;
 
 /**
  * NOTE: This file has been copied and slightly modified from {com.alibaba.csp.sentinel.datasource.redis}.
- * <p>
  * <h2>Redis Datasource Task Elements Operation</h2>
  *
  * This class is a concrete implementation of a remote configuration data source,
@@ -65,10 +65,8 @@ import java.util.List;
  * </ul>
  *
  * <h3>Working Principle</h3>
- * <p>
- * During initialization, the class automatically selects the appropriate client based on
+ * <p>During initialization, the class automatically selects the appropriate client based on
  * the provided {@link RedisConnectionConfig}:
- * </p>
  * <ul>
  *   <li>If cluster nodes are configured, it creates a {@link RedisClusterClient}.</li>
  *   <li>Otherwise, it uses a {@link RedisClient} for standalone or Sentinel mode connections.</li>
@@ -80,8 +78,11 @@ import java.util.List;
  * This lazy initialization strategy reduces resource consumption and improves application startup time.
  *
  * <h3>Key Method Overview</h3>
- * <table border="1" cellpadding="8">
- *   <tr><th>Method</th><th>Purpose</th></tr>
+ * <table border="1" cellpadding="8" summary="Description of key methods in RedisDatasourceTaskElementsOperation">
+ *   <tr>
+ *     <th>Method</th>
+ *     <th>Purpose</th>
+ *   </tr>
  *   <tr>
  *     <td>{@link #getRemoteConfigInfo()}</td>
  *     <td>Retrieves the current configuration value associated with {@code ruleKey} from Redis (via GET)</td>
@@ -142,6 +143,8 @@ public class RedisDatasourceTaskElementsOperation extends RemoteDatasourceTaskEl
 
     private final String ruleKey;
 
+    private final String channel;
+
     /**
      * Initializes a Redis-based datasource with connection config, data key, subscription channel,
      * and configuration format. Sets up either standalone/sentinel or cluster client based on config.
@@ -165,6 +168,7 @@ public class RedisDatasourceTaskElementsOperation extends RemoteDatasourceTaskEl
             this.redisClient = null;
         }
         this.ruleKey = ruleKey;
+        this.channel = channel;
         setLazyListener(() -> subscribeFromChannel(channel));
     }
 
@@ -318,9 +322,7 @@ public class RedisDatasourceTaskElementsOperation extends RemoteDatasourceTaskEl
 
     @Override
     protected String getRemoteConfigInfo() {
-        if (this.redisClient == null && this.redisClusterClient == null) {
-            throw new IllegalStateException("Redis client or Redis Cluster client has not been initialized or error occurred");
-        }
+        checkInitialized();
 
         if (redisClient != null) {
             RedisCommands<String, String> stringRedisCommands = redisClient.connect().sync();
@@ -333,16 +335,26 @@ public class RedisDatasourceTaskElementsOperation extends RemoteDatasourceTaskEl
 
     @Override
     protected void publishConfig(String configInfo) {
-        if (this.redisClient == null && this.redisClusterClient == null) {
-            throw new IllegalStateException("Redis client or Redis Cluster client has not been initialized or error occurred");
-        }
+        checkInitialized();
+
+        BaseRedisCommands<String,String> baseRedisCommands;
 
         if (redisClient != null) {
             RedisCommands<String, String> stringRedisCommands = redisClient.connect().sync();
             stringRedisCommands.set(ruleKey, configInfo);
+            baseRedisCommands = stringRedisCommands;
         } else {
-            RedisAdvancedClusterCommands<String, String> stringRedisCommands = redisClusterClient.connect().sync();
-            stringRedisCommands.set(ruleKey, configInfo);
+            RedisAdvancedClusterCommands<String, String> stringClusterRedisCommands = redisClusterClient.connect().sync();
+            stringClusterRedisCommands.set(ruleKey, configInfo);
+            baseRedisCommands = stringClusterRedisCommands;
+        }
+
+        baseRedisCommands.publish(channel, configInfo);
+    }
+
+    private void checkInitialized() {
+        if (this.redisClient == null && this.redisClusterClient == null) {
+            throw new IllegalStateException("Redis client or Redis Cluster client has not been initialized or error occurred");
         }
     }
 
