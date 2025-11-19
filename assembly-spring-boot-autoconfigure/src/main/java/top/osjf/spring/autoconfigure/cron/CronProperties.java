@@ -575,7 +575,7 @@ public class CronProperties {
              */
             private String dataId;
 
-            private ConfigFormat configFormat;
+            private ConfigFormat configFormat = ConfigFormat.JSON;
 
             public String getServerAddr() {
                 return serverAddr;
@@ -637,7 +637,7 @@ public class CronProperties {
              */
             private String channel;
 
-            private ConfigFormat configFormat;
+            private ConfigFormat configFormat = ConfigFormat.JSON;
 
             public RedisConnectionConfig getConfig() {
                 return config;
