@@ -20,6 +20,7 @@ package top.osjf.cron.datasource.driven.scheduled.nacosconfig;
 import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.PropertyKeyConst;
 import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.config.ConfigType;
 import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.common.executor.NameThreadFactory;
@@ -52,6 +53,7 @@ public class NacosConfigDatasourceTaskElementsOperation extends RemoteDatasource
     private final String groupId;
     private final String dataId;
     private final Properties properties;
+    private final ConfigType configType;
 
     /**
      * Note: The Nacos config might be null if its initialization failed.
@@ -83,6 +85,7 @@ public class NacosConfigDatasourceTaskElementsOperation extends RemoteDatasource
     public NacosConfigDatasourceTaskElementsOperation(final Properties properties, final String groupId,
                                                       final String dataId, final ConfigFormat configFormat) {
         super(configFormat);
+        this.configType = toNacosConfigType(configFormat);
         AssertUtils.assertNotBlank(groupId, String.format("Bad argument: groupId=[%s]", groupId));
         AssertUtils.assertNotBlank(dataId, String.format("Bad argument: dataId=[%s]", dataId));
         AssertUtils.assertNotNull(properties,
@@ -92,6 +95,18 @@ public class NacosConfigDatasourceTaskElementsOperation extends RemoteDatasource
         this.properties = properties;
         initNacosConfigService();
         setLazyListener(()-> new ConfigRefreshListener(this));
+    }
+
+    private ConfigType toNacosConfigType(ConfigFormat configFormat) {
+        switch (configFormat) {
+            case PROPERTIES: return ConfigType.PROPERTIES;
+            case XML: return ConfigType.XML;
+            case JSON: return ConfigType.JSON;
+            case TEXT: return ConfigType.TEXT;
+            case HTML: return ConfigType.HTML;
+            case YAML: return ConfigType.YAML;
+            default: throw new UnsupportedOperationException("Unsupported type conversion.");
+        }
     }
 
     private static Properties buildProperties(String serverAddr) {
@@ -151,7 +166,7 @@ public class NacosConfigDatasourceTaskElementsOperation extends RemoteDatasource
 
     @Override
     protected void publishConfig(String configInfo) throws Throwable {
-        configService.publishConfig(dataId, groupId, configInfo);
+        configService.publishConfig(dataId, groupId, configInfo, configType.getType());
     }
 
     /**
