@@ -771,7 +771,6 @@ public class RedisConnectionConfig {
 
     /**
      * Sets the trustedCertificatesPath.
-     * <p>
      * <p>You can use getTrustedCertificatesPath() to get the value of trustedCertificatesPath</p>
      *
      * @param trustedCertificatesPath trustedCertificatesPath
@@ -791,7 +790,6 @@ public class RedisConnectionConfig {
 
     /**
      * Sets the trustedCertificatesJksPassword.
-     * <p>
      * <p>You can use getTrustedCertificatesJksPassword() to get the value of trustedCertificatesJksPassword</p>
      *
      * @param trustedCertificatesJksPassword trustedCertificatesJksPassword
@@ -811,7 +809,6 @@ public class RedisConnectionConfig {
 
     /**
      * Sets the keyCertChainFilePath.
-     * <p>
      * <p>You can use getKeyCertChainFilePath() to get the value of keyCertChainFilePath</p>
      *
      * @param keyCertChainFilePath keyCertChainFilePath
@@ -831,7 +828,6 @@ public class RedisConnectionConfig {
 
     /**
      * Sets the keyFilePath.
-     * <p>
      * <p>You can use getKeyFilePath() to get the value of keyFilePath</p>
      *
      * @param keyFilePath keyFilePath
@@ -851,7 +847,6 @@ public class RedisConnectionConfig {
 
     /**
      * Sets the keyFilePassword.
-     * <p>
      * <p>You can use getKeyFilePassword() to get the value of keyFilePassword</p>
      *
      * @param keyFilePassword keyFilePassword
@@ -862,7 +857,6 @@ public class RedisConnectionConfig {
 
     /**
      * Sets the sslEnable.
-     * <p>
      * <p>You can use isSslEnable() to get the value of sslEnable</p>
      *
      * @param sslEnable sslEnable

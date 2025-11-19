@@ -2,7 +2,7 @@
 <!--
 
 /*
- * Copyright 2024-? the original author or authors.
+ * Copyright 2025-? the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>top.osjf.cron</groupId>
   <artifactId>cron-nacos-config-datasource-driven-scheduled</artifactId>
-  <version>3.0.1-GA</version>
-  <name>cron-nacos-config-datasource-driven-scheduled 3.0.1-GA</name>
+  <version>3.0.2</version>
+  <name>cron-nacos-config-datasource-driven-scheduled 3.0.2</name>
   <description>Nacos-config is a data source implementation package for manipulating databases.</description>
   <url>https://github.com/zpf9705/assembly/assembly-simplified-cron/cron-nacos-config-datasource-driven-scheduled</url>
   <licenses>
@@ -54,32 +54,14 @@
   <dependencies>
     <dependency>
       <groupId>top.osjf.cron</groupId>
-      <artifactId>cron-datasource-driven-scheduled</artifactId>
-      <version>3.0.1-GA</version>
+      <artifactId>cron-datasource-driven-scheduled-serialization</artifactId>
+      <version>3.0.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.alibaba.nacos</groupId>
       <artifactId>nacos-client</artifactId>
       <version>1.4.2</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>2.12.5</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.thoughtworks.xstream</groupId>
-      <artifactId>xstream</artifactId>
-      <version>1.4.20</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.dataformat</groupId>
-      <artifactId>jackson-dataformat-yaml</artifactId>
-      <version>2.12.5</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

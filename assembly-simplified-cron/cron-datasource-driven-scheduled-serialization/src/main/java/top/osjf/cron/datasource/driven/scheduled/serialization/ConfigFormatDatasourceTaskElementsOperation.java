@@ -28,15 +28,14 @@ import java.util.List;
 
 /**
  * Abstract base class for data source operations of scheduled task elements with built-in serialization support.
- * <p>
- * This class implements {@link ConfigFormatProvider}, {@link DatasourceTaskElementsOperation},
+ *
+ * <p>This class implements {@link ConfigFormatProvider}, {@link DatasourceTaskElementsOperation},
  * and {@link ConfigTaskElementSerializer}, providing a common foundation for reading,
  * writing, and transforming task configurations in various formats (e.g., YAML, JSON, TEXT).
  * Subclasses can focus on implementing data source-specific logic (e.g., Nacos, DB) while reusing
  * standardized serialization behavior.
- * </p>
- * <p>
- * Key responsibilities include:
+ *
+ * <p>Key responsibilities include:
  * <ul>
  *   <li>Holding and exposing an immutable {@link ConfigFormat} instance that indicates the current format.</li>
  *   <li>Providing default implementations of {@code serialize} and {@code deserialize}
@@ -44,12 +43,10 @@ import java.util.List;
  *   <li>Standardizing exception handling by catching IOExceptions, logging details,
  *       and wrapping them into {@link DataSourceDrivenException} for consistent error propagation.</li>
  * </ul>
- * </p>
- * <p>
- * Typical use cases involve loading task lists from configuration centers, persisting modified tasks,
+ *
+ * <p>Typical use cases involve loading task lists from configuration centers, persisting modified tasks,
  * or transferring task configurations across systems. By combining data source operations with
  * format serialization capabilities, this class promotes separation of concerns and improves code reuse.
- * </p>
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2

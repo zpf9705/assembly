@@ -133,6 +133,12 @@
 
             <dependency>
                 <groupId>top.osjf.cron</groupId>
+                <artifactId>cron-redis-datasource-driven-scheduled</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>top.osjf.cron</groupId>
                 <artifactId>cron-spring</artifactId>
                 <version>${project.version}</version>
             </dependency>

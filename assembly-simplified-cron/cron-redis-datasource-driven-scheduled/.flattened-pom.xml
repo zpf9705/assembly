@@ -2,7 +2,7 @@
 <!--
 
 /*
- * Copyright 2024-? the original author or authors.
+ * Copyright 2025-? the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,12 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>top.osjf</groupId>
-  <artifactId>assembly-simplified-all</artifactId>
+  <groupId>top.osjf.cron</groupId>
+  <artifactId>cron-redis-datasource-driven-scheduled</artifactId>
   <version>3.0.2</version>
-  <name>assembly-simplified-all 3.0.2</name>
-  <description>Assembly all.</description>
-  <url>https://github.com/zpf9705/assembly/assembly-simplified-all</url>
+  <name>cron-redis-datasource-driven-scheduled 3.0.2</name>
+  <description>Redis is a data source implementation package for manipulating databases.</description>
+  <url>https://github.com/zpf9705/assembly/assembly-simplified-cron/cron-redis-datasource-driven-scheduled</url>
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
@@ -47,39 +47,21 @@
     </developer>
   </developers>
   <scm>
-    <connection>scm:git:https://github.com/zpf9705/assembly.git/assembly-simplified-all</connection>
-    <developerConnection>scm:git:https://github.com/zpf9705/assembly.git/assembly-simplified-all</developerConnection>
-    <url>https://github.com/zpf9705/assembly/assembly-simplified-all</url>
+    <connection>scm:git:https://github.com/zpf9705/assembly.git/assembly-simplified-cron/cron-redis-datasource-driven-scheduled</connection>
+    <developerConnection>scm:git:https://github.com/zpf9705/assembly.git/assembly-simplified-cron/cron-redis-datasource-driven-scheduled</developerConnection>
+    <url>https://github.com/zpf9705/assembly/assembly-simplified-cron/cron-redis-datasource-driven-scheduled</url>
   </scm>
   <dependencies>
     <dependency>
-      <groupId>top.osjf.sdk</groupId>
-      <artifactId>sdk-spring</artifactId>
-      <version>3.0.2</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>top.osjf.cron</groupId>
-      <artifactId>cron-spring-boot-starter</artifactId>
+      <artifactId>cron-datasource-driven-scheduled-serialization</artifactId>
       <version>3.0.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>top.osjf.spring.optimize</groupId>
-      <artifactId>service-bean-boot-starter</artifactId>
-      <version>3.0.2</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>top.osjf.spring.optimize</groupId>
-      <artifactId>idempotent-boot-starter</artifactId>
-      <version>3.0.2</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>top.osjf.filewatch</groupId>
-      <artifactId>file-watch-boot-starter</artifactId>
-      <version>3.0.2</version>
+      <groupId>io.lettuce</groupId>
+      <artifactId>lettuce-core</artifactId>
+      <version>6.1.5.RELEASE</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

@@ -33,14 +33,13 @@ import java.util.stream.Collectors;
 
 /**
  * Abstract base class for operating scheduled task elements stored in a remote data source (e.g., Nacos, Redis).
- * <p>
- * Extends {@link ConfigFormatDatasourceTaskElementsOperation}, providing common logic for reading,
+ *
+ * <p>Extends {@link ConfigFormatDatasourceTaskElementsOperation}, providing common logic for reading,
  * writing, and synchronizing task configurations from/to remote configuration centers using various formats
  * (JSON, YAML, etc.). Subclasses implement concrete data access while reusing standardized serialization
  * and lifecycle callback mechanisms.
- * </p>
- * <p>
- * Key features:
+ *
+ * <p>Key features:
  * <ul>
  *   <li>Loads task configurations from remote sources and deserializes them into {@link ConfigurableTaskElement}s.
  *   </li>
@@ -48,18 +47,15 @@ import java.util.stream.Collectors;
  *   <li>Supports lazy initialization of a {@link RemoteListener} to react to remote config changes.</li>
  *   <li>Wraps remote I/O exceptions into {@link DataSourceDrivenException} for consistent error handling.</li>
  * </ul>
- * </p>
- * <p>
- * Subclasses must implement:
+ *
+ * <p>Subclasses must implement:
  * <ul>
  *   <li>{@link #getRemoteConfigInfo()}: Retrieves raw configuration string from the remote source.</li>
  *   <li>{@link #publishConfig(String)}: Publishes serialized configuration back to the remote source.</li>
  * </ul>
- * </p>
- * <p>
- * Typical use cases involve integrating with centralized configuration systems like Nacos or Apollo
+ *
+ * <p>Typical use cases involve integrating with centralized configuration systems like Nacos or Apollo
  * to enable dynamic task updates and cluster-wide synchronization in distributed scheduling environments.
- * </p>
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
