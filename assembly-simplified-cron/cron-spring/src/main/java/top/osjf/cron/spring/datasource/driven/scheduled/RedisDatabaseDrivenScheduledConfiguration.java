@@ -42,10 +42,10 @@ public class RedisDatabaseDrivenScheduledConfiguration {
         if (config == null) {
             config = RedisConnectionConfig.builder().build();
         }
-        String ruleKey = environment.getProperty("${spring.schedule.cron.scheduled-driven.redis.rule-key}");
-        String channel = environment.getProperty("${spring.schedule.cron.scheduled-driven.redis.channel}");
+        String ruleKey = environment.getProperty("spring.schedule.cron.scheduled-driven.redis.rule-key");
+        String channel = environment.getProperty("spring.schedule.cron.scheduled-driven.redis.channel");
         ConfigFormat configFormat = environment
-                .getProperty("${spring.schedule.cron.scheduled-driven.redis.config-format}", ConfigFormat.class);
+                .getProperty("spring.schedule.cron.scheduled-driven.redis.config-format", ConfigFormat.class);
         return new RedisDatasourceTaskElementsOperation(config, ruleKey, channel, configFormat);
     }
 

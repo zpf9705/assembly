@@ -35,11 +35,11 @@ public class NacosConfigDatabaseDrivenScheduledConfiguration {
     @Bean
     public NacosConfigDatasourceTaskElementsOperation nacosConfigDatasourceTaskElementsOperation
             (Environment environment) {
-        String serverAddr = environment.getProperty("${spring.schedule.cron.scheduled-driven.nacos-config.server-addr}");
-        String groupId = environment.getProperty("${spring.schedule.cron.scheduled-driven.nacos-config.group-id}");
-        String dataId = environment.getProperty("${spring.schedule.cron.scheduled-driven.nacos-config.data-id}");
+        String serverAddr = environment.getProperty("spring.schedule.cron.scheduled-driven.nacos-config.server-addr");
+        String groupId = environment.getProperty("spring.schedule.cron.scheduled-driven.nacos-config.group-id");
+        String dataId = environment.getProperty("spring.schedule.cron.scheduled-driven.nacos-config.data-id");
         ConfigFormat configFormat = environment
-                .getProperty("${spring.schedule.cron.scheduled-driven.nacos-config.config-format}", ConfigFormat.class);
+                .getProperty("spring.schedule.cron.scheduled-driven.nacos-config.config-format", ConfigFormat.class);
         return new NacosConfigDatasourceTaskElementsOperation(serverAddr, groupId, dataId, configFormat);
     }
 }
