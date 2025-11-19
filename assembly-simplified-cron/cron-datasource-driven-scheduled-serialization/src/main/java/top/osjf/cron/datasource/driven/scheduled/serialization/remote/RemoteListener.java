@@ -19,6 +19,7 @@ package top.osjf.cron.datasource.driven.scheduled.serialization.remote;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import top.osjf.cron.datasource.driven.scheduled.AbstractDatasourceDrivenScheduled;
 import top.osjf.cron.datasource.driven.scheduled.serialization.ConfigurableTaskElement;
 
 import java.util.List;
@@ -57,6 +58,8 @@ public abstract class RemoteListener {
      */
     protected final RemoteDatasourceTaskElementsOperation remoteOperation;
 
+    private AbstractDatasourceDrivenScheduled scheduled;
+
     /**
      * Constructs a new remote listener with the given operation instance.
      * <p>
@@ -73,6 +76,15 @@ public abstract class RemoteListener {
     }
 
     /**
+     * Set up a data source dynamic management instance for the remote listener to trigger data
+     * detection at {@link #refresh}.
+     * @param scheduled task scheduling data source management instance object.
+     */
+    protected void setAbstractDatasourceDrivenScheduled(AbstractDatasourceDrivenScheduled scheduled) {
+        this.scheduled = scheduled;
+    }
+
+    /**
      * Refreshes the local cache of task elements upon receiving updated configuration.
      * <p>
      * Deserializes the provided configuration string using the bound {@link RemoteDatasourceTaskElementsOperation}
@@ -82,10 +94,13 @@ public abstract class RemoteListener {
      * Note: This method is intended to be called by subclasses when a remote configuration change is received,
      * e.g., within a Nacos ConfigListener's onReceive callback.
      * </p>
-     *
+     * <p>
+     * After refreshing and deserializing, promptly call the main manager to perform task checking operations.
+     * </p>
      * @param configInfo Latest configuration content string (such as JSON or YAML format)
      */
     protected void refresh(String configInfo) {
         this.elements = remoteOperation.deserialize(configInfo);
+        scheduled.run();
     }
 }

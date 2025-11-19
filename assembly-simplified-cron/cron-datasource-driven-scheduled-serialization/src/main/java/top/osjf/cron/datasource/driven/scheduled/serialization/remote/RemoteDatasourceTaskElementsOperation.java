@@ -18,6 +18,7 @@
 package top.osjf.cron.datasource.driven.scheduled.serialization.remote;
 
 import top.osjf.cron.core.lang.Nullable;
+import top.osjf.cron.datasource.driven.scheduled.AbstractDatasourceDrivenScheduled;
 import top.osjf.cron.datasource.driven.scheduled.DataSourceDrivenException;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 import top.osjf.cron.datasource.driven.scheduled.serialization.ConfigFormat;
@@ -151,6 +152,11 @@ public abstract class RemoteDatasourceTaskElementsOperation extends ConfigFormat
     @Override
     public boolean registerDefaultIfMainTaskInfoNotProvided() {
         return false;
+    }
+
+    @Override
+    public void setAbstractDatasourceDrivenScheduled(AbstractDatasourceDrivenScheduled scheduled) {
+        listener.setAbstractDatasourceDrivenScheduled(scheduled);
     }
 
     @Override
