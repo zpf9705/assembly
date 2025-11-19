@@ -18,16 +18,15 @@ package top.osjf.spring.autoconfigure.cron;
 
 import com.cronutils.model.CronType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.core.repository.RunTimeoutRegistrarRepository;
 import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
 import top.osjf.cron.datasource.driven.scheduled.Constants;
-import top.osjf.cron.datasource.driven.scheduled.redis.config.RedisConnectionConfig;
 import top.osjf.cron.datasource.driven.scheduled.serialization.ConfigFormat;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
 import top.osjf.cron.spring.datasource.driven.scheduled.DataSource;
 import top.osjf.cron.spring.datasource.driven.scheduled.SpringDatasourceDrivenScheduled;
+import top.osjf.spring.autoconfigure.cron.datasouce.driven.scheduled.RedisConnectionConfigBuilderCustomizer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -613,16 +612,9 @@ public class CronProperties {
         /**
          * Redis config configuration.
          * @since 3.0.2
+         * @see RedisConnectionConfigBuilderCustomizer
          */
         public static class Redis {
-
-            /**
-             * The Redis connection configuration containing host, port, password, timeout, SSL settings,
-             * and deployment mode (standalone, sentinel, or cluster). This determines how the client
-             * connects to the Redis server.
-             */
-            @NestedConfigurationProperty
-            private RedisConnectionConfig config = new RedisConnectionConfig();
 
             /**
              * The Redis key used to store rule or configuration data. Used for reading and writing
@@ -638,14 +630,6 @@ public class CronProperties {
             private String channel;
 
             private ConfigFormat configFormat = ConfigFormat.JSON;
-
-            public RedisConnectionConfig getConfig() {
-                return config;
-            }
-
-            public void setConfig(RedisConnectionConfig config) {
-                this.config = config;
-            }
 
             public String getRuleKey() {
                 return ruleKey;
