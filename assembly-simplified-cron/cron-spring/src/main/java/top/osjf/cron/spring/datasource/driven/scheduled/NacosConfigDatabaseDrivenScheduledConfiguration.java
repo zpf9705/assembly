@@ -35,8 +35,10 @@ public class NacosConfigDatabaseDrivenScheduledConfiguration {
     @Bean
     public NacosConfigDatasourceTaskElementsOperation nacosConfigDatasourceTaskElementsOperation
             (Environment environment) {
-        String serverAddr = environment.getProperty("spring.schedule.cron.scheduled-driven.nacos-config.server-addr");
-        String groupId = environment.getProperty("spring.schedule.cron.scheduled-driven.nacos-config.group-id");
+        String serverAddr = environment.getProperty("spring.schedule.cron.scheduled-driven.nacos-config.server-addr",
+                "localhost:8848");
+        String groupId = environment.getProperty("spring.schedule.cron.scheduled-driven.nacos-config.group-id",
+                "DEFAULT_GROUP");
         String dataId = environment.getProperty("spring.schedule.cron.scheduled-driven.nacos-config.data-id");
         ConfigFormat configFormat = environment
                 .getProperty("spring.schedule.cron.scheduled-driven.nacos-config.config-format", ConfigFormat.class);
