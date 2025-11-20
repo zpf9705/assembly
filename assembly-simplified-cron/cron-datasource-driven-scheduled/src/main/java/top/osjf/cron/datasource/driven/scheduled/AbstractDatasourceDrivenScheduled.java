@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.repository.CronTaskInfo;
 import top.osjf.cron.core.repository.CronTaskRepository;
+import top.osjf.cron.core.util.AssertUtils;
 import top.osjf.cron.core.util.CollectionUtils;
 import top.osjf.cron.core.util.ReflectUtils;
 import top.osjf.cron.core.util.StringUtils;
@@ -464,6 +465,7 @@ public abstract class AbstractDatasourceDrivenScheduled
     @NotNull
     protected Runnable resolveTaskRunnable(TaskElement element) {
         String taskName = element.getTaskName();
+        AssertUtils.assertNotBlank(taskName, "Task name not be empty");
         String[] sp = taskName.split("@"); /*class.name()@method.name()*/
         if (sp.length != 2) {
             debug("{} does not comply with parsing rules [class's qualified name @ method name]", taskName);
