@@ -29,7 +29,6 @@ import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.listener.ListenerContext;
 import top.osjf.cron.core.util.ExecutorUtils;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -398,7 +397,7 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
-    public String register(@NotNull String expression, @NotNull Runnable runnable) throws CronInternalException {
+    public String registerInternal(@NotNull String expression, @NotNull Runnable runnable) throws CronInternalException {
         return new SimpleRunnabledScheduledFuture(expression, runnable).listenerContext.id;
     }
 
@@ -406,7 +405,7 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
-    public String register(@NotNull String expression, @NotNull CronMethodRunnable runnable) throws CronInternalException {
+    public String registerInternal(@NotNull String expression, @NotNull CronMethodRunnable runnable) throws CronInternalException {
         return register(expression, (Runnable) runnable);
     }
 
@@ -414,7 +413,7 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
-    public String register(@NotNull String expression, @NotNull RunnableTaskBody body) throws CronInternalException {
+    public String registerInternal(@NotNull String expression, @NotNull RunnableTaskBody body) throws CronInternalException {
         return register(expression, body.getRunnable());
     }
 
@@ -422,7 +421,7 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
-    public String register(@NotNull String expression, @NotNull TaskBody body) throws CronInternalException {
+    public String registerInternal(@NotNull String expression, @NotNull TaskBody body) throws CronInternalException {
         if (body.isWrapperFor(RunnableTaskBody.class)) {
             return register(expression, body.unwrap(RunnableTaskBody.class));
         }
@@ -433,12 +432,12 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
-    public String register(@NotNull CronTask task) throws CronInternalException {
+    public String registerInternal(@NotNull CronTask task) throws CronInternalException {
         return register(task.getExpression(), task.getRunnable());
     }
 
     @Override
-    public boolean hasCronTaskInfo(@Nonnull String id) {
+    public boolean hasCronTaskInfoInternal(@NotNull String id) {
         return futureCache.containsKey(id);
     }
 
@@ -447,7 +446,7 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
      */
     @Nullable
     @Override
-    public CronTaskInfo getCronTaskInfo(@NotNull String id) {
+    public CronTaskInfo getCronTaskInfoInternal(@NotNull String id) {
         return Optional.ofNullable(futureCache.get(id)).map(SimpleRunnabledScheduledFuture::toCronTaskInfo)
                 .orElse(null);
     }
@@ -466,7 +465,7 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
-    public void update(@NotNull String id, @NotNull String newExpression) throws CronInternalException {
+    public void updateInternal(@NotNull String id, @NotNull String newExpression) throws CronInternalException {
         SimpleRunnabledScheduledFuture future = futureCache.get(id);
         if (future == null) {
             throw new CronInternalException("Missing task information according to id " + id);
@@ -479,7 +478,7 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
-    public void remove(@NotNull String id) throws CronInternalException {
+    public void removeInternal(@NotNull String id) throws CronInternalException {
         SimpleRunnabledScheduledFuture future = futureCache.remove(id);
         if (future != null && !future.isCancelled()) {
             future.cancel(true);
