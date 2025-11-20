@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import top.osjf.cron.core.lang.NotNull;
+import top.osjf.cron.core.util.AssertUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -89,6 +90,10 @@ public class DefaultYamlConfigTaskElementSerializer extends NullableResolvedConf
      * @param objectMapper the given {@link ObjectMapper}.
      */
     public DefaultYamlConfigTaskElementSerializer(ObjectMapper objectMapper) {
+
+        AssertUtils.assertTrue(objectMapper.getFactory() instanceof YAMLFactory,
+                "objectMapper.getFactory() must instanceof YAMLFactory");
+
         this.objectMapper = objectMapper;
     }
 
