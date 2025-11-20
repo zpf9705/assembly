@@ -19,7 +19,6 @@ package top.osjf.cron.core.repository;
 
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
-import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.listener.SimpleCronListener;
 
@@ -67,7 +66,7 @@ public abstract class AbstractRunTimesRegistrarRepository
      * {@inheritDoc}
      */
     @Override
-    public void registerRunTimes(@NotNull String expression, @NotNull Runnable runnable, int times)
+    public void registerRunTimes(String expression, Runnable runnable, int times)
             throws CronInternalException {
         registerRunTimes(() -> register(expression, runnable), times);
     }
@@ -76,7 +75,7 @@ public abstract class AbstractRunTimesRegistrarRepository
      * {@inheritDoc}
      */
     @Override
-    public void registerRunTimes(@NotNull String expression, @NotNull CronMethodRunnable runnable, int times)
+    public void registerRunTimes(String expression, CronMethodRunnable runnable, int times)
             throws CronInternalException {
         registerRunTimes(() -> register(expression, runnable), times);
     }
@@ -85,7 +84,7 @@ public abstract class AbstractRunTimesRegistrarRepository
      * {@inheritDoc}
      */
     @Override
-    public void registerRunTimes(@NotNull String expression, @NotNull RunnableTaskBody body, int times)
+    public void registerRunTimes(String expression, RunnableTaskBody body, int times)
             throws CronInternalException {
         registerRunTimes(() -> register(expression, body), times);
     }
@@ -94,7 +93,7 @@ public abstract class AbstractRunTimesRegistrarRepository
      * {@inheritDoc}
      */
     @Override
-    public void registerRunTimes(@NotNull String expression, @NotNull TaskBody body, int times)
+    public void registerRunTimes(String expression, TaskBody body, int times)
             throws CronInternalException, UnsupportedTaskBodyException {
         registerRunTimes(() -> register(expression, body), times);
     }
@@ -103,7 +102,7 @@ public abstract class AbstractRunTimesRegistrarRepository
      * {@inheritDoc}
      */
     @Override
-    public void registerRunTimes(@NotNull CronTask task, int times) throws CronInternalException {
+    public void registerRunTimes(CronTask task, int times) throws CronInternalException {
         registerRunTimes(() -> register(task), times);
     }
 
@@ -111,7 +110,7 @@ public abstract class AbstractRunTimesRegistrarRepository
      * {@inheritDoc}
      */
     @Override
-    public void addListener(@NotNull CronListener listener) {
+    public void addListener(CronListener listener) {
         ensureCheckedListenerIsLastIfRuntime(() -> super.addListener(listener));
     }
 
@@ -119,7 +118,7 @@ public abstract class AbstractRunTimesRegistrarRepository
      * {@inheritDoc}
      */
     @Override
-    public void addLastListener(@NotNull CronListener listener) {
+    public void addLastListener(CronListener listener) {
         ensureCheckedListenerIsLastIfRuntime(() -> super.addLastListener(listener));
     }
 

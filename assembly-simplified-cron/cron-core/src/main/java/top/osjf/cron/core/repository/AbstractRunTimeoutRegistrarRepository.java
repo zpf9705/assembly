@@ -19,8 +19,8 @@ package top.osjf.cron.core.repository;
 
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
-import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
+import top.osjf.cron.core.util.AssertUtils;
 
 /**
  * An abstract implementation class of {@link RunTimeoutRegistrarRepository} that adds
@@ -56,8 +56,9 @@ public abstract class AbstractRunTimeoutRegistrarRepository
      * {@inheritDoc}
      */
     @Override
-    public String register(@NotNull String expression, @NotNull Runnable runnable, @NotNull RunningTimeout timeout)
+    public String register(String expression, Runnable runnable, RunningTimeout timeout)
             throws CronInternalException {
+        AssertUtils.assertNotNull(timeout, "runningTimeout not be null");
         return register(expression, wrapWithTimeoutMonitoring(runnable, timeout));
     }
 
@@ -65,8 +66,9 @@ public abstract class AbstractRunTimeoutRegistrarRepository
      * {@inheritDoc}
      */
     @Override
-    public String register(@NotNull String expression, @NotNull CronMethodRunnable runnable,
-                           @NotNull RunningTimeout timeout) throws CronInternalException {
+    public String register(String expression, CronMethodRunnable runnable, RunningTimeout timeout)
+            throws CronInternalException {
+        AssertUtils.assertNotNull(timeout, "runningTimeout not be null");
         return register(expression, wrapWithTimeoutMonitoring(runnable, timeout));
     }
 
@@ -74,8 +76,9 @@ public abstract class AbstractRunTimeoutRegistrarRepository
      * {@inheritDoc}
      */
     @Override
-    public String register(@NotNull String expression, @NotNull RunnableTaskBody body, @NotNull RunningTimeout timeout)
+    public String register(String expression, RunnableTaskBody body, RunningTimeout timeout)
             throws CronInternalException {
+        AssertUtils.assertNotNull(timeout, "runningTimeout not be null");
         return register(expression, body.getRunnable(), timeout);
     }
 
@@ -83,8 +86,9 @@ public abstract class AbstractRunTimeoutRegistrarRepository
      * {@inheritDoc}
      */
     @Override
-    public String register(@NotNull String expression, @NotNull TaskBody body, @NotNull RunningTimeout timeout)
+    public String register(String expression, TaskBody body, RunningTimeout timeout)
             throws CronInternalException, UnsupportedTaskBodyException {
+        AssertUtils.assertNotNull(timeout, "runningTimeout not be null");
         return register(expression, wrapWithTimeoutMonitoring(asRunnable(body), timeout));
     }
 
@@ -92,7 +96,8 @@ public abstract class AbstractRunTimeoutRegistrarRepository
      * {@inheritDoc}
      */
     @Override
-    public String register(@NotNull CronTask task, @NotNull RunningTimeout timeout) throws CronInternalException {
+    public String register(CronTask task, RunningTimeout timeout) throws CronInternalException {
+        AssertUtils.assertNotNull(timeout, "runningTimeout not be null");
         return register(task.getExpression(), task.getRunnable(), timeout);
     }
 
@@ -100,8 +105,9 @@ public abstract class AbstractRunTimeoutRegistrarRepository
      * {@inheritDoc}
      */
     @Override
-    public void registerRunTimes(@NotNull String expression, @NotNull Runnable runnable, int times,
-                                 @NotNull RunningTimeout timeout) throws CronInternalException {
+    public void registerRunTimes(String expression, Runnable runnable, int times,
+                                 RunningTimeout timeout) throws CronInternalException {
+        AssertUtils.assertNotNull(timeout, "runningTimeout not be null");
         registerRunTimes(expression, wrapWithTimeoutMonitoring(runnable, timeout), times);
     }
 
@@ -109,8 +115,9 @@ public abstract class AbstractRunTimeoutRegistrarRepository
      * {@inheritDoc}
      */
     @Override
-    public void registerRunTimes(@NotNull String expression, @NotNull CronMethodRunnable runnable,
-                                 int times, @NotNull RunningTimeout timeout) throws CronInternalException {
+    public void registerRunTimes(String expression, CronMethodRunnable runnable,
+                                 int times, RunningTimeout timeout) throws CronInternalException {
+        AssertUtils.assertNotNull(timeout, "runningTimeout not be null");
         registerRunTimes(expression, wrapWithTimeoutMonitoring(runnable, timeout), times);
     }
 
@@ -118,8 +125,9 @@ public abstract class AbstractRunTimeoutRegistrarRepository
      * {@inheritDoc}
      */
     @Override
-    public void registerRunTimes(@NotNull String expression, @NotNull RunnableTaskBody body, int times,
-                                 @NotNull RunningTimeout timeout) throws CronInternalException {
+    public void registerRunTimes(String expression, RunnableTaskBody body, int times, RunningTimeout timeout)
+            throws CronInternalException {
+        AssertUtils.assertNotNull(timeout, "runningTimeout not be null");
         registerRunTimes(expression, body.getRunnable(), times, timeout);
     }
 
@@ -127,8 +135,9 @@ public abstract class AbstractRunTimeoutRegistrarRepository
      * {@inheritDoc}
      */
     @Override
-    public void registerRunTimes(@NotNull String expression, @NotNull TaskBody body, int times,
-                                 @NotNull RunningTimeout timeout) throws CronInternalException, UnsupportedTaskBodyException {
+    public void registerRunTimes(String expression, TaskBody body, int times, RunningTimeout timeout)
+            throws CronInternalException, UnsupportedTaskBodyException {
+        AssertUtils.assertNotNull(timeout, "runningTimeout not be null");
         registerRunTimes(expression, asRunnable(body), times, timeout);
     }
 
@@ -136,7 +145,8 @@ public abstract class AbstractRunTimeoutRegistrarRepository
      * {@inheritDoc}
      */
     @Override
-    public void registerRunTimes(@NotNull CronTask task, int times, @NotNull RunningTimeout timeout) throws CronInternalException {
+    public void registerRunTimes(CronTask task, int times, RunningTimeout timeout) throws CronInternalException {
+        AssertUtils.assertNotNull(timeout, "runningTimeout not be null");
         registerRunTimes(task.getExpression(), task.getRunnable(), times, timeout);
     }
 
