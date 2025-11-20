@@ -19,6 +19,7 @@ package top.osjf.cron.spring.datasource.driven.scheduled;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -27,8 +28,6 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.core.util.ReflectUtils;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
-
-import javax.annotation.Nonnull;
 
 /**
  * Extended from {@link SpringDatasourceDrivenScheduled}, the enhanced controller adds real-time
@@ -65,7 +64,7 @@ public class SpringHandlerMappingDatasourceDrivenScheduled
     }
 
     @Override
-    public void onApplicationEvent(@Nonnull ContextRefreshedEvent event) {
+    public void onApplicationEvent(@NonNull ContextRefreshedEvent event) {
         super.onApplicationEvent(event);
 
         registerMapping(event.getApplicationContext());
