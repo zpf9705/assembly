@@ -125,6 +125,8 @@ public abstract class AbstractCronTaskRepository
         return getCronTaskInfoInternal(id);
     }
 
+    /*   Internal API implementation method group after parameter validation in version 3.0.2.    */
+
     /*
      * (NON-JavaDoc)
      * @param expression
