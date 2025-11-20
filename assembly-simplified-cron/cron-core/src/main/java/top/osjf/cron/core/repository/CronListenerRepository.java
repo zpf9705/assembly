@@ -17,7 +17,6 @@
 
 package top.osjf.cron.core.repository;
 
-import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.listener.CronListener;
 
 /**
@@ -45,9 +44,8 @@ public interface CronListenerRepository extends Repository {
      * <p>This method takes a task listener {@code CronListener} object as an input parameter
      * and adds it to the listener list.
      * @param listener the task listener {@code CronListener} object to be added.
-     * @throws NullPointerException if input listener is {@literal null}.
      */
-    void addListener(@NotNull CronListener listener);
+    void addListener(CronListener listener);
 
     /**
      * Add a task listener {@code CronListener} instance at the beginning.
@@ -55,9 +53,8 @@ public interface CronListenerRepository extends Repository {
      * <p>This method takes a task listener {@code CronListener} object as an input parameter
      * and adds it to the listener list.
      * @param listener the task listener {@code CronListener} object to be added.
-     * @throws NullPointerException if input listener is {@literal null}.
      */
-    void addFirstListener(@NotNull CronListener listener);
+    void addFirstListener(CronListener listener);
 
     /**
      * Add a task listener {@code CronListener} instance at the ending.
@@ -65,15 +62,13 @@ public interface CronListenerRepository extends Repository {
      * <p>This method takes a task listener {@code CronListener} object as an input parameter
      * and adds it to the listener list.
      * @param listener the task listener {@code CronListener} object to be added.
-     * @throws NullPointerException if input listener is {@literal null}.
      */
-    void addLastListener(@NotNull CronListener listener);
+    void addLastListener(CronListener listener);
 
     /**
      * Return a {@code Boolean} flag that the input {@code CronListener} already added.
      * @param listener the task listener object to check.
      * @return if {@code true} already added,{@code false} otherwise.
-     * @throws NullPointerException if input listener is {@literal null}.
      */
     boolean hasListener(CronListener listener);
 
@@ -82,7 +77,6 @@ public interface CronListenerRepository extends Repository {
      * <p>This method takes a task listener {@code CronListener} object as an input parameter
      * and removes it from the listener list.
      * @param listener the task listener object to be removed.
-     * @throws NullPointerException if input listener is {@literal null}.
      */
-    void removeListener(@NotNull CronListener listener);
+    void removeListener(CronListener listener);
 }
