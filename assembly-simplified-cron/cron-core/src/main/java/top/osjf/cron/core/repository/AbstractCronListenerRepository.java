@@ -17,7 +17,6 @@
 
 package top.osjf.cron.core.repository;
 
-import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.listener.CronListenerCollector;
 import top.osjf.cron.core.listener.DefaultCronListenerCollector;
@@ -41,7 +40,7 @@ public abstract class AbstractCronListenerRepository
      * {@inheritDoc}
      */
     @Override
-    public void addListener(@NotNull CronListener listener) {
+    public void addListener(CronListener listener) {
         getCronListenerCollector().addCronListener(listener);
     }
 
@@ -49,7 +48,7 @@ public abstract class AbstractCronListenerRepository
      * {@inheritDoc}
      */
     @Override
-    public void addFirstListener(@NotNull CronListener listener) {
+    public void addFirstListener(CronListener listener) {
         getCronListenerCollector().addFirstCronListener(listener);
     }
 
@@ -57,7 +56,7 @@ public abstract class AbstractCronListenerRepository
      * {@inheritDoc}
      */
     @Override
-    public void addLastListener(@NotNull CronListener listener) {
+    public void addLastListener(CronListener listener) {
         getCronListenerCollector().addLastCronListener(listener);
     }
 
@@ -65,7 +64,7 @@ public abstract class AbstractCronListenerRepository
      * {@inheritDoc}
      */
     @Override
-    public boolean hasListener(@NotNull CronListener cronListener) {
+    public boolean hasListener(CronListener cronListener) {
         return getCronListenerCollector().hasCronListener(cronListener);
     }
 
@@ -73,7 +72,7 @@ public abstract class AbstractCronListenerRepository
      * {@inheritDoc}
      */
     @Override
-    public void removeListener(@NotNull CronListener listener) {
+    public void removeListener(CronListener listener) {
         getCronListenerCollector().removeCronListener(listener);
     }
 
