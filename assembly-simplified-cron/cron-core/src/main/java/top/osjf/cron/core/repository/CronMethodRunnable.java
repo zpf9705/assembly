@@ -16,6 +16,7 @@
 
 package top.osjf.cron.core.repository;
 
+import top.osjf.cron.core.util.AssertUtils;
 import top.osjf.cron.core.util.ReflectUtils;
 
 import java.lang.reflect.Method;
@@ -49,6 +50,9 @@ public class CronMethodRunnable implements Runnable {
      * @param method the target method to call
      */
     public CronMethodRunnable(Object target, Method method) {
+        AssertUtils.assertNotNull(target, "Target not be blank");
+        AssertUtils.assertNotNull(method, "Method not be null");
+
         this.target = target;
         this.method = method;
     }
@@ -62,6 +66,10 @@ public class CronMethodRunnable implements Runnable {
      * @throws NoSuchMethodException if the specified method does not exist
      */
     public CronMethodRunnable(Object target, String methodName) throws NoSuchMethodException {
+
+        AssertUtils.assertNotNull(target, "Target not be blank");
+        AssertUtils.assertNotBlank(methodName, "MethodName not be null");
+
         this.target = target;
         this.method = target.getClass().getMethod(methodName);
     }

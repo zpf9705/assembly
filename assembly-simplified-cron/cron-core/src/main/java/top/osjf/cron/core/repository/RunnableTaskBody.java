@@ -17,6 +17,8 @@
 
 package top.osjf.cron.core.repository;
 
+import top.osjf.cron.core.util.AssertUtils;
+
 /**
  * The implementation class of interface {@link TaskBody} carries an
  * executable {@link Runnable} object.
@@ -34,6 +36,7 @@ public class RunnableTaskBody implements TaskBody {
      * @param runnable the executable {@code Runnable}.
      */
     public RunnableTaskBody(Runnable runnable) {
+        AssertUtils.assertNotNull(runnable, "Runnable not be null");
         this.runnable = runnable;
     }
 

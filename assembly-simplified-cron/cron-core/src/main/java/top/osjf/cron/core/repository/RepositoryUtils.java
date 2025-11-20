@@ -20,8 +20,7 @@ package top.osjf.cron.core.repository;
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lang.Nullable;
-
-import java.util.Objects;
+import top.osjf.cron.core.util.AssertUtils;
 
 /**
  * This class is a utility class designed to assist in executing and verifying
@@ -51,7 +50,7 @@ public abstract class RepositoryUtils {
     @NotNull
     public static String doRegister(@NotNull Register register,
                                     @Nullable Class<? extends Exception> inValidExpressionExceptionType) {
-        Objects.requireNonNull(register, "<Register> == <null>");
+        AssertUtils.assertNotNull(register, "Register not be null");
         try {
             return register.register();
         }
@@ -71,7 +70,7 @@ public abstract class RepositoryUtils {
      */
     public static void doVoidInvoke(@NotNull VoidInvoke invoke,
                                     @Nullable Class<? extends Exception> inValidExpressionExceptionType) {
-        Objects.requireNonNull(invoke, "<VoidInvoke> == <null>");
+        AssertUtils.assertNotNull(invoke, "VoidInvoke not be null");
         try {
             invoke.invoke();
         }

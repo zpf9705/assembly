@@ -17,6 +17,8 @@
 
 package top.osjf.cron.core.repository;
 
+import top.osjf.cron.core.util.AssertUtils;
+
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -72,6 +74,11 @@ public class RunningTimeout {
      * @param policy   timeout handling strategy enumeration value.
      */
     public RunningTimeout(long timeout, TimeUnit timeUnit, RunningTimeoutPolicy policy) {
+
+        AssertUtils.assertTrue(timeout > 0, "Timeout cannot be less than or equal to 0");
+        AssertUtils.assertNotNull(timeUnit, "TimeUnit not be null");
+        AssertUtils.assertNotNull(policy, "RunningTimeoutPolicy not be null");
+
         this.timeout = timeout;
         this.timeUnit = timeUnit;
         this.policy = policy;
