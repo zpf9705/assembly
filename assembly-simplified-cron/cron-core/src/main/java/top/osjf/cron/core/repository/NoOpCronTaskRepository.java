@@ -18,8 +18,8 @@
 package top.osjf.cron.core.repository;
 
 import top.osjf.cron.core.exception.CronInternalException;
+import top.osjf.cron.core.lang.NotNull;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
@@ -61,7 +61,7 @@ public class NoOpCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
-    public String register(@Nonnull String expression, @Nonnull Runnable runnable) throws CronInternalException {
+    public String registerInternal(@NotNull String expression, @NotNull Runnable runnable) throws CronInternalException {
         return getWithoutOperationId();
     }
 
@@ -69,7 +69,7 @@ public class NoOpCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
-    public String register(@Nonnull String expression, @Nonnull CronMethodRunnable runnable) throws CronInternalException {
+    public String registerInternal(@NotNull String expression, @NotNull CronMethodRunnable runnable) throws CronInternalException {
         return getWithoutOperationId();
     }
 
@@ -77,7 +77,7 @@ public class NoOpCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
-    public String register(@Nonnull String expression, @Nonnull RunnableTaskBody body) throws CronInternalException {
+    public String registerInternal(@NotNull String expression, @NotNull RunnableTaskBody body) throws CronInternalException {
         return getWithoutOperationId();
     }
 
@@ -85,7 +85,7 @@ public class NoOpCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
-    public String register(@Nonnull String expression, @Nonnull TaskBody body) throws CronInternalException {
+    public String registerInternal(@NotNull String expression, @NotNull TaskBody body) throws CronInternalException {
         return getWithoutOperationId();
     }
 
@@ -93,12 +93,12 @@ public class NoOpCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
-    public String register(@Nonnull CronTask task) throws CronInternalException {
+    public String registerInternal(@NotNull CronTask task) throws CronInternalException {
         return getWithoutOperationId();
     }
 
     @Override
-    public boolean hasCronTaskInfo(@Nonnull String id) {
+    public boolean hasCronTaskInfoInternal(@NotNull String id) {
         return false;
     }
 
@@ -109,7 +109,7 @@ public class NoOpCronTaskRepository extends AbstractCronTaskRepository {
      */
     @Nullable
     @Override
-    public CronTaskInfo getCronTaskInfo(@Nonnull String id) {
+    public CronTaskInfo getCronTaskInfoInternal(@NotNull String id) {
         return null;
     }
 
@@ -125,14 +125,14 @@ public class NoOpCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
-    public void update(@Nonnull String id, @Nonnull String newExpression) throws CronInternalException {
+    public void updateInternal(@NotNull String id, @NotNull String newExpression) throws CronInternalException {
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void remove(@Nonnull String id) throws CronInternalException {
+    public void removeInternal(@NotNull String id) throws CronInternalException {
     }
 
     @Override

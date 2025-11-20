@@ -17,7 +17,6 @@
 
 package top.osjf.cron.core.repository;
 
-import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lang.Nullable;
 
 import java.util.List;
@@ -39,7 +38,7 @@ public interface ListableRepository extends Repository {
      * @param id the unique identifier of the registered cron task.
      * @return if {@code true} prove this id's task exist,{@code false} otherwise.
      */
-    boolean hasCronTaskInfo(@NotNull String id);
+    boolean hasCronTaskInfo(String id);
 
     /**
      * Retrieves cron task information based on a given unique identifier.
@@ -51,10 +50,9 @@ public interface ListableRepository extends Repository {
      * @param id the unique identifier of the registered cron task.
      * @return The cron task information object that matches the given ID (if exists); otherwise,
      * returns {@literal null}.
-     * @throws NullPointerException if input id is {@literal null}.
      */
     @Nullable
-    CronTaskInfo getCronTaskInfo(@NotNull String id);
+    CronTaskInfo getCronTaskInfo(String id);
 
     /**
      * Retrieves information for all registered cron tasks.
