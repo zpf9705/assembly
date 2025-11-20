@@ -29,7 +29,6 @@ import top.osjf.cron.core.listener.CronListenerCollector;
 import top.osjf.cron.core.repository.*;
 import top.osjf.cron.cron4j.listener.SchedulerListenerImpl;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -209,7 +208,7 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
      * @return {@inheritDoc}
      */
     @Override
-    public String register(@NotNull String expression, @NotNull Runnable runnable) throws CronInternalException {
+    public String registerInternal(@NotNull String expression, @NotNull Runnable runnable) throws CronInternalException {
         return RepositoryUtils.doRegister(() -> getInitializedScheduler().schedule(expression, runnable),
                 InvalidPatternException.class);
     }
@@ -227,7 +226,7 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
      * @return {@inheritDoc}
      */
     @Override
-    public String register(@NotNull String expression, @NotNull CronMethodRunnable runnable) throws CronInternalException {
+    public String registerInternal(@NotNull String expression, @NotNull CronMethodRunnable runnable) throws CronInternalException {
         return register(expression, (Runnable) runnable);
     }
 
@@ -244,7 +243,7 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
      * @return {@inheritDoc}
      */
     @Override
-    public String register(@NotNull String expression, @NotNull RunnableTaskBody body) throws CronInternalException {
+    public String registerInternal(@NotNull String expression, @NotNull RunnableTaskBody body) throws CronInternalException {
         return register(expression, body.getRunnable());
     }
 
@@ -261,7 +260,7 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
      * @return {@inheritDoc} , the ID of the timed file starts with {@link #FILE_ID_PREFIX}.
      */
     @Override
-    public String register(@NotNull String expression, @NotNull TaskBody body) {
+    public String registerInternal(@NotNull String expression, @NotNull TaskBody body) {
         if (body.isWrapperFor(FileTaskBody.class)) {
             FileTaskBody fileTaskBody = body.unwrap(FileTaskBody.class);
             File file = fileTaskBody.getFile();
@@ -287,12 +286,12 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
      * @return {@inheritDoc}
      */
     @Override
-    public String register(@NotNull CronTask task) {
+    public String registerInternal(@NotNull CronTask task) {
         return register(task.getExpression(), new RunnableTaskBody(task.getRunnable()));
     }
 
     @Override
-    public boolean hasCronTaskInfo(@Nonnull String id) {
+    public boolean hasCronTaskInfoInternal(@NotNull String id) {
         return getInitializedScheduler().getTask(id) != null;
     }
 
@@ -300,7 +299,7 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
-    public CronTaskInfo getCronTaskInfo(@NotNull String id) {
+    public CronTaskInfo getCronTaskInfoInternal(@NotNull String id) {
         return buildCronTaskInfo(id);
     }
 
@@ -344,7 +343,7 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
      * @param newExpression {@inheritDoc}
      */
     @Override
-    public void update(@NotNull String taskId, @NotNull String newExpression) {
+    public void updateInternal(@NotNull String taskId, @NotNull String newExpression) {
         RepositoryUtils.doVoidInvoke(() ->
                 getInitializedScheduler().reschedule(taskId, newExpression), InvalidPatternException.class);
     }
@@ -356,7 +355,7 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
      * @param taskId {@inheritDoc}
      */
     @Override
-    public void remove(@NotNull String taskId) {
+    public void removeInternal(@NotNull String taskId) {
         if (taskId.startsWith(FILE_ID_PREFIX)) {
             File file = fileIdMap.remove(taskId);
             if (file != null) {
