@@ -20,6 +20,7 @@ package top.osjf.cron.core.repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.osjf.cron.core.lang.Nullable;
+import top.osjf.cron.core.util.AssertUtils;
 
 import java.util.UUID;
 import java.util.concurrent.*;
@@ -65,6 +66,10 @@ public class TimeoutMonitoringRunnable implements Runnable {
      * @param monitoringExecutor  the monitoring {@link ExecutorService}.
      */
     public TimeoutMonitoringRunnable(Runnable real, RunningTimeout timeout, @Nullable ExecutorService monitoringExecutor) {
+
+        AssertUtils.assertNotNull(real, "Real runnable not be null");
+        AssertUtils.assertNotNull(timeout, "RunningTimeout arg not be null");
+
         this.real =  real;
         this.timeout =  timeout;
         this.monitoringExecutor =  monitoringExecutor;
