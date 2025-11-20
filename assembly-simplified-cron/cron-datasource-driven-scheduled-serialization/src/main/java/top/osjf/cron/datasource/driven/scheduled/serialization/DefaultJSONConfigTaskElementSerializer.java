@@ -19,6 +19,7 @@ package top.osjf.cron.datasource.driven.scheduled.serialization;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import top.osjf.cron.core.lang.NotNull;
 
 import java.io.IOException;
@@ -50,7 +51,9 @@ public class DefaultJSONConfigTaskElementSerializer extends NullableResolvedConf
      * {@code ObjectMapper}.
      */
     public DefaultJSONConfigTaskElementSerializer() {
-        this.objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        this.objectMapper = objectMapper;
     }
 
     /**
