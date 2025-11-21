@@ -39,21 +39,23 @@ import java.util.List;
  * <p>The serializer supports and generates YAML in the following format:</p>
  * <pre>
  * - id: "task-001"
+ *   taskId: ""
  *   taskName: "health-check-task"
  *   profiles: "dev"
  *   taskDescription: "Performs periodic health checks on services"
  *   status: "ACTIVE"
  *   statusDescription: "Currently running without issues"
  *   expression: "0 0/5 * * * ?"
- *   updateSign: "a1b2c3d4e5f6"
+ *   updateSign: 0
  * - id: "task-002"
+ *   taskId: ""
  *   taskName: "log-purge-task"
  *   profiles: "prod"
  *   taskDescription: "Cleans up logs older than 7 days"
  *   status: "INACTIVE"
  *   statusDescription: "Paused until next maintenance window"
  *   expression: "0 0 1 * * ?"
- *   updateSign: "f6e5d4c3b2a1"
+ *   updateSign: 0
  * </pre>
  *
  * <h3>Usage Example</h3>

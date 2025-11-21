@@ -39,13 +39,25 @@ import java.util.stream.Collectors;
  *
  * <h3>Supported Configuration Example:</h3>
  * <pre>
- * elements[0].name=task1
- * elements[0].enabled=true
- * elements[0].interval=60000
+ * elements[0].id=task-001
+ * elements[0].taskId=
+ * elements[0].taskName=health-check-task
+ * elements[0].profiles=dev
+ * elements[0].taskDescription=Performs periodic health checks on services
+ * elements[0].status=ACTIVE
+ * elements[0].statusDescription=Currently running without issues
+ * elements[0].expression=0 0/5 * * * ?
+ * elements[0].updateSign=0
  *
- * elements[1].name=task2
- * elements[1].enabled=false
- * elements[1].interval=30000
+ * elements[1].id=task-002
+ * elements[1].taskId=
+ * elements[1].taskName=log-purge-task
+ * elements[1].profiles=prod
+ * elements[1].taskDescription=Cleans up logs older than 7 days
+ * elements[1].status=INACTIVE
+ * elements[1].statusDescription=Paused until next maintenance window
+ * elements[1].expression=0/1 * * * * ?
+ * elements[1].updateSign=0
  * </pre>
  *
  * <h3>Features:</h3>
