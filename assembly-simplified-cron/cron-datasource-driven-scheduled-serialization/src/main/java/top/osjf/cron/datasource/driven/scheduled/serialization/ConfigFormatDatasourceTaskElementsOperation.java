@@ -84,7 +84,8 @@ public abstract class ConfigFormatDatasourceTaskElementsOperation
      *
      * @param elements the list of task elements to serialize, must not be {@literal null}
      * @return the serialized string in the configured format
-     * @throws DataSourceDrivenException if serialization fails due to I/O error
+     * @throws DataSourceDrivenException if serialization fails due to I/O error, wrap it as
+     *                                   {@code DataSourceDrivenException}.
      */
     public String serialize(List<ConfigurableTaskElement> elements) {
         try {
@@ -115,7 +116,8 @@ public abstract class ConfigFormatDatasourceTaskElementsOperation
      *
      * @param configInfo the configuration string to deserialize, must not be {@literal null}
      * @return the list of deserialized task elements
-     * @throws DataSourceDrivenException if deserialization fails due to I/O error
+     * @throws DataSourceDrivenException if serialization fails due to I/O error, wrap it as
+     *                                   {@code DataSourceDrivenException}.
      */
     public List<ConfigurableTaskElement> deserialize(String configInfo) {
         try {
