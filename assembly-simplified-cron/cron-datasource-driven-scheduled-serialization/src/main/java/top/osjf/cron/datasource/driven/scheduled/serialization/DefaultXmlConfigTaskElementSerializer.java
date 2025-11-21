@@ -30,7 +30,7 @@ import java.util.List;
  * objects and XML format, using the XStream library. It defines clear XML structure with aliases to ensure
  * human-readable and maintainable configuration files.
  *
- * <h3>Supported XML Format:</h3>
+ * <h3>Default Supported XML Format:</h3>
  * The serializer supports the following standard XML structure:
  *
  * <pre>

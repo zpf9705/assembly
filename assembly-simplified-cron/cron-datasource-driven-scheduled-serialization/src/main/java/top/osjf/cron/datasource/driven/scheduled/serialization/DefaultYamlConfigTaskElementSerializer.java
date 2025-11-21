@@ -35,7 +35,7 @@ import java.util.List;
  * It uses the Jackson library's {@code jackson-dataformat-yaml} module to ensure robust, efficient,
  * and standards-compliant YAML processing.</p>
  *
- * <h3>Supported YAML Format</h3>
+ * <h3>Default Supported YAML Format</h3>
  * <p>The serializer supports and generates YAML in the following format:</p>
  * <pre>
  * - id: "task-001"
