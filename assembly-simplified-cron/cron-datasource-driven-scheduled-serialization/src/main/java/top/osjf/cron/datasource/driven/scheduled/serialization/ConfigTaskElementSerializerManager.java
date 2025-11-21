@@ -20,6 +20,7 @@ package top.osjf.cron.datasource.driven.scheduled.serialization;
 import java.io.IOException;
 import java.util.*;
 import java.util.function.Supplier;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -61,8 +62,9 @@ public abstract class ConfigTaskElementSerializerManager {
             Class<? extends ConfigTaskElementSerializer> clazz = serializer.getClass();
             SerializerSpi spi = clazz.getAnnotation(SerializerSpi.class);
             if (spi == null) {
-                System.err.println("Warning: Serializer implementation " + clazz.getName() +
-                        " is missing @SerializerSpi annotation. Skipping...");
+                Logger.getLogger(ConfigTaskElementSerializerManager.class.getName())
+                        .warning("Serializer implementation " + clazz.getName() +
+                                " is missing @SerializerSpi annotation. Skipping...");
                 continue;
             }
             loadResultMap.computeIfAbsent(serializer.getConfigFormat(), k -> new ArrayList<>()).add(serializer);
