@@ -46,6 +46,9 @@ public class TimeoutMonitoringRunnable implements Runnable {
     /** the monitoring {@link ExecutorService}.*/
     @Nullable private ExecutorService monitoringExecutor;
 
+    /** The unique ID of the registered task. */
+    @Nullable private String taskId;
+
     /**
      * Construct a {@code TimeoutMonitoringRunnable} with given real {@link Runnable}
      * and the configure instance {@link RunningTimeout}.
@@ -81,6 +84,21 @@ public class TimeoutMonitoringRunnable implements Runnable {
      */
     public void setMonitoringExecutor(@Nullable ExecutorService monitoringExecutor) {
         this.monitoringExecutor = monitoringExecutor;
+    }
+
+    /**
+     * Set the registration ID for the delegated task {@link #real}.
+     * @param taskId the registration ID for delegated task {@link #real}
+     */
+    public void setTaskId(@Nullable String taskId) {
+        this.taskId = taskId;
+    }
+
+    /**
+     * @return the configure instance {@link RunningTimeout}.
+     */
+    protected RunningTimeout getTimeout() {
+        return timeout;
     }
 
     /**
@@ -154,14 +172,18 @@ public class TimeoutMonitoringRunnable implements Runnable {
      * @param future the input {@link Future}.
      */
     void cancel(Future<?> future) {
+        String taskId = this.taskId;
+        taskId = taskId == null ? "UN-KNOW ID" : taskId;
         if (!future.cancel(true)) {
             if (future.isDone()) {
-                LOGGER.warn("Cannot cancel task because it has already completed.");
+                LOGGER.warn("Task [{}] Cannot cancel task because it has already completed.",
+                        taskId);
             } else if (future.isCancelled()) {
-                LOGGER.debug("Task was already cancelled by another thread.");
+                LOGGER.debug("Task [{}] was already cancelled by another thread.",
+                        taskId);
             } else {
-                LOGGER.error("Failed to cancel task that is still running and non-interruption. " +
-                        "Check if the task properly handles InterruptedException.");
+                LOGGER.error("Failed to cancel task [{}] that is still running and non-interruption. " +
+                        "Check if the task properly handles InterruptedException.", taskId);
             }
         }
     }
