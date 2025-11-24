@@ -83,6 +83,13 @@ public class CronTaskInfo implements Serializable {
     private long remainingNumberOfRuns;
 
     /**
+     * An instance of timeout configuration for a single task run.
+     * @since 3.0.2
+     */
+    @Nullable
+    private RunningTimeout timeoutConfig;
+
+    /**
      * Constructs a {@code CronTaskInfo} with any task info.
      * @param id                        {@link #id}
      * @param expression                {@link #expression}
@@ -117,6 +124,15 @@ public class CronTaskInfo implements Serializable {
      */
     public void setRemainingNumberOfRuns(long remainingNumberOfRuns) {
         this.remainingNumberOfRuns = remainingNumberOfRuns;
+    }
+
+    /**
+     * Set a timeout configuration instance for the {@code CronTaskInfo} task to run once.
+     * @param timeoutConfig the timeout configuration instance.
+     * @since 3.0.2
+     */
+    public void setTimeoutConfig(@Nullable RunningTimeout timeoutConfig) {
+        this.timeoutConfig = timeoutConfig;
     }
 
     /**
@@ -195,6 +211,14 @@ public class CronTaskInfo implements Serializable {
         return remainingNumberOfRuns;
     }
 
+    /**
+     * @return {@link #timeoutConfig}
+     */
+    @Nullable
+    public RunningTimeout getTimeoutConfig() {
+        return timeoutConfig;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -222,6 +246,7 @@ public class CronTaskInfo implements Serializable {
                 ", method=" + method +
                 ", args=" + Arrays.toString(args) +
                 ", remainingNumberOfRuns=" + remainingNumberOfRuns +
+                ", timeoutConfig=" + timeoutConfig +
                 '}';
     }
 }
