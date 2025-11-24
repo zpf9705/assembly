@@ -29,11 +29,14 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.expression.BeanFactoryResolver;
 import org.springframework.core.env.Environment;
+import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.util.ReflectionUtils;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lang.Nullable;
+import top.osjf.cron.core.repository.CronMethodRunnable;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.core.util.AssertUtils;
 import top.osjf.cron.core.util.StringUtils;
@@ -188,7 +191,8 @@ public class SpringDatasourceDrivenScheduled
         String taskName = element.getTaskName();
         AssertUtils.assertNotBlank(taskName, "Task name not be empty");
         Expression expression = expressionParser.parseExpression(taskName);
-        return () -> expression.getValue(evaluationContext);
+        return new CronMethodRunnable(expression,
+                ReflectionUtils.findMethod(expression.getClass(), "getValue", EvaluationContext.class));
     }
 
     @Override
