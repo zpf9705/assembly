@@ -24,6 +24,7 @@ import top.osjf.cron.core.listener.SimpleCronListener;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -120,6 +121,17 @@ public abstract class AbstractRunTimesRegistrarRepository
     @Override
     public void addLastListener(CronListener listener) {
         ensureCheckedListenerIsLastIfRuntime(() -> super.addLastListener(listener));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void removeListener(CronListener listener) {
+        if (listener != null && Objects.equals(listener, checkedCronListener)) {
+            throw new IllegalStateException("Unsupported listener objects for deletion" + listener);
+        }
+        super.removeListener(listener);
     }
 
     /**

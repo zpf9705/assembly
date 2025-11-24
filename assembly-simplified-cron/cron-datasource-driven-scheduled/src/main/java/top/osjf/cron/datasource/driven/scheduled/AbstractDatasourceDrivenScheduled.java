@@ -20,8 +20,7 @@ package top.osjf.cron.datasource.driven.scheduled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.osjf.cron.core.lang.NotNull;
-import top.osjf.cron.core.repository.CronTaskInfo;
-import top.osjf.cron.core.repository.CronTaskRepository;
+import top.osjf.cron.core.repository.*;
 import top.osjf.cron.core.util.AssertUtils;
 import top.osjf.cron.core.util.CollectionUtils;
 import top.osjf.cron.core.util.ReflectUtils;
@@ -103,6 +102,8 @@ public abstract class AbstractDatasourceDrivenScheduled
      * variable {@link System#setProperty}. */
     public static final String PROFILES_SYSTEM_PROPERTY_NAME = "cron.datasource.driven.scheduled.profiles";
     private static List<String> SYSTEM_PROFILES;
+
+    private static final String PREFIX_SIGN_OF_TIMES_REGISTED = "Frequency-limit-";
 
     static {  loadRegisterProfiles(); }
 
@@ -223,6 +224,9 @@ public abstract class AbstractDatasourceDrivenScheduled
         boolean managerTaskRegisterFlag = false;
 
         for (TaskElement taskElement : taskElements) {
+
+            elementCheck(taskElement);
+
             registerTask(taskElement);
             if (!managerTaskRegisterFlag && isManagerTask(taskElement)) {
                 managerTaskRegisterFlag = true;
@@ -250,6 +254,19 @@ public abstract class AbstractDatasourceDrivenScheduled
         started = true;
 
         debug("Drive scheduler service has been successfully started !");
+    }
+
+    /**
+     * @since 3.0.2
+     * @param element the task element.
+     */
+    private void elementCheck(TaskElement element) {
+        AssertUtils.assertNotBlank(element.getId(), "Bad Element : No unique ID");
+        AssertUtils.assertNotBlank(element.getTaskName(), "Bad Element : No task name");
+        AssertUtils.assertNotBlank(element.getExpression(), "Bad Element : No cron expression");
+        AssertUtils.assertNotNull(element.getUpdateSign(), "Bad Element : No update sign");
+        AssertUtils.assertTrue(element.getUpdateSign() == 0 ||
+                element.getUpdateSign() == 1, "Bad Element : update sign can only be 0 or 1");
     }
 
     /**
@@ -303,6 +320,12 @@ public abstract class AbstractDatasourceDrivenScheduled
                     // Check for changes in expressions.
                     String taskId = element.getTaskId();
                     if (!StringUtils.isBlank(taskId)) {
+                        // Last time it was run as a limited number of task execution mechanism,
+                        // if you want to continue registering and executing, you need to set
+                        // this ID to a null value.
+                        if (taskId.startsWith(PREFIX_SIGN_OF_TIMES_REGISTED)) {
+                            continue;
+                        }
                         CronTaskInfo cronTaskInfo = cronTaskRepository.getCronTaskInfo(taskId);
                         String oldExpression = cronTaskInfo != null ? cronTaskInfo.getExpression() : null;
                         if (element.expressionNoSame(oldExpression)) {
@@ -393,7 +416,20 @@ public abstract class AbstractDatasourceDrivenScheduled
             return;
         }
         Runnable taskRunnable = isManagerTask(taskElement) ? this : resolveTaskRunnable(taskElement);
-        String taskId = cronTaskRepository.register(taskElement.getExpression(), taskRunnable);
+
+        // When returning [top.osjf.cron.core.repository.CronMethodRunnable] instances that know the
+        // target object and method, dynamic registration support based on the maximum number of method
+        // runs and timeout mechanism will be supported.
+        String taskId = taskRunnable instanceof CronMethodRunnable ?
+                new CronTaskRegistrar(new CronTask(taskElement.getExpression(), (CronMethodRunnable) taskRunnable))
+                        .registerFor(cronTaskRepository) :
+                cronTaskRepository.register(taskElement.getExpression(), taskRunnable);
+
+        // Registration with a limit on the number of runs will not be able to return the unique ID of the
+        // task. Therefore, a prefix+the task ID set by the user will be used as the task registration ID,
+        // in order to pause the registration of this task when checking again.
+        if (StringUtils.isBlank(taskId)) taskId = PREFIX_SIGN_OF_TIMES_REGISTED + taskElement.getId();
+
         taskElement.setTaskId(taskId);
         taskElement.setStatusDescription(true, "Running");
         debug("[Task-{}] Successfully to register : name [{}] ||  description [{}] || expression [{}]",
@@ -483,15 +519,8 @@ public abstract class AbstractDatasourceDrivenScheduled
             debug("Failed to resolve task [" + element.getId() + "] to runnable.", ex);
             throw new DataSourceDrivenException("Failed to resolve task runnable " + element.getId(), ex);
         }
-        return () -> {
-            try {
-                ReflectUtils.invokeMethod(target, targetMethod);
-            }
-            catch (Exception ex) {
-                debug("Failed to invoke task [" + element.getId() + "].", ex);
-                throw new DataSourceDrivenException("Failed to invoke task " + element.getId(), ex);
-            }
-        };
+
+        return new CronMethodRunnable(target, targetMethod);
     }
 
     /**
