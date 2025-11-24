@@ -176,6 +176,7 @@ public abstract class AbstractRunTimeoutRegistrarRepository
     @Override
     public void call(String expression, Runnable runnable, String id) {
         if (runnable instanceof TimeoutMonitoringRunnable) {
+            ((TimeoutMonitoringRunnable) runnable).setTaskId(id);
             taskRunTimeoutMap.putIfAbsent(id, ((TimeoutMonitoringRunnable) runnable).getTimeout());
         }
     }
