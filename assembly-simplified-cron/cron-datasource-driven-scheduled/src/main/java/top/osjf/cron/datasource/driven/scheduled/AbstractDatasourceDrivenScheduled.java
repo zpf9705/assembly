@@ -295,6 +295,8 @@ public abstract class AbstractDatasourceDrivenScheduled
 
         for (TaskElement element : runtimeCheckedDatasourceTaskElements) {
 
+            elementCheck(element);
+
             // Pre-check for dynamic changes in markers.
             if (element.isAfterUpdate()) {
 
