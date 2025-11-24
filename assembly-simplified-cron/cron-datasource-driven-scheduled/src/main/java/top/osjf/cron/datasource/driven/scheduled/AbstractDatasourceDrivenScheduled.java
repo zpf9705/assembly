@@ -495,7 +495,10 @@ public abstract class AbstractDatasourceDrivenScheduled
      * the method is used as a candidate resolution for {@link TaskElement#getTaskName()}.
      *
      * @param element the task element information.
-     * @return the Task execution function.
+     * @return Return the {@link CronMethodRunnable} type, which supports the parsing of annotations
+     * {@link RunTimes} and {@link RunTimeout} by the source method, and supports a registration
+     * mechanism with timeout control and limit on the number of times. Otherwise, execute {@link Runnable}
+     * normally. For detailed implementation, please refer to method {@link #registerTask(TaskElement)}.
      * @throws DataSourceDrivenException If the parsing rules are not met or the task fails to run.
      */
     @NotNull

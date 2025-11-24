@@ -28,12 +28,13 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.expression.BeanFactoryResolver;
+import org.springframework.core.MethodParameter;
+import org.springframework.core.ResolvableType;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.env.Environment;
-import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
-import org.springframework.util.ReflectionUtils;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.repository.CronMethodRunnable;
@@ -42,6 +43,7 @@ import top.osjf.cron.core.util.AssertUtils;
 import top.osjf.cron.core.util.StringUtils;
 import top.osjf.cron.datasource.driven.scheduled.*;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -191,8 +193,44 @@ public class SpringDatasourceDrivenScheduled
         String taskName = element.getTaskName();
         AssertUtils.assertNotBlank(taskName, "Task name not be empty");
         Expression expression = expressionParser.parseExpression(taskName);
-        return new CronMethodRunnable(expression,
-                ReflectionUtils.findMethod(expression.getClass(), "getValue", EvaluationContext.class));
+        Method sourceMethod = getSourceMethod(expression);
+        // If the source method cannot be found, simply call the expression to execute it.
+        if (sourceMethod == null) {
+            return ()-> expression.getValue(evaluationContext);
+        }
+        return new CronMethodRunnable(
+                /* It is only used for checking occupancy and has no practical purpose. */
+                expression,
+                sourceMethod) {
+
+            /**
+             * The actual method execution is not handed over to the incoming objects and
+             * methods, but to the parsed expression for execution.
+             */
+            @Override
+            public void run() {
+                expression.getValue(evaluationContext);
+            }
+        };
+    }
+
+    /**
+     * Return an instance of the source method that parses the given {@link Expression}.
+     * @param expression the expression instance.
+     * @return the source method.
+     * @since 3.0.2
+     */
+    @Nullable
+    private Method getSourceMethod(Expression expression) {
+        TypeDescriptor descriptor = expression.getValueTypeDescriptor(evaluationContext);
+        if (descriptor != null) {
+            ResolvableType resolvableType = descriptor.getResolvableType();
+            Object source = resolvableType.getSource();
+            if (source instanceof MethodParameter) {
+                return ((MethodParameter) source).getMethod();
+            }
+        }
+        return null;
     }
 
     @Override
