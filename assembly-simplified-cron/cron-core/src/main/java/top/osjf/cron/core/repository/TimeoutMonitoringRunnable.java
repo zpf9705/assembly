@@ -47,7 +47,7 @@ public class TimeoutMonitoringRunnable implements Runnable {
     @Nullable private ExecutorService monitoringExecutor;
 
     /** The unique ID of the registered task. */
-    @Nullable private String taskId;
+    private String taskId = "UN-KNOW ID";
 
     /**
      * Construct a {@code TimeoutMonitoringRunnable} with given real {@link Runnable}
@@ -90,7 +90,8 @@ public class TimeoutMonitoringRunnable implements Runnable {
      * Set the registration ID for the delegated task {@link #real}.
      * @param taskId the registration ID for delegated task {@link #real}
      */
-    public void setTaskId(@Nullable String taskId) {
+    public void setTaskId(String taskId) {
+        AssertUtils.assertNotBlank(taskId, "TaskId not be blank");
         this.taskId = taskId;
     }
 
@@ -172,8 +173,6 @@ public class TimeoutMonitoringRunnable implements Runnable {
      * @param future the input {@link Future}.
      */
     void cancel(Future<?> future) {
-        String taskId = this.taskId;
-        taskId = taskId == null ? "UN-KNOW ID" : taskId;
         if (!future.cancel(true)) {
             if (future.isDone()) {
                 LOGGER.warn("Task [{}] Cannot cancel task because it has already completed.",
