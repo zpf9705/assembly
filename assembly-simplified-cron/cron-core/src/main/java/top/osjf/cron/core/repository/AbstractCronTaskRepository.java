@@ -43,7 +43,9 @@ public abstract class AbstractCronTaskRepository
     public String register(String expression, Runnable runnable) throws CronInternalException {
         AssertUtils.assertNotBlank(expression, "expression must not be blank");
         AssertUtils.assertNotNull(runnable, "runnable must not be null");
-        return registerInternal(expression, runnable);
+        String id = registerInternal(expression, runnable);
+        call(expression, runnable, id);
+        return id;
     }
 
     /**
@@ -54,7 +56,9 @@ public abstract class AbstractCronTaskRepository
             throws CronInternalException {
         AssertUtils.assertNotBlank(expression, "expression must not be blank");
         AssertUtils.assertNotNull(runnable, "runnable must not be null");
-        return registerInternal(expression, runnable);
+        String id = registerInternal(expression, runnable);
+        call(expression, runnable, id);
+        return id;
     }
 
     /**
@@ -65,7 +69,9 @@ public abstract class AbstractCronTaskRepository
             throws CronInternalException {
         AssertUtils.assertNotBlank(expression, "expression must not be blank");
         AssertUtils.assertNotNull(body, "body must not be null");
-        return registerInternal(expression, body);
+        String id = registerInternal(expression, body);
+        call(expression, body, id);
+        return id;
     }
 
     /**
@@ -76,7 +82,9 @@ public abstract class AbstractCronTaskRepository
             throws CronInternalException, UnsupportedTaskBodyException {
         AssertUtils.assertNotBlank(expression, "expression must not be blank");
         AssertUtils.assertNotNull(body, "body must not be null");
-        return registerInternal(expression, body);
+        String id = registerInternal(expression, body);
+        call(expression, body, id);
+        return id;
     }
 
     /**
@@ -85,7 +93,9 @@ public abstract class AbstractCronTaskRepository
     @Override
     public String register(CronTask task) throws CronInternalException {
         AssertUtils.assertNotNull(task, "task must not be blank");
-        return registerInternal(task);
+        String id = registerInternal(task);
+        call(task, id);
+        return id;
     }
 
     /**
@@ -221,6 +231,18 @@ public abstract class AbstractCronTaskRepository
     }
 
     /**
+     * Retrieve the corresponding {@link RunningTimeout} configuration from the expired
+     * configuration instance cache based on the unique ID.
+     * @param taskId the specify task id.
+     * @return The timeout configuration instance for a single run of this task.
+     * @since 3.0.2
+     */
+    @Nullable
+    protected RunningTimeout getTimeoutConfig(String taskId) {
+        return getTaskRunTimeoutMap().getOrDefault(taskId, null);
+    }
+
+    /**
      * Customize a specified {@link CronTaskInfo}.
      * @param cronTaskInfo a specified {@link CronTaskInfo}.
      * @return a specified {@link CronTaskInfo}.
@@ -233,7 +255,8 @@ public abstract class AbstractCronTaskRepository
         }
         // Setting remaining number of runs.
         cronTaskInfo.setRemainingNumberOfRuns(getTaskRemainingNumberOfRuns(cronTaskInfo.getId()));
-
+        // Setting running timeout config.
+        cronTaskInfo.setTimeoutConfig(getTimeoutConfig(cronTaskInfo.getId()));
         return cronTaskInfo;
     }
 }
