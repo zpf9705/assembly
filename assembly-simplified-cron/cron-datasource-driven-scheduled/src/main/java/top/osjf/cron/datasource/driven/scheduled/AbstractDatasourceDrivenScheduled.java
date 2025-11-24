@@ -310,6 +310,7 @@ public abstract class AbstractDatasourceDrivenScheduled
                                 " please ignore this reminder.", element.getId(), element.getExpression());
                     }
                     String taskId = element.getTaskId();
+                    // Tasks with limited registration times do not require manual deletion of tasks.
                     if (isFrequencyLimitTask(element)) {
                         debug("[Runtime-checked-Task-{}] Task name [{}] description [{}]  is a task that " +
                                         "limits the number of registrations and does not require manual " +
