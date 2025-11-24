@@ -310,6 +310,13 @@ public abstract class AbstractDatasourceDrivenScheduled
                                 " please ignore this reminder.", element.getId(), element.getExpression());
                     }
                     String taskId = element.getTaskId();
+                    if (isFrequencyLimitTask(element)) {
+                        debug("[Runtime-checked-Task-{}] Task name [{}] description [{}]  is a task that " +
+                                        "limits the number of registrations and does not require manual " +
+                                        "deletion of tasks.",
+                                element.getId(), element.getTaskName(), element.getTaskDescription());
+                        continue;
+                    }
                     cronTaskRepository.remove(taskId);
                     element.pausedClear();
                     debug("[Runtime-checked-Task-{}] [{}] execution has been stopped.",
@@ -328,7 +335,11 @@ public abstract class AbstractDatasourceDrivenScheduled
                         // Last time it was run as a limited number of task execution mechanism,
                         // if you want to continue registering and executing, you need to set
                         // this ID to a null value.
-                        if (taskId.startsWith(PREFIX_SIGN_OF_TIMES_REGISTED)) {
+                        if (isFrequencyLimitTask(element)) {
+                            debug("[Runtime-checked-Task-{}] Task name [{}] description [{}]  is a limited " +
+                                            "registration task. If you need to make any configuration changes, " +
+                                            "please change the task ID to a null value.",
+                                    element.getId(), element.getTaskName(), element.getTaskDescription());
                             continue;
                         }
                         CronTaskInfo cronTaskInfo = cronTaskRepository.getCronTaskInfo(taskId);
@@ -360,6 +371,10 @@ public abstract class AbstractDatasourceDrivenScheduled
 
     private static String getActiveTime() {
         return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    }
+
+    private static boolean isFrequencyLimitTask(TaskElement element) {
+        return element.getTaskId().startsWith(PREFIX_SIGN_OF_TIMES_REGISTED);
     }
 
     /**
