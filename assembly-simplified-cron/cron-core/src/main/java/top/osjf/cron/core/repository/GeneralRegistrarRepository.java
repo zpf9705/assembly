@@ -39,7 +39,7 @@ import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
-public interface GeneralRegistrarRepository extends Repository {
+public interface GeneralRegistrarRepository extends Repository, RegistrationCallback {
 
     /**
      * Register a new scheduled task using the given cron expression and a {@code Runnable}.
