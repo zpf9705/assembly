@@ -22,6 +22,10 @@ import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.core.util.AssertUtils;
 
+import java.util.Collections;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * An abstract implementation class of {@link RunTimeoutRegistrarRepository} that adds
  * a single timeout run on top of regular registration and run limit registration.
@@ -36,7 +40,14 @@ import top.osjf.cron.core.util.AssertUtils;
 public abstract class AbstractRunTimeoutRegistrarRepository
         extends AbstractRunTimesRegistrarRepository implements RunTimeoutRegistrarRepository {
 
+    /**
+     * A thread-safe, immutable-reference map that stores the running timeout configuration for each task.
+     * @since 3.0.2
+     */
+    private final Map<String, RunningTimeout> taskRunTimeoutMap = new ConcurrentHashMap<>(16);
+
     private SuperiorPropertiesParsedThreadPoolExecutor monitoringExecutor;
+
 
     /**
      * {@inheritDoc}
@@ -89,7 +100,7 @@ public abstract class AbstractRunTimeoutRegistrarRepository
     public String register(String expression, TaskBody body, RunningTimeout timeout)
             throws CronInternalException, UnsupportedTaskBodyException {
         AssertUtils.assertNotNull(timeout, "runningTimeout not be null");
-        return register(expression, wrapWithTimeoutMonitoring(asRunnable(body), timeout));
+        return register(expression, asRunnable(body), timeout);
     }
 
     /**
@@ -157,6 +168,25 @@ public abstract class AbstractRunTimeoutRegistrarRepository
     public void stop() {
         super.stop();
         closeMonitoringExecutor();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void call(String expression, Runnable runnable, String id) {
+        if (runnable instanceof TimeoutMonitoringRunnable) {
+            taskRunTimeoutMap.putIfAbsent(id, ((TimeoutMonitoringRunnable) runnable).getTimeout());
+        }
+    }
+
+    /**
+     * Returns an unmodifiable view of the task running timeout map.
+     * @return an unmodifiable Map mapping task IDs (String) to their {@code RunningTimeout} objects.
+     * @since 3.0.2
+     */
+    protected Map<String, RunningTimeout> getTaskRunTimeoutMap() {
+        return Collections.unmodifiableMap(taskRunTimeoutMap);
     }
 
     /**
