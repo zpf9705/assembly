@@ -19,6 +19,7 @@ package top.osjf.cron.spring;
 
 import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.repository.CronTaskInfo;
+import top.osjf.cron.core.repository.RunningTimeout;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -63,6 +64,12 @@ public final class CronTaskInfoView implements Serializable {
     private final long remainingNumberOfRuns;
 
     /**
+     * An instance of timeout configuration for a single task run.
+     * @since 3.0.2
+     */
+    private final RunningTimeout timeoutConfig;
+
+    /**
      * Creates a new {@link CronTaskInfoView} by given {@link CronTaskInfo}.
      *
      * @param cronTaskInfo the given {@link CronTaskInfo} obj.
@@ -76,6 +83,7 @@ public final class CronTaskInfoView implements Serializable {
             this.sourceMethod = mod.toString();
         }
         this.remainingNumberOfRuns = cronTaskInfo.getRemainingNumberOfRuns();
+        this.timeoutConfig = cronTaskInfo.getTimeoutConfig();
     }
 
     /**
@@ -113,5 +121,13 @@ public final class CronTaskInfoView implements Serializable {
      */
     public long getRemainingNumberOfRuns() {
         return remainingNumberOfRuns;
+    }
+
+    /**
+     * @return {@link #timeoutConfig}
+     */
+    @Nullable
+    public RunningTimeout getTimeoutConfig() {
+        return timeoutConfig;
     }
 }

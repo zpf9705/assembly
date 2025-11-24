@@ -19,6 +19,7 @@ package top.osjf.cron.core.repository;
 
 import top.osjf.cron.core.util.AssertUtils;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -103,5 +104,27 @@ public class RunningTimeout {
      */
     public RunningTimeoutPolicy getPolicy() {
         return policy;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RunningTimeout that = (RunningTimeout) o;
+        return timeout == that.timeout && timeUnit == that.timeUnit && policy == that.policy;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(timeout, timeUnit, policy);
+    }
+
+    @Override
+    public String toString() {
+        return "RunningTimeout{" +
+                "timeout=" + timeout +
+                ", timeUnit=" + timeUnit +
+                ", policy=" + policy +
+                '}';
     }
 }
