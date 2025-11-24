@@ -103,6 +103,11 @@ public abstract class AbstractDatasourceDrivenScheduled
     public static final String PROFILES_SYSTEM_PROPERTY_NAME = "cron.datasource.driven.scheduled.profiles";
     private static List<String> SYSTEM_PROFILES;
 
+    /**
+     * Due to compatibility limitations on {@link RunTimes} run times, it is not possible to return
+     * the task ID and a custom prefix constant is assigned to the combined task ID.
+     * @since 3.0.2
+     */
     private static final String PREFIX_SIGN_OF_TIMES_REGISTED = "Frequency-limit-";
 
     static {  loadRegisterProfiles(); }
