@@ -525,7 +525,6 @@ public abstract class AbstractDatasourceDrivenScheduled
     @NotNull
     protected Runnable resolveTaskRunnable(TaskElement element) {
         String taskName = element.getTaskName();
-        AssertUtils.assertNotBlank(taskName, "Task name not be empty");
         String[] sp = taskName.split("@"); /*class.name()@method.name()*/
         if (sp.length != 2) {
             debug("{} does not comply with parsing rules [class's qualified name @ method name]", taskName);
