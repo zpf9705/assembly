@@ -268,7 +268,6 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
                 }
                 this.scheduledFuture
                         = scheduledExecutorService.schedule(this, getNextDelaySeconds(), TimeUnit.SECONDS);
-                willGet();
             } finally {
                 scheduleLock.unlock();
             }
@@ -280,12 +279,6 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
                 return scheduledFuture;
             } finally {
                 scheduleLock.unlock();
-            }
-        }
-
-        private void willGet() {
-            if (rawRunnable instanceof TimeoutMonitoringRunnable) {
-                ((TimeoutMonitoringRunnable) rawRunnable).get(scheduledFuture);
             }
         }
 
@@ -313,7 +306,13 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
          * @return A new {@link CronTaskInfo} by this.
          */
         public CronTaskInfo toCronTaskInfo() {
-            return customizeCronTaskInfo(new CronTaskInfo(listenerContext.id, cron.asString(), rawRunnable));
+            Runnable runnable = unwaperRunnable(rawRunnable);
+            if (runnable instanceof CronMethodRunnable) {
+                CronMethodRunnable cr = (CronMethodRunnable) runnable;
+                return customizeCronTaskInfo(new CronTaskInfo(listenerContext.id, cron.asString(), runnable,
+                        cr.getTarget(), cr.getMethod()));
+            }
+            return customizeCronTaskInfo(new CronTaskInfo(listenerContext.id, cron.asString(), runnable));
         }
 
         @Override
