@@ -96,6 +96,13 @@ public class TimeoutMonitoringRunnable implements Runnable {
     }
 
     /**
+     * @return the real {@link Runnable}.
+     */
+    public Runnable getReal() {
+        return real;
+    }
+
+    /**
      * @return the configure instance {@link RunningTimeout}.
      */
     protected RunningTimeout getTimeout() {

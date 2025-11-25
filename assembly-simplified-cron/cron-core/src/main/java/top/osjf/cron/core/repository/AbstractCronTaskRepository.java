@@ -259,4 +259,19 @@ public abstract class AbstractCronTaskRepository
         cronTaskInfo.setTimeoutConfig(getTimeoutConfig(cronTaskInfo.getId()));
         return cronTaskInfo;
     }
+
+    /**
+     * Unwraps the given Runnable instance. If the provided Runnable is an instance of
+     * {@link TimeoutMonitoringRunnable}, this method returns the underlying wrapped task
+     * via {@code getReal()}. Otherwise, it returns the original Runnable directly.
+     * @param given the {@code Runnable} to unwrap.
+     * @return the underlying real Runnable if wrapped; otherwise, the same instance.
+     * @since 3.0.2
+     */
+    protected Runnable unwaperRunnable(Runnable given) {
+        if (given instanceof TimeoutMonitoringRunnable) {
+            return ((TimeoutMonitoringRunnable) given).getReal();
+        }
+        return given;
+    }
 }
