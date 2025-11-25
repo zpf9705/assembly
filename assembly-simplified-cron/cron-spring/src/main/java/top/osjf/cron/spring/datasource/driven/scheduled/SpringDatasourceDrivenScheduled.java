@@ -198,10 +198,8 @@ public class SpringDatasourceDrivenScheduled
         if (sourceMethod == null) {
             return ()-> expression.getValue(evaluationContext);
         }
-        return new CronMethodRunnable(
-                /* It is only used for checking occupancy and has no practical purpose. */
-                expression,
-                sourceMethod) {
+        Object target = applicationContext.getBean(sourceMethod.getDeclaringClass());
+        return new CronMethodRunnable(target, sourceMethod) {
 
             /**
              * The actual method execution is not handed over to the incoming objects and
