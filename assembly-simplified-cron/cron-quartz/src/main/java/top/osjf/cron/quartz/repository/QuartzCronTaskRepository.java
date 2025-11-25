@@ -27,7 +27,6 @@ import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.core.listener.CronListenerCollector;
 import top.osjf.cron.core.repository.*;
-import top.osjf.cron.core.util.StringUtils;
 import top.osjf.cron.quartz.QuartzUtils;
 import top.osjf.cron.quartz.listener.JobListenerImpl;
 
@@ -60,12 +59,6 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
     private static final int DEFAULT_THREAD_COUNT = 10;
 
     /**
-     * The factory class property name.
-     */
-    @Deprecated
-    public static final String PROP_NAME_OF_FACTORY_CLASS = "quartz.customize.schedulerFactoryClass";
-
-    /**
      * The  property name of when the scheduler is closed, wait for the task to complete execution.
      */
     public static final String PROP_NAME_OF_IF_STOP_WAIT_JOB_COMPLETE = "quartz.customize.waitForJobsToCompleteWhenStop";
@@ -75,20 +68,11 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      */
     public static final boolean DEFAULT_IF_STOP_WAIT_JOB_COMPLETE_VALUE = false;
 
-    @Deprecated
-    private String schedulerName = Scheduler.class.getName() + UUID.randomUUID();
-
     private Properties quartzProperties = System.getProperties();
 
     private Executor taskExecutor;
 
     private RunnableJobFactory jobFactory = new RunnableJobFactory();
-
-    @Deprecated
-    private SchedulerFactory schedulerFactory;
-
-    @Deprecated
-    private Class<? extends SchedulerFactory> schedulerFactoryClass = StdSchedulerFactory.class;
 
     /**
      * The scheduled task management class of Quartz.
@@ -102,16 +86,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
 
     private boolean waitForJobsToCompleteWhenStop;
 
-    @Deprecated
-    private boolean setSchedulerName;
-
-    @Deprecated
-    private boolean setSchedulerFactoryClass;
-
     private boolean setWaitForJobsToCompleteWhenStop;
-
-    @Deprecated
-    private boolean jobFactorySet;
 
     /**
      * @since 1.0.3
@@ -122,63 +97,6 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      * @since 1.0.3
      */
     public QuartzCronTaskRepository() {
-    }
-
-    /**
-     * Creates a new {@code QuartzCronTaskRepository} using given {@code Scheduler}.
-     *
-     * @param scheduler quartz task scheduler instance after initialize.
-     * @since 1.0.3
-     * @deprecated 3.0.1
-     */
-    @Deprecated
-    public QuartzCronTaskRepository(Scheduler scheduler) {
-        this.scheduler = scheduler;
-    }
-
-    /**
-     * Creates a new {@code QuartzCronTaskRepository} using given {@code SchedulerFactory}.
-     *
-     * @param schedulerFactory quartz {@code Scheduler} product factory instance after
-     *                         initialize.
-     * @since 1.0.3
-     * @deprecated 3.0.1
-     */
-    @Deprecated
-    public QuartzCronTaskRepository(SchedulerFactory schedulerFactory) {
-        this.schedulerFactory = schedulerFactory;
-    }
-
-    /**
-     * Set the name of the Scheduler to create via the SchedulerFactory, as an
-     * alternative to the {@code org.quartz.scheduler.instanceName} property.
-     *
-     * @param schedulerName the unique name of the Scheduler.
-     * @since 1.0.3
-     */
-    @Deprecated
-    public void setSchedulerName(String schedulerName) {
-        if (!StringUtils.isBlank(schedulerName)) {
-            this.schedulerName = schedulerName;
-            setSchedulerName = true;
-        }
-    }
-
-    /**
-     * Set the class object of the {@code SchedulerFactory} implementation class.
-     * <p>When {@link #schedulerFactory} is not set, use this class object to implement
-     * class instantiation and ensure there are empty constructs.
-     *
-     * @param schedulerFactoryClass the class object of the {@code SchedulerFactory}
-     *                              implementation class.
-     * @since 1.0.3
-     */
-    @Deprecated
-    public void setSchedulerFactoryClass(Class<? extends SchedulerFactory> schedulerFactoryClass) {
-        if (schedulerFactoryClass != null) {
-            this.schedulerFactoryClass = schedulerFactoryClass;
-            setSchedulerFactoryClass = true;
-        }
     }
 
     /**
