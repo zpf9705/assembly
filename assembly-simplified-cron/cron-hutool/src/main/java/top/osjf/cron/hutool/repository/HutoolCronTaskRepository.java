@@ -106,19 +106,6 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
     }
 
     /**
-     * The constructor with parameter {@code Scheduler} allows developers to pass
-     * in a custom Scheduler instance to initialize the task repository.
-     *
-     * @param scheduler Custom {@code Scheduler} instance for task scheduling after
-     *                  initialize.
-     * @since 1.0.3
-     */
-    @Deprecated
-    public HutoolCronTaskRepository(Scheduler scheduler) {
-        this.scheduler = scheduler;
-    }
-
-    /**
      * Set custom thread pool.
      *
      * <p>When customizing a thread pool, it is necessary to consider whether the thread

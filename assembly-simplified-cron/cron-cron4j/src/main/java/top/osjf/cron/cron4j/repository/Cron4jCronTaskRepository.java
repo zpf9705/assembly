@@ -98,17 +98,6 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
     }
 
     /**
-     * Creates a {@code Cron4jCronTaskRepository} by given {@code Scheduler} instance.
-     *
-     * @param scheduler the given {@code Scheduler} instance after initialize.
-     * @since 1.0.3
-     */
-    @Deprecated
-    public Cron4jCronTaskRepository(Scheduler scheduler) {
-        this.scheduler = scheduler;
-    }
-
-    /**
      * Marks this scheduler daemon flag. When a scheduler is marked as a daemon
      * scheduler it spawns only daemon threads. The Java Virtual Machine exits
      * when the only threads running are all daemon threads.
