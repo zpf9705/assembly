@@ -185,6 +185,8 @@ public class SpringDatasourceDrivenScheduled
      * @throws org.springframework.expression.EvaluationException It has been clearly stated that [if there is a
      *                                                            problem during evaluation] is not encapsulated
      *                                                            as {@link DataSourceDrivenException}.
+     *
+     * @return {@inheritDoc}
      */
     @NotNull
     @Override
