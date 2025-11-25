@@ -286,13 +286,16 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
                 getInitializedScheduler().schedule(id, expression, defineIDRunnableTaskBody.getRunnable());
                 return id;
             }, CronException.class);
-        } else if (body.isWrapperFor(InvokeTaskBody.class)) {
+        }
+        else if (body.isWrapperFor(InvokeTaskBody.class)) {
             InvokeTask invokeTask = body.unwrap(InvokeTaskBody.class).getInvokeTask();
             return RepositoryUtils.doRegister(() -> getInitializedScheduler().schedule(expression, invokeTask),
                     CronException.class);
-        } else if (body.isWrapperFor(RunnableTaskBody.class)) {
+        }
+        else if (body.isWrapperFor(RunnableTaskBody.class)) {
             return register(expression, body.unwrap(RunnableTaskBody.class));
-        } else if (body.isWrapperFor(SettingTaskBody.class)) {
+        }
+        else if (body.isWrapperFor(SettingTaskBody.class)) {
             return RepositoryUtils.doRegister(() -> {
                 SettingTaskBody settingTaskBody = body.unwrap(SettingTaskBody.class);
                 getInitializedScheduler().schedule(settingTaskBody.getSetting());
