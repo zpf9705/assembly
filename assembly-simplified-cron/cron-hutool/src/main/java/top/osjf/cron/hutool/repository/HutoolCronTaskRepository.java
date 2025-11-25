@@ -16,10 +16,13 @@
 
 package top.osjf.cron.hutool.repository;
 
+import cn.hutool.core.exceptions.UtilException;
+import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.cron.CronException;
 import cn.hutool.cron.Scheduler;
 import cn.hutool.cron.pattern.CronPattern;
 import cn.hutool.cron.task.InvokeTask;
+import cn.hutool.cron.task.RunnableTask;
 import cn.hutool.cron.task.Task;
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
@@ -30,6 +33,7 @@ import top.osjf.cron.core.listener.CronListenerCollector;
 import top.osjf.cron.core.repository.*;
 import top.osjf.cron.hutool.listener.TaskListenerImpl;
 
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Objects;
 import java.util.TimeZone;
@@ -317,7 +321,37 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
     @Override
     @Nullable
     public CronTaskInfo getCronTaskInfoInternal(@NotNull String id) {
-        return customizeCronTaskInfo(CronTaskInfoBuildUtils.buildCronTaskInfo(id, getInitializedScheduler()));
+        return customizeCronTaskInfo(getCronTaskInfoInternal0(id));
+    }
+
+    @Nullable private CronTaskInfo getCronTaskInfoInternal0(String id) {
+        Task task = scheduler.getTask(id);
+        CronPattern pattern = scheduler.getPattern(id);
+        if (task == null || pattern == null) {
+            return null;
+        }
+        Runnable runnable = null;
+        Object target = null;
+        Method method = null;
+        try {
+            Task sourceTask = task instanceof cn.hutool.cron.task.CronTask ?
+                    ((cn.hutool.cron.task.CronTask) task).getRaw() : task;
+            if (sourceTask instanceof RunnableTask) {
+                runnable = (Runnable) ReflectUtil.getFieldValue(sourceTask, "runnable");
+                if (runnable instanceof CronMethodRunnable) {
+                    CronMethodRunnable cmr = (CronMethodRunnable) runnable;
+                    target = cmr.getTarget();
+                    method = cmr.getMethod();
+                }
+            } else if (sourceTask instanceof InvokeTask) {
+                target = ReflectUtil.getFieldValue(sourceTask, "obj");
+                method = (Method) ReflectUtil.getFieldValue(sourceTask, "method");
+            }
+        }
+        catch (UtilException ignored) {
+        }
+        if (runnable == null) runnable = task::execute;
+        return new CronTaskInfo(id, pattern.toString(), runnable, target, method);
     }
 
     /**
