@@ -17,13 +17,12 @@
 
 package top.osjf.cron.quartz;
 
-import org.quartz.*;
+import org.quartz.Job;
+import org.quartz.JobKey;
+import org.quartz.Trigger;
 import org.quartz.impl.triggers.CronTriggerImpl;
 import top.osjf.cron.core.util.GsonUtils;
-import top.osjf.cron.core.util.ReflectUtils;
-import top.osjf.cron.core.util.StringUtils;
 
-import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -37,88 +36,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class QuartzUtils {
 
     private static final Map<String, JobKey> JOB_KEY_MAP = new ConcurrentHashMap<>(16);
-
-    /**
-     * This is a rule method check that specifies the framework setting {@link JobDetail#getJobClass()}.
-     *
-     * <p>This framework is limited by {@link MethodLevelJobFactory} for quartz's {@link Job}
-     * factory, so the defined {@link JobDetail#getJobClass()} must be {@link MethodLevelJob} or its subclass.
-     *
-     * @param jobClass the subsequent execution defines the class object of class {@link Job}.
-     * @throws NullPointerException     if input {@code jobClass} is null.
-     * @throws IllegalArgumentException if input {@code jobClass} does not meet the above rules.¬
-     */
-    @Deprecated
-    public static void checkJobClassRules(Class<? extends Job> jobClass) {
-        if (!MethodLevelJob.class.isAssignableFrom(jobClass)) {
-            throw new IllegalArgumentException
-                    ("The attribute <org.quartz.JobDetail#getJobClass> must be " +
-                            "<top.osjf.cron.quartz.MethodLevelJob> or its subclass.");
-        }
-    }
-
-    /**
-     * This is a rule method check that specifies the framework setting {@link JobKey}.
-     *
-     * <p>This framework is limited by {@link MethodLevelJobFactory} for quartz's {@link Job}
-     * factory, so the defined {@link JobKey} must meet the following conditions:
-     * <ul>
-     * <li>{@link JobKey#getGroup()} must satisfy the fully qualified name of the defined class,
-     * i.e. {@link Class#getName()}, and be a class that can currently be found by {@code classpath}
-     * .</li>
-     * <li>{@link JobKey#getName()} must be the name of the method that defines the class dependency,
-     * i.e. {@link Method#getName()}, and is a method that can be found by the current defined class.
-     * Please refer to {@link ReflectUtils#getMethod} for specific search rules.</li>
-     * </ul>
-     *
-     * @param key the setting {@link JobKey}.
-     * @throws NullPointerException     if input {@link JobKey} is null.
-     * @throws IllegalArgumentException If input {@link JobKey} does not meet the above rules.
-     * @throws IllegalStateException    If the relevant attributes of {@link JobKey} cannot be found.
-     */
-    @Deprecated
-    public static void checkJobKeyRules(JobKey key) {
-        String declaringClassName = key.getGroup();
-        if (StringUtils.isBlank(declaringClassName)) {
-            throw new IllegalArgumentException
-                    ("The attribute <org.quartz.JobKey#group> of <org.quartz.JobKey> is required and is" +
-                            " a fully qualified name for the existing class.");
-        }
-        String methodName = key.getName();
-        if (StringUtils.isBlank(methodName)) {
-            throw new IllegalArgumentException
-                    ("The attribute <org.quartz.JobKey#name> of <org.quartz.JobKey> is required and is" +
-                            " the executable method in class <" + declaringClassName + ">.");
-        }
-        Class<?> declaringClass;
-        try {
-            declaringClass = ReflectUtils.forName(declaringClassName);
-        } catch (Exception e) {
-            throw new IllegalStateException
-                    ("The input requirement for the <org.quartz.JobKey#group> attribute of " +
-                            "<org.quartz.JobKey> is the fully qualified name of the executing class.");
-        }
-        try {
-            ReflectUtils.getMethod(declaringClass, methodName);
-        } catch (Exception e) {
-            throw new IllegalStateException
-                    ("The input requirement for the <org.quartz.JobKey#name> attribute of " +
-                            "<org.quartz.JobKey> is the executable method in class <" + declaringClassName + ">.");
-        }
-    }
-
-    /**
-     * Using the rules of this framework, create a standard {@link JobDetail} instance that meets the
-     * requirements of methods {@link #checkJobClassRules} and {@link #checkJobKeyRules} mentioned above.
-     *
-     * @param methodName         the method name.
-     * @param declaringClassName the declare class name.
-     * @return {@link JobDetail} instance after standard build.
-     */
-    @Deprecated
-    public static JobDetail buildStandardJobDetail(String methodName, String declaringClassName) {
-        return JobBuilder.newJob(MethodLevelJob.class).withIdentity(methodName, declaringClassName).build();
-    }
 
     /**
      * Returns a unique identity string formatted according to {@link JobKey}.
@@ -142,28 +59,6 @@ public abstract class QuartzUtils {
      */
     public static JobKey getJobKey(String id) {
         return JOB_KEY_MAP.getOrDefault(id, null);
-    }
-
-    /**
-     * Return an ID through serialization {@link JobKey}.
-     *
-     * @param jobKey the input resolve {@link JobKey}.
-     * @return Serialize the ID of {@link JobKey} json.
-     */
-    @Deprecated
-    public static String getIdBySerializeJobKey(JobKey jobKey) {
-        return GsonUtils.toJson(jobKey);
-    }
-
-    /**
-     * Return a {@link JobKey} ID through deserialization.
-     *
-     * @param id the input resolve id.
-     * @return Deserialize the {@link JobKey} of id.
-     */
-    @Deprecated
-    public static JobKey getJobKeyByDeSerializeId(String id) {
-        return GsonUtils.fromJson(id, JobKey.class);
     }
 
     /**

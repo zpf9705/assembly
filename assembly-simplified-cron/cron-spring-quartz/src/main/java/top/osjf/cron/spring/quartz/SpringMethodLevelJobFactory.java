@@ -27,8 +27,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.lang.NonNull;
 import org.springframework.util.ClassUtils;
-import top.osjf.cron.quartz.MethodLevelJob;
-import top.osjf.cron.quartz.MethodLevelJobFactory;
 
 import java.lang.reflect.Method;
 
