@@ -404,6 +404,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
             JobKeyWrapperdRunnable jobKeyWrapperdRunnable
                     = (JobKeyWrapperdRunnable) jobDataMap.get(JobConstants.RUNNABLE_PROPERTY);
             Runnable runnable = jobKeyWrapperdRunnable.getRaw();
+            runnable = unwaperRunnable(runnable);
             Object target = null;
             Method method = null;
             if (runnable instanceof CronMethodRunnable) {
