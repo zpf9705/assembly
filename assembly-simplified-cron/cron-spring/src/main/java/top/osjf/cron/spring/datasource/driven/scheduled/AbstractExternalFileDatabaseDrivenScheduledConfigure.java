@@ -20,13 +20,12 @@ package top.osjf.cron.spring.datasource.driven.scheduled;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import top.osjf.cron.datasource.driven.scheduled.excel.ExcelDatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.external.file.ExternalFileTaskElementLoader;
 
 import java.util.function.Consumer;
 
 /**
- * Commons {@link Configuration Configuration} for {@link ExcelDatasourceTaskElementsOperation}.
+ * Commons {@link Configuration Configuration} for {@link ExternalFileTaskElementLoader}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
