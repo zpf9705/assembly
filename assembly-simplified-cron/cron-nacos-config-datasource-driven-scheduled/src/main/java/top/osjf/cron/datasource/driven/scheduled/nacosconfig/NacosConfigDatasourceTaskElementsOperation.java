@@ -105,7 +105,7 @@ public class NacosConfigDatasourceTaskElementsOperation extends RemoteDatasource
             case TEXT: return ConfigType.TEXT;
             case HTML: return ConfigType.HTML;
             case YAML: return ConfigType.YAML;
-            default: throw new UnsupportedOperationException("Unsupported type conversion.");
+            default: return ConfigType.UNSET;
         }
     }
 
