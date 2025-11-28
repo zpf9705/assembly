@@ -79,7 +79,7 @@ public class SshClientAutoConfiguration {
         return new SshClientLifecycle(sshClient);
     }
 
-    /**
+    /*
      * @deprecated {@code top.osjf.spring.autoconfigure.ssh.SshClientAutoConfiguration#clientBuilder(ObjectProvider)}
      */
     @Deprecated
