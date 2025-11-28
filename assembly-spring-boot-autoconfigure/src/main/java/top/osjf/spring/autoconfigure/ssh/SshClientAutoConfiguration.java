@@ -68,6 +68,21 @@ public class SshClientAutoConfiguration {
     }
 
     @Bean
+    public ClientBuilder clientBuilder(ObjectProvider<SshClientBuilderCustomizer> provider) {
+        ClientBuilder builder = ClientBuilder.builder();
+        provider.orderedStream().forEach(customizer -> customizer.customize(builder));
+        return builder;
+    }
+
+    @Bean
+    public SshClientLifecycle sshClientLifecycle(SshClient sshClient) {
+        return new SshClientLifecycle(sshClient);
+    }
+
+    /**
+     * @deprecated {@code top.osjf.spring.autoconfigure.ssh.SshClientAutoConfiguration#clientBuilder(ObjectProvider)}
+     */
+    @Deprecated
     public ClientBuilder clientBuilder(
             ObjectProvider<ServerKeyVerifier> ServerKeyVerifierObjectProvider,
             ObjectProvider<HostConfigEntryResolver> hostConfigEntryResolverObjectProvider,
@@ -162,12 +177,8 @@ public class SshClientAutoConfiguration {
         return builder;
     }
 
-    @Bean
-    public SshClientLifecycle sshClientLifecycle(SshClient sshClient) {
-        return new SshClientLifecycle(sshClient);
-    }
-
     @Nullable
+    @Deprecated
     private <T> T orderedStreamFirst(ObjectProvider<T> provider) {
         List<T> beans = orderedStreamList(provider);
         if (CollectionUtils.isEmpty(beans)) {
@@ -176,6 +187,7 @@ public class SshClientAutoConfiguration {
         return beans.get(0);
     }
 
+    @Deprecated
     private <T> List<T> orderedStreamList(ObjectProvider<T> provider) {
         return provider.orderedStream().collect(Collectors.toList());
     }

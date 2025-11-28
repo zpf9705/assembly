@@ -28,5 +28,6 @@ import java.util.function.Supplier;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
+@Deprecated
 public interface ChannelStreamWriterResolverSupplier extends Supplier<ChannelStreamWriterResolver> {
 }
