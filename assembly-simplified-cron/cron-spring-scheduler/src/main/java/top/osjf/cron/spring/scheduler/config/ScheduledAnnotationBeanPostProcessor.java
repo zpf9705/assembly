@@ -549,7 +549,7 @@ public class ScheduledAnnotationBeanPostProcessor
             }
         }
         Runnable runnable = createRunnable(bean, method);
-        String expression = cron.expression();
+        String expression = cron.expression(); // Must not be blank in 3.0.2
         AssertUtils.assertNotBlank(expression, "Cron expression cannot be blank");
         CronTrigger cronTrigger = new CronTrigger(expression);
         CronTask cronTask = new CronTask(runnable, cronTrigger);

@@ -179,7 +179,7 @@ public class CronAnnotationPostProcessor implements ApplicationContextAware,
      */
     protected void processCron(Cron cron, Method method, Object bean) {
         CronMethodRunnable runnable = createRunnable(bean, method);
-        String expression = cron.expression();
+        String expression = cron.expression(); // Must not be blank in 3.0.2
         AssertUtils.assertNotBlank(expression, "Cron expression cannot be blank");
         String[] profiles = cron.profiles();
         synchronized (this.cronTasks) {
