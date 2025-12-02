@@ -42,15 +42,18 @@ import org.springframework.core.env.Environment;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
-import org.springframework.scheduling.annotation.*;
+import org.springframework.scheduling.annotation.AsyncAnnotationBeanPostProcessor;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.annotation.Schedules;
+import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.*;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.scheduling.support.ScheduledMethodRunnable;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.util.StringValueResolver;
-import top.osjf.cron.core.support.ExpressionSupport;
 import top.osjf.cron.core.util.ArrayUtils;
+import top.osjf.cron.core.util.AssertUtils;
 import top.osjf.cron.spring.annotation.Cron;
 import top.osjf.cron.spring.annotation.Crones;
 
@@ -547,9 +550,7 @@ public class ScheduledAnnotationBeanPostProcessor
         }
         Runnable runnable = createRunnable(bean, method);
         String expression = cron.expression();
-        if (!StringUtils.hasText(expression)) {
-            expression = ExpressionSupport.secondLevelDefaultExpression();
-        }
+        AssertUtils.assertNotBlank(expression, "Cron expression cannot be blank");
         CronTrigger cronTrigger = new CronTrigger(expression);
         CronTask cronTask = new CronTask(runnable, cronTrigger);
         ScheduledTask scheduledTask = this.registrar.scheduleCronTask(cronTask);

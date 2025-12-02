@@ -40,10 +40,12 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import top.osjf.cron.core.lifecycle.Lifecycle;
 import top.osjf.cron.core.listener.CronListener;
-import top.osjf.cron.core.repository.*;
-import top.osjf.cron.core.support.ExpressionSupport;
+import top.osjf.cron.core.repository.CronMethodRunnable;
+import top.osjf.cron.core.repository.CronTask;
+import top.osjf.cron.core.repository.CronTaskRegistrar;
+import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.core.util.ArrayUtils;
-import top.osjf.cron.core.util.StringUtils;
+import top.osjf.cron.core.util.AssertUtils;
 import top.osjf.cron.spring.annotation.Cron;
 import top.osjf.cron.spring.annotation.Crones;
 
@@ -96,6 +98,7 @@ public class CronAnnotationPostProcessor implements ApplicationContextAware,
 
     private final Set<CronTaskRegistrar> cronTasks = Collections.newSetFromMap(new ConcurrentHashMap<>(16));
 
+    @Deprecated
     private static final boolean isCron4j;
 
     static {
@@ -176,15 +179,9 @@ public class CronAnnotationPostProcessor implements ApplicationContextAware,
      */
     protected void processCron(Cron cron, Method method, Object bean) {
         CronMethodRunnable runnable = createRunnable(bean, method);
-        String[] profiles = cron.profiles();
         String expression = cron.expression();
-        if (StringUtils.isBlank(expression)) {
-            if (isCron4j) {
-                expression = ExpressionSupport.minuteLevelDefaultExpression();
-            } else {
-                expression = ExpressionSupport.secondLevelDefaultExpression();
-            }
-        }
+        AssertUtils.assertNotBlank(expression, "Cron expression cannot be blank");
+        String[] profiles = cron.profiles();
         synchronized (this.cronTasks) {
             //No environment specified or specified environment adapted
             // to the current activated environment.

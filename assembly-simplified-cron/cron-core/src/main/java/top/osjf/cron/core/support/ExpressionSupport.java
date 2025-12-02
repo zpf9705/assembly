@@ -23,6 +23,7 @@ package top.osjf.cron.core.support;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
+@Deprecated
 public final class ExpressionSupport {
     private ExpressionSupport() {
     }
