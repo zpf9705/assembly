@@ -21,10 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.repository.*;
-import top.osjf.cron.core.util.AssertUtils;
-import top.osjf.cron.core.util.CollectionUtils;
-import top.osjf.cron.core.util.ReflectUtils;
-import top.osjf.cron.core.util.StringUtils;
+import top.osjf.cron.core.util.*;
 
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
@@ -536,7 +533,7 @@ public abstract class AbstractDatasourceDrivenScheduled
         Object target;
         Method targetMethod;
         try {
-            Class<?> clazz = ReflectUtils.forName(sp[0]);
+            Class<?> clazz = ClassUtils.forName(sp[0]);
             target = ReflectUtils.newInstance(clazz);
             targetMethod = ReflectUtils.getMethod(clazz, sp[1]);
         }
