@@ -67,7 +67,8 @@ public abstract class ReflectUtils {
         try {
             makeAccessible(method);
             return method.invoke(target, args);
-        } catch (InvocationTargetException ex) {
+        }
+        catch (InvocationTargetException ex) {
             Throwable targetException = ex.getTargetException();
             if (targetException instanceof RuntimeException) {
                 throw (RuntimeException) targetException;
@@ -76,7 +77,8 @@ public abstract class ReflectUtils {
                 throw (Error) targetException;
             }
             throw new UndeclaredThrowableException(targetException);
-        } catch (IllegalAccessException ex) {
+        }
+        catch (IllegalAccessException ex) {
             throw new UndeclaredThrowableException(ex);
         }
     }
@@ -120,16 +122,19 @@ public abstract class ReflectUtils {
         if (paramTypes != null) {
             try {
                 return clazz.getMethod(methodName, paramTypes);
-            } catch (NoSuchMethodException ex) {
+            }
+            catch (NoSuchMethodException ex) {
                 throw new IllegalStateException("Expected method not found: " + ex);
             }
         } else {
             Set<Method> candidates = findMethodCandidatesByName(clazz, methodName);
             if (candidates.size() == 1) {
                 return candidates.iterator().next();
-            } else if (candidates.isEmpty()) {
+            }
+            else if (candidates.isEmpty()) {
                 throw new IllegalStateException("Expected method not found: " + clazz.getName() + '.' + methodName);
-            } else {
+            }
+            else {
                 throw new IllegalStateException("No unique method found: " + clazz.getName() + '.' + methodName);
             }
         }
@@ -160,10 +165,12 @@ public abstract class ReflectUtils {
     public static <T> T newInstance(Class<T> clazz) {
         try {
             return clazz.newInstance();
-        } catch (InstantiationException e) {
-            throw new IllegalArgumentException(e);
-        } catch (IllegalAccessException e) {
-            throw new UndeclaredThrowableException(e);
+        }
+        catch (InstantiationException ex) {
+            throw new IllegalArgumentException(ex);
+        }
+        catch (IllegalAccessException ex) {
+            throw new UndeclaredThrowableException(ex);
         }
     }
 
@@ -180,7 +187,8 @@ public abstract class ReflectUtils {
     public static <T> T newInstance(Constructor<T> constructor, Object... initArgs) {
         try {
             return constructor.newInstance(initArgs);
-        } catch (InvocationTargetException ex) {
+        }
+        catch (InvocationTargetException ex) {
             Throwable targetException = ex.getTargetException();
             if (targetException instanceof RuntimeException) {
                 throw (RuntimeException) targetException;
@@ -189,7 +197,11 @@ public abstract class ReflectUtils {
                 throw (Error) targetException;
             }
             throw new UndeclaredThrowableException(targetException);
-        } catch (IllegalAccessException | InstantiationException ex) {
+        }
+        catch (InstantiationException ex) {
+            throw new IllegalArgumentException(ex);
+        }
+        catch (IllegalAccessException ex) {
             throw new UndeclaredThrowableException(ex);
         }
     }
