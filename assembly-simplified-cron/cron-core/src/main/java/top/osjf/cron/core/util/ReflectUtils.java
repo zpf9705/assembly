@@ -141,21 +141,6 @@ public abstract class ReflectUtils {
     }
 
     /**
-     * Use the API {@code forName} of {@link Class} to obtain a {@code Class} object with
-     * a given name without static initialization.
-     *
-     * @param className the given class name.
-     * @return a {@code Class} object by given name.
-     */
-    public static Class<?> forName(String className) {
-        try {
-            return Class.forName(className);
-        } catch (ClassNotFoundException e) {
-            throw new UndeclaredThrowableException(e);
-        }
-    }
-
-    /**
      * Create a new {@code T} object by given {@code Class<T>} according to {@link Class#newInstance()}.
      *
      * @param clazz given type.
