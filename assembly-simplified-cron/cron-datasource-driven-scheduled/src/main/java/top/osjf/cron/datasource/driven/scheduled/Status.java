@@ -48,7 +48,7 @@ public enum Status {
      * {@code false} otherwise.
      */
     public static boolean isStatus(String status) {
-        return Arrays.stream(Status.values()).anyMatch(s -> s.name().equals(status));
+        return Arrays.stream(Status.values()).anyMatch(s -> s.name().equalsIgnoreCase(status));
     }
 
     /**
@@ -59,6 +59,6 @@ public enum Status {
      * false otherwise.
      */
     public static boolean isActive(String status) {
-        return isStatus(status) && Status.ACTIVE.name().equals(status);
+        return isStatus(status) && Status.ACTIVE.name().equalsIgnoreCase(status);
     }
 }
