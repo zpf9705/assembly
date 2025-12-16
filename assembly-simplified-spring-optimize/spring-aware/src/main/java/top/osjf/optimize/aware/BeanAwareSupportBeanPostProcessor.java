@@ -18,6 +18,7 @@
 package top.osjf.optimize.aware;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.Aware;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
@@ -60,10 +61,12 @@ public class BeanAwareSupportBeanPostProcessor implements MergedBeanDefinitionPo
     @Override
     public void postProcessMergedBeanDefinition(@NonNull RootBeanDefinition beanDefinition,
                                                 @NonNull Class<?> beanType, @NonNull String beanName) {
-        if (BeanAware.class.isAssignableFrom(beanType)) {
-            Class<?> beanAwareClass = getBeanAwareClass(beanType);
-            beanDefinition.getPropertyValues()
-                    .addPropertyValue("bean", new RuntimeBeanReference(beanAwareClass));
+        if (Aware.class.isAssignableFrom(beanType)) {
+            if (BeanAware.class.isAssignableFrom(beanType)) {
+                Class<?> beanAwareClass = getBeanAwareClass(beanType);
+                beanDefinition.getPropertyValues()
+                        .addPropertyValue("bean", new RuntimeBeanReference(beanAwareClass));
+            }
         }
     }
 

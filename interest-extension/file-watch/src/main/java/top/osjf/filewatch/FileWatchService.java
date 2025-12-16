@@ -412,7 +412,7 @@ public class FileWatchService implements Runnable, Closeable {
             service.close();
         }
         catch (IOException ex) {
-            LOGGER.error("Close watchService occurs error", ex);
+            LOGGER.error("Close watchService [{}] occurs error", service, ex);
         }
     }
 
