@@ -118,4 +118,11 @@ public final class EventDefineTypeResolver {
                     " (Path.class, WatchEvent.class)", ex);
         }
     }
+
+    /**
+     * @since 3.0.2
+     */
+    private EventDefineTypeResolver() {
+        throw new UnsupportedOperationException("Cannot support instantiation");
+    }
 }
