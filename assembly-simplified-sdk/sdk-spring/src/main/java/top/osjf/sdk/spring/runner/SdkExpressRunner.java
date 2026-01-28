@@ -406,7 +406,7 @@ public class SdkExpressRunner {
             Map<String, Object> content = new HashMap<>();
             for (int i = 0; i < args.length; i++) {
                 Parameter parameter = parameters[i];
-                Object arg = args[0];
+                Object arg = args[i];// ISSUE FOR 3.0.1
                 if (!parameter.getType().isInstance(arg)) {
                     throw new SdkExpressRunnerException("Type "+ parameter.getType() +" is required, " +
                             "but " + arg.getClass() + " is provided.");
