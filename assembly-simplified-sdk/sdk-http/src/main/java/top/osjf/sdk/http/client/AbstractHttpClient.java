@@ -303,7 +303,8 @@ public abstract class AbstractHttpClient<R extends HttpResponse> extends Abstrac
 
             //Execute HTTP components based on encapsulation parameters.
             top.osjf.sdk.http.spi.HttpResponse spiResponse =
-                    getRequestExecutor().execute(new DefaultHttpRequest(request, getUrl(), getOptions()));
+                    getRequestExecutor().execute(new DefaultHttpRequest(request,
+                            request.resolveUrlBeforeRequest(getUrl()), getOptions()));
 
             //Get request body string parameters
             responseStr = spiResponse.getBody();
