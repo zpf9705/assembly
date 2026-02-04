@@ -19,25 +19,24 @@ package top.osjf.sdk.http.spi;
 
 import top.osjf.sdk.core.lang.Nullable;
 
-import static java.util.Objects.requireNonNull;
-
 /**
- * Default implementation for {@link ProtocolVersion}.
+ * The transmission protocol simply wraps objects and supports custom conversion
+ * of {@link top.osjf.sdk.core.Wrapper}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 3.0.1
+ * @since 3.0.2
  */
-public class DefaultProtocolVersion implements ProtocolVersion {
+public class WrapperedProtocolVersion implements ProtocolVersion {
 
-    private final Object protocolVersion;
+    @Nullable private final Object protocolVersion;
 
-    public DefaultProtocolVersion(@Nullable Object protocolVersion) {
-        requireNonNull(protocolVersion, "protocolVersion");
+    public WrapperedProtocolVersion(@Nullable Object protocolVersion) {
         this.protocolVersion = protocolVersion;
     }
 
     @Override
     public boolean isWrapperFor(Class<?> clazz) {
+        if (protocolVersion == null) return false;
         return clazz.isInstance(protocolVersion);
     }
 

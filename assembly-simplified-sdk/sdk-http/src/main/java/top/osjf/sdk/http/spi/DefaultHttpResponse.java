@@ -60,7 +60,7 @@ public class DefaultHttpResponse implements HttpResponse {
         this.headerMap = Collections.unmodifiableMap(headerMap);
         this.charset = charset;
         this.body = body;
-        this.protocolVersion = new DefaultProtocolVersion(protocolVersion);
+        this.protocolVersion = new WrapperedProtocolVersion(protocolVersion);
     }
     @Override public int getStatusCode() {
         return statusCode;
