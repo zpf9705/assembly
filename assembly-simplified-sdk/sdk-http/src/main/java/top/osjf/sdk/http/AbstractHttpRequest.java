@@ -161,6 +161,14 @@ public abstract class AbstractHttpRequest<R extends AbstractHttpResponse> extend
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String resolveUrlBeforeRequest(String basicallyCompleteUrl) {
+        return basicallyCompleteUrl;
+    }
+
+    /**
      * Format the actual request address of the SDK and concatenate subsequent URLs.
      *
      * <p>Here, the splicing parameters of the {@link #urlJoin()} method will be
