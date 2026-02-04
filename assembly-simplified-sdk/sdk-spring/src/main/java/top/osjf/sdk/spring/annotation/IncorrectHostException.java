@@ -37,7 +37,10 @@ import top.osjf.sdk.core.exception.SdkIllegalArgumentException;
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
+ * @deprecated Abandoned since version 3.0.2, verification will be left to the developers themselves and
+ * will be removed in the future.
  */
+@Deprecated
 public class IncorrectHostException extends SdkIllegalArgumentException {
 
     private static final long serialVersionUID = -1221839322641243165L;

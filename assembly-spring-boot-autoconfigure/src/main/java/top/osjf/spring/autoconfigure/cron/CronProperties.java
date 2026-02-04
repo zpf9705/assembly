@@ -22,10 +22,10 @@ import top.osjf.cron.core.lifecycle.SuperiorProperties;
 import top.osjf.cron.core.repository.RunTimeoutRegistrarRepository;
 import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
 import top.osjf.cron.datasource.driven.scheduled.Constants;
-import top.osjf.cron.datasource.driven.scheduled.serialization.ConfigFormat;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
 import top.osjf.cron.spring.datasource.driven.scheduled.DataSource;
 import top.osjf.cron.spring.datasource.driven.scheduled.SpringDatasourceDrivenScheduled;
+import top.osjf.cron.spring.datasource.driven.scheduled.SubstituteConfigFormat;
 import top.osjf.spring.autoconfigure.cron.datasouce.driven.scheduled.RedisConnectionConfigBuilderCustomizer;
 
 import java.util.HashMap;
@@ -574,7 +574,7 @@ public class CronProperties {
              */
             private String dataId;
 
-            private ConfigFormat configFormat = ConfigFormat.JSON;
+            private SubstituteConfigFormat configFormat = SubstituteConfigFormat.JSON;
 
             public String getServerAddr() {
                 return serverAddr;
@@ -600,11 +600,11 @@ public class CronProperties {
                 this.dataId = dataId;
             }
 
-            public ConfigFormat getConfigFormat() {
+            public SubstituteConfigFormat getConfigFormat() {
                 return configFormat;
             }
 
-            public void setConfigFormat(ConfigFormat configFormat) {
+            public void setConfigFormat(SubstituteConfigFormat configFormat) {
                 this.configFormat = configFormat;
             }
         }
@@ -629,7 +629,7 @@ public class CronProperties {
              */
             private String channel;
 
-            private ConfigFormat configFormat = ConfigFormat.JSON;
+            private SubstituteConfigFormat configFormat = SubstituteConfigFormat.JSON;
 
             public String getRuleKey() {
                 return ruleKey;
@@ -647,11 +647,11 @@ public class CronProperties {
                 this.channel = channel;
             }
 
-            public ConfigFormat getConfigFormat() {
+            public SubstituteConfigFormat getConfigFormat() {
                 return configFormat;
             }
 
-            public void setConfigFormat(ConfigFormat configFormat) {
+            public void setConfigFormat(SubstituteConfigFormat configFormat) {
                 this.configFormat = configFormat;
             }
         }

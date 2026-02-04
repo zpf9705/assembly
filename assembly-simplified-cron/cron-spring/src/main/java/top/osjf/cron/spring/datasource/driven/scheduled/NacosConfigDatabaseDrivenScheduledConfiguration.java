@@ -40,9 +40,10 @@ public class NacosConfigDatabaseDrivenScheduledConfiguration {
         String groupId = environment.getProperty("spring.schedule.cron.scheduled-driven.nacos-config.group-id",
                 "DEFAULT_GROUP");
         String dataId = environment.getProperty("spring.schedule.cron.scheduled-driven.nacos-config.data-id");
-        ConfigFormat configFormat = environment
-                .getProperty("spring.schedule.cron.scheduled-driven.nacos-config.config-format", ConfigFormat.class,
-                        ConfigFormat.JSON);
-        return new NacosConfigDatasourceTaskElementsOperation(serverAddr, groupId, dataId, configFormat);
+        SubstituteConfigFormat configFormat = environment
+                .getProperty("spring.schedule.cron.scheduled-driven.nacos-config.config-format",
+                        SubstituteConfigFormat.class, SubstituteConfigFormat.JSON);
+        return new NacosConfigDatasourceTaskElementsOperation(serverAddr, groupId,
+                dataId, ConfigFormat.valueOf(configFormat.name()));
     }
 }

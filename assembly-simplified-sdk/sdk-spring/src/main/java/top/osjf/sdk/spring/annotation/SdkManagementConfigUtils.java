@@ -47,7 +47,10 @@ public abstract class SdkManagementConfigUtils {
      * which can be English letters (both uppercase and lowercase), digits, or hyphens.</li>
      * <li>The top-level domain (i.e., the part after the last dot) consists of 2 or more English letters.</li>
      * </ul>
+     * @deprecated Abandoned since version 3.0.2, verification will be left to the developers themselves and
+     * will be removed in the future.
      */
+    @Deprecated
     public static final String DEFAULT_DOMAIN_PATTERN
             = "^(?!-)[A-Za-z0-9-]{1,63}(?<!-)\\.(?!-)[A-Za-z0-9-]{1,63}(?<!-)\\.[A-Za-z]{2,}$";
 
@@ -59,7 +62,10 @@ public abstract class SdkManagementConfigUtils {
      * <li>The IP address consists of four octets, each with a value between 0 and 255.</li>
      * <li>The octets are separated by dots (.).</li>
      * </ul>
+     * @deprecated Abandoned since version 3.0.2, verification will be left to the developers themselves and
+     * will be removed in the future.
      */
+    @Deprecated
     public static final String DEFAULT_IP_PATTERN =
             "((25[0-5])|(2[0-4]\\d)|(1\\d\\d)|([1-9]\\d)|\\d)(\\.((25[0-5])|(2[0-4]\\d)|(1\\d\\d)|([1-9]\\d)|\\d)){3}";
 

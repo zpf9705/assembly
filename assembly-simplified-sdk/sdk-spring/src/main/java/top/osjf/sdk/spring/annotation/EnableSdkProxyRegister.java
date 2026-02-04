@@ -181,7 +181,10 @@ public @interface EnableSdkProxyRegister {
      *
      * @return A string representing the regular expression pattern for domain names.
      * @since 1.0.3
+     * @deprecated Abandoned since version 3.0.2, verification will be left to the developers themselves and
+     * will be removed in the future.
      */
+    @Deprecated
     String domainPattern() default SdkManagementConfigUtils.DEFAULT_DOMAIN_PATTERN;
 
     /**
@@ -191,6 +194,9 @@ public @interface EnableSdkProxyRegister {
      *
      * @return A string representing the regular expression pattern for IP addresses.
      * @since 1.0.3
+     * @deprecated Abandoned since version 3.0.2, verification will be left to the developers themselves and
+     * will be removed in the future.
      */
+    @Deprecated
     String ipPattern() default SdkManagementConfigUtils.DEFAULT_IP_PATTERN;
 }
