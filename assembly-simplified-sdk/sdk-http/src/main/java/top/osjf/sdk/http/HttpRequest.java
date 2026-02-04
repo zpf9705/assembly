@@ -157,4 +157,42 @@ public interface HttpRequest<R extends HttpResponse> extends Request<R> {
      */
     @Override
     boolean isAssignableRequest(Class<?> clazz);
+
+    /**
+     * Resolves the final, executable request URL by applying dynamic, context-aware adjustments
+     * to the given basically complete URL. This method is invoked <b>immediately before</b> the HTTP request is sent,
+     * allowing runtime modifications based on request context (e.g., headers, body, user session, environment flags,
+     * A/B testing group, or tenant routing rules).
+     *
+     * <p><b>Design Intent:</b>
+     * <ul>
+     *   <li>The input {@code basicallyCompleteUrl} is assumed to be syntactically valid and fully formed
+     *       (e.g., "https://api.example.com/v1/users?id=123"), but <b>not necessarily the final endpoint</b>.
+     *       It serves as a baseline — not a fixed destination.</li>
+     *   <li>This method enables <b>intelligent rewriting</b>, not simple string replacement:
+     *       e.g., appending trace IDs to query, switching host for canary traffic, injecting tenant subpaths,
+     *       normalizing schemes, or stripping sensitive parameters for logging.</li>
+     *   <li>The output must be a well-formed, ready-to-execute URL — including proper encoding, canonicalization,
+     *       and adherence to RFC 3986. No further URL processing occurs after this call.</li>
+     *   <li>Implementations <b>MUST be side-effect-free</b> and idempotent: calling it multiple times with the same input
+     *       and context must yield identical results.</li>
+     * </ul>
+     *
+     * <p><b>Example usage:</b>
+     * <pre>{@code
+     * // Input: "https://api.example.com/v1/order"
+     * // Context: tenant="acme", region="us-east", isCanary=true
+     * // Output: "https://canary-us-east.api.acme.example.com/v1/order?tenant=acme&trace_id=abc123"
+     * String finalUrl = resolveUrlBeforeRequest("https://api.example.com/v1/order");
+     * }</pre>
+     *
+     * @param basicallyCompleteUrl the baseline request URL — already protocol-, host-, path-, and query-complete,
+     *                             but subject to dynamic refinement. Must not be {@code null}.
+     * @return the resolved, fully qualified, executable URL after all contextual adjustments.
+     *         Must never be {@code null} or empty; must be RFC 3986 compliant.
+     * @throws IllegalArgumentException if {@code basicallyCompleteUrl} is malformed or violates security constraints
+     *         (e.g., contains unexpected scheme like "file://" or dangerous fragments)
+     * @since 3.0.2
+     */
+    String resolveUrlBeforeRequest(String basicallyCompleteUrl);
 }
