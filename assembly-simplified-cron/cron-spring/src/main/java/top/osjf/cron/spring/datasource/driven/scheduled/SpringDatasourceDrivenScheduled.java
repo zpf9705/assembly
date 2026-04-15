@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
@@ -124,6 +125,12 @@ public class SpringDatasourceDrivenScheduled
     public void setEnvironment(Environment environment) {
         activeProfiles.addAll(Arrays.asList(environment.getActiveProfiles()));
         this.environment = environment;
+    }
+
+    @Override
+    @Autowired(required = false)
+    public void setResolvedRunnablePostProcessors(List<ResolvedRunnablePostProcessor> resolvedRunnablePostProcessors) {
+        super.setResolvedRunnablePostProcessors(resolvedRunnablePostProcessors);
     }
 
     @Override
