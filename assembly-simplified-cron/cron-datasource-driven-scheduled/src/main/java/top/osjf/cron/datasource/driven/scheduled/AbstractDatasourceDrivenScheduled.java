@@ -20,6 +20,7 @@ package top.osjf.cron.datasource.driven.scheduled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.osjf.cron.core.lang.NotNull;
+import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.repository.*;
 import top.osjf.cron.core.util.*;
 
@@ -86,6 +87,12 @@ public abstract class AbstractDatasourceDrivenScheduled
     private final CronTaskRepository cronTaskRepository;
     private final DatasourceTaskElementsOperation datasourceTaskElementsOperation;
 
+    /**
+     * Based on the {@link Runnable} post processor set parsed from {@link TaskElement}.
+     * @since 3.0.2
+     */
+    @Nullable private List<ResolvedRunnablePostProcessor> resolvedRunnablePostProcessors;
+
     /** Flag that indicates whether this driven scheduler is currently init. */
     private boolean inited = false;
     /** Flag that indicates whether this driven scheduler is currently start. */
@@ -130,6 +137,19 @@ public abstract class AbstractDatasourceDrivenScheduled
         this.cronTaskRepository = cronTaskRepository;
         this.datasourceTaskElementsOperation = datasourceTaskElementsOperation;
         this.datasourceTaskElementsOperation.setAbstractDatasourceDrivenScheduled(this);
+    }
+
+    /**
+     * Set the post processors for {@code Runnable} that have been resolved.
+     * <p>These processors will be executed in the registration order, and the resolved
+     * {@code Runnable} can be wrapped, enhanced, or replaced.
+     * @param resolvedRunnablePostProcessors the post processors for resolved Runnable
+     * @since 3.0.2
+     */
+    public void setResolvedRunnablePostProcessors(@Nullable
+                                                  List<ResolvedRunnablePostProcessor> resolvedRunnablePostProcessors)
+    {
+        this.resolvedRunnablePostProcessors = resolvedRunnablePostProcessors;
     }
 
     @Override
@@ -436,6 +456,14 @@ public abstract class AbstractDatasourceDrivenScheduled
             return;
         }
         Runnable taskRunnable = isManagerTask(taskElement) ? this : resolveTaskRunnable(taskElement);
+
+        // Apply post processing to the resolved task Runnable if any post processors exist.
+        if (resolvedRunnablePostProcessors != null) {
+            for (ResolvedRunnablePostProcessor postProcessor : resolvedRunnablePostProcessors) {
+                // Invoke the post processor to handle the resolved task Runnable.
+                taskRunnable = postProcessor.postProcessResolvedRunnable(taskRunnable, taskElement);
+            }
+        }
 
         // When returning [top.osjf.cron.core.repository.CronMethodRunnable] instances that know the
         // target object and method, dynamic registration support based on the maximum number of method
