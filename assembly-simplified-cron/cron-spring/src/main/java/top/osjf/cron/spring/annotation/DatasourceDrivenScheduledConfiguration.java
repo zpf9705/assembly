@@ -55,6 +55,10 @@ public class DatasourceDrivenScheduledConfiguration implements ImportSelector {
                     configs.add(JpaDatabaseDrivenScheduledConfiguration.class.getCanonicalName()); break;
                 case EXCEL_CONFIG:
                     configs.add(ExcelDatabaseDrivenScheduledConfiguration.class.getCanonicalName()); break;
+                case NACOS_CONFIG:
+                    configs.add(NacosConfigDatabaseDrivenScheduledConfiguration.class.getCanonicalName()); break;
+                case REDIS:
+                    configs.add(RedisDatabaseDrivenScheduledConfiguration.class.getCanonicalName()); break;
             }
         }
 
