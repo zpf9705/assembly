@@ -51,7 +51,7 @@ public abstract class DefaultTaskParameterRegistry {
     }
 
     /**
-     * Set the dynamic parameter {@link TaskParameter} for the current execution.
+     * Set the local dynamic parameter {@link TaskParameter} for the current execution.
      * <p>When the task is actively triggered, relevant running parameters can be
      * dynamically passed in.
      * @param taskParameter the {@code TaskParameter} for setting.
@@ -66,6 +66,14 @@ public abstract class DefaultTaskParameterRegistry {
     }
 
     /**
+     * Get the local dynamic parameter {@link TaskParameter} for the current execution.
+     * @return taskParameter the {@code TaskParameter} by {@link #setLocalTaskParameter}.
+     */
+    public static TaskParameter getLocalTaskParameter() {
+        return LOCAL_PARAM.get();
+    }
+
+    /**
      * Get the {@link TaskParameter} parameter, the current thread setting value has a
      * priority greater than the persistent ID mapping parameter value.
      * @param taskId unique task identifier.
@@ -73,7 +81,7 @@ public abstract class DefaultTaskParameterRegistry {
      */
     @Nullable
     protected TaskParameter getTaskParameter(String taskId) {
-        TaskParameter taskParameter = LOCAL_PARAM.get();
+        TaskParameter taskParameter = getLocalTaskParameter();
         if (taskParameter != null) {
             return taskParameter;
         }

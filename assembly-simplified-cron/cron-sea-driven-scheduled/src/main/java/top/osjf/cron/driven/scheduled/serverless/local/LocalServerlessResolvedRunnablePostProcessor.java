@@ -252,6 +252,12 @@ public class LocalServerlessResolvedRunnablePostProcessor
                 LOGGER.error("Interrupted occurred during the execution of task function [{} - {}]/parameter [{}] && command [{}]",
                         taskElement.getId(), taskElement.getTaskName(), taskParameter, applicationStartupCommand, ex);
             }
+            finally {
+                // Clear local parameters...
+                if (getLocalTaskParameter() != null) {
+                    setLocalTaskParameter(null);
+                }
+            }
         }
 
         /**
