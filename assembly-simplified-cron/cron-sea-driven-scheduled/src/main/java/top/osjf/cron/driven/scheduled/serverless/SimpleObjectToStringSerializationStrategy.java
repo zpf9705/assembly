@@ -27,6 +27,9 @@ package top.osjf.cron.driven.scheduled.serverless;
  * @since 3.0.2
  */
 public class SimpleObjectToStringSerializationStrategy implements ObjectToStringSerializationStrategy {
+
+    public static final SimpleObjectToStringSerializationStrategy INSTANCE = new SimpleObjectToStringSerializationStrategy();
+
     @Override
     public String serializeToString(Object obj) {
         if (obj == null) return "";

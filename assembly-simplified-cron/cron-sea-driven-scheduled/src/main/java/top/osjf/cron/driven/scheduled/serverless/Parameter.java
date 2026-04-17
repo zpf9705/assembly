@@ -17,6 +17,8 @@
 
 package top.osjf.cron.driven.scheduled.serverless;
 
+import java.lang.annotation.*;
+
 /**
  * Annotation for marking fields as task execution parameters.
  * Supports custom parameter names and provides object-to-string serialization strategy
@@ -25,6 +27,9 @@ package top.osjf.cron.driven.scheduled.serverless;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
  */
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
 public @interface Parameter {
     /**
      * Defines the name of the parameter.
