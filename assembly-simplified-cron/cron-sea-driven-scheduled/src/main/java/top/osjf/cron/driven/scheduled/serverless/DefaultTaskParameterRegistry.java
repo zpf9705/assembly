@@ -56,7 +56,7 @@ public abstract class DefaultTaskParameterRegistry {
      * dynamically passed in.
      * @param taskParameter the {@code TaskParameter} for setting.
      */
-    public static void setLocalTaskParameter(@Nullable TaskParameter taskParameter) {
+    public void setLocalTaskParameter(@Nullable TaskParameter taskParameter) {
         if (taskParameter == null) {
             LOCAL_PARAM.remove();
         }
@@ -69,7 +69,7 @@ public abstract class DefaultTaskParameterRegistry {
      * Get the local dynamic parameter {@link TaskParameter} for the current execution.
      * @return taskParameter the {@code TaskParameter} by {@link #setLocalTaskParameter}.
      */
-    public static TaskParameter getLocalTaskParameter() {
+    public TaskParameter getLocalTaskParameter() {
         return LOCAL_PARAM.get();
     }
 

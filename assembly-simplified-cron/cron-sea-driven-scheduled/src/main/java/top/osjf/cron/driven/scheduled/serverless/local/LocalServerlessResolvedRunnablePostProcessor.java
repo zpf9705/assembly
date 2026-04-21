@@ -37,9 +37,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Local serverless architecture Runnable post-processor {@link ResolvedRunnablePostProcessor}.
- * Responsible for binding function JAR files and execution timeout for each task,
- * then wrapping and generating a serverless task Runnable that can run locally.
+ * {@code LocalServerlessResolvedUnablePostProcessor} is used to convert processable tasks
+ * {@link Runnable} into {@link LocalServerlessRunnable} computed by local functions.
+ *
+ * <p>This {@link ResolvedRunnablePostProcessor} implementation class can customize a unique
+ * id {@link TaskElement#getId()} (non {@link TaskElement#getTaskId()}) based on the task,
+ * add jar packages for function startup {@link #taskFunctionJarFileMapping}, and set timeout
+ * control settings for JVM process execution {@link #taskProcessTimeoutMapping}. Of course,
+ * it is not possible to set a unified function jar package, which can be used as the default
+ * when no special function jar package is added, and also includes global default timeout control.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
@@ -47,36 +53,26 @@ import java.util.concurrent.TimeUnit;
 public class LocalServerlessResolvedRunnablePostProcessor
         extends DefaultTaskParameterRegistry implements ResolvedRunnablePostProcessor {
 
-    /**
-     * Task ID -> Function execution JAR file mapping
-     * Used for caching task-specific JAR files for dynamic loading during runtime
-     */
+
+    /** Mapping of task unique custom ID {@link TaskElement#getId()} and the specific function jar package.*/
     private final ConcurrentHashMap<String, File> taskFunctionJarFileMapping = new ConcurrentHashMap<>();
 
-    /**
-     * Task ID -> Task execution timeout mapping
-     * Each task can be configured with an independent timeout control
-     */
+    /** Mapping of task unique custom ID {@link TaskElement#getId()} and process timeout control. */
     private final ConcurrentHashMap<String, Timeout> taskProcessTimeoutMapping = new ConcurrentHashMap<>();
 
-    /**
-     * Default global function JAR file
-     * Used when a task does not specify a dedicated JAR file
-     */
+    /** The default function jar package can be used as the default when not set.*/
     private File defaultFunctionJarFile;
 
-    /**
-     * Default task execution timeout (30 minutes)
-     * Used when a task does not specify an independent timeout
-     */
+    /** The default process control time (30 minutes) can be used as the default when not set.*/
     private Timeout defaultProcessTimeout = new Timeout(30, TimeUnit.MINUTES);
 
     /**
-     * Add a dedicated function JAR file for the specified task
-     * Automatically validates file existence, readability, and valid JAR format
-     *
-     * @param taskId task ID
-     * @param functionJarFile function JAR file required for task execution
+     * Add an executable and effective local function executable jar package mapping
+     * for a specific task.
+     * @param taskId          the task unique custom ID.
+     * @param functionJarFile the function JAR file required for task execution
+     * @throws IllegalArgumentException If the task ID is empty or not a qualified
+     *       function jar package.
      */
     public void addTaskFunctionJarFile(String taskId, File functionJarFile) {
         AssertUtils.assertNotBlank(taskId, "TaskId cannot be blank");
@@ -116,10 +112,11 @@ public class LocalServerlessResolvedRunnablePostProcessor
     }
 
     /**
-     * Set independent execution timeout for the specified task
-     *
-     * @param taskId task ID
-     * @param processTimeout task execution timeout object
+     * Add a function jar package to execute a mapping of process control time for a specific task.
+     * @param taskId          the task unique custom ID.
+     * @param processTimeout task execution timeout object.
+     * @throws IllegalArgumentException If the unique ID of the task is empty or {@link Timeout}
+     *      is {@literal null}.
      */
     public void addTaskProcessTimeout(String taskId, Timeout processTimeout) {
         AssertUtils.assertNotBlank(taskId, "TaskId cannot be blank");
@@ -128,8 +125,7 @@ public class LocalServerlessResolvedRunnablePostProcessor
     }
 
     /**
-     * Set global default function JAR file
-     * All tasks without a dedicated JAR will use this default JAR for execution
+     * Set a default {@link File function jar package}.
      * @param defaultFunctionJarFile the default function JAR file
      */
     public void setDefaultFunctionJarFile(File defaultFunctionJarFile) {
@@ -138,7 +134,7 @@ public class LocalServerlessResolvedRunnablePostProcessor
     }
 
     /**
-     * Set global default task execution timeout
+     * Set a default function {@link Timeout  process timeout control}.
      * @param defaultProcessTimeout the default timeout object
      */
     public void setDefaultProcessTimeout(Timeout defaultProcessTimeout) {
@@ -163,7 +159,7 @@ public class LocalServerlessResolvedRunnablePostProcessor
 
 
     /**
-     * Get task execution timeout
+     * Get task execution timeout.
      * Priority: task-specific config > global default
      *
      * @param taskId unique task identifier
@@ -186,12 +182,12 @@ public class LocalServerlessResolvedRunnablePostProcessor
     public Runnable postProcessResolvedRunnable(Runnable resolvedRunnable, TaskElement taskElement) {
         String id = taskElement.getId();
         return new LocalServerlessRunnable(resolvedRunnable, taskElement,
-                getRequiredFunctionJarFile(id), getProcessTimeout(id), getTaskParameter(id));
+                getRequiredFunctionJarFile(id), getProcessTimeout(id), getTaskParameter(id), this);
     }
 
     private static class LocalServerlessRunnable implements Runnable {
 
-        private static final Logger LOGGER = LoggerFactory.getLogger(LocalServerlessRunnable.class);
+        private final Logger LOGGER = LoggerFactory.getLogger(LocalServerlessRunnable.class);
 
         @SuppressWarnings("unused") private final Runnable resolvedRunnable;
 
@@ -203,13 +199,17 @@ public class LocalServerlessResolvedRunnablePostProcessor
 
         private final TaskParameter taskParameter;
 
+        private final DefaultTaskParameterRegistry defaultTaskParameterRegistry;
+
         public LocalServerlessRunnable(Runnable resolvedRunnable, TaskElement taskElement, File functionJarFile,
-                                       Timeout processTimeout, TaskParameter taskParameter) {
+                                       Timeout processTimeout, TaskParameter taskParameter,
+                                       DefaultTaskParameterRegistry defaultTaskParameterRegistry) {
             this.resolvedRunnable = resolvedRunnable;
             this.taskElement = taskElement;
             this.functionJarFile = functionJarFile;
             this.processTimeout = processTimeout;
             this.taskParameter = taskParameter;
+            this.defaultTaskParameterRegistry = defaultTaskParameterRegistry;
         }
 
         @Override
@@ -254,8 +254,8 @@ public class LocalServerlessResolvedRunnablePostProcessor
             }
             finally {
                 // Clear local parameters...
-                if (getLocalTaskParameter() != null) {
-                    setLocalTaskParameter(null);
+                if (defaultTaskParameterRegistry.getLocalTaskParameter() != null) {
+                    defaultTaskParameterRegistry.setLocalTaskParameter(null);
                 }
             }
         }
