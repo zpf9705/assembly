@@ -215,6 +215,7 @@ public class LocalServerlessResolvedRunnablePostProcessor
         @Override
         public void run() {
 
+            // Local parameters are prioritized for startup execution.
             TaskParameter modTaskParameter =
                     defaultTaskParameterRegistry.getLocalTaskParameter() != null ?
                             defaultTaskParameterRegistry.getLocalTaskParameter() : taskParameter;
