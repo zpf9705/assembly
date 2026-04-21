@@ -19,6 +19,7 @@ package top.osjf.cron.driven.scheduled.serverless;
 
 import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.util.AssertUtils;
+import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -35,6 +36,7 @@ public abstract class DefaultTaskParameterRegistry {
 
     private static final ThreadLocal<TaskParameter> LOCAL_PARAM = new ThreadLocal<>();
 
+    /** Mapping of task unique custom ID {@link TaskElement#getId()} and function jar starts {@link TaskParameter}. */
     private final ConcurrentHashMap<String, TaskParameter> taskParameterMapping = new ConcurrentHashMap<>();
 
     /**
@@ -74,17 +76,13 @@ public abstract class DefaultTaskParameterRegistry {
     }
 
     /**
-     * Get the {@link TaskParameter} parameter, the current thread setting value has a
-     * priority greater than the persistent ID mapping parameter value.
+     * Retrieve the mapping parameters between registered {@link TaskParameter} and input
+     * {@link TaskElement#getId()}.
      * @param taskId unique task identifier.
      * @return task {@code TaskParameter} object, or {@code null} if not found
      */
     @Nullable
     protected TaskParameter getTaskParameter(String taskId) {
-        TaskParameter taskParameter = getLocalTaskParameter();
-        if (taskParameter != null) {
-            return taskParameter;
-        }
         return taskParameterMapping.get(taskId);
     }
 }

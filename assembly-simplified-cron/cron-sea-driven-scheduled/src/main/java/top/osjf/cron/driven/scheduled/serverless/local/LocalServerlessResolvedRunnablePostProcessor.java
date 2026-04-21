@@ -215,7 +215,11 @@ public class LocalServerlessResolvedRunnablePostProcessor
         @Override
         public void run() {
 
-            String parameter = ParameterHelp.resolveJarStartupParameter(taskParameter);
+            TaskParameter modTaskParameter =
+                    defaultTaskParameterRegistry.getLocalTaskParameter() != null ?
+                            defaultTaskParameterRegistry.getLocalTaskParameter() : taskParameter;
+
+            String parameter = ParameterHelp.resolveJarStartupParameter(modTaskParameter);
 
             String applicationStartupCommand = buildStartupCommand(parameter);
 
