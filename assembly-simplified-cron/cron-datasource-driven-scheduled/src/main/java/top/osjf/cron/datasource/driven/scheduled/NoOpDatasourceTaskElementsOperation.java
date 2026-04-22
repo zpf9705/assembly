@@ -62,6 +62,22 @@ public class NoOpDatasourceTaskElementsOperation implements DatasourceTaskElemen
         return null;
     }
 
+    @Nullable
+    @Override
+    public TaskElement getElementByTaskId(String taskId) {
+        return null;
+    }
+
+    @Override
+    public List<TaskElement> getElementByTaskName(String taskName) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<TaskElement> getElementByTaskStatus(Status status) {
+        return Collections.emptyList();
+    }
+
     @Override
     public String toString() {
         return " Non operational datasourceTaskElementsOperation implementation class. ";

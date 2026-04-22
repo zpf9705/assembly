@@ -17,8 +17,6 @@
 
 package top.osjf.cron.datasource.driven.scheduled;
 
-import top.osjf.cron.core.lang.Nullable;
-
 import java.util.List;
 
 /**
@@ -41,7 +39,7 @@ import java.util.List;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
-public interface DatasourceTaskElementsOperation extends AutoCloseable {
+public interface DatasourceTaskElementsOperation extends DatasourceTaskElementsQueryOperation, AutoCloseable {
 
     /**
      * Cleans up task information data in the datasource to prevent dirty data during registration.
@@ -113,16 +111,6 @@ public interface DatasourceTaskElementsOperation extends AutoCloseable {
      *                                            of tasks during runtime.
      */
     void afterRun(List<TaskElement> runtimeCheckedDatasourceTaskElement);
-
-    /**
-     * Searches for and returns the task element with the specified unique identifier.
-     *
-     * @param id The unique identifier of the task element to find
-     * @return The instance of the matching TaskElement, or null if no element is found
-     * @see TaskElement#getId() Method to retrieve the ID of a task element
-     */
-    @Nullable
-    TaskElement getElementById(String id);
 
     /**
      * Return a {@code Boolean} variable indicating that when the data source does not provide
