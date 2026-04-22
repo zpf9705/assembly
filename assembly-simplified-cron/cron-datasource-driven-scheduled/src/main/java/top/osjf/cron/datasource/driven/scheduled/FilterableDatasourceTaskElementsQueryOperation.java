@@ -59,7 +59,7 @@ public abstract class FilterableDatasourceTaskElementsQueryOperation implements 
     @Override
     public List<TaskElement> getRuntimeNeedCheckDatasourceTaskElements() {
         return filterList(t -> Objects.equals(t.getUpdateSign(), 1)
-                || (Objects.equals(t.getUpdateSign(), 1) && t.getTaskId() == null));
+                || (Objects.equals(t.getUpdateSign(), 0) && t.getTaskId() == null));
     }
 
     /**
