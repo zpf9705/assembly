@@ -69,12 +69,12 @@ public class NoOpDatasourceTaskElementsOperation implements DatasourceTaskElemen
     }
 
     @Override
-    public List<TaskElement> getElementByTaskName(String taskName) {
+    public List<TaskElement> getElementsByTaskName(String taskName) {
         return Collections.emptyList();
     }
 
     @Override
-    public List<TaskElement> getElementByTaskStatus(Status status) {
+    public List<TaskElement> getElementsByTaskStatus(Status status) {
         return Collections.emptyList();
     }
 
