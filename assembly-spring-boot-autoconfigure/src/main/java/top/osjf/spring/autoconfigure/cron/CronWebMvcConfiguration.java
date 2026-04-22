@@ -19,6 +19,7 @@ package top.osjf.spring.autoconfigure.cron;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
@@ -45,6 +46,7 @@ import java.util.List;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ RequestMappingHandlerMapping.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.ANY)
+@ConditionalOnBean({ RequestMappingHandlerMapping.class })
 public class CronWebMvcConfiguration {
 
     /**
