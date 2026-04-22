@@ -17,7 +17,9 @@
 
 package top.osjf.cron.datasource.driven.scheduled.jpa;
 
+import org.springframework.data.domain.Example;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
+import top.osjf.cron.datasource.driven.scheduled.Status;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 
 import javax.annotation.Nullable;
@@ -100,6 +102,28 @@ public class JpaDatasourceTaskElementsOperation implements DatasourceTaskElement
     @Override
     public TaskElement getElementById(String id) {
         return jpaRepository.findById(id).orElse(null);
+    }
+
+    @Nullable
+    @Override
+    public TaskElement getElementByTaskId(String taskId) {
+        DatabaseTaskElement element = new DatabaseTaskElement();
+        element.setTaskId(taskId);
+        return jpaRepository.findOne(Example.of(element)).orElse(null);
+    }
+
+    @Override
+    public List<TaskElement> getElementsByTaskName(String taskName) {
+        DatabaseTaskElement element = new DatabaseTaskElement();
+        element.setTaskName(taskName);
+        return Collections.unmodifiableList(jpaRepository.findAll(Example.of(element)));
+    }
+
+    @Override
+    public List<TaskElement> getElementsByTaskStatus(Status status) {
+        DatabaseTaskElement element = new DatabaseTaskElement();
+        element.setStatus(status.name());
+        return Collections.unmodifiableList(jpaRepository.findAll(Example.of(element)));
     }
 
     /**

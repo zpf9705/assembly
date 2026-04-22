@@ -18,11 +18,10 @@
 package top.osjf.cron.datasource.driven.scheduled.external.file;
 
 import com.sun.nio.file.SensitivityWatchEventModifier;
-import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.lifecycle.InitializeAble;
 import top.osjf.cron.datasource.driven.scheduled.AbstractDatasourceDrivenScheduled;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
-import top.osjf.cron.datasource.driven.scheduled.Status;
+import top.osjf.cron.datasource.driven.scheduled.FilterableDatasourceTaskElementsQueryOperation;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 import top.osjf.filewatch.AmapleWatchEvent;
 import top.osjf.filewatch.AmpleFileWatchListener;
@@ -34,10 +33,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /**
  * An abstract base implementation of {@link DatasourceTaskElementsOperation} that
@@ -84,8 +80,8 @@ import java.util.stream.Collectors;
  * @see TaskElement
  */
 public abstract
-class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement> implements DatasourceTaskElementsOperation,
-        InitializeAble {
+class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement>
+        extends FilterableDatasourceTaskElementsQueryOperation implements DatasourceTaskElementsOperation, InitializeAble {
 
     private final ExternalFileTaskElementLoader<T> loader;
 
@@ -148,37 +144,11 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement> impleme
     /**
      * {@inheritDoc}
      *
-     * {@link #getDatasourceTaskElements} by {@link #loader}.
-     */
-    @Override
-    public List<TaskElement> getDatasourceTaskElements() {
-        return Collections.unmodifiableList(loader.loading(Function.identity()));
-    }
-
-    /**
-     * {@inheritDoc}
-     *
      * {@link #afterStart} by {@link #loader}.
      */
     @Override
     public void afterStart(List<TaskElement> fulledDatasourceTaskElement) {
         loader.checkedUpdate(fulledDatasourceTaskElement);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * {@link #getRuntimeNeedCheckDatasourceTaskElements} by {@link #loader}.
-     */
-    @Override
-    public List<TaskElement> getRuntimeNeedCheckDatasourceTaskElements() {
-
-        List<T> filteredDatasourceTaskElements = loader.loading(yamlTaskElements -> yamlTaskElements.stream()
-                .filter(t -> Objects.equals(t.getUpdateSign(), 1)
-                        || (Objects.equals(t.getUpdateSign(), 1) && t.getTaskId() == null))
-                .collect(Collectors.toList()));
-
-        return Collections.unmodifiableList(filteredDatasourceTaskElements);
     }
 
     /**
@@ -193,58 +163,12 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement> impleme
 
     /**
      * {@inheritDoc}
-     */
-    @Nullable
-    @Override
-    public TaskElement getElementById(String id) {
-        return filterLoadingSingle(element -> Objects.equals(element.getId(), id));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Nullable
-    @Override
-    public TaskElement getElementByTaskId(String taskId) {
-        return filterLoadingSingle(element -> Objects.equals(element.getTaskId(), taskId));
-    }
-
-    /**
-     * {@inheritDoc}
+     *
+     * {@link #getBeFilteredTaskElements()} by {@link #loader}
      */
     @Override
-    public List<TaskElement> getElementByTaskName(String taskName) {
-        return filterLoadingList(element -> Objects.equals(element.getTaskName(), taskName));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<TaskElement> getElementByTaskStatus(Status status) {
-        return filterLoadingList(element -> Objects.equals(element.getStatus(), status.name()));
-    }
-
-    /**
-     * @param filter the loading {@link Predicate Filter}.
-     * @return Filter individual results loaded.
-     * @since 3.0.2
-     */
-    @Nullable
-    private TaskElement filterLoadingSingle(Predicate<TaskElement> filter) {
-        List<TaskElement> taskElements = filterLoadingList(filter);
-        return taskElements.isEmpty() ? null : taskElements.get(0);
-    }
-
-    /**
-     * @param filter the loading {@link Predicate Filter}.
-     * @return Filter the results of the loaded list.
-     * @since 3.0.2
-     */
-    @SuppressWarnings("unchecked")
-    private List<TaskElement> filterLoadingList(Predicate<TaskElement> filter) {
-        return (List<TaskElement>) loader.loading(yamlTaskElements -> yamlTaskElements.stream()
-                .filter(filter).collect(Collectors.toList()));
+    protected List<TaskElement> getBeFilteredTaskElements() {
+        return Collections.unmodifiableList(loader.loading(Function.identity()));
     }
 
     /**

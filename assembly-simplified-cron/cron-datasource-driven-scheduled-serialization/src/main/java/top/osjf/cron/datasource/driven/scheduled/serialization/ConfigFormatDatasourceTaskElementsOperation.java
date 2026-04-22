@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import top.osjf.cron.core.util.AssertUtils;
 import top.osjf.cron.datasource.driven.scheduled.DataSourceDrivenException;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
+import top.osjf.cron.datasource.driven.scheduled.FilterableDatasourceTaskElementsQueryOperation;
 
 import java.io.IOException;
 import java.util.List;
@@ -52,6 +53,7 @@ import java.util.List;
  * @since 3.0.2
  */
 public abstract class ConfigFormatDatasourceTaskElementsOperation
+        extends FilterableDatasourceTaskElementsQueryOperation
         implements ConfigFormatProvider, DatasourceTaskElementsOperation, ConfigTaskElementSerializer {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());

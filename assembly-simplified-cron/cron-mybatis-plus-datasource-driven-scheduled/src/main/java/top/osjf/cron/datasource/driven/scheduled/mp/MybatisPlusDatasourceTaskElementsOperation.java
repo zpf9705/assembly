@@ -21,6 +21,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.IService;
 import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
+import top.osjf.cron.datasource.driven.scheduled.Status;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 
 import java.util.ArrayList;
@@ -107,7 +108,26 @@ public class MybatisPlusDatasourceTaskElementsOperation implements DatasourceTas
     @Nullable
     public TaskElement getElementById(String id) {
         return taskElementService.getOne(Wrappers.<DatabaseTaskElement>lambdaQuery()
-                .eq(DatabaseTaskElement::getTaskId, id), false);
+                .eq(DatabaseTaskElement::getId, id), false);
+    }
+
+    @Nullable
+    @Override
+    public TaskElement getElementByTaskId(String taskId) {
+        return taskElementService.getOne(Wrappers.<DatabaseTaskElement>lambdaQuery()
+                .eq(DatabaseTaskElement::getTaskId, taskId), false);
+    }
+
+    @Override
+    public List<TaskElement> getElementsByTaskName(String taskName) {
+        return Collections.unmodifiableList(taskElementService.list(Wrappers.<DatabaseTaskElement>lambdaQuery()
+                .eq(DatabaseTaskElement::getTaskName, taskName)));
+    }
+
+    @Override
+    public List<TaskElement> getElementsByTaskStatus(Status status) {
+        return Collections.unmodifiableList(taskElementService.list(Wrappers.<DatabaseTaskElement>lambdaQuery()
+                .eq(DatabaseTaskElement::getStatus, status.name())));
     }
 
     /**

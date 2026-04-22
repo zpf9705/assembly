@@ -28,9 +28,7 @@ import top.osjf.cron.datasource.driven.scheduled.serialization.ConfigurableTaskE
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 /**
  * Abstract base class for operating scheduled task elements stored in a remote data source (e.g., Nacos, Redis).
@@ -108,31 +106,9 @@ public abstract class RemoteDatasourceTaskElementsOperation extends ConfigFormat
     }
 
     @Override
-    public List<TaskElement> getDatasourceTaskElements() {
-        return Collections.unmodifiableList(getElements());
-    }
-
-    @Override
     public void afterStart(List<TaskElement> fulledDatasourceTaskElement) {
 
         updateConfig(fulledDatasourceTaskElement);
-    }
-
-    @Override
-    public List<TaskElement> getRuntimeNeedCheckDatasourceTaskElements() {
-
-        List<ConfigurableTaskElement> elements = getElements();
-
-        if (elements.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        elements = elements.stream()
-                .filter(t -> Objects.equals(t.getUpdateSign(), 1)
-                        || (Objects.equals(t.getUpdateSign(), 1) && t.getTaskId() == null))
-                .collect(Collectors.toList());
-
-        return Collections.unmodifiableList(elements);
     }
 
     @Override
@@ -141,12 +117,9 @@ public abstract class RemoteDatasourceTaskElementsOperation extends ConfigFormat
         updateConfig(runtimeCheckedDatasourceTaskElement);
     }
 
-    @Nullable
     @Override
-    public TaskElement getElementById(String id) {
-        List<ConfigurableTaskElement> elements = getElements();
-        return elements.isEmpty() ? null : elements.stream()
-                .filter(e-> Objects.equals(e.getTaskId(), id)).findFirst().orElse(null);
+    protected List<TaskElement> getBeFilteredTaskElements() {
+        return Collections.unmodifiableList(getElements());
     }
 
     @Override
