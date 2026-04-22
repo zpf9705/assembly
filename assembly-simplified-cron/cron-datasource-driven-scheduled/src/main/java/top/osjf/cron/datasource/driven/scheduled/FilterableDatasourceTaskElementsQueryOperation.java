@@ -34,10 +34,10 @@ import java.util.stream.Collectors;
  * {@link #getBeFilteredTaskElements()} to provide a complete dataset of task elements to be filtered,
  * It can automatically have the ability to query based on conditions such as primary
  *
- * <ul>key ID {@link #getElementById(String)}</ul>
- * <ul>key task ID {@link #getElementByTaskId(String)}</ul>
- * <ul>key task name {@link #getElementsByTaskName(String)}</ul>
- * <ul>key task status {@link #getElementsByTaskStatus(Status)}</ul>
+ * <ul><li>key ID {@link #getElementById(String)}</li></ul>
+ * <ul><li>key task ID {@link #getElementByTaskId(String)}</li></ul>
+ * <ul><li>key task name {@link #getElementsByTaskName(String)}</li></ul>
+ * <ul><li>key task status {@link #getElementsByTaskStatus(Status)}</li></ul>
  * etc.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
