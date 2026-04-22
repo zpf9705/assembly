@@ -17,25 +17,14 @@
 
 package top.osjf.cron.spring;
 
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportAware;
-import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
-import top.osjf.cron.core.repository.CronTaskRepository;
-import top.osjf.cron.core.util.CollectionUtils;
-import top.osjf.cron.spring.auth.AuthenticationPredicate;
-import top.osjf.cron.spring.auth.WebRequestAuthenticationInterceptor;
-import top.osjf.cron.spring.datasource.driven.scheduled.SpringHandlerMappingDatasourceDrivenScheduled;
 
 import java.lang.annotation.Annotation;
-import java.util.List;
 
 /**
  * Abstract {@link Configuration configuration} class for task registration framework.
@@ -87,52 +76,5 @@ public abstract class AbstractCronTaskConfiguration implements ImportAware {
     @Nullable
     protected Class<? extends Annotation> enableImportAnnotationType() {
         return null;
-    }
-
-    /**
-     * Return the {@link CronTaskInfoView} readable controller, which is the HTTP access interface.
-     * @param cronTaskRepository            the configured {@link CronTaskRepository}.
-     * @param requestMappingHandlerMapping  the configured {@link RequestMappingHandlerMapping}.
-     * @return the configured {@link CronTaskInfoView} readable controller.
-     */
-    @Bean
-    public CronTaskInfoReadableWebMvcHandlerController cronTaskInfoReadableWebMvcHandlerController
-            (CronTaskRepository cronTaskRepository,
-             RequestMappingHandlerMapping requestMappingHandlerMapping) {
-        return new CronTaskInfoReadableWebMvcHandlerController(cronTaskRepository, requestMappingHandlerMapping);
-    }
-
-    /**
-     * Return the authentication interceptor for accessing task scheduling information.
-     * @param provider     the lazy loader of {@link AuthenticationPredicate}.
-     * @param environment  the {@link Environment} instance.
-     * @param providers    the {@link WebRequestAuthenticationInterceptor.AuthenticationProvider} instances.
-     * @return the configured {@link CronTaskInfoView} readable controller.
-     */
-    @Bean
-    public WebRequestAuthenticationInterceptor webRequestAuthenticationInterceptor
-            (ObjectProvider<AuthenticationPredicate> provider, Environment environment,
-             @Autowired(required = false) List<WebRequestAuthenticationInterceptor.AuthenticationProvider> providers) {
-        WebRequestAuthenticationInterceptor authenticationInterceptor
-                = new WebRequestAuthenticationInterceptor(provider, environment);
-
-        // The default URL that requires registration and authentication.
-        authenticationInterceptor.registerAuthenticationPath
-                (CronTaskInfoReadableWebMvcHandlerController.REQUEST_MAPPING_PATH_OF_GET_CRON_TASK_LIST);
-        if (environment.getProperty("spring.schedule.cron.scheduled-driven.enable", boolean.class, false)) {
-            authenticationInterceptor.registerAuthenticationPath
-                    (SpringHandlerMappingDatasourceDrivenScheduled.RUNNING_MAPPING_PATH);
-        }
-
-        // The URL provided externally that requires authentication.
-        if (CollectionUtils.isNotEmpty(providers)) {
-            for (WebRequestAuthenticationInterceptor.AuthenticationProvider authenticationProvider : providers) {
-                for (String authenticationPaths : authenticationProvider.get()) {
-                    authenticationInterceptor.registerAuthenticationPath(authenticationPaths);
-                }
-            }
-        }
-
-        return authenticationInterceptor;
     }
 }

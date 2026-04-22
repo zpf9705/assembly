@@ -22,22 +22,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import top.osjf.cron.core.lifecycle.SuperiorProperties;
-import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.spring.AbstractCronTaskConfiguration;
-import top.osjf.cron.spring.CronTaskInfoReadableWebMvcHandlerController;
 import top.osjf.cron.spring.ObjectProviderUtils;
-import top.osjf.cron.spring.auth.AuthenticationPredicate;
-import top.osjf.cron.spring.auth.WebRequestAuthenticationInterceptor;
 import top.osjf.cron.spring.scheduler.SpringSchedulerTaskRepository;
-
-import java.util.List;
 
 /**
  * {@link Configuration Configuration} for {@link SpringSchedulerTaskRepository}.
@@ -81,27 +73,5 @@ public class SchedulingRepositoryConfiguration extends AbstractCronTaskConfigura
     @Bean
     public SchedulingConfigurer repositorySchedulingConfigurer(SpringSchedulerTaskRepository repository) {
         return taskRegistrar -> taskRegistrar.setTaskScheduler(repository);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Bean
-    @Override
-    public CronTaskInfoReadableWebMvcHandlerController cronTaskInfoReadableWebMvcHandlerController
-            (CronTaskRepository cronTaskRepository,
-             RequestMappingHandlerMapping requestMappingHandlerMapping) {
-        return super.cronTaskInfoReadableWebMvcHandlerController(cronTaskRepository, requestMappingHandlerMapping);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Bean
-    @Override
-    public WebRequestAuthenticationInterceptor webRequestAuthenticationInterceptor
-            (ObjectProvider<AuthenticationPredicate> provider, Environment environment,
-             @Autowired(required = false) List<WebRequestAuthenticationInterceptor.AuthenticationProvider> providers) {
-        return super.webRequestAuthenticationInterceptor(provider, environment, providers);
     }
 }

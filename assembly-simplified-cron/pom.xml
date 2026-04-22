@@ -54,6 +54,7 @@
         <module>cron-spring-cron4j</module>
         <module>cron-spring-quartz</module>
         <module>cron-spring-boot-starter</module>
+        <module>cron-sea-driven-scheduled</module>
     </modules>
 
     <dependencyManagement>
@@ -134,6 +135,12 @@
             <dependency>
                 <groupId>top.osjf.cron</groupId>
                 <artifactId>cron-redis-datasource-driven-scheduled</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>top.osjf.cron</groupId>
+                <artifactId>cron-sea-driven-scheduled</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
