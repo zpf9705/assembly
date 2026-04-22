@@ -22,6 +22,7 @@ import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.lifecycle.InitializeAble;
 import top.osjf.cron.datasource.driven.scheduled.AbstractDatasourceDrivenScheduled;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
+import top.osjf.cron.datasource.driven.scheduled.Status;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 import top.osjf.filewatch.AmapleWatchEvent;
 import top.osjf.filewatch.AmpleFileWatchListener;
@@ -34,8 +35,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -192,17 +193,58 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement> impleme
 
     /**
      * {@inheritDoc}
-     *
-     * {@link #getElementById} by {@link #loader}.
      */
     @Nullable
     @Override
     public TaskElement getElementById(String id) {
-        return Optional.ofNullable(loader.loading(yamlTaskElements -> yamlTaskElements.stream()
-                        .filter(element -> Objects.equals(id, element.getTaskId()))
-                        .collect(Collectors.toList())))
-                .map(l -> l.get(0))
-                .orElse(null);
+        return filterLoadingSingle(element -> Objects.equals(element.getId(), id));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Nullable
+    @Override
+    public TaskElement getElementByTaskId(String taskId) {
+        return filterLoadingSingle(element -> Objects.equals(element.getTaskId(), taskId));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<TaskElement> getElementByTaskName(String taskName) {
+        return filterLoadingList(element -> Objects.equals(element.getTaskName(), taskName));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<TaskElement> getElementByTaskStatus(Status status) {
+        return filterLoadingList(element -> Objects.equals(element.getStatus(), status.name()));
+    }
+
+    /**
+     * @param filter the loading {@link Predicate Filter}.
+     * @return Filter individual results loaded.
+     * @since 3.0.2
+     */
+    @Nullable
+    private TaskElement filterLoadingSingle(Predicate<TaskElement> filter) {
+        List<TaskElement> taskElements = filterLoadingList(filter);
+        return taskElements.isEmpty() ? null : taskElements.get(0);
+    }
+
+    /**
+     * @param filter the loading {@link Predicate Filter}.
+     * @return Filter the results of the loaded list.
+     * @since 3.0.2
+     */
+    @SuppressWarnings("unchecked")
+    private List<TaskElement> filterLoadingList(Predicate<TaskElement> filter) {
+        return (List<TaskElement>) loader.loading(yamlTaskElements -> yamlTaskElements.stream()
+                .filter(filter).collect(Collectors.toList()));
     }
 
     /**
