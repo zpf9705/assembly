@@ -190,7 +190,7 @@ public class LocalServerlessResolvedRunnablePostProcessor
 
         private final Logger LOGGER = LoggerFactory.getLogger(LocalServerlessRunnable.class);
 
-        @SuppressWarnings("unused") private final Runnable resolvedRunnable;
+        private final Runnable resolvedRunnable;
 
         private final TaskElement taskElement;
 
@@ -220,6 +220,12 @@ public class LocalServerlessResolvedRunnablePostProcessor
             TaskParameter modTaskParameter =
                     defaultTaskParameterRegistry.getLocalTaskParameter() != null ?
                             defaultTaskParameterRegistry.getLocalTaskParameter() : taskParameter;
+
+            // After disabling the function service, directly call the local task to run.
+            if (modTaskParameter instanceof DisabledLocalServerlessTaskParameter) {
+                resolvedRunnable.run();
+                return;
+            }
 
             Map<Parameter.Type, String> startupParameter = ParameterHelp.resolveJarStartupParameter(modTaskParameter);
 
