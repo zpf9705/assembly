@@ -90,7 +90,7 @@ public @interface Parameter {
      *     }
      *    }
      * </pre>
-     * The formatting command is: <strong>java -Xmx=2g -Xms=2g -Duser.dir=/local/user xxx.jar --server.port=8080</strong>
+     * The formatting command is: <strong>java -Xmx2g -Xms2g -Duser.dir=/local/user xxx.jar --server.port=8080</strong>
      */
     enum Type {
 
