@@ -50,4 +50,53 @@ public @interface Parameter {
      */
     Class<? extends ObjectToStringSerializationStrategy> serializationStrategy()
             default SimpleObjectToStringSerializationStrategy.class;
+
+    /**
+     * Define the type {@link Type} of this series of parameters, which defaults to the
+     * application parameter {@link Type#APPLICATION}. Indicate the necessary parameters
+     * or custom application parameter types that must be configured when launching
+     * application functions.
+     * @return the type {@link Type} of this series of parameters.
+     */
+    Type type() default Type.APPLICATION;
+
+    /**
+     * An enumeration class that defines parameter types.
+     *
+     * <p>According to the placement of parameters in the Jar package startup command,
+     * the type of parameters should be specified in accordance with the following relevant
+     * specifications:
+     * <p><strong>{@code Java [JVM Parameters] - jar [Jar Package] [Program Parameters]}</strong>
+     *
+     * <p>To give a specific example:
+     * <pre>
+     *     {@code
+     *     public class MyParameter {
+     *         Parameter(name = "Xmx", type = Type.JVM)
+     *         private String xmx = "2g";
+     *
+     *         Parameter(name = "Xms", type = Type.JVM)
+     *         private String xms = "2g";
+     *
+     *         Parameter(name = "server.port", type = Type.APPLICATION)
+     *         private String serverPort = 8080;
+     *     }
+     *    }
+     * </pre>
+     * The formatting command is: <strong>java -Xmx=2g -Xms=2g xxx.jar --server.port=8080</strong>
+     */
+    enum Type {
+
+        /**
+         * This type indicates that the parameters passed are acceptable parameter group types
+         * for JVM internal tuning, such as {@code -XX:+UseG1GC -Xmx2g -Xms2g}.
+         */
+        JVM,
+
+        /**
+         * This type indicates that the parameters passed are acceptable parameter group types
+         * for internal configuration of the application, for example {@code --server.port=8080}.
+         */
+        APPLICATION
+    }
 }
