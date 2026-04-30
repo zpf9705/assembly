@@ -93,7 +93,7 @@ public class IdempotentMethodAspect implements ApplicationContextAware , Applica
     /**
      * The Global configuration.
      */
-    private IdempotentGlobalConfiguration globalConfiguration;
+    private IdempotentGlobalConfiguration globalConfiguration = new IdempotentGlobalConfiguration();
 
     private IdempotentExceptionTranslator idempotentExceptionTranslator;
 
@@ -103,6 +103,9 @@ public class IdempotentMethodAspect implements ApplicationContextAware , Applica
      * @param globalConfiguration the specialized global config of idempotent.
      */
     public void setGlobalConfiguration(IdempotentGlobalConfiguration globalConfiguration) {
+        Assert.notNull(globalConfiguration, "IdempotentGlobalConfiguration can not be null");
+        Assert.isTrue(globalConfiguration.getDuration() > 0, "Global configuration duration must > 0");
+        Assert.hasText(globalConfiguration.getMessage(), "Global configuration message can not be blank");
         this.globalConfiguration = globalConfiguration;
     }
 
@@ -157,7 +160,7 @@ public class IdempotentMethodAspect implements ApplicationContextAware , Applica
      */
     private long getDuration(Idempotent idempotentAnnotation) {
         long duration = idempotentAnnotation.duration();
-        if (duration == -1 && globalConfigExist()) {
+        if (duration < 0) {
             duration = globalConfiguration.getDuration();
         }
         return idempotentAnnotation.timeUnit().toNanos(duration);
@@ -171,17 +174,10 @@ public class IdempotentMethodAspect implements ApplicationContextAware , Applica
      */
     private String getIdempotentFailedMessage(Idempotent idempotentAnnotation) {
         String message = idempotentAnnotation.message();
-        if ("".equals(message) && globalConfigExist()) {
+        if ("".equals(message)) {
             message = globalConfiguration.getMessage();
         }
         return message;
-    }
-
-    /**
-     * @return The {@code boolean} flag that {@link #globalConfiguration} not {@literal null}.
-     */
-    private boolean globalConfigExist() {
-        return globalConfiguration != null;
     }
 
     /**
@@ -201,13 +197,6 @@ public class IdempotentMethodAspect implements ApplicationContextAware , Applica
             }
             cache = caches.get(0);
         }
-    }
-
-    /**
-     * @return The {@link IdempotentCache} instance after loading.
-     */
-    public IdempotentCache getCache() {
-        return cache;
     }
 
     /**
