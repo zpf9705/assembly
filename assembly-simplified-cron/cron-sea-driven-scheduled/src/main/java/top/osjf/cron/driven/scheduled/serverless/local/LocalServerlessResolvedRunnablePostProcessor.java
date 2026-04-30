@@ -19,12 +19,12 @@ package top.osjf.cron.driven.scheduled.serverless.local;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.util.AssertUtils;
 import top.osjf.cron.core.util.StringUtils;
 import top.osjf.cron.datasource.driven.scheduled.ResolvedRunnablePostProcessor;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 import top.osjf.cron.driven.scheduled.serverless.DefaultTaskParameterRegistry;
+import top.osjf.cron.driven.scheduled.serverless.Parameter;
 import top.osjf.cron.driven.scheduled.serverless.ParameterHelp;
 import top.osjf.cron.driven.scheduled.serverless.TaskParameter;
 
@@ -33,6 +33,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -220,9 +221,9 @@ public class LocalServerlessResolvedRunnablePostProcessor
                     defaultTaskParameterRegistry.getLocalTaskParameter() != null ?
                             defaultTaskParameterRegistry.getLocalTaskParameter() : taskParameter;
 
-            String parameter = ParameterHelp.resolveJarStartupParameter(modTaskParameter);
+            Map<Parameter.Type, String> startupParameter = ParameterHelp.resolveJarStartupParameter(modTaskParameter);
 
-            String applicationStartupCommand = buildStartupCommand(parameter);
+            String applicationStartupCommand = buildStartupCommand(startupParameter);
 
             try {
                 LOGGER.info("Task function [{} - {}] && parameter [{}] start execute command [{}].",
@@ -267,15 +268,25 @@ public class LocalServerlessResolvedRunnablePostProcessor
 
         /**
          * Build Java - jar xxx. jar -- param=xxx command
-         * @param parameterStr the parameter.
+         * @param startupParameter the parameter map.
          * @return java startup command.
          */
-        private String buildStartupCommand(@Nullable String parameterStr) {
+        private String buildStartupCommand(Map<Parameter.Type, String> startupParameter) {
             StringBuilder sb = new StringBuilder();
-            sb.append("java -jar ").append(functionJarFile.getPath());
 
-            if (!StringUtils.isBlank(parameterStr)) {
-                sb.append(" ").append(parameterStr);
+            String jvmParam = startupParameter.get(Parameter.Type.JVM);
+
+            sb.append("java -jar ");
+            if (!StringUtils.isBlank(jvmParam)) {
+                sb.append(jvmParam).append(" ");
+            }
+
+            sb.append(functionJarFile.getPath()).append(" ");
+
+            String applicationParam = startupParameter.get(Parameter.Type.APPLICATION);
+
+            if (!StringUtils.isBlank(applicationParam)) {
+                sb.append(applicationParam);
             }
 
             return sb.toString();

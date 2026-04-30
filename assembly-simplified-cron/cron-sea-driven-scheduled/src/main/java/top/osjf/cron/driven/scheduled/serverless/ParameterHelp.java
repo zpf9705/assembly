@@ -17,12 +17,13 @@
 
 package top.osjf.cron.driven.scheduled.serverless;
 
-import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -40,10 +41,9 @@ public abstract class ParameterHelp {
     private static final ConcurrentHashMap<Class<?>, ObjectToStringSerializationStrategy> STRATEGY_CACHE
             = new ConcurrentHashMap<>();
 
-    @Nullable
-    public static String resolveJarStartupParameter(TaskParameter taskParameter) {
+    public static Map<Parameter.Type, String> resolveJarStartupParameter(TaskParameter taskParameter) {
         if (taskParameter == null) {
-            return null;
+            return Collections.emptyMap();
         }
 
         List<ParameterDescription> descriptions = new ArrayList<>();
@@ -78,10 +78,11 @@ public abstract class ParameterHelp {
         }
 
         if (descriptions.isEmpty()) {
-            return null;
+            return Collections.emptyMap();
         }
 
-        return descriptions.stream().map(ParameterDescription::toString).collect(Collectors.joining(" "));
+        return descriptions.stream().collect(Collectors.groupingBy(ParameterDescription::getType,
+                Collectors.mapping(ParameterDescription::toString, Collectors.joining(" "))));
     }
 
     private static class ParameterDescription {
@@ -96,6 +97,10 @@ public abstract class ParameterHelp {
             this.paramName = paramName;
             this.paramValue = paramValue;
             this.type = type;
+        }
+
+        public Parameter.Type getType() {
+            return type;
         }
 
         @Override
