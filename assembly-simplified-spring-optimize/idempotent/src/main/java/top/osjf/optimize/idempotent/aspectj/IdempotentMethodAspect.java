@@ -70,6 +70,7 @@ public class IdempotentMethodAspect implements ApplicationContextAware , Applica
 
     /**
      * Get the spring el expression for accessing the URI mapping path.
+     * @see HttpServletRequest#getRequestURI()
      */
     private static final String GET_URI_EXPRESSION = "#" + RequestAttributes.REFERENCE_REQUEST + ".getRequestURI()";
 
@@ -88,6 +89,7 @@ public class IdempotentMethodAspect implements ApplicationContextAware , Applica
     private final JSONDecoder jsonDecoder = new JSONDecoder();
 
     private ApplicationContext applicationContext;
+
     private BeanResolver beanResolver;
 
     /**
