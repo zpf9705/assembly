@@ -276,12 +276,12 @@ public class LocalServerlessResolvedRunnablePostProcessor
 
             String jvmParam = startupParameter.get(Parameter.Type.JVM);
 
-            sb.append("java -jar ");
+            sb.append("java ");
             if (!StringUtils.isBlank(jvmParam)) {
                 sb.append(jvmParam).append(" ");
             }
 
-            sb.append(functionJarFile.getPath()).append(" ");
+            sb.append(" -jar ").append(functionJarFile.getPath()).append(" ");
 
             String applicationParam = startupParameter.get(Parameter.Type.APPLICATION);
 
