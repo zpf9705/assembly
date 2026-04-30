@@ -21,8 +21,8 @@ import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.util.StringUtils;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -46,7 +46,7 @@ public abstract class ParameterHelp {
             return null;
         }
 
-        Map<String, String> parameters = new HashMap<>();
+        List<ParameterDescription> descriptions = new ArrayList<>();
         Field[] fields = taskParameter.getClass().getDeclaredFields();
 
         for (Field field : fields) {
@@ -74,16 +74,36 @@ public abstract class ParameterHelp {
                 paramValue = strategy.serializeToString(fieldValue);
             }
 
-            parameters.put(paramName, paramValue);
+            descriptions.add(new ParameterDescription(paramName, paramValue, parameter.type()));
         }
 
-        if (parameters.isEmpty()) {
+        if (descriptions.isEmpty()) {
             return null;
         }
 
-        return parameters.entrySet().stream()
-                .map(entry -> "--" + entry.getKey() + "=" + entry.getValue())
-                .collect(Collectors.joining(" "));
+        return descriptions.stream().map(ParameterDescription::toString).collect(Collectors.joining(" "));
+    }
+
+    private static class ParameterDescription {
+
+        private final String paramName;
+
+        private final String paramValue;
+
+        private final Parameter.Type type;
+
+        public ParameterDescription(String paramName, String paramValue, Parameter.Type type) {
+            this.paramName = paramName;
+            this.paramValue = paramValue;
+            this.type = type;
+        }
+
+        @Override
+        public String toString() {
+            return (type == Parameter.Type.JVM ? "-" : "--")
+                    + ((paramName.startsWith("D") || type == Parameter.Type.APPLICATION) ? paramName + "=" : paramName)
+                    + paramValue;
+        }
     }
 
     private static ObjectToStringSerializationStrategy getOrCreateStrategy(Field field, Parameter parameter) {
