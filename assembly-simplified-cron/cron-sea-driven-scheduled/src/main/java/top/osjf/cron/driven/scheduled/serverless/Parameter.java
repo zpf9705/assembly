@@ -66,7 +66,11 @@ public @interface Parameter {
      * <p>According to the placement of parameters in the Jar package startup command,
      * the type of parameters should be specified in accordance with the following relevant
      * specifications:
-     * <p><strong>{@code Java [JVM Parameters] - jar [Jar Package] [Program Parameters]}</strong>
+     * <p><strong>{@code java
+     * [JVM Parameters (-keyvalue(JVM built-in parameter: - keyvalue has no equal sign)/
+     * -Dkey=value(JVM system attribute: - Dkey=value has an equal sign))]
+     * -jar [Jar Package Path]
+     * [Application Parameters (--key=value)]}</strong>
      *
      * <p>To give a specific example:
      * <pre>
@@ -78,12 +82,15 @@ public @interface Parameter {
      *         Parameter(name = "Xms", type = Type.JVM)
      *         private String xms = "2g";
      *
+     *         Parameter(name = "Duser.dir", type = Type.JVM)
+     *         private String userDir = '/local/user';
+     *
      *         Parameter(name = "server.port", type = Type.APPLICATION)
-     *         private String serverPort = 8080;
+     *         private Integer serverPort = 8080;
      *     }
      *    }
      * </pre>
-     * The formatting command is: <strong>java -Xmx=2g -Xms=2g xxx.jar --server.port=8080</strong>
+     * The formatting command is: <strong>java -Xmx=2g -Xms=2g -Duser.dir=/local/user xxx.jar --server.port=8080</strong>
      */
     enum Type {
 
