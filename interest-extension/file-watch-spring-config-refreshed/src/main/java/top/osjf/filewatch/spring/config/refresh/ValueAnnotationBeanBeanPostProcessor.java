@@ -18,6 +18,7 @@
 package top.osjf.filewatch.spring.config.refresh;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,10 +31,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -49,6 +47,8 @@ public class ValueAnnotationBeanBeanPostProcessor
 
     private ApplicationContext applicationContext;
 
+    private AutowiredAnnotationBeanPostProcessor autowiredAnnotationBeanPostProcessor;
+
     private final Map<String, Set<Field>> beanValueFieldsInjectPropertyMapping = new ConcurrentHashMap<>(64);
 
     @Override
@@ -58,18 +58,33 @@ public class ValueAnnotationBeanBeanPostProcessor
 
     @Nullable
     @Override
-    public Object postProcessBeforeInstantiation(@NonNull Class<?> beanClass, @NonNull String beanName)
+    public PropertyValues postProcessProperties(@NonNull PropertyValues pvs, @NonNull Object bean, @NonNull String beanName)
             throws BeansException {
 
-        // Scan all fields with @Value annotation using Spring's ReflectionUtils.
+        Class<?> beanClass = bean.getClass();
 
-        ReflectionUtils.doWithFields(beanClass, field -> {
-            Set<Field> valueFields
-                    = beanValueFieldsInjectPropertyMapping.computeIfAbsent(beanName, key -> new LinkedHashSet<>());
-            valueFields.add(field);
-        }, field -> field.isAnnotationPresent(Value.class));
+        if (beanClass.isAnnotationPresent(Refreshable.class)) {
 
-        return InstantiationAwareBeanPostProcessor.super.postProcessBeforeInstantiation(beanClass, beanName);
+            // Scan all fields with @Value annotation using Spring's ReflectionUtils.
+
+            ReflectionUtils.doWithFields(beanClass, field -> {
+                Set<Field> valueFields
+                        = beanValueFieldsInjectPropertyMapping.computeIfAbsent(beanName, key -> new LinkedHashSet<>());
+                valueFields.add(field);
+            }, field -> field.isAnnotationPresent(Value.class));
+        }
+
+        return pvs;
+    }
+
+    /**
+     * @return The bean of {@link AutowiredAnnotationBeanPostProcessor} in {@link ApplicationContext}.
+     */
+    private AutowiredAnnotationBeanPostProcessor getAutowiredAnnotationBeanPostProcessor() {
+        if (autowiredAnnotationBeanPostProcessor == null) {
+            autowiredAnnotationBeanPostProcessor = applicationContext.getBean(AutowiredAnnotationBeanPostProcessor.class);
+        }
+        return autowiredAnnotationBeanPostProcessor;
     }
 
     /**
@@ -83,9 +98,7 @@ public class ValueAnnotationBeanBeanPostProcessor
         if (CollectionUtils.isEmpty(updatePropertyNames)) {
             return;
         }
-        Map<Object, Set<Field>> beanValueConfigFieldMap = new ConcurrentHashMap<>();
-        AutowiredAnnotationBeanPostProcessor postProcessor
-                = applicationContext.getBean(AutowiredAnnotationBeanPostProcessor.class);
+        Map<Object, Set<Field>> beanValueConfigFieldMap = new HashMap<>();
         for (Map.Entry<String, Set<Field>> entry : beanValueFieldsInjectPropertyMapping.entrySet()) {
             String beanName = entry.getKey();
 
@@ -103,7 +116,7 @@ public class ValueAnnotationBeanBeanPostProcessor
             // Process injection if it has config reloading field.
             if (!configFields.isEmpty()) {
                 Object bean = applicationContext.getBean(beanName);
-                postProcessor.processInjection(bean);
+                getAutowiredAnnotationBeanPostProcessor().processInjection(bean);
                 beanValueConfigFieldMap.putIfAbsent(bean, configFields);
             }
         }
