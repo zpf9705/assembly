@@ -63,6 +63,8 @@ public class ConfigRefreshedFileWatchListener extends AmpleFileWatchListener imp
 
     private ConfigurableEnvironment environment;
 
+    private ValueAnnotationBeanBeanPostProcessor valueAnnotationBeanBeanPostProcessor;
+
     @Override
     public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
@@ -148,8 +150,7 @@ public class ConfigRefreshedFileWatchListener extends AmpleFileWatchListener imp
                 if (canAdd) mutablePropertySources.addFirst(propertySource);
             }
             // Trigger dependency updates.
-            applicationContext.getBean(ValueAnnotationBeanBeanPostProcessor.class)
-                    .processInjection(updatePropertyNames, configFileName);
+            getValueAnnotationBeanBeanPostProcessor().processInjection(updatePropertyNames, configFileName);
         }
         catch (MalformedURLException ex) {
             logger.error("[ORIGIN CONFIG] URL [{}] specification is not valid", event.getFullPath(), ex);
@@ -163,6 +164,13 @@ public class ConfigRefreshedFileWatchListener extends AmpleFileWatchListener imp
             logger.error("[ORIGIN CONFIG] Failed to load or refresh config [{}]", event.context(), ex);
             throw ex;
         }
+    }
+
+    private ValueAnnotationBeanBeanPostProcessor getValueAnnotationBeanBeanPostProcessor() {
+        if (valueAnnotationBeanBeanPostProcessor == null) {
+            valueAnnotationBeanBeanPostProcessor = applicationContext.getBean(ValueAnnotationBeanBeanPostProcessor.class);
+        }
+        return valueAnnotationBeanBeanPostProcessor;
     }
 
     @Nullable
