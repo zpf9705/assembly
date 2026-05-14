@@ -49,7 +49,7 @@ import java.lang.annotation.Target;
  * </pre>
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 2026.05.14
+ * @since 3.0.2
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
