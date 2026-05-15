@@ -166,6 +166,9 @@ public class ConfigRefreshedFileWatchListener extends AmpleFileWatchListener imp
         }
     }
 
+    /**
+     * @return The bean of {@link ValueAnnotationBeanBeanPostProcessor} in {@link ApplicationContext}.
+     */
     private ValueAnnotationBeanBeanPostProcessor getValueAnnotationBeanBeanPostProcessor() {
         if (valueAnnotationBeanBeanPostProcessor == null) {
             valueAnnotationBeanBeanPostProcessor = applicationContext.getBean(ValueAnnotationBeanBeanPostProcessor.class);
