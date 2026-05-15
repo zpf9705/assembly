@@ -400,6 +400,7 @@ public class FileWatchService implements Runnable, Closeable {
             executor.shutdownNow();
             closeWatchService(watchService);
             peculiarFileWatchConsumer(service -> closeWatchService(service.watchService));
+            isStarted = false;
         }
         finally {
             lock.unlock();
