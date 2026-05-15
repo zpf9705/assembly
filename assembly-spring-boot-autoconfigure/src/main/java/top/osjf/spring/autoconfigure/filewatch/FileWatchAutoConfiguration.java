@@ -42,7 +42,7 @@ import top.osjf.filewatch.FileWatchService;
 @Import({ ApplicationStartupFileWatchConfiguration.class , ConfigRefreshedConfiguration.class })
 public class FileWatchAutoConfiguration {
 
-    @Bean(destroyMethod = "close")
+    @Bean
     @ConditionalOnMissingBean
     public FileWatchService fileWatchService(FileWatchProperties fileWatchProperties,
                                              ObjectProvider<FileWatchServiceCustomizer> customizerProvider) {
