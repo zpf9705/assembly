@@ -145,8 +145,8 @@ public class NacosConfigDatasourceTaskElementsOperation extends RemoteDatasource
     }
 
     @Override
-    public void notifyMainTaskInfoNotProvidedAndNoDefaultUsed() {
-        super.notifyMainTaskInfoNotProvidedAndNoDefaultUsed();
+    public void elseMonitorStartAction() {
+        super.elseMonitorStartAction();
         try {
             // Add config listener.
             configService.addListener(dataId, groupId, getListener());
