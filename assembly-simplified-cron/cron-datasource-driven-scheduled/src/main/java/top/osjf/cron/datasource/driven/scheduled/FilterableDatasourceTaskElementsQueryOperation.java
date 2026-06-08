@@ -43,7 +43,8 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
  */
-public abstract class FilterableDatasourceTaskElementsQueryOperation implements DatasourceTaskElementsQueryOperation {
+public abstract class FilterableDatasourceTaskElementsQueryOperation
+        extends ElseMonitorTaskScheduleMonitorStartAction implements DatasourceTaskElementsQueryOperation {
 
     /**
      * {@inheritDoc}
