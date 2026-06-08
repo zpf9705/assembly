@@ -23,6 +23,7 @@ import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.Status;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
+import top.osjf.cron.datasource.driven.scheduled.UseThreadPollingTaskScheduleMonitorStartAction;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,7 +57,8 @@ import java.util.List;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
-public class MybatisPlusDatasourceTaskElementsOperation implements DatasourceTaskElementsOperation {
+public class MybatisPlusDatasourceTaskElementsOperation
+        extends UseThreadPollingTaskScheduleMonitorStartAction implements DatasourceTaskElementsOperation {
 
     private final IService<DatabaseTaskElement> taskElementService;
 
@@ -100,7 +102,7 @@ public class MybatisPlusDatasourceTaskElementsOperation implements DatasourceTas
     }
 
     @Override
-    public void afterRun(List<TaskElement> runtimeCheckedDatasourceTaskElement) {
+    public void afterInspect(List<TaskElement> runtimeCheckedDatasourceTaskElement) {
         updateBatchElements(runtimeCheckedDatasourceTaskElement);
     }
 

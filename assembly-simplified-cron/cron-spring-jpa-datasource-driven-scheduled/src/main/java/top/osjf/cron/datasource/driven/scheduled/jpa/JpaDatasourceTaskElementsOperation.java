@@ -21,6 +21,7 @@ import org.springframework.data.domain.Example;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.Status;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
+import top.osjf.cron.datasource.driven.scheduled.UseThreadPollingTaskScheduleMonitorStartAction;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -50,14 +51,15 @@ import java.util.List;
  *     <li>{@link #afterStart(List)} - Batch updates task elements after startup</li>
  *     <li>{@link #getRuntimeNeedCheckDatasourceTaskElements()} - Retrieves task elements that need to be
  *     checked at runtime</li>
- *     <li>{@link #afterRun(List)} - Batch updates task elements after execution</li>
+ *     <li>{@link #afterInspect(List)} - Batch updates task elements after execution</li>
  *     <li>{@link #getElementById(String)} - Retrieves a task element by ID</li>
  * </ul>
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
-public class JpaDatasourceTaskElementsOperation implements DatasourceTaskElementsOperation {
+public class JpaDatasourceTaskElementsOperation
+        extends UseThreadPollingTaskScheduleMonitorStartAction implements DatasourceTaskElementsOperation {
 
     private final DatabaseTaskElementJpaRepository jpaRepository;
 
@@ -94,7 +96,7 @@ public class JpaDatasourceTaskElementsOperation implements DatasourceTaskElement
     }
 
     @Override
-    public void afterRun(List<TaskElement> runtimeCheckedDatasourceTaskElement) {
+    public void afterInspect(List<TaskElement> runtimeCheckedDatasourceTaskElement) {
         updateBatchElements(runtimeCheckedDatasourceTaskElement);
     }
 
