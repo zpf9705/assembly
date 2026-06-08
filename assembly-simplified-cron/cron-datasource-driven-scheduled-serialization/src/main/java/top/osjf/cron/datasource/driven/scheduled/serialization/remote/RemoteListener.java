@@ -101,6 +101,6 @@ public abstract class RemoteListener {
      */
     protected void refresh(String configInfo) {
         this.elements = remoteOperation.deserialize(configInfo);
-        scheduled.run();
+        scheduled.inspect();
     }
 }

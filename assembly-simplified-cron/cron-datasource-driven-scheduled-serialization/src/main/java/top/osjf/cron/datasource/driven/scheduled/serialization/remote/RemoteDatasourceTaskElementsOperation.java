@@ -112,7 +112,7 @@ public abstract class RemoteDatasourceTaskElementsOperation extends ConfigFormat
     }
 
     @Override
-    public void afterRun(List<TaskElement> runtimeCheckedDatasourceTaskElement) {
+    public void afterInspect(List<TaskElement> runtimeCheckedDatasourceTaskElement) {
 
         updateConfig(runtimeCheckedDatasourceTaskElement);
     }
@@ -120,11 +120,6 @@ public abstract class RemoteDatasourceTaskElementsOperation extends ConfigFormat
     @Override
     protected List<TaskElement> getBeFilteredTaskElements() {
         return Collections.unmodifiableList(getElements());
-    }
-
-    @Override
-    public boolean registerDefaultIfMainTaskInfoNotProvided() {
-        return false;
     }
 
     @Override
@@ -140,7 +135,7 @@ public abstract class RemoteDatasourceTaskElementsOperation extends ConfigFormat
     }
 
     @Override
-    public void notifyMainTaskInfoNotProvidedAndNoDefaultUsed() {
+    public void elseMonitorStartAction() {
         if (lazyListener != null) {
             listener = lazyListener.get();
         }
