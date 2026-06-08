@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-? the original author or authors.
+ * Copyright 2026-? the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,27 +17,27 @@
 
 package top.osjf.cron.datasource.driven.scheduled;
 
-import top.osjf.cron.core.lang.Nullable;
-
 /**
- * Provide interface for the IDs of the main management task.
- *
- * <p>The secondary interface can be rewritten by the developer to provide the main
- * task IDs. If it is not available, the framework will register and supplement it
- * on its own.
+ * Implementation class that enables built-in thread polling for task schedule monitor.
+ * This implementation always enables internal polling thread, and leaves custom monitor logic empty.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.4
+ * @since 3.0.2
  */
-public interface ManagerTaskUniqueIdentifiersProvider {
+public abstract class UseThreadPollingTaskScheduleMonitorStartAction
+        implements AbstractDatasourceDrivenScheduled.TaskScheduleMonitorStartAction {
 
     /**
-     * Return the main management task ID array used to manage scheduled task information.
-     * @return The IDs of the main management task.
-     * @see TaskElement#getId()
+     * Always enable the built-in thread polling.
+     * @return always return true to enable internal polling thread
      */
-    @Nullable
-    default String[] getManagerTaskUniqueIdentifiers() {
-        return null;
+    @Override
+    public boolean useThreadPolling() {
+        return true;
+    }
+
+    @Override
+    public void elseMonitorStartAction() {
+
     }
 }
