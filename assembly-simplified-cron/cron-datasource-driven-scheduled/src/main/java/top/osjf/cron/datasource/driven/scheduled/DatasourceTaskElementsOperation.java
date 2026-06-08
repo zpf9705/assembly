@@ -28,9 +28,7 @@ import java.util.List;
  *   <li>Cleaning up invalid or expired task data to prevent dirty data during registration</li>
  *   <li>Retrieving task information sets for registration and runtime dynamic checks</li>
  *   <li>Callback after {@link DatasourceDrivenScheduledLifecycle#start()} to update source data</li>
- *   <li>Retrieving runtime specific conditions require a dataset that is specifically checked by the
- *   main task.</li>
- *   <li>Callback after {@link AbstractDatasourceDrivenScheduled#run()} to update source data</li>
+ *   <li>Callback after {@link AbstractDatasourceDrivenScheduled#inspect()} to update source data</li>
  * </ul>
  *
  * <p>Implementations should define cleanup logic and task information retrieval strategies according
@@ -39,7 +37,8 @@ import java.util.List;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
-public interface DatasourceTaskElementsOperation extends DatasourceTaskElementsQueryOperation, AutoCloseable {
+public interface DatasourceTaskElementsOperation extends DatasourceTaskElementsQueryOperation,
+        AbstractDatasourceDrivenScheduled.TaskScheduleMonitorStartAction, AutoCloseable {
 
     /**
      * Cleans up task information data in the datasource to prevent dirty data during registration.
@@ -64,30 +63,18 @@ public interface DatasourceTaskElementsOperation extends DatasourceTaskElementsQ
     void afterStart(List<TaskElement> fulledDatasourceTaskElement);
 
     /**
-     * This method is for the main management task to drive the callback of protective gear after
-     * the scheduled inspection of {@link AbstractDatasourceDrivenScheduled#run()}.
+     * This method is used for patrolling and monitoring activities {@link AbstractDatasourceDrivenScheduled#inspect()}
+     * to check the method callback after execution.
      *
      * <p>According to the developer's modification prompts for {@link TaskElement#getUpdateSign()},
-     * the task is dynamically checked and updated during runtime (see method {@link AbstractDatasourceDrivenScheduled#run()}).
+     * the task is dynamically checked and updated during runtime (see method {@link AbstractDatasourceDrivenScheduled#inspect()}).
      * After the changes and updates are completed, the data source needs to be updated and returned
      * to the update.
      *
      * @param runtimeCheckedDatasourceTaskElement Dynamically check and update the {@link TaskElement} collection
      *                                            of tasks during runtime.
      */
-    void afterRun(List<TaskElement> runtimeCheckedDatasourceTaskElement);
-
-    /**
-     * Return a {@code Boolean} variable indicating that when the data source does not provide
-     * main task information, this class of {@link AbstractDatasourceDrivenScheduled#run()} is
-     * registered by default as the main task running check strategy scheme.
-     * @return If it is {@code true}, register {@link AbstractDatasourceDrivenScheduled#run()}
-     * as the main task for checking, otherwise it will be based on the provided information.
-     * @since 3.0.2
-     */
-    default boolean registerDefaultIfMainTaskInfoNotProvided() {
-        return true;
-    }
+    void afterInspect(List<TaskElement> runtimeCheckedDatasourceTaskElement);
 
     /**
      * Set the task scheduling data source management instance object {@link AbstractDatasourceDrivenScheduled
@@ -98,14 +85,6 @@ public interface DatasourceTaskElementsOperation extends DatasourceTaskElementsQ
      * @since 3.0.2
      */
     default void setAbstractDatasourceDrivenScheduled(AbstractDatasourceDrivenScheduled scheduled) {
-    }
-
-    /**
-     * Notify the data source operation class that there is currently no main check task provided
-     * during registration and the default check task is not being used.
-     * @since 3.0.2
-     */
-    default void notifyMainTaskInfoNotProvidedAndNoDefaultUsed() {
     }
 
     /**
