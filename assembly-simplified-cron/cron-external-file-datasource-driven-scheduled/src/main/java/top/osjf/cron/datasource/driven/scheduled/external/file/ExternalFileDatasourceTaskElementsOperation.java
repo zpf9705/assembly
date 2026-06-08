@@ -65,12 +65,10 @@ import java.util.function.Function;
  * op.initialize()
  * }</pre>
  *
- * <p>If the file timing task data source does not provide the main task information
- * check, the default value of {@link #registerDefaultIfMainTaskInfoNotProvided()}
- * in this abstract class is {@code false}, which means that the trigger of the main
- * task {@link AbstractDatasourceDrivenScheduled#run()} is handed over to {@link #fileWatchService}
- * for execution, and the original logic remains unchanged. We recommend this usage when
- * there is no autonomous check logic.
+ * <p>Regarding the monitoring task of running tasks loaded from external files, the file
+ * modification monitoring mechanism of {@link FileWatchService} is adopted (as seen in the
+ * initialization of method {@link #elseMonitorStartAction()}) to adapt to real-time task
+ * modifications more quickly and flexibly.
  *
  * @param <T> the type of task elements this operation handles, must extend {@link TaskElement}.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
@@ -154,10 +152,10 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement>
     /**
      * {@inheritDoc}
      *
-     * {@link #afterRun} by {@link #loader}.
+     * {@link #afterInspect} by {@link #loader}.
      */
     @Override
-    public void afterRun(List<TaskElement> runtimeCheckedDatasourceTaskElement) {
+    public void afterInspect(List<TaskElement> runtimeCheckedDatasourceTaskElement) {
         loader.checkedUpdate(runtimeCheckedDatasourceTaskElement);
     }
 
@@ -175,14 +173,6 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement>
      * {@inheritDoc}
      */
     @Override
-    public boolean registerDefaultIfMainTaskInfoNotProvided() {
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void setAbstractDatasourceDrivenScheduled(AbstractDatasourceDrivenScheduled scheduled) {
         this.scheduled = scheduled;
     }
@@ -191,7 +181,7 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement>
      * {@inheritDoc}
      */
     @Override
-    public void notifyMainTaskInfoNotProvidedAndNoDefaultUsed() {
+    public void elseMonitorStartAction() {
         fileWatchService = new FileWatchService();
         File configFile = loader.getConfigFile();
         fileWatchService.registerWatch(configFile.getParent(),
@@ -214,7 +204,7 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement>
 
         @Override
         public void onWatchEvent(AmapleWatchEvent event) {
-            scheduled.run();
+            scheduled.inspect();
         }
     }
 
