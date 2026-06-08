@@ -24,12 +24,10 @@ package top.osjf.cron.datasource.driven.scheduled;
  * @since 1.0.4
  */
 public interface Constants {
-
     /**
-     * The default cron expression for the scanning and checking frequency
-     * of the main task is once every 10 minutes.
+     * The default millisecond value {@literal 5000} of polling interval of the task monitor thread.
      */
-    String MANAGER_TASK_CHECK_FREQUENCY_CRON = "0 0/10 * * * ?";
+    long MONITOR_CHECK_INTERNAL = 5000;
 
     /**
      * A fixed table name that needs to be set by the developer to match the name of the database table.
