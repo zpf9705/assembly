@@ -52,7 +52,7 @@ public class NoOpDatasourceTaskElementsOperation implements DatasourceTaskElemen
     }
 
     @Override
-    public void afterRun(List<TaskElement> runtimeCheckedDatasourceTaskElement) {
+    public void afterInspect(List<TaskElement> runtimeCheckedDatasourceTaskElement) {
         // do noting.
     }
 
@@ -76,6 +76,15 @@ public class NoOpDatasourceTaskElementsOperation implements DatasourceTaskElemen
     @Override
     public List<TaskElement> getElementsByTaskStatus(Status status) {
         return Collections.emptyList();
+    }
+
+    @Override
+    public boolean useThreadPolling() {
+        return false;
+    }
+
+    @Override
+    public void elseMonitorStartAction() {
     }
 
     @Override
