@@ -55,7 +55,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * <ol>
  *   <li>{@link #init()}: Initializes task management infrastructure</li>
  *   <li>{@link #start()}: Activates all registered tasks and begins monitoring</li>
- *   <li>{@link #run()}: Core execution method for periodic task validation</li>
+ *   <li>{@link #inspect()}: Core execution method for periodic task validation</li>
  *   <li>{@link #stop()}: Safely deactivates all tasks and releases resources</li>
  * </ol>
  *
@@ -70,21 +70,24 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * <h2>Runtime Behavior:</h2>
  * <ul>
- *   <li>On startup: Registers management task and data source tasks</li>
- *   <li>During execution: Periodically checks for task updates
- *   (every {@value Constants#MANAGER_TASK_CHECK_FREQUENCY_CRON} if no provider main task information)</li>
- *   <li>On update detection: Applies configuration changes or stops/starts tasks as needed</li>
+ *   <li>On startup: Registration management tasks and data source tasks, if
+ *   {@code {@link TaskScheduleMonitorStartAction#useThreadPolling()} == true} starts a
+ *   monitoring thread {@link CronTaskScheduleMonitorThread}, otherwise customize
+ *   the monitoring logic {@link TaskScheduleMonitorStartAction#elseMonitorStartAction()}.</li>
+ *   <li>During execution: Monitoring tasks call method {@link #inspect()} based on specific logic
+ *   to perform inspection tasks and adapt to timely changes in tasks.</li>
  * </ul>
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
 public abstract class AbstractDatasourceDrivenScheduled
-        implements DatasourceDrivenScheduledLifecycle, ManagerTaskUniqueIdentifiersProvider, Runnable {
+        implements DatasourceDrivenScheduledLifecycle, ScheduledSurveillanceInspector {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final CronTaskRepository cronTaskRepository;
+
     private final DatasourceTaskElementsOperation datasourceTaskElementsOperation;
 
     /**
@@ -95,12 +98,11 @@ public abstract class AbstractDatasourceDrivenScheduled
 
     /** Flag that indicates whether this driven scheduler is currently init. */
     private boolean inited = false;
+
     /** Flag that indicates whether this driven scheduler is currently start. */
     private boolean started = false;
 
     private final Lock lock = new ReentrantLock();
-
-    private String[] mangerTaskUniqueIds;
 
     /** Property name that determines the task execution environment can be configured in the system
      * variable {@link System#setProperty}. */
@@ -155,25 +157,25 @@ public abstract class AbstractDatasourceDrivenScheduled
     @Override
     public void init() {
 
-        lockExecuteLifecycle(this::initInternal, false, "init");
+        lifecycleStepExecute(this::initInternal, false, "init");
     }
 
     @Override
     public void start() {
 
-        lockExecuteLifecycle(this::startInternal, false, "start");
-    }
-
-    @Override
-    public void run() {
-
-        lockExecuteLifecycle(this::runInternal, true, "run");
+        lifecycleStepExecute(this::startInternal, false, "start");
     }
 
     @Override
     public void stop() {
 
-        lockExecuteLifecycle(this::stopInternal, false, "stop");
+        lifecycleStepExecute(this::stopInternal, false, "stop");
+    }
+
+    @Override
+    public void inspect() {
+
+        lifecycleStepExecute(this::inspectInternal, true, "inspect");
     }
 
     /**
@@ -189,14 +191,14 @@ public abstract class AbstractDatasourceDrivenScheduled
      * @param loggerCatch     the boolean flag of catch do error logger.
      * @param lifecycleName   the specify lifecycle name.
      */
-    private void lockExecuteLifecycle(ThrowableRunnable r, boolean loggerCatch, String lifecycleName) {
+    private void lifecycleStepExecute(ThrowableRunnable r, boolean loggerCatch, String lifecycleName) {
         lock.lock();
         try {
             r.run();
         }
         catch (Throwable ex) {
             if (loggerCatch) {
-                getLogger().error("Failed to execute <{}> ", lifecycleName, ex);
+                getLogger().error("Failed to execute lifecycle step [{}] ", lifecycleName, ex);
             }
             else throw new DataSourceDrivenException(lifecycleName, ex);
         }
@@ -217,6 +219,69 @@ public abstract class AbstractDatasourceDrivenScheduled
         inited = true;
 
         debug("Drive scheduler service has been successfully inited !");
+    }
+
+    /**
+     * Extended interface for task execution monitoring and startup logic.
+     * @since 3.0.2
+     */
+    public interface TaskScheduleMonitorStartAction {
+
+        /**
+         * Whether to use built-in thread polling for monitoring
+         * {@code true}: use internal {@link CronTaskScheduleMonitorThread} thread
+         * {@code false}: disable internal polling, use custom monitor strategy
+         *
+         * @return {@code true} if enable internal thread polling
+         */
+        boolean useThreadPolling();
+
+        /**
+         * Provide custom monitor startup logic when internal polling is disabled
+         * Only takes effect when {@link #useThreadPolling()} returns {@code false}.
+         */
+        void elseMonitorStartAction();
+    }
+
+    /**
+     * Cron Task Monitor Background Thread
+     * Periodically polls task configuration changes to implement dynamic task management
+     * including start, stop, update and interrupt operations.
+     * Runs as a daemon thread and is automatically managed with the application lifecycle.
+     * @since 3.0.2
+     */
+    private class CronTaskScheduleMonitorThread extends Thread {
+
+        public CronTaskScheduleMonitorThread() {
+            setName("Cron-Task-Monitor-Thread");
+            setDaemon(true);
+        }
+
+        @Override
+        @SuppressWarnings("BusyWait")
+        public void run() {
+
+            // Main loop: keep polling while in started state
+            while (started) {
+                try {
+                    // Execute core task checking and scheduling logic
+                    inspect();
+                }
+                catch (Throwable ex) {
+                    // simply skip all
+                }
+
+                try {
+                    // Sleep for the configured polling interval to release CPU resources
+                    Thread.sleep(getTaskMonitorCheckInternal());
+                }
+                catch (InterruptedException ex) {
+                    // Respond to interrupt signal, restore interrupt status and exit loop safely
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
+        }
     }
 
     /**
@@ -242,35 +307,25 @@ public abstract class AbstractDatasourceDrivenScheduled
             return;
         }
 
-        this.mangerTaskUniqueIds = getManagerTaskUniqueIdentifiers();
-        boolean managerTaskRegisterFlag = false;
-
         for (TaskElement taskElement : taskElements) {
 
             elementCheck(taskElement);
 
             registerTask(taskElement);
-            if (!managerTaskRegisterFlag && isManagerTask(taskElement)) {
-                managerTaskRegisterFlag = true;
-            }
-        }
-
-        if (!managerTaskRegisterFlag
-                && datasourceTaskElementsOperation.registerDefaultIfMainTaskInfoNotProvided()) {
-
-            // Execute at a self configured fixed frequency without a designated main task management.
-            this.mangerTaskUniqueIds
-                    = new String[]{cronTaskRepository.register(getManagerTaskCheckFrequencyCronExpress(), this)};
-
-            managerTaskRegisterFlag = true;
         }
 
         datasourceTaskElementsOperation.afterStart(taskElements);
 
-        // Notify the data source operation class that there is no main check task running.
-        if (!managerTaskRegisterFlag) {
-            datasourceTaskElementsOperation.notifyMainTaskInfoNotProvidedAndNoDefaultUsed();
+        // Determine startup mode based on monitor strategy: use internal thread polling or
+        // execute custom monitor logic
+
+        if (datasourceTaskElementsOperation.useThreadPolling()) {
+            // Use built-in thread polling mode: start the background thread for task schedule monitoring
+
+            new CronTaskScheduleMonitorThread().start();
         }
+        // Do not use internal polling: execute custom monitor startup logic
+        else { datasourceTaskElementsOperation.elseMonitorStartAction(); }
 
         // The marking has been start.
         started = true;
@@ -292,9 +347,9 @@ public abstract class AbstractDatasourceDrivenScheduled
     }
 
     /**
-     * The internal method of {@link #run()}.
+     * The internal method of {@link #inspect()}.
      */
-    private void runInternal() {
+    private void inspectInternal() {
 
         assertStarted();
 
@@ -319,15 +374,7 @@ public abstract class AbstractDatasourceDrivenScheduled
 
                 // Here it is judged to be terminated.
                 if (element.willBePaused()) {
-                    if (isManagerTask(element)) {
 
-                        // The stopping of the main inspection task is quite serious and may lead to
-                        // the effectiveness of automatic management.
-                        debug("[Runtime-checked] The main management check task [{}] will be " +
-                                "automatically stopped, which will result in the loss of the scheduled check" +
-                                " capability with a frequency of [{}]. If multiple main tasks are configured," +
-                                " please ignore this reminder.", element.getId(), element.getExpression());
-                    }
                     String taskId = element.getTaskId();
                     // Tasks with limited registration times do not require manual deletion of tasks.
                     if (isFrequencyLimitTask(element)) {
@@ -383,7 +430,7 @@ public abstract class AbstractDatasourceDrivenScheduled
             }
         }
 
-        datasourceTaskElementsOperation.afterRun(runtimeCheckedDatasourceTaskElements);
+        datasourceTaskElementsOperation.afterInspect(runtimeCheckedDatasourceTaskElements);
 
         debug("[Time-{}] => Drive scheduler service check of timing information has ended.",
                 getActiveTime());
@@ -403,10 +450,6 @@ public abstract class AbstractDatasourceDrivenScheduled
     private void stopInternal() throws Exception {
 
         assertStarted();
-
-        for (String mangerTaskUniqueId : mangerTaskUniqueIds) {
-            cronTaskRepository.remove(mangerTaskUniqueId);
-        }
 
         for (TaskElement element : datasourceTaskElementsOperation.getDatasourceTaskElements()) {
             String taskId = element.getTaskId();
@@ -455,7 +498,8 @@ public abstract class AbstractDatasourceDrivenScheduled
             debug("[Task-{}] Failed to register : Environment mismatch", taskElement.getId());
             return;
         }
-        Runnable taskRunnable = isManagerTask(taskElement) ? this : resolveTaskRunnable(taskElement);
+
+        Runnable taskRunnable = resolveTaskRunnable(taskElement);
 
         // Apply post processing to the resolved task Runnable if any post processors exist.
         if (resolvedRunnablePostProcessors != null) {
@@ -483,35 +527,6 @@ public abstract class AbstractDatasourceDrivenScheduled
         debug("[Task-{}] Successfully to register : name [{}] ||  description [{}] || expression [{}]",
                 taskElement.getId(), taskElement.getTaskName(), taskElement.getTaskDescription(),
                 taskElement.getExpression());
-    }
-
-    /**
-     * Check if it is the main management task.
-     *
-     * @param taskElement the Task element information.
-     * @return {@code true} represents the information of the main management task,
-     * otherwise it is not.
-     */
-    protected boolean isManagerTask(TaskElement taskElement) {
-        return mangerTaskUniqueIds != null
-                && Arrays.binarySearch(mangerTaskUniqueIds, taskElement.getId()) >= 0;
-    }
-
-    /**
-     * Return the cron expression when the data source is not provided by the main task,
-     * i.e. {@link #getManagerTaskUniqueIdentifiers()} is {@code null}. This framework
-     * independently registers the cron expression used for the main management task, and
-     * developers can also define this value themselves.
-     *
-     * <p>If the detailed running task of the main inspection task is not provided and
-     * {@link DatasourceTaskElementsOperation#registerDefaultIfMainTaskInfoNotProvided()}
-     * returns {@code true}, {@link DatasourceTaskElementsOperation} will independently
-     * implement the main task inspection, and this class will not provide inspection.
-     *
-     * @return the default cron expression for the execution frequency of the main management task.
-     */
-    protected String getManagerTaskCheckFrequencyCronExpress() {
-        return Constants.MANAGER_TASK_CHECK_FREQUENCY_CRON;
     }
 
     /**
@@ -571,6 +586,15 @@ public abstract class AbstractDatasourceDrivenScheduled
         }
 
         return new CronMethodRunnable(target, targetMethod);
+    }
+
+    /**
+     * Gets the polling interval of the task monitor thread.
+     * @return the polling interval for task monitor checking, unit: millisecond
+     * @since 3.0.2
+     */
+    protected long getTaskMonitorCheckInternal() {
+        return Constants.MONITOR_CHECK_INTERNAL;
     }
 
     /**
