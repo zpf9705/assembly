@@ -17,6 +17,7 @@
 
 package top.osjf.cron.datasource.driven.scheduled.external.file;
 
+import org.slf4j.LoggerFactory;
 import top.osjf.cron.core.lang.NotNull;
 
 import java.io.Closeable;
@@ -26,7 +27,8 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -145,11 +147,9 @@ public class FileReadWriteLock implements ReadWriteLock, Closeable {
      * on the underlying thread lock type.
      */
     private static class FileChannelLockImpl implements FileChannelLock {
-        /**
-         * Thread-local storage for file locks to ensure thread safety.
-         * Each thread maintains its own file lock instance.
-         */
-        private final ThreadLocal<FileLock> local = new ThreadLocal<>();
+
+        private final ThreadLocal<UnlockCallbackRegistrant> unlockCallbackLocal = ThreadLocal
+                .withInitial(UnlockCallbackRegistrant::new);
 
         /** The file channel associated with this lock. */
         private final FileChannel fileChannel;
@@ -192,7 +192,7 @@ public class FileReadWriteLock implements ReadWriteLock, Closeable {
                 else {
                     fileLock = fileChannel.lock();
                 }
-                local.set(fileLock);
+                registerUnlockCallback(fileLock);
             }
             catch (IOException ex) {
                 throw new IllegalStateException("File lock acquisition failed", ex);
@@ -215,7 +215,7 @@ public class FileReadWriteLock implements ReadWriteLock, Closeable {
                     fileLock = fileChannel.tryLock();
                 }
                 if (fileLock != null) {
-                    local.set(fileLock);
+                    registerUnlockCallback(fileLock);
                     return true;
                 }
                 return false;
@@ -225,64 +225,100 @@ public class FileReadWriteLock implements ReadWriteLock, Closeable {
             }
         }
 
-        /**
-         * Acquires the lock, blocking if necessary.
-         * First acquires the file lock, then the thread lock.
-         */
         @Override
         public void lock() {
-            lockProcess();
             threadLock.lock();
+            lockProcess();
+            registerUnlockCallback(threadLock);
         }
 
-        /**
-         * Acquires the lock unless the current thread is interrupted.
-         * First acquires the file lock, then the thread lock.
-         *
-         * @throws InterruptedException if the current thread is interrupted
-         */
         @Override
         public void lockInterruptibly() throws InterruptedException {
-            lockProcess();
             threadLock.lockInterruptibly();
+            lockProcess();
+            registerUnlockCallback(threadLock);
         }
 
-        /**
-         * {@inheritDoc}
-         * Attempts to acquire the lock without blocking.
-         * First acquires the file lock, then the thread lock.
-         */
         @Override
         public boolean tryLock() {
-            return tryLockProcess() && threadLock.tryLock();
+            if (!threadLock.tryLock()) {
+                return false;
+            }
+            return tryLock0();
         }
 
-        /**
-         * {@inheritDoc}
-         * Attempts to acquire the lock within the given waiting time.
-         * First acquires the file lock, then the thread lock.
-         */
         @Override
         public boolean tryLock(long time, @NotNull TimeUnit unit) throws InterruptedException {
-            return tryLockProcess() && threadLock.tryLock(time, unit);
+            if (!threadLock.tryLock(time, unit)) {
+                return false;
+            }
+            return tryLock0();
         }
 
         /**
-         * Releases the lock.
-         * First releases the file lock (if acquired), then clears thread-local storage.
+         * @return result of {@code tryLock}
+         * @since 3.0.2
          */
+        private boolean tryLock0() {
+            if (!tryLockProcess()) {
+                threadLock.unlock();
+                return false;
+            }
+            registerUnlockCallback(threadLock);
+            return true;
+        }
+
         @Override
         public void unlock() {
-            Optional.ofNullable(local.get()).ifPresent(fileLock -> {
-                try {
-                    fileLock.release();
-                    threadLock.unlock();
-                    local.remove();
+            try {
+                unlockCallbackLocal.get().callback();
+            }
+            catch (Exception ex) {
+                LoggerFactory.getLogger(FileReadWriteLock.class)
+                        .error("Failed to execute unlock callbacks", ex);
+            }
+            finally {
+                unlockCallbackLocal.remove();
+            }
+        }
+
+        /**
+         * @since 3.0.2
+         */
+        private void registerUnlockCallback(Object callbackObj) {
+            unlockCallbackLocal.get().registerUnlockCallback(callbackObj);
+        }
+
+        /**
+         * @since 3.0.2
+         */
+        private interface Callback {
+            void callback() throws Exception;
+        }
+
+        /**
+         * @since 3.0.2
+         */
+        private static class UnlockCallbackRegistrant implements Callback {
+            private final List<Callback> callbacks = new ArrayList<>();
+            private boolean threadRegistered;
+            private boolean fileRegistered;
+            public void registerUnlockCallback(Object callbackObj) {
+                if (!threadRegistered && callbackObj instanceof Lock) {
+                    callbacks.add(() -> ((Lock) callbackObj).unlock());
+                    threadRegistered = true;
                 }
-                catch (IOException ex) {
-                    throw new IllegalStateException("File lock release failed", ex);
+                else if (!fileRegistered && callbackObj instanceof FileLock) {
+                    callbacks.add(() -> ((FileLock) callbackObj).release());
+                    fileRegistered = true;
                 }
-            });
+            }
+            @Override
+            public void callback() throws Exception {
+                for (Callback callback : callbacks) {
+                    callback.callback();
+                }
+            }
         }
 
         /**
