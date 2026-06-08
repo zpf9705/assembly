@@ -257,15 +257,8 @@ public class SpringDatasourceDrivenScheduled
     }
 
     @Override
-    @Nullable
-    public String[] getManagerTaskUniqueIdentifiers() {
-        return environment.getProperty("spring.schedule.cron.scheduled-driven.main-task-unique-ids",
-                String[].class);
-    }
-
-    @Override
-    protected String getManagerTaskCheckFrequencyCronExpress() {
-        return environment.getProperty("spring.schedule.cron.scheduled-driven.default-main-task-express",
-                super.getManagerTaskCheckFrequencyCronExpress());
+    protected long getTaskMonitorCheckInternal() {
+        return environment.getProperty("spring.schedule.cron.scheduled-driven.monitor-check-internal",
+                long.class, super.getTaskMonitorCheckInternal());
     }
 }

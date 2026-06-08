@@ -32,7 +32,7 @@ import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation
 /**
  * Extended from {@link SpringDatasourceDrivenScheduled}, the enhanced controller adds real-time
  * task triggering capability based on HTTP requests, providing a channel for manual execution
- * {@link #run()} to check task updates when the main task automatic scheduling is not executed.
+ * {@link #inspect()} to check task updates when the main task automatic scheduling is not executed.
  *
  * <p>This class uses the Spring MVC request mapping mechanism to expose a POST interface
  * ({@value #RUNNING_MAPPING_PATH}), allowing external systems or administrators to immediately
@@ -87,7 +87,7 @@ public class SpringHandlerMappingDatasourceDrivenScheduled
      */
     @Override
     @ResponseBody
-    public void run() {
-        super.run();
+    public void inspect() {
+        super.inspect();
     }
 }
