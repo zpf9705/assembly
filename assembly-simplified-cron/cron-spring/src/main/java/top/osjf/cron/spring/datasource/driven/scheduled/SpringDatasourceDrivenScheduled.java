@@ -134,6 +134,12 @@ public class SpringDatasourceDrivenScheduled
     }
 
     @Override
+    @Autowired(required = false)
+    public void setConfigLoader(DataSourceConfigLoader configLoader) {
+        super.setConfigLoader(configLoader);
+    }
+
+    @Override
     public void afterPropertiesSet() {
         evaluationContext.setBeanResolver(new BeanFactoryResolver(applicationContext.getAutowireCapableBeanFactory()));
         initLogger();
