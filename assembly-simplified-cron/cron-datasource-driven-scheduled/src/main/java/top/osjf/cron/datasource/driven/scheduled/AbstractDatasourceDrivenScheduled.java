@@ -96,6 +96,11 @@ public abstract class AbstractDatasourceDrivenScheduled
      */
     @Nullable private List<ResolvedRunnablePostProcessor> resolvedRunnablePostProcessors;
 
+    /**
+     * @since 3.0.2
+     */
+    @Nullable private DataSourceConfigLoader configLoader;
+
     /** Flag that indicates whether this driven scheduler is currently init. */
     private boolean inited = false;
 
@@ -152,6 +157,25 @@ public abstract class AbstractDatasourceDrivenScheduled
                                                   List<ResolvedRunnablePostProcessor> resolvedRunnablePostProcessors)
     {
         this.resolvedRunnablePostProcessors = resolvedRunnablePostProcessors;
+    }
+
+    /**
+     * Set up a data-driven dynamic configuration interface instance for obtaining task driven
+     * management related dynamic configurations, with priority over fixed configurations.
+     * @param configLoader the {@link DataSourceConfigLoader} to set.
+     * @since 3.0.2
+     */
+    public void setConfigLoader(@Nullable DataSourceConfigLoader configLoader) {
+        this.configLoader = configLoader;
+    }
+
+    /**
+     * @return A data-driven dynamic configuration interface instance.
+     * @since 3.0.2
+     */
+    @Nullable
+    public DataSourceConfigLoader getConfigLoader() {
+        return configLoader;
     }
 
     @Override
@@ -252,6 +276,8 @@ public abstract class AbstractDatasourceDrivenScheduled
      */
     private class CronTaskScheduleMonitorThread extends Thread {
 
+        static private final String KEY_OF_TASK_CHECK_INTERNAL = "TASK_CHECK_INTERNAL";
+
         public CronTaskScheduleMonitorThread() {
             setName("Cron-Task-Monitor-Thread");
             setDaemon(true);
@@ -282,6 +308,25 @@ public abstract class AbstractDatasourceDrivenScheduled
                 }
             }
         }
+
+        /**
+         * @return Dynamic config if exists, otherwise return default fixed config
+         */
+        private Long getTaskMonitorCheckInternal() {
+            Long taskMonitorCheckInternal = AbstractDatasourceDrivenScheduled.this.getTaskMonitorCheckInternal();
+            if (configLoader == null) {
+                return taskMonitorCheckInternal;
+            }
+            try {
+                taskMonitorCheckInternal
+                        = configLoader.getConfig(KEY_OF_TASK_CHECK_INTERNAL, Long.class);
+            }
+            catch (Throwable ex) {
+                logger.error("Failed to obtain config [{}]", KEY_OF_TASK_CHECK_INTERNAL, ex);
+            }
+            return taskMonitorCheckInternal;
+        }
+
     }
 
     /**
