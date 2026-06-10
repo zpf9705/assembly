@@ -18,6 +18,7 @@
 package top.osjf.cron.datasource.driven.scheduled;
 
 import top.osjf.cron.core.util.CollectionUtils;
+import top.osjf.cron.core.util.StringUtils;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -60,7 +61,7 @@ public abstract class FilterableDatasourceTaskElementsQueryOperation
     @Override
     public List<TaskElement> getRuntimeNeedCheckDatasourceTaskElements() {
         return filterList(t -> Objects.equals(t.getUpdateSign(), 1)
-                || (Objects.equals(t.getUpdateSign(), 0) && t.getTaskId() == null));
+                || (Objects.equals(t.getUpdateSign(), 0) && StringUtils.isBlank(t.getTaskId())));
     }
 
     /**
