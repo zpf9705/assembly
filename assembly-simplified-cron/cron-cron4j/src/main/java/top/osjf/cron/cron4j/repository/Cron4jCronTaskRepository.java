@@ -24,9 +24,10 @@ import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lang.Nullable;
-import top.osjf.cron.core.lifecycle.SuperiorProperties;
+import top.osjf.cron.core.lifecycle.InitializeProperties;
 import top.osjf.cron.core.listener.CronListenerCollector;
 import top.osjf.cron.core.repository.*;
+import top.osjf.cron.core.util.StringUtils;
 import top.osjf.cron.cron4j.listener.SchedulerListenerImpl;
 
 import java.io.File;
@@ -144,33 +145,29 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
     }
 
     /**
-     * Set the parameter {@link SuperiorProperties} object for building the cron4j task
+     * Set the parameter {@link InitializeProperties} object for building the cron4j task
      * scheduler, compatible with the Cron framework startup parameter series.
      *
      * <p>The configuration file cannot overwrite the value set by the external active
      * call to the set method.
      *
-     * @param superiorProperties {@link SuperiorProperties} object for building the cron4j
+     * @param initializeProperties {@link InitializeProperties} object for building the cron4j
      *                           task scheduler.
      * @since 1.0.3
      */
     @Override
-    public void setSuperiorProperties(SuperiorProperties superiorProperties) {
-        super.setSuperiorProperties(superiorProperties);
-        if (superiorProperties != null && !superiorProperties.isEmpty()) {
+    public void setInitializeProperties(InitializeProperties initializeProperties) {
+        super.setInitializeProperties(initializeProperties);
+        if (initializeProperties != null && !initializeProperties.isEmpty()) {
             if (!setDaemon)
-                setDaemon(superiorProperties.getProperty(PROPERTY_NAME_OF_DAEMON, DEFAULT_VALUE_OF_DAEMON));
+                setDaemon(initializeProperties.getBoolean(PROPERTY_NAME_OF_DAEMON, DEFAULT_VALUE_OF_DAEMON));
             if (!setTimeZone) {
-                Object zone = superiorProperties.getProperty(PROPERTY_NAME_OF_TIMEZONE);
-                if (zone instanceof TimeZone) {
-                    setTimeZone((TimeZone) zone);
-                } else {
-                    TimeZone timeZone = DEFAULT_VALUE_OF_TIMEZONE;
-                    if (zone != null) {
-                        timeZone = TimeZone.getTimeZone(zone.toString());
-                    }
-                    setTimeZone(timeZone);
+                TimeZone timeZone = DEFAULT_VALUE_OF_TIMEZONE;
+                String zoneID = initializeProperties.getProperty(PROPERTY_NAME_OF_TIMEZONE);
+                if (!StringUtils.isBlank(zoneID)) {
+                    timeZone = TimeZone.getTimeZone(zoneID);
                 }
+                setTimeZone(timeZone);
             }
         }
     }
