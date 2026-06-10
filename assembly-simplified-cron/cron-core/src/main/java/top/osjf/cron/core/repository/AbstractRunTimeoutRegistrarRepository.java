@@ -20,7 +20,7 @@ package top.osjf.cron.core.repository;
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 import top.osjf.cron.core.lang.Nullable;
-import top.osjf.cron.core.lifecycle.SuperiorProperties;
+import top.osjf.cron.core.lifecycle.InitializeProperties;
 
 import java.util.Collections;
 import java.util.Map;
@@ -46,7 +46,7 @@ public abstract class AbstractRunTimeoutRegistrarRepository
      */
     private final Map<String, RunningTimeout> taskRunTimeoutMap = new ConcurrentHashMap<>(16);
 
-    @Nullable private SuperiorPropertiesParsedThreadPoolExecutor monitoringExecutor;
+    @Nullable private PropertiesParsedThreadPoolExecutor monitoringExecutor;
 
 
     /**
@@ -55,12 +55,12 @@ public abstract class AbstractRunTimeoutRegistrarRepository
     @Override
     public void initialize() throws Exception {
         super.initialize();
-        SuperiorProperties superiorProperties = getSuperiorProperties();
-        if (superiorProperties == null) {
-            superiorProperties = SuperiorProperties.of(System.getProperties());
-            setSuperiorProperties(superiorProperties);
+        InitializeProperties initializeProperties = getInitializeProperties();
+        if (initializeProperties == null) {
+            initializeProperties = InitializeProperties.copyOf(System.getProperties());
+            setInitializeProperties(initializeProperties);
         }
-        monitoringExecutor = new SuperiorPropertiesParsedThreadPoolExecutor(superiorProperties);
+        monitoringExecutor = new PropertiesParsedThreadPoolExecutor(initializeProperties);
     }
 
     /**

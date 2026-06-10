@@ -17,7 +17,7 @@
 
 package top.osjf.cron.core.repository;
 
-import top.osjf.cron.core.lifecycle.SuperiorPropertiesInitializeAble;
+import top.osjf.cron.core.lifecycle.PropertiesInitializeAble;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -27,8 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
-public abstract class AbstractLifecycleRepository
-        extends SuperiorPropertiesInitializeAble implements LifecycleRepository {
+public abstract class AbstractLifecycleRepository extends PropertiesInitializeAble implements LifecycleRepository {
 
     /**
      * Atomic flag to track whether the repository is started.
