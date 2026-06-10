@@ -18,7 +18,7 @@
 package top.osjf.cron.core.repository;
 
 import top.osjf.cron.core.lang.NotNull;
-import top.osjf.cron.core.lifecycle.SuperiorProperties;
+import top.osjf.cron.core.lifecycle.InitializeProperties;
 import top.osjf.cron.core.util.ExecutorUtils;
 
 import java.util.concurrent.*;
@@ -26,71 +26,71 @@ import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * {@code SuperiorPropertiesParsedThreadPoolExecutor} is an inheritance implementation
- * class of {@link ThreadPoolExecutor}, which uses {@link SuperiorProperties}'s configuration
+ * class of {@link ThreadPoolExecutor}, which uses {@link InitializeProperties}'s configuration
  * loading to configure a thread pool instance.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
-public class SuperiorPropertiesParsedThreadPoolExecutor extends ThreadPoolExecutor implements AutoCloseable {
+public class PropertiesParsedThreadPoolExecutor extends ThreadPoolExecutor implements AutoCloseable {
 
     /**
-     * The {@link SuperiorProperties} configuration attribute name of {@code ThreadPoolExecutor#corePoolSize}
+     * The {@link InitializeProperties} configuration attribute name of {@code ThreadPoolExecutor#corePoolSize}
      */
     public static final String PROPERTY_OF_CORE_SIZE = "corePoolSize";
 
     /**
-     * The {@link SuperiorProperties} configuration attribute name of {@code ThreadPoolExecutor#maximumPoolSize}
+     * The {@link InitializeProperties} configuration attribute name of {@code ThreadPoolExecutor#maximumPoolSize}
      */
     public static final String PROPERTY_OF_MAX_SIZE = "maximumPoolSize";
 
     /**
-     * The {@link SuperiorProperties} configuration attribute name of {@code ThreadPoolExecutor#keepAliveTime}
+     * The {@link InitializeProperties} configuration attribute name of {@code ThreadPoolExecutor#keepAliveTime}
      */
     public static final String PROPERTY_OF_KEEP_ALIVE = "keepAlive";
 
     /**
-     * The {@link SuperiorProperties} configuration attribute name of {@code ThreadPoolExecutor#keepAliveTime}
+     * The {@link InitializeProperties} configuration attribute name of {@code ThreadPoolExecutor#keepAliveTime}
      */
     public static final String PROPERTY_OF_KEEP_ALIVE_UNIT = "keepAliveUnit";
 
     /**
-     * The {@link SuperiorProperties} configuration attribute name of {@code ThreadPoolExecutor#workQueue}
+     * The {@link InitializeProperties} configuration attribute name of {@code ThreadPoolExecutor#workQueue}
      */
     public static final String PROPERTY_OF_QUEUE_CAPACITY = "queueCapacity";
 
     /**
-     * The {@link SuperiorProperties} configuration attribute name of {@code ThreadPoolExecutor#threadFactory}
+     * The {@link InitializeProperties} configuration attribute name of {@code ThreadPoolExecutor#threadFactory}
      */
     public static final String PROPERTY_OF_THREAD_NAME_PREFIX = "threadNamePrefix";
 
     /**
-     * The {@link SuperiorProperties} configuration attribute name of {@code ThreadPoolExecutor#allowCoreThreadTimeOut}
+     * The {@link InitializeProperties} configuration attribute name of {@code ThreadPoolExecutor#allowCoreThreadTimeOut}
      */
     public static final String PROPERTY_OF_ALLOW_CORE_THREAD_TIMEOUT = "allowCoreThreadTimeout";
 
     /**
-     * The {@link SuperiorProperties} configuration attribute name of {@link ThreadPoolExecutor#awaitTermination}
+     * The {@link InitializeProperties} configuration attribute name of {@link ThreadPoolExecutor#awaitTermination}
      */
     public static final String PROPERTY_OF_AWAIT_TERMINATION = "awaitTermination";
 
     /**
-     * The {@link SuperiorProperties} configuration attribute name of {@link ThreadPoolExecutor#awaitTermination}
+     * The {@link InitializeProperties} configuration attribute name of {@link ThreadPoolExecutor#awaitTermination}
      */
     public static final String PROPERTY_OF_AWAIT_TERMINATION_TIMEOUT = "awaitTerminationTimeout";
 
     /**
-     * The {@link SuperiorProperties} configuration attribute name of {@link ThreadPoolExecutor#awaitTermination}
+     * The {@link InitializeProperties} configuration attribute name of {@link ThreadPoolExecutor#awaitTermination}
      */
     public static final String PROPERTY_OF_AWAIT_TERMINATION_TIMEOUT_UNIT = "awaitTerminationTimeoutUnit";
 
     /**
-     * The {@link SuperiorProperties} configuration attribute name of {@code ThreadPoolExecutor#handler}
+     * The {@link InitializeProperties} configuration attribute name of {@code ThreadPoolExecutor#handler}
      */
     public static final String PROPERTY_OF_REJECT_RETRY_TIMEOUT = "rejectRetryTimeout";
 
     /**
-     * The {@link SuperiorProperties} configuration attribute name of {@code ThreadPoolExecutor#handler}
+     * The {@link InitializeProperties} configuration attribute name of {@code ThreadPoolExecutor#handler}
      */
     public static final String PROPERTY_OF_REJECT_RETRY_TIMEOUT_UNIT = "rejectRetryTimeoutUnit";
 
@@ -103,29 +103,25 @@ public class SuperiorPropertiesParsedThreadPoolExecutor extends ThreadPoolExecut
     /**
      * Creates a new {@code SuperiorPropertiesParsedThreadPoolExecutor} with the given initial
      * parameter.
-     * @param properties the initial {@link SuperiorProperties}.
+     * @param properties the initial {@link top.osjf.cron.core.lifecycle.InitializeProperties}.
      */
-    public SuperiorPropertiesParsedThreadPoolExecutor(SuperiorProperties properties) {
+    public PropertiesParsedThreadPoolExecutor(InitializeProperties properties) {
         super(
-                getProperty(properties, PROPERTY_OF_CORE_SIZE, Runtime.getRuntime().availableProcessors()),
-                getProperty(properties, PROPERTY_OF_MAX_SIZE, Runtime.getRuntime().availableProcessors() + 1),
-                getProperty(properties, PROPERTY_OF_KEEP_ALIVE, 60L),
-                getProperty(properties, PROPERTY_OF_KEEP_ALIVE_UNIT, TimeUnit.SECONDS),
-                new ArrayBlockingQueue<>(getProperty(properties, PROPERTY_OF_QUEUE_CAPACITY, 1000)),
-                new SuperiorPropertiesParsedThreadFactoryImpl(properties),
-                new SuperiorPropertiesParsedRejectedExecutionHandler(properties)
+                properties.getInteger(PROPERTY_OF_CORE_SIZE, Runtime.getRuntime().availableProcessors()),
+                properties.getInteger(PROPERTY_OF_MAX_SIZE, Runtime.getRuntime().availableProcessors() + 1),
+                properties.getLong( PROPERTY_OF_KEEP_ALIVE, 60L),
+                properties.getEnum(PROPERTY_OF_KEEP_ALIVE_UNIT, TimeUnit.class, TimeUnit.SECONDS),
+                new ArrayBlockingQueue<>(properties.getInteger(PROPERTY_OF_QUEUE_CAPACITY, 1000)),
+                new PropertiesParsedThreadFactoryImpl(properties),
+                new PropertiesParsedRejectedExecutionHandler(properties)
         );
-        allowCoreThreadTimeOut(getProperty(properties, PROPERTY_OF_ALLOW_CORE_THREAD_TIMEOUT, true));
+        allowCoreThreadTimeOut(properties.getBoolean(PROPERTY_OF_ALLOW_CORE_THREAD_TIMEOUT, true));
         this.awaitTermination
-                = getProperty(properties, PROPERTY_OF_AWAIT_TERMINATION, this.awaitTermination);
+                = properties.getBoolean(PROPERTY_OF_AWAIT_TERMINATION, this.awaitTermination);
         this.awaitTerminationTimeout
-                = getProperty(properties, PROPERTY_OF_AWAIT_TERMINATION_TIMEOUT, this.awaitTerminationTimeout);
+                = properties.getLong(PROPERTY_OF_AWAIT_TERMINATION_TIMEOUT, this.awaitTerminationTimeout);
         this.awaitTerminationTimeoutUnit
-                = getProperty(properties, PROPERTY_OF_AWAIT_TERMINATION_TIMEOUT_UNIT, this.awaitTerminationTimeoutUnit);
-    }
-
-    private static <T> T getProperty(SuperiorProperties properties, String propertyName, T def) {
-        return properties.getProperty(propertyName, def);
+                = properties.getEnum(PROPERTY_OF_AWAIT_TERMINATION_TIMEOUT_UNIT, TimeUnit.class, this.awaitTerminationTimeoutUnit);
     }
 
     @Override
@@ -134,14 +130,14 @@ public class SuperiorPropertiesParsedThreadPoolExecutor extends ThreadPoolExecut
     }
 
     /**
-     * The {@link ThreadFactory} implementation class for parsing configuration of {@link SuperiorProperties}.
+     * The {@link ThreadFactory} implementation class for parsing configuration of {@link InitializeProperties}.
      */
-    private static class SuperiorPropertiesParsedThreadFactoryImpl implements ThreadFactory {
+    private static class PropertiesParsedThreadFactoryImpl implements ThreadFactory {
         private final AtomicLong counter = new AtomicLong(0);
 
         private final String threadNamePrefix;
 
-        public SuperiorPropertiesParsedThreadFactoryImpl(SuperiorProperties properties) {
+        public PropertiesParsedThreadFactoryImpl(InitializeProperties properties) {
             threadNamePrefix = properties.getProperty(PROPERTY_OF_THREAD_NAME_PREFIX, "monitor-task-");
         }
 
@@ -154,16 +150,17 @@ public class SuperiorPropertiesParsedThreadPoolExecutor extends ThreadPoolExecut
     }
 
     /**
-     * The {@link RejectedExecutionHandler} implementation class for parsing configuration of {@link SuperiorProperties}.
+     * The {@link RejectedExecutionHandler} implementation class for parsing configuration of {@link InitializeProperties}.
      */
-    private static class SuperiorPropertiesParsedRejectedExecutionHandler implements RejectedExecutionHandler {
+    private static class PropertiesParsedRejectedExecutionHandler implements RejectedExecutionHandler {
 
         private final long rejectRetryTimeout;
         private final TimeUnit rejectRetryTimeoutUnit;
 
-        public SuperiorPropertiesParsedRejectedExecutionHandler(SuperiorProperties properties) {
-            this.rejectRetryTimeout = properties.getProperty(PROPERTY_OF_REJECT_RETRY_TIMEOUT, 10L);
-            this.rejectRetryTimeoutUnit = properties.getProperty(PROPERTY_OF_REJECT_RETRY_TIMEOUT_UNIT, TimeUnit.SECONDS);
+        public PropertiesParsedRejectedExecutionHandler(InitializeProperties properties) {
+            this.rejectRetryTimeout = properties.getLong(PROPERTY_OF_REJECT_RETRY_TIMEOUT, 10L);
+            this.rejectRetryTimeoutUnit = properties.getEnum(PROPERTY_OF_REJECT_RETRY_TIMEOUT_UNIT, TimeUnit.class,
+                    TimeUnit.SECONDS);
         }
 
         @Override
