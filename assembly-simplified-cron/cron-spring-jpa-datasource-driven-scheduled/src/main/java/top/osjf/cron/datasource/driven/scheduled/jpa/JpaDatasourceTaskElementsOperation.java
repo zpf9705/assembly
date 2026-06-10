@@ -18,6 +18,7 @@
 package top.osjf.cron.datasource.driven.scheduled.jpa;
 
 import org.springframework.data.domain.Example;
+import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.Status;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
@@ -81,47 +82,51 @@ public class JpaDatasourceTaskElementsOperation
     }
 
     @Override
+    @NotNull
     public List<TaskElement> getDatasourceTaskElements() {
         return Collections.unmodifiableList(jpaRepository.findAll());
     }
 
     @Override
-    public void afterStart(List<TaskElement> fulledDatasourceTaskElement) {
+    public void afterStart(@NotNull List<TaskElement> fulledDatasourceTaskElement) {
         updateBatchElements(fulledDatasourceTaskElement);
     }
 
     @Override
+    @NotNull
     public List<TaskElement> getRuntimeNeedCheckDatasourceTaskElements() {
         return Collections.unmodifiableList(jpaRepository.findElementsByUpdateSignAndTaskId());
     }
 
     @Override
-    public void afterInspect(List<TaskElement> runtimeCheckedDatasourceTaskElement) {
+    public void afterInspect(@NotNull List<TaskElement> runtimeCheckedDatasourceTaskElement) {
         updateBatchElements(runtimeCheckedDatasourceTaskElement);
     }
 
     @Nullable
     @Override
-    public TaskElement getElementById(String id) {
+    public TaskElement getElementById(@NotNull String id) {
         return jpaRepository.findById(id).orElse(null);
     }
 
     @Nullable
     @Override
-    public TaskElement getElementByTaskId(String taskId) {
+    public TaskElement getElementByTaskId(@NotNull String taskId) {
         DatabaseTaskElement element = new DatabaseTaskElement();
         element.setTaskId(taskId);
         return jpaRepository.findOne(Example.of(element)).orElse(null);
     }
 
     @Override
-    public List<TaskElement> getElementsByTaskName(String taskName) {
+    @NotNull
+    public List<TaskElement> getElementsByTaskName(@NotNull String taskName) {
         DatabaseTaskElement element = new DatabaseTaskElement();
         element.setTaskName(taskName);
         return Collections.unmodifiableList(jpaRepository.findAll(Example.of(element)));
     }
 
     @Override
+    @NotNull
     public List<TaskElement> getElementsByTaskStatus(Status status) {
         DatabaseTaskElement element = new DatabaseTaskElement();
         element.setStatus(status.name());
