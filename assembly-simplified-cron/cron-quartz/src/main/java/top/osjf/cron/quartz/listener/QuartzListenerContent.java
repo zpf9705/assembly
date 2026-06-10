@@ -18,6 +18,7 @@
 package top.osjf.cron.quartz.listener;
 
 import org.quartz.JobExecutionContext;
+import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.listener.ListenerContext;
 import top.osjf.cron.quartz.repository.JobConstants;
 
@@ -42,11 +43,13 @@ public class QuartzListenerContent implements ListenerContext {
     }
 
     @Override
+    @NotNull
     public String getID() {
         return id;
     }
 
     @Override
+    @NotNull
     public Object getSourceContext() {
         return context;
     }

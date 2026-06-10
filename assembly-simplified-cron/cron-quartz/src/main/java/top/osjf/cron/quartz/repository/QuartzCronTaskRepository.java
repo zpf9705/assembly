@@ -193,6 +193,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      * {@inheritDoc}
      */
     @Override
+    @NotNull
     public String registerInternal(@NotNull String expression, @NotNull Runnable runnable) throws CronInternalException {
         return doRegister(expression, new JobKeyWrapperdRunnable(runnable));
     }
@@ -201,6 +202,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      * {@inheritDoc}
      */
     @Override
+    @NotNull
     public String registerInternal(@NotNull String expression, @NotNull CronMethodRunnable runnable) throws CronInternalException {
         return register(expression, (Runnable) runnable);
     }
@@ -209,6 +211,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      * {@inheritDoc}
      */
     @Override
+    @NotNull
     public String registerInternal(@NotNull String expression, @NotNull RunnableTaskBody body) throws CronInternalException {
         return register(expression, body.getRunnable());
     }
@@ -217,6 +220,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      * {@inheritDoc}
      */
     @Override
+    @NotNull
     public String registerInternal(@NotNull String expression, @NotNull TaskBody body) {
         if (body.isWrapperFor(RunnableTaskBody.class)) {
             return register(expression, ((RunnableTaskBody) body).getRunnable());
@@ -228,6 +232,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      * {@inheritDoc}
      */
     @Override
+    @NotNull
     public String registerInternal(@NotNull CronTask task) {
         return register(task.getExpression(), task.getRunnable());
     }
@@ -274,6 +279,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      * {@inheritDoc}
      */
     @Override
+    @NotNull
     public List<CronTaskInfo> getAllCronTaskInfo() {
         try {
             return getInitializedScheduler().getJobKeys(GroupMatcher.anyGroup())
@@ -363,6 +369,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
     }
 
     @Override
+    @NotNull
     protected CronListenerCollector getCronListenerCollector() {
         return jobListener;
     }
