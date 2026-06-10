@@ -18,13 +18,13 @@ package top.osjf.cron.spring.hutool;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Configuration;
-import top.osjf.cron.core.lifecycle.SuperiorProperties;
+import top.osjf.cron.core.lifecycle.InitializeProperties;
 import top.osjf.cron.core.repository.CronExecutorServiceSupplier;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
 import top.osjf.cron.spring.AbstractCronTaskConfiguration;
 import top.osjf.cron.spring.CronAnnotationPostProcessor;
 import top.osjf.cron.spring.ObjectProviderUtils;
-import top.osjf.cron.spring.SuperiorPropertiesUtils;
+import top.osjf.cron.spring.PropertiesUtils;
 import top.osjf.cron.spring.annotation.Cron;
 import top.osjf.cron.spring.annotation.CronRepositoryBean;
 
@@ -46,12 +46,12 @@ import java.lang.annotation.Annotation;
 public class HutoolCronTaskConfiguration extends AbstractCronTaskConfiguration {
 
     @CronRepositoryBean
-    public HutoolCronTaskRepository hutoolCronTaskRepository(ObjectProvider<SuperiorProperties> propertiesProvider,
+    public HutoolCronTaskRepository hutoolCronTaskRepository(ObjectProvider<InitializeProperties> propertiesProvider,
                                                              ObjectProvider<CronExecutorServiceSupplier> executorServiceProvider) {
 
         HutoolCronTaskRepository repository = new HutoolCronTaskRepository();
-        repository.setSuperiorProperties(SuperiorPropertiesUtils.compositeSuperiorProperties
-                (getImportAnnotationSuperiorProperties(),
+        repository.setInitializeProperties(PropertiesUtils.compositeSuperiorProperties
+                (getImportAnnotationInitializeProperties(),
                         ObjectProviderUtils.getPriority(propertiesProvider)));
         CronExecutorServiceSupplier executorServiceSupplier = ObjectProviderUtils.getPriority(executorServiceProvider);
         if (executorServiceSupplier != null) {

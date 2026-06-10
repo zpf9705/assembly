@@ -18,12 +18,12 @@ package top.osjf.cron.spring.cron4j;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Configuration;
-import top.osjf.cron.core.lifecycle.SuperiorProperties;
+import top.osjf.cron.core.lifecycle.InitializeProperties;
 import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
 import top.osjf.cron.spring.AbstractCronTaskConfiguration;
 import top.osjf.cron.spring.CronAnnotationPostProcessor;
 import top.osjf.cron.spring.ObjectProviderUtils;
-import top.osjf.cron.spring.SuperiorPropertiesUtils;
+import top.osjf.cron.spring.PropertiesUtils;
 import top.osjf.cron.spring.annotation.Cron;
 import top.osjf.cron.spring.annotation.CronRepositoryBean;
 
@@ -45,10 +45,10 @@ import java.lang.annotation.Annotation;
 public class Cron4jCronTaskConfiguration extends AbstractCronTaskConfiguration {
 
     @CronRepositoryBean
-    public Cron4jCronTaskRepository cron4jCronTaskRepository(ObjectProvider<SuperiorProperties> propertiesProvider) {
+    public Cron4jCronTaskRepository cron4jCronTaskRepository(ObjectProvider<InitializeProperties> propertiesProvider) {
         Cron4jCronTaskRepository repository = new Cron4jCronTaskRepository();
-        repository.setSuperiorProperties(SuperiorPropertiesUtils.compositeSuperiorProperties
-                (getImportAnnotationSuperiorProperties(),
+        repository.setInitializeProperties(PropertiesUtils.compositeSuperiorProperties
+                (getImportAnnotationInitializeProperties(),
                         ObjectProviderUtils.getPriority(propertiesProvider)));
         return repository;
     }

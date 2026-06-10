@@ -17,7 +17,7 @@
 package top.osjf.cron.spring.quartz;
 
 import org.springframework.context.annotation.Import;
-import top.osjf.cron.core.lifecycle.SuperiorProperties;
+import top.osjf.cron.core.lifecycle.InitializeProperties;
 import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
 import top.osjf.cron.spring.CronAnnotationPostProcessor;
 import top.osjf.cron.spring.CronTaskConfiguration;
@@ -45,8 +45,8 @@ import java.lang.annotation.*;
  * that scans the relevant beans wearing the annotation {@link Cron} and registers the task.
  *
  * <p>There are too many core attribute configurations for quartz, which can be encapsulated
- * in {@link SuperiorProperties} and passed through using method
- * {@link QuartzCronTaskRepository#setSuperiorProperties}for construction.
+ * in {@link InitializeProperties} and passed through using method
+ * {@link QuartzCronTaskRepository#setInitializeProperties(InitializeProperties)}for construction.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.0
