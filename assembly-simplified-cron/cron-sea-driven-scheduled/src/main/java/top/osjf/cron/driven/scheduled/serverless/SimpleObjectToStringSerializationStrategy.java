@@ -32,7 +32,6 @@ public class SimpleObjectToStringSerializationStrategy implements ObjectToString
 
     @Override
     public String serializeToString(Object obj) {
-        if (obj == null) return "";
         return obj.toString();
     }
 }

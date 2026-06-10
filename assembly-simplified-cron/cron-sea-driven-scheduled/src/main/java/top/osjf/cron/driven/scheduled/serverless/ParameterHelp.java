@@ -17,6 +17,7 @@
 
 package top.osjf.cron.driven.scheduled.serverless;
 
+import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.util.StringUtils;
 
 import java.lang.reflect.Field;
@@ -41,7 +42,7 @@ public abstract class ParameterHelp {
     private static final ConcurrentHashMap<Class<?>, ObjectToStringSerializationStrategy> STRATEGY_CACHE
             = new ConcurrentHashMap<>();
 
-    public static Map<Parameter.Type, String> resolveJarStartupParameter(TaskParameter taskParameter) {
+    public static Map<Parameter.Type, String> resolveJarStartupParameter(@Nullable TaskParameter taskParameter) {
         if (taskParameter == null) {
             return Collections.emptyMap();
         }
@@ -130,6 +131,7 @@ public abstract class ParameterHelp {
         });
     }
 
+    @Nullable
     private static Object getFieldValue(Field f, TaskParameter taskParameter) {
         if (!f.isAccessible()) {
             f.setAccessible(true);
