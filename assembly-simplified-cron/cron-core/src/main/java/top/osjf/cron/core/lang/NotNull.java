@@ -28,9 +28,6 @@ import java.lang.annotation.*;
  *
  * <p>Should be used at parameter, return value, and field level. Method overrides should
  * repeat parent {@code @NotNull} annotations unless they behave differently.
- *
- * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.3
  */
 @Target({ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)

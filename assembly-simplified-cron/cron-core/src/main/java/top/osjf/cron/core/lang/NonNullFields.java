@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-? the original author or authors.
+ * Copyright 2026-? the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,24 +17,23 @@
 package top.osjf.cron.core.lang;
 
 import javax.annotation.Nonnull;
-import javax.annotation.meta.TypeQualifierNickname;
-import javax.annotation.meta.When;
+import javax.annotation.meta.TypeQualifierDefault;
 import java.lang.annotation.*;
 
 /**
- * A common annotation to declare that annotated elements can be {@code null} under
- * some circumstance.
+ * A common annotation to declare that fields are to be considered as
+ * non-nullable by default for a given package.
  *
  * <p>Leverages JSR-305 meta-annotations to indicate nullability in Java to common
- * tools with JSR-305 support and used by Kotlin to infer nullability of Spring API.
+ * tools with JSR-305 support and used by Kotlin to infer nullability of API.
  *
- * <p>Should be used at parameter, return value, and field level. Methods override should
- * repeat parent {@code @CanNull} annotations unless they behave differently.
+ * <p>Should be used at package level in association with {@link Nullable}
+ * annotations at field level.
  */
-@Target({ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD})
+@Target(ElementType.PACKAGE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Nonnull(when = When.MAYBE)
-@TypeQualifierNickname
-public @interface Nullable {
+@Nonnull
+@TypeQualifierDefault(ElementType.FIELD)
+public @interface NonNullFields {
 }
