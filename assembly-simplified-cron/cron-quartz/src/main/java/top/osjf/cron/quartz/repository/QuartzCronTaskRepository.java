@@ -24,7 +24,7 @@ import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lang.Nullable;
-import top.osjf.cron.core.lifecycle.SuperiorProperties;
+import top.osjf.cron.core.lifecycle.InitializeProperties;
 import top.osjf.cron.core.listener.CronListenerCollector;
 import top.osjf.cron.core.repository.*;
 import top.osjf.cron.quartz.QuartzUtils;
@@ -100,24 +100,24 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
     }
 
     /**
-     * Set the parameter {@link SuperiorProperties} object for building the quartz task
+     * Set the parameter {@link InitializeProperties} object for building the quartz task
      * factory, compatible with the Cron framework startup parameter series.
      *
      * <p>The configuration file cannot overwrite the value set by the external active
      * call to the set method.
      *
-     * @param superiorProperties {@link SuperiorProperties} object for building the quartz
+     * @param initializeProperties {@link InitializeProperties} object for building the quartz
      *                           task factory.
      * @since 3.0.0
      */
     @Override
-    public void setSuperiorProperties(SuperiorProperties superiorProperties) {
-        super.setSuperiorProperties(superiorProperties);
-        if (quartzProperties != null && !superiorProperties.isEmpty()) {
-            this.quartzProperties = superiorProperties.asProperties();
+    public void setInitializeProperties(InitializeProperties initializeProperties) {
+        super.setInitializeProperties(initializeProperties);
+        if (quartzProperties != null && !initializeProperties.isEmpty()) {
+            this.quartzProperties = initializeProperties;
             if (!setWaitForJobsToCompleteWhenStop)
-                setWaitForJobsToCompleteWhenStop(superiorProperties
-                        .getProperty(PROP_NAME_OF_IF_STOP_WAIT_JOB_COMPLETE, DEFAULT_IF_STOP_WAIT_JOB_COMPLETE_VALUE));
+                setWaitForJobsToCompleteWhenStop(initializeProperties
+                        .getBoolean(PROP_NAME_OF_IF_STOP_WAIT_JOB_COMPLETE, DEFAULT_IF_STOP_WAIT_JOB_COMPLETE_VALUE));
         }
     }
 
