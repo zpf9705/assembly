@@ -18,6 +18,7 @@
 package top.osjf.cron.datasource.driven.scheduled.external.file;
 
 import com.sun.nio.file.SensitivityWatchEventModifier;
+import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lifecycle.InitializeAble;
 import top.osjf.cron.datasource.driven.scheduled.AbstractDatasourceDrivenScheduled;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
@@ -145,7 +146,7 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement>
      * {@link #afterStart} by {@link #loader}.
      */
     @Override
-    public void afterStart(List<TaskElement> fulledDatasourceTaskElement) {
+    public void afterStart(@NotNull List<TaskElement> fulledDatasourceTaskElement) {
         loader.checkedUpdate(fulledDatasourceTaskElement);
     }
 
@@ -155,7 +156,7 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement>
      * {@link #afterInspect} by {@link #loader}.
      */
     @Override
-    public void afterInspect(List<TaskElement> runtimeCheckedDatasourceTaskElement) {
+    public void afterInspect(@NotNull List<TaskElement> runtimeCheckedDatasourceTaskElement) {
         loader.checkedUpdate(runtimeCheckedDatasourceTaskElement);
     }
 
@@ -165,6 +166,7 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement>
      * {@link #getBeFilteredTaskElements()} by {@link #loader}
      */
     @Override
+    @NotNull
     protected List<TaskElement> getBeFilteredTaskElements() {
         return Collections.unmodifiableList(loader.loading(Function.identity()));
     }
@@ -173,7 +175,7 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement>
      * {@inheritDoc}
      */
     @Override
-    public void setAbstractDatasourceDrivenScheduled(AbstractDatasourceDrivenScheduled scheduled) {
+    public void setAbstractDatasourceDrivenScheduled(@NotNull AbstractDatasourceDrivenScheduled scheduled) {
         this.scheduled = scheduled;
     }
 
