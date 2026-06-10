@@ -112,7 +112,7 @@ public abstract class AbstractDatasourceDrivenScheduled
     /** Property name that determines the task execution environment can be configured in the system
      * variable {@link System#setProperty}. */
     public static final String PROFILES_SYSTEM_PROPERTY_NAME = "cron.datasource.driven.scheduled.profiles";
-    private static List<String> SYSTEM_PROFILES;
+    @Nullable private static List<String> SYSTEM_PROFILES;
 
     /**
      * Due to compatibility limitations on {@link RunTimes} run times, it is not possible to return
@@ -318,8 +318,9 @@ public abstract class AbstractDatasourceDrivenScheduled
                 return taskMonitorCheckInternal;
             }
             try {
-                taskMonitorCheckInternal
+                Long loadConfigValue
                         = configLoader.getConfig(KEY_OF_TASK_CHECK_INTERNAL, Long.class);
+                if (loadConfigValue != null) taskMonitorCheckInternal = loadConfigValue;
             }
             catch (Throwable ex) {
                 logger.error("Failed to obtain config [{}]", KEY_OF_TASK_CHECK_INTERNAL, ex);
@@ -565,7 +566,7 @@ public abstract class AbstractDatasourceDrivenScheduled
         // Registration with a limit on the number of runs will not be able to return the unique ID of the
         // task. Therefore, a prefix+the task ID set by the user will be used as the task registration ID,
         // in order to pause the registration of this task when checking again.
-        if (StringUtils.isBlank(taskId)) taskId = PREFIX_SIGN_OF_TIMES_REGISTED + taskElement.getId();
+        if (taskId == null) taskId = PREFIX_SIGN_OF_TIMES_REGISTED + taskElement.getId();
 
         taskElement.setTaskId(taskId);
         taskElement.setStatusDescription(true, "Running");
@@ -590,7 +591,7 @@ public abstract class AbstractDatasourceDrivenScheduled
      * @return {@code true} indicates that the environment matches, otherwise it does not match.
      */
     protected boolean profilesMatch(String profiles) {
-        if (StringUtils.isBlank(profiles)) {
+        if (StringUtils.isBlank(profiles) || SYSTEM_PROFILES == null) {
             return true;
         }
         return SYSTEM_PROFILES.contains(profiles);
