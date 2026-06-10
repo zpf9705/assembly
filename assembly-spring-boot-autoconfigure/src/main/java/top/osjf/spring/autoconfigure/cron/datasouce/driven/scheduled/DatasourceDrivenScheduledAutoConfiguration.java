@@ -20,13 +20,17 @@ package top.osjf.spring.autoconfigure.cron.datasouce.driven.scheduled;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.type.AnnotationMetadata;
 import top.osjf.cron.core.lang.NotNull;
+import top.osjf.cron.core.util.StringUtils;
+import top.osjf.cron.datasource.driven.scheduled.DataSourceConfigLoader;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
+import top.osjf.cron.datasource.driven.scheduled.JdkDataSourceConfigLoader;
 import top.osjf.cron.datasource.driven.scheduled.NoOpDatasourceTaskElementsOperation;
 import top.osjf.cron.spring.annotation.DatasourceDrivenScheduledConfiguration;
 import top.osjf.cron.spring.datasource.driven.scheduled.DataSource;
@@ -39,6 +43,7 @@ import top.osjf.cron.spring.datasource.driven.scheduled.SpringDatasourceDrivenSc
  * @since 1.0.4
  */
 @Configuration(proxyBeanMethods = false)
+@EnableConfigurationProperties(CronDatasourceDrivenProperties.class)
 @ConditionalOnProperty(prefix = "spring.schedule.cron", name = "scheduled-driven.enable", havingValue = "true")
 public class DatasourceDrivenScheduledAutoConfiguration {
 
@@ -56,6 +61,26 @@ public class DatasourceDrivenScheduledAutoConfiguration {
     @ConditionalOnMissingBean(DatasourceTaskElementsOperation.class)
     public NoOpDatasourceTaskElementsOperation noOpDatasourceTaskElementsOperation() {
         return new NoOpDatasourceTaskElementsOperation();
+    }
+
+    /**
+     * @since 3.0.2
+     */
+    @Bean
+    @ConditionalOnMissingBean(DataSourceConfigLoader.class)
+    @ConditionalOnProperty
+            (prefix = "spring.schedule.cron.scheduled-driven.config-loader.javax-datasource", name = "query-config-qql")
+    public DataSourceConfigLoader dataSourceConfigLoader(javax.sql.DataSource dataSource,
+                                                         CronDatasourceDrivenProperties properties) {
+        CronDatasourceDrivenProperties.ConfigLoader.JavaxDatasource javaxDatasource
+                = properties.getConfigLoader().getJavaxDatasource();
+        JdkDataSourceConfigLoader loader =
+                new JdkDataSourceConfigLoader(dataSource, javaxDatasource.getQueryConfigSql());
+        String configValueColumnName = javaxDatasource.getConfigValueColumnName();
+        if (!StringUtils.isBlank(configValueColumnName)) {
+            loader.setConfigValueColumnName(configValueColumnName);
+        }
+        return loader;
     }
 
     /**
