@@ -20,7 +20,6 @@ package top.osjf.cron.datasource.driven.scheduled.external.file;
 import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.lifecycle.InitializeAble;
 import top.osjf.cron.core.util.CollectionUtils;
-import top.osjf.cron.core.util.StringUtils;
 import top.osjf.cron.datasource.driven.scheduled.DataSourceDrivenException;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
@@ -77,27 +76,26 @@ import java.util.function.Function;
 public abstract class ExternalFileTaskElementLoader<T extends TaskElement> implements InitializeAble, Closeable {
 
     /** The path to the base directory.*/
-    @Nullable
-    private String baseDir;
+    @Nullable private String baseDir;
 
     /** The path to the configuration file name.*/
-    private String configFileName;
+    @Nullable private String configFileName;
 
     /** The {@link File} object to {@link #configFileName} and {@link #baseDir}.*/
-    private File configFile;
+    @Nullable private File configFile;
 
     /** The timestamp of the last modification.*/
-    private Long lastModifiedMill;
+    @Nullable private Long lastModifiedMill;
 
     /** The boolean flag indicates first loading. */
     private volatile boolean loadingFlag;
 
-    private ReadWriteLock readWriteLock;
+    @Nullable private ReadWriteLock readWriteLock;
 
     /** The list of {@link TaskElement} loading through {@link #loadingInternal(InputStream)}. */
-    protected List<T> taskElements;
+    @Nullable protected List<T> taskElements;
 
-    private Class<T> rawType;
+    @Nullable private Class<T> rawType;
 
     /**
      * Sets the base directory path for resolving dynamic configuration files.
@@ -208,7 +206,7 @@ public abstract class ExternalFileTaskElementLoader<T extends TaskElement> imple
 
         List<T> elements = new ArrayList<>();
         for (TaskElement updateElement : updateElements) {
-            if (rawType.isInstance(updateElement)) {
+            if (rawType != null && rawType.isInstance(updateElement)) {
                 elements.add((T) updateElement);
             }
         }
@@ -360,7 +358,7 @@ public abstract class ExternalFileTaskElementLoader<T extends TaskElement> imple
      * @return The configuration file name.
      */
     private String getConfigFileName() {
-        if (StringUtils.isBlank(configFileName)) {
+        if (configFileName == null) {
             configFileName = defaultConfigFileName();
         }
         return configFileName;
@@ -379,7 +377,7 @@ public abstract class ExternalFileTaskElementLoader<T extends TaskElement> imple
     private boolean isModifiedRecently() {
         try {
             long modifiedMillis = Files.getLastModifiedTime(getConfigFile().toPath()).toMillis();
-            if (lastModifiedMill.compareTo(modifiedMillis) != 0) {
+            if (lastModifiedMill == null || lastModifiedMill.compareTo(modifiedMillis) != 0) {
                 lastModifiedMill = modifiedMillis;
                 return true;
             }

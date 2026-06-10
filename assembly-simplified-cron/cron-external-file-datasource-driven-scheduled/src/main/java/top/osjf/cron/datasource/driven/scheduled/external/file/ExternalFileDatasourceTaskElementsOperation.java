@@ -19,6 +19,7 @@ package top.osjf.cron.datasource.driven.scheduled.external.file;
 
 import com.sun.nio.file.SensitivityWatchEventModifier;
 import top.osjf.cron.core.lang.NotNull;
+import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.lifecycle.InitializeAble;
 import top.osjf.cron.datasource.driven.scheduled.AbstractDatasourceDrivenScheduled;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
@@ -88,12 +89,12 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement>
      * Lazy-initialized when main task info is not provided.
      * @since 3.0.2
      */
-    private FileWatchService fileWatchService;
+    @Nullable private FileWatchService fileWatchService;
 
     /**
      * @since 3.0.2
      */
-    private AbstractDatasourceDrivenScheduled scheduled;
+    @Nullable private AbstractDatasourceDrivenScheduled scheduled;
 
     /**
      * Constructs an {@code ExternalFileDatasourceTaskElementsOperation} with the given
@@ -184,12 +185,13 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement>
      */
     @Override
     public void elseMonitorStartAction() {
-        fileWatchService = new FileWatchService();
+        FileWatchService fileWatchService = new FileWatchService();
         File configFile = loader.getConfigFile();
         fileWatchService.registerWatch(configFile.getParent(),
                 false, SensitivityWatchEventModifier.MEDIUM, TriggerKind.ENTRY_MODIFY);
         fileWatchService.registerListener(new ExternalFileModifyListener());
         fileWatchService.start();
+        this.fileWatchService = fileWatchService;
     }
 
     /**
@@ -206,7 +208,7 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement>
 
         @Override
         public void onWatchEvent(AmapleWatchEvent event) {
-            scheduled.inspect();
+            if (scheduled != null) scheduled.inspect();
         }
     }
 
