@@ -19,6 +19,7 @@ package top.osjf.cron.datasource.driven.scheduled.mp;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.IService;
+import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.Status;
@@ -84,16 +85,18 @@ public class MybatisPlusDatasourceTaskElementsOperation
     }
 
     @Override
+    @NotNull
     public List<TaskElement> getDatasourceTaskElements() {
         return Collections.unmodifiableList(taskElementService.lambdaQuery().list());
     }
 
     @Override
-    public void afterStart(List<TaskElement> fulledDatasourceTaskElement) {
+    public void afterStart(@NotNull List<TaskElement> fulledDatasourceTaskElement) {
         updateBatchElements(fulledDatasourceTaskElement);
     }
 
     @Override
+    @NotNull
     public List<TaskElement> getRuntimeNeedCheckDatasourceTaskElements() {
         return Collections.unmodifiableList(taskElementService.lambdaQuery()
                 .and(w -> w.eq(DatabaseTaskElement::getUpdateSign, 1)
@@ -102,31 +105,33 @@ public class MybatisPlusDatasourceTaskElementsOperation
     }
 
     @Override
-    public void afterInspect(List<TaskElement> runtimeCheckedDatasourceTaskElement) {
+    public void afterInspect(@NotNull List<TaskElement> runtimeCheckedDatasourceTaskElement) {
         updateBatchElements(runtimeCheckedDatasourceTaskElement);
     }
 
     @Override
     @Nullable
-    public TaskElement getElementById(String id) {
+    public TaskElement getElementById(@NotNull String id) {
         return taskElementService.getOne(Wrappers.<DatabaseTaskElement>lambdaQuery()
                 .eq(DatabaseTaskElement::getId, id), false);
     }
 
     @Nullable
     @Override
-    public TaskElement getElementByTaskId(String taskId) {
+    public TaskElement getElementByTaskId(@NotNull String taskId) {
         return taskElementService.getOne(Wrappers.<DatabaseTaskElement>lambdaQuery()
                 .eq(DatabaseTaskElement::getTaskId, taskId), false);
     }
 
     @Override
-    public List<TaskElement> getElementsByTaskName(String taskName) {
+    @NotNull
+    public List<TaskElement> getElementsByTaskName(@NotNull String taskName) {
         return Collections.unmodifiableList(taskElementService.list(Wrappers.<DatabaseTaskElement>lambdaQuery()
                 .eq(DatabaseTaskElement::getTaskName, taskName)));
     }
 
     @Override
+    @NotNull
     public List<TaskElement> getElementsByTaskStatus(Status status) {
         return Collections.unmodifiableList(taskElementService.list(Wrappers.<DatabaseTaskElement>lambdaQuery()
                 .eq(DatabaseTaskElement::getStatus, status.name())));

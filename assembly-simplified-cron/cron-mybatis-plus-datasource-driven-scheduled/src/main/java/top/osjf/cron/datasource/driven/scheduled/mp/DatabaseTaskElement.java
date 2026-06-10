@@ -20,6 +20,7 @@ package top.osjf.cron.datasource.driven.scheduled.mp;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.datasource.driven.scheduled.Constants;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 import top.osjf.generated.mybatisplus.MybatisPlusCodeGenerate;
@@ -122,6 +123,7 @@ public class DatabaseTaskElement implements TaskElement {
     private Integer updateSign;
 
     @Override
+    @NotNull
     public String getId() {
         return id;
     }
@@ -131,16 +133,18 @@ public class DatabaseTaskElement implements TaskElement {
     }
 
     @Override
+    @NotNull
     public String getTaskId() {
         return taskId;
     }
 
     @Override
-    public void setTaskId(String taskId) {
+    public void setTaskId(@NotNull String taskId) {
         this.taskId = taskId;
     }
 
     @Override
+    @NotNull
     public String getTaskName() {
         return taskName;
     }
@@ -150,6 +154,7 @@ public class DatabaseTaskElement implements TaskElement {
     }
 
     @Override
+    @NotNull
     public String getProfiles() {
         return profiles;
     }
@@ -159,6 +164,7 @@ public class DatabaseTaskElement implements TaskElement {
     }
 
     @Override
+    @NotNull
     public String getTaskDescription() {
         return taskDescription;
     }
@@ -168,26 +174,29 @@ public class DatabaseTaskElement implements TaskElement {
     }
 
     @Override
+    @NotNull
     public String getStatus() {
         return status;
     }
 
     @Override
-    public void setStatus(String status) {
+    public void setStatus(@NotNull String status) {
         this.status = status;
     }
 
     @Override
+    @NotNull
     public String getStatusDescription() {
         return statusDescription;
     }
 
     @Override
-    public void setStatusDescription(String statusDescription) {
+    public void setStatusDescription(@NotNull String statusDescription) {
         this.statusDescription = statusDescription;
     }
 
     @Override
+    @NotNull
     public String getExpression() {
         return expression;
     }
@@ -197,12 +206,13 @@ public class DatabaseTaskElement implements TaskElement {
     }
 
     @Override
+    @NotNull
     public Integer getUpdateSign() {
         return updateSign;
     }
 
     @Override
-    public void setUpdateSign(Integer updateSign) {
+    public void setUpdateSign(@NotNull Integer updateSign) {
         this.updateSign = updateSign;
     }
 }
