@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-
-/**
- * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 3.0.2
- */
 @NonNullApi
 @NonNullFields
 package top.osjf.cron.core.listener;
