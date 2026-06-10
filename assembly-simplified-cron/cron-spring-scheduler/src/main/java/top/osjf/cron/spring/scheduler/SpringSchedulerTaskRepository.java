@@ -124,6 +124,7 @@ public class SpringSchedulerTaskRepository
      * {@inheritDoc}
      */
     @Override
+    @NotNull
     public String registerInternal(@NotNull String expression, @NotNull Runnable runnable) throws CronInternalException {
         return RepositoryUtils.doRegister(() ->
                         schedule(runnable, new CronTrigger(expression)).getListenableRunnable().getId(),
@@ -134,6 +135,7 @@ public class SpringSchedulerTaskRepository
      * {@inheritDoc}
      */
     @Override
+    @NotNull
     public String registerInternal(@NotNull String expression, @NotNull CronMethodRunnable runnable) throws CronInternalException {
         return register(expression, (Runnable) runnable);
     }
@@ -142,6 +144,7 @@ public class SpringSchedulerTaskRepository
      * {@inheritDoc}
      */
     @Override
+    @NotNull
     public String registerInternal(@NotNull String expression, @NotNull RunnableTaskBody body) throws CronInternalException {
         return register(expression, body.getRunnable());
     }
@@ -150,6 +153,7 @@ public class SpringSchedulerTaskRepository
      * {@inheritDoc}
      */
     @Override
+    @NotNull
     public String registerInternal(@NotNull String expression, @NotNull TaskBody body) {
         if (body.isWrapperFor(RunnableTaskBody.class)) {
             return register(expression, body.unwrap(RunnableTaskBody.class));
@@ -161,6 +165,7 @@ public class SpringSchedulerTaskRepository
      * {@inheritDoc}
      */
     @Override
+    @NotNull
     public String registerInternal(@NotNull top.osjf.cron.core.repository.CronTask task) {
         return register(task.getExpression(), task.getRunnable());
     }
@@ -183,6 +188,7 @@ public class SpringSchedulerTaskRepository
      * {@inheritDoc}
      */
     @Override
+    @NotNull
     public List<CronTaskInfo> getAllCronTaskInfo() {
         return getFutureIds()
                 .stream()

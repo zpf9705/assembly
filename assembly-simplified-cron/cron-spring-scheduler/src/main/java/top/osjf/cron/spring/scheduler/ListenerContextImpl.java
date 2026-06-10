@@ -17,6 +17,7 @@
 
 package top.osjf.cron.spring.scheduler;
 
+import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.listener.ListenerContext;
 
 /**
@@ -40,11 +41,13 @@ public class ListenerContextImpl implements ListenerContext {
     }
 
     @Override
+    @NotNull
     public String getID() {
         return id;
     }
 
     @Override
+    @NotNull
     public Object getSourceContext() {
         return listenableRunnable;
     }
