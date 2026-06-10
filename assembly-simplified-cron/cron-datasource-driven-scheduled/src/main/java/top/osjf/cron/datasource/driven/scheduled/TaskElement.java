@@ -17,6 +17,7 @@
 
 package top.osjf.cron.datasource.driven.scheduled;
 
+import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.core.util.StringUtils;
 
@@ -254,7 +255,7 @@ public interface TaskElement extends Serializable {
      * @param oldExpression The old expression.
      * @return {@code true} is indicating that they are different. and {@code false} otherwise.
      */
-    default boolean expressionNoSame(String oldExpression) {
+    default boolean expressionNoSame(@Nullable String oldExpression) {
         return !StringUtils.isBlank(oldExpression) && !Objects.equals(oldExpression, getExpression());
     }
 
