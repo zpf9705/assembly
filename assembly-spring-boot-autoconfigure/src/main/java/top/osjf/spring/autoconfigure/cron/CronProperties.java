@@ -24,7 +24,6 @@ import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
 import top.osjf.cron.datasource.driven.scheduled.Constants;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
 import top.osjf.cron.spring.datasource.driven.scheduled.DataSource;
-import top.osjf.cron.spring.datasource.driven.scheduled.SpringDatasourceDrivenScheduled;
 import top.osjf.cron.spring.datasource.driven.scheduled.SubstituteConfigFormat;
 import top.osjf.spring.autoconfigure.cron.datasouce.driven.scheduled.RedisConnectionConfigBuilderCustomizer;
 
@@ -409,20 +408,10 @@ public class CronProperties {
         private String loggerName;
 
         /**
-         * Specify the main task ID array when scheduling tasks driven by dynamic data sources.
-         * @see SpringDatasourceDrivenScheduled#getManagerTaskUniqueIdentifiers()
-         * @since 3.0.1
+         * The millisecond of polling interval of the task monitor thread.
+         * @since 3.0.2
          */
-        private String[] mainTaskUniqueIds;
-
-        /**
-         * The definition of this cron expression is used to determine the execution frequency
-         * of using the default main task management when no relevant information about the
-         * main task is provided.
-         * {@code SpringDatasourceDrivenScheduled#getManagerTaskCheckFrequencyCronExpress()}
-         * @since 3.0.1
-         */
-        private String defaultMainTaskExpress = Constants.MANAGER_TASK_CHECK_FREQUENCY_CRON;
+        private Long monitorCheckInternal = Constants.MONITOR_CHECK_INTERNAL;
 
         /**
          * @see External
@@ -471,20 +460,12 @@ public class CronProperties {
             this.loggerName = loggerName;
         }
 
-        public String[] getMainTaskUniqueIds() {
-            return mainTaskUniqueIds;
+        public Long getMonitorCheckInternal() {
+            return monitorCheckInternal;
         }
 
-        public void setMainTaskUniqueIds(String[] mainTaskUniqueIds) {
-            this.mainTaskUniqueIds = mainTaskUniqueIds;
-        }
-
-        public String getDefaultMainTaskExpress() {
-            return defaultMainTaskExpress;
-        }
-
-        public void setDefaultMainTaskExpress(String defaultMainTaskExpress) {
-            this.defaultMainTaskExpress = defaultMainTaskExpress;
+        public void setMonitorCheckInternal(Long monitorCheckInternal) {
+            this.monitorCheckInternal = monitorCheckInternal;
         }
 
         public External getExternal() {
