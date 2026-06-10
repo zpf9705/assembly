@@ -197,6 +197,7 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
      * @return {@inheritDoc}
      */
     @Override
+    @NotNull
     public String registerInternal(@NotNull String expression, @NotNull Runnable runnable) throws CronInternalException {
         return RepositoryUtils.doRegister(() -> getInitializedScheduler().schedule(expression, runnable),
                 InvalidPatternException.class);
@@ -215,6 +216,7 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
      * @return {@inheritDoc}
      */
     @Override
+    @NotNull
     public String registerInternal(@NotNull String expression, @NotNull CronMethodRunnable runnable) throws CronInternalException {
         return register(expression, (Runnable) runnable);
     }
@@ -232,6 +234,7 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
      * @return {@inheritDoc}
      */
     @Override
+    @NotNull
     public String registerInternal(@NotNull String expression, @NotNull RunnableTaskBody body) throws CronInternalException {
         return register(expression, body.getRunnable());
     }
@@ -249,6 +252,7 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
      * @return {@inheritDoc} , the ID of the timed file starts with {@link #FILE_ID_PREFIX}.
      */
     @Override
+    @NotNull
     public String registerInternal(@NotNull String expression, @NotNull TaskBody body) {
         if (body.isWrapperFor(FileTaskBody.class)) {
             FileTaskBody fileTaskBody = body.unwrap(FileTaskBody.class);
@@ -275,6 +279,7 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
      * @return {@inheritDoc}
      */
     @Override
+    @NotNull
     public String registerInternal(@NotNull CronTask task) {
         return register(task.getExpression(), new RunnableTaskBody(task.getRunnable()));
     }
@@ -296,6 +301,7 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
+    @NotNull
     public List<CronTaskInfo> getAllCronTaskInfo() {
         return Arrays.stream(getInitializedScheduler().getExecutingTasks())
                 .map(taskExecutor -> buildCronTaskInfo(taskExecutor.getGuid()))
@@ -357,6 +363,7 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
     }
 
     @Override
+    @NotNull
     protected CronListenerCollector getCronListenerCollector() {
         return schedulerListener;
     }

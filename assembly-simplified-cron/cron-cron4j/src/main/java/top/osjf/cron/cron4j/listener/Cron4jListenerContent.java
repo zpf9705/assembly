@@ -18,6 +18,7 @@
 package top.osjf.cron.cron4j.listener;
 
 import it.sauronsoftware.cron4j.TaskExecutor;
+import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.listener.ListenerContext;
 
 /**
@@ -41,11 +42,13 @@ public class Cron4jListenerContent implements ListenerContext {
     }
 
     @Override
+    @NotNull
     public String getID() {
         return id;
     }
 
     @Override
+    @NotNull
     public Object getSourceContext() {
         return taskExecutor;
     }
