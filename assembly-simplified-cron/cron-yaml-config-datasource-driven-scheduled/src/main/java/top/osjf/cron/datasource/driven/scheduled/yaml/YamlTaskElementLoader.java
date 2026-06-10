@@ -128,7 +128,8 @@ public class YamlTaskElementLoader extends ExternalFileTaskElementLoader<YamlTas
 
     @Override
     @SuppressWarnings("unchecked")
-    protected List<YamlTaskElement> loadingInternal(InputStream is) {
+    @NotNull
+    protected List<YamlTaskElement> loadingInternal(@NotNull InputStream is) {
         List<Object> loadingResult = yaml.load(is);
         if (CollectionUtils.isEmpty(loadingResult)) {
             return Collections.emptyList();
@@ -149,6 +150,7 @@ public class YamlTaskElementLoader extends ExternalFileTaskElementLoader<YamlTas
     }
 
     @Override
+    @NotNull
     protected String defaultConfigFileName() {
         return DEFAULT_CONFIG_FILE_NAME;
     }

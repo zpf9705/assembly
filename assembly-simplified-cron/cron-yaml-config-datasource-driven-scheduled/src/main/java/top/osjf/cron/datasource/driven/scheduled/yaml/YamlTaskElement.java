@@ -17,6 +17,7 @@
 
 package top.osjf.cron.datasource.driven.scheduled.yaml;
 
+import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 import top.osjf.cron.datasource.driven.scheduled.external.file.ExternalFileDatasourceTaskElement;
@@ -112,6 +113,7 @@ public class YamlTaskElement extends ExternalFileDatasourceTaskElement {
     }
 
     @Override
+    @NotNull
     public String getId() {
         return id;
     }
@@ -121,16 +123,18 @@ public class YamlTaskElement extends ExternalFileDatasourceTaskElement {
     }
 
     @Override
+    @NotNull
     public String getTaskId() {
         return taskId;
     }
 
     @Override
-    public void setTaskId(String taskId) {
+    public void setTaskId(@NotNull String taskId) {
         this.taskId = taskId;
     }
 
     @Override
+    @NotNull
     public String getTaskName() {
         return taskName;
     }
@@ -140,6 +144,7 @@ public class YamlTaskElement extends ExternalFileDatasourceTaskElement {
     }
 
     @Override
+    @NotNull
     public String getProfiles() {
         return profiles;
     }
@@ -149,6 +154,7 @@ public class YamlTaskElement extends ExternalFileDatasourceTaskElement {
     }
 
     @Override
+    @NotNull
     public String getTaskDescription() {
         return taskDescription;
     }
@@ -158,26 +164,29 @@ public class YamlTaskElement extends ExternalFileDatasourceTaskElement {
     }
 
     @Override
+    @NotNull
     public String getStatus() {
         return status;
     }
 
     @Override
-    public void setStatus(String status) {
+    public void setStatus(@NotNull String status) {
         this.status = status;
     }
 
     @Override
+    @NotNull
     public String getStatusDescription() {
         return statusDescription;
     }
 
     @Override
-    public void setStatusDescription(String statusDescription) {
+    public void setStatusDescription(@NotNull String statusDescription) {
         this.statusDescription = statusDescription;
     }
 
     @Override
+    @NotNull
     public String getExpression() {
         return expression;
     }
@@ -187,12 +196,13 @@ public class YamlTaskElement extends ExternalFileDatasourceTaskElement {
     }
 
     @Override
+    @NotNull
     public Integer getUpdateSign() {
         return updateSign;
     }
 
     @Override
-    public void setUpdateSign(Integer updateSign) {
+    public void setUpdateSign(@NotNull Integer updateSign) {
         this.updateSign = updateSign;
     }
 

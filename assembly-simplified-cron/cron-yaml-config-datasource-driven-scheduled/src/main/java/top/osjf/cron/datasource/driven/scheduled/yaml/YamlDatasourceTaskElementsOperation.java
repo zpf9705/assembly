@@ -18,6 +18,7 @@
 package top.osjf.cron.datasource.driven.scheduled.yaml;
 
 import org.yaml.snakeyaml.Yaml;
+import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.external.file.ExternalFileDatasourceTaskElementsOperation;
 
@@ -54,6 +55,7 @@ public class YamlDatasourceTaskElementsOperation extends ExternalFileDatasourceT
 
 
     @Override
+    @NotNull
     public YamlTaskElementLoader getLoader() {
         return (YamlTaskElementLoader) super.getLoader();
     }
