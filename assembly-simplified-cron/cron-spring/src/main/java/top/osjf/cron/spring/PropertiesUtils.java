@@ -18,18 +18,18 @@
 package top.osjf.cron.spring;
 
 import top.osjf.cron.core.lang.Nullable;
-import top.osjf.cron.core.lifecycle.SuperiorProperties;
+import top.osjf.cron.core.lifecycle.InitializeProperties;
 
 /**
- * Simple {@link SuperiorProperties} related tool classes.
+ * Simple {@link InitializeProperties} related tool classes.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.3
+ * @since 3.0.2
  */
-public abstract class SuperiorPropertiesUtils {
+public abstract class PropertiesUtils {
 
     @Nullable
-    public static SuperiorProperties compositeSuperiorProperties(SuperiorProperties s1, SuperiorProperties s2) {
+    public static InitializeProperties compositeSuperiorProperties(InitializeProperties s1, InitializeProperties s2) {
         if (s1 == null && s2 == null) {
             return null;
         } else if (s1 == null) {
@@ -37,7 +37,7 @@ public abstract class SuperiorPropertiesUtils {
         } else if (s2 == null) {
             return s1;
         }
-        s1.addProperties(s2);
+        s1.mergeFrom(s2);
         return s1;
     }
 }

@@ -22,14 +22,15 @@ import org.springframework.context.annotation.ImportAware;
 import org.springframework.core.type.AnnotationMetadata;
 import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lang.Nullable;
-import top.osjf.cron.core.lifecycle.SuperiorProperties;
+import top.osjf.cron.core.lifecycle.InitializeProperties;
 
 import java.lang.annotation.Annotation;
+import java.util.Map;
 
 /**
  * Abstract {@link Configuration configuration} class for task registration framework.
  * <p>
- * Provide {@link SuperiorProperties} instance conversion for switch annotation properties,
+ * Provide {@link InitializeProperties} instance conversion for switch annotation properties,
  * as well as configuration for accessing task metadata in restful format and access
  * authentication mechanisms.
  *
@@ -44,7 +45,7 @@ public abstract class AbstractCronTaskConfiguration implements ImportAware {
      * provide annotation types.
      */
     @Nullable
-    private SuperiorProperties superiorProperties;
+    private InitializeProperties initializeProperties;
 
     @Override
     public void setImportMetadata(@NotNull AnnotationMetadata importMetadata) {
@@ -53,20 +54,23 @@ public abstract class AbstractCronTaskConfiguration implements ImportAware {
             return;
         }
         if (importMetadata.hasMetaAnnotation(annotationType.getName())) {
-            superiorProperties = SuperiorProperties.of(importMetadata.getAnnotationAttributes
-                    (annotationType.getCanonicalName()));
+            Map<String, Object> annotationAttributes
+                    = importMetadata.getAnnotationAttributes(annotationType.getCanonicalName());
+            if (annotationAttributes != null) {
+                initializeProperties = InitializeProperties.copyOfStringKeys(annotationAttributes);
+            }
         }
     }
 
     /**
-     * Return a {@link SuperiorProperties} object compiled from the specified annotation
+     * Return a {@link InitializeProperties} object compiled from the specified annotation
      * attributes extracted from {@code AnnotationMetadata}.
-     * @return The {@code SuperiorProperties} object contains properties extracted from
+     * @return The {@code InitializeProperties} object contains properties extracted from
      * annotations.
      */
     @Nullable
-    protected SuperiorProperties getImportAnnotationSuperiorProperties() {
-        return superiorProperties;
+    protected InitializeProperties getImportAnnotationInitializeProperties() {
+        return initializeProperties;
     }
 
     /**
