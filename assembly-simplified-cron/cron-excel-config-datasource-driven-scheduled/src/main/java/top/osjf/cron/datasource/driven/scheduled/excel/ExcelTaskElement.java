@@ -19,6 +19,7 @@ package top.osjf.cron.datasource.driven.scheduled.excel;
 
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.write.style.ColumnWidth;
+import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 import top.osjf.cron.datasource.driven.scheduled.external.file.ExternalFileDatasourceTaskElement;
 
@@ -96,6 +97,7 @@ public class ExcelTaskElement extends ExternalFileDatasourceTaskElement {
     private Integer updateSign;
 
     @Override
+    @NotNull
     public String getId() {
         return id;
     }
@@ -105,16 +107,19 @@ public class ExcelTaskElement extends ExternalFileDatasourceTaskElement {
     }
 
     @Override
+    @NotNull
     public String getTaskId() {
         return taskId;
     }
 
     @Override
+    @NotNull
     public void setTaskId(String taskId) {
         this.taskId = taskId;
     }
 
     @Override
+    @NotNull
     public String getTaskName() {
         return taskName;
     }
@@ -124,6 +129,7 @@ public class ExcelTaskElement extends ExternalFileDatasourceTaskElement {
     }
 
     @Override
+    @NotNull
     public String getProfiles() {
         return profiles;
     }
@@ -133,6 +139,7 @@ public class ExcelTaskElement extends ExternalFileDatasourceTaskElement {
     }
 
     @Override
+    @NotNull
     public String getTaskDescription() {
         return taskDescription;
     }
@@ -142,26 +149,30 @@ public class ExcelTaskElement extends ExternalFileDatasourceTaskElement {
     }
 
     @Override
+    @NotNull
     public String getStatus() {
         return status;
     }
 
     @Override
+    @NotNull
     public void setStatus(String status) {
         this.status = status;
     }
 
     @Override
+    @NotNull
     public String getStatusDescription() {
         return statusDescription;
     }
 
     @Override
-    public void setStatusDescription(String statusDescription) {
+    public void setStatusDescription(@NotNull String statusDescription) {
         this.statusDescription = statusDescription;
     }
 
     @Override
+    @NotNull
     public String getExpression() {
         return expression;
     }
@@ -171,12 +182,13 @@ public class ExcelTaskElement extends ExternalFileDatasourceTaskElement {
     }
 
     @Override
+    @NotNull
     public Integer getUpdateSign() {
         return updateSign;
     }
 
     @Override
-    public void setUpdateSign(Integer updateSign) {
+    public void setUpdateSign(@NotNull Integer updateSign) {
         this.updateSign = updateSign;
     }
 }
