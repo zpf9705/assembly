@@ -231,6 +231,7 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
+    @NotNull
     public String registerInternal(@NotNull String expression, @NotNull Runnable runnable) throws CronInternalException {
         return RepositoryUtils.doRegister(() ->
                 getInitializedScheduler().schedule(expression, runnable), CronException.class);
@@ -240,6 +241,7 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
+    @NotNull
     public String registerInternal(@NotNull String expression, @NotNull CronMethodRunnable runnable) throws CronInternalException {
         return register(expression, (Runnable) runnable);
     }
@@ -248,6 +250,7 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
+    @NotNull
     public String registerInternal(@NotNull String expression, @NotNull RunnableTaskBody body) throws CronInternalException {
         return register(expression, body.getRunnable());
     }
@@ -261,6 +264,7 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
      * @return {@inheritDoc}
      */
     @Override
+    @NotNull
     public String registerInternal(@NotNull String expression, @NotNull TaskBody body) {
         if (body.isWrapperFor(DefineIDRunnableTaskBody.class)) {
             DefineIDRunnableTaskBody defineIDRunnableTaskBody = body.unwrap(DefineIDRunnableTaskBody.class);
@@ -296,6 +300,7 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
     }
 
     @Override
+    @NotNull
     public String registerInternal(@NotNull CronTask task) {
         return register(task.getExpression(), new RunnableTaskBody(task.getRunnable()));
     }
@@ -349,6 +354,7 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
+    @NotNull
     public List<CronTaskInfo> getAllCronTaskInfo() {
         return getInitializedScheduler().getTaskTable()
                 .getIds()
@@ -377,6 +383,7 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
     }
 
     @Override
+    @NotNull
     protected CronListenerCollector getCronListenerCollector() {
         return taskListener;
     }
@@ -436,8 +443,9 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
         return scheduler;
     }
 
+    @NotNull
     @Override
-    protected Runnable asRunnable(TaskBody body) throws UnsupportedTaskBodyException {
+    protected Runnable asRunnable(@NotNull TaskBody body) throws UnsupportedTaskBodyException {
         if (body instanceof InvokeTaskBody) {
             return () -> ((InvokeTaskBody) body).getInvokeTask().execute();
         }
