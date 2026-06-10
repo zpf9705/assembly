@@ -162,7 +162,7 @@ public class SpringDatasourceDrivenScheduled
      * registration environment matching.
      */
     @Override
-    protected boolean profilesMatch(String profiles) {
+    protected boolean profilesMatch(@NotNull String profiles) {
         return StringUtils.isBlank(profiles)
                 || Arrays.stream(profiles.replace("，", ",").split(","))
                 .anyMatch(s -> activeProfiles.contains(s.trim()));
@@ -203,7 +203,7 @@ public class SpringDatasourceDrivenScheduled
      */
     @NotNull
     @Override
-    protected Runnable resolveTaskRunnable(TaskElement element) {
+    protected Runnable resolveTaskRunnable(@NotNull TaskElement element) {
         String taskName = element.getTaskName();
         Expression expression = expressionParser.parseExpression(taskName);
         Method sourceMethod = getSourceMethod(expression);
@@ -250,6 +250,7 @@ public class SpringDatasourceDrivenScheduled
     }
 
     @Override
+    @NotNull
     protected Logger getLogger() {
         return logger != null ? logger : super.getLogger();
     }
