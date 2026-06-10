@@ -18,6 +18,7 @@
 package top.osjf.cron.core.listener;
 
 import top.osjf.cron.core.lang.NotNull;
+import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.util.ReflectUtils;
 
 import java.lang.reflect.Constructor;
@@ -129,11 +130,11 @@ public abstract class ListenerContextSupport {
         /**
          * Constructor instance.
          */
-        private Constructor<? extends ListenerContext> constructor;
+        @Nullable private Constructor<? extends ListenerContext> constructor;
         /**
          * The source context class.
          */
-        private Class<?> sourceContextClass;
+        @Nullable private Class<?> sourceContextClass;
         /**
          * The input {@code ListenerContext} class.
          */
@@ -199,11 +200,11 @@ public abstract class ListenerContextSupport {
         /**
          * Set method instance.
          */
-        private Method setMethod;
+        @Nullable private Method setMethod;
         /**
          * The source context class.
          */
-        private Class<?> sourceContextClass;
+        @Nullable private Class<?> sourceContextClass;
         /**
          * The input {@code ListenerContext} class.
          */

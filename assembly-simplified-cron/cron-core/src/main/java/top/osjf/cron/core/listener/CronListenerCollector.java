@@ -17,7 +17,7 @@
 
 package top.osjf.cron.core.listener;
 
-import top.osjf.cron.core.lang.NotNull;
+import top.osjf.cron.core.lang.Nullable;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -42,10 +42,8 @@ public abstract class CronListenerCollector {
     /**
      * Add a {@code CronListener} to the listener list if it does not already exist.
      * @param cronListener The {@code CronListener}  instance to be added.
-     * @throws NullPointerException if input {@code CronListener} is {@literal null}.
      */
-    public void addCronListener(@NotNull CronListener cronListener) {
-        listenerNotNull(cronListener);
+    public void addCronListener(CronListener cronListener) {
         final Lock writeLock = lock.writeLock();
         writeLock.lock();
         try {
@@ -61,10 +59,8 @@ public abstract class CronListenerCollector {
      * Add a {@code CronListener} instance to the beginning of the listener list
      * if it does not already exist.
      * @param cronListener The {@code CronListener}  instance to be added.
-     * @throws NullPointerException if input {@code CronListener} is {@literal null}.
      */
-    public void addFirstCronListener(@NotNull CronListener cronListener){
-        listenerNotNull(cronListener);
+    public void addFirstCronListener(CronListener cronListener){
         final Lock writeLock = lock.writeLock();
         writeLock.lock();
         try {
@@ -80,10 +76,8 @@ public abstract class CronListenerCollector {
      * Add a {@code CronListener} instance to the end of the listener list
      * if it does not already exist.
      * @param cronListener The {@code CronListener}  instance to be added.
-     * @throws NullPointerException if input {@code CronListener} is {@literal null}.
      */
-    public void addLastCronListener(@NotNull CronListener cronListener){
-        listenerNotNull(cronListener);
+    public void addLastCronListener(CronListener cronListener){
         final Lock writeLock = lock.writeLock();
         writeLock.lock();
         try {
@@ -98,10 +92,8 @@ public abstract class CronListenerCollector {
     /**
      * Remove the specified {@code CronListener} from the listener list.
      * @param cronListener {@code CronListener} instance to be removed.
-     * @throws NullPointerException if input {@code CronListener} is {@literal null}.
      */
-    public void removeCronListener(@NotNull CronListener cronListener) {
-        listenerNotNull(cronListener);
+    public void removeCronListener(CronListener cronListener) {
         final Lock writeLock = lock.writeLock();
         writeLock.lock();
         try {
@@ -133,10 +125,8 @@ public abstract class CronListenerCollector {
      * @return a {@code Boolean} flag that the input {@code CronListener} already registered
      *         in {@link #cronListeners}.
      * @since 1.0.4
-     * @throws NullPointerException if input {@code CronListener} is {@literal null}.
      */
-    public boolean hasCronListener(@NotNull CronListener cronListener) {
-        listenerNotNull(cronListener);
+    public boolean hasCronListener(CronListener cronListener) {
         final Lock readLock = lock.readLock();
         readLock.lock();
         try {
@@ -172,6 +162,7 @@ public abstract class CronListenerCollector {
      * @return The type of {@code ListenerContext}
      * @see ListenerContextSupport#createListenerContext
      */
+    @Nullable
     protected Class<? extends ListenerContext> getListenerContextClass() {
         return null;
     }
@@ -218,16 +209,7 @@ public abstract class CronListenerCollector {
      *                          for executing scheduled tasks.
      * @param e                 error type object thrown during task execution only when failed.
      */
-    private void doListeners(ListenerLifecycle listenerLifecycle, Object sourceContext, Throwable e) {
+    private void doListeners(ListenerLifecycle listenerLifecycle, Object sourceContext, @Nullable Throwable e) {
         listenerLifecycle.consumerListeners(sourceContext, e, this);
-    }
-
-    /**
-     * @param cronListener a specify {@link CronListener} to check.
-     */
-    private void listenerNotNull(CronListener cronListener) {
-        if (cronListener == null) {
-            throw new NullPointerException("cronListener");
-        }
     }
 }

@@ -21,7 +21,7 @@ import top.osjf.cron.core.lang.Nullable;
 
 /**
  * The enumeration class is used to describe the execution lifecycle of {@code CronListener},
- * where each cycle has its own consumption function {@link Consumer}, and the methods of this
+ * where each cycle has its own consumption function {@link ListenerConsumer}, and the methods of this
  * declaration cycle stage are executed based on the given parameters.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
@@ -44,7 +44,7 @@ public enum ListenerLifecycle {
      */
     FAILED(CronListener::failed);
 
-    final Consumer consumer;
+    final ListenerConsumer consumer;
 
     /**
      * At the beginning stage, a {@link ListenerContext} instance will be generated based
@@ -54,12 +54,12 @@ public enum ListenerLifecycle {
      */
     private static final ThreadLocal<ListenerContext> CONTEXT_LOCAL = new ThreadLocal<>();
 
-    ListenerLifecycle(Consumer consumer) {
+    ListenerLifecycle(ListenerConsumer consumer) {
         this.consumer = consumer;
     }
 
     /**
-     * Perform phased execution on the provided {@link Consumer} based on the current enumerated
+     * Perform phased execution on the provided {@link ListenerConsumer} based on the current enumerated
      * {@link CronListener} behavior.
      *
      * <p>{@link ListenerContext} will only be created when the state is {@link #START}, and then
@@ -88,14 +88,5 @@ public enum ListenerLifecycle {
                 }
             }
         }
-    }
-
-    /**
-     * Provide {@link CronListener} consumption related parameters to execute the function interface
-     * during the listening cycle phase.
-     */
-    @FunctionalInterface
-    interface Consumer {
-        void accept(CronListener cronListener, ListenerContext listenerContext, @Nullable Throwable e);
     }
 }
