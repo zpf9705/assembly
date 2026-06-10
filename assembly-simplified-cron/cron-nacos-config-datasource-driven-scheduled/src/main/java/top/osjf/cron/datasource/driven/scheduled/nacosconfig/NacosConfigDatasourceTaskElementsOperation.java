@@ -24,6 +24,7 @@ import com.alibaba.nacos.api.config.ConfigType;
 import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.common.executor.NameThreadFactory;
+import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.util.AssertUtils;
 import top.osjf.cron.datasource.driven.scheduled.DataSourceDrivenException;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
@@ -160,12 +161,13 @@ public class NacosConfigDatasourceTaskElementsOperation extends RemoteDatasource
     }
 
     @Override
+    @NotNull
     protected String getRemoteConfigInfo() throws Throwable {
         return configService.getConfig(dataId, groupId, DEFAULT_TIMEOUT);
     }
 
     @Override
-    protected void publishConfig(String configInfo) throws Throwable {
+    protected void publishConfig(@NotNull String configInfo) throws Throwable {
         configService.publishConfig(dataId, groupId, configInfo, configType.getType());
     }
 
