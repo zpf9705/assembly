@@ -22,7 +22,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import top.osjf.cron.core.lifecycle.SuperiorProperties;
+import top.osjf.cron.core.lifecycle.InitializeProperties;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
 import top.osjf.cron.spring.quartz.EnableQuartzCronTaskRegister;
@@ -44,9 +44,9 @@ import java.util.List;
 class QuartzCronConfiguration {
 
     @Bean
-    public SuperiorProperties quartzProperties(ObjectProvider<List<QuartzPropertiesCustomizer>> provider,
+    public InitializeProperties quartzProperties(ObjectProvider<List<QuartzPropertiesCustomizer>> provider,
                                                CronProperties cronProperties) {
-        SuperiorProperties properties = cronProperties.getClientProperties(ClientType.QUARTZ);
+        InitializeProperties properties = cronProperties.getClientProperties(ClientType.QUARTZ);
         provider.orderedStream()
                 .forEach(customizers -> customizers.forEach(c -> c.customize(properties)));
         return properties;

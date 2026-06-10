@@ -32,7 +32,7 @@ import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProc
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.config.TaskManagementConfigUtils;
-import top.osjf.cron.core.lifecycle.SuperiorProperties;
+import top.osjf.cron.core.lifecycle.InitializeProperties;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.spring.AbstractCronTaskConfiguration;
 import top.osjf.cron.spring.ObjectProviderUtils;
@@ -59,7 +59,7 @@ class SpringSchedulerConfiguration {
     }
 
     @Bean
-    public SuperiorProperties springSchedulerProperties(CronProperties cronProperties) {
+    public InitializeProperties springSchedulerProperties(CronProperties cronProperties) {
         return cronProperties.getRunTimeoutMonitoring().get();
     }
 
@@ -78,11 +78,11 @@ class SpringSchedulerConfiguration {
         @Bean
         public SpringSchedulerTaskRepository springSchedulerTaskRepository(
                 @Qualifier(SchedulingRepositoryConfiguration.TASK_SCHEDULER_INTERNAL_BEAN_NAME)
-                TaskScheduler taskScheduler, ObjectProvider<SuperiorProperties> provider) {
+                TaskScheduler taskScheduler, ObjectProvider<InitializeProperties> provider) {
             SpringSchedulerTaskRepository repository = new SpringSchedulerTaskRepository(taskScheduler);
-            SuperiorProperties properties = ObjectProviderUtils.getPriority(provider);
+            InitializeProperties properties = ObjectProviderUtils.getPriority(provider);
             if (properties != null) {
-                repository.setSuperiorProperties(properties);
+                repository.setInitializeProperties(properties);
             }
             return repository;
         }

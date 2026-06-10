@@ -18,7 +18,7 @@ package top.osjf.spring.autoconfigure.cron;
 
 import com.cronutils.model.CronType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import top.osjf.cron.core.lifecycle.SuperiorProperties;
+import top.osjf.cron.core.lifecycle.InitializeProperties;
 import top.osjf.cron.core.repository.RunTimeoutRegistrarRepository;
 import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
 import top.osjf.cron.datasource.driven.scheduled.Constants;
@@ -33,7 +33,7 @@ import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import static top.osjf.cron.core.repository.SuperiorPropertiesParsedThreadPoolExecutor.*;
+import static top.osjf.cron.core.repository.PropertiesParsedThreadPoolExecutor.*;
 
 /**
  * Cron schedule properties.
@@ -82,26 +82,26 @@ public class CronProperties {
     /**
      * Get the configuration of the specified {@link ClientType}.
      * @param clientType the input {@link ClientType}.
-     * @return the {@link SuperiorProperties} created by {@link ClientType}.
+     * @return the {@link InitializeProperties} created by {@link ClientType}.
      * @since 3.0.1
      */
-    public SuperiorProperties getClientProperties(ClientType clientType) {
-        SuperiorProperties superiorProperties = null;
+    public InitializeProperties getClientProperties(ClientType clientType) {
+        InitializeProperties properties = null;
         if (clientType == ClientType.HUTOOL) {
-            superiorProperties = hutool.get();
+            properties = hutool.get();
         }
         else if (clientType == ClientType.CRON4J) {
-            superiorProperties = cron4j.get();
+            properties = cron4j.get();
         }
         else if (clientType == ClientType.QUARTZ) {
-            superiorProperties = quartz.get();
+            properties = quartz.get();
         }
 
-        if (superiorProperties != null) {
-            superiorProperties.addProperties(runTimeoutMonitoring.get());
+        if (properties != null) {
+            properties.mergeFrom(runTimeoutMonitoring.get());
         }
 
-        return superiorProperties;
+        return properties;
     }
 
     public void setClientType(ClientType clientType) {
@@ -151,7 +151,7 @@ public class CronProperties {
     /**
      * Hutool client properties.
      */
-    public static class Hutool implements Supplier<SuperiorProperties> {
+    public static class Hutool implements Supplier<InitializeProperties> {
 
         /**
          * Set whether to support second matching.
@@ -218,12 +218,12 @@ public class CronProperties {
         }
 
         @Override
-        public SuperiorProperties get() {
-            SuperiorProperties properties = SuperiorProperties.of();
-            properties.addProperty(HutoolCronTaskRepository.PROPERTY_NAME_OF_MATCH_SECOND, isMatchSecond);
-            properties.addProperty(HutoolCronTaskRepository.PROPERTY_NAME_OF_DAEMON, isDaemon);
-            properties.addProperty(HutoolCronTaskRepository.PROPERTY_NAME_OF_TIMEZONE, timezone);
-            properties.addProperty(HutoolCronTaskRepository.PROPERTY_NAME_OF_IF_STOP_CLEAR_TASK, ifStopClearTasks);
+        public InitializeProperties get() {
+            InitializeProperties properties = InitializeProperties.empty();
+            properties.setProperty(HutoolCronTaskRepository.PROPERTY_NAME_OF_MATCH_SECOND, isMatchSecond);
+            properties.setProperty(HutoolCronTaskRepository.PROPERTY_NAME_OF_DAEMON, isDaemon);
+            properties.setProperty(HutoolCronTaskRepository.PROPERTY_NAME_OF_TIMEZONE, timezone.getID());
+            properties.setProperty(HutoolCronTaskRepository.PROPERTY_NAME_OF_IF_STOP_CLEAR_TASK, ifStopClearTasks);
             return properties;
         }
     }
@@ -231,7 +231,7 @@ public class CronProperties {
     /**
      * Quartz client properties.
      */
-    public static class Quartz implements Supplier<SuperiorProperties> {
+    public static class Quartz implements Supplier<InitializeProperties> {
 
         /**
          * Additional Quartz Scheduler properties.
@@ -252,19 +252,15 @@ public class CronProperties {
          * @since 1.0.3
          */
         @Override
-        public SuperiorProperties get() {
-            SuperiorProperties superiorProperties = SuperiorProperties.of();
-            for (Map.Entry<String, String> entry : properties.entrySet()) {
-                superiorProperties.addProperty(entry.getKey(), entry.getValue());
-            }
-            return superiorProperties;
+        public InitializeProperties get() {
+            return InitializeProperties.copyOf(properties);
         }
     }
 
     /**
      * Cron4j client properties.
      */
-    public static class Cron4j implements Supplier<SuperiorProperties> {
+    public static class Cron4j implements Supplier<InitializeProperties> {
 
         /**
          * The daemon flag. If true the scheduler and its spawned threads acts like
@@ -294,10 +290,10 @@ public class CronProperties {
         }
 
         @Override
-        public SuperiorProperties get() {
-            SuperiorProperties properties = SuperiorProperties.of();
-            properties.addProperty(Cron4jCronTaskRepository.PROPERTY_NAME_OF_TIMEZONE, timezone);
-            properties.addProperty(Cron4jCronTaskRepository.PROPERTY_NAME_OF_DAEMON, daemon);
+        public InitializeProperties get() {
+            InitializeProperties properties = InitializeProperties.empty();
+            properties.setProperty(Cron4jCronTaskRepository.PROPERTY_NAME_OF_TIMEZONE, timezone.getID());
+            properties.setProperty(Cron4jCronTaskRepository.PROPERTY_NAME_OF_DAEMON, daemon);
             return properties;
         }
     }
@@ -677,7 +673,7 @@ public class CronProperties {
      * <p>Support monitoring thread pool configuration object for {@link RunTimeoutRegistrarRepository} API.
      * @since 3.0.1
      */
-    public static class RunTimeoutMonitoring implements Supplier<SuperiorProperties> {
+    public static class RunTimeoutMonitoring implements Supplier<InitializeProperties> {
         private final Pool pool = new Pool();
         private final Shutdown shutdown = new Shutdown();
 
@@ -703,20 +699,20 @@ public class CronProperties {
         }
 
         @Override
-        public SuperiorProperties get() {
-            SuperiorProperties properties = SuperiorProperties.of();
-            properties.addProperty(PROPERTY_OF_CORE_SIZE, pool.coreSize);
-            properties.addProperty(PROPERTY_OF_MAX_SIZE, pool.maxSize);
-            properties.addProperty(PROPERTY_OF_KEEP_ALIVE, pool.keepAlive);
-            properties.addProperty(PROPERTY_OF_KEEP_ALIVE_UNIT, pool.keepAliveUnit);
-            properties.addProperty(PROPERTY_OF_QUEUE_CAPACITY, pool.queueCapacity);
-            properties.addProperty(PROPERTY_OF_THREAD_NAME_PREFIX, threadNamePrefix);
-            properties.addProperty(PROPERTY_OF_ALLOW_CORE_THREAD_TIMEOUT, pool.allowCoreThreadTimeout);
-            properties.addProperty(PROPERTY_OF_AWAIT_TERMINATION, shutdown.awaitTermination);
-            properties.addProperty(PROPERTY_OF_AWAIT_TERMINATION_TIMEOUT, shutdown.awaitTerminationTimeout);
-            properties.addProperty(PROPERTY_OF_AWAIT_TERMINATION_TIMEOUT_UNIT, shutdown.awaitTerminationTimeoutUnit);
-            properties.addProperty(PROPERTY_OF_REJECT_RETRY_TIMEOUT, pool.rejectRetryTimeout);
-            properties.addProperty(PROPERTY_OF_REJECT_RETRY_TIMEOUT_UNIT, pool.rejectRetryTimeoutUnit);
+        public InitializeProperties get() {
+            InitializeProperties properties = InitializeProperties.empty();
+            properties.setProperty(PROPERTY_OF_CORE_SIZE, pool.coreSize);
+            properties.setProperty(PROPERTY_OF_MAX_SIZE, pool.maxSize);
+            properties.setProperty(PROPERTY_OF_KEEP_ALIVE, pool.keepAlive);
+            properties.setProperty(PROPERTY_OF_KEEP_ALIVE_UNIT, pool.keepAliveUnit);
+            properties.setProperty(PROPERTY_OF_QUEUE_CAPACITY, pool.queueCapacity);
+            properties.setProperty(PROPERTY_OF_THREAD_NAME_PREFIX, threadNamePrefix);
+            properties.setProperty(PROPERTY_OF_ALLOW_CORE_THREAD_TIMEOUT, pool.allowCoreThreadTimeout);
+            properties.setProperty(PROPERTY_OF_AWAIT_TERMINATION, shutdown.awaitTermination);
+            properties.setProperty(PROPERTY_OF_AWAIT_TERMINATION_TIMEOUT, shutdown.awaitTerminationTimeout);
+            properties.setProperty(PROPERTY_OF_AWAIT_TERMINATION_TIMEOUT_UNIT, shutdown.awaitTerminationTimeoutUnit);
+            properties.setProperty(PROPERTY_OF_REJECT_RETRY_TIMEOUT, pool.rejectRetryTimeout);
+            properties.setProperty(PROPERTY_OF_REJECT_RETRY_TIMEOUT_UNIT, pool.rejectRetryTimeoutUnit);
             return properties;
         }
 

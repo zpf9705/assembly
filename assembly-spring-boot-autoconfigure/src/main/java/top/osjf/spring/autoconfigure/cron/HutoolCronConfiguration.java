@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import top.osjf.cron.core.lifecycle.SuperiorProperties;
+import top.osjf.cron.core.lifecycle.InitializeProperties;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
 import top.osjf.cron.spring.CronTaskConfiguration;
@@ -42,7 +42,7 @@ import top.osjf.cron.spring.hutool.HutoolCronTaskConfiguration;
 class HutoolCronConfiguration {
 
     @Bean
-    public SuperiorProperties hutoolProperties(CronProperties cronProperties) {
+    public InitializeProperties hutoolProperties(CronProperties cronProperties) {
         return cronProperties.getClientProperties(ClientType.HUTOOL);
     }
 }
