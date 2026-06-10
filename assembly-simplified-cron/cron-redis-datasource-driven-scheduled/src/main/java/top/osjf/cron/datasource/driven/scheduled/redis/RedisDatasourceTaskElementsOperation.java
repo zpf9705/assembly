@@ -29,6 +29,7 @@ import io.lettuce.core.cluster.pubsub.StatefulRedisClusterPubSubConnection;
 import io.lettuce.core.pubsub.RedisPubSubListener;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.pubsub.api.sync.RedisPubSubCommands;
+import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.util.AssertUtils;
 import top.osjf.cron.core.util.StringUtils;
 import top.osjf.cron.datasource.driven.scheduled.redis.config.RedisConnectionConfig;
@@ -321,6 +322,7 @@ public class RedisDatasourceTaskElementsOperation extends RemoteDatasourceTaskEl
     }
 
     @Override
+    @NotNull
     protected String getRemoteConfigInfo() {
         checkInitialized();
 
@@ -334,7 +336,7 @@ public class RedisDatasourceTaskElementsOperation extends RemoteDatasourceTaskEl
     }
 
     @Override
-    protected void publishConfig(String configInfo) {
+    protected void publishConfig(@NotNull String configInfo) {
         checkInitialized();
 
         BaseRedisCommands<String,String> baseRedisCommands;
