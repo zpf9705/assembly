@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import top.osjf.cron.core.lifecycle.SuperiorProperties;
+import top.osjf.cron.core.lifecycle.InitializeProperties;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
 import top.osjf.cron.spring.CronTaskConfiguration;
@@ -42,7 +42,7 @@ import top.osjf.cron.spring.cron4j.Cron4jCronTaskConfiguration;
 class Cron4jCronConfiguration {
 
     @Bean
-    public SuperiorProperties cron4jProperties(CronProperties cronProperties) {
+    public InitializeProperties cron4jProperties(CronProperties cronProperties) {
         return cronProperties.getClientProperties(ClientType.CRON4J);
     }
 }
