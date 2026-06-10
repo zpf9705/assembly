@@ -17,45 +17,46 @@
 
 package top.osjf.cron.core.lifecycle;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import top.osjf.cron.core.lang.Nullable;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * An abstract class {@code SuperiorPropertiesInitializeAble} initialized based on
- * the {@link SuperiorProperties} instance.
+ * An abstract class {@code PropertiesInitializeAble} initialized based on
+ * the {@link InitializeProperties} instance.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 3.0.0
+ * @since 3.0.2
  */
-public abstract class SuperiorPropertiesInitializeAble extends ClassLogger implements InitializeAble {
+public abstract class PropertiesInitializeAble implements InitializeAble {
 
-    private SuperiorProperties superiorProperties;
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Nullable private InitializeProperties initializeProperties;
 
     /**
      * Atomic flag to track whether the repository is initialized.
-     *
-     * @since 3.0.1
      */
     private final AtomicBoolean isInitialized = new AtomicBoolean(false);
 
     /**
-     * Return the {@link SuperiorProperties} instance of the setting.
-     *
-     * @return the {@link SuperiorProperties} instance.
+     * Return the {@link InitializeProperties} instance of the setting.
+     * @return the {@link InitializeProperties} instance.
      */
     @Nullable
-    public SuperiorProperties getSuperiorProperties() {
-        return superiorProperties;
+    public InitializeProperties getInitializeProperties() {
+        return initializeProperties;
     }
 
     /**
-     * Set a {@link SuperiorProperties} as Initialization reference.
+     * Set a {@link InitializeProperties} as Initialization reference.
      *
-     * @param superiorProperties the {@link SuperiorProperties} instance.
+     * @param initializeProperties the {@link InitializeProperties} instance.
      */
-    public void setSuperiorProperties(@Nullable SuperiorProperties superiorProperties) {
-        this.superiorProperties = superiorProperties;
+    public void setInitializeProperties(@Nullable InitializeProperties initializeProperties) {
+        this.initializeProperties = initializeProperties;
     }
 
     /**
@@ -71,7 +72,6 @@ public abstract class SuperiorPropertiesInitializeAble extends ClassLogger imple
     
     /**
      * ensure the repository has been initialized before providing service.
-     * @since 3.0.1
      */
     protected void ensureInitialized() {
         if (!isInitialized.get()) {

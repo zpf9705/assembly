@@ -38,7 +38,9 @@ import java.util.Properties;
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
+ * @deprecated 3.0.2 replace: {@link InitializeProperties}
  */
+@Deprecated
 public interface SuperiorProperties {
 
     /* --------------------------------------------------------------------------- */
@@ -51,11 +53,9 @@ public interface SuperiorProperties {
      * @param propertyName name of the attribute to be obtained. This name should match the
      *                     property name defined in the object.
      * @return Returns the value of the specified property name,if not exist return null.
-     * @throws NullPointerException if input propertyName is null.
      * @since 1.0.3
      */
-    @Nullable
-    Object getProperty(String propertyName);
+    @Nullable Object getProperty(String propertyName);
 
     /**
      * Retrieve the value of the specified attribute, and return the default value if the
@@ -68,7 +68,6 @@ public interface SuperiorProperties {
      * @param def          the default value when the attribute does not exist.
      * @return Returns the value of the specified property, and if the property does not exist,
      * returns the default value passed in.
-     * @throws NullPointerException if input propertyName is null.
      * @since 1.0.3
      */
     <T> T getProperty(String propertyName, T def);
@@ -79,7 +78,6 @@ public interface SuperiorProperties {
      * @param propertyKey   the key of the property, used to uniquely identify the property.
      *                      Must be of type String.
      * @param propertyValue the value associated with the key. Must be of type String.
-     * @throws NullPointerException if input key or value is null.
      * @since 1.0.3
      */
     void addProperty(String propertyKey, String propertyValue);
@@ -102,7 +100,6 @@ public interface SuperiorProperties {
      * @param propertyKey   the key of the property, used to uniquely identify the property.
      *                      Can be any type of object.
      * @param propertyValue the value associated with the key. Can be any type of object.
-     * @throws NullPointerException if input key or value is null.
      * @since 1.0.3
      */
     void addProperty(Object propertyKey, Object propertyValue);
@@ -112,7 +109,6 @@ public interface SuperiorProperties {
      *
      * @param properties the {@code Properties} object containing the startup
      *                   parameters to be added.
-     * @throws NullPointerException if input properties is null.
      */
     void addProperties(Properties properties);
 
@@ -121,7 +117,6 @@ public interface SuperiorProperties {
      *
      * @param map a {@code Map} containing the startup parameters to be added,
      *            where the key is of string type and the value is of object type.
-     * @throws NullPointerException if input map is null.
      */
     void addProperties(Map<String, Object> map);
 
@@ -129,13 +124,11 @@ public interface SuperiorProperties {
      * Copy the startup parameters from another {@code SuperiorProperties} object.
      *
      * @param superiorProperties another {@code SuperiorProperties} instance to merge.
-     * @throws NullPointerException if input SuperiorProperties is null.
      */
     void addProperties(SuperiorProperties superiorProperties);
 
     /**
      * Returns <tt>true</tt> if this {@code SuperiorProperties} contains no key-value mappings.
-     *
      * @return <tt>true</tt> if this {@code SuperiorProperties} contains no key-value mappings.
      */
     boolean isEmpty();
@@ -143,7 +136,6 @@ public interface SuperiorProperties {
     /**
      * Convert all properties in the current {@code SuperiorProperties} into a
      * {@code Properties} object.
-     *
      * @return the {@code Properties} object that contains all the properties in
      * the current instance.
      */
