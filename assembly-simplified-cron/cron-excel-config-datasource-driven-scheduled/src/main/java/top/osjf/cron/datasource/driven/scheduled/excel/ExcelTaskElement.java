@@ -113,8 +113,7 @@ public class ExcelTaskElement extends ExternalFileDatasourceTaskElement {
     }
 
     @Override
-    @NotNull
-    public void setTaskId(String taskId) {
+    public void setTaskId(@NotNull String taskId) {
         this.taskId = taskId;
     }
 
@@ -155,8 +154,7 @@ public class ExcelTaskElement extends ExternalFileDatasourceTaskElement {
     }
 
     @Override
-    @NotNull
-    public void setStatus(String status) {
+    public void setStatus(@NotNull String status) {
         this.status = status;
     }
 
