@@ -18,6 +18,7 @@
 package top.osjf.cron.datasource.driven.scheduled.serialization;
 
 import top.osjf.cron.core.lang.NotNull;
+import top.osjf.cron.core.lang.Nullable;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -164,7 +165,8 @@ public class DefaultPropertiesConfigTaskElementSerializer extends NullableResolv
      * @param type  the type of {@link Field}.
      * @return the convert value.
      */
-    private Object convertValue(String value, Class<?> type) {
+    @Nullable
+    private Object convertValue(@Nullable String value, Class<?> type) {
         if (value == null || value.equals("null")) {
             return null;
         }

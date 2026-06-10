@@ -19,7 +19,6 @@ package top.osjf.cron.datasource.driven.scheduled.serialization;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import top.osjf.cron.core.util.AssertUtils;
 import top.osjf.cron.datasource.driven.scheduled.DataSourceDrivenException;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.FilterableDatasourceTaskElementsQueryOperation;
@@ -61,7 +60,6 @@ public abstract class ConfigFormatDatasourceTaskElementsOperation
     private final ConfigFormat configFormat;
 
     public ConfigFormatDatasourceTaskElementsOperation(ConfigFormat configFormat) {
-        AssertUtils.assertNotNull(configFormat, "configFormat not be null");
         this.configFormat = configFormat;
     }
 

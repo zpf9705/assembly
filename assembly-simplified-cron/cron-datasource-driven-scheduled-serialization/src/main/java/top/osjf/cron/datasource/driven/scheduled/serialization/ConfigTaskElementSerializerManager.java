@@ -150,9 +150,6 @@ public abstract class ConfigTaskElementSerializerManager {
      * @return the found serializer, or {@literal null} if not registered.
      */
     private static ConfigTaskElementSerializer findConfigTaskElementSerializer(ConfigFormat configFormat) {
-        if (configFormat == null) {
-            throw new NullPointerException("configFormat");
-        }
         return SERIALIZER_MAP.get(configFormat);
     }
 }

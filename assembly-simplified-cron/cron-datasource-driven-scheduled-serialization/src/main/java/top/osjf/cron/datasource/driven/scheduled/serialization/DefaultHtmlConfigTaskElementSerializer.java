@@ -17,8 +17,6 @@
 
 package top.osjf.cron.datasource.driven.scheduled.serialization;
 
-import top.osjf.cron.core.lang.NotNull;
-
 import java.util.List;
 
 /**
@@ -45,7 +43,7 @@ public class DefaultHtmlConfigTaskElementSerializer implements ConfigTaskElement
      * @throws UnsupportedOperationException Operation not supported.
      */
     @Override
-    public String serialize(@NotNull List<ConfigurableTaskElement> elements) {
+    public String serialize(List<ConfigurableTaskElement> elements) {
         throw new UnsupportedOperationException();
     }
 
@@ -54,7 +52,7 @@ public class DefaultHtmlConfigTaskElementSerializer implements ConfigTaskElement
      * @throws UnsupportedOperationException Operation not supported.
      */
     @Override
-    public List<ConfigurableTaskElement> deserialize(@NotNull String configInfo) {
+    public List<ConfigurableTaskElement> deserialize(String configInfo) {
         throw new UnsupportedOperationException();
     }
 

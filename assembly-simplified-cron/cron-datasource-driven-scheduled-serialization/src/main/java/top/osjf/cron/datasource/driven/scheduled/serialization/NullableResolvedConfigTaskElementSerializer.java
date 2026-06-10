@@ -17,7 +17,6 @@
 
 package top.osjf.cron.datasource.driven.scheduled.serialization;
 
-import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.util.CollectionUtils;
 import top.osjf.cron.core.util.StringUtils;
 
@@ -61,7 +60,7 @@ public abstract class NullableResolvedConfigTaskElementSerializer implements Con
      * @return         {@link #serialize(List)}
      * @throws IOException see {@link #serialize(List)}
      */
-    protected abstract String serializeInternal(@NotNull List<ConfigurableTaskElement> elements)
+    protected abstract String serializeInternal(List<ConfigurableTaskElement> elements)
             throws IOException;
 
     /**
@@ -70,6 +69,6 @@ public abstract class NullableResolvedConfigTaskElementSerializer implements Con
      * @return           {@link #deserialize(String)}
      * @throws IOException see  {@link #deserialize(String)}
      */
-    protected abstract List<ConfigurableTaskElement> deserializeInternal(@NotNull String configInfo)
+    protected abstract List<ConfigurableTaskElement> deserializeInternal(String configInfo)
             throws IOException;
 }

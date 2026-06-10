@@ -62,9 +62,9 @@ import java.util.function.Supplier;
 public abstract class RemoteDatasourceTaskElementsOperation extends ConfigFormatDatasourceTaskElementsOperation {
 
     /** Lazy listener provider that only initializes when needed .*/
-    private Supplier<RemoteListener> lazyListener;
+    @Nullable private Supplier<RemoteListener> lazyListener;
 
-    private RemoteListener listener;
+    @Nullable private RemoteListener listener;
 
     /**
      * Constructs an instance with the specified configuration format.

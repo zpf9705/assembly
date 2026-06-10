@@ -21,7 +21,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
-import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.util.AssertUtils;
 
 import java.io.IOException;
@@ -101,12 +100,12 @@ public class DefaultYamlConfigTaskElementSerializer extends NullableResolvedConf
     }
 
     @Override
-    public String serializeInternal(@NotNull List<ConfigurableTaskElement> elements) throws IOException {
+    public String serializeInternal(List<ConfigurableTaskElement> elements) throws IOException {
         return objectMapper.writeValueAsString(elements);
     }
 
     @Override
-    public List<ConfigurableTaskElement> deserializeInternal(@NotNull String configInfo) throws IOException {
+    public List<ConfigurableTaskElement> deserializeInternal(String configInfo) throws IOException {
         return objectMapper.readValue(configInfo, new TypeReference<List<ConfigurableTaskElement>>() {});
     }
 

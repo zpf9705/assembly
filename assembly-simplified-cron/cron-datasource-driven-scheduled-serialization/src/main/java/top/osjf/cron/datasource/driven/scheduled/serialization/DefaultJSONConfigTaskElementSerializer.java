@@ -20,7 +20,6 @@ package top.osjf.cron.datasource.driven.scheduled.serialization;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import top.osjf.cron.core.lang.NotNull;
 
 import java.io.IOException;
 import java.util.List;
@@ -65,17 +64,17 @@ public class DefaultJSONConfigTaskElementSerializer extends NullableResolvedConf
      * @param objectMapper the provided ObjectMapper instance, must not be {@literal null}.
      *
      */
-    public DefaultJSONConfigTaskElementSerializer(@NotNull ObjectMapper objectMapper) {
+    public DefaultJSONConfigTaskElementSerializer(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 
     @Override
-    public String serializeInternal(@NotNull List<ConfigurableTaskElement> elements) throws IOException {
+    public String serializeInternal(List<ConfigurableTaskElement> elements) throws IOException {
         return objectMapper.writeValueAsString(elements);
     }
 
     @Override
-    public List<ConfigurableTaskElement> deserializeInternal(@NotNull String configInfo) throws IOException {
+    public List<ConfigurableTaskElement> deserializeInternal(String configInfo) throws IOException {
         return objectMapper.readValue(configInfo, new TypeReference<List<ConfigurableTaskElement>>() { });
     }
 

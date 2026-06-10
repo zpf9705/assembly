@@ -17,8 +17,6 @@
 
 package top.osjf.cron.datasource.driven.scheduled.serialization;
 
-import top.osjf.cron.core.lang.NotNull;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -69,12 +67,12 @@ public class DefaultTextConfigTaskElementSerializer implements ConfigTaskElement
     }
 
     @Override
-    public String serialize(@NotNull List<ConfigurableTaskElement> elements) throws IOException {
+    public String serialize(List<ConfigurableTaskElement> elements) throws IOException {
         return serializer.serialize(elements);
     }
 
     @Override
-    public List<ConfigurableTaskElement> deserialize(@NotNull String configInfo) throws IOException {
+    public List<ConfigurableTaskElement> deserialize(String configInfo) throws IOException {
         return serializer.deserialize(configInfo);
     }
 

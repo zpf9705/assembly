@@ -19,6 +19,7 @@ package top.osjf.cron.datasource.driven.scheduled.serialization.remote;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.datasource.driven.scheduled.AbstractDatasourceDrivenScheduled;
 import top.osjf.cron.datasource.driven.scheduled.serialization.ConfigurableTaskElement;
 
@@ -58,7 +59,7 @@ public abstract class RemoteListener {
      */
     protected final RemoteDatasourceTaskElementsOperation remoteOperation;
 
-    private AbstractDatasourceDrivenScheduled scheduled;
+    @Nullable private AbstractDatasourceDrivenScheduled scheduled;
 
     /**
      * Constructs a new remote listener with the given operation instance.
@@ -101,6 +102,6 @@ public abstract class RemoteListener {
      */
     protected void refresh(String configInfo) {
         this.elements = remoteOperation.deserialize(configInfo);
-        scheduled.inspect();
+        if (scheduled != null) scheduled.inspect();
     }
 }

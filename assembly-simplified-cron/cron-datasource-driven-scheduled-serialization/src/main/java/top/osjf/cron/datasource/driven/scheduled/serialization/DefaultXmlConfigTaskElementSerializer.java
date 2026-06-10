@@ -18,7 +18,6 @@
 package top.osjf.cron.datasource.driven.scheduled.serialization;
 
 import com.thoughtworks.xstream.XStream;
-import top.osjf.cron.core.lang.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -102,13 +101,13 @@ public class DefaultXmlConfigTaskElementSerializer extends NullableResolvedConfi
     }
 
     @Override
-    public String serializeInternal(@NotNull List<ConfigurableTaskElement> elements) {
+    public String serializeInternal(List<ConfigurableTaskElement> elements) {
         return xstream.toXML(elements);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<ConfigurableTaskElement> deserializeInternal(@NotNull String configInfo) {
+    public List<ConfigurableTaskElement> deserializeInternal(String configInfo) {
         return (List<ConfigurableTaskElement>) xstream.fromXML(configInfo);
     }
 
