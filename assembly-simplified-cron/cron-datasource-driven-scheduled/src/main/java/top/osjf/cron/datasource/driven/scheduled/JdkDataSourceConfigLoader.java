@@ -50,7 +50,6 @@ import java.sql.ResultSet;
  * <pre>{@code
  * SELECT config_key, CONFIG_VALUE FROM t_system_config WHERE config_key = ?
  * }</pre>
- * </p>
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
