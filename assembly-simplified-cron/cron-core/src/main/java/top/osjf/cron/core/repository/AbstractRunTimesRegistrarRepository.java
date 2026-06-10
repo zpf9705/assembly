@@ -19,6 +19,7 @@ package top.osjf.cron.core.repository;
 
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
+import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.listener.SimpleCronListener;
 
@@ -128,8 +129,8 @@ public abstract class AbstractRunTimesRegistrarRepository
      */
     @Override
     public void removeListener(CronListener listener) {
-        if (listener != null && Objects.equals(listener, checkedCronListener)) {
-            throw new IllegalStateException("Unsupported listener objects for deletion" + listener);
+        if (Objects.equals(listener, checkedCronListener)) {
+            throw new IllegalStateException("Unsupported listener objects for deletion " + listener);
         }
         super.removeListener(listener);
     }
@@ -197,12 +198,12 @@ public abstract class AbstractRunTimesRegistrarRepository
      */
     private class RunTimesCheckedCronListener extends SimpleCronListener {
         @Override
-        public void successWithId(String id) {
+        public void successWithId(@NotNull String id) {
             checkRunTimes(id);
         }
 
         @Override
-        public void failedWithId(String id, Throwable exception) {
+        public void failedWithId(@NotNull String id, @NotNull Throwable exception) {
             checkRunTimes(id);
         }
 

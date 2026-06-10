@@ -19,9 +19,7 @@ package top.osjf.cron.core.repository;
 
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
-import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lang.Nullable;
-import top.osjf.cron.core.util.AssertUtils;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -41,8 +39,6 @@ public abstract class AbstractCronTaskRepository
      */
     @Override
     public String register(String expression, Runnable runnable) throws CronInternalException {
-        AssertUtils.assertNotBlank(expression, "expression must not be blank");
-        AssertUtils.assertNotNull(runnable, "runnable must not be null");
         String id = registerInternal(expression, runnable);
         call(expression, runnable, id);
         return id;
@@ -54,8 +50,6 @@ public abstract class AbstractCronTaskRepository
     @Override
     public String register(String expression, CronMethodRunnable runnable)
             throws CronInternalException {
-        AssertUtils.assertNotBlank(expression, "expression must not be blank");
-        AssertUtils.assertNotNull(runnable, "runnable must not be null");
         String id = registerInternal(expression, runnable);
         call(expression, runnable, id);
         return id;
@@ -67,8 +61,6 @@ public abstract class AbstractCronTaskRepository
     @Override
     public String register(String expression, RunnableTaskBody body)
             throws CronInternalException {
-        AssertUtils.assertNotBlank(expression, "expression must not be blank");
-        AssertUtils.assertNotNull(body, "body must not be null");
         String id = registerInternal(expression, body);
         call(expression, body, id);
         return id;
@@ -80,8 +72,6 @@ public abstract class AbstractCronTaskRepository
     @Override
     public String register(String expression, TaskBody body)
             throws CronInternalException, UnsupportedTaskBodyException {
-        AssertUtils.assertNotBlank(expression, "expression must not be blank");
-        AssertUtils.assertNotNull(body, "body must not be null");
         String id = registerInternal(expression, body);
         call(expression, body, id);
         return id;
@@ -92,7 +82,6 @@ public abstract class AbstractCronTaskRepository
      */
     @Override
     public String register(CronTask task) throws CronInternalException {
-        AssertUtils.assertNotNull(task, "task must not be blank");
         String id = registerInternal(task);
         call(task, id);
         return id;
@@ -103,8 +92,6 @@ public abstract class AbstractCronTaskRepository
      */
     @Override
     public void update(String id, String newExpression) throws CronInternalException {
-        AssertUtils.assertNotBlank(id, "id must not be blank");
-        AssertUtils.assertNotBlank(newExpression, "newExpression must not be null");
         updateInternal(id, newExpression);
     }
 
@@ -113,7 +100,6 @@ public abstract class AbstractCronTaskRepository
      */
     @Override
     public void remove(String id) throws CronInternalException {
-        AssertUtils.assertNotBlank(id, "id must not be blank");
         removeInternal(id);
     }
 
@@ -122,7 +108,6 @@ public abstract class AbstractCronTaskRepository
      */
     @Override
     public boolean hasCronTaskInfo(String id) {
-        AssertUtils.assertNotBlank(id, "id must not be blank");
         return hasCronTaskInfoInternal(id);
     }
 
@@ -131,7 +116,6 @@ public abstract class AbstractCronTaskRepository
      */
     @Override
     public CronTaskInfo getCronTaskInfo(String id) {
-        AssertUtils.assertNotBlank(id, "id must not be blank");
         return getCronTaskInfoInternal(id);
     }
 
@@ -144,7 +128,7 @@ public abstract class AbstractCronTaskRepository
      * @return
      * @throws CronInternalException
      */
-    protected abstract String registerInternal(@NotNull String expression, @NotNull Runnable runnable)
+    protected abstract String registerInternal(String expression, Runnable runnable)
             throws CronInternalException;
 
     /*
@@ -154,7 +138,7 @@ public abstract class AbstractCronTaskRepository
      * @return
      * @throws CronInternalException
      */
-    protected abstract String registerInternal(@NotNull String expression, @NotNull CronMethodRunnable runnable)
+    protected abstract String registerInternal(String expression, CronMethodRunnable runnable)
             throws CronInternalException;
 
     /*
@@ -164,7 +148,7 @@ public abstract class AbstractCronTaskRepository
      * @return
      * @throws CronInternalException
      */
-    protected abstract String registerInternal(@NotNull String expression, @NotNull RunnableTaskBody body)
+    protected abstract String registerInternal(String expression, RunnableTaskBody body)
             throws CronInternalException;
 
     /*
@@ -175,7 +159,7 @@ public abstract class AbstractCronTaskRepository
      * @throws CronInternalException
      * @throws UnsupportedTaskBodyException
      */
-    protected abstract String registerInternal(@NotNull String expression, @NotNull TaskBody body)
+    protected abstract String registerInternal(String expression, TaskBody body)
             throws CronInternalException, UnsupportedTaskBodyException;
 
     /*
@@ -184,7 +168,7 @@ public abstract class AbstractCronTaskRepository
      * @return
      * @throws CronInternalException
      */
-    protected abstract String registerInternal(@NotNull CronTask task) throws CronInternalException;
+    protected abstract String registerInternal(CronTask task) throws CronInternalException;
 
     /*
      * (NON-JavaDoc)
@@ -192,7 +176,7 @@ public abstract class AbstractCronTaskRepository
      * @param newExpression
      * @throws CronInternalException
      */
-    protected abstract void updateInternal(@NotNull String id, @NotNull String newExpression)
+    protected abstract void updateInternal(String id, String newExpression)
             throws CronInternalException;
 
     /*
@@ -200,21 +184,21 @@ public abstract class AbstractCronTaskRepository
      * @param id
      * @throws CronInternalException
      */
-    protected abstract void removeInternal(@NotNull String id) throws CronInternalException;
+    protected abstract void removeInternal(String id) throws CronInternalException;
 
     /*
      * (NON-JavaDoc)
      * @param id
      * @return
      */
-    protected abstract boolean hasCronTaskInfoInternal(@NotNull String id);
+    protected abstract boolean hasCronTaskInfoInternal(String id);
 
     /*
      * (NON-JavaDoc)
      * @param id
      * @return
      */
-    @Nullable protected abstract CronTaskInfo getCronTaskInfoInternal(@NotNull String id);
+    @Nullable protected abstract CronTaskInfo getCronTaskInfoInternal(String id);
 
     /**
      * Return remaining number of runs of the specify id task.
@@ -249,7 +233,7 @@ public abstract class AbstractCronTaskRepository
      * @since 3.0.1
      */
     @Nullable
-    protected CronTaskInfo customizeCronTaskInfo(CronTaskInfo cronTaskInfo) {
+    protected CronTaskInfo customizeCronTaskInfo(@Nullable CronTaskInfo cronTaskInfo) {
         if (cronTaskInfo == null) {
             return null;
         }
