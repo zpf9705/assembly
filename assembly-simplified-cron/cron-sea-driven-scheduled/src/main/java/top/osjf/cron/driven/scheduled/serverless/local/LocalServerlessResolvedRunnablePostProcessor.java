@@ -19,6 +19,7 @@ package top.osjf.cron.driven.scheduled.serverless.local;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.util.AssertUtils;
 import top.osjf.cron.core.util.StringUtils;
 import top.osjf.cron.datasource.driven.scheduled.ResolvedRunnablePostProcessor;
@@ -180,7 +181,8 @@ public class LocalServerlessResolvedRunnablePostProcessor
      * @return wrapped local serverless Runnable
      */
     @Override
-    public Runnable postProcessResolvedRunnable(Runnable resolvedRunnable, TaskElement taskElement) {
+    @NotNull
+    public Runnable postProcessResolvedRunnable(@NotNull Runnable resolvedRunnable, @NotNull TaskElement taskElement) {
         String id = taskElement.getId();
         return new LocalServerlessRunnable(resolvedRunnable, taskElement,
                 getRequiredFunctionJarFile(id), getProcessTimeout(id), getTaskParameter(id), this);
