@@ -20,6 +20,7 @@ package top.osjf.cron.datasource.driven.scheduled.excel;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.read.metadata.ReadWorkbook;
 import com.alibaba.excel.support.ExcelTypeEnum;
+import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.datasource.driven.scheduled.DataSourceDrivenException;
 import top.osjf.cron.datasource.driven.scheduled.external.file.ExternalFileTaskElementLoader;
 
@@ -59,11 +60,13 @@ public class ExcelTaskElementLoader extends ExternalFileTaskElementLoader<ExcelT
     }
 
     @Override
-    protected List<ExcelTaskElement> loadingInternal(InputStream is) {
+    @NotNull
+    protected List<ExcelTaskElement> loadingInternal(@NotNull InputStream is) {
         return EasyExcel.read(is).head(ExcelTaskElement.class).excelType(excelType).sheet().doReadSync();
     }
 
     @Override
+    @NotNull
     protected String defaultConfigFileName() {
         return DEFAULT_CONFIG_FILE_NAME;
     }
