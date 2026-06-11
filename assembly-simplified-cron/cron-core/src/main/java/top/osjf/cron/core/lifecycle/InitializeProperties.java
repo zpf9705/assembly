@@ -55,7 +55,7 @@ public class InitializeProperties extends Properties {
     }
 
     /**
-     * Create and initialize with existing Properties source.
+     * Create and initialize with existing {@code Properties} source.
      * @param source original properties source
      * @throws NullPointerException if source is null
      */
@@ -67,16 +67,24 @@ public class InitializeProperties extends Properties {
 
     /**
      * Static factory method: create empty instance.
-     * @return empty InitializeProperties
+     * @return empty {@code InitializeProperties}
      */
     public static InitializeProperties empty() {
         return new InitializeProperties();
     }
 
     /**
-     * Static factory method: copy from Properties.
+     * Static factory method: copy from {@link System#getProperties()}.
+     * @return new filled {@code InitializeProperties}.
+     */
+    public static InitializeProperties systemProperties() {
+        return copyOf(System.getProperties());
+    }
+
+    /**
+     * Static factory method: copy from {@code Properties}.
      * @param source origin properties
-     * @return new filled InitializeProperties
+     * @return new filled {@code InitializeProperties}
      */
     public static InitializeProperties copyOf(Properties source) {
         return new InitializeProperties(source);
@@ -85,7 +93,7 @@ public class InitializeProperties extends Properties {
     /**
      * Static factory method: copy from string-key string-value map.
      * @param source origin Map  {@link String}, {@link String} source
-     * @return new filled InitializeProperties
+     * @return new filled {@code InitializeProperties}
      * @throws NullPointerException if source is null
      */
     public static InitializeProperties copyOf(Map<String, String> source) {
@@ -98,7 +106,7 @@ public class InitializeProperties extends Properties {
     /**
      * Static factory method: copy from Map  {@link String}, {@link Object} , value auto convert to {@link String}.
      * @param source {@link Map} with String key and arbitrary object value
-     * @return new filled InitializeProperties instance
+     * @return new filled {@code InitializeProperties} instance
      * @throws NullPointerException if source is null
      */
     public static InitializeProperties copyOfStringKeys(Map<String, Object> source) {
@@ -112,7 +120,7 @@ public class InitializeProperties extends Properties {
      * Static factory method : copy from Map {@link Object}, {@link Object} , both key and value auto
      * convert to {@link String}.
      * @param source {@link Map} with arbitrary object key and arbitrary object value
-     * @return new filled InitializeProperties instance
+     * @return new filled {@code InitializeProperties} instance
      * @throws NullPointerException if source is null
      */
     public static InitializeProperties copyOfObjectKeys(Map<Object, Object> source) {
