@@ -57,7 +57,7 @@ public abstract class AbstractRunTimeoutRegistrarRepository
         super.initialize();
         InitializeProperties initializeProperties = getInitializeProperties();
         if (initializeProperties == null) {
-            initializeProperties = InitializeProperties.copyOf(System.getProperties());
+            initializeProperties = InitializeProperties.systemProperties();
             setInitializeProperties(initializeProperties);
         }
         monitoringExecutor = new PropertiesParsedThreadPoolExecutor(initializeProperties);
