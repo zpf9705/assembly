@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
+@Deprecated
 class ClassLogger {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
