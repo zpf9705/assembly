@@ -117,6 +117,14 @@ public class DefaultJdkDataSourceConfigLoader implements JdkDataSourceConfigLoad
 
     /**
      * {@inheritDoc}
+     */
+    @Override
+    public void setConfig(String configKey, String configValue) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * {@inheritDoc}
      * @throws java.sql.SQLException if a database access error occurs
      */
     @Nullable

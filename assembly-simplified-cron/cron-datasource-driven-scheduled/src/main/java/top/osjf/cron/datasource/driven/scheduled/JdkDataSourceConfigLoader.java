@@ -35,7 +35,7 @@ import java.sql.SQLException;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
  */
-public interface JdkDataSourceConfigLoader extends DataSourceConfigLoader {
+public interface JdkDataSourceConfigLoader extends ConfigurableDataSourceConfigLoader {
 
     /**
      * Retrieve the configuration text value stored in database by unique configuration key.
