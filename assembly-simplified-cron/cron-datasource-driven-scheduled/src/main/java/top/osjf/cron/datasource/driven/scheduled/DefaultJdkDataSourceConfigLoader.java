@@ -117,6 +117,11 @@ public class DefaultJdkDataSourceConfigLoader implements JdkDataSourceConfigLoad
 
     /**
      * {@inheritDoc}
+     *
+     * This default implementation is read-only and does not support writing configurations.
+     *
+     * <p>Implement {@link ConfigurableDataSourceConfigLoader} with custom write logic if create/update
+     * config is required.
      */
     @Override
     public void setConfig(String configKey, String configValue) {
