@@ -17,109 +17,65 @@
 
 package top.osjf.cron.datasource.driven.scheduled;
 
-import org.intellij.lang.annotations.Language;
-import top.osjf.cron.core.util.AssertUtils;
-
 import javax.annotation.Nullable;
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
- * JDK native JDBC implementation for loading config from database
+ * Specialized intermediate interface for configuration loader based on standard JDBC DataSource.
+ * As an extended sub-abstraction of {@link DataSourceConfigLoader}, this interface restricts all
+ * implementations that read configurations from database tables via JDBC {@link DataSource}.
  *
- * <ul>
- *     <li>
- *         Auto manage JDBC resources, use try-with-resources to close all AutoCloseable objects automatically,
- *         avoid connection/cursor leak
- *     </li>
- *     <li>
- *         Fully compatible with JDBC connection pool. Connection.close() just return connection to pool instead
- *         of closing physical TCP link
- *     </li>
- *     <li>
- *         Support custom config value column name for different table schema
- *     </li>
- *     <li>
- *         The input sql must contain exactly one '?' placeholder to bind config key parameter
- *     </li>
- * </ul>
- *
- * <p>Usage Example：
- * <pre>{@code
- * SELECT config_key, CONFIG_VALUE FROM t_system_config WHERE config_key = ?
- * }</pre>
+ * <p>The top-level parent interface defines unified behavior for configuration loading, while this
+ * intermediate interface encapsulates exclusive capabilities for database query scenarios.
+ * It decouples general configuration specifications from database data source capabilities, complying
+ * with Single Responsibility Principle & Open/Closed Principle, and facilitates differentiation
+ * between database implementations and other configuration sources such as config centers or local files.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
  */
-public class JdkDataSourceConfigLoader implements DataSourceConfigLoader {
+public interface JdkDataSourceConfigLoader extends DataSourceConfigLoader {
 
     /**
-     * Default column name of config value in ResultSet (uppercase column standard)
-     */
-    public static final String CONFIG_VALUE_COLUMN_NAME = "CONFIG_VALUE";
-
-    /**
-     * Database DataSource instance, usually a connection pool object
-     */
-    private final DataSource dataSource;
-
-    /**
-     * SQL statement for query config, must contain exactly one '?' placeholder for config key binding
-     */
-    @Language("SQL") private final String queryConfigSql;
-
-    /**
-     * Custom column name for config value, default value is {@link #CONFIG_VALUE_COLUMN_NAME}
-     */
-    private String configValueColumnName = CONFIG_VALUE_COLUMN_NAME;
-
-    /**
-     * Constructs a new {@link JdkDataSourceConfigLoader} with given {@link DataSource}
-     * and {@code queryConfigSql}.
-     * @param dataSource     Database resource instance object.
-     * @param queryConfigSql Query sql string, cannot be blank, must contain one '?' placeholder
-     */
-    public JdkDataSourceConfigLoader(DataSource dataSource, @Language("SQL") String queryConfigSql) {
-        AssertUtils.assertNotNull(dataSource, "javax.sql.DataSource must not be null");
-        AssertUtils.assertNotBlank(queryConfigSql, "queryConfigSql must not be blank");
-        this.dataSource = dataSource;
-        this.queryConfigSql = queryConfigSql;
-    }
-
-    /**
-     * Set custom column name of config value, adapt to table column with different case
-     * @param configValueColumnName Column name storing config value in ResultSet, cannot be blank
-     */
-    public void setConfigValueColumnName(String configValueColumnName) {
-        AssertUtils.assertNotBlank(configValueColumnName, "configValueColumnName must not be blank");
-        this.configValueColumnName = configValueColumnName;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @throws java.sql.SQLException if a database access error occurs
+     * Retrieve the configuration text value stored in database by unique configuration key.
+     * Overrides the standard loading method of top-level parent interface, executes predefined query SQL
+     * via the JDBC DataSource held by current interface to complete configuration query.
+     * Returns {@code null} if no record matching the given configKey exists in database table; throws
+     * {@code SQLException} for database link failure, invalid SQL syntax or column read errors.
+     *
+     * @param configKey the unique identifier key of configuration item.
+     * @return Matched configuration string from database; returns {@code null} when no matching record exists.
+     * @throws SQLException Thrown when database access fails, including connection acquisition failure,
+     * SQL execution error, result set read exception, missing target column and other scenarios.
      */
     @Nullable
     @Override
-    public String getConfig(String configKey) throws java.sql.SQLException {
+    String getConfig(String configKey) throws SQLException;
 
-        // Auto close connection & prepared statement ...
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement ps = connection.prepareStatement(queryConfigSql)) {
+    /**
+     * Returns standard {@link DataSource JDBC DataSource instance} used for querying configuration data.
+     * @return a valid JDBC DataSource instance.
+     */
+    DataSource getDataSource();
 
-            // Bind config key parameter to sql placeholder ...
-            ps.setString(1, configKey);
+    /**
+     * Returns the predefined SQL statement for querying configuration items.
+     * The SQL template must reserve one parameter placeholder to bind {@code configKey}
+     * filter condition, example: <pre>{@code SELECT config_value FROM t_sys_config WHERE config_key = ?}</pre>
+     *
+     * @return the Complete executable SQL template string for configuration query.
+     */
+    String getQueryConfigSQL();
 
-            // Execute query, result set auto closed ...
-            try (ResultSet resultSet = ps.executeQuery()) {
-
-                // Move cursor to check record exists, return null if no data to avoid
-                // "Before start of result set" exception
-                return resultSet.next() ? resultSet.getString(configValueColumnName) : null;
-            }
-        }
-    }
+    /**
+     * Dynamically specify column name which stores configuration values in database table.
+     * Designed to adapt differentiated column naming of various business configuration tables
+     * (e.g. val, cfg_value, config_val). Configuration text will be extracted from result set
+     * via this column name during query execution.
+     *
+     * @param configValueColumnName  the database column name corresponding to configuration value。
+     *
+     */
+    void setConfigValueColumnName(String configValueColumnName);
 }
