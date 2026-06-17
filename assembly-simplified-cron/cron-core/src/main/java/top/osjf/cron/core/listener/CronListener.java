@@ -104,8 +104,8 @@ public interface CronListener {
     }
 
     /**
-     * The callback method executed at the beginning of a scheduled task needs to be
-     * defined by the implementation framework's own {@link ListenerContext}.
+     * The default callback method executed at the beginning of a scheduled task needs to be
+     * defined by the implementation framework's own {@link ListenerContext#getID()}.
      *
      * <p>This method receives a unique identifier as a parameter to identify the timed
      * task that triggers the callback. The implementation class should define specific
@@ -117,8 +117,8 @@ public interface CronListener {
     default void startWithId(String id) { }
 
     /**
-     * The callback method executed upon successful completion of scheduled tasks requires
-     * the implementation framework to define its own {@link ListenerContext}.
+     * The default callback method executed upon successful completion of scheduled tasks requires
+     * the implementation framework to define its own {@link ListenerContext#getID()}.
      *
      * <p>This method receives a unique identifier as a parameter to identify the timed task
      * that triggers the callback. The implementation class should define specific listening
@@ -130,8 +130,8 @@ public interface CronListener {
     default void successWithId(String id) { }
 
     /**
-     * The callback method executed when a scheduled task fails successfully requires the
-     * implementation framework to define its own {@link ListenerContext}.
+     * The default callback method executed when a scheduled task fails successfully requires the
+     * implementation framework to define its own {@link ListenerContext#getID()}.
      *
      * <p>This method receives a unique identifier and an exception message as parameters
      * to identify the timed task that triggers the callback and provide detailed error
