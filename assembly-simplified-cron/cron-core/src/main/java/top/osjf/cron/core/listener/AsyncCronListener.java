@@ -23,7 +23,7 @@ import top.osjf.cron.core.repository.CronExecutorServiceSupplier;
 import java.util.concurrent.ExecutorService;
 
 /**
- * Cron scheduled task listener supporting asynchronous execution callbacks
+ * Cron scheduled task listener supporting asynchronous execution callbacks.
  *
  * <p>Inherit from {@link CronListener} to obtain the ability to receive callbacks for
  * scheduled task lifecycle events, At the same time, implement the external provision
