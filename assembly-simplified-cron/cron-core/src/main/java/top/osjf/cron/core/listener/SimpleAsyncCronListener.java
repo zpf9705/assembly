@@ -30,6 +30,9 @@ import java.util.concurrent.Executors;
  * @since 3.0.2
  */
 public abstract class SimpleAsyncCronListener extends SimpleCronListener implements AsyncCronListener {
+
+    private final ExecutorService executorService = Executors.newFixedThreadPool(1);
+
     /**
      * @return Return to the default single-thread thread pool for asynchronously and orderly executing
      * all the scheduled task lifecycle callbacks of the current listener.
@@ -37,6 +40,6 @@ public abstract class SimpleAsyncCronListener extends SimpleCronListener impleme
     @NotNull
     @Override
     public ExecutorService get() {
-        return Executors.newFixedThreadPool(1);
+        return executorService;
     }
 }
