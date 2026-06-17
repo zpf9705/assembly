@@ -18,8 +18,10 @@ package top.osjf.cron.spring.scheduler;
 
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.Trigger;
+import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.listener.ListenerContext;
+import top.osjf.cron.core.listener.ListenerExecuteSupport;
 
 import java.util.List;
 
@@ -34,7 +36,7 @@ import java.util.List;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public class DefaultListenableRunnable implements ListenableRunnable {
+public class DefaultListenableRunnable extends ListenerExecuteSupport implements ListenableRunnable {
     /**
      * The unique ID for this task.
      */
@@ -91,30 +93,20 @@ public class DefaultListenableRunnable implements ListenableRunnable {
     }
 
     @Override
-    @Nullable
+    @NotNull
     public List<CronListener> getCronListeners() {
         return cronListeners;
     }
 
-    /**
-     * This method represents the execution body of a runnable task.
-     * It first notifies all registered cron listeners of the start of the task,
-     * then executes the main runnable logic, and finally notifies the listeners
-     * of either the success or failure of the task execution.
-     */
+    @NotNull
     @Override
-    public void run() {
-        try {
-            // Notify all cron listeners that the task is about to start
-            cronListeners.forEach(c -> c.start(listenerContext));
-            // Execute the main logic of the runnable
-            runnable.run();
-            // Notify all cron listeners that the task has completed successfully
-            cronListeners.forEach(c -> c.success(listenerContext));
-        } catch (Throwable e) {
-            // If an error occurs during task execution, notify all cron listeners
-            // of the failure, passing the exception context for further handling
-            cronListeners.forEach(c -> c.failed(listenerContext, e));
-        }
+    protected ListenerContext getListenerContext() {
+        return listenerContext;
+    }
+
+    @Override
+    @NotNull
+    protected Runnable getRaw() {
+        return getRunnable();
     }
 }
