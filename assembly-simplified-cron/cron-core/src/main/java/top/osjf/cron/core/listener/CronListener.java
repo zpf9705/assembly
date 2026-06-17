@@ -114,7 +114,7 @@ public interface CronListener {
      *
      * @param id unique identifier for scheduled tasks.
      */
-    void startWithId(String id);
+    default void startWithId(String id) { }
 
     /**
      * The callback method executed upon successful completion of scheduled tasks requires
@@ -127,7 +127,7 @@ public interface CronListener {
      *
      * @param id unique identifier for scheduled tasks.
      */
-    void successWithId(String id);
+    default void successWithId(String id) { }
 
     /**
      * The callback method executed when a scheduled task fails successfully requires the
@@ -143,5 +143,5 @@ public interface CronListener {
      * @param exception the exception object of the failed callback contains specific
      *                  failure information.
      */
-    void failedWithId(String id, Throwable exception);
+    default void failedWithId(String id, Throwable exception) { }
 }
