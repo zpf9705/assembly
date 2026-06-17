@@ -215,7 +215,8 @@ public abstract class AbstractRunTimesRegistrarRepository
                 if (count.decrementAndGet() <= 0) {
                     remove(id);
                     if (logger.isDebugEnabled()) {
-                        logger.debug("Task ID <{}> terminated: maximum run count reached.", id);
+                        logger.debug("Task with ID [{}] has been terminated because the maximum allowed " +
+                                "run count was reached.", id);
                     }
                     return null;
                 }
