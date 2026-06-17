@@ -74,10 +74,11 @@ public abstract class ListenerExecuteSupport implements Runnable {
             getRaw().run();
             // Notify all cron listeners that the task has completed successfully
             cronListeners.forEach(c -> doListenerCallback(c, ()-> c.success(listenerContext)));
-        } catch (Throwable e) {
+        }
+        catch (Throwable ex) {
             // If an error occurs during task execution, notify all cron listeners
             // of the failure, passing the exception context for further handling
-            cronListeners.forEach(c -> doListenerCallback(c, ()-> c.failed(listenerContext, e)));
+            cronListeners.forEach(c -> doListenerCallback(c, ()-> c.failed(listenerContext, ex)));
         }
     }
     /**
