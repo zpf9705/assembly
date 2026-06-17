@@ -74,6 +74,5 @@ public interface ListenableRunnable extends Runnable {
      * it may return null or an empty list.{@code CronListener} is commonly used
      * to set callbacks on timed tasks based on cron expressions.
      */
-    @Nullable
     List<CronListener> getCronListeners();
 }
