@@ -28,6 +28,7 @@ import top.osjf.cron.core.lang.NotNull;
 import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.listener.ListenerContext;
+import top.osjf.cron.core.listener.ListenerExecuteSupport;
 import top.osjf.cron.core.util.ExecutorUtils;
 
 import java.time.ZonedDateTime;
@@ -203,7 +204,7 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
      * A simple implementation class for the {@link ScheduledFuture} interface to calculate the
      * next execution time and store mutable {@link ScheduledFuture}.
      */
-    private class SimpleRunnabledScheduledFuture implements ScheduledFuture<Object>, Runnable {
+    private class SimpleRunnabledScheduledFuture extends ListenerExecuteSupport implements ScheduledFuture<Object>, Runnable {
 
         /**
          * The running function executed by the original target.
@@ -317,20 +318,23 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
 
         @Override
         public void run() {
-            List<CronListener> cronListeners = getCronListenerCollector().getCronListeners();
-            try {
-                // Notify all cron listeners that the task is about to start
-                cronListeners.forEach(c -> c.start(listenerContext));
-                // Execute the main logic of the runnable
-                rawRunnable.run();
-                // Notify all cron listeners that the task has completed successfully
-                cronListeners.forEach(c -> c.success(listenerContext));
-            } catch (Throwable e) {
-                // If an error occurs during task execution, notify all cron listeners
-                // of the failure, passing the exception context for further handling
-                cronListeners.forEach(c -> c.failed(listenerContext, e));
-            }
+            super.run();
             schedule();
+        }
+
+        @Override
+        protected Runnable getRaw() {
+            return rawRunnable;
+        }
+
+        @Override
+        protected List<CronListener> getCronListeners() {
+            return getCronListenerCollector().getCronListeners();
+        }
+
+        @Override
+        protected ListenerContext getListenerContext() {
+            return listenerContext;
         }
 
         /**
