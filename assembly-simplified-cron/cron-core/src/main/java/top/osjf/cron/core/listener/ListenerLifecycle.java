@@ -91,6 +91,18 @@ public enum ListenerLifecycle {
         }
     }
 
+
+    /**
+     * @see #doListenerCallback(CronListener, Runnable)
+     * @param collector         the storage container of {@link CronListener} is used to
+     *                           obtain the {@link CronListener} collection.
+     * @param listenerCallback  {@link #doListenerCallback(CronListener, Runnable)}
+     * @since 3.0.2
+     */
+    public static void doListenerCallback(CronListenerCollector collector, Runnable listenerCallback) {
+        collector.getCronListeners().forEach(cronListener -> doListenerCallback(cronListener, listenerCallback));
+    }
+
     /**
      * Implement the callback logic of the scheduled task listener, automatically distinguishing
      * between synchronous and asynchronous execution modes
