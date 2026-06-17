@@ -71,6 +71,7 @@ public abstract class DefaultTaskParameterRegistry {
      * Get the local dynamic parameter {@link TaskParameter} for the current execution.
      * @return taskParameter the {@code TaskParameter} by {@link #setLocalTaskParameter}.
      */
+    @Nullable
     public TaskParameter getLocalTaskParameter() {
         return LOCAL_PARAM.get();
     }
