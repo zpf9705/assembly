@@ -29,7 +29,7 @@ import java.sql.SQLException;
  * <p>The top-level parent interface defines unified behavior for configuration loading, while this
  * intermediate interface encapsulates exclusive capabilities for database query scenarios.
  * It decouples general configuration specifications from database data source capabilities, complying
- * with Single Responsibility Principle & Open/Closed Principle, and facilitates differentiation
+ * with Single Responsibility Principle {@code &} Open/Closed Principle, and facilitates differentiation
  * between database implementations and other configuration sources such as config centers or local files.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>

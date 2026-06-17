@@ -26,18 +26,18 @@ import static top.osjf.cron.core.listener.ListenerLifecycle.doListenerCallback;
  *
  * <p>Internally used template support class, implementing {@link Runnable}, encapsulates
  * the complete lifecycle execution logic of Cron scheduled tasks in a unified manner:
- * Pre-task startup listening callback -> Execute original scheduled business task ->
+ * Pre-task startup listening callback {@code ->} Execute original scheduled business task {@code ->}
  * Task success callback / Task exception failure callback.
  *
  * <p><strong>Internal execution rules</strong>
  * <ul>
  * <li>1.Traverse all {@link CronListener}s, and automatically distinguish synchronous/asynchronous
  * listeners through {@link ListenerLifecycle#doListenerCallback(CronListener, Runnable)};</li>
- * </li>
  * <li>2.{@link AsyncCronListener} will use its own bound thread pool to execute callbacks asynchronously,
  * while ordinary listeners execute synchronously on the current scheduling thread;</li>
  * <li>Globally catch {@link Throwable}, whether it's a business exception or a system error, and trigger
  * a failure listening callback to ensure that exception events are not lost.</li>
+ * </ul>
  *
  * <p>Adopt the template method pattern, where subclasses provide the original task, listener collection,
  * and task context, reusing a unified listener orchestration logic.
