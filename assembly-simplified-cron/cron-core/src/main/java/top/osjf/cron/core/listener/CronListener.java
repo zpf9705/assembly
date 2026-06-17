@@ -130,7 +130,7 @@ public interface CronListener {
     default void successWithId(String id) { }
 
     /**
-     * The default callback method executed when a scheduled task fails successfully requires the
+     * The default callback method executed when a scheduled task fails requires the
      * implementation framework to define its own {@link ListenerContext#getID()}.
      *
      * <p>This method receives a unique identifier and an exception message as parameters
