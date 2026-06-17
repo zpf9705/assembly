@@ -50,7 +50,7 @@ public abstract class ListenerExecuteSupport implements Runnable {
     /**
      * A unified execution entry for scheduled tasks, orchestrating the complete task
      * lifecycle and listener event callbacks.
-     *
+     * <p>
      * <strong>Execution process:</strong>
      * <ul>
      * <li>1.Traverse all scheduled listeners and dispatch the 'task start' event callback;</li>
