@@ -40,28 +40,26 @@ import java.util.concurrent.ExecutorService;
  */
 public abstract class AbstractPropertiesConfiguredAsyncCronListener implements AsyncCronListener {
 
-    /**
-     * Thread pool initialization configuration property object
-     */
-    private final InitializeProperties initializeProperties;
+    /** A thread pool object created with the given configuration {@link InitializeProperties}.*/
+    private final PropertiesParsedThreadPoolExecutor executorService;
 
     /**
      * Creates a new {@code AbstractPropertiesConfiguredAsyncCronListener} with the given initial
-     * {@link InitializeProperties}.
-     * @param initializeProperties Initialization configuration parameters related to thread pool.
+     * {@link InitializeProperties} to initialize a new {@link PropertiesParsedThreadPoolExecutor}.
+     * @param initializeProperties the initialization configuration parameters related to thread pool.
      */
     public AbstractPropertiesConfiguredAsyncCronListener(InitializeProperties initializeProperties) {
-        this.initializeProperties = initializeProperties;
+        this.executorService = new PropertiesParsedThreadPoolExecutor(initializeProperties);
     }
 
     /**
-     * Create and return a custom thread pool instance based on the configuration properties,
-     * which is used to asynchronously execute the scheduled task callback of the current listener.
+     * Return a custom thread pool instance based on the configuration properties, which is used
+     * to asynchronously execute the scheduled task callback of the current listener.
      * @return a custom thread pool {@link PropertiesParsedThreadPoolExecutor} instance.
      */
     @NotNull
     @Override
     public ExecutorService get() {
-        return new PropertiesParsedThreadPoolExecutor(initializeProperties);
+        return executorService;
     }
 }
