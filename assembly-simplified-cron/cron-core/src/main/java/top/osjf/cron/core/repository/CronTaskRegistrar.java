@@ -17,8 +17,8 @@
 
 package top.osjf.cron.core.repository;
 
+import top.osjf.commons.util.Assert;
 import top.osjf.cron.core.lang.Nullable;
-import top.osjf.cron.core.util.AssertUtils;
 
 import java.lang.reflect.Method;
 
@@ -48,7 +48,7 @@ public class CronTaskRegistrar {
      */
     public CronTaskRegistrar(CronTask cronTask) {
 
-        AssertUtils.assertNotNull(cronTask, "CronTask not be null");
+        Assert.notNull(cronTask, "CronTask not be null");
 
         this.cronTask = cronTask;
         this.targetMethod = cronTask.getRunnable().getMethod();
@@ -64,7 +64,7 @@ public class CronTaskRegistrar {
     @Nullable
     public String registerFor(CronTaskRepository cronTaskRepository) {
 
-        AssertUtils.assertNotNull(cronTaskRepository, "CronTaskRepository not be null");
+        Assert.notNull(cronTaskRepository, "CronTaskRepository not be null");
 
         boolean needSpecifyRuntimes = targetMethod.isAnnotationPresent(RunTimes.class);
         boolean needSpecifyRunTimeout = targetMethod.isAnnotationPresent(RunTimeout.class);

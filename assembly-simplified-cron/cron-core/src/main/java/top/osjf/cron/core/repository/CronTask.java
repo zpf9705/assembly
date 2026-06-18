@@ -17,7 +17,7 @@
 
 package top.osjf.cron.core.repository;
 
-import top.osjf.cron.core.util.AssertUtils;
+import top.osjf.commons.util.Assert;
 
 /**
  * The {@code CronTask} class represents a timed task execution information wrapper
@@ -41,8 +41,8 @@ public final class CronTask {
      */
     public CronTask(String expression, CronMethodRunnable runnable) {
 
-        AssertUtils.assertNotBlank(expression, "Expression not be blank");
-        AssertUtils.assertNotNull(runnable, "CronMethodRunnable not be null");
+        Assert.hasText(expression, "Expression not be blank");
+        Assert.notNull(runnable, "CronMethodRunnable not be null");
 
         this.expression = expression;
         this.runnable = runnable;
