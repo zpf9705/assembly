@@ -60,6 +60,11 @@
             <version>${cronutils}</version>
         </dependency>
 
+        <dependency>
+            <groupId>top.osjf.commons</groupId>
+            <artifactId>assembly-commons</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>
