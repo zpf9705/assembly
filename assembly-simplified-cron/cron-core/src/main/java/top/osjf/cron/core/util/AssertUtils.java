@@ -17,6 +17,8 @@
 
 package top.osjf.cron.core.util;
 
+import top.osjf.commons.util.CollectionUtils;
+
 import java.util.Collection;
 
 /**
@@ -29,6 +31,7 @@ import java.util.Collection;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
  */
+@Deprecated
 public abstract class AssertUtils {
 
     /**
