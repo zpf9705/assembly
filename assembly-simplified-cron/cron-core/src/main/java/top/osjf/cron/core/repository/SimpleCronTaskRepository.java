@@ -183,15 +183,22 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
 
         private final String id;
         private final ScheduledFuture<?> future;
+        private final RepositoryContext repositoryContext;
 
-        public SimpleListenerContext(String id, ScheduledFuture<?> future) {
+        public SimpleListenerContext(String id, ScheduledFuture<?> future, SimpleCronTaskRepository repository) {
             this.id = id;
             this.future = future;
+            this.repositoryContext = new DefaultRepositoryContext(repository);
         }
 
         @Override
         public String getID() {
             return id;
+        }
+
+        @Override
+        public RepositoryContext getRepositoryContext() {
+            return repositoryContext;
         }
 
         @Override
@@ -242,7 +249,8 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
          */
         public SimpleRunnabledScheduledFuture(String expression, Runnable rawRunnable) {
             this.rawRunnable = rawRunnable;
-            this.listenerContext = new SimpleListenerContext(getNextId(), this);
+            this.listenerContext = new SimpleListenerContext(getNextId(),
+                    this, SimpleCronTaskRepository.this);
             this.cron = parseToCron(expression);
             schedule();
             futureCache.putIfAbsent(listenerContext.id, this);
