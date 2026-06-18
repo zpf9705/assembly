@@ -749,6 +749,7 @@ public abstract class ReflectionUtils {
 	/**
 	 * Determine whether the given field is a "public static final" constant.
 	 * @param field the field to check
+	 * @return
 	 */
 	public static boolean isPublicStaticFinal(Field field) {
 		int modifiers = field.getModifiers();
