@@ -71,22 +71,11 @@ public abstract class Assert {
 	 * @param messageSupplier a supplier for the exception message to use if the
 	 * assertion fails
 	 * @throws IllegalStateException if {@code expression} is {@code false}
-	 * @since 5.0
 	 */
 	public static void state(boolean expression, Supplier<String> messageSupplier) {
 		if (!expression) {
 			throw new IllegalStateException(nullSafeGet(messageSupplier));
 		}
-	}
-
-	/**
-	 * Assert a boolean expression, throwing an {@code IllegalStateException}
-	 * if the expression evaluates to {@code false}.
-	 * @deprecated as of 4.3.7, in favor of {@link #state(boolean, String)}
-	 */
-	@Deprecated
-	public static void state(boolean expression) {
-		state(expression, "[Assertion failed] - this state invariant must be true");
 	}
 
 	/**
@@ -113,22 +102,11 @@ public abstract class Assert {
 	 * @param messageSupplier a supplier for the exception message to use if the
 	 * assertion fails
 	 * @throws IllegalArgumentException if {@code expression} is {@code false}
-	 * @since 5.0
 	 */
 	public static void isTrue(boolean expression, Supplier<String> messageSupplier) {
 		if (!expression) {
 			throw new IllegalArgumentException(nullSafeGet(messageSupplier));
 		}
-	}
-
-	/**
-	 * Assert a boolean expression, throwing an {@code IllegalArgumentException}
-	 * if the expression evaluates to {@code false}.
-	 * @deprecated as of 4.3.7, in favor of {@link #isTrue(boolean, String)}
-	 */
-	@Deprecated
-	public static void isTrue(boolean expression) {
-		isTrue(expression, "[Assertion failed] - this expression must be true");
 	}
 
 	/**
@@ -153,21 +131,11 @@ public abstract class Assert {
 	 * @param messageSupplier a supplier for the exception message to use if the
 	 * assertion fails
 	 * @throws IllegalArgumentException if the object is not {@code null}
-	 * @since 5.0
 	 */
 	public static void isNull(@Nullable Object object, Supplier<String> messageSupplier) {
 		if (object != null) {
 			throw new IllegalArgumentException(nullSafeGet(messageSupplier));
 		}
-	}
-
-	/**
-	 * Assert that an object is {@code null}.
-	 * @deprecated as of 4.3.7, in favor of {@link #isNull(Object, String)}
-	 */
-	@Deprecated
-	public static void isNull(@Nullable Object object) {
-		isNull(object, "[Assertion failed] - the object argument must be null");
 	}
 
 	/**
@@ -193,21 +161,11 @@ public abstract class Assert {
 	 * @param messageSupplier a supplier for the exception message to use if the
 	 * assertion fails
 	 * @throws IllegalArgumentException if the object is {@code null}
-	 * @since 5.0
 	 */
 	public static void notNull(@Nullable Object object, Supplier<String> messageSupplier) {
 		if (object == null) {
 			throw new IllegalArgumentException(nullSafeGet(messageSupplier));
 		}
-	}
-
-	/**
-	 * Assert that an object is not {@code null}.
-	 * @deprecated as of 4.3.7, in favor of {@link #notNull(Object, String)}
-	 */
-	@Deprecated
-	public static void notNull(@Nullable Object object) {
-		notNull(object, "[Assertion failed] - this argument is required; it must not be null");
 	}
 
 	/**
@@ -236,24 +194,12 @@ public abstract class Assert {
 	 * @param messageSupplier a supplier for the exception message to use if the
 	 * assertion fails
 	 * @throws IllegalArgumentException if the text is empty
-	 * @since 5.0
 	 * @see StringUtils#hasLength
 	 */
 	public static void hasLength(@Nullable String text, Supplier<String> messageSupplier) {
 		if (!StringUtils.hasLength(text)) {
 			throw new IllegalArgumentException(nullSafeGet(messageSupplier));
 		}
-	}
-
-	/**
-	 * Assert that the given String is not empty; that is,
-	 * it must not be {@code null} and not the empty String.
-	 * @deprecated as of 4.3.7, in favor of {@link #hasLength(String, String)}
-	 */
-	@Deprecated
-	public static void hasLength(@Nullable String text) {
-		hasLength(text,
-				"[Assertion failed] - this String argument must have length; it must not be null or empty");
 	}
 
 	/**
@@ -282,24 +228,12 @@ public abstract class Assert {
 	 * @param messageSupplier a supplier for the exception message to use if the
 	 * assertion fails
 	 * @throws IllegalArgumentException if the text does not contain valid text content
-	 * @since 5.0
 	 * @see StringUtils#hasText
 	 */
 	public static void hasText(@Nullable String text, Supplier<String> messageSupplier) {
 		if (!StringUtils.hasText(text)) {
 			throw new IllegalArgumentException(nullSafeGet(messageSupplier));
 		}
-	}
-
-	/**
-	 * Assert that the given String contains valid text content; that is, it must not
-	 * be {@code null} and must contain at least one non-whitespace character.
-	 * @deprecated as of 4.3.7, in favor of {@link #hasText(String, String)}
-	 */
-	@Deprecated
-	public static void hasText(@Nullable String text) {
-		hasText(text,
-				"[Assertion failed] - this String argument must have text; it must not be null, empty, or blank");
 	}
 
 	/**
@@ -327,23 +261,12 @@ public abstract class Assert {
 	 * @param messageSupplier a supplier for the exception message to use if the
 	 * assertion fails
 	 * @throws IllegalArgumentException if the text contains the substring
-	 * @since 5.0
 	 */
 	public static void doesNotContain(@Nullable String textToSearch, String substring, Supplier<String> messageSupplier) {
 		if (StringUtils.hasLength(textToSearch) && StringUtils.hasLength(substring) &&
 				textToSearch.contains(substring)) {
 			throw new IllegalArgumentException(nullSafeGet(messageSupplier));
 		}
-	}
-
-	/**
-	 * Assert that the given text does not contain the given substring.
-	 * @deprecated as of 4.3.7, in favor of {@link #doesNotContain(String, String, String)}
-	 */
-	@Deprecated
-	public static void doesNotContain(@Nullable String textToSearch, String substring) {
-		doesNotContain(textToSearch, substring,
-				() -> "[Assertion failed] - this String argument must not contain the substring [" + substring + "]");
 	}
 
 	/**
@@ -370,22 +293,11 @@ public abstract class Assert {
 	 * @param messageSupplier a supplier for the exception message to use if the
 	 * assertion fails
 	 * @throws IllegalArgumentException if the object array is {@code null} or contains no elements
-	 * @since 5.0
 	 */
 	public static void notEmpty(@Nullable Object[] array, Supplier<String> messageSupplier) {
 		if (ObjectUtils.isEmpty(array)) {
 			throw new IllegalArgumentException(nullSafeGet(messageSupplier));
 		}
-	}
-
-	/**
-	 * Assert that an array contains elements; that is, it must not be
-	 * {@code null} and must contain at least one element.
-	 * @deprecated as of 4.3.7, in favor of {@link #notEmpty(Object[], String)}
-	 */
-	@Deprecated
-	public static void notEmpty(@Nullable Object[] array) {
-		notEmpty(array, "[Assertion failed] - this array must not be empty: it must contain at least 1 element");
 	}
 
 	/**
@@ -416,7 +328,6 @@ public abstract class Assert {
 	 * @param messageSupplier a supplier for the exception message to use if the
 	 * assertion fails
 	 * @throws IllegalArgumentException if the object array contains a {@code null} element
-	 * @since 5.0
 	 */
 	public static void noNullElements(@Nullable Object[] array, Supplier<String> messageSupplier) {
 		if (array != null) {
@@ -426,15 +337,6 @@ public abstract class Assert {
 				}
 			}
 		}
-	}
-
-	/**
-	 * Assert that an array contains no {@code null} elements.
-	 * @deprecated as of 4.3.7, in favor of {@link #noNullElements(Object[], String)}
-	 */
-	@Deprecated
-	public static void noNullElements(@Nullable Object[] array) {
-		noNullElements(array, "[Assertion failed] - this array must not contain any null elements");
 	}
 
 	/**
@@ -463,23 +365,11 @@ public abstract class Assert {
 	 * assertion fails
 	 * @throws IllegalArgumentException if the collection is {@code null} or
 	 * contains no elements
-	 * @since 5.0
 	 */
 	public static void notEmpty(@Nullable Collection<?> collection, Supplier<String> messageSupplier) {
 		if (CollectionUtils.isEmpty(collection)) {
 			throw new IllegalArgumentException(nullSafeGet(messageSupplier));
 		}
-	}
-
-	/**
-	 * Assert that a collection contains elements; that is, it must not be
-	 * {@code null} and must contain at least one element.
-	 * @deprecated as of 4.3.7, in favor of {@link #notEmpty(Collection, String)}
-	 */
-	@Deprecated
-	public static void notEmpty(@Nullable Collection<?> collection) {
-		notEmpty(collection,
-				"[Assertion failed] - this collection must not be empty: it must contain at least 1 element");
 	}
 
 	/**
@@ -489,7 +379,6 @@ public abstract class Assert {
 	 * @param collection the collection to check
 	 * @param message the exception message to use if the assertion fails
 	 * @throws IllegalArgumentException if the collection contains a {@code null} element
-	 * @since 5.2
 	 */
 	public static void noNullElements(@Nullable Collection<?> collection, String message) {
 		if (collection != null) {
@@ -511,7 +400,6 @@ public abstract class Assert {
 	 * @param messageSupplier a supplier for the exception message to use if the
 	 * assertion fails
 	 * @throws IllegalArgumentException if the collection contains a {@code null} element
-	 * @since 5.2
 	 */
 	public static void noNullElements(@Nullable Collection<?> collection, Supplier<String> messageSupplier) {
 		if (collection != null) {
@@ -547,22 +435,11 @@ public abstract class Assert {
 	 * @param messageSupplier a supplier for the exception message to use if the
 	 * assertion fails
 	 * @throws IllegalArgumentException if the map is {@code null} or contains no entries
-	 * @since 5.0
 	 */
 	public static void notEmpty(@Nullable Map<?, ?> map, Supplier<String> messageSupplier) {
 		if (CollectionUtils.isEmpty(map)) {
 			throw new IllegalArgumentException(nullSafeGet(messageSupplier));
 		}
-	}
-
-	/**
-	 * Assert that a Map contains entries; that is, it must not be {@code null}
-	 * and must contain at least one entry.
-	 * @deprecated as of 4.3.7, in favor of {@link #notEmpty(Map, String)}
-	 */
-	@Deprecated
-	public static void notEmpty(@Nullable Map<?, ?> map) {
-		notEmpty(map, "[Assertion failed] - this map must not be empty; it must contain at least one entry");
 	}
 
 	/**
@@ -594,7 +471,6 @@ public abstract class Assert {
 	 * @param messageSupplier a supplier for the exception message to use if the
 	 * assertion fails. See {@link #isInstanceOf(Class, Object, String)} for details.
 	 * @throws IllegalArgumentException if the object is not an instance of type
-	 * @since 5.0
 	 */
 	public static void isInstanceOf(Class<?> type, @Nullable Object obj, Supplier<String> messageSupplier) {
 		notNull(type, "Type to check against must not be null");
@@ -643,7 +519,6 @@ public abstract class Assert {
 	 * @param messageSupplier a supplier for the exception message to use if the
 	 * assertion fails. See {@link #isAssignable(Class, Class, String)} for details.
 	 * @throws IllegalArgumentException if the classes are not assignable
-	 * @since 5.0
 	 */
 	public static void isAssignable(Class<?> superType, @Nullable Class<?> subType, Supplier<String> messageSupplier) {
 		notNull(superType, "Super type to check against must not be null");
