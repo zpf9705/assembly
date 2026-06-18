@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>top.osjf</groupId>
+        <artifactId>assembly</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <groupId>top.osjf.commons</groupId>
+    <artifactId>assembly-commons</artifactId>
+    <packaging>jar</packaging>
+    <name>assembly-commons ${project.version}</name>
+    <description>
+        This common module encapsulates general utility classes, custom annotations and basic
+        infrastructure capabilities partially referenced from excellent open-source frameworks.
+        It is designed to centrally manage underlying tool dependencies, avoid version conflicts
+        caused by directly introducing multiple third-party tool libraries, unify dependency version
+        governance for internal projects, reduce repetitive configuration work and improve development
+        stability and efficiency.
+    </description>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+    </dependencies>
+
+</project>

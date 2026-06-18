@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>top.osjf.commons</groupId>
+  <artifactId>assembly-commons</artifactId>
+  <version>3.0.2</version>
+  <name>assembly-commons 3.0.2</name>
+  <description>This common module encapsulates general utility classes, custom annotations and basic
+        infrastructure capabilities partially referenced from excellent open-source frameworks.
+        It is designed to centrally manage underlying tool dependencies, avoid version conflicts
+        caused by directly introducing multiple third-party tool libraries, unify dependency version
+        governance for internal projects, reduce repetitive configuration work and improve development
+        stability and efficiency.</description>
+  <url>https://github.com/zpf9705/assembly/assembly-commons</url>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <id>12039-xpc-oks</id>
+      <name>张鹏飞</name>
+      <email>929160069@qq.com</email>
+      <url>https://github.com/zpf9705</url>
+      <organization>Undetermined</organization>
+      <roles>
+        <role>Individual developer</role>
+      </roles>
+      <timezone>+8</timezone>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:https://github.com/zpf9705/assembly.git/assembly-commons</connection>
+    <developerConnection>scm:git:https://github.com/zpf9705/assembly.git/assembly-commons</developerConnection>
+    <url>https://github.com/zpf9705/assembly/assembly-commons</url>
+  </scm>
+  <dependencies>
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+      <version>3.0.2</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.32</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+</project>
