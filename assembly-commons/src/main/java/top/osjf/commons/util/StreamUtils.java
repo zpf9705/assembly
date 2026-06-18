@@ -74,7 +74,6 @@ public abstract class StreamUtils {
 	 * @param baos the {@code ByteArrayOutputStream} to be copied into a String
 	 * @param charset the {@link Charset} to use to decode the bytes
 	 * @return the String that has been copied to (possibly empty)
-	 * @since 5.2.6
 	 */
 	public static String copyToString(ByteArrayOutputStream baos, Charset charset) {
 		Assert.notNull(baos, "No ByteArrayOutputStream specified");
@@ -156,7 +155,6 @@ public abstract class StreamUtils {
 	 * @param end the position to end copying
 	 * @return the number of bytes copied
 	 * @throws IOException in case of I/O errors
-	 * @since 4.3
 	 */
 	public static long copyRange(InputStream in, OutputStream out, long start, long end) throws IOException {
 		Assert.notNull(in, "No InputStream specified");
@@ -192,7 +190,6 @@ public abstract class StreamUtils {
 	 * @param in the InputStream to drain
 	 * @return the number of bytes read
 	 * @throws IOException in case of I/O errors
-	 * @since 4.3
 	 */
 	public static int drain(InputStream in) throws IOException {
 		Assert.notNull(in, "No InputStream specified");
@@ -208,7 +205,6 @@ public abstract class StreamUtils {
 	/**
 	 * Return an efficient empty {@link InputStream}.
 	 * @return a {@link ByteArrayInputStream} based on an empty byte array
-	 * @since 4.2.2
 	 */
 	public static InputStream emptyInput() {
 		return new ByteArrayInputStream(EMPTY_CONTENT);

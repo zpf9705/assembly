@@ -23,7 +23,6 @@ public abstract class ReflectionUtils {
 	/**
 	 * Pre-built MethodFilter that matches all non-bridge non-synthetic methods
 	 * which are not declared on {@code java.lang.Object}.
-	 * @since 3.0.5
 	 */
 	public static final MethodFilter USER_DECLARED_METHODS =
 			(method -> !method.isBridge() && !method.isSynthetic());
@@ -152,7 +151,6 @@ public abstract class ReflectionUtils {
 	 * @param parameterTypes the parameter types of the desired constructor
 	 * @return the constructor reference
 	 * @throws NoSuchMethodException if no such constructor exists
-	 * @since 5.0
 	 */
 	public static <T> Constructor<T> accessibleConstructor(Class<T> clazz, Class<?>... parameterTypes)
 			throws NoSuchMethodException {
@@ -289,7 +287,6 @@ public abstract class ReflectionUtils {
 	 * @param clazz the class to introspect
 	 * @param mc the callback to invoke for each method
 	 * @throws IllegalStateException if introspection fails
-	 * @since 4.2
 	 * @see #doWithMethods
 	 */
 	public static void doWithLocalMethods(Class<?> clazz, MethodCallback mc) {
@@ -382,7 +379,6 @@ public abstract class ReflectionUtils {
 	 * @param leafClass the class to introspect
 	 * @param mf the filter that determines the methods to take into account
 	 * @throws IllegalStateException if introspection fails
-	 * @since 5.2
 	 */
 	public static Method[] getUniqueDeclaredMethods(Class<?> leafClass, @Nullable MethodFilter mf) {
 		final List<Method> methods = new ArrayList<>(20);
@@ -423,7 +419,6 @@ public abstract class ReflectionUtils {
 	 * @param clazz the class to introspect
 	 * @return the cached array of methods
 	 * @throws IllegalStateException if introspection fails
-	 * @since 5.2
 	 * @see Class#getDeclaredMethods()
 	 */
 	public static Method[] getDeclaredMethods(Class<?> clazz) {
@@ -639,7 +634,6 @@ public abstract class ReflectionUtils {
 	 * @param clazz the target class to analyze
 	 * @param fc the callback to invoke for each field
 	 * @throws IllegalStateException if introspection fails
-	 * @since 4.2
 	 * @see #doWithFields
 	 */
 	public static void doWithLocalFields(Class<?> clazz, FieldCallback fc) {
@@ -768,7 +762,6 @@ public abstract class ReflectionUtils {
 
 	/**
 	 * Clear the internal method/field cache.
-	 * @since 4.2.4
 	 */
 	public static void clearCache() {
 		declaredMethodsCache.clear();
@@ -808,7 +801,6 @@ public abstract class ReflectionUtils {
 		 * @param next the next {@code MethodFilter}
 		 * @return a composite {@code MethodFilter}
 		 * @throws IllegalArgumentException if the MethodFilter argument is {@code null}
-		 * @since 5.3.2
 		 */
 		default MethodFilter and(MethodFilter next) {
 			Assert.notNull(next, "Next MethodFilter must not be null");
@@ -849,7 +841,6 @@ public abstract class ReflectionUtils {
 		 * @param next the next {@code FieldFilter}
 		 * @return a composite {@code FieldFilter}
 		 * @throws IllegalArgumentException if the FieldFilter argument is {@code null}
-		 * @since 5.3.2
 		 */
 		default FieldFilter and(FieldFilter next) {
 			Assert.notNull(next, "Next FieldFilter must not be null");

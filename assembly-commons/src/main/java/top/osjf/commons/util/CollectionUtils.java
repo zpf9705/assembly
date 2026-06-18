@@ -52,7 +52,6 @@ public abstract class CollectionUtils {
 	 * {@link java.util.concurrent.ConcurrentHashMap#ConcurrentHashMap(int)}.
 	 * @param expectedSize the expected number of elements (with a corresponding
 	 * capacity to be derived so that no resize/rehash operations are needed)
-	 * @since 5.3
 	 * @see #newLinkedHashMap(int)
 	 */
 	public static <K, V> HashMap<K, V> newHashMap(int expectedSize) {
@@ -69,7 +68,6 @@ public abstract class CollectionUtils {
 	 * {@link LinkedMultiValueMap} constructor semantics as of 5.3.
 	 * @param expectedSize the expected number of elements (with a corresponding
 	 * capacity to be derived so that no resize/rehash operations are needed)
-	 * @since 5.3
 	 * @see #newHashMap(int)
 	 */
 	public static <K, V> LinkedHashMap<K, V> newLinkedHashMap(int expectedSize) {
@@ -321,7 +319,6 @@ public abstract class CollectionUtils {
 	 * or otherwise using the iterator.
 	 * @param set the Set to check (may be {@code null} or empty)
 	 * @return the first element, or {@code null} if none
-	 * @since 5.2.3
 	 * @see SortedSet
 	 * @see LinkedHashMap#keySet()
 	 * @see java.util.LinkedHashSet
@@ -347,7 +344,6 @@ public abstract class CollectionUtils {
 	 * Retrieve the first element of the given List, accessing the zero index.
 	 * @param list the List to check (may be {@code null} or empty)
 	 * @return the first element, or {@code null} if none
-	 * @since 5.2.3
 	 */
 	@Nullable
 	public static <T> T firstElement(@Nullable List<T> list) {
@@ -362,7 +358,6 @@ public abstract class CollectionUtils {
 	 * or otherwise iterating over all elements (assuming a linked set).
 	 * @param set the Set to check (may be {@code null} or empty)
 	 * @return the last element, or {@code null} if none
-	 * @since 5.0.3
 	 * @see SortedSet
 	 * @see LinkedHashMap#keySet()
 	 * @see java.util.LinkedHashSet
@@ -389,7 +384,6 @@ public abstract class CollectionUtils {
 	 * Retrieve the last element of the given List, accessing the highest index.
 	 * @param list the List to check (may be {@code null} or empty)
 	 * @return the last element, or {@code null} if none
-	 * @since 5.0.3
 	 */
 	@Nullable
 	public static <T> T lastElement(@Nullable List<T> list) {
@@ -425,7 +419,6 @@ public abstract class CollectionUtils {
 	 * Adapt a {@code Map<K, List<V>>} to an {@code MultiValueMap<K, V>}.
 	 * @param targetMap the original map
 	 * @return the adapted multi-value map (wrapping the original map)
-	 * @since 3.1
 	 */
 	public static <K, V> MultiValueMap<K, V> toMultiValueMap(Map<K, List<V>> targetMap) {
 		return new MultiValueMapAdapter<>(targetMap);
@@ -435,7 +428,6 @@ public abstract class CollectionUtils {
 	 * Return an unmodifiable view of the specified multi-value map.
 	 * @param targetMap the map for which an unmodifiable view is to be returned.
 	 * @return an unmodifiable view of the specified multi-value map
-	 * @since 3.1
 	 */
 	@SuppressWarnings("unchecked")
 	public static <K, V> MultiValueMap<K, V> unmodifiableMultiValueMap(

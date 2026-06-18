@@ -99,7 +99,6 @@ public abstract class FileSystemUtils {
 	 * @param src the source directory
 	 * @param dest the destination directory
 	 * @throws IOException in the case of I/O errors
-	 * @since 5.0
 	 */
 	public static void copyRecursively(Path src, Path dest) throws IOException {
 		Assert.notNull(src, "Source Path must not be null");

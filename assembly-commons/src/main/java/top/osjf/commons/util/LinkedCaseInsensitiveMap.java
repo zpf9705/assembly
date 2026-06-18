@@ -312,7 +312,7 @@ public class LinkedCaseInsensitiveMap<V> implements Map<String, V>, Serializable
 	 * Determine whether this map should remove the given eldest entry.
 	 * @param eldest the candidate entry
 	 * @return {@code true} for removing it, {@code false} for keeping it
-	 * @see LinkedHashMap#removeEldestEntry
+	 * {@code LinkedHashMap#removeEldestEntry}
 	 */
 	protected boolean removeEldestEntry(Entry<String, V> eldest) {
 		return false;

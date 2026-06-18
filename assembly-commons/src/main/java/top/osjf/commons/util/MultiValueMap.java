@@ -36,14 +36,12 @@ public interface MultiValueMap<K, V> extends Map<K, List<V>> {
 	 * Add all the values of the given list to the current list of values for the given key.
 	 * @param key they key
 	 * @param values the values to be added
-	 * @since 5.0
 	 */
 	void addAll(K key, List<? extends V> values);
 
 	/**
 	 * Add all the values of the given {@code MultiValueMap} to the current values.
 	 * @param values the values to be added
-	 * @since 5.0
 	 */
 	void addAll(MultiValueMap<K, V> values);
 
@@ -52,7 +50,6 @@ public interface MultiValueMap<K, V> extends Map<K, List<V>> {
 	 * {@link #containsKey(Object) contain} the given key.
 	 * @param key the key
 	 * @param value the value to be added
-	 * @since 5.2
 	 */
 	default void addIfAbsent(K key, @Nullable V value) {
 		if (!containsKey(key)) {

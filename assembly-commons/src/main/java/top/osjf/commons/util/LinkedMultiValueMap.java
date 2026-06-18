@@ -78,7 +78,6 @@ public class LinkedMultiValueMap<K, V> extends MultiValueMapAdapter<K, V>  // ne
 	 * @return a shallow copy of this Map, reusing this Map's value-holding List entries
 	 * (even if some entries are shared or unmodifiable) along the lines of standard
 	 * {@code Map.put} semantics
-	 * @since 4.2
 	 * @see #put(Object, List)
 	 * @see #putAll(Map)
 	 * @see LinkedMultiValueMap#LinkedMultiValueMap(Map)
