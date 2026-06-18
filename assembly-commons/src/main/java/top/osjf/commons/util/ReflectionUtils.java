@@ -151,6 +151,7 @@ public abstract class ReflectionUtils {
 	 * @param parameterTypes the parameter types of the desired constructor
 	 * @return the constructor reference
 	 * @throws NoSuchMethodException if no such constructor exists
+	 * @param <T>
 	 */
 	public static <T> Constructor<T> accessibleConstructor(Class<T> clazz, Class<?>... parameterTypes)
 			throws NoSuchMethodException {
@@ -354,6 +355,7 @@ public abstract class ReflectionUtils {
 	 * Leaf class methods are included first.
 	 * @param leafClass the class to introspect
 	 * @throws IllegalStateException if introspection fails
+	 * @return
 	 */
 	public static Method[] getAllDeclaredMethods(Class<?> leafClass) {
 		final List<Method> methods = new ArrayList<>(20);
@@ -367,6 +369,7 @@ public abstract class ReflectionUtils {
 	 * any methods found with signatures matching a method already included are filtered out.
 	 * @param leafClass the class to introspect
 	 * @throws IllegalStateException if introspection fails
+	 * @return
 	 */
 	public static Method[] getUniqueDeclaredMethods(Class<?> leafClass) {
 		return getUniqueDeclaredMethods(leafClass, null);
@@ -379,6 +382,7 @@ public abstract class ReflectionUtils {
 	 * @param leafClass the class to introspect
 	 * @param mf the filter that determines the methods to take into account
 	 * @throws IllegalStateException if introspection fails
+	 * @return
 	 */
 	public static Method[] getUniqueDeclaredMethods(Class<?> leafClass, @Nullable MethodFilter mf) {
 		final List<Method> methods = new ArrayList<>(20);
@@ -473,6 +477,8 @@ public abstract class ReflectionUtils {
 	/**
 	 * Determine whether the given method is an "equals" method.
 	 * @see Object#equals(Object)
+	 * @param method
+	 * @return
 	 */
 	public static boolean isEqualsMethod(@Nullable Method method) {
 		if (method == null) {
@@ -490,6 +496,8 @@ public abstract class ReflectionUtils {
 	/**
 	 * Determine whether the given method is a "hashCode" method.
 	 * @see Object#hashCode()
+	 * @param method
+	 * @return
 	 */
 	public static boolean isHashCodeMethod(@Nullable Method method) {
 		return method != null && method.getParameterCount() == 0 && method.getName().equals("hashCode");
@@ -498,6 +506,8 @@ public abstract class ReflectionUtils {
 	/**
 	 * Determine whether the given method is a "toString" method.
 	 * @see Object#toString()
+	 * @param method
+	 * @return
 	 */
 	public static boolean isToStringMethod(@Nullable Method method) {
 		return (method != null && method.getParameterCount() == 0 && method.getName().equals("toString"));
@@ -505,6 +515,8 @@ public abstract class ReflectionUtils {
 
 	/**
 	 * Determine whether the given method is originally declared by {@link Object}.
+	 * @param method
+	 * @return
 	 */
 	public static boolean isObjectMethod(@Nullable Method method) {
 		return (method != null && (method.getDeclaringClass() == Object.class ||
@@ -515,6 +527,7 @@ public abstract class ReflectionUtils {
 	 * Determine whether the given method is a CGLIB 'renamed' method,
 	 * following the pattern "CGLIB$methodName$0".
 	 * @param renamedMethod the method to check
+	 * @return
 	 */
 	public static boolean isCglibRenamedMethod(Method renamedMethod) {
 		String name = renamedMethod.getName();
@@ -716,6 +729,8 @@ public abstract class ReflectionUtils {
 	 * or a subclass, copy all fields, including inherited fields. Designed to
 	 * work on objects with public no-arg constructors.
 	 * @throws IllegalStateException if introspection fails
+	 * @param dest
+	 * @param src
 	 */
 	public static void shallowCopyFieldState(final Object src, final Object dest) {
 		Assert.notNull(src, "Source for field copy cannot be null");

@@ -72,6 +72,7 @@ public abstract class ObjectUtils {
 	 * Determine whether the given object is an array:
 	 * either an Object array or a primitive array.
 	 * @param obj the object to check
+	 * @return
 	 */
 	public static boolean isArray(@Nullable Object obj) {
 		return (obj != null && obj.getClass().isArray());
@@ -82,6 +83,7 @@ public abstract class ObjectUtils {
 	 * i.e. {@code null} or of zero length.
 	 * @param array the array to check
 	 * @see #isEmpty(Object)
+	 * @return
 	 */
 	public static boolean isEmpty(@Nullable Object[] array) {
 		return (array == null || array.length == 0);
@@ -107,6 +109,7 @@ public abstract class ObjectUtils {
 	 * @see StringUtils#hasLength(CharSequence)
 	 * @see CollectionUtils#isEmpty(Collection)
 	 * @see CollectionUtils#isEmpty(Map)
+	 * @return
 	 */
 	public static boolean isEmpty(@Nullable Object obj) {
 		if (obj == null) {
@@ -208,6 +211,7 @@ public abstract class ObjectUtils {
 	 * @param constant the constant to get the enum value of
 	 * @throws IllegalArgumentException if the given constant is not found in the given array
 	 * of enum values. Use {@link #containsConstant(Enum[], String)} as a guard to avoid this exception.
+	 * @return
 	 */
 	public static <E extends Enum<?>> E caseInsensitiveValueOf(E[] enumValues, String constant) {
 		for (E candidate : enumValues) {
@@ -225,6 +229,8 @@ public abstract class ObjectUtils {
 	 * @param array the array to append to (can be {@code null})
 	 * @param obj the object to append
 	 * @return the new array (of the same component type; never {@code null})
+	 * @param <A>
+	 * @param <O>
 	 */
 	public static <A, O extends A> A[] addObjectToArray(@Nullable A[] array, @Nullable O obj) {
 		Class<?> compType = Object.class;
@@ -363,6 +369,8 @@ public abstract class ObjectUtils {
 	 * @see #nullSafeHashCode(int[])
 	 * @see #nullSafeHashCode(long[])
 	 * @see #nullSafeHashCode(short[])
+	 * @param obj
+	 * @return
 	 */
 	public static int nullSafeHashCode(@Nullable Object obj) {
 		if (obj == null) {
@@ -403,6 +411,8 @@ public abstract class ObjectUtils {
 	/**
 	 * Return a hash code based on the contents of the specified array.
 	 * If {@code array} is {@code null}, this method returns 0.
+	 * @param array
+	 * @return
 	 */
 	public static int nullSafeHashCode(@Nullable Object[] array) {
 		if (array == null) {
@@ -418,6 +428,8 @@ public abstract class ObjectUtils {
 	/**
 	 * Return a hash code based on the contents of the specified array.
 	 * If {@code array} is {@code null}, this method returns 0.
+	 * @param array
+	 * @return
 	 */
 	public static int nullSafeHashCode(@Nullable boolean[] array) {
 		if (array == null) {
@@ -433,6 +445,8 @@ public abstract class ObjectUtils {
 	/**
 	 * Return a hash code based on the contents of the specified array.
 	 * If {@code array} is {@code null}, this method returns 0.
+	 * @param array
+	 * @return
 	 */
 	public static int nullSafeHashCode(@Nullable byte[] array) {
 		if (array == null) {
@@ -448,6 +462,8 @@ public abstract class ObjectUtils {
 	/**
 	 * Return a hash code based on the contents of the specified array.
 	 * If {@code array} is {@code null}, this method returns 0.
+	 * @param array
+	 * @return
 	 */
 	public static int nullSafeHashCode(@Nullable char[] array) {
 		if (array == null) {
@@ -463,6 +479,8 @@ public abstract class ObjectUtils {
 	/**
 	 * Return a hash code based on the contents of the specified array.
 	 * If {@code array} is {@code null}, this method returns 0.
+	 * @param array
+	 * @return
 	 */
 	public static int nullSafeHashCode(@Nullable double[] array) {
 		if (array == null) {
@@ -478,6 +496,8 @@ public abstract class ObjectUtils {
 	/**
 	 * Return a hash code based on the contents of the specified array.
 	 * If {@code array} is {@code null}, this method returns 0.
+	 * @param array
+	 * @return
 	 */
 	public static int nullSafeHashCode(@Nullable float[] array) {
 		if (array == null) {
@@ -493,6 +513,8 @@ public abstract class ObjectUtils {
 	/**
 	 * Return a hash code based on the contents of the specified array.
 	 * If {@code array} is {@code null}, this method returns 0.
+	 * @param array
+	 * @return
 	 */
 	public static int nullSafeHashCode(@Nullable int[] array) {
 		if (array == null) {
@@ -508,6 +530,8 @@ public abstract class ObjectUtils {
 	/**
 	 * Return a hash code based on the contents of the specified array.
 	 * If {@code array} is {@code null}, this method returns 0.
+	 * @param array
+	 * @return
 	 */
 	public static int nullSafeHashCode(@Nullable long[] array) {
 		if (array == null) {
@@ -523,6 +547,8 @@ public abstract class ObjectUtils {
 	/**
 	 * Return a hash code based on the contents of the specified array.
 	 * If {@code array} is {@code null}, this method returns 0.
+	 * @param array
+	 * @return
 	 */
 	public static int nullSafeHashCode(@Nullable short[] array) {
 		if (array == null) {

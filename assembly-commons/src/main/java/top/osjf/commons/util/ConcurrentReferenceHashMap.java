@@ -485,6 +485,7 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 		 * @param key the key
 		 * @param task the update operation
 		 * @return the result of the operation
+		 * @param <T>
 		 */
 		@Nullable
 		public <T> T doTask(final int hash, @Nullable final Object key, final Task<T> task) {
@@ -640,6 +641,7 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 
 		/**
 		 * Return the size of the current references array.
+		 * @return
 		 */
 		public final int getSize() {
 			return this.references.length;
@@ -647,6 +649,7 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 
 		/**
 		 * Return the total number of references in this segment.
+		 * @return
 		 */
 		public final int getCount() {
 			return this.count.get();
@@ -664,17 +667,20 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 
 		/**
 		 * Return the referenced entry, or {@code null} if the entry is no longer available.
+		 * @return
 		 */
 		@Nullable
 		Entry<K, V> get();
 
 		/**
 		 * Return the hash for the reference.
+		 * @return
 		 */
 		int getHash();
 
 		/**
 		 * Return the next reference in the chain, or {@code null} if none.
+		 * @return
 		 */
 		@Nullable
 		Reference<K, V> getNext();

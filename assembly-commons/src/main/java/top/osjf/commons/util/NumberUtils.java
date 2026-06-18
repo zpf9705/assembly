@@ -53,6 +53,7 @@ public abstract class NumberUtils {
 	 * @return the converted number
 	 * @throws IllegalArgumentException if the target class is not supported
 	 * (i.e. not a standard Number subclass as included in the JDK)
+	 * @param <T>
 	 * @see Byte
 	 * @see Short
 	 * @see Integer
@@ -167,6 +168,7 @@ public abstract class NumberUtils {
 	 * <p>Supports numbers in hex format (with leading "0x", "0X", or "#") as well.
 	 * @param text the text to convert
 	 * @param targetClass the target class to parse into
+	 * @param <T>
 	 * @return the parsed number
 	 * @throws IllegalArgumentException if the target class is not supported
 	 * (i.e. not a standard Number subclass as included in the JDK)
@@ -223,6 +225,7 @@ public abstract class NumberUtils {
 	 * @param targetClass the target class to parse into
 	 * @param numberFormat the {@code NumberFormat} to use for parsing (if
 	 * {@code null}, this method falls back to {@link #parseNumber(String, Class)})
+	 * @param <T>
 	 * @return the parsed number
 	 * @throws IllegalArgumentException if the target class is not supported
 	 * (i.e. not a standard Number subclass as included in the JDK)

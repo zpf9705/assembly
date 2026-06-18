@@ -40,7 +40,7 @@ public class SocketUtils {
 	/**
 	 * Although {@code SocketUtils} consists solely of static utility methods,
 	 * this constructor is intentionally {@code public}.
-	 * <h4>Rationale</h4>
+	 * <h3>Rationale</h3>
 	 * <p>Static methods from this class may be invoked from within XML
 	 * configuration files using the Spring Expression Language (SpEL) and the
 	 * following syntax.

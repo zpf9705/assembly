@@ -53,6 +53,9 @@ public abstract class CollectionUtils {
 	 * @param expectedSize the expected number of elements (with a corresponding
 	 * capacity to be derived so that no resize/rehash operations are needed)
 	 * @see #newLinkedHashMap(int)
+	 * @param <K>
+	 * @param <V>
+	 * @return
 	 */
 	public static <K, V> HashMap<K, V> newHashMap(int expectedSize) {
 		return new HashMap<>((int) (expectedSize / DEFAULT_LOAD_FACTOR), DEFAULT_LOAD_FACTOR);
@@ -69,6 +72,9 @@ public abstract class CollectionUtils {
 	 * @param expectedSize the expected number of elements (with a corresponding
 	 * capacity to be derived so that no resize/rehash operations are needed)
 	 * @see #newHashMap(int)
+	 * @param <K>
+	 * @param <V>
+	 * @return
 	 */
 	public static <K, V> LinkedHashMap<K, V> newLinkedHashMap(int expectedSize) {
 		return new LinkedHashMap<>((int) (expectedSize / DEFAULT_LOAD_FACTOR), DEFAULT_LOAD_FACTOR);
@@ -94,6 +100,7 @@ public abstract class CollectionUtils {
 	 * Merge the given array into the given Collection.
 	 * @param array the array to merge (may be {@code null})
 	 * @param collection the target Collection to merge the array into
+	 * @param <E>
 	 */
 	@SuppressWarnings("unchecked")
 	public static <E> void mergeArrayIntoCollection(@Nullable Object array, Collection<E> collection) {
@@ -110,6 +117,8 @@ public abstract class CollectionUtils {
 	 * default properties linked into the original Properties instance.
 	 * @param props the Properties instance to merge (may be {@code null})
 	 * @param map the target Map to merge the properties into
+	 * @param <K>
+	 * @param <V>
 	 */
 	@SuppressWarnings("unchecked")
 	public static <K, V> void mergePropertiesIntoMap(@Nullable Properties props, Map<K, V> map) {
@@ -201,6 +210,7 @@ public abstract class CollectionUtils {
 	 * @param source the source Collection
 	 * @param candidates the candidates to search for
 	 * @return the first present object, or {@code null} if not found
+	 * @param <E>
 	 */
 	@SuppressWarnings("unchecked")
 	@Nullable
@@ -222,6 +232,7 @@ public abstract class CollectionUtils {
 	 * @param type the type to look for
 	 * @return a value of the given type found if there is a clear match,
 	 * or {@code null} if none or more than one such value found
+	 * @param <T>
 	 */
 	@SuppressWarnings("unchecked")
 	@Nullable
@@ -322,6 +333,7 @@ public abstract class CollectionUtils {
 	 * @see SortedSet
 	 * @see LinkedHashMap#keySet()
 	 * @see java.util.LinkedHashSet
+	 * @param <T>
 	 */
 	@Nullable
 	public static <T> T firstElement(@Nullable Set<T> set) {
@@ -344,6 +356,7 @@ public abstract class CollectionUtils {
 	 * Retrieve the first element of the given List, accessing the zero index.
 	 * @param list the List to check (may be {@code null} or empty)
 	 * @return the first element, or {@code null} if none
+	 * @param <T>
 	 */
 	@Nullable
 	public static <T> T firstElement(@Nullable List<T> list) {
@@ -361,6 +374,7 @@ public abstract class CollectionUtils {
 	 * @see SortedSet
 	 * @see LinkedHashMap#keySet()
 	 * @see java.util.LinkedHashSet
+	 * @param <T>
 	 */
 	@Nullable
 	public static <T> T lastElement(@Nullable Set<T> set) {
@@ -384,6 +398,7 @@ public abstract class CollectionUtils {
 	 * Retrieve the last element of the given List, accessing the highest index.
 	 * @param list the List to check (may be {@code null} or empty)
 	 * @return the last element, or {@code null} if none
+	 * @param <T>
 	 */
 	@Nullable
 	public static <T> T lastElement(@Nullable List<T> list) {
@@ -397,6 +412,10 @@ public abstract class CollectionUtils {
 	 * Marshal the elements from the given enumeration into an array of the given type.
 	 * Enumeration elements must be assignable to the type of the given array. The array
 	 * returned will be a different instance than the array given.
+	 * @param <E>
+	 * @param array
+	 * @param enumeration
+	 * @return
 	 */
 	public static <A, E extends A> A[] toArray(Enumeration<E> enumeration, A[] array) {
 		ArrayList<A> elements = new ArrayList<>();
@@ -410,6 +429,7 @@ public abstract class CollectionUtils {
 	 * Adapt an {@link Enumeration} to an {@link Iterator}.
 	 * @param enumeration the original {@code Enumeration}
 	 * @return the adapted {@code Iterator}
+	 * @param <E>
 	 */
 	public static <E> Iterator<E> toIterator(@Nullable Enumeration<E> enumeration) {
 		return (enumeration != null ? new EnumerationIterator<>(enumeration) : Collections.emptyIterator());
@@ -419,6 +439,8 @@ public abstract class CollectionUtils {
 	 * Adapt a {@code Map<K, List<V>>} to an {@code MultiValueMap<K, V>}.
 	 * @param targetMap the original map
 	 * @return the adapted multi-value map (wrapping the original map)
+	 * @param <K>
+	 * @param <V>
 	 */
 	public static <K, V> MultiValueMap<K, V> toMultiValueMap(Map<K, List<V>> targetMap) {
 		return new MultiValueMapAdapter<>(targetMap);
@@ -428,6 +450,8 @@ public abstract class CollectionUtils {
 	 * Return an unmodifiable view of the specified multi-value map.
 	 * @param targetMap the map for which an unmodifiable view is to be returned.
 	 * @return an unmodifiable view of the specified multi-value map
+	 * @param <K>
+	 * @param <V>
 	 */
 	@SuppressWarnings("unchecked")
 	public static <K, V> MultiValueMap<K, V> unmodifiableMultiValueMap(

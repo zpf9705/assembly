@@ -335,6 +335,7 @@ public abstract class ClassUtils {
 	 * @param clazz the class to check (typically an interface)
 	 * @param classLoader the ClassLoader to check against
 	 * (may be {@code null} in which case this method will always return {@code true})
+	 * @return
 	 */
 	public static boolean isVisible(Class<?> clazz, @Nullable ClassLoader classLoader) {
 		if (classLoader == null) {
@@ -359,6 +360,7 @@ public abstract class ClassUtils {
 	 * @param clazz the class to analyze
 	 * @param classLoader the ClassLoader to potentially cache metadata in
 	 * (may be {@code null} which indicates the system class loader)
+	 * @return
 	 */
 	public static boolean isCacheSafe(Class<?> clazz, @Nullable ClassLoader classLoader) {
 		Assert.notNull(clazz, "Class must not be null");
@@ -557,7 +559,7 @@ public abstract class ClassUtils {
 	 * slash ('/') to the return value). Built by taking the package of the specified
 	 * class file, converting all dots ('.') to slashes ('/'), adding a trailing slash
 	 * if necessary, and concatenating the specified resource name to this.
-	 * <br/>As such, this function may be used to build a path suitable for
+	 * <br>As such, this function may be used to build a path suitable for
 	 * loading a resource file that is in the same package as a class file,
 	 * although {@code org.springframework.core.io.ClassPathResource} is usually
 	 * even more convenient.
@@ -788,6 +790,7 @@ public abstract class ClassUtils {
 	 * for 'primary' user-level interfaces. Common characteristics: no service-level
 	 * operations, no bean property methods, no default methods.
 	 * @param ifc the interface to check
+	 * @return
 	 */
 	public static boolean isJavaLanguageInterface(Class<?> ifc) {
 		return javaLanguageInterfaces.contains(ifc);
@@ -796,6 +799,7 @@ public abstract class ClassUtils {
 	/**
 	 * Determine if the supplied class is an <em>inner class</em>,
 	 * i.e. a non-static member of an enclosing class.
+	 * @param clazz
 	 * @return {@code true} if the supplied class is an inner class
 	 * @see Class#isMemberClass()
 	 */
@@ -861,6 +865,7 @@ public abstract class ClassUtils {
 	 * Check whether the given class matches the user-specified type name.
 	 * @param clazz the class to check
 	 * @param typeName the type name to match
+	 * @return
 	 */
 	public static boolean matchesTypeName(Class<?> clazz, @Nullable String typeName) {
 		return (typeName != null &&
@@ -1000,6 +1005,7 @@ public abstract class ClassUtils {
 	 * @param paramTypes the parameter types of the method
 	 * @return the constructor, or {@code null} if not found
 	 * @see Class#getConstructor
+	 * @param <T>
 	 */
 	@Nullable
 	public static <T> Constructor<T> getConstructorIfAvailable(Class<T> clazz, Class<?>... paramTypes) {

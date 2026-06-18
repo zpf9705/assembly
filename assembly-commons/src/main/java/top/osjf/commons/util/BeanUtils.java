@@ -55,6 +55,7 @@ public abstract class BeanUtils {
      * (e.g. due to a missing dependency at runtime), or an exception thrown
      * from the constructor invocation itself.
      * @see Constructor#newInstance
+     * @param <T>
      */
     public static <T> T instantiateClass(Class<T> clazz) throws BeanInstantiationException {
         Assert.notNull(clazz, "Class must not be null");
@@ -84,6 +85,7 @@ public abstract class BeanUtils {
      * @return the new instance
      * @throws BeanInstantiationException if the bean cannot be instantiated
      * @see Constructor#newInstance
+     * @param <T>
      */
     @SuppressWarnings("unchecked")
     public static <T> T instantiateClass(Class<?> clazz, Class<T> assignableTo) throws BeanInstantiationException {
@@ -102,6 +104,7 @@ public abstract class BeanUtils {
      * @return the new instance
      * @throws BeanInstantiationException if the bean cannot be instantiated
      * @see Constructor#newInstance
+     * @param <T>
      */
     public static <T> T instantiateClass(Constructor<T> ctor, Object... args) throws BeanInstantiationException {
         Assert.notNull(ctor, "Constructor must not be null");
@@ -143,6 +146,7 @@ public abstract class BeanUtils {
      * for the returned constructor's parameters, if any.
      * @param clazz the class to check
      * @throws IllegalStateException in case of no unique constructor found at all
+     * @param <T>
      */
     @SuppressWarnings("unchecked")
     public static <T> Constructor<T> getResolvableConstructor(Class<T> clazz) {

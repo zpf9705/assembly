@@ -49,6 +49,7 @@ public class MethodInvoker {
 	 * a target object needs to be specified anyway.
 	 * @see #setTargetObject
 	 * @see #setTargetMethod
+	 * @param targetClass
 	 */
 	public void setTargetClass(@Nullable Class<?> targetClass) {
 		this.targetClass = targetClass;
@@ -56,6 +57,7 @@ public class MethodInvoker {
 
 	/**
 	 * Return the target class on which to call the target method.
+	 * @return
 	 */
 	@Nullable
 	public Class<?> getTargetClass() {
@@ -68,6 +70,7 @@ public class MethodInvoker {
 	 * else, a target class is sufficient.
 	 * @see #setTargetClass
 	 * @see #setTargetMethod
+	 * @param targetObject
 	 */
 	public void setTargetObject(@Nullable Object targetObject) {
 		this.targetObject = targetObject;
@@ -78,6 +81,7 @@ public class MethodInvoker {
 
 	/**
 	 * Return the target object on which to call the target method.
+	 * @return
 	 */
 	@Nullable
 	public Object getTargetObject() {
@@ -109,6 +113,7 @@ public class MethodInvoker {
 	 * Convenient alternative to specifying targetClass and targetMethod.
 	 * @see #setTargetClass
 	 * @see #setTargetMethod
+	 * @param staticMethod
 	 */
 	public void setStaticMethod(String staticMethod) {
 		this.staticMethod = staticMethod;
@@ -117,6 +122,7 @@ public class MethodInvoker {
 	/**
 	 * Set arguments for the method invocation. If this property is not set,
 	 * or the Object array is of length 0, a method with no arguments is assumed.
+	 * @param arguments
 	 */
 	public void setArguments(Object... arguments) {
 		this.arguments = arguments;
@@ -124,6 +130,7 @@ public class MethodInvoker {
 
 	/**
 	 * Return the arguments for the method invocation.
+	 * @return
 	 */
 	public Object[] getArguments() {
 		return (this.arguments != null ? this.arguments : EMPTY_ARGUMENTS);
@@ -135,6 +142,8 @@ public class MethodInvoker {
 	 * The method can be invoked any number of times afterwards.
 	 * @see #getPreparedMethod
 	 * @see #invoke
+	 * @throws ClassNotFoundException
+	 * @throws NoSuchMethodException
 	 */
 	public void prepare() throws ClassNotFoundException, NoSuchMethodException {
 		if (this.staticMethod != null) {
@@ -239,6 +248,7 @@ public class MethodInvoker {
 	/**
 	 * Return whether this invoker has been prepared already,
 	 * i.e. whether it allows access to {@link #getPreparedMethod()} already.
+	 * @return
 	 */
 	public boolean isPrepared() {
 		return (this.methodObject != null);
