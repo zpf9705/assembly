@@ -1,4 +1,7 @@
 /**
+ * This class was copied from {@code org.springframework.core}, with minor modifications
+ * and adaptations. I would like to express my sincere gratitude here!
+ *
  * Useful generic {@code java.util.function} helper classes.
  */
 @NonNullApi
