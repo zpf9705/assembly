@@ -49,7 +49,6 @@ public abstract class Base64Utils {
 	 * "URL and Filename Safe Alphabet".
 	 * @param src the original byte array
 	 * @return the encoded byte array
-	 * @since 4.2.4
 	 */
 	public static byte[] encodeUrlSafe(byte[] src) {
 		if (src.length == 0) {
@@ -63,7 +62,6 @@ public abstract class Base64Utils {
 	 * "URL and Filename Safe Alphabet".
 	 * @param src the encoded byte array
 	 * @return the original byte array
-	 * @since 4.2.4
 	 */
 	public static byte[] decodeUrlSafe(byte[] src) {
 		if (src.length == 0) {
