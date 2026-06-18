@@ -17,7 +17,7 @@
 
 package top.osjf.cron.core.repository;
 
-import top.osjf.cron.core.util.AssertUtils;
+import top.osjf.commons.util.Assert;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -76,9 +76,9 @@ public class RunningTimeout {
      */
     public RunningTimeout(long timeout, TimeUnit timeUnit, RunningTimeoutPolicy policy) {
 
-        AssertUtils.assertTrue(timeout > 0, "Timeout cannot be less than or equal to 0");
-        AssertUtils.assertNotNull(timeUnit, "TimeUnit not be null");
-        AssertUtils.assertNotNull(policy, "RunningTimeoutPolicy not be null");
+        Assert.isTrue(timeout > 0, "Timeout cannot be less than or equal to 0");
+        Assert.notNull(timeUnit, "TimeUnit not be null");
+        Assert.notNull(policy, "RunningTimeoutPolicy not be null");
 
         this.timeout = timeout;
         this.timeUnit = timeUnit;

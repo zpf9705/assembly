@@ -19,8 +19,8 @@ package top.osjf.cron.core.repository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import top.osjf.commons.util.Assert;
 import top.osjf.cron.core.lang.Nullable;
-import top.osjf.cron.core.util.AssertUtils;
 
 import java.util.UUID;
 import java.util.concurrent.*;
@@ -70,8 +70,8 @@ public class TimeoutMonitoringRunnable implements Runnable {
      */
     public TimeoutMonitoringRunnable(Runnable real, RunningTimeout timeout, @Nullable ExecutorService monitoringExecutor) {
 
-        AssertUtils.assertNotNull(real, "Real runnable not be null");
-        AssertUtils.assertNotNull(timeout, "RunningTimeout arg not be null");
+        Assert.notNull(real, "Real runnable not be null");
+        Assert.notNull(timeout, "RunningTimeout arg not be null");
 
         this.real =  real;
         this.timeout =  timeout;
@@ -91,7 +91,7 @@ public class TimeoutMonitoringRunnable implements Runnable {
      * @param taskId the registration ID for delegated task {@link #real}
      */
     public void setTaskId(String taskId) {
-        AssertUtils.assertNotBlank(taskId, "TaskId not be blank");
+        Assert.hasText(taskId, "TaskId not be blank");
         this.taskId = taskId;
     }
 
