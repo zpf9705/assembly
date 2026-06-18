@@ -124,6 +124,32 @@ public abstract class StringUtils {
 	}
 
 	/**
+	 * Compatible meaning {@code isBlank} is equivalent to the negation of {@link #isNotBlank}.
+	 * @param str the {@code String} to check (may be {@code null})
+	 * @return {@code true} if the {@code String} is not {@code null}, its
+	 * length is greater than 0, and it does not contain whitespace only
+	 * @see #hasText(CharSequence)
+	 * @see #hasLength(String)
+	 * @see Character#isWhitespace
+	 */
+	public static boolean isBlank(@Nullable String str) {
+		return !isNotBlank(str);
+	}
+
+	/**
+	 * Compatible meaning {@code isNotBlank}, equivalent to {@link #hasText}.
+	 * @param str the {@code String} to check (may be {@code null})
+	 * @return {@code true} if the {@code String} is not {@code null}, its
+	 * length is greater than 0, and it does not contain whitespace only
+	 * @see #hasText(CharSequence)
+	 * @see #hasLength(String)
+	 * @see Character#isWhitespace
+	 */
+	public static boolean isNotBlank(@Nullable String str) {
+		return hasText(str);
+	}
+
+	/**
 	 * Check whether the given {@code CharSequence} contains any whitespace characters.
 	 * @param str the {@code CharSequence} to check (may be {@code null})
 	 * @return {@code true} if the {@code CharSequence} is not empty and
