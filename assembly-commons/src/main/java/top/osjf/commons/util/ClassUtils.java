@@ -1301,6 +1301,26 @@ public abstract class ClassUtils {
 		}
 	}
 
+	/**
+	 * Returns the class array of the object array.
+	 *
+	 * @param objects for an object array, if there is a {@code null} element in the array,
+	 *                this element is considered to be of type Object
+	 * @return class array
+	 */
+	public static Class<?>[] getClasses(Object... objects) {
+		Class<?>[] classes = new Class<?>[objects.length];
+		Object obj;
+		for (int i = 0; i < objects.length; i++) {
+			obj = objects[i];
+			if (null == obj) {
+				classes[i] = Object.class;
+			} else {
+				classes[i] = obj.getClass();
+			}
+		}
+		return classes;
+	}
 
 	@Nullable
 	private static Method getMethodOrNull(Class<?> clazz, String methodName, Class<?>[] paramTypes) {
