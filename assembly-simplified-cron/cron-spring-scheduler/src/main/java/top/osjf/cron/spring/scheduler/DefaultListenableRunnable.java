@@ -67,6 +67,7 @@ public class DefaultListenableRunnable extends ListenerExecuteSupport implements
      * @param runnable      the execution function for this task.
      * @param trigger       the triggering method for the execution of this task.
      * @param cronListeners the list of eavesdroppers for the execution of this task.
+     * @param repository    the repository.
      */
     public DefaultListenableRunnable(String id, Runnable runnable, @Nullable Trigger trigger,
                                      List<CronListener> cronListeners, SpringSchedulerTaskRepository repository) {

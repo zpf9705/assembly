@@ -30,13 +30,14 @@ import top.osjf.cron.quartz.repository.JobConstants;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public class QuartzListenerContent extends AbstractListenerContext implements ListenerContext {
+public class QuartzListenerContent extends AbstractListenerContext<JobExecutionContext> implements ListenerContext {
 
     private final String id;
 
     /**
      * Creates a {@code QuartzListenerContent} by given {@code TaskExecutor}.
      * @param context the Quartz scheduler listener obj.
+     * @param repositoryContext {@inheritDoc}
      */
     public QuartzListenerContent(JobExecutionContext context, RepositoryContext repositoryContext) {
         super(context, repositoryContext);

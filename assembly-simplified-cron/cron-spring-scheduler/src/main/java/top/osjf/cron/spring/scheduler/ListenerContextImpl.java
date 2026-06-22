@@ -28,7 +28,7 @@ import top.osjf.cron.core.repository.RepositoryContext;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public class ListenerContextImpl extends AbstractListenerContext implements ListenerContext {
+public class ListenerContextImpl extends AbstractListenerContext<ListenableRunnable> implements ListenerContext {
 
     private final String id;
 

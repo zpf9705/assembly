@@ -27,21 +27,22 @@ import top.osjf.cron.core.repository.RepositoryContext;
  * Subclasses inherit this abstract class and reuse the field initialization and getter implementations,
  * avoiding repetitive definition of context member variables and access methods.
  *
+ * @param <T> the type of source context.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
  */
-public abstract class AbstractListenerContext implements ListenerContext {
+public abstract class AbstractListenerContext<T> implements ListenerContext {
+
+    private final T sourceContext;
 
     private final RepositoryContext repositoryContext;
-
-    private final Object sourceContext;
 
     /**
      * Create an abstract listener context with specified repository context and source execution context.
      * @param sourceContext     original business context of the scheduled task trigger
      * @param repositoryContext task repository operation context
      */
-    public AbstractListenerContext(Object sourceContext, RepositoryContext repositoryContext) {
+    public AbstractListenerContext(T sourceContext, RepositoryContext repositoryContext) {
         this.sourceContext = sourceContext;
         this.repositoryContext = repositoryContext;
     }

@@ -29,7 +29,7 @@ import top.osjf.cron.core.repository.RepositoryContext;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public class HutoolListenerContent extends AbstractListenerContext implements ListenerContext {
+public class HutoolListenerContent extends AbstractListenerContext<TaskExecutor> implements ListenerContext {
 
     private final String id;
 
