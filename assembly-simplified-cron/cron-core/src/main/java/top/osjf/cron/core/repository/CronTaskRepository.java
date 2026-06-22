@@ -16,7 +16,7 @@
 
 package top.osjf.cron.core.repository;
 
-import top.osjf.cron.core.lang.Wrapper;
+import top.osjf.commons.lang.Wrapper;
 
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -46,8 +46,8 @@ import javax.annotation.concurrent.ThreadSafe;
  *   architecture.</li>
  *   <li>{@link LifecycleRepository}: Defines lifecycle control methods such as start, stop, and
  *   restart.</li>
- *   <li>{@link Wrapper}: Enables decorator pattern support, allowing task instances to be wrapped
- *   with cross-cutting concerns like logging, monitoring, retry logic, etc.</li>
+ *   <li>{@link top.osjf.commons.lang.Wrapper}: Enables decorator pattern support, allowing task instances
+ *   to be wrapped with cross-cutting concerns like logging, monitoring, retry logic, etc.</li>
  * </ul>
  *
  * <p>The differentiation and combination of the above modules were gathered in version 3.0.1,
@@ -64,7 +64,7 @@ import javax.annotation.concurrent.ThreadSafe;
  * @see ListableRepository
  * @see CronListenerRepository
  * @see LifecycleRepository
- * @see Wrapper
+ * @see top.osjf.commons.lang.Wrapper
  */
 @ThreadSafe
 public interface CronTaskRepository extends Repository, RunTimesRegistrarRepository, RunTimeoutRegistrarRepository,
