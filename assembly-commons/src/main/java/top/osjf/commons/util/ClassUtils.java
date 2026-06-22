@@ -1019,6 +1019,59 @@ public abstract class ClassUtils {
 	}
 
 	/**
+	 * Determine whether a given class has a compatible constructor with a given signature.
+	 * @param clazz       the target class to search for a compatible constructor
+	 * @param paramTypes  the sequence of parameter types to match against constructor parameters
+	 * @return whether the class has a corresponding constructor
+	 * @see #getCompatibleConstructorIfAvailable(Class, Class[])
+	 */
+	public static boolean hasCompatibleConstructor(Class<?> clazz, Class<?>... paramTypes) {
+		return (getCompatibleConstructorIfAvailable(clazz, paramTypes) != null);
+	}
+
+	/**
+	 * Attempts to find a compatible constructor of the target class.
+	 * <p>
+	 * Compatibility rule: each formal parameter type of the constructor must be assignable from
+	 * the corresponding given parameter type, which allows passing subclass instances to
+	 * parameters declared as their superclass type.
+	 * </p>
+	 * <p>
+	 * Returns {@code null} if no matching constructor with the same parameter count and
+	 * assignable parameter types can be found.
+	 * </p>
+	 *
+	 * @param clazz       the target class to search for a compatible constructor
+	 * @param paramTypes  the sequence of parameter types to match against constructor parameters
+	 * @param <T>         the generic type of the target class
+	 * @return the matched compatible {@link Constructor}, or {@code null} if no such constructor exists
+	 */
+	@Nullable
+	@SuppressWarnings("unchecked")
+	public static <T> Constructor<T> getCompatibleConstructorIfAvailable(Class<T> clazz, Class<?>... paramTypes) {
+		Constructor<?>[] constructors = clazz.getDeclaredConstructors();
+		for (Constructor<?> constructor : constructors) {
+			Class<?>[] parameterTypes = constructor.getParameterTypes();
+			if (parameterTypes.length != paramTypes.length) {
+				continue;
+			}
+			boolean match = true;
+			for (int i = 0; i < parameterTypes.length; i++) {
+				// The constructor parameter type.isAssignableFrom(actual passed-in parameter type)
+				// supports the parent class accepting child classes
+				if (!parameterTypes[i].isAssignableFrom(paramTypes[i])) {
+					match = false;
+					break;
+				}
+			}
+			if (match) {
+				return (Constructor<T>) constructor;
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * Determine whether the given class has a public method with the given signature.
 	 * @param clazz the clazz to analyze
 	 * @param method the method to look for
@@ -1085,6 +1138,58 @@ public abstract class ClassUtils {
 				throw new IllegalStateException("No unique method found: " + clazz.getName() + '.' + methodName);
 			}
 		}
+	}
+
+	/**
+	 * Determine whether the given class has a compatible method with the given signature
+	 * and parameter settings.
+	 * @param targetClass     the target class to scan for compatible assignment method
+	 * @param parameterType   the expected parameter type used for type compatibility matching
+	 * @return whether the class has a corresponding method
+	 */
+	public static boolean hasCompatibleSetterMethod(Class<?> targetClass, Class<?> parameterType) {
+		return (getCompatibleSetterMethod(targetClass, parameterType) != null);
+	}
+
+	/**
+	 * Find a compatible single-argument assignment method from the target class and its parent classes.
+	 * <p>
+	 * Matching rules:
+	 * <ol>
+	 * <li>The method must declare exactly one formal parameter;</li>
+	 * <li>The parameter type of the method is assignable from the given {@code parameterType},
+	 * which allows passing subclass instances to parameters declared as their super type;</li>
+	 * <li>No restriction on method name, supports standard {@code setXxx} bean setters as well as custom
+	 * binding methods like {@code withXxx}, {@code bindXxx} etc.</li>
+	 * </ol>
+	 * <p>
+	 * This method will recursively scan all parent classes up to {@link Object}.
+	 * Returns {@code null} if no matching assignment method can be found.
+	 * </p>
+	 *
+	 * @param targetClass     the target class to scan for compatible assignment method
+	 * @param parameterType   the expected parameter type used for type compatibility matching
+	 * @return the matched single-argument compatible assignment {@link Method},
+	 *         or {@code null} if no eligible method exists
+	 */
+	@Nullable
+	public static Method getCompatibleSetterMethod(Class<?> targetClass, Class<?> parameterType) {
+		Method[] declaredMethods = targetClass.getDeclaredMethods();
+		for (Method method : declaredMethods) {
+			if (method.getParameterCount() != 1) {
+				continue;
+			}
+			Class<?> paramType = method.getParameterTypes()[0];
+			if (paramType.isAssignableFrom(parameterType)) {
+				return method;
+			}
+		}
+
+		Class<?> superClazz = targetClass.getSuperclass();
+		if (superClazz != Object.class && superClazz != null) {
+			return getCompatibleSetterMethod(superClazz, parameterType);
+		}
+		return null;
 	}
 
 	/**
