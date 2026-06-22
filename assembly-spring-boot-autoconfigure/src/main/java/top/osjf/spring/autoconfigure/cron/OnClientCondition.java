@@ -64,7 +64,7 @@ class OnClientCondition extends SourceClassMessageCondition {
                 }
             }
         }
-        catch (BindException ex) {
+        catch (BindException ignored) {
         }
         return ConditionOutcome.noMatch(message.because("unknown or non matched cron client type"));
     }
