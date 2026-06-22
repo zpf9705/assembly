@@ -20,7 +20,7 @@ package top.osjf.cron.datasource.driven.scheduled.mp;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import top.osjf.cron.core.lang.NotNull;
+import top.osjf.commons.lang.NotNull;
 import top.osjf.cron.datasource.driven.scheduled.Constants;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 import top.osjf.generated.mybatisplus.MybatisPlusCodeGenerate;
