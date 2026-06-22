@@ -17,7 +17,7 @@
 
 package top.osjf.cron.driven.scheduled.serverless.local;
 
-import top.osjf.cron.core.util.AssertUtils;
+import top.osjf.commons.util.Assert;
 
 import java.util.concurrent.TimeUnit;
 
@@ -39,8 +39,8 @@ public class Timeout {
      * @param timeUnit the time unit
      */
     public Timeout(long duration, TimeUnit timeUnit) {
-        AssertUtils.assertTrue( duration >= 0, "Duration must be greater than 0");
-        AssertUtils.assertNotNull( timeUnit, "TimeUnit can not be null");
+        Assert.isTrue( duration >= 0, "Duration must be greater than 0");
+        Assert.notNull( timeUnit, "TimeUnit can not be null");
         this.duration = duration;
         this.timeUnit = timeUnit;
     }

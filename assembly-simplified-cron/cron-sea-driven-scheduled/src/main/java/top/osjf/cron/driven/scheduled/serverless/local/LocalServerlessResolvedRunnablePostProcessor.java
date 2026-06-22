@@ -19,9 +19,9 @@ package top.osjf.cron.driven.scheduled.serverless.local;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import top.osjf.cron.core.lang.NotNull;
-import top.osjf.cron.core.util.AssertUtils;
-import top.osjf.cron.core.util.StringUtils;
+import top.osjf.commons.lang.NotNull;
+import top.osjf.commons.util.Assert;
+import top.osjf.commons.util.StringUtils;
 import top.osjf.cron.datasource.driven.scheduled.ResolvedRunnablePostProcessor;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 import top.osjf.cron.driven.scheduled.serverless.DefaultTaskParameterRegistry;
@@ -77,14 +77,14 @@ public class LocalServerlessResolvedRunnablePostProcessor
      *       function jar package.
      */
     public void addTaskFunctionJarFile(String taskId, File functionJarFile) {
-        AssertUtils.assertNotBlank(taskId, "TaskId cannot be blank");
-        AssertUtils.assertNotNull(functionJarFile, "FunctionJarFile cannot be null");
-        AssertUtils.assertTrue(functionJarFile.exists(), "Jar file does not exist: " + functionJarFile);
-        AssertUtils.assertTrue(functionJarFile.isFile(), "Path is not a valid file: " + functionJarFile);
-        AssertUtils.assertTrue(functionJarFile.canRead(), "Jar file cannot be read: " + functionJarFile);
+        Assert.hasText(taskId, "TaskId cannot be blank");
+        Assert.notNull(functionJarFile, "FunctionJarFile cannot be null");
+        Assert.isTrue(functionJarFile.exists(), "Jar file does not exist: " + functionJarFile);
+        Assert.isTrue(functionJarFile.isFile(), "Path is not a valid file: " + functionJarFile);
+        Assert.isTrue(functionJarFile.canRead(), "Jar file cannot be read: " + functionJarFile);
 
         // Verify if it is a valid Jar file (suffix+file header)
-        AssertUtils.assertTrue(isValidJarFile(functionJarFile),
+        Assert.isTrue(isValidJarFile(functionJarFile),
                 "Invalid JAR file, only standard JAR files are supported: " + functionJarFile.getName());
 
         taskFunctionJarFileMapping.put(taskId, functionJarFile);
@@ -121,8 +121,8 @@ public class LocalServerlessResolvedRunnablePostProcessor
      *      is {@literal null}.
      */
     public void addTaskProcessTimeout(String taskId, Timeout processTimeout) {
-        AssertUtils.assertNotBlank(taskId, "TaskId cannot be blank");
-        AssertUtils.assertNotNull(processTimeout, "ProcessTimeout cannot be null");
+        Assert.hasText(taskId, "TaskId cannot be blank");
+        Assert.notNull(processTimeout, "ProcessTimeout cannot be null");
         taskProcessTimeoutMapping.put(taskId, processTimeout);
     }
 
@@ -131,7 +131,7 @@ public class LocalServerlessResolvedRunnablePostProcessor
      * @param defaultFunctionJarFile the default function JAR file
      */
     public void setDefaultFunctionJarFile(File defaultFunctionJarFile) {
-        AssertUtils.assertNotNull(defaultFunctionJarFile, "DefaultFunctionJarFile can not be null");
+        Assert.notNull(defaultFunctionJarFile, "DefaultFunctionJarFile can not be null");
         this.defaultFunctionJarFile = defaultFunctionJarFile;
     }
 
@@ -140,7 +140,7 @@ public class LocalServerlessResolvedRunnablePostProcessor
      * @param defaultProcessTimeout the default timeout object
      */
     public void setDefaultProcessTimeout(Timeout defaultProcessTimeout) {
-        AssertUtils.assertNotNull(defaultProcessTimeout, "DefaultProcessTimeout can not be null");
+        Assert.notNull(defaultProcessTimeout, "DefaultProcessTimeout can not be null");
         this.defaultProcessTimeout = defaultProcessTimeout;
     }
 
@@ -154,8 +154,7 @@ public class LocalServerlessResolvedRunnablePostProcessor
      */
     private File getRequiredFunctionJarFile(String taskId) {
         File functionJarFile = taskFunctionJarFileMapping.getOrDefault(taskId, defaultFunctionJarFile);
-        AssertUtils.assertNotNull(functionJarFile, "Task "+ taskId
-                +" has no executable function jar file");
+        Assert.notNull(functionJarFile, "Task "+ taskId +" has no executable function jar file");
         return functionJarFile;
     }
 
@@ -285,7 +284,7 @@ public class LocalServerlessResolvedRunnablePostProcessor
             String jvmParam = startupParameter.get(Parameter.Type.JVM);
 
             sb.append("java ");
-            if (!StringUtils.isBlank(jvmParam)) {
+            if (StringUtils.isNotBlank(jvmParam)) {
                 sb.append(jvmParam).append(" ");
             }
 
@@ -293,7 +292,7 @@ public class LocalServerlessResolvedRunnablePostProcessor
 
             String applicationParam = startupParameter.get(Parameter.Type.APPLICATION);
 
-            if (!StringUtils.isBlank(applicationParam)) {
+            if (StringUtils.isNotBlank(applicationParam)) {
                 sb.append(applicationParam);
             }
 

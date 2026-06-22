@@ -17,8 +17,8 @@
 
 package top.osjf.cron.driven.scheduled.serverless;
 
-import top.osjf.cron.core.lang.Nullable;
-import top.osjf.cron.core.util.AssertUtils;
+import top.osjf.commons.lang.Nullable;
+import top.osjf.commons.util.Assert;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -47,8 +47,8 @@ public abstract class DefaultTaskParameterRegistry {
      * @param taskParameter task parameter object
      */
     public void registerTaskParameter(String taskId, TaskParameter taskParameter) {
-        AssertUtils.assertNotBlank(taskId, "TaskId cannot be blank");
-        AssertUtils.assertNotNull(taskParameter, "TaskParameter cannot be null");
+        Assert.hasText(taskId, "TaskId cannot be blank");
+        Assert.notNull(taskParameter, "TaskParameter cannot be null");
         taskParameterMapping.put(taskId, taskParameter);
     }
 

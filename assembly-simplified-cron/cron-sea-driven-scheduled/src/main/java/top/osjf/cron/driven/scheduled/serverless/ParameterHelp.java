@@ -17,8 +17,12 @@
 
 package top.osjf.cron.driven.scheduled.serverless;
 
-import top.osjf.cron.core.lang.Nullable;
-import top.osjf.cron.core.util.StringUtils;
+
+import top.osjf.commons.lang.Nullable;
+import top.osjf.commons.util.BeanInstantiationException;
+import top.osjf.commons.util.BeanUtils;
+import top.osjf.commons.util.ReflectionUtils;
+import top.osjf.commons.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -58,7 +62,7 @@ public abstract class ParameterHelp {
 
             Parameter parameter = field.getAnnotation(Parameter.class);
             // Get parameter name: Annotation name>Field name
-            String paramName = !StringUtils.isBlank(parameter.name()) ? parameter.name() : field.getName();
+            String paramName = StringUtils.isNotBlank(parameter.name()) ? parameter.name() : field.getName();
             // Get field values (automatically process private fields)
             Object fieldValue = getFieldValue(field, taskParameter);
 
@@ -123,22 +127,20 @@ public abstract class ParameterHelp {
             }
 
             try {
-                return strategyClass.getDeclaredConstructor().newInstance();
+                return BeanUtils.instantiateClass(strategyClass);
             }
-            catch (Exception ex) {
-                throw new ServerlessException("Failed to instantiate serialization strategy: " + strategyClass.getName(), ex);
+            catch (BeanInstantiationException ex) {
+                throw new ServerlessException(ex.getMessage(), ex);
             }
         });
     }
 
     @Nullable
     private static Object getFieldValue(Field f, TaskParameter taskParameter) {
-        if (!f.isAccessible()) {
-            f.setAccessible(true);
-        }
+        ReflectionUtils.makeAccessible(f);
         try {
-            return f.get(taskParameter);
+            return ReflectionUtils.getField(f, taskParameter);
         }
-        catch (Exception ex) {  throw new ServerlessException("Could not access field: " + f.getName(), ex); }
+        catch (Exception ex) {  throw new ServerlessException(ex.getMessage(), ex); }
     }
 }
