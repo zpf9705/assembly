@@ -212,7 +212,7 @@ public enum ListenerLifecycle {
             Constructor<? extends ListenerContext> constructor
                     = ClassUtils.getConstructorIfAvailable(listenerContextClass, rawClass, RepositoryContext.class);
             if (constructor != null) {
-                return BeanUtils.instantiateClass(constructor, repositoryContext, sourceContext);
+                return BeanUtils.instantiateClass(constructor, sourceContext, repositoryContext);
             }
         }
         Constructor<? extends ListenerContext> constructor =
@@ -221,7 +221,7 @@ public enum ListenerLifecycle {
         Assert.notNull(constructor,
                 "No available Constructor <" + sourceContext.getClass() + "," + repositoryContext.getClass()
                         + "> provided.");
-        return BeanUtils.instantiateClass(constructor, repositoryContext, sourceContext);
+        return BeanUtils.instantiateClass(constructor, sourceContext, repositoryContext);
     }
 
     /**
