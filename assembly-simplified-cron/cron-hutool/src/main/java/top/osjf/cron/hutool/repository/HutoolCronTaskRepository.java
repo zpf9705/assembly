@@ -24,14 +24,14 @@ import cn.hutool.cron.pattern.CronPattern;
 import cn.hutool.cron.task.InvokeTask;
 import cn.hutool.cron.task.RunnableTask;
 import cn.hutool.cron.task.Task;
+import top.osjf.commons.util.StringUtils;
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
-import top.osjf.cron.core.lang.NotNull;
-import top.osjf.cron.core.lang.Nullable;
+import top.osjf.commons.lang.NotNull;
+import top.osjf.commons.lang.Nullable;
 import top.osjf.cron.core.lifecycle.InitializeProperties;
 import top.osjf.cron.core.listener.CronListenerCollector;
 import top.osjf.cron.core.repository.*;
-import top.osjf.cron.core.util.StringUtils;
 import top.osjf.cron.hutool.listener.TaskListenerImpl;
 
 import java.lang.reflect.Method;
@@ -98,7 +98,7 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
     /**
      * @since 1.0.3
      */
-    private final TaskListenerImpl taskListener = new TaskListenerImpl();
+    private final TaskListenerImpl taskListener = new TaskListenerImpl(this);
 
     /**
      * @since 1.0.3
@@ -141,7 +141,7 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
             if (!setTimeZone) {
                 TimeZone zone = DEFAULT_VALUE_OF_TIMEZONE;
                 String zoneID = initializeProperties.getProperty(PROPERTY_NAME_OF_TIMEZONE);
-                if (!StringUtils.isBlank(zoneID)) {
+                if (StringUtils.isNotBlank(zoneID)) {
                     zone = TimeZone.getTimeZone(zoneID);
                 }
                 setTimeZone(zone);
