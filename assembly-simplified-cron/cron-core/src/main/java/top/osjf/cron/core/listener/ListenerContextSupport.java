@@ -17,8 +17,8 @@
 
 package top.osjf.cron.core.listener;
 
-import top.osjf.cron.core.lang.NotNull;
-import top.osjf.cron.core.lang.Nullable;
+import top.osjf.commons.lang.NotNull;
+import top.osjf.commons.lang.Nullable;
 import top.osjf.cron.core.util.ReflectUtils;
 
 import java.lang.reflect.Constructor;
@@ -36,6 +36,7 @@ import java.util.function.Function;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
+@Deprecated
 public abstract class ListenerContextSupport {
 
     private static final Map<String, Function<Object, ListenerContext>> LISTENER_CONTEXT_BUILD_FUC_CACHE
