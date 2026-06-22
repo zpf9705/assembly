@@ -17,7 +17,7 @@
 package top.osjf.cron.core.repository;
 
 import top.osjf.commons.util.Assert;
-import top.osjf.cron.core.util.ReflectUtils;
+import top.osjf.commons.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
 
@@ -96,7 +96,7 @@ public class CronMethodRunnable implements Runnable {
 
     @Override
     public void run() {
-        ReflectUtils.invokeMethod(this.target, this.method);
+        ReflectionUtils.invokeMethod(method, target);
     }
 
     @Override
