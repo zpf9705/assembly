@@ -17,7 +17,10 @@
 
 package top.osjf.cron.core.listener;
 
-import top.osjf.cron.core.lang.Nullable;
+import top.osjf.commons.lang.Nullable;
+import top.osjf.cron.core.repository.DelegatingRepositoryContext;
+import top.osjf.cron.core.repository.Repository;
+import top.osjf.cron.core.repository.RepositoryContext;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -38,6 +41,17 @@ public abstract class CronListenerCollector {
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     private final LinkedList<CronListener> cronListeners = new LinkedList<>();
+
+    private final RepositoryContext repositoryContext;
+
+    /**
+     * @param repository The resource class used for listening to callbacks
+     *                   in {@link ListenerContext}.
+     * @since 3.0.2
+     */
+    public CronListenerCollector(Repository repository) {
+        this.repositoryContext = new DelegatingRepositoryContext(repository);
+    }
 
     /**
      * Add a {@code CronListener} to the listener list if it does not already exist.
@@ -197,7 +211,7 @@ public abstract class CronListenerCollector {
      * @param e             error type object thrown during task execution.
      */
     protected void doFailedListener(Object sourceContext, Throwable e) {
-        doListeners(ListenerLifecycle.FAILED, sourceContext, e);
+        doListeners(ListenerLifecycle.FAILED, sourceContext,  e);
     }
 
     /**
@@ -210,6 +224,6 @@ public abstract class CronListenerCollector {
      * @param e                 error type object thrown during task execution only when failed.
      */
     private void doListeners(ListenerLifecycle listenerLifecycle, Object sourceContext, @Nullable Throwable e) {
-        listenerLifecycle.consumerListeners(sourceContext, e, this);
+        listenerLifecycle.consumerListeners(sourceContext, repositoryContext, e, this);
     }
 }
