@@ -68,6 +68,6 @@ public final class CronTask {
 
     @Override
     public String toString() {
-        return expression + "@" + runnable.toString();
+        return expression + "@" + runnable;
     }
 }

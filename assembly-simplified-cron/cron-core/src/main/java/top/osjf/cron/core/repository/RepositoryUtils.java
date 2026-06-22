@@ -17,10 +17,8 @@
 
 package top.osjf.cron.core.repository;
 
-import top.osjf.commons.util.Assert;
+import top.osjf.commons.lang.Nullable;
 import top.osjf.cron.core.exception.CronInternalException;
-import top.osjf.cron.core.lang.NotNull;
-import top.osjf.cron.core.lang.Nullable;
 
 /**
  * This class is a utility class designed to assist in executing and verifying
@@ -47,15 +45,13 @@ public abstract class RepositoryUtils {
      * which can be used for subsequent updates and deletions.
      * @throws NullPointerException if input register is {@literal null}.
      */
-    @NotNull
-    public static String doRegister(@NotNull Register register,
+    public static String doRegister(Register register,
                                     @Nullable Class<? extends Exception> inValidExpressionExceptionType) {
-        Assert.notNull(register, "Register not be null");
         try {
             return register.register();
         }
-        catch (Exception e) {
-            throw resolveExceptionToRuntime(e, inValidExpressionExceptionType);
+        catch (Exception ex) {
+            throw resolveExceptionToRuntime(ex, inValidExpressionExceptionType);
         }
     }
 
@@ -68,14 +64,13 @@ public abstract class RepositoryUtils {
      *                                       framework validation.
      * @throws NullPointerException if input register is {@literal null}.
      */
-    public static void doVoidInvoke(@NotNull VoidInvoke invoke,
+    public static void doVoidInvoke(VoidInvoke invoke,
                                     @Nullable Class<? extends Exception> inValidExpressionExceptionType) {
-        Assert.notNull(invoke, "VoidInvoke not be null");
         try {
             invoke.invoke();
         }
-        catch (Exception e) {
-            throw resolveExceptionToRuntime(e, inValidExpressionExceptionType);
+        catch (Exception ex) {
+            throw resolveExceptionToRuntime(ex, inValidExpressionExceptionType);
         }
     }
 

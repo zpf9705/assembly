@@ -17,7 +17,7 @@
 
 package top.osjf.cron.core.repository;
 
-import top.osjf.cron.core.lang.Wrapper;
+import top.osjf.commons.lang.Wrapper;
 
 /**
  * This interface is a tagging interface specifically designed to identify
