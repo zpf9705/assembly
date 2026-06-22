@@ -17,7 +17,7 @@
 package top.osjf.cron.datasource.driven.scheduled.redis.config;
 
 
-import top.osjf.cron.core.util.AssertUtils;
+import top.osjf.commons.util.Assert;
 
 /**
  * NOTE: This file has been copied and slightly modified from {com.alibaba.csp.sentinel.datasource.redis}.
@@ -39,7 +39,7 @@ public class RedisHostAndPort {
      * @param port the given port.
      */
     private RedisHostAndPort(String host, int port) {
-        AssertUtils.assertNotNull(host, "host must not be null");
+        Assert.notNull(host, "host must not be null");
 
         this.host = host;
         this.port = port;
@@ -53,7 +53,7 @@ public class RedisHostAndPort {
      * @return the {@link RedisHostAndPort} of {@code host} and {@code port}
      */
     public static RedisHostAndPort of(String host, int port) {
-        AssertUtils.assertTrue(isValidPort(port), String.format("Port out of range: %s", port));
+        Assert.isTrue(isValidPort(port), String.format("Port out of range: %s", port));
         return new RedisHostAndPort(host, port);
     }
 

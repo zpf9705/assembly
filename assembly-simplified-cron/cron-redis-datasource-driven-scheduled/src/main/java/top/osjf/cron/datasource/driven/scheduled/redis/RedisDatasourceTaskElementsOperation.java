@@ -29,9 +29,9 @@ import io.lettuce.core.cluster.pubsub.StatefulRedisClusterPubSubConnection;
 import io.lettuce.core.pubsub.RedisPubSubListener;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.pubsub.api.sync.RedisPubSubCommands;
-import top.osjf.cron.core.lang.NotNull;
-import top.osjf.cron.core.util.AssertUtils;
-import top.osjf.cron.core.util.StringUtils;
+import top.osjf.commons.lang.NotNull;
+import top.osjf.commons.util.Assert;
+import top.osjf.commons.util.StringUtils;
 import top.osjf.cron.datasource.driven.scheduled.redis.config.RedisConnectionConfig;
 import top.osjf.cron.datasource.driven.scheduled.serialization.ConfigFormat;
 import top.osjf.cron.datasource.driven.scheduled.serialization.remote.RemoteDatasourceTaskElementsOperation;
@@ -158,9 +158,9 @@ public class RedisDatasourceTaskElementsOperation extends RemoteDatasourceTaskEl
     public RedisDatasourceTaskElementsOperation(RedisConnectionConfig connectionConfig, String ruleKey,
                                                 String channel, ConfigFormat configFormat) {
         super(configFormat);
-        AssertUtils.assertNotNull(connectionConfig, "Redis connection config can not be null");
-        AssertUtils.assertNotBlank(ruleKey, "Redis ruleKey can not be empty");
-        AssertUtils.assertNotBlank(channel, "Redis subscribe channel can not be empty");
+        Assert.notNull(connectionConfig, "Redis connection config can not be null");
+        Assert.hasText(ruleKey, "Redis ruleKey can not be empty");
+        Assert.hasText(channel, "Redis subscribe channel can not be empty");
         if (connectionConfig.getRedisClusters().isEmpty()) {
             this.redisClient = getRedisClient(connectionConfig);
             this.redisClusterClient = null;
@@ -280,7 +280,7 @@ public class RedisDatasourceTaskElementsOperation extends RemoteDatasourceTaskEl
         if (password != null) {
             redisUriBuilder.withPassword(connectionConfig.getPassword());
         }
-        if (!StringUtils.isBlank(clientName)) {
+        if (StringUtils.isNotBlank(clientName)) {
             redisUriBuilder.withClientName(clientName);
         }
         return RedisClient.create(redisUriBuilder.build());
@@ -296,7 +296,7 @@ public class RedisDatasourceTaskElementsOperation extends RemoteDatasourceTaskEl
         if (password != null) {
             sentinelRedisUriBuilder.withPassword(connectionConfig.getPassword());
         }
-        if (!StringUtils.isBlank(clientName)) {
+        if (StringUtils.isNotBlank(clientName)) {
             sentinelRedisUriBuilder.withClientName(clientName);
         }
         sentinelRedisUriBuilder.withSentinelMasterId(connectionConfig.getRedisSentinelMasterId())

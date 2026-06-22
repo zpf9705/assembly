@@ -16,8 +16,8 @@
 
 package top.osjf.cron.datasource.driven.scheduled.redis.config;
 
-import top.osjf.cron.core.util.AssertUtils;
-import top.osjf.cron.core.util.StringUtils;
+import top.osjf.commons.util.Assert;
+import top.osjf.commons.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -84,8 +84,8 @@ public class RedisConnectionConfig {
      */
     public RedisConnectionConfig(String host, int port, long timeout) {
 
-        AssertUtils.assertNotBlank(host, "Host must not be empty");
-        AssertUtils.assertTrue(timeout >= 0, "Timeout duration must be greater or equal to zero");
+        Assert.hasText(host, "Host must not be empty");
+        Assert.isTrue(timeout >= 0, "Timeout duration must be greater or equal to zero");
 
         setHost(host);
         setPort(port);
@@ -171,7 +171,7 @@ public class RedisConnectionConfig {
      */
     public void setPassword(String password) {
 
-        AssertUtils.assertNotNull(password, "Password must not be null");
+        Assert.notNull(password, "Password must not be null");
         this.password = password.toCharArray();
     }
 
@@ -182,7 +182,7 @@ public class RedisConnectionConfig {
      */
     public void setPassword(char[] password) {
 
-        AssertUtils.assertNotNull(password, "Password must not be null");
+        Assert.notNull(password, "Password must not be null");
         this.password = Arrays.copyOf(password, password.length);
     }
 
@@ -202,8 +202,8 @@ public class RedisConnectionConfig {
      */
     public void setTimeout(Long timeout) {
 
-        AssertUtils.assertNotNull(timeout, "Timeout must not be null");
-        AssertUtils.assertTrue(timeout >= 0, "Timeout must be greater or equal 0");
+        Assert.notNull(timeout, "Timeout must not be null");
+        Assert.isTrue(timeout >= 0, "Timeout must be greater or equal 0");
 
         this.timeout = timeout;
     }
@@ -224,7 +224,7 @@ public class RedisConnectionConfig {
      */
     public void setDatabase(int database) {
 
-        AssertUtils.assertTrue(database >= 0, "Invalid database number: " + database);
+        Assert.isTrue(database >= 0, "Invalid database number: " + database);
 
         this.database = database;
     }
@@ -371,8 +371,8 @@ public class RedisConnectionConfig {
          */
         public static Builder redis(String host, int port) {
 
-            AssertUtils.assertNotBlank(host, "Host must not be empty");
-            AssertUtils.assertTrue(isValidPort(port), String.format("Port out of range: %s", port));
+            Assert.hasText(host, "Host must not be empty");
+            Assert.isTrue(isValidPort(port), String.format("Port out of range: %s", port));
 
             Builder builder = RedisConnectionConfig.builder();
             return builder.withHost(host).withPort(port);
@@ -386,7 +386,7 @@ public class RedisConnectionConfig {
          */
         public static Builder redisSentinel(String host) {
 
-            AssertUtils.assertNotBlank(host, "Host must not be empty");
+            Assert.hasText(host, "Host must not be empty");
 
             Builder builder = RedisConnectionConfig.builder();
             return builder.withRedisSentinel(host);
@@ -401,8 +401,8 @@ public class RedisConnectionConfig {
          */
         public static Builder redisSentinel(String host, int port) {
 
-            AssertUtils.assertNotBlank(host, "Host must not be empty");
-            AssertUtils.assertTrue(isValidPort(port), String.format("Port out of range: %s", port));
+            Assert.hasText(host, "Host must not be empty");
+            Assert.isTrue(isValidPort(port), String.format("Port out of range: %s", port));
 
             Builder builder = RedisConnectionConfig.builder();
             return builder.withRedisSentinel(host, port);
@@ -429,8 +429,8 @@ public class RedisConnectionConfig {
          */
         public static Builder redisSentinel(String host, int port, String masterId) {
 
-            AssertUtils.assertNotBlank(host, "Host must not be empty");
-            AssertUtils.assertTrue(isValidPort(port), String.format("Port out of range: %s", port));
+            Assert.hasText(host, "Host must not be empty");
+            Assert.isTrue(isValidPort(port), String.format("Port out of range: %s", port));
 
             Builder builder = RedisConnectionConfig.builder();
             return builder.withSentinelMasterId(masterId).withRedisSentinel(host, port);
@@ -455,9 +455,9 @@ public class RedisConnectionConfig {
          */
         public Builder withRedisSentinel(String host, int port) {
 
-            AssertUtils.assertTrue(this.host == null, "Cannot use with Redis mode.");
-            AssertUtils.assertNotBlank(host, "Host must not be empty");
-            AssertUtils.assertTrue(isValidPort(port), String.format("Port out of range: %s", port));
+            Assert.isTrue(this.host == null, "Cannot use with Redis mode.");
+            Assert.hasText(host, "Host must not be empty");
+            Assert.isTrue(isValidPort(port), String.format("Port out of range: %s", port));
 
             redisSentinels.add(RedisHostAndPort.of(host, port));
             return this;
@@ -471,7 +471,7 @@ public class RedisConnectionConfig {
          */
         public static Builder redisCluster(String host) {
 
-            AssertUtils.assertNotBlank(host, "Host must not be empty");
+            Assert.hasText(host, "Host must not be empty");
 
             Builder builder = RedisConnectionConfig.builder();
             return builder.withRedisCluster(host);
@@ -486,8 +486,8 @@ public class RedisConnectionConfig {
          */
         public static Builder redisCluster(String host, int port) {
 
-            AssertUtils.assertNotBlank(host, "Host must not be empty");
-            AssertUtils.assertTrue(isValidPort(port), String.format("Port out of range: %s", port));
+            Assert.hasText(host, "Host must not be empty");
+            Assert.isTrue(isValidPort(port), String.format("Port out of range: %s", port));
 
             Builder builder = RedisConnectionConfig.builder();
             return builder.withRedisCluster(host, port);
@@ -512,9 +512,9 @@ public class RedisConnectionConfig {
          */
         public Builder withRedisCluster(String host, int port) {
 
-            AssertUtils.assertTrue(this.host == null, "Cannot use with Redis mode.");
-            AssertUtils.assertNotBlank(host, "Host must not be empty");
-            AssertUtils.assertTrue(isValidPort(port), String.format("Port out of range: %s", port));
+            Assert.isTrue(this.host == null, "Cannot use with Redis mode.");
+            Assert.hasText(host, "Host must not be empty");
+            Assert.isTrue(isValidPort(port), String.format("Port out of range: %s", port));
 
             redisClusters.add(RedisHostAndPort.of(host, port));
             return this;
@@ -528,9 +528,9 @@ public class RedisConnectionConfig {
          */
         public Builder withHost(String host) {
 
-            AssertUtils.assertTrue(this.redisSentinels.isEmpty(),
+            Assert.isTrue(this.redisSentinels.isEmpty(),
                 "Sentinels are non-empty. Cannot use in Sentinel mode.");
-            AssertUtils.assertNotBlank(host, "Host must not be empty");
+            Assert.hasText(host, "Host must not be empty");
 
             this.host = host;
             return this;
@@ -544,8 +544,8 @@ public class RedisConnectionConfig {
          */
         public Builder withPort(int port) {
 
-            AssertUtils.assertTrue(this.host != null, "Host is null. Cannot use in Sentinel mode.");
-            AssertUtils.assertTrue(isValidPort(port), String.format("Port out of range: %s", port));
+            Assert.isTrue(this.host != null, "Host is null. Cannot use in Sentinel mode.");
+            Assert.isTrue(isValidPort(port), String.format("Port out of range: %s", port));
 
             this.port = port;
             return this;
@@ -559,7 +559,7 @@ public class RedisConnectionConfig {
          */
         public Builder withDatabase(int database) {
 
-            AssertUtils.assertTrue(database >= 0, "Invalid database number: " + database);
+            Assert.isTrue(database >= 0, "Invalid database number: " + database);
 
             this.database = database;
             return this;
@@ -573,7 +573,7 @@ public class RedisConnectionConfig {
          */
         public Builder withClientName(String clientName) {
 
-            AssertUtils.assertNotNull(clientName, "Client name must not be null");
+            Assert.hasText(clientName, "Client name must not be null");
 
             this.clientName = clientName;
             return this;
@@ -588,7 +588,7 @@ public class RedisConnectionConfig {
          */
         public Builder withPassword(String password) {
 
-            AssertUtils.assertNotNull(password, "Password must not be null");
+            Assert.notNull(password, "Password must not be null");
 
             return withPassword(password.toCharArray());
         }
@@ -601,7 +601,7 @@ public class RedisConnectionConfig {
          */
         public Builder withPassword(char[] password) {
 
-            AssertUtils.assertNotNull(password, "Password must not be null");
+            Assert.notNull(password, "Password must not be null");
 
             this.password = Arrays.copyOf(password, password.length);
             return this;
@@ -615,7 +615,7 @@ public class RedisConnectionConfig {
          */
         public Builder withTimeout(long timeout) {
 
-            AssertUtils.assertTrue(timeout >= 0, "Timeout must be greater or equal 0");
+            Assert.isTrue(timeout >= 0, "Timeout must be greater or equal 0");
 
             this.timeout = timeout;
             return this;
@@ -629,7 +629,7 @@ public class RedisConnectionConfig {
          */
         public Builder withSentinelMasterId(String sentinelMasterId) {
 
-            AssertUtils.assertNotNull(sentinelMasterId, "Sentinel master id must not empty");
+            Assert.notNull(sentinelMasterId, "Sentinel master id must not empty");
 
             this.redisSentinelMasterId = sentinelMasterId;
             return this;
@@ -654,7 +654,7 @@ public class RedisConnectionConfig {
          */
         public Builder withTrustedCertificatesPath(String trustedCertificatesPath) {
 
-            AssertUtils.assertNotBlank(trustedCertificatesPath, "trusted certificates path must not empty");
+            Assert.hasText(trustedCertificatesPath, "trusted certificates path must not empty");
 
             this.trustedCertificatesPath = trustedCertificatesPath;
             return this;
