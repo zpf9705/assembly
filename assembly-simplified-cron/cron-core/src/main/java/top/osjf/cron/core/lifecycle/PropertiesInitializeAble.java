@@ -19,7 +19,7 @@ package top.osjf.cron.core.lifecycle;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import top.osjf.cron.core.lang.Nullable;
+import top.osjf.commons.lang.Nullable;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
