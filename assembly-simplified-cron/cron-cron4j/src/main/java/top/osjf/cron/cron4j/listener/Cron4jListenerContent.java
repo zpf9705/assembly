@@ -36,6 +36,7 @@ public class Cron4jListenerContent extends AbstractListenerContext implements Li
     /**
      * Creates a {@code Cron4jListenerContent} by given {@code TaskExecutor}.
      * @param taskExecutor the cron4j scheduler listener obj.
+     * @param repositoryContext {@inheritDoc}
      */
     public Cron4jListenerContent(TaskExecutor taskExecutor, RepositoryContext repositoryContext) {
         super(taskExecutor, repositoryContext);
