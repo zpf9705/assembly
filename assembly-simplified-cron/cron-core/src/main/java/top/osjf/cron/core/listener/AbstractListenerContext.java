@@ -38,21 +38,12 @@ public abstract class AbstractListenerContext implements ListenerContext {
 
     /**
      * Create an abstract listener context with specified repository context and source execution context.
-     *
-     * @param repositoryContext task repository operation context
      * @param sourceContext     original business context of the scheduled task trigger
+     * @param repositoryContext task repository operation context
      */
-    public AbstractListenerContext(RepositoryContext repositoryContext, Object sourceContext) {
-        this.repositoryContext = repositoryContext;
+    public AbstractListenerContext(Object sourceContext, RepositoryContext repositoryContext) {
         this.sourceContext = sourceContext;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public RepositoryContext getRepositoryContext() {
-        return repositoryContext;
+        this.repositoryContext = repositoryContext;
     }
 
     /**
@@ -61,5 +52,13 @@ public abstract class AbstractListenerContext implements ListenerContext {
     @Override
     public Object getSourceContext() {
         return sourceContext;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public RepositoryContext getRepositoryContext() {
+        return repositoryContext;
     }
 }
