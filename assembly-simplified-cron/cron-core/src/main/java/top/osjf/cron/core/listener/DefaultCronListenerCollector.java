@@ -17,6 +17,8 @@
 
 package top.osjf.cron.core.listener;
 
+import top.osjf.cron.core.repository.Repository;
+
 /**
  * The default {@link CronListenerCollector} implementation class.
  *
@@ -24,4 +26,12 @@ package top.osjf.cron.core.listener;
  * @since 1.0.3
  */
 public class DefaultCronListenerCollector extends CronListenerCollector {
+    /**
+     * @param repository The resource class used for listening to callbacks
+     *                   in {@link ListenerContext}.
+     * @since 3.0.2
+     */
+    public DefaultCronListenerCollector(Repository repository) {
+        super(repository);
+    }
 }
