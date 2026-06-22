@@ -164,7 +164,7 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
             if (!setTimeZone) {
                 TimeZone timeZone = DEFAULT_VALUE_OF_TIMEZONE;
                 String zoneID = initializeProperties.getProperty(PROPERTY_NAME_OF_TIMEZONE);
-                if (!StringUtils.isBlank(zoneID)) {
+                if (StringUtils.isNotBlank(zoneID)) {
                     timeZone = TimeZone.getTimeZone(zoneID);
                 }
                 setTimeZone(timeZone);
