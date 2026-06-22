@@ -19,7 +19,7 @@ package top.osjf.cron.datasource.driven.scheduled.serialization.remote;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import top.osjf.cron.core.lang.Nullable;
+import top.osjf.commons.lang.Nullable;
 import top.osjf.cron.datasource.driven.scheduled.AbstractDatasourceDrivenScheduled;
 import top.osjf.cron.datasource.driven.scheduled.serialization.ConfigurableTaskElement;
 
