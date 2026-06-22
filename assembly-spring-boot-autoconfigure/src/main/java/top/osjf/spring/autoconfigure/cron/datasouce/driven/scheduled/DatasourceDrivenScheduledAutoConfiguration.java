@@ -26,8 +26,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.type.AnnotationMetadata;
-import top.osjf.cron.core.lang.NotNull;
-import top.osjf.cron.core.util.StringUtils;
+import top.osjf.commons.lang.NotNull;
+import top.osjf.commons.util.StringUtils;
 import top.osjf.cron.datasource.driven.scheduled.*;
 import top.osjf.cron.spring.annotation.DatasourceDrivenScheduledConfiguration;
 import top.osjf.cron.spring.datasource.driven.scheduled.DataSource;
@@ -74,7 +74,7 @@ public class DatasourceDrivenScheduledAutoConfiguration {
         JdkDataSourceConfigLoader loader =
                 new DefaultJdkDataSourceConfigLoader(dataSource, javaxDatasource.getQueryConfigSql());
         String configValueColumnName = javaxDatasource.getConfigValueColumnName();
-        if (!StringUtils.isBlank(configValueColumnName)) {
+        if (StringUtils.isNotBlank(configValueColumnName)) {
             loader.setConfigValueColumnName(configValueColumnName);
         }
         return loader;

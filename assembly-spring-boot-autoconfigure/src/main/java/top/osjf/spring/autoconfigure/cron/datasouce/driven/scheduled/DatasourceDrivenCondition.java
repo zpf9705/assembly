@@ -54,7 +54,7 @@ class DatasourceDrivenCondition extends SourceClassMessageCondition {
             if (specified.get() == required) {
                 return ConditionOutcome.match(message.because(specified.get() + " cron dataSource type"));
             }
-        } catch (BindException ex) {
+        } catch (BindException ignored) {
         }
         return ConditionOutcome.noMatch(message.because("unknown cron dataSource type"));
     }
