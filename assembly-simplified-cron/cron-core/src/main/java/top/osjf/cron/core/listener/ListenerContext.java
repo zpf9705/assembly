@@ -17,7 +17,7 @@
 
 package top.osjf.cron.core.listener;
 
-import top.osjf.cron.core.lang.Wrapper;
+import top.osjf.commons.lang.Wrapper;
 import top.osjf.cron.core.repository.RepositoryContext;
 
 /**
@@ -57,8 +57,8 @@ import top.osjf.cron.core.repository.RepositoryContext;
  * and structure of contextual information to ensure that they can meet the requirements of
  * specific task scenarios.
  *
- * <p>This interface implements {@link Wrapper} and can always perform supervisor
- * conversion. In subsequent usage scenarios, conversion operations can be performed
+ * <p>This interface implements {@link top.osjf.commons.lang.Wrapper} and can always perform
+ * supervisor conversion. In subsequent usage scenarios, conversion operations can be performed
  * based on the current usage type, making it more convenient and accurate to handle.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
@@ -80,12 +80,6 @@ public interface ListenerContext extends Wrapper {
     String getID();
 
     /**
-     * @return
-     * @since 3.0.2
-     */
-    RepositoryContext getRepositoryContext();
-
-    /**
      * Retrieve the original context object used for executing scheduled tasks, referring
      * to the one provided by the framework.
      *
@@ -102,4 +96,20 @@ public interface ListenerContext extends Wrapper {
      * tasks.
      */
     Object getSourceContext();
+
+    /**
+     * Return the repository context for operating scheduled task data storage.
+     *
+     * <p>This context encapsulates various data repository view interfaces of scheduled tasks,
+     * providing capabilities such as task querying, modification, lifecycle management, runtime
+     * statistics, and cron listener registration for business callback logic.
+     *
+     * <p>Through this object, developers can persist task runtime records, modify task execution
+     * rules, query historical execution data and other persistent operations in listener callback
+     * methods.
+     *
+     * @return the repository context instance for scheduled task data manipulation.
+     * @since 3.0.2
+     */
+    RepositoryContext getRepositoryContext();
 }
