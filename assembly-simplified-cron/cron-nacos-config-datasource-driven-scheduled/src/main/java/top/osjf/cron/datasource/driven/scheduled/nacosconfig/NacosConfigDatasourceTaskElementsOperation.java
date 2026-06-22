@@ -24,8 +24,8 @@ import com.alibaba.nacos.api.config.ConfigType;
 import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.common.executor.NameThreadFactory;
-import top.osjf.cron.core.lang.NotNull;
-import top.osjf.cron.core.util.AssertUtils;
+import top.osjf.commons.lang.NotNull;
+import top.osjf.commons.util.Assert;
 import top.osjf.cron.datasource.driven.scheduled.DataSourceDrivenException;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.serialization.ConfigFormat;
@@ -87,9 +87,9 @@ public class NacosConfigDatasourceTaskElementsOperation extends RemoteDatasource
                                                       final String dataId, final ConfigFormat configFormat) {
         super(configFormat);
         this.configType = toNacosConfigType(configFormat);
-        AssertUtils.assertNotBlank(groupId, String.format("Bad argument: groupId=[%s]", groupId));
-        AssertUtils.assertNotBlank(dataId, String.format("Bad argument: dataId=[%s]", dataId));
-        AssertUtils.assertNotNull(properties,
+        Assert.hasText(groupId, String.format("Bad argument: groupId=[%s]", groupId));
+        Assert.hasText(dataId, String.format("Bad argument: dataId=[%s]", dataId));
+        Assert.notNull(properties,
                 "Nacos properties must not be null, you could put some keys from PropertyKeyConst");
         this.groupId = groupId;
         this.dataId = dataId;
@@ -111,7 +111,7 @@ public class NacosConfigDatasourceTaskElementsOperation extends RemoteDatasource
     }
 
     private static Properties buildProperties(String serverAddr) {
-        AssertUtils.assertNotBlank(serverAddr, String.format("Bad argument: serverAddr=[%s]", serverAddr));
+        Assert.hasText(serverAddr, String.format("Bad argument: serverAddr=[%s]", serverAddr));
         Properties properties = new Properties();
         properties.setProperty(PropertyKeyConst.SERVER_ADDR, serverAddr);
         return properties;
