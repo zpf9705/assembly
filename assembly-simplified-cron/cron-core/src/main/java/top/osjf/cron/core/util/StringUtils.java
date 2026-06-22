@@ -22,6 +22,7 @@ package top.osjf.cron.core.util;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
+@Deprecated
 public abstract class StringUtils {
 
     /**

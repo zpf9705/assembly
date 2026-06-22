@@ -31,6 +31,7 @@ import java.util.Set;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
+@Deprecated
 public abstract class ReflectUtils {
 
     private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
