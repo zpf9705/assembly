@@ -29,10 +29,10 @@ import org.springframework.scheduling.support.ScheduledMethodRunnable;
 import org.springframework.util.Assert;
 import org.springframework.util.IdGenerator;
 import org.springframework.util.SimpleIdGenerator;
+import top.osjf.commons.lang.NotNull;
+import top.osjf.commons.lang.Nullable;
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
-import top.osjf.cron.core.lang.NotNull;
-import top.osjf.cron.core.lang.Nullable;
 import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.repository.*;
 import top.osjf.cron.core.util.GsonUtils;
@@ -117,7 +117,8 @@ public class SpringSchedulerTaskRepository
     @Override
     protected ListenableRunnable wrapperRunnableToListenable(Runnable runnable, Trigger trigger) {
         String id = idGenerator.generateId().toString();
-        return new DefaultListenableRunnable(id, runnable, trigger, getCronListenerCollector().getCronListeners());
+        return new DefaultListenableRunnable(id, runnable,
+                trigger, getCronListenerCollector().getCronListeners(), this);
     }
 
     /**

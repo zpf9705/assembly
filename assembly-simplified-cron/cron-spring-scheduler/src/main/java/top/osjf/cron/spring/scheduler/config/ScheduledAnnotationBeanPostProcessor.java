@@ -52,8 +52,8 @@ import org.springframework.scheduling.support.ScheduledMethodRunnable;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.util.StringValueResolver;
-import top.osjf.cron.core.util.ArrayUtils;
-import top.osjf.cron.core.util.AssertUtils;
+import top.osjf.commons.lang.NotNull;
+import top.osjf.commons.util.compat.ArrayUtils;
 import top.osjf.cron.spring.annotation.Cron;
 import top.osjf.cron.spring.annotation.Crones;
 
@@ -181,17 +181,17 @@ public class ScheduledAnnotationBeanPostProcessor
      * @param scheduler the {@link TaskScheduler} instance.
      * @see #DEFAULT_TASK_SCHEDULER_BEAN_NAME
      */
-    public void setScheduler(Object scheduler) {
+    public void setScheduler(@NotNull Object scheduler) {
         this.scheduler = scheduler;
     }
 
     @Override
-    public void setEmbeddedValueResolver(StringValueResolver resolver) {
+    public void setEmbeddedValueResolver(@NotNull StringValueResolver resolver) {
         this.embeddedValueResolver = resolver;
     }
 
     @Override
-    public void setBeanName(String beanName) {
+    public void setBeanName(@NotNull String beanName) {
         this.beanName = beanName;
     }
 
@@ -201,7 +201,7 @@ public class ScheduledAnnotationBeanPostProcessor
      * a {@link #setScheduler scheduler} has to be explicitly configured.
      */
     @Override
-    public void setBeanFactory(BeanFactory beanFactory) {
+    public void setBeanFactory(@NotNull BeanFactory beanFactory) {
         this.beanFactory = beanFactory;
     }
 
@@ -336,16 +336,17 @@ public class ScheduledAnnotationBeanPostProcessor
 
 
     @Override
-    public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName) {
+    public void postProcessMergedBeanDefinition(@NotNull RootBeanDefinition beanDefinition, @NotNull Class<?> beanType,
+                                                @NotNull String beanName) {
     }
 
     @Override
-    public Object postProcessBeforeInitialization(Object bean, String beanName) {
+    public Object postProcessBeforeInitialization(@NotNull Object bean, @NotNull String beanName) {
         return bean;
     }
 
     @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) {
+    public Object postProcessAfterInitialization(@NotNull Object bean, @NotNull String beanName) {
         if (bean instanceof AopInfrastructureBean || bean instanceof TaskScheduler ||
                 bean instanceof ScheduledExecutorService) {
             // Ignore AOP infrastructure such as scoped proxies.
@@ -540,7 +541,7 @@ public class ScheduledAnnotationBeanPostProcessor
      */
     protected void processCrones(Cron cron, Method method, Object bean) {
         String[] profiles = cron.profiles();
-        if (environment != null && !ArrayUtils.isEmpty(profiles)) {
+        if (environment != null && ArrayUtils.isNotEmpty(profiles)) {
             List<String> activeProfiles = Arrays.asList(environment.getActiveProfiles());
             if (Arrays.stream(profiles).noneMatch(activeProfiles::contains)) {
                 logger.info("Could not register method " + method.getName() + " for bean type "
@@ -550,7 +551,7 @@ public class ScheduledAnnotationBeanPostProcessor
         }
         Runnable runnable = createRunnable(bean, method);
         String expression = cron.expression(); // Must not be blank in 3.0.2
-        AssertUtils.assertNotBlank(expression, "Cron expression cannot be blank");
+        Assert.hasText(expression, "Cron expression cannot be blank");
         CronTrigger cronTrigger = new CronTrigger(expression);
         CronTask cronTask = new CronTask(runnable, cronTrigger);
         ScheduledTask scheduledTask = this.registrar.scheduleCronTask(cronTask);
@@ -604,6 +605,7 @@ public class ScheduledAnnotationBeanPostProcessor
      * @since 5.0.2
      */
     @Override
+    @NotNull
     public Set<ScheduledTask> getScheduledTasks() {
         Set<ScheduledTask> result = new LinkedHashSet<>();
         synchronized (this.scheduledTasks) {
@@ -617,7 +619,7 @@ public class ScheduledAnnotationBeanPostProcessor
     }
 
     @Override
-    public void postProcessBeforeDestruction(Object bean, String beanName) {
+    public void postProcessBeforeDestruction(@NotNull Object bean, @NotNull String beanName) {
         Set<ScheduledTask> tasks;
         synchronized (this.scheduledTasks) {
             tasks = this.scheduledTasks.remove(bean);
@@ -630,7 +632,7 @@ public class ScheduledAnnotationBeanPostProcessor
     }
 
     @Override
-    public boolean requiresDestruction(Object bean) {
+    public boolean requiresDestruction(@NotNull Object bean) {
         synchronized (this.scheduledTasks) {
             return this.scheduledTasks.containsKey(bean);
         }
