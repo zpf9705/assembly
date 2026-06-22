@@ -162,6 +162,25 @@ public enum ListenerLifecycle {
      * <li>Make the assignment methods accessible and use reflection to inject the two context objects into the instance.</li>
      * </ol>
      *
+     * For example :
+     * <pre>
+     *     {@code
+     *     public class DefaultListenerContext implements ListenerContext {
+     *
+     *         private final Object sourceContext;
+     *         private final RepositoryContext repositoryContext;
+     *
+     *         public void setSourceContext(Object sourceContext) {
+     *              this.sourceContext = sourceContext;
+     *         }
+     *
+     *         public void setRepositoryContext(RepositoryContext repositoryContext) {
+     *              this.repositoryContext = repositoryContext;
+     *         }
+     *     }
+     *     }
+     * </pre>
+     *
      * @param listenerContextClass target implementation class of {@link ListenerContext}
      * @param sourceContext        source business context to be injected
      * @param repositoryContext    repository context to be injected
@@ -196,6 +215,25 @@ public enum ListenerLifecycle {
      * <li>If not matched, scan all constructors to find one whose parameter types are assignable from the types
      * of the two incoming context objects.</li>
      * </ol>
+     *
+     * For example :
+     * <pre>
+     *     {@code
+     *
+     *     pubic class DefaultSourceContext {}
+     *
+     *     public class DefaultListenerContext extend AbstractListenerContext<DefaultSourceContext> {
+     *
+     *         private final DefaultSourceContext sourceContext;
+     *         private final RepositoryContext repositoryContext;
+     *
+     *         public void DefaultListenerContext(DefaultSourceContext sourceContext, RepositoryContext repositoryContext) {
+     *              this.sourceContext = sourceContext;
+     *              this.repositoryContext = repositoryContext;
+     *         }
+     *     }
+     *     }
+     * </pre>
      *
      * @param listenerContextClass target implementation class of {@link ListenerContext}
      * @param sourceContext        source business context passed as constructor argument
