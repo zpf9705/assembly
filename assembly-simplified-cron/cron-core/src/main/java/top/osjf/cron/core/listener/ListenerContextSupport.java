@@ -35,6 +35,9 @@ import java.util.function.Function;
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
+ * @deprecated
+ * See {@code ListenerLifecycle#createListenerContextByConstructor(Class, Object, RepositoryContext)}
+ * See {@code ListenerLifecycle#createListenerContextBySetMethod(Class, Object, RepositoryContext)}}
  */
 @Deprecated
 public abstract class ListenerContextSupport {
