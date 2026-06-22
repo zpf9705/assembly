@@ -18,7 +18,7 @@
 package top.osjf.cron.datasource.driven.scheduled.jpa;
 
 import org.springframework.data.domain.Example;
-import top.osjf.cron.core.lang.NotNull;
+import top.osjf.commons.lang.NotNull;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.Status;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
