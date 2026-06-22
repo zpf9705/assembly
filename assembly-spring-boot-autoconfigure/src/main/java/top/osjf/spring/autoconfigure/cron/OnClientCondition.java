@@ -27,7 +27,7 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
-import top.osjf.cron.core.util.ArrayUtils;
+import top.osjf.commons.util.compat.ArrayUtils;
 import top.osjf.spring.autoconfigure.SourceClassMessageCondition;
 
 import java.util.Arrays;
@@ -54,7 +54,7 @@ class OnClientCondition extends SourceClassMessageCondition {
                         .fromMap(metadata.getAnnotationAttributes(ConditionalOnClient.class.getCanonicalName()));
                 if (att != null) {
                     ClientType[] clientTypes = (ClientType[]) att.get("value");
-                    if (!ArrayUtils.isEmpty(clientTypes)) {
+                    if (ArrayUtils.isNotEmpty(clientTypes)) {
                         ClientType clientType = specified.get();
                         if (Arrays.binarySearch(clientTypes, clientType) >= 0) {
                             return ConditionOutcome
