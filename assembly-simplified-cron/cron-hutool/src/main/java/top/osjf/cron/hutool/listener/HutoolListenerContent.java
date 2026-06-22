@@ -18,8 +18,10 @@
 package top.osjf.cron.hutool.listener;
 
 import cn.hutool.cron.TaskExecutor;
-import top.osjf.cron.core.lang.NotNull;
+import top.osjf.commons.lang.NotNull;
+import top.osjf.cron.core.listener.AbstractListenerContext;
 import top.osjf.cron.core.listener.ListenerContext;
+import top.osjf.cron.core.repository.RepositoryContext;
 
 /**
  * The listening context object of {@code Hutool}.
@@ -27,29 +29,23 @@ import top.osjf.cron.core.listener.ListenerContext;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public class HutoolListenerContent implements ListenerContext {
+public class HutoolListenerContent extends AbstractListenerContext implements ListenerContext {
 
     private final String id;
-    private final TaskExecutor taskExecutor;
 
     /**
      * Creates a {@code HutoolListenerContent} by given {@code TaskExecutor}.
      * @param taskExecutor the Hutool scheduler listener obj.
+     * @param repositoryContext {@inheritDoc}
      */
-    public HutoolListenerContent(TaskExecutor taskExecutor) {
+    public HutoolListenerContent(TaskExecutor taskExecutor, RepositoryContext repositoryContext) {
+        super(taskExecutor, repositoryContext);
         this.id = String.valueOf(taskExecutor.getCronTask().getId());
-        this.taskExecutor = taskExecutor;
     }
 
     @Override
     @NotNull
     public String getID() {
         return id;
-    }
-
-    @Override
-    @NotNull
-    public Object getSourceContext() {
-        return taskExecutor;
     }
 }

@@ -21,7 +21,9 @@ import cn.hutool.cron.TaskExecutor;
 import cn.hutool.cron.listener.TaskListener;
 import top.osjf.cron.core.listener.CronListenerCollector;
 import top.osjf.cron.core.listener.DefaultCronListenerCollector;
+import top.osjf.cron.core.listener.ListenerContext;
 import top.osjf.cron.core.listener.ListenerContextTypeProvider;
+import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
 
 /**
  * The default Hutool task listener implementation class extends {@link CronListenerCollector}
@@ -32,6 +34,15 @@ import top.osjf.cron.core.listener.ListenerContextTypeProvider;
  */
 @ListenerContextTypeProvider(HutoolListenerContent.class)
 public class TaskListenerImpl extends DefaultCronListenerCollector implements TaskListener {
+    /**
+     * @param repository The resource class used for listening to callbacks
+     *                   in {@link ListenerContext}.
+     * @since 3.0.2
+     */
+    public TaskListenerImpl(HutoolCronTaskRepository repository) {
+        super(repository);
+    }
+
     @Override
     public void onStart(TaskExecutor executor) {
         doStartListener(executor);
