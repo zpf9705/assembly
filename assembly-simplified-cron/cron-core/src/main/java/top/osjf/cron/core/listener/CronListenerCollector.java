@@ -18,9 +18,9 @@
 package top.osjf.cron.core.listener;
 
 import top.osjf.commons.lang.Nullable;
-import top.osjf.cron.core.repository.DelegatingRepositoryContext;
 import top.osjf.cron.core.repository.Repository;
 import top.osjf.cron.core.repository.RepositoryContext;
+import top.osjf.cron.core.repository.TypedRepositoryContext;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -50,7 +50,7 @@ public abstract class CronListenerCollector {
      * @since 3.0.2
      */
     public CronListenerCollector(Repository repository) {
-        this.repositoryContext = new DelegatingRepositoryContext(repository);
+        this.repositoryContext = new TypedRepositoryContext(repository);
     }
 
     /**
