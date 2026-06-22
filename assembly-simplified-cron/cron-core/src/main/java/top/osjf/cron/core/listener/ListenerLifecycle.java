@@ -17,10 +17,7 @@
 package top.osjf.cron.core.listener;
 
 import top.osjf.commons.lang.Nullable;
-import top.osjf.commons.util.Assert;
-import top.osjf.commons.util.BeanUtils;
-import top.osjf.commons.util.ClassUtils;
-import top.osjf.commons.util.ReflectionUtils;
+import top.osjf.commons.util.*;
 import top.osjf.cron.core.repository.RepositoryContext;
 
 import java.lang.reflect.Constructor;
@@ -210,8 +207,10 @@ public enum ListenerLifecycle {
     private static ListenerContext createListenerContextByConstructor(Class<? extends ListenerContext> listenerContextClass,
                                                               Object sourceContext, RepositoryContext repositoryContext) {
         if (AbstractListenerContext.class.isAssignableFrom(listenerContextClass)) {
+            Class<?> rawClass = ResolvableType.forClass(listenerContextClass).getSuperType().getGeneric(0).getRawClass();
+            if (rawClass == null) rawClass = Object.class;
             Constructor<? extends ListenerContext> constructor
-                    = ClassUtils.getConstructorIfAvailable(listenerContextClass, Object.class, RepositoryContext.class);
+                    = ClassUtils.getConstructorIfAvailable(listenerContextClass, rawClass, RepositoryContext.class);
             if (constructor != null) {
                 return BeanUtils.instantiateClass(constructor, repositoryContext, sourceContext);
             }
