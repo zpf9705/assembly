@@ -18,8 +18,10 @@
 package top.osjf.cron.cron4j.listener;
 
 import it.sauronsoftware.cron4j.TaskExecutor;
-import top.osjf.cron.core.lang.NotNull;
+import top.osjf.commons.lang.NotNull;
+import top.osjf.cron.core.listener.AbstractListenerContext;
 import top.osjf.cron.core.listener.ListenerContext;
+import top.osjf.cron.core.repository.RepositoryContext;
 
 /**
  * The listening context object of {@code Cron4j}.
@@ -27,29 +29,22 @@ import top.osjf.cron.core.listener.ListenerContext;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public class Cron4jListenerContent implements ListenerContext {
+public class Cron4jListenerContent extends AbstractListenerContext implements ListenerContext {
 
     private final String id;
-    private final TaskExecutor taskExecutor;
 
     /**
      * Creates a {@code Cron4jListenerContent} by given {@code TaskExecutor}.
      * @param taskExecutor the cron4j scheduler listener obj.
      */
-    public Cron4jListenerContent(TaskExecutor taskExecutor) {
+    public Cron4jListenerContent(TaskExecutor taskExecutor, RepositoryContext repositoryContext) {
+        super(taskExecutor, repositoryContext);
         this.id = String.valueOf(taskExecutor.getTask().getId());
-        this.taskExecutor = taskExecutor;
     }
 
     @Override
     @NotNull
     public String getID() {
         return id;
-    }
-
-    @Override
-    @NotNull
-    public Object getSourceContext() {
-        return taskExecutor;
     }
 }

@@ -21,7 +21,9 @@ import it.sauronsoftware.cron4j.SchedulerListener;
 import it.sauronsoftware.cron4j.TaskExecutor;
 import top.osjf.cron.core.listener.CronListenerCollector;
 import top.osjf.cron.core.listener.DefaultCronListenerCollector;
+import top.osjf.cron.core.listener.ListenerContext;
 import top.osjf.cron.core.listener.ListenerContextTypeProvider;
+import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
 
 /**
  * The default Cron4j task listener implementation class extends {@link CronListenerCollector}
@@ -32,6 +34,15 @@ import top.osjf.cron.core.listener.ListenerContextTypeProvider;
  */
 @ListenerContextTypeProvider(Cron4jListenerContent.class)
 public class SchedulerListenerImpl extends DefaultCronListenerCollector implements SchedulerListener {
+
+    /**
+     * @param repository The resource class used for listening to callbacks
+     *                   in {@link ListenerContext}.
+     * @since 3.0.2
+     */
+    public SchedulerListenerImpl(Cron4jCronTaskRepository repository) {
+        super(repository);
+    }
 
     @Override
     public void taskLaunching(TaskExecutor executor) {

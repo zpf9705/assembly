@@ -76,7 +76,7 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
     /**
      * @since 1.0.3
      */
-    private final SchedulerListenerImpl schedulerListener = new SchedulerListenerImpl();
+    private final SchedulerListenerImpl schedulerListener = new SchedulerListenerImpl(this);
 
     /**
      * The schedule file id prefix.
