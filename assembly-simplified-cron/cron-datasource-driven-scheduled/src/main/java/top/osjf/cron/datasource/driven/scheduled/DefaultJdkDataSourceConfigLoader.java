@@ -18,7 +18,7 @@
 package top.osjf.cron.datasource.driven.scheduled;
 
 import org.intellij.lang.annotations.Language;
-import top.osjf.cron.core.util.AssertUtils;
+import top.osjf.commons.util.Assert;
 
 import javax.annotation.Nullable;
 import javax.sql.DataSource;
@@ -84,8 +84,8 @@ public class DefaultJdkDataSourceConfigLoader implements JdkDataSourceConfigLoad
      * @param queryConfigSql Query sql string, cannot be blank, must contain one '?' placeholder
      */
     public DefaultJdkDataSourceConfigLoader(DataSource dataSource, @Language("SQL") String queryConfigSql) {
-        AssertUtils.assertNotNull(dataSource, "javax.sql.DataSource must not be null");
-        AssertUtils.assertNotBlank(queryConfigSql, "queryConfigSql must not be blank");
+        Assert.notNull(dataSource, "javax.sql.DataSource must not be null");
+        Assert.hasText(queryConfigSql, "queryConfigSql must not be blank");
         this.dataSource = dataSource;
         this.queryConfigSql = queryConfigSql;
     }
@@ -95,7 +95,7 @@ public class DefaultJdkDataSourceConfigLoader implements JdkDataSourceConfigLoad
      */
     @Override
     public void setConfigValueColumnName(String configValueColumnName) {
-        AssertUtils.assertNotBlank(configValueColumnName, "configValueColumnName must not be blank");
+        Assert.hasText(configValueColumnName, "configValueColumnName must not be blank");
         this.configValueColumnName = configValueColumnName;
     }
 

@@ -19,10 +19,10 @@ package top.osjf.cron.datasource.driven.scheduled;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import top.osjf.cron.core.lang.NotNull;
-import top.osjf.cron.core.lang.Nullable;
+import top.osjf.commons.lang.NotNull;
+import top.osjf.commons.lang.Nullable;
+import top.osjf.commons.util.*;
 import top.osjf.cron.core.repository.*;
-import top.osjf.cron.core.util.*;
 
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
@@ -94,7 +94,8 @@ public abstract class AbstractDatasourceDrivenScheduled
      * Based on the {@link Runnable} post processor set parsed from {@link TaskElement}.
      * @since 3.0.2
      */
-    @Nullable private List<ResolvedRunnablePostProcessor> resolvedRunnablePostProcessors;
+    @Nullable
+    private List<ResolvedRunnablePostProcessor> resolvedRunnablePostProcessors;
 
     /**
      * @since 3.0.2
@@ -384,11 +385,11 @@ public abstract class AbstractDatasourceDrivenScheduled
      * @param element the task element.
      */
     private void elementCheck(TaskElement element) {
-        AssertUtils.assertNotBlank(element.getId(), "Bad Element : No unique ID");
-        AssertUtils.assertNotBlank(element.getTaskName(), "Bad Element : No task name");
-        AssertUtils.assertNotBlank(element.getExpression(), "Bad Element : No cron expression");
-        AssertUtils.assertNotNull(element.getUpdateSign(), "Bad Element : No update sign");
-        AssertUtils.assertTrue(element.getUpdateSign() == 0 ||
+        Assert.hasText(element.getId(), "Bad Element : No unique ID");
+        Assert.hasText(element.getTaskName(), "Bad Element : No task name");
+        Assert.hasText(element.getExpression(), "Bad Element : No cron expression");
+        Assert.notNull(element.getUpdateSign(), "Bad Element : No update sign");
+        Assert.isTrue(element.getUpdateSign() == 0 ||
                 element.getUpdateSign() == 1, "Bad Element : update sign can only be 0 or 1");
     }
 
@@ -613,8 +614,8 @@ public abstract class AbstractDatasourceDrivenScheduled
     @NotNull
     protected Runnable resolveTaskRunnable(TaskElement element) {
         String taskName = element.getTaskName();
-        String[] sp = taskName.split("@"); /*class.name()@method.name()*/
-        if (sp.length != 2) {
+        String[] nameArray = taskName.split("@"); /*class.name()@method.name()*/
+        if (nameArray.length != 2) {
             debug("{} does not comply with parsing rules [class's qualified name @ method name]", taskName);
             throw new DataSourceDrivenException(taskName + " does not comply with parsing rules " +
                     "[class's qualified name @ method name].");
@@ -622,9 +623,9 @@ public abstract class AbstractDatasourceDrivenScheduled
         Object target;
         Method targetMethod;
         try {
-            Class<?> clazz = ClassUtils.forName(sp[0]);
-            target = ReflectUtils.newInstance(clazz);
-            targetMethod = ReflectUtils.getMethod(clazz, sp[1]);
+            Class<?> clazz = ClassUtils.forName(nameArray[0], getClass().getClassLoader());
+            target = BeanUtils.instantiateClass(clazz);
+            targetMethod = ClassUtils.getMethod(clazz, nameArray[1]);
         }
         catch (Exception ex) {
             debug("Failed to resolve task [" + element.getId() + "] to runnable.", ex);

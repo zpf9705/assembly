@@ -17,9 +17,9 @@
 
 package top.osjf.cron.datasource.driven.scheduled;
 
-import top.osjf.cron.core.lang.Nullable;
+import top.osjf.commons.lang.Nullable;
+import top.osjf.commons.util.StringUtils;
 import top.osjf.cron.core.repository.CronTaskRepository;
-import top.osjf.cron.core.util.StringUtils;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -192,7 +192,7 @@ public interface TaskElement extends Serializable {
      */
     default boolean noActive() {
         String status = getStatus();
-        return !StringUtils.isBlank(status) && Status.isStatus(status) && Status.valueOf(status) != Status.ACTIVE;
+        return StringUtils.isNotBlank(status) && Status.isStatus(status) && Status.valueOf(status) != Status.ACTIVE;
     }
 
     /**
