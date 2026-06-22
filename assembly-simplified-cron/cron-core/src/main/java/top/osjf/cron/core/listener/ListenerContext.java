@@ -18,6 +18,7 @@
 package top.osjf.cron.core.listener;
 
 import top.osjf.cron.core.lang.Wrapper;
+import top.osjf.cron.core.repository.RepositoryContext;
 
 /**
  * The information interface for callback during the scheduled task execution phase
@@ -77,6 +78,12 @@ public interface ListenerContext extends Wrapper {
      * @return The unique identifier of a scheduled task, usually a string.
      */
     String getID();
+
+    /**
+     * @return
+     * @since 3.0.2
+     */
+    RepositoryContext getRepositoryContext();
 
     /**
      * Retrieve the original context object used for executing scheduled tasks, referring
