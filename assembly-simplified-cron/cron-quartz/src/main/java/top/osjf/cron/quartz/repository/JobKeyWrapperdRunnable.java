@@ -18,7 +18,7 @@
 package top.osjf.cron.quartz.repository;
 
 import org.quartz.JobKey;
-import top.osjf.cron.core.lang.NotNull;
+import top.osjf.commons.lang.NotNull;
 import top.osjf.cron.core.repository.CronMethodRunnable;
 
 import java.lang.reflect.Method;

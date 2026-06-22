@@ -19,7 +19,7 @@ package top.osjf.cron.quartz.repository;
 
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
-import top.osjf.cron.core.lang.NotNull;
+import top.osjf.commons.lang.NotNull;
 
 /**
  * {@code RunnableJob} is an implementation class that encapsulates a

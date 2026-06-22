@@ -18,8 +18,10 @@
 package top.osjf.cron.quartz.listener;
 
 import org.quartz.JobExecutionContext;
-import top.osjf.cron.core.lang.NotNull;
+import top.osjf.commons.lang.NotNull;
+import top.osjf.cron.core.listener.AbstractListenerContext;
 import top.osjf.cron.core.listener.ListenerContext;
+import top.osjf.cron.core.repository.RepositoryContext;
 import top.osjf.cron.quartz.repository.JobConstants;
 
 /**
@@ -28,29 +30,22 @@ import top.osjf.cron.quartz.repository.JobConstants;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public class QuartzListenerContent implements ListenerContext {
+public class QuartzListenerContent extends AbstractListenerContext implements ListenerContext {
 
     private final String id;
-    private final JobExecutionContext context;
 
     /**
      * Creates a {@code QuartzListenerContent} by given {@code TaskExecutor}.
      * @param context the Quartz scheduler listener obj.
      */
-    public QuartzListenerContent(JobExecutionContext context) {
+    public QuartzListenerContent(JobExecutionContext context, RepositoryContext repositoryContext) {
+        super(context, repositoryContext);
         this.id = (String) context.getJobDetail().getJobDataMap().get(JobConstants.ID_PROPERTY);
-        this.context = context;
     }
 
     @Override
     @NotNull
     public String getID() {
         return id;
-    }
-
-    @Override
-    @NotNull
-    public Object getSourceContext() {
-        return context;
     }
 }

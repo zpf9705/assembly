@@ -22,7 +22,9 @@ import org.quartz.JobExecutionException;
 import org.quartz.JobListener;
 import top.osjf.cron.core.listener.CronListenerCollector;
 import top.osjf.cron.core.listener.DefaultCronListenerCollector;
+import top.osjf.cron.core.listener.ListenerContext;
 import top.osjf.cron.core.listener.ListenerContextTypeProvider;
+import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
 
 /**
  * The default Quartz task listener implementation class extends {@link CronListenerCollector}
@@ -33,6 +35,15 @@ import top.osjf.cron.core.listener.ListenerContextTypeProvider;
  */
 @ListenerContextTypeProvider(QuartzListenerContent.class)
 public class JobListenerImpl extends DefaultCronListenerCollector implements JobListener {
+    /**
+     * @param repository The resource class used for listening to callbacks
+     *                   in {@link ListenerContext}.
+     * @since 3.0.2
+     */
+    public JobListenerImpl(QuartzCronTaskRepository repository) {
+        super(repository);
+    }
+
     @Override
     public String getName() {
         return this.getClass().getName();

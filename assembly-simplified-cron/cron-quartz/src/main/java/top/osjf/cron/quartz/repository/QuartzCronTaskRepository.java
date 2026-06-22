@@ -22,8 +22,8 @@ import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.simpl.SimpleThreadPool;
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
-import top.osjf.cron.core.lang.NotNull;
-import top.osjf.cron.core.lang.Nullable;
+import top.osjf.commons.lang.NotNull;
+import top.osjf.commons.lang.Nullable;
 import top.osjf.cron.core.lifecycle.InitializeProperties;
 import top.osjf.cron.core.listener.CronListenerCollector;
 import top.osjf.cron.core.repository.*;
@@ -91,7 +91,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
     /**
      * @since 1.0.3
      */
-    private final JobListenerImpl jobListener = new JobListenerImpl();
+    private final JobListenerImpl jobListener = new JobListenerImpl(this);
 
     /**
      * @since 1.0.3
