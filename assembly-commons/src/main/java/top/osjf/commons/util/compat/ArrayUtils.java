@@ -1,4 +1,4 @@
-package top.osjf.commons.util.array;
+package top.osjf.commons.util.compat;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
