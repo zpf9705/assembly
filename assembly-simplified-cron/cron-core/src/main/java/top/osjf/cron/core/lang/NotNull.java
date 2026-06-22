@@ -28,11 +28,13 @@ import java.lang.annotation.*;
  *
  * <p>Should be used at parameter, return value, and field level. Method overrides should
  * repeat parent {@code @NotNull} annotations unless they behave differently.
+ * @deprecated See {@link top.osjf.commons.lang.NotNull}
  */
 @Target({ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Nonnull
 @TypeQualifierNickname
+@Deprecated
 public @interface NotNull {
 }

@@ -30,7 +30,9 @@ package top.osjf.cron.core.lang;
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
+ * @deprecated See {@link top.osjf.commons.lang.Wrapper}
  */
+@Deprecated
 public interface Wrapper {
 
     /**

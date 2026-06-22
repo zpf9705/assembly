@@ -30,11 +30,13 @@ import java.lang.annotation.*;
  *
  * <p>Should be used at parameter, return value, and field level. Methods override should
  * repeat parent {@code @CanNull} annotations unless they behave differently.
+ * @deprecated See {@link top.osjf.commons.lang.Nullable}
  */
 @Target({ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Nonnull(when = When.MAYBE)
 @TypeQualifierNickname
+@Deprecated
 public @interface Nullable {
 }
