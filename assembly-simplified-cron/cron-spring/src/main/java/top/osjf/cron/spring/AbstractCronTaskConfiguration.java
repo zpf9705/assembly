@@ -20,8 +20,8 @@ package top.osjf.cron.spring;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportAware;
 import org.springframework.core.type.AnnotationMetadata;
-import top.osjf.cron.core.lang.NotNull;
-import top.osjf.cron.core.lang.Nullable;
+import top.osjf.commons.lang.NotNull;
+import top.osjf.commons.lang.Nullable;
 import top.osjf.cron.core.lifecycle.InitializeProperties;
 
 import java.lang.annotation.Annotation;

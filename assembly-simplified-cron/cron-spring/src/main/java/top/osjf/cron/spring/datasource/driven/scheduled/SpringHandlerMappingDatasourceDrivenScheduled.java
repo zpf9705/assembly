@@ -25,8 +25,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import top.osjf.commons.util.ClassUtils;
 import top.osjf.cron.core.repository.CronTaskRepository;
-import top.osjf.cron.core.util.ReflectUtils;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
 
 /**
@@ -79,7 +79,7 @@ public class SpringHandlerMappingDatasourceDrivenScheduled
                         .methods(RequestMethod.POST)
                         .params()
                         .build(), this,
-                ReflectUtils.getMethod(this.getClass(), "run"));
+                ClassUtils.getMethod(this.getClass(), "run"));
     }
 
     /**

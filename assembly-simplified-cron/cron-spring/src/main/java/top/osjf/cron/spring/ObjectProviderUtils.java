@@ -18,7 +18,7 @@
 package top.osjf.cron.spring;
 
 import org.springframework.beans.factory.ObjectProvider;
-import top.osjf.cron.core.lang.Nullable;
+import top.osjf.commons.lang.Nullable;
 
 /**
  * Simple {@link ObjectProvider} related tool classes.

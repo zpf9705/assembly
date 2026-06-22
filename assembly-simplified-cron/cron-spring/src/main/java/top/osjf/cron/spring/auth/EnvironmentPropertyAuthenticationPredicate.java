@@ -18,7 +18,7 @@
 package top.osjf.cron.spring.auth;
 
 import org.springframework.core.env.Environment;
-import top.osjf.cron.core.lang.NotNull;
+import top.osjf.commons.lang.NotNull;
 
 import java.util.Objects;
 

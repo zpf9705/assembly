@@ -20,9 +20,8 @@ package top.osjf.cron.spring.auth;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.context.request.WebRequestInterceptor;
-import top.osjf.cron.core.lang.NotNull;
-
-import javax.annotation.Nullable;
+import top.osjf.commons.lang.NotNull;
+import top.osjf.commons.lang.Nullable;
 
 /**
  * Authentication interceptor interface, used to execute authentication logic at different

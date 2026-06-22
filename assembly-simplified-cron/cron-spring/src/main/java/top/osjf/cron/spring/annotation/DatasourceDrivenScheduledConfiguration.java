@@ -21,7 +21,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
-import top.osjf.cron.core.lang.NotNull;
+import top.osjf.commons.lang.NotNull;
 import top.osjf.cron.spring.datasource.driven.scheduled.*;
 
 import java.util.ArrayList;

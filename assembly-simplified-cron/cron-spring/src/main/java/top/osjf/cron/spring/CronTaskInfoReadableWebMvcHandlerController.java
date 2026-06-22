@@ -23,10 +23,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import top.osjf.commons.util.ClassUtils;
+import top.osjf.commons.util.CollectionUtils;
 import top.osjf.cron.core.repository.CronTaskInfo;
 import top.osjf.cron.core.repository.CronTaskRepository;
-import top.osjf.cron.core.util.CollectionUtils;
-import top.osjf.cron.core.util.ReflectUtils;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -64,7 +64,7 @@ public class CronTaskInfoReadableWebMvcHandlerController
     /**
      * View processing method for querying all registered task information.
      */
-    private final Method getCronTaskListHandlerMethod = ReflectUtils.getMethod(this.getClass(), "get");
+    private final Method getCronTaskListHandlerMethod = ClassUtils.getMethod(this.getClass(), "get");
 
     /**
      * The repository used to access and manipulate the storage of Cron task information.

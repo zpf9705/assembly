@@ -37,15 +37,14 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
+import org.springframework.util.StringUtils;
+import top.osjf.commons.util.compat.ArrayUtils;
 import top.osjf.cron.core.lifecycle.Lifecycle;
 import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.repository.CronMethodRunnable;
 import top.osjf.cron.core.repository.CronTask;
 import top.osjf.cron.core.repository.CronTaskRegistrar;
 import top.osjf.cron.core.repository.CronTaskRepository;
-import top.osjf.cron.core.util.ArrayUtils;
-import top.osjf.cron.core.util.AssertUtils;
 import top.osjf.cron.spring.annotation.Cron;
 import top.osjf.cron.spring.annotation.Crones;
 
@@ -97,14 +96,6 @@ public class CronAnnotationPostProcessor implements ApplicationContextAware,
     private final Set<Class<?>> nonAnnotatedClasses = Collections.newSetFromMap(new ConcurrentHashMap<>(16));
 
     private final Set<CronTaskRegistrar> cronTasks = Collections.newSetFromMap(new ConcurrentHashMap<>(16));
-
-    @Deprecated
-    private static final boolean isCron4j;
-
-    static {
-        isCron4j = ClassUtils.isPresent("top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository",
-                CronAnnotationPostProcessor.class.getClassLoader());
-    }
 
     @Override
     public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
@@ -180,7 +171,7 @@ public class CronAnnotationPostProcessor implements ApplicationContextAware,
     protected void processCron(Cron cron, Method method, Object bean) {
         CronMethodRunnable runnable = createRunnable(bean, method);
         String expression = cron.expression(); // Must not be blank in 3.0.2
-        AssertUtils.assertNotBlank(expression, "Cron expression cannot be blank");
+        Assert.hasText(expression, "Cron expression cannot be blank");
         String[] profiles = cron.profiles();
         synchronized (this.cronTasks) {
             //No environment specified or specified environment adapted
@@ -245,6 +236,6 @@ public class CronAnnotationPostProcessor implements ApplicationContextAware,
         int size = beansOfType.size();
         Assert.state(size == 1,
                 "expected single matching bean but found " + size + ": " +
-                        org.springframework.util.StringUtils.collectionToCommaDelimitedString(beansOfType.keySet()));
+                        StringUtils.collectionToCommaDelimitedString(beansOfType.keySet()));
     }
 }

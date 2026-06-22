@@ -17,7 +17,7 @@
 
 package top.osjf.cron.spring;
 
-import top.osjf.cron.core.lang.Nullable;
+import top.osjf.commons.lang.Nullable;
 import top.osjf.cron.core.lifecycle.InitializeProperties;
 
 /**
