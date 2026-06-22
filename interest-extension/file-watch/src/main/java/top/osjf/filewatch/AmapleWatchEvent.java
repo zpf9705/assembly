@@ -47,7 +47,7 @@ public class AmapleWatchEvent implements WatchEvent<Path> {
      */
     public AmapleWatchEvent(Path parent, WatchEvent<Path> original) {
         this.parent = requireNonNull(parent, "parent");
-        this.original = requireNonNull(original, "original");;
+        this.original = requireNonNull(original, "original");
     }
     /**
      * Gets parent directory of the event
