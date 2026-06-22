@@ -144,4 +144,22 @@ public interface CronListener {
      *                  failure information.
      */
     default void failedWithId(String id, Throwable exception) { }
+
+    /**
+     * Fallback callback executed when the {@link #failed(ListenerContext, Throwable)} method itself throws
+     * an exception.
+     * <p>
+     * This is the final safety barrier to avoid the original task failure being concealed or lost due to
+     * runtime exceptions within the normal failure callback logic.
+     * <p>
+     * To guarantee the highest execution success rate of this fallback method, only the exception object
+     * is passed in, without relying on any business context objects that may be abnormal or uninitialized.
+     * It is strongly recommended to only implement lightweight logic such as error log recording and emergency
+     * operation alerts, and avoid heavy operations including database writing, remote RPC calls and complex
+     * business processing.
+     *
+     * @param exception the exception thrown during the execution of the {@code failed} callback method
+     * @since 3.0.2
+     */
+    default void failedFallback(Throwable exception) { }
 }
