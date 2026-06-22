@@ -34,7 +34,7 @@ public abstract class AbstractCronListenerRepository
         extends AbstractLifecycleRepository implements CronListenerRepository {
 
     /** Scheduling listener manager.*/
-    private final CronListenerCollector listenerCollector = new DefaultCronListenerCollector();
+    private final CronListenerCollector listenerCollector = new DefaultCronListenerCollector(this);
 
     /**
      * {@inheritDoc}
