@@ -183,9 +183,9 @@ public enum ListenerLifecycle {
         Method repositoryContextMd = ClassUtils.getCompatibleSetterMethod(listenerContextClass, repositoryContext.getClass());
         Assert.notNull(repositoryContextMd, "No available compatible " + repositoryContext.getClass() + " setter method");
         ReflectionUtils.makeAccessible(sourceContextMd);
-        ReflectionUtils.invokeMethod(sourceContextMd, listenerContext);
+        ReflectionUtils.invokeMethod(sourceContextMd, listenerContext, sourceContext);
         ReflectionUtils.makeAccessible(repositoryContextMd);
-        ReflectionUtils.invokeMethod(repositoryContextMd, listenerContext);
+        ReflectionUtils.invokeMethod(repositoryContextMd, listenerContext, repositoryContext);
         return listenerContext;
     }
 
