@@ -14,9 +14,5 @@
  * limitations under the License.
  */
 
-@NonNullApi
-@NonNullFields
 package top.osjf.cron.datasource.driven.scheduled.external.file;
 
-import top.osjf.cron.core.lang.NonNullApi;
-import top.osjf.cron.core.lang.NonNullFields;
