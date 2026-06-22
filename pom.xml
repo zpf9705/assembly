@@ -40,6 +40,7 @@
         <module>assembly-spring-boot-autoconfigure</module>
         <module>assembly-simplified-all</module>
         <module>interest-extension</module>
+        <module>assembly-commons</module>
     </modules>
 
 
@@ -145,6 +146,13 @@
             <dependency>
                 <groupId>top.osjf.spring.optimize</groupId>
                 <artifactId>spring-aware</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Commons support -->
+            <dependency>
+                <groupId>top.osjf.commons</groupId>
+                <artifactId>assembly-commons</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
