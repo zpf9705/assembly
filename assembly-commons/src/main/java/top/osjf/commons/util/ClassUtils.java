@@ -1180,7 +1180,7 @@ public abstract class ClassUtils {
 				continue;
 			}
 			Class<?> paramType = method.getParameterTypes()[0];
-			if (paramType.isAssignableFrom(parameterType)) {
+			if (paramType != Object.class && paramType.isAssignableFrom(parameterType)) {
 				return method;
 			}
 		}
