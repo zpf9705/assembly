@@ -63,17 +63,24 @@ public enum ListenerLifecycle {
     }
 
     /**
-     * Perform phased execution on the provided {@link ListenerConsumer} based on the current enumerated
-     * {@link CronListener} behavior.
+     * Entry method for consuming all cron listeners, responsible for initializing task global context,
+     * binding context to current thread via {@code ThreadLocal}, and safely invoking the listener consumption
+     * logic.
+     * <p>
+     * Execution process:
+     * <ol>
+     * <li>Create lifecycle wrapper to record current listener execution lifecycle state;</li>
+     * <li>Initialize {@link ListenerContext} only when the lifecycle is {@code START}, bind it to thread local
+     * storage;</li>
+     * <li>Obtain context from thread local and execute listener consumption logic;</li>
+     * <li>Clear thread local context in finally block to avoid thread pool context pollution and memory leaks,
+     * only executed when the lifecycle reaches the final stage.</li>
+     * </ol>
      *
-     * <p>{@link ListenerContext} will only be created when the state is {@link #START}, and then
-     * retained until {@link #SUCCESS} or {@link #FAILED} is used up before being deleted.
-     *
-     * @param sourceContext     the original context object provided by the framework used
-     *                          for executing scheduled tasks.
-     * @param repositoryContext the context object for operating task resources.
-     * @param e                 error type object thrown during task execution only when failed.
-     * @param collector         manage instance objects for listeners.
+     * @param sourceContext     Custom business source context passed by the caller
+     * @param repositoryContext Data repository operation context for cron task persistence
+     * @param e                 Exception thrown during task execution, {@code null} if the task runs successfully
+     * @param collector         Cron listener manager collector, used to filter and group registered listeners
      */
     void consumerListeners(Object sourceContext, RepositoryContext repositoryContext, @Nullable Throwable e,
                            CronListenerCollector collector) {
@@ -85,53 +92,8 @@ public enum ListenerLifecycle {
         }
         ListenerContext listenerContext = CONTEXT_LOCAL.get();
         if (listenerContext != null) {
-
             try {
-                if (!(listenerContext instanceof ListenerErrorContext)) {
-                    for (CronListener cronListener : collector.newQueryBuilder().async().build()) {
-                        ((AsyncCronListener) cronListener).get()
-                                .execute(() -> consumer.accept(cronListener, listenerContext, e));
-                    }
-                }
-
-                if (!(listenerContext instanceof ListenerErrorContext)) {
-                    for (CronListener cronListener : collector.getCronListeners()) {
-                        try {
-                            consumer.accept(cronListener, listenerContext, e);
-                        }
-                        catch (Throwable ex) {
-                            if (lifecycleWrapper.matchLifecycle(SUCCESS)) {
-                                lifecycleWrapper.notAllow();
-                            }
-                            CONTEXT_LOCAL.set(new DefaultListenerErrorContext(listenerContext, this,
-                                    cronListener));
-                            throw ex;
-                        }
-                    }
-                }
-                else {
-                    CronListener errorCronListener = ((ListenerErrorContext) listenerContext).getErrorCronListener();
-                    if (errorCronListener.getListenerErrorPropagateStrategy() == ListenerErrorPropagateStrategy.ISOLATE)
-                    {
-                        try {
-                            errorCronListener.failed(listenerContext, e);
-                        }
-                        catch (Throwable ex) {
-                            errorCronListener.failedFallback(ex);
-                        }
-                    }
-                    else {
-                        for (CronListener propagateCronListener : collector.newQueryBuilder().sync().propagate().build())
-                        {
-                            try {
-                                propagateCronListener.failed(listenerContext, e);
-                            }
-                            catch (Throwable ex) {
-                                errorCronListener.failedFallback(ex);
-                            }
-                        }
-                    }
-                }
+                consumerListeners(lifecycleWrapper, listenerContext, e, collector);
             }
             finally {
                 if (lifecycleWrapper.matchFinally()) {
@@ -142,9 +104,91 @@ public enum ListenerLifecycle {
     }
 
     /**
+     * Consume and execute all registered cron listeners according to different context types and lifecycle rules.
+     * <p>
+     * Execution branch description:
+     * <ol>
+     * <li>If the incoming context is NOT {@link ListenerErrorContext}:
+     *     <ul>
+     *         <li>First submit all {@link AsyncCronListener} to their own thread pool for asynchronous execution;
+     *         </li>
+     *         <li>Then execute all registered cron listeners synchronously, capture runtime exceptions,
+     *         wrap the exception scene into {@link ListenerErrorContext} and rethrow the exception;</li>
+     *     </ul>
+     * </li>
+     * <li>If the incoming context IS {@link ListenerErrorContext} (single listener local execution exception):
+     *     <ul>
+     *         <li>For ISOLATE strategy listener: only execute its own {@code failed} callback, trigger
+     *         {@code failedFallback} when exception occurs;</li>
+     *         <li>For PROPAGATE strategy listener: broadcast the failed event to all synchronous propagate-type
+     *         listeners;</li>
+     *     </ul>
+     * </li>
+     * </ol>
+     *
+     * @param lifecycleWrapper  the packaging auxiliary object for execution cycle, used to mark and restrict current
+     *                         lifecycle execution status
+     * @param listenerContext   the given listening context object, can be global {@link ListenerContext} or single
+     *                          listener error {@link ListenerErrorContext}
+     * @param e                 the exception object that occurred in the task or listener step, nullable if executed
+     *                         successfully
+     * @param collector         the manage instance objects for listeners, used to filter and obtain different groups
+     *                         of cron listeners
+     */
+    void consumerListeners(ListenerLifecycleWrapper lifecycleWrapper,
+                           ListenerContext listenerContext, @Nullable Throwable e, CronListenerCollector collector) {
+
+        if (!(listenerContext instanceof ListenerErrorContext)) {
+            for (CronListener cronListener : collector.newQueryBuilder().async().build()) {
+                ((AsyncCronListener) cronListener).get()
+                        .execute(() -> consumer.accept(cronListener, listenerContext, e));
+            }
+        }
+
+        if (!(listenerContext instanceof ListenerErrorContext)) {
+            for (CronListener cronListener : collector.getCronListeners()) {
+                try {
+                    consumer.accept(cronListener, listenerContext, e);
+                }
+                catch (Throwable ex) {
+                    if (lifecycleWrapper.matchLifecycle(SUCCESS)) {
+                        lifecycleWrapper.notAllow();
+                    }
+                    CONTEXT_LOCAL.set(new DefaultListenerErrorContext(listenerContext, this,
+                            cronListener));
+                    throw ex;
+                }
+            }
+        }
+        else {
+            CronListener errorCronListener = ((ListenerErrorContext) listenerContext).getErrorCronListener();
+            if (errorCronListener.getListenerErrorPropagateStrategy() == ListenerErrorPropagateStrategy.ISOLATE)
+            {
+                try {
+                    errorCronListener.failed(listenerContext, e);
+                }
+                catch (Throwable ex) {
+                    errorCronListener.failedFallback(ex);
+                }
+            }
+            else {
+                for (CronListener propagateCronListener : collector.newQueryBuilder().sync().propagate().build())
+                {
+                    try {
+                        propagateCronListener.failed(listenerContext, e);
+                    }
+                    catch (Throwable ex) {
+                        errorCronListener.failedFallback(ex);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * The help {@link ListenerLifecycle} wrapper class.
      */
-    static class ListenerLifecycleWrapper {
+    protected static class ListenerLifecycleWrapper {
 
         ListenerLifecycle lifecycle;
 
