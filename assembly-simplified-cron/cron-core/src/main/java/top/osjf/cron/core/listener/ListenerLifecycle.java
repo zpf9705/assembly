@@ -115,7 +115,8 @@ public enum ListenerLifecycle {
      * @param collector               the cron listener collector used to filter asynchronous, synchronous and
      *                                error-propagate listeners
      */
-    void consumerListeners(Supplier<ListenerContext> listenerContextSupplier, @Nullable Throwable e, CronListenerCollector collector) {
+    void consumerListeners(Supplier<ListenerContext> listenerContextSupplier, @Nullable Throwable e,
+                           CronListenerCollector collector) {
 
         ListenerLifecycleWrapper lifecycleWrapper = new ListenerLifecycleWrapper(this);
         if (lifecycleWrapper.matchLifecycle(START)) {
@@ -126,42 +127,57 @@ public enum ListenerLifecycle {
         ListenerContext listenerContext = CONTEXT_LOCAL.get();
         if (listenerContext != null) {
 
-            if (!(listenerContext instanceof ListenerErrorContext)) {
-                for (CronListener cronListener : collector.newQueryBuilder().async().build()) {
-                    ((AsyncCronListener) cronListener).get()
-                            .execute(() -> consumer.accept(cronListener, listenerContext, e));
+            try {
+                // When the isolation strategy is in effect, the event is directly terminated and not
+                // propagated outward. Only the current listener consumes this abnormal event
+                if (!(listenerContext instanceof ListenerErrorContext)) {
+                    for (CronListener cronListener : collector.newQueryBuilder().async().sort().build()) {
+                        ((AsyncCronListener) cronListener).get()
+                                .execute(() -> consumer.accept(cronListener, listenerContext, e));
+                    }
                 }
-            }
 
-            if (!(listenerContext instanceof ListenerErrorContext)) {
-                for (CronListener cronListener : collector.getCronListeners()) {
-                    try {
-                        consumer.accept(cronListener, listenerContext, e);
-                    }
-                    catch (Throwable ex) {
-                        if (lifecycleWrapper.matchLifecycle(SUCCESS)) {
-                            lifecycleWrapper.notAllow();
+                if (!(listenerContext instanceof ListenerErrorContext)) {
+                    for (CronListener cronListener : collector.getCronListeners()) {
+                        try {
+                            consumer.accept(cronListener, listenerContext, e);
                         }
-                        CONTEXT_LOCAL.set(new DefaultListenerErrorContext(listenerContext, this,
-                                cronListener));
-                        throw ex;
+                        catch (Throwable ex) {
+                            // When an error occurs in the monitoring step, if it is a successful
+                            // notification, do not clear the local cache immediately. Clear it
+                            // after the next failed notification.
+                            if (lifecycleWrapper.matchLifecycle(SUCCESS)) {
+                                lifecycleWrapper.notAllow();
+                            }
+                            // Create a new error listening context for listening and passing.
+                            CONTEXT_LOCAL.set(new DefaultListenerErrorContext(listenerContext, this,
+                                    cronListener));
+                            throw ex;
+                        }
                     }
                 }
-            }
-            else {
-                CronListener errorCronListener = ((ListenerErrorContext) listenerContext).getErrorCronListener();
-                if (errorCronListener.getListenerErrorPropagateStrategy() == ListenerErrorPropagateStrategy.ISOLATE)
-                {
+                else {
+                    CronListener errorCronListener = ((ListenerErrorContext) listenerContext).getErrorCronListener();
                     try {
+                        // Regardless of whether it is an independent propagation mechanism or not,
+                        // the event source listener needs to be executed first.
                         errorCronListener.failed(listenerContext, e);
                     }
                     catch (Throwable ex) {
                         failedFallback(errorCronListener, listenerContext, ex);
                     }
-                }
-                else {
-                    for (CronListener propagateCronListener : collector.newQueryBuilder().sync().propagate().build())
+                    // If ISOLATE strategy is adopted, terminate the event propagation directly
+                    if (errorCronListener.getListenerErrorPropagateStrategy() == ListenerErrorPropagateStrategy.ISOLATE)
                     {
+                        return;
+                    }
+                    // PROPAGATE strategy: execute synchronous propagate listeners in order sorted.
+                    for (CronListener propagateCronListener : collector.newQueryBuilder().sync().propagate().sort()
+                            .build())
+                    {
+                        if (propagateCronListener == errorCronListener) {
+                            continue;
+                        }
                         try {
                             propagateCronListener.failed(listenerContext, e);
                         }
@@ -169,6 +185,11 @@ public enum ListenerLifecycle {
                             failedFallback(propagateCronListener, listenerContext, ex);
                         }
                     }
+                }
+            }
+            finally {
+                if (lifecycleWrapper.matchFinally()) {
+                    CONTEXT_LOCAL.remove();
                 }
             }
         }
