@@ -185,6 +185,8 @@ public abstract class CronListenerCollector {
 
         @Nullable private ListenerErrorPropagateStrategy propagateStrategy;
 
+        private boolean buildFlag = false;
+
         /**
          * Private constructor, create builder via {@link #newQueryBuilder()}
          * @param cronListeners original full list of cron listeners
@@ -198,6 +200,7 @@ public abstract class CronListenerCollector {
          * @return current builder instance for chain call
          */
         public ListenerQueryBuilder sync() {
+            checkBuildFlag();
             this.sync = true;
             return this;
         }
@@ -211,6 +214,7 @@ public abstract class CronListenerCollector {
          * @return current builder instance for chain call
          */
         public ListenerQueryBuilder async() {
+            checkBuildFlag();
             this.sync = false;
             return this;
         }
@@ -222,6 +226,7 @@ public abstract class CronListenerCollector {
          * @return current builder instance for chain call
          */
         public ListenerQueryBuilder isolate() {
+            checkBuildFlag();
             this.propagateStrategy = ListenerErrorPropagateStrategy.ISOLATE;
             return this;
         }
@@ -233,6 +238,7 @@ public abstract class CronListenerCollector {
          * @return current builder instance for chain call
          */
         public ListenerQueryBuilder propagate() {
+            checkBuildFlag();
             this.propagateStrategy = ListenerErrorPropagateStrategy.PROPAGATE;
             return this;
         }
@@ -244,14 +250,28 @@ public abstract class CronListenerCollector {
          * @throws IllegalArgumentException if asynchronous query specifies propagation strategy
          */
         public List<CronListener> build() {
+            checkBuildFlag();
             if (CollectionUtils.isEmpty(cronListeners)) {
+                buildFlag = true;
                 return Collections.emptyList();
             }
             Assert.isTrue(!(!sync && propagateStrategy != null),
                     "Asynchronous listener does not support propagation strategies");
-            return cronListeners.stream().filter(cronListener -> (sync != (cronListener instanceof AsyncCronListener)) &&
+            List<CronListener> result = cronListeners.stream().filter(cronListener ->
+                            (sync != (cronListener instanceof AsyncCronListener)) &&
                     (propagateStrategy == null || propagateStrategy == cronListener.getListenerErrorPropagateStrategy()))
                     .collect(Collectors.toList());
+            buildFlag = true;
+            return result;
+        }
+
+        /**
+         * Check whether the builder has completed construction.
+         * If built, forbid modifying builder conditions.
+         * @throws IllegalStateException if already built
+         */
+        private void checkBuildFlag() {
+            Assert.state(!buildFlag, "The build() method can only be invoked once.");
         }
     }
 
