@@ -174,7 +174,6 @@ public abstract class CronListenerCollector {
      * <li>Attempting to specify a propagation strategy when querying asynchronous listeners will trigger an
      * assertion error.</li>
      * </ul>
-     * </p>
      * @since 3.0.2
      */
     public static class ListenerQueryBuilder {
