@@ -18,6 +18,8 @@
 package top.osjf.cron.core.listener;
 
 import top.osjf.commons.lang.Nullable;
+import top.osjf.commons.util.Assert;
+import top.osjf.commons.util.CollectionUtils;
 import top.osjf.cron.core.repository.Repository;
 import top.osjf.cron.core.repository.RepositoryContext;
 import top.osjf.cron.core.repository.TypedRepositoryContext;
@@ -28,6 +30,7 @@ import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
 
 /**
  * The {@code CronListenerCollector} abstract class is used to manage a set of {@code CronListener}
@@ -147,6 +150,108 @@ public abstract class CronListenerCollector {
             return cronListeners.contains(cronListener);
         } finally {
             readLock.unlock();
+        }
+    }
+
+    /**
+     * Create a listener conditional query builder based on all registered cron listeners.
+     * Support filtering by synchronous/asynchronous type and exception propagation strategy.
+     *
+     * @return listener query builder instance
+     * @since 3.0.2
+     */
+    public ListenerQueryBuilder newQueryBuilder() {
+        return new ListenerQueryBuilder(getCronListeners());
+    }
+
+    /**
+     * Builder for conditional filtering of registered {@link CronListener}.
+     * <p>
+     * Filter rules:
+     * <ul>
+     * <li>Filter by execution mode: synchronous / asynchronous</li>
+     * <li>Filter by listener exception propagation strategy (only available for synchronous listeners)</li>
+     * <li>Attempting to specify a propagation strategy when querying asynchronous listeners will trigger an
+     * assertion error.</li>
+     * </ul>
+     * </p>
+     * @since 3.0.2
+     */
+    public static class ListenerQueryBuilder {
+
+        private final List<CronListener> cronListeners;
+
+        private boolean sync = true;
+
+        @Nullable private ListenerErrorPropagateStrategy propagateStrategy;
+
+        /**
+         * Private constructor, create builder via {@link #newQueryBuilder()}
+         * @param cronListeners original full list of cron listeners
+         */
+        private ListenerQueryBuilder(List<CronListener> cronListeners) {
+            this.cronListeners = cronListeners;
+        }
+
+        /**
+         * Set filter rule: only query synchronous {@link CronListener}
+         * @return current builder instance for chain call
+         */
+        public ListenerQueryBuilder sync() {
+            this.sync = true;
+            return this;
+        }
+
+        /**
+         * Set filter rule: only query asynchronous {@link AsyncCronListener}
+         *
+         * After calling this method, {@link #isolate()} or {@link #propagate()} cannot be invoked,
+         * otherwise an assertion exception will be thrown during build.
+         *
+         * @return current builder instance for chain call
+         */
+        public ListenerQueryBuilder async() {
+            this.sync = false;
+            return this;
+        }
+
+        /**
+         * Set strategy filter: only match listeners with ISOLATE exception propagation strategy
+         * can only be used with {@link #sync()}.
+         *
+         * @return current builder instance for chain call
+         */
+        public ListenerQueryBuilder isolate() {
+            this.propagateStrategy = ListenerErrorPropagateStrategy.ISOLATE;
+            return this;
+        }
+
+        /**
+         * Set strategy filter: only match listeners with PROPAGATE exception propagation strategy
+         * can only be used with {@link #sync()}.
+         *
+         * @return current builder instance for chain call
+         */
+        public ListenerQueryBuilder propagate() {
+            this.propagateStrategy = ListenerErrorPropagateStrategy.PROPAGATE;
+            return this;
+        }
+
+        /**
+         * Execute filtering rules and return the matched listener list.
+         *
+         * @return filtered listener list, empty list if original collection is empty
+         * @throws IllegalArgumentException if asynchronous query specifies propagation strategy
+         */
+        private List<CronListener> build() {
+            if (CollectionUtils.isEmpty(cronListeners)) {
+                return Collections.emptyList();
+            }
+            Assert.isTrue(!(!sync && propagateStrategy != null),
+                    "Asynchronous listener does not support propagation strategies");
+            return cronListeners.stream().filter(cronListener -> (sync != (cronListener instanceof AsyncCronListener)) &&
+                    (propagateStrategy == null || propagateStrategy == cronListener.getListenerErrorPropagateStrategy()))
+                    .collect(Collectors.toList());
         }
     }
 
