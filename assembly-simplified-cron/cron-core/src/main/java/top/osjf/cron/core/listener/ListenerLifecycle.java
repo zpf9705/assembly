@@ -390,27 +390,4 @@ public enum ListenerLifecycle {
                         + "> provided.");
         return BeanUtils.instantiateClass(constructor, sourceContext, repositoryContext);
     }
-
-    /**
-     * Implement the callback logic of the scheduled task listener, automatically distinguishing
-     * between synchronous and asynchronous execution modes
-     *
-     * <p>If the current listener is an asynchronous type listener of {@link AsyncCronListener},
-     * the callback will be executed asynchronously using the thread pool provided by the listener
-     * itself;
-     * The ordinary {@link CronListener} listener directly executes the callback logic synchronously
-     * in the current scheduling thread.
-     * @param listener          the instance of scheduled task listener.
-     * @param listenerCallback  the listener callback task to be executed includes callback methods
-     *                          enclosed in {@link CronListener},such as {@link CronListener#start}.
-     * @since 3.0.2
-     */
-    public static void doListenerCallback(CronListener listener, Runnable listenerCallback) {
-        if (listener instanceof AsyncCronListener) {
-            ((AsyncCronListener) listener).get().execute(listenerCallback);
-        }
-        else {
-            listenerCallback.run();
-        }
-    }
 }

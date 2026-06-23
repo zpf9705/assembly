@@ -17,30 +17,36 @@
 
 package top.osjf.cron.core.listener;
 
-import java.util.List;
-
-import static top.osjf.cron.core.listener.ListenerLifecycle.doListenerCallback;
-
 /**
- * Implementation support class for scheduled task listener.
+ * Abstract template support class for orchestrating cron task listener lifecycle execution.
  *
- * <p>Internally used template support class, implementing {@link Runnable}, encapsulates
- * the complete lifecycle execution logic of Cron scheduled tasks in a unified manner:
- * Pre-task startup listening callback {@code ->} Execute original scheduled business task {@code ->}
- * Task success callback / Task exception failure callback.
+ * <p>This abstract class implements {@link Runnable} and adopts the Template Method Pattern,
+ * which encapsulates the standard execution flow of scheduled tasks and uniformly manages the
+ * three core lifecycle callbacks: <b>task startup</b>, <b>task execution success</b>, <b>task
+ * execution failure</b>.
  *
- * <p><strong>Internal execution rules</strong>
+ * <p><strong>Core Execution Mechanism</strong>
  * <ul>
- * <li>1.Traverse all {@link CronListener}s, and automatically distinguish synchronous/asynchronous
- * listeners through {@link ListenerLifecycle#doListenerCallback(CronListener, Runnable)};</li>
- * <li>2.{@link AsyncCronListener} will use its own bound thread pool to execute callbacks asynchronously,
- * while ordinary listeners execute synchronously on the current scheduling thread;</li>
- * <li>Globally catch {@link Throwable}, whether it's a business exception or a system error, and trigger
- * a failure listening callback to ensure that exception events are not lost.</li>
+ * <li>1. The complete execution flow: trigger the {@code START} listener callback before task
+ * execution → run the original scheduled business logic → trigger the {@code SUCCESS} callback
+ * if executed normally, otherwise capture any {@link Throwable} and trigger the {@code FAILED}
+ * callback;</li>
+ * <li>2. Delegate listener event distribution to {@link ListenerLifecycle}, which automatically
+ * distinguishes {@link AsyncCronListener}(executed asynchronously via self-bound thread pool)
+ * and ordinary {@link CronListener}(executed synchronously on the current scheduling thread);
+ * </li>
+ * <li>3. The global try-catch captures all runtime exceptions of business tasks to ensure that
+ * task failure events can be completely notified to all registered listeners without loss;
+ * </li>
+ * <li>4. The task global context {@link ListenerContext} is uniformly provided and fully managed
+ * by subclasses, which ensure the uniqueness of the context within a single task; this superclass
+ * is only responsible for obtaining this context and transparently passing it to various listener
+ * lifecycle callbacks.</li>
  * </ul>
  *
- * <p>Adopt the template method pattern, where subclasses provide the original task, listener collection,
- * and task context, reusing a unified listener orchestration logic.
+ * <p>Subclasses must implement three abstract methods to provide the original scheduled task,the
+ * global listener collector and the runtime task context, so as to reuse the unified lifecycle
+ * scheduling capability defined by the parent class.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
@@ -48,39 +54,61 @@ import static top.osjf.cron.core.listener.ListenerLifecycle.doListenerCallback;
 public abstract class ListenerExecuteSupport implements Runnable {
 
     /**
-     * A unified execution entry for scheduled tasks, orchestrating the complete task
-     * lifecycle and listener event callbacks.
-     * <p>
-     * <strong>Execution process:</strong>
-     * <ul>
-     * <li>1.Traverse all scheduled listeners and dispatch the 'task start' event callback;</li>
-     * <li>2.Execute the user's original scheduled task business logic;</li>
-     * <li>3.No exception in task: Distribute the callback event for [task execution success];</li>
-     * <li>4.Any exception occurs in the task: catch Throwable, dispatch a 'task execution failure'
-     * event callback, and pass the exception object.</li>
-     * </ul>
-     *
-     * <p>The listener will automatically select the current scheduling thread for synchronous
-     * execution based on its type, or use a custom thread pool for asynchronous execution of callbacks.
+     * @see #doStart()
+     * @see #doSuccess()
+     * @see #doFailed(Throwable)
      */
     @Override
     public void run() {
-        List<CronListener> cronListeners = getCronListeners();
-        ListenerContext listenerContext = getListenerContext();
         try {
             // Notify all cron listeners that the task is about to start
-            cronListeners.forEach(c -> doListenerCallback(c, ()-> c.start(listenerContext)));
+            doStart();
             // Execute the main logic of the runnable
             getRaw().run();
             // Notify all cron listeners that the task has completed successfully
-            cronListeners.forEach(c -> doListenerCallback(c, ()-> c.success(listenerContext)));
+            doSuccess();
         }
         catch (Throwable ex) {
             // If an error occurs during task execution, notify all cron listeners
             // of the failure, passing the exception context for further handling
-            cronListeners.forEach(c -> doListenerCallback(c, ()-> c.failed(listenerContext, ex)));
+            doFailed(ex);
         }
     }
+
+    /**
+     * Trigger task [Start] lifecycle callback: = Distribute task start events to all synchronous
+     * and asynchronous timing listeners.
+     */
+    private void doStart() {
+        ListenerLifecycle.ListenerLifecycleWrapper lifecycleWrapper
+                = new ListenerLifecycle.ListenerLifecycleWrapper(ListenerLifecycle.START);
+        ListenerLifecycle.START.consumerListeners(lifecycleWrapper, getListenerContext(),
+                null, getCronListenerCollector());
+    }
+
+    /**
+     * Trigger task [Success] lifecycle callback: Distribute task execution success events to all
+     * registered scheduled listeners.
+     */
+    private void doSuccess() {
+        ListenerLifecycle.ListenerLifecycleWrapper lifecycleWrapper
+                = new ListenerLifecycle.ListenerLifecycleWrapper(ListenerLifecycle.SUCCESS);
+        ListenerLifecycle.SUCCESS.consumerListeners(lifecycleWrapper, getListenerContext(),
+                null, getCronListenerCollector());
+    }
+
+    /**
+     * Trigger task [failed] lifecycle callback: Distribute task execution failure events to all
+     * listeners, carrying exception stack information.
+     * @param ex the exception that occur during task execution or during the monitoring of execution.
+     */
+    private void doFailed(Throwable ex) {
+        ListenerLifecycle.ListenerLifecycleWrapper lifecycleWrapper
+                = new ListenerLifecycle.ListenerLifecycleWrapper(ListenerLifecycle.FAILED);
+        ListenerLifecycle.FAILED.consumerListeners(lifecycleWrapper, getListenerContext(),
+                ex, getCronListenerCollector());
+    }
+
     /**
      * Returns the internal original scheduled business tasks to be executed
      * @return the original business scheduled task.
@@ -88,13 +116,13 @@ public abstract class ListenerExecuteSupport implements Runnable {
     protected abstract Runnable getRaw();
 
     /**
-     * Returns all the scheduled listeners bound to the current scheduled task
-     * @return the list of Cron listeners associated with the task.
+     * Returns the instance of scheduled task listener collector.
+     * @return the instance of scheduled task listener collector.
      */
-    protected abstract List<CronListener> getCronListeners();
+    protected abstract CronListenerCollector getCronListenerCollector();
 
     /**
-     * Obtain the current scheduled task lifecycle context for transparent transmission to
+     * Returns the current scheduled task lifecycle context for transparent transmission to
      * various listener callback methods.
      * @return the {@code ListenerContext} instance.
      */
