@@ -187,6 +187,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
         scheduler.setJobFactory(jobFactory);
         listenerManager = scheduler.getListenerManager();
         listenerManager.addJobListener(jobListener);
+        listenerManager.addSchedulerListener(jobListener);
     }
 
     /**
