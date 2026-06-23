@@ -38,10 +38,6 @@ package top.osjf.cron.core.listener;
  * <li>3. The global try-catch captures all runtime exceptions of business tasks to ensure that
  * task failure events can be completely notified to all registered listeners without loss;
  * </li>
- * <li>4. The task global context {@link ListenerContext} is uniformly provided and fully managed
- * by subclasses, which ensure the uniqueness of the context within a single task; this superclass
- * is only responsible for obtaining this context and transparently passing it to various listener
- * lifecycle callbacks.</li>
  * </ul>
  *
  * <p>Subclasses must implement three abstract methods to provide the original scheduled task,the
@@ -80,10 +76,7 @@ public abstract class ListenerExecuteSupport implements Runnable {
      * and asynchronous timing listeners.
      */
     private void doStart() {
-        ListenerLifecycle.ListenerLifecycleWrapper lifecycleWrapper
-                = new ListenerLifecycle.ListenerLifecycleWrapper(ListenerLifecycle.START);
-        ListenerLifecycle.START.consumerListeners(lifecycleWrapper, getListenerContext(),
-                null, getCronListenerCollector());
+        ListenerLifecycle.START.consumerListeners(this::getListenerContext, null, getCronListenerCollector());
     }
 
     /**
@@ -91,10 +84,7 @@ public abstract class ListenerExecuteSupport implements Runnable {
      * registered scheduled listeners.
      */
     private void doSuccess() {
-        ListenerLifecycle.ListenerLifecycleWrapper lifecycleWrapper
-                = new ListenerLifecycle.ListenerLifecycleWrapper(ListenerLifecycle.SUCCESS);
-        ListenerLifecycle.SUCCESS.consumerListeners(lifecycleWrapper, getListenerContext(),
-                null, getCronListenerCollector());
+        ListenerLifecycle.SUCCESS.consumerListeners(this::getListenerContext, null, getCronListenerCollector());
     }
 
     /**
@@ -103,10 +93,7 @@ public abstract class ListenerExecuteSupport implements Runnable {
      * @param ex the exception that occur during task execution or during the monitoring of execution.
      */
     private void doFailed(Throwable ex) {
-        ListenerLifecycle.ListenerLifecycleWrapper lifecycleWrapper
-                = new ListenerLifecycle.ListenerLifecycleWrapper(ListenerLifecycle.FAILED);
-        ListenerLifecycle.FAILED.consumerListeners(lifecycleWrapper, getListenerContext(),
-                ex, getCronListenerCollector());
+        ListenerLifecycle.FAILED.consumerListeners(this::getListenerContext, ex, getCronListenerCollector());
     }
 
     /**
