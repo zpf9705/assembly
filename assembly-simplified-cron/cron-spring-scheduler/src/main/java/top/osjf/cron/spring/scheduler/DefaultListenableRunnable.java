@@ -20,6 +20,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.scheduling.Trigger;
 import top.osjf.commons.lang.NotNull;
 import top.osjf.cron.core.listener.CronListener;
+import top.osjf.cron.core.listener.CronListenerCollector;
 import top.osjf.cron.core.listener.ListenerContext;
 import top.osjf.cron.core.listener.ListenerExecuteSupport;
 import top.osjf.cron.core.repository.DefaultRepositoryContext;
@@ -51,9 +52,10 @@ public class DefaultListenableRunnable extends ListenerExecuteSupport implements
      */
     private final Trigger trigger;
     /**
-     * The list of eavesdroppers for the execution of this task.
+     * The instance of scheduled task listener collector.
+     * @since 3.0.2
      */
-    private final List<CronListener> cronListeners;
+    private final CronListenerCollector collector;
     /**
      * The listening context information for this task.
      */
@@ -66,15 +68,15 @@ public class DefaultListenableRunnable extends ListenerExecuteSupport implements
      * @param id            the unique ID for this task.
      * @param runnable      the execution function for this task.
      * @param trigger       the triggering method for the execution of this task.
-     * @param cronListeners the list of eavesdroppers for the execution of this task.
+     * @param collector     the instance of scheduled task listener collector.
      * @param repository    the repository.
      */
     public DefaultListenableRunnable(String id, Runnable runnable, @Nullable Trigger trigger,
-                                     List<CronListener> cronListeners, SpringSchedulerTaskRepository repository) {
+                                     CronListenerCollector collector, SpringSchedulerTaskRepository repository) {
         this.id = id;
         this.runnable = runnable;
         this.trigger = trigger;
-        this.cronListeners = cronListeners;
+        this.collector = collector;
         this.listenerContext = new ListenerContextImpl(this, new DefaultRepositoryContext(repository));
     }
 
@@ -96,8 +98,14 @@ public class DefaultListenableRunnable extends ListenerExecuteSupport implements
 
     @Override
     @NotNull
+    protected CronListenerCollector getCronListenerCollector() {
+        return collector;
+    }
+
+    @Override
+    @NotNull
     public List<CronListener> getCronListeners() {
-        return cronListeners;
+        return collector.getCronListeners();
     }
 
     @NotNull
