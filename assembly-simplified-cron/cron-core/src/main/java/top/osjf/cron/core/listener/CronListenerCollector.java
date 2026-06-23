@@ -18,6 +18,8 @@
 package top.osjf.cron.core.listener;
 
 import top.osjf.commons.lang.Nullable;
+import top.osjf.commons.lang.OrderComparator;
+import top.osjf.commons.lang.Ordered;
 import top.osjf.commons.util.Assert;
 import top.osjf.commons.util.CollectionUtils;
 import top.osjf.cron.core.repository.Repository;
@@ -184,6 +186,8 @@ public abstract class CronListenerCollector {
 
         @Nullable private ListenerErrorPropagateStrategy propagateStrategy;
 
+        private boolean sort = false;
+
         private boolean buildFlag = false;
 
         /**
@@ -243,6 +247,22 @@ public abstract class CronListenerCollector {
         }
 
         /**
+         * Enable sorting of the result set for the listener.
+         * <p>
+         * After invoking this method, the final set of selected timer listeners will be sorted using
+         * {@link OrderComparator} based on the return value of the {@link Ordered} interface implemented
+         * by the listeners. The listener with a smaller sorting value will have a higher execution priority
+         * and will be scheduled for execution earlier
+         *
+         * @return current builder instance for chain call
+         */
+        public ListenerQueryBuilder sort() {
+            checkBuildFlag();
+            this.sort = true;
+            return this;
+        }
+
+        /**
          * Execute filtering rules and return the matched listener list.
          *
          * @return filtered listener list, empty list if original collection is empty
@@ -260,6 +280,7 @@ public abstract class CronListenerCollector {
                             (sync != (cronListener instanceof AsyncCronListener)) &&
                     (propagateStrategy == null || propagateStrategy == cronListener.getListenerErrorPropagateStrategy()))
                     .collect(Collectors.toList());
+            if (sort) OrderComparator.sort(result);
             buildFlag = true;
             return result;
         }
