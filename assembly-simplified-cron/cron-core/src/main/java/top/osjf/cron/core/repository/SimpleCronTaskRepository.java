@@ -22,11 +22,11 @@ import com.cronutils.model.CronType;
 import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.model.time.ExecutionTime;
 import com.cronutils.parser.CronParser;
-import top.osjf.cron.core.exception.CronInternalException;
-import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 import top.osjf.commons.lang.NotNull;
 import top.osjf.commons.lang.Nullable;
-import top.osjf.cron.core.listener.CronListener;
+import top.osjf.cron.core.exception.CronInternalException;
+import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
+import top.osjf.cron.core.listener.CronListenerCollector;
 import top.osjf.cron.core.listener.ListenerContext;
 import top.osjf.cron.core.listener.ListenerExecuteSupport;
 import top.osjf.cron.core.util.ExecutorUtils;
@@ -211,7 +211,8 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
      * A simple implementation class for the {@link ScheduledFuture} interface to calculate the
      * next execution time and store mutable {@link ScheduledFuture}.
      */
-    private class SimpleRunnabledScheduledFuture extends ListenerExecuteSupport implements ScheduledFuture<Object>, Runnable {
+    private class SimpleRunnabledScheduledFuture extends ListenerExecuteSupport implements ScheduledFuture<Object>,
+            Runnable {
 
         /**
          * The running function executed by the original target.
@@ -336,8 +337,8 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
         }
 
         @Override
-        protected List<CronListener> getCronListeners() {
-            return getCronListenerCollector().getCronListeners();
+        protected CronListenerCollector getCronListenerCollector() {
+            return SimpleCronTaskRepository.this.getCronListenerCollector();
         }
 
         @Override
