@@ -49,4 +49,17 @@ public interface AsyncCronListener extends CronListener, CronExecutorServiceSupp
      * @return {@inheritDoc}
      */
     @NotNull @Override ExecutorService get();
+
+    /**
+     * The asynchronous listener does not support the operation, and the asynchronous Cron listener
+     * does not support the propagation strategy for listener exceptions. Any attempt to call or
+     * override this method will throw a {@link UnsupportedOperationException}.
+     * @return {@code Nulls}
+     * @throws UnsupportedOperationException does not support the operation.
+     */
+    @Override
+    default ListenerErrorPropagateStrategy getListenerErrorPropagateStrategy() {
+        throw new UnsupportedOperationException
+                ("AsyncCronListener does not support custom exception propagation strategy.");
+    }
 }
