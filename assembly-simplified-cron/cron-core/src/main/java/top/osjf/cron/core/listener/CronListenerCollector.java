@@ -243,7 +243,7 @@ public abstract class CronListenerCollector {
          * @return filtered listener list, empty list if original collection is empty
          * @throws IllegalArgumentException if asynchronous query specifies propagation strategy
          */
-        private List<CronListener> build() {
+        public List<CronListener> build() {
             if (CollectionUtils.isEmpty(cronListeners)) {
                 return Collections.emptyList();
             }
