@@ -174,7 +174,6 @@ public abstract class CronListenerCollector {
      * </pre>
      *
      * @return The type of {@code ListenerContext}
-     * @see ListenerContextSupport#createListenerContext
      */
     @Nullable
     protected Class<? extends ListenerContext> getListenerContextClass() {
