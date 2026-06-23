@@ -77,24 +77,93 @@ public enum ListenerLifecycle {
      */
     void consumerListeners(Object sourceContext, RepositoryContext repositoryContext, @Nullable Throwable e,
                            CronListenerCollector collector) {
-        if (START == this) {
+        ListenerLifecycleWrapper lifecycleWrapper = new ListenerLifecycleWrapper(this);
+        if (lifecycleWrapper.matchLifecycle(START)) {
             ListenerContext listenerContext
                     = createListenerContext(collector, sourceContext, repositoryContext);
             CONTEXT_LOCAL.set(listenerContext);
         }
         ListenerContext listenerContext = CONTEXT_LOCAL.get();
         if (listenerContext != null) {
+
             try {
-                for (CronListener cronListener : collector.getCronListeners()) {
-                    doListenerCallback(cronListener,
-                            () -> consumer.accept(cronListener, listenerContext, e));
+                if (!(listenerContext instanceof ListenerErrorContext)) {
+                    for (CronListener cronListener : collector.newQueryBuilder().async().build()) {
+                        ((AsyncCronListener) cronListener).get()
+                                .execute(() -> consumer.accept(cronListener, listenerContext, e));
+                    }
+                }
+
+                if (!(listenerContext instanceof ListenerErrorContext)) {
+                    for (CronListener cronListener : collector.getCronListeners()) {
+                        try {
+                            consumer.accept(cronListener, listenerContext, e);
+                        }
+                        catch (Throwable ex) {
+                            if (lifecycleWrapper.matchLifecycle(SUCCESS)) {
+                                lifecycleWrapper.notAllow();
+                            }
+                            CONTEXT_LOCAL.set(new DefaultListenerErrorContext(listenerContext, this,
+                                    cronListener));
+                            throw ex;
+                        }
+                    }
+                }
+                else {
+                    CronListener errorCronListener = ((ListenerErrorContext) listenerContext).getErrorCronListener();
+                    if (errorCronListener.getListenerErrorPropagateStrategy() == ListenerErrorPropagateStrategy.ISOLATE)
+                    {
+                        try {
+                            errorCronListener.failed(listenerContext, e);
+                        }
+                        catch (Throwable ex) {
+                            errorCronListener.failedFallback(ex);
+                        }
+                    }
+                    else {
+                        for (CronListener propagateCronListener : collector.newQueryBuilder().sync().propagate().build())
+                        {
+                            try {
+                                propagateCronListener.failed(listenerContext, e);
+                            }
+                            catch (Throwable ex) {
+                                errorCronListener.failedFallback(ex);
+                            }
+                        }
+                    }
                 }
             }
             finally {
-                if (SUCCESS == this || FAILED == this) {
+                if (lifecycleWrapper.matchFinally()) {
                     CONTEXT_LOCAL.remove();
                 }
             }
+        }
+    }
+
+    /**
+     * The help {@link ListenerLifecycle} wrapper class.
+     */
+    static class ListenerLifecycleWrapper {
+
+        ListenerLifecycle lifecycle;
+
+        boolean allow = true;
+
+        public ListenerLifecycleWrapper(ListenerLifecycle lifecycle) {
+            this.lifecycle = lifecycle;
+        }
+
+        public boolean matchFinally() {
+            return (matchLifecycle(SUCCESS) || matchLifecycle(FAILED)) && allow;
+        }
+
+        private void notAllow() {
+            this.allow = false;
+        }
+
+        public boolean matchLifecycle(ListenerLifecycle matchLifecycle) {
+            return this.lifecycle == matchLifecycle;
         }
     }
 
