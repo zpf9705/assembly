@@ -16,6 +16,7 @@
 
 package top.osjf.cron.core.listener;
 
+import org.slf4j.LoggerFactory;
 import top.osjf.commons.lang.Nullable;
 import top.osjf.commons.util.*;
 import top.osjf.cron.core.repository.RepositoryContext;
@@ -168,7 +169,7 @@ public enum ListenerLifecycle {
                     errorCronListener.failed(listenerContext, e);
                 }
                 catch (Throwable ex) {
-                    errorCronListener.failedFallback(ex);
+                    failedFallback(errorCronListener, listenerContext, ex);
                 }
             }
             else {
@@ -178,10 +179,25 @@ public enum ListenerLifecycle {
                         propagateCronListener.failed(listenerContext, e);
                     }
                     catch (Throwable ex) {
-                        errorCronListener.failedFallback(ex);
+                        failedFallback(propagateCronListener, listenerContext, ex);
                     }
                 }
             }
+        }
+    }
+
+    private static void failedFallback(CronListener c, ListenerContext listenerContext, Throwable ex) {
+        try {
+            c.failedFallback(ex);
+        }
+        catch (Throwable e) {
+            LoggerFactory.getLogger(ListenerLifecycle.class).error(
+                    "[CronListener] An exception occurred when executing listener fallback method [failedFallback]." +
+                            " Task ID: {}, Listener Name: {}, Exception Message: {}",
+                    listenerContext.getID(),
+                    c.getName(),
+                    ex.getMessage(), ex
+            );
         }
     }
 
