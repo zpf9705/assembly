@@ -162,4 +162,25 @@ public interface CronListener {
      * @since 3.0.2
      */
     default void failedFallback(Throwable exception) { }
+
+    /**
+     * Returns an exception propagation strategy for when a listener process encounters an error. The
+     * default is {@link ListenerErrorPropagateStrategy#ISOLATE}, which means the listener handles the
+     * related errors internally and does not broadcast them to other listeners.
+     *
+     * @return the exception propagation strategy when an error occurs in the listener process.
+     * @since 3.0.2
+     */
+    default ListenerErrorPropagateStrategy getListenerErrorPropagateStrategy() {
+        return ListenerErrorPropagateStrategy.ISOLATE;
+    }
+
+    /**
+     * Returns the custom tag name of this listener, which defaults to {@link Class#getName()}.
+     * @return the custom tag name of this listener.
+     * @since 3.0.2
+     */
+    default String getName() {
+        return getClass().getName();
+    }
 }
