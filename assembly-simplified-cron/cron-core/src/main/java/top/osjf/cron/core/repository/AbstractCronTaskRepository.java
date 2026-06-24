@@ -17,6 +17,7 @@
 
 package top.osjf.cron.core.repository;
 
+import top.osjf.cron.core.exception.CronExpressionInvalidException;
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 import top.osjf.commons.lang.Nullable;
@@ -119,6 +120,73 @@ public abstract class AbstractCronTaskRepository
         return getCronTaskInfoInternal(id);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getName() {
+        return getClass().getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isSupportedExpression(String expression) {
+        try {
+            checkSupportedExpression(expression);
+            return true;
+        }
+        catch (CronExpressionInvalidException ex) {
+            return false;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public long getTaskRemainingNumberOfRuns(String taskId) {
+        AtomicInteger count = getTaskRunTimesMap().getOrDefault(taskId, null);
+        return count == null ? hasCronTaskInfo(taskId) ? -1 : 0 : count.get();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Nullable
+    @Override
+    public RunningTimeout getTimeoutConfig(String taskId) {
+        return getTaskRunTimeoutMap().getOrDefault(taskId, null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Nullable
+    @Override
+    public CronTaskInfo customizeCronTaskInfo(@Nullable CronTaskInfo cronTaskInfo) {
+        if (cronTaskInfo == null) {
+            return null;
+        }
+        // Setting remaining number of runs.
+        cronTaskInfo.setRemainingNumberOfRuns(getTaskRemainingNumberOfRuns(cronTaskInfo.getId()));
+        // Setting running timeout config.
+        cronTaskInfo.setTimeoutConfig(getTimeoutConfig(cronTaskInfo.getId()));
+        return cronTaskInfo;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Runnable unwaperRunnable(Runnable given) {
+        if (given instanceof TimeoutMonitoringRunnable) {
+            return ((TimeoutMonitoringRunnable) given).getReal();
+        }
+        return given;
+    }
+
     /*   Internal API implementation method group after parameter validation in version 3.0.2.    */
 
     /*
@@ -199,63 +267,4 @@ public abstract class AbstractCronTaskRepository
      * @return
      */
     @Nullable protected abstract CronTaskInfo getCronTaskInfoInternal(String id);
-
-    /**
-     * Return remaining number of runs of the specify id task.
-     * @param taskId the specify task id.
-     * @return Remaining number of runs of the specify id task,
-     * the unlimited number of times is {@code -1}, and there
-     * are no tasks with {@code 0}. Otherwise, it is the remaining
-     * number of runs.
-     * @since 3.0.1
-     */
-    protected long getTaskRemainingNumberOfRuns(String taskId) {
-        AtomicInteger count = getTaskRunTimesMap().getOrDefault(taskId, null);
-        return count == null ? hasCronTaskInfo(taskId) ? -1 : 0 : count.get();
-    }
-
-    /**
-     * Retrieve the corresponding {@link RunningTimeout} configuration from the expired
-     * configuration instance cache based on the unique ID.
-     * @param taskId the specify task id.
-     * @return The timeout configuration instance for a single run of this task.
-     * @since 3.0.2
-     */
-    @Nullable
-    protected RunningTimeout getTimeoutConfig(String taskId) {
-        return getTaskRunTimeoutMap().getOrDefault(taskId, null);
-    }
-
-    /**
-     * Customize a specified {@link CronTaskInfo}.
-     * @param cronTaskInfo a specified {@link CronTaskInfo}.
-     * @return a specified {@link CronTaskInfo}.
-     * @since 3.0.1
-     */
-    @Nullable
-    protected CronTaskInfo customizeCronTaskInfo(@Nullable CronTaskInfo cronTaskInfo) {
-        if (cronTaskInfo == null) {
-            return null;
-        }
-        // Setting remaining number of runs.
-        cronTaskInfo.setRemainingNumberOfRuns(getTaskRemainingNumberOfRuns(cronTaskInfo.getId()));
-        // Setting running timeout config.
-        cronTaskInfo.setTimeoutConfig(getTimeoutConfig(cronTaskInfo.getId()));
-        return cronTaskInfo;
-    }
-
-    /**
-     * Unwraps the given Runnable instance. If the provided Runnable is an instance of
-     * {@link TimeoutMonitoringRunnable}, this method returns the underlying wrapped task
-     * via {@code getReal()}. Otherwise, it returns the original Runnable directly.
-     * @param given the {@code Runnable} to unwrap.
-     * @return the underlying real Runnable if wrapped; otherwise, the same instance.
-     * @since 3.0.2
-     */
-    protected Runnable unwaperRunnable(Runnable given) {
-        if (given instanceof TimeoutMonitoringRunnable) {
-            return ((TimeoutMonitoringRunnable) given).getReal();
-        }
-        return given;
-    }
 }

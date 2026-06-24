@@ -18,6 +18,7 @@
 package top.osjf.cron.core.repository;
 
 import top.osjf.commons.lang.Nullable;
+import top.osjf.cron.core.exception.CronExpressionInvalidException;
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.commons.lang.NotNull;
 
@@ -55,6 +56,22 @@ public class NoOpCronTaskRepository extends AbstractCronTaskRepository {
     @Override
     public boolean isStarted() {
         return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @NotNull
+    public String getName() {
+        return "NOOP_SCHEDULER@" + super.getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void checkSupportedExpression(String expression) throws CronExpressionInvalidException {
     }
 
     /**

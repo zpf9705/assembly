@@ -21,6 +21,7 @@ import it.sauronsoftware.cron4j.Scheduler;
 import it.sauronsoftware.cron4j.SchedulingPattern;
 import it.sauronsoftware.cron4j.Task;
 import top.osjf.commons.util.StringUtils;
+import top.osjf.cron.core.exception.CronExpressionInvalidException;
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 import top.osjf.commons.lang.NotNull;
@@ -179,6 +180,29 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
         scheduler.setDaemon(daemon);
         scheduler.setTimeZone(timezone);
         scheduler.addSchedulerListener(schedulerListener);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @NotNull
+    public String getName() {
+        return "CRON4J_SCHEDULER@" + super.getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void checkSupportedExpression(@NotNull String expression)
+            throws CronExpressionInvalidException {
+        try {
+            new SchedulingPattern(expression);
+        }
+        catch (InvalidPatternException ex) {
+            throw new CronExpressionInvalidException(expression, getName(), ex);
+        }
     }
 
     /**

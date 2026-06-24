@@ -21,10 +21,12 @@ import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.cron.CronException;
 import cn.hutool.cron.Scheduler;
 import cn.hutool.cron.pattern.CronPattern;
+import cn.hutool.cron.pattern.parser.PatternParser;
 import cn.hutool.cron.task.InvokeTask;
 import cn.hutool.cron.task.RunnableTask;
 import cn.hutool.cron.task.Task;
 import top.osjf.commons.util.StringUtils;
+import top.osjf.cron.core.exception.CronExpressionInvalidException;
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 import top.osjf.commons.lang.NotNull;
@@ -222,6 +224,28 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
         scheduler.setTimeZone(timeZone);
         scheduler.setThreadExecutor(executorService);
         scheduler.addListener(taskListener);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @NotNull
+    public String getName() {
+        return "HUTOOL_SCHEDULER@" + super.getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void checkSupportedExpression(@NotNull String expression) throws CronExpressionInvalidException {
+        try {
+            PatternParser.parse(expression);
+        }
+        catch (CronException ex) {
+            throw new CronExpressionInvalidException(expression, getName(), ex);
+        }
     }
 
     /**

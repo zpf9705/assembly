@@ -23,6 +23,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.concurrent.DefaultManagedTaskScheduler;
+import org.springframework.scheduling.support.CronExpression;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.scheduling.support.PeriodicTrigger;
 import org.springframework.scheduling.support.ScheduledMethodRunnable;
@@ -31,6 +32,7 @@ import org.springframework.util.IdGenerator;
 import org.springframework.util.SimpleIdGenerator;
 import top.osjf.commons.lang.NotNull;
 import top.osjf.commons.lang.Nullable;
+import top.osjf.cron.core.exception.CronExpressionInvalidException;
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 import top.osjf.cron.core.listener.CronListener;
@@ -118,6 +120,33 @@ public class SpringSchedulerTaskRepository
     protected ListenableRunnable wrapperRunnableToListenable(Runnable runnable, Trigger trigger) {
         String id = idGenerator.generateId().toString();
         return new DefaultListenableRunnable(id, runnable, trigger, getCronListenerCollector(), this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @NotNull
+    public String getName() {
+        return "SPRING_SCHEDULER@" + super.getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isSupportedExpression(@NotNull String expression) {
+        return CronExpression.isValidExpression(expression);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void checkSupportedExpression(@NotNull String expression) throws CronExpressionInvalidException {
+        if (!isSupportedExpression(expression)) {
+            throw new CronExpressionInvalidException(expression, getName());
+        }
     }
 
     /**

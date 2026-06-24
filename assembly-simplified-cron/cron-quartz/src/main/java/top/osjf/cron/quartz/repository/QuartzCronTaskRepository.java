@@ -20,6 +20,7 @@ import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.simpl.SimpleThreadPool;
+import top.osjf.cron.core.exception.CronExpressionInvalidException;
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 import top.osjf.commons.lang.NotNull;
@@ -188,6 +189,28 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
         listenerManager = scheduler.getListenerManager();
         listenerManager.addJobListener(jobListener);
         listenerManager.addSchedulerListener(jobListener);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @NotNull
+    public String getName() {
+        return "QUARTZ_SCHEDULER@" + super.getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void checkSupportedExpression(@NotNull String expression) throws CronExpressionInvalidException {
+        try {
+            new CronExpression(expression);
+        }
+        catch (ParseException ex) {
+            throw new CronExpressionInvalidException(expression, getName(), ex);
+        }
     }
 
     /**

@@ -24,6 +24,7 @@ import com.cronutils.model.time.ExecutionTime;
 import com.cronutils.parser.CronParser;
 import top.osjf.commons.lang.NotNull;
 import top.osjf.commons.lang.Nullable;
+import top.osjf.cron.core.exception.CronExpressionInvalidException;
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 import top.osjf.cron.core.listener.CronListenerCollector;
@@ -402,6 +403,28 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
         public Object get(long timeout, @NotNull TimeUnit unit)
                 throws InterruptedException, ExecutionException, TimeoutException {
             return getFuture().get(timeout, unit);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @NotNull
+    public String getName() {
+        return "SIMPLE_SCHEDULER@" + super.getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void checkSupportedExpression(String expression) throws CronExpressionInvalidException {
+        try {
+            cronParser.parse(expression);
+        }
+        catch (IllegalArgumentException ex) {
+            throw new CronExpressionInvalidException(expression, getName(), ex);
         }
     }
 
