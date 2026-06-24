@@ -25,6 +25,7 @@ package top.osjf.cron.core.repository;
  * @since 1.0.3
  */
 @FunctionalInterface
+@Deprecated
 public interface VoidInvoke {
     /**
      * Set a custom behavior for a function based operation with no return value.

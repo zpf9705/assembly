@@ -25,6 +25,7 @@ package top.osjf.cron.core.repository;
  * @since 1.0.3
  */
 @FunctionalInterface
+@Deprecated
 public interface Register {
     /**
      * Set up a custom registration behavior for a timed task written in a functional way.

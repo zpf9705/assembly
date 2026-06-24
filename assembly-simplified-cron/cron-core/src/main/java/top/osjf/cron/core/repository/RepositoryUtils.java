@@ -32,6 +32,7 @@ import top.osjf.cron.core.exception.CronInternalException;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
+@Deprecated
 public abstract class RepositoryUtils {
 
     /**
