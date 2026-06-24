@@ -314,7 +314,8 @@ public abstract class AbstractCronTaskRepository
      * @param body Generic custom encapsulated task body
      * @return Globally unique task ID generated after successful registration
      * @throws Exception Any exception thrown by the underlying scheduling framework during registration
-     * @throws UnsupportedTaskBodyException Thrown when the current scheduling framework does not support the incoming {@link TaskBody} type
+     * @throws UnsupportedTaskBodyException Thrown when the current scheduling framework does not support
+     * the incoming {@link TaskBody} type
      */
     protected abstract String registerInternal(String expression, TaskBody body) throws Exception,
             UnsupportedTaskBodyException;
@@ -373,7 +374,8 @@ public abstract class AbstractCronTaskRepository
      * Underlying internal query method for obtaining complete task metadata.
      *
      * @param id Unique identifier of the target task
-     * @return Complete {@link CronTaskInfo} metadata of the task; return {@code null} if no matching task exists
+     * @return Complete {@link CronTaskInfo} metadata of the task; return {@code null} if no
+     * matching task exists
      */
     @Nullable protected abstract CronTaskInfo getCronTaskInfoInternal(String id);
 }
