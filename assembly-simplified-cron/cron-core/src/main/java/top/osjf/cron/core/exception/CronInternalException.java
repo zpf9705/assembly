@@ -20,8 +20,8 @@ package top.osjf.cron.core.exception;
 /**
  * Internal exceptions are thrown during the registration, updating, and execution of
  * scheduling tasks, indicating potential issues related to unsupported or incorrect
- * operations. You can refer to {@link #getCause()} or the type to determine the specific
- * details of the internal exception.
+ * operations. You can refer to {@link #getCause()} or {@link #getMessage()} or the type
+ * to determine the specific details of the internal exception.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
