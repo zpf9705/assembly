@@ -156,5 +156,5 @@ public interface CronTaskRepository extends Repository, RunTimesRegistrarReposit
      * @return unwrapped real underlying task instance
      * @since 3.0.2
      */
-    Runnable unwaperRunnable(Runnable given);
+    Runnable unwrapRunnable(Runnable given);
 }

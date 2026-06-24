@@ -25,9 +25,27 @@ import top.osjf.commons.lang.Nullable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * The abstract implementation of {@link CronTaskRepository} inherits a series of classes
- * such as {@link AbstractRunTimeoutRegistrarRepository} to give {@link CronTaskRepository}
- * a default implementation.
+ * This abstract class encapsulates the unified public logic of all cron task repository
+ * implementations: parameter pre-verification, unified callback execution after task
+ * registration, default implementation of general capability methods defined in
+ * {@link CronTaskRepository}, including expression validity judgment, remaining execution
+ * times query, task timeout configuration acquisition, task metadata supplementation and
+ * wrapping Runnable unwrapping.
+ *
+ * <p>
+ * It splits the task operation logic into two layers:
+ * <ol>
+ * <li>External public methods: complete unified parameter check, general cross-cutting logic
+ * such as callback notification;</li>
+ * <li>Protected abstract {@code xxxInternal} methods: only responsible for the underlying task
+ * storage, modification, deletion and query operations, which need to be implemented by specific
+ * scheduling framework repository subclasses.</li>
+ * </ol>
+ *
+ * <p>
+ * Implements the {@link top.osjf.commons.ability.Nameable} capability by default, using the fully
+ * qualified class name of the subclass as the unique repository name for log tracking, exception
+ * location and monitoring statistics.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
@@ -180,7 +198,7 @@ public abstract class AbstractCronTaskRepository
      * {@inheritDoc}
      */
     @Override
-    public Runnable unwaperRunnable(Runnable given) {
+    public Runnable unwrapRunnable(Runnable given) {
         if (given instanceof TimeoutMonitoringRunnable) {
             return ((TimeoutMonitoringRunnable) given).getReal();
         }
