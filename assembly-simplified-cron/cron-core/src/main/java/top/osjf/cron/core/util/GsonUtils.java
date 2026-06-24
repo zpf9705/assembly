@@ -19,6 +19,7 @@ package top.osjf.cron.core.util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import top.osjf.commons.lang.Nullable;
 
 /**
  * A simple JSON serialization utility class for {@link Gson}.
@@ -52,10 +53,7 @@ public abstract class GsonUtils {
      * @param obj  the object to be serialized as JSON.
      * @return Provide the JSON string after object serialization.
      */
-    public static String toJson(Gson gson, Object obj) {
-        if (obj == null) {
-            return "";
-        }
+    public static String toJson(@Nullable Gson gson, Object obj) {
         return getAvailableGson(gson).toJson(obj);
     }
 
@@ -82,14 +80,11 @@ public abstract class GsonUtils {
      * @param <T>  the convert generic of class object.
      * @return Convert JSON string to an instance of the specified type.
      */
-    public static <T> T fromJson(Gson gson, String json, Class<T> type) {
-        if (json == null || type == null) {
-            return null;
-        }
+    public static <T> T fromJson(@Nullable Gson gson, String json, Class<T> type) {
         return getAvailableGson(gson).fromJson(json, type);
     }
 
-    private static Gson getAvailableGson(Gson gson) {
+    private static Gson getAvailableGson(@Nullable Gson gson) {
         return gson != null ? gson : defatultGson;
     }
 }
