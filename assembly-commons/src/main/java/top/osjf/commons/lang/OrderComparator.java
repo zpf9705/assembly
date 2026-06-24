@@ -42,7 +42,6 @@ public class OrderComparator implements Comparator<Object> {
      * Build an adapted order comparator with the given source provider.
      * @param sourceProvider the order source provider to use
      * @return the adapted comparator
-     * @since 4.1
      */
     public Comparator<Object> withSourceProvider(OrderSourceProvider sourceProvider) {
         return (o1, o2) -> doCompare(o1, o2, sourceProvider);
@@ -134,7 +133,6 @@ public class OrderComparator implements Comparator<Object> {
      * another, in addition to serving for ordering purposes in a list/array.
      * @param obj the object to check
      * @return the priority value, or {@code null} if none
-     * @since 4.1
      */
     @Nullable
     public Integer getPriority(Object obj) {
@@ -188,7 +186,6 @@ public class OrderComparator implements Comparator<Object> {
 
     /**
      * Strategy interface to provide an order source for a given object.
-     * @since 4.1
      */
     @FunctionalInterface
     public interface OrderSourceProvider {
