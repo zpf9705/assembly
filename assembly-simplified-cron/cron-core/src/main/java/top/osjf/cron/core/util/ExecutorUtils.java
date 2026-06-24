@@ -34,7 +34,6 @@ public abstract class ExecutorUtils {
      * @param awaitTermination              the flag that whether await termination.
      * @param awaitTerminationTimeout       the maximum time to wait
      * @param awaitTerminationTimeoutUnit   the time unit of the timeout argument.
-     * @throws NullPointerException if input {@link ExecutorService} or {@link TimeUnit} is {@literal null}.
      */
     public static void shutdownExecutor(ExecutorService executorService,
                                         boolean awaitTermination, long awaitTerminationTimeout,
