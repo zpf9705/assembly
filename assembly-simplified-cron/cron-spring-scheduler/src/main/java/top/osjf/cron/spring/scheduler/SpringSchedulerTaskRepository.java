@@ -292,6 +292,14 @@ public class SpringSchedulerTaskRepository
         cancelFuture(id);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void removeAllInternal() {
+        cancelAllFutures();
+    }
+
     @Override
     public void destroy() {
         super.stop();

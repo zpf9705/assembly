@@ -197,6 +197,18 @@ public abstract class ListenableTaskScheduler extends AbstractCronTaskRepository
     }
 
     /**
+     * Cancel all cache {@link ScheduledFuture} tasks.
+     * @since 3.0.2
+     */
+    protected void cancelAllFutures() {
+        for (ListenableScheduledFuture future : futureCache.values()) {
+            if (future != null && !future.isCancelled()) {
+                future.cancel(true);
+            }
+        }
+    }
+
+    /**
      * The closing operation of the task scheduler and task cache cleaning should be completed by
      * this class, compatible with the Spring framework's bean cycle processing, and should be
      * completed by the resource class.

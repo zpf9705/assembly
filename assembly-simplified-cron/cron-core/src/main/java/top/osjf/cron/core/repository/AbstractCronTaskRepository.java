@@ -187,6 +187,16 @@ public abstract class AbstractCronTaskRepository
         }
     }
 
+    @Override
+    public void removeAll() throws CronInternalException {
+        try {
+            removeAllInternal();
+        }
+        catch (Exception ex) {
+            throw new CronInternalException(ex);
+        }
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -376,6 +386,19 @@ public abstract class AbstractCronTaskRepository
      * @throws Exception Any exception thrown by the underlying scheduling framework during deletion
      */
     protected abstract void removeInternal(String id) throws Exception;
+
+    /**
+     * Underlying internal batch deletion method to clear all registered scheduled tasks and release
+     * all runtime resources held by the current repository.
+     * <p>
+     * This method is invoked after the outer public {@link #removeAll()} method, no parameter verification
+     * is required in subclasses.Any runtime or checked exception thrown during implementation will be
+     * uniformly caught and wrapped into {@link CronInternalException}.
+     *
+     * @throws Exception Any exception thrown by the underlying scheduling framework during batch task
+     * removal and resource recycling
+     */
+    protected abstract void removeAllInternal() throws Exception;
 
     /**
      * Underlying internal existence judgment method for specified task ID.

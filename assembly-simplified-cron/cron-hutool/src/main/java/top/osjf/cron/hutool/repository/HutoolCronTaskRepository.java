@@ -391,7 +391,14 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
     @Override
     public void removeInternal(@NotNull String taskId) {
         getInitializedScheduler().descheduleWithStatus(taskId);
+    }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void removeAllInternal() {
+        getInitializedScheduler().clear();
     }
 
     @Override

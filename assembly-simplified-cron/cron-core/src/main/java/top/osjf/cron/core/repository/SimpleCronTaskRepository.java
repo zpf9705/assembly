@@ -520,4 +520,16 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
             future.cancel(true);
         }
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void removeAllInternal() {
+        for (SimpleRunnabledScheduledFuture future : futureCache.values()) {
+            if (future != null && !future.isCancelled()) {
+                future.cancel(true);
+            }
+        }
+    }
 }

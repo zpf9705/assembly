@@ -393,6 +393,14 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
         getInitializedScheduler().deleteJob(QuartzUtils.getJobKey(id));
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void removeAllInternal() throws Exception {
+        getInitializedScheduler().clear();
+    }
+
     @Override
     @NotNull
     protected CronListenerCollector getCronListenerCollector() {

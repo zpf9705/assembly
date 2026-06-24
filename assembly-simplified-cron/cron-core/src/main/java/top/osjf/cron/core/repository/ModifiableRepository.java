@@ -53,4 +53,13 @@ public interface ModifiableRepository extends Repository {
      *                                  within the scheduling architecture.
      */
     void remove(String id) throws CronInternalException;
+
+    /**
+     * Remove all registered cron tasks within the current repository and release all scheduling
+     * resources.
+     * @throws CronInternalException    if an unsupported or incorrect related exception occurs
+     *                                  within the scheduling architecture.
+     * @since 3.0.2
+     */
+    void removeAll() throws CronInternalException;
 }

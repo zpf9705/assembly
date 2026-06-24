@@ -16,10 +16,7 @@
 
 package top.osjf.cron.cron4j.repository;
 
-import it.sauronsoftware.cron4j.InvalidPatternException;
-import it.sauronsoftware.cron4j.Scheduler;
-import it.sauronsoftware.cron4j.SchedulingPattern;
-import it.sauronsoftware.cron4j.Task;
+import it.sauronsoftware.cron4j.*;
 import top.osjf.commons.lang.NotNull;
 import top.osjf.commons.lang.Nullable;
 import top.osjf.commons.util.StringUtils;
@@ -366,6 +363,31 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
             }
         }
         getInitializedScheduler().deschedule(taskId);
+    }
+
+    @Override
+    protected void removeAllInternal() {
+
+        TaskCollector memoryTaskCollector = null;
+        for (TaskCollector taskCollector : getInitializedScheduler().getTaskCollectors()) {
+            if ("it.sauronsoftware.cron4j.MemoryTaskCollector"
+                    .equals(taskCollector.getClass().getName())) {
+                memoryTaskCollector = taskCollector;
+                break;
+            }
+        }
+
+        if (memoryTaskCollector != null) {
+            TaskTable tasks = memoryTaskCollector.getTasks();
+            for (int i = 0; i < tasks.size(); i++) {
+                tasks.remove(i);
+            }
+        }
+
+        for (File scheduledFile : getInitializedScheduler().getScheduledFiles()) {
+            getInitializedScheduler().descheduleFile(scheduledFile);
+        }
+        fileIdMap.clear();
     }
 
     @Override
