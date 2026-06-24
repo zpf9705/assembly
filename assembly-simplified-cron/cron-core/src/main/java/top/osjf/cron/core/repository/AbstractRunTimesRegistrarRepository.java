@@ -17,9 +17,8 @@
 
 package top.osjf.cron.core.repository;
 
-import top.osjf.cron.core.exception.CronInternalException;
-import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 import top.osjf.commons.lang.NotNull;
+import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.listener.SimpleCronListener;
 
@@ -95,8 +94,7 @@ public abstract class AbstractRunTimesRegistrarRepository
      * {@inheritDoc}
      */
     @Override
-    public void registerRunTimes(String expression, TaskBody body, int times)
-            throws CronInternalException, UnsupportedTaskBodyException {
+    public void registerRunTimes(String expression, TaskBody body, int times) throws CronInternalException {
         registerRunTimes(() -> register(expression, body), times);
     }
 

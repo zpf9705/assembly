@@ -96,6 +96,7 @@
         <fastjson2>2.0.41</fastjson2>
         <jetbrains.annotation>26.0.2</jetbrains.annotation>
         <gson>2.9.0</gson>
+        <micrometer>1.7.5</micrometer>
     </properties>
 
     <dependencyManagement>
@@ -131,6 +132,11 @@
                 <groupId>com.google.code.gson</groupId>
                 <artifactId>gson</artifactId>
                 <version>${gson}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.micrometer</groupId>
+                <artifactId>micrometer-core</artifactId>
+                <version>${micrometer}</version>
             </dependency>
 
             <!-- spring / spring-boot -->

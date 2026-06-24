@@ -94,8 +94,7 @@ public abstract class AbstractRunTimeoutRegistrarRepository
      * {@inheritDoc}
      */
     @Override
-    public String register(String expression, TaskBody body, RunningTimeout timeout)
-            throws CronInternalException, UnsupportedTaskBodyException {
+    public String register(String expression, TaskBody body, RunningTimeout timeout) throws CronInternalException {
         return register(expression, asRunnable(body), timeout);
     }
 
@@ -139,7 +138,7 @@ public abstract class AbstractRunTimeoutRegistrarRepository
      */
     @Override
     public void registerRunTimes(String expression, TaskBody body, int times, RunningTimeout timeout)
-            throws CronInternalException, UnsupportedTaskBodyException {
+            throws CronInternalException {
         registerRunTimes(expression, asRunnable(body), times, timeout);
     }
 
