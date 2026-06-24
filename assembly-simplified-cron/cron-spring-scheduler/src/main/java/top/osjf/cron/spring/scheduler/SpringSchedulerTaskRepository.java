@@ -33,7 +33,6 @@ import org.springframework.util.SimpleIdGenerator;
 import top.osjf.commons.lang.NotNull;
 import top.osjf.commons.lang.Nullable;
 import top.osjf.cron.core.exception.CronExpressionInvalidException;
-import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.repository.*;
@@ -154,10 +153,8 @@ public class SpringSchedulerTaskRepository
      */
     @Override
     @NotNull
-    public String registerInternal(@NotNull String expression, @NotNull Runnable runnable) throws CronInternalException {
-        return RepositoryUtils.doRegister(() ->
-                        schedule(runnable, new CronTrigger(expression)).getListenableRunnable().getId(),
-                IllegalArgumentException.class);
+    public String registerInternal(@NotNull String expression, @NotNull Runnable runnable) {
+        return schedule(runnable, new CronTrigger(expression)).getListenableRunnable().getId();
     }
 
     /**
@@ -165,8 +162,8 @@ public class SpringSchedulerTaskRepository
      */
     @Override
     @NotNull
-    public String registerInternal(@NotNull String expression, @NotNull CronMethodRunnable runnable) throws CronInternalException {
-        return register(expression, (Runnable) runnable);
+    public String registerInternal(@NotNull String expression, @NotNull CronMethodRunnable runnable) {
+        return registerInternal(expression, (Runnable) runnable);
     }
 
     /**
@@ -174,8 +171,8 @@ public class SpringSchedulerTaskRepository
      */
     @Override
     @NotNull
-    public String registerInternal(@NotNull String expression, @NotNull RunnableTaskBody body) throws CronInternalException {
-        return register(expression, body.getRunnable());
+    public String registerInternal(@NotNull String expression, @NotNull RunnableTaskBody body) {
+        return registerInternal(expression, body.getRunnable());
     }
 
     /**
@@ -183,9 +180,10 @@ public class SpringSchedulerTaskRepository
      */
     @Override
     @NotNull
-    public String registerInternal(@NotNull String expression, @NotNull TaskBody body) {
+    public String registerInternal(@NotNull String expression, @NotNull TaskBody body)
+            throws UnsupportedTaskBodyException{
         if (body.isWrapperFor(RunnableTaskBody.class)) {
-            return register(expression, body.unwrap(RunnableTaskBody.class));
+            return registerInternal(expression, body.unwrap(RunnableTaskBody.class));
         }
         throw new UnsupportedTaskBodyException(body.getClass());
     }
@@ -196,7 +194,7 @@ public class SpringSchedulerTaskRepository
     @Override
     @NotNull
     public String registerInternal(@NotNull top.osjf.cron.core.repository.CronTask task) {
-        return register(task.getExpression(), task.getRunnable());
+        return registerInternal(task.getExpression(), task.getRunnable());
     }
 
     @Override

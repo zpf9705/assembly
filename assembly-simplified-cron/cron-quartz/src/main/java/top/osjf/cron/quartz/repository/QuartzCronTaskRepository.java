@@ -20,11 +20,10 @@ import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.simpl.SimpleThreadPool;
-import top.osjf.cron.core.exception.CronExpressionInvalidException;
-import top.osjf.cron.core.exception.CronInternalException;
-import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 import top.osjf.commons.lang.NotNull;
 import top.osjf.commons.lang.Nullable;
+import top.osjf.cron.core.exception.CronExpressionInvalidException;
+import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 import top.osjf.cron.core.lifecycle.InitializeProperties;
 import top.osjf.cron.core.listener.CronListenerCollector;
 import top.osjf.cron.core.repository.*;
@@ -218,8 +217,27 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      */
     @Override
     @NotNull
-    public String registerInternal(@NotNull String expression, @NotNull Runnable runnable) throws CronInternalException {
-        return doRegister(expression, new JobKeyWrapperdRunnable(runnable));
+    public String registerInternal(@NotNull String expression, @NotNull Runnable runnable)
+            throws SchedulerException {
+        return doRegisterInternal(expression, new JobKeyWrapperdRunnable(runnable));
+    }
+
+    private String doRegisterInternal(String expression, JobKeyWrapperdRunnable runnable)
+            throws SchedulerException {
+        JobKey jobKey = runnable.getJobKey();
+        TriggerKey triggerKey = new TriggerKey(jobKey.getName(), jobKey.getGroup());
+        TriggerBuilder<CronTrigger> triggerBuilder = TriggerBuilder.newTrigger()
+                .withIdentity(triggerKey)
+                .startNow()
+                .withSchedule(CronScheduleBuilder.cronSchedule(expression));
+        JobDetail jobDetail = JobBuilder.newJob(RunnableJob.class)
+                .withIdentity(jobKey.getName(), jobKey.getGroup()).build();
+        String jobId = QuartzUtils.getJobIdentity(jobKey);
+        JobDataMap jobDataMap = jobDetail.getJobDataMap();
+        jobDataMap.put(JobConstants.RUNNABLE_PROPERTY, runnable);
+        jobDataMap.put(JobConstants.ID_PROPERTY, jobId);
+        getInitializedScheduler().scheduleJob(jobDetail, triggerBuilder.build());
+        return jobId;
     }
 
     /**
@@ -227,8 +245,9 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      */
     @Override
     @NotNull
-    public String registerInternal(@NotNull String expression, @NotNull CronMethodRunnable runnable) throws CronInternalException {
-        return register(expression, (Runnable) runnable);
+    public String registerInternal(@NotNull String expression, @NotNull CronMethodRunnable runnable)
+            throws SchedulerException {
+        return registerInternal(expression, (Runnable) runnable);
     }
 
     /**
@@ -236,8 +255,9 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      */
     @Override
     @NotNull
-    public String registerInternal(@NotNull String expression, @NotNull RunnableTaskBody body) throws CronInternalException {
-        return register(expression, body.getRunnable());
+    public String registerInternal(@NotNull String expression, @NotNull RunnableTaskBody body)
+            throws SchedulerException {
+        return registerInternal(expression, body.getRunnable());
     }
 
     /**
@@ -245,9 +265,10 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      */
     @Override
     @NotNull
-    public String registerInternal(@NotNull String expression, @NotNull TaskBody body) {
+    public String registerInternal(@NotNull String expression, @NotNull TaskBody body)
+            throws SchedulerException, UnsupportedTaskBodyException {
         if (body.isWrapperFor(RunnableTaskBody.class)) {
-            return register(expression, ((RunnableTaskBody) body).getRunnable());
+            return registerInternal(expression, ((RunnableTaskBody) body).getRunnable());
         }
         throw new UnsupportedTaskBodyException(body.getClass());
     }
@@ -257,27 +278,8 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      */
     @Override
     @NotNull
-    public String registerInternal(@NotNull CronTask task) {
-        return register(task.getExpression(), task.getRunnable());
-    }
-
-    private String doRegister(String expression, JobKeyWrapperdRunnable runnable) {
-        return RepositoryUtils.doRegister(() -> {
-            JobKey jobKey = runnable.getJobKey();
-            TriggerKey triggerKey = new TriggerKey(jobKey.getName(), jobKey.getGroup());
-            TriggerBuilder<CronTrigger> triggerBuilder = TriggerBuilder.newTrigger()
-                    .withIdentity(triggerKey)
-                    .startNow()
-                    .withSchedule(CronScheduleBuilder.cronSchedule(expression));
-            JobDetail jobDetail = JobBuilder.newJob(RunnableJob.class)
-                            .withIdentity(jobKey.getName(), jobKey.getGroup()).build();
-            String jobId = QuartzUtils.getJobIdentity(jobKey);
-            JobDataMap jobDataMap = jobDetail.getJobDataMap();
-            jobDataMap.put(JobConstants.RUNNABLE_PROPERTY, runnable);
-            jobDataMap.put(JobConstants.ID_PROPERTY, jobId);
-            getInitializedScheduler().scheduleJob(jobDetail, triggerBuilder.build());
-            return jobId;
-        }, ParseException.class);
+    public String registerInternal(@NotNull CronTask task) throws SchedulerException {
+        return registerInternal(task.getExpression(), task.getRunnable());
     }
 
     @Override
@@ -285,7 +287,8 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
         JobKey jobKey = QuartzUtils.getJobKey(id);
         try {
             return getInitializedScheduler().checkExists(jobKey);
-        } catch (SchedulerException e) {
+        }
+        catch (SchedulerException ex) {
             return false;
         }
     }
@@ -371,25 +374,23 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      * {@inheritDoc}
      */
     @Override
-    public void updateInternal(@NotNull String id, @NotNull String newExpression) {
+    public void updateInternal(@NotNull String id, @NotNull String newExpression) throws SchedulerException {
         JobKey jobKey = QuartzUtils.getJobKey(id);
         TriggerKey triggerKey = new TriggerKey(jobKey.getName(), jobKey.getGroup());
-        RepositoryUtils.doVoidInvoke(() -> getInitializedScheduler().rescheduleJob(triggerKey,
+        getInitializedScheduler().rescheduleJob(triggerKey,
                 TriggerBuilder.newTrigger()
                         .withIdentity(triggerKey)
                         .startNow()
                         .withSchedule(CronScheduleBuilder.cronSchedule(newExpression))
-                        .build()), ParseException.class);
+                        .build());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void removeInternal(@NotNull String id) {
-        RepositoryUtils.doVoidInvoke(() ->
-                        getInitializedScheduler().deleteJob(QuartzUtils.getJobKey(id)),
-                null);
+    public void removeInternal(@NotNull String id) throws SchedulerException {
+        getInitializedScheduler().deleteJob(QuartzUtils.getJobKey(id));
     }
 
     @Override
@@ -424,8 +425,9 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
     public void start() {
         try {
             getInitializedScheduler().start();
-        } catch (SchedulerException e) {
-            throw new IllegalStateException(e);
+        }
+        catch (SchedulerException ex) {
+            throw new IllegalStateException(ex);
         }
     }
 
@@ -450,7 +452,8 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
     public boolean isStarted() {
         try {
             return getInitializedScheduler().isStarted();
-        } catch (SchedulerException e) {
+        }
+        catch (SchedulerException ex) {
             return false;
         }
     }

@@ -17,10 +17,8 @@
 
 package top.osjf.cron.core.repository;
 
-import top.osjf.commons.lang.Nullable;
-import top.osjf.cron.core.exception.CronExpressionInvalidException;
-import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.commons.lang.NotNull;
+import top.osjf.commons.lang.Nullable;
 
 import java.util.Collections;
 import java.util.List;
@@ -71,14 +69,14 @@ public class NoOpCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
-    public void checkSupportedExpression(String expression) throws CronExpressionInvalidException {
+    public void checkSupportedExpression(String expression) {
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String registerInternal(@NotNull String expression, @NotNull Runnable runnable) throws CronInternalException {
+    public String registerInternal(@NotNull String expression, @NotNull Runnable runnable)  {
         return getWithoutOperationId();
     }
 
@@ -86,7 +84,7 @@ public class NoOpCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
-    public String registerInternal(@NotNull String expression, @NotNull CronMethodRunnable runnable) throws CronInternalException {
+    public String registerInternal(@NotNull String expression, @NotNull CronMethodRunnable runnable)  {
         return getWithoutOperationId();
     }
 
@@ -94,7 +92,7 @@ public class NoOpCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
-    public String registerInternal(@NotNull String expression, @NotNull RunnableTaskBody body) throws CronInternalException {
+    public String registerInternal(@NotNull String expression, @NotNull RunnableTaskBody body)  {
         return getWithoutOperationId();
     }
 
@@ -102,7 +100,7 @@ public class NoOpCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
-    public String registerInternal(@NotNull String expression, @NotNull TaskBody body) throws CronInternalException {
+    public String registerInternal(@NotNull String expression, @NotNull TaskBody body)  {
         return getWithoutOperationId();
     }
 
@@ -110,7 +108,7 @@ public class NoOpCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
-    public String registerInternal(@NotNull CronTask task) throws CronInternalException {
+    public String registerInternal(@NotNull CronTask task) {
         return getWithoutOperationId();
     }
 
@@ -142,14 +140,14 @@ public class NoOpCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
-    public void updateInternal(@NotNull String id, @NotNull String newExpression) throws CronInternalException {
+    public void updateInternal(@NotNull String id, @NotNull String newExpression)  {
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void removeInternal(@NotNull String id) throws CronInternalException {
+    public void removeInternal(@NotNull String id)  {
     }
 
     @Override

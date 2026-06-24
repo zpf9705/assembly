@@ -432,7 +432,7 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
-    public String registerInternal(@NotNull String expression, @NotNull Runnable runnable) throws CronInternalException {
+    public String registerInternal(@NotNull String expression, @NotNull Runnable runnable) {
         return new SimpleRunnabledScheduledFuture(expression, runnable).listenerContext.id;
     }
 
@@ -440,25 +440,26 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
-    public String registerInternal(@NotNull String expression, @NotNull CronMethodRunnable runnable) throws CronInternalException {
-        return register(expression, (Runnable) runnable);
+    public String registerInternal(@NotNull String expression, @NotNull CronMethodRunnable runnable) {
+        return registerInternal(expression, (Runnable) runnable);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String registerInternal(@NotNull String expression, @NotNull RunnableTaskBody body) throws CronInternalException {
-        return register(expression, body.getRunnable());
+    public String registerInternal(@NotNull String expression, @NotNull RunnableTaskBody body) {
+        return registerInternal(expression, body.getRunnable());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String registerInternal(@NotNull String expression, @NotNull TaskBody body) throws CronInternalException {
+    public String registerInternal(@NotNull String expression, @NotNull TaskBody body)
+            throws UnsupportedTaskBodyException{
         if (body.isWrapperFor(RunnableTaskBody.class)) {
-            return register(expression, body.unwrap(RunnableTaskBody.class));
+            return registerInternal(expression, body.unwrap(RunnableTaskBody.class));
         }
         throw new UnsupportedTaskBodyException(body.getClass());
     }
@@ -467,8 +468,8 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
-    public String registerInternal(@NotNull CronTask task) throws CronInternalException {
-        return register(task.getExpression(), task.getRunnable());
+    public String registerInternal(@NotNull CronTask task) {
+        return registerInternal(task.getExpression(), task.getRunnable());
     }
 
     @Override
@@ -500,7 +501,7 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
-    public void updateInternal(@NotNull String id, @NotNull String newExpression) throws CronInternalException {
+    public void updateInternal(@NotNull String id, @NotNull String newExpression)  {
         SimpleRunnabledScheduledFuture future = futureCache.get(id);
         if (future == null) {
             throw new CronInternalException("Missing task information according to id " + id);
@@ -513,7 +514,7 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
-    public void removeInternal(@NotNull String id) throws CronInternalException {
+    public void removeInternal(@NotNull String id) {
         SimpleRunnabledScheduledFuture future = futureCache.remove(id);
         if (future != null && !future.isCancelled()) {
             future.cancel(true);

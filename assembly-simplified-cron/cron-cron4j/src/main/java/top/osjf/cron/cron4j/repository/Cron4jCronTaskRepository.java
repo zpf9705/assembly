@@ -20,12 +20,11 @@ import it.sauronsoftware.cron4j.InvalidPatternException;
 import it.sauronsoftware.cron4j.Scheduler;
 import it.sauronsoftware.cron4j.SchedulingPattern;
 import it.sauronsoftware.cron4j.Task;
-import top.osjf.commons.util.StringUtils;
-import top.osjf.cron.core.exception.CronExpressionInvalidException;
-import top.osjf.cron.core.exception.CronInternalException;
-import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 import top.osjf.commons.lang.NotNull;
 import top.osjf.commons.lang.Nullable;
+import top.osjf.commons.util.StringUtils;
+import top.osjf.cron.core.exception.CronExpressionInvalidException;
+import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 import top.osjf.cron.core.lifecycle.InitializeProperties;
 import top.osjf.cron.core.listener.CronListenerCollector;
 import top.osjf.cron.core.repository.*;
@@ -212,16 +211,39 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
      * The cron expression of cron4j allows a maximum of 5 parts, each
      * separated by a space, representing "minute", "hour", "day", "month",
      * "week" from left to right, and does not include the second part.
-     *
-     * @param expression {@inheritDoc}
-     * @param runnable   {@inheritDoc}
-     * @return {@inheritDoc}
      */
     @Override
     @NotNull
-    public String registerInternal(@NotNull String expression, @NotNull Runnable runnable) throws CronInternalException {
-        return RepositoryUtils.doRegister(() -> getInitializedScheduler().schedule(expression, runnable),
-                InvalidPatternException.class);
+    public String registerInternal(@NotNull String expression, @NotNull Runnable runnable) {
+        return getInitializedScheduler().schedule(expression, runnable);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Cron4j itself does not support cron expressions precise to seconds.
+     * The cron expression of cron4j allows a maximum of 5 parts, each
+     * separated by a space, representing "minute", "hour", "day", "month",
+     * "week" from left to right, and does not include the second part.
+     */
+    @Override
+    @NotNull
+    public String registerInternal(@NotNull String expression, @NotNull CronMethodRunnable runnable) {
+        return registerInternal(expression, (Runnable) runnable);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Cron4j itself does not support cron expressions precise to seconds.
+     * The cron expression of cron4j allows a maximum of 5 parts, each
+     * separated by a space, representing "minute", "hour", "day", "month",
+     * "week" from left to right, and does not include the second part.
+     */
+    @Override
+    @NotNull
+    public String registerInternal(@NotNull String expression, @NotNull RunnableTaskBody body) {
+        return registerInternal(expression, body.getRunnable());
     }
 
     /**
@@ -232,49 +254,14 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
      * separated by a space, representing "minute", "hour", "day", "month",
      * "week" from left to right, and does not include the second part.
      *
-     * @param expression {@inheritDoc}
-     * @param runnable   {@inheritDoc}
-     * @return {@inheritDoc}
-     */
-    @Override
-    @NotNull
-    public String registerInternal(@NotNull String expression, @NotNull CronMethodRunnable runnable) throws CronInternalException {
-        return register(expression, (Runnable) runnable);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>Cron4j itself does not support cron expressions precise to seconds.
-     * The cron expression of cron4j allows a maximum of 5 parts, each
-     * separated by a space, representing "minute", "hour", "day", "month",
-     * "week" from left to right, and does not include the second part.
-     *
-     * @param expression {@inheritDoc}
-     * @param body       {@inheritDoc}
-     * @return {@inheritDoc}
-     */
-    @Override
-    @NotNull
-    public String registerInternal(@NotNull String expression, @NotNull RunnableTaskBody body) throws CronInternalException {
-        return register(expression, body.getRunnable());
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>Cron4j itself does not support cron expressions precise to seconds.
-     * The cron expression of cron4j allows a maximum of 5 parts, each
-     * separated by a space, representing "minute", "hour", "day", "month",
-     * "week" from left to right, and does not include the second part.
-     *
-     * @param expression {@inheritDoc}
      * @param body       support {@link FileTaskBody} or {@link RunnableTaskBody}
      * @return {@inheritDoc} , the ID of the timed file starts with {@link #FILE_ID_PREFIX}.
+     * @throws UnsupportedTaskBodyException {@inheritDoc}
      */
     @Override
     @NotNull
-    public String registerInternal(@NotNull String expression, @NotNull TaskBody body) {
+    public String registerInternal(@NotNull String expression, @NotNull TaskBody body)
+            throws UnsupportedTaskBodyException {
         if (body.isWrapperFor(FileTaskBody.class)) {
             FileTaskBody fileTaskBody = body.unwrap(FileTaskBody.class);
             File file = fileTaskBody.getFile();
@@ -283,7 +270,7 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
             fileIdMap.putIfAbsent(fileID, file);
             return fileID;
         } else if (body.isWrapperFor(RunnableTaskBody.class)) {
-            return register(expression, body.unwrap(RunnableTaskBody.class));
+            return registerInternal(expression, body.unwrap(RunnableTaskBody.class));
         }
         throw new UnsupportedTaskBodyException(body.getClass());
     }
@@ -302,7 +289,7 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
     @Override
     @NotNull
     public String registerInternal(@NotNull CronTask task) {
-        return register(task.getExpression(), new RunnableTaskBody(task.getRunnable()));
+        return registerInternal(task.getExpression(), task.getRunnable());
     }
 
     @Override
@@ -361,8 +348,7 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
      */
     @Override
     public void updateInternal(@NotNull String taskId, @NotNull String newExpression) {
-        RepositoryUtils.doVoidInvoke(() ->
-                getInitializedScheduler().reschedule(taskId, newExpression), InvalidPatternException.class);
+        getInitializedScheduler().reschedule(taskId, newExpression);
     }
 
     /**
@@ -379,8 +365,7 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
                 getInitializedScheduler().descheduleFile(file);
             }
         }
-        RepositoryUtils.doVoidInvoke(() ->
-                getInitializedScheduler().deschedule(taskId), null);
+        getInitializedScheduler().deschedule(taskId);
     }
 
     @Override
