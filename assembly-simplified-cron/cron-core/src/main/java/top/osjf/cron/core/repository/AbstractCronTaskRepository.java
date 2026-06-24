@@ -58,7 +58,14 @@ public abstract class AbstractCronTaskRepository
      */
     @Override
     public String register(String expression, Runnable runnable) throws CronInternalException {
-        String id = registerInternal(expression, runnable);
+        checkSupportedExpression(expression);
+        String id;
+        try {
+            id = registerInternal(expression, runnable);
+        }
+        catch (Exception ex) {
+            throw new CronInternalException(ex);
+        }
         call(expression, runnable, id);
         return id;
     }
@@ -69,7 +76,14 @@ public abstract class AbstractCronTaskRepository
     @Override
     public String register(String expression, CronMethodRunnable runnable)
             throws CronInternalException {
-        String id = registerInternal(expression, runnable);
+        checkSupportedExpression(expression);
+        String id;
+        try {
+            id = registerInternal(expression, runnable);
+        }
+        catch (Exception ex) {
+            throw new CronInternalException(ex);
+        }
         call(expression, runnable, id);
         return id;
     }
@@ -80,7 +94,14 @@ public abstract class AbstractCronTaskRepository
     @Override
     public String register(String expression, RunnableTaskBody body)
             throws CronInternalException {
-        String id = registerInternal(expression, body);
+        checkSupportedExpression(expression);
+        String id;
+        try {
+            id = registerInternal(expression, body);
+        }
+        catch (Exception ex) {
+            throw new CronInternalException(ex);
+        }
         call(expression, body, id);
         return id;
     }
@@ -91,7 +112,17 @@ public abstract class AbstractCronTaskRepository
     @Override
     public String register(String expression, TaskBody body)
             throws CronInternalException, UnsupportedTaskBodyException {
-        String id = registerInternal(expression, body);
+        checkSupportedExpression(expression);
+        String id;
+        try {
+            id = registerInternal(expression, body);
+        }
+        catch (UnsupportedTaskBodyException ex) {
+            throw ex;
+        }
+        catch (Exception ex) {
+            throw new CronInternalException(ex);
+        }
         call(expression, body, id);
         return id;
     }
@@ -101,7 +132,14 @@ public abstract class AbstractCronTaskRepository
      */
     @Override
     public String register(CronTask task) throws CronInternalException {
-        String id = registerInternal(task);
+        checkSupportedExpression(task.getExpression());
+        String id;
+        try {
+            id = registerInternal(task);
+        }
+        catch (Exception ex) {
+            throw new CronInternalException(ex);
+        }
         call(task, id);
         return id;
     }
@@ -111,7 +149,13 @@ public abstract class AbstractCronTaskRepository
      */
     @Override
     public void update(String id, String newExpression) throws CronInternalException {
-        updateInternal(id, newExpression);
+        checkSupportedExpression(newExpression);
+        try {
+            updateInternal(id, newExpression);
+        }
+        catch (Exception ex) {
+            throw new CronInternalException(ex);
+        }
     }
 
     /**
@@ -119,7 +163,12 @@ public abstract class AbstractCronTaskRepository
      */
     @Override
     public void remove(String id) throws CronInternalException {
-        removeInternal(id);
+        try {
+            removeInternal(id);
+        }
+        catch (Exception ex) {
+            throw new CronInternalException(ex);
+        }
     }
 
     /**
@@ -205,84 +254,126 @@ public abstract class AbstractCronTaskRepository
         return given;
     }
 
-    /*   Internal API implementation method group after parameter validation in version 3.0.2.    */
-
-    /*
-     * (NON-JavaDoc)
-     * @param expression
-     * @param runnable
-     * @return
-     * @throws CronInternalException
+    /**
+     * Underlying internal registration method for {@link Runnable} scheduled task.
+     * <p>
+     * All input parameters have passed legality verification and framework expression rule verification
+     * in the outer public method.
+     * Subclasses implement the task persistence and scheduling registration logic for the current framework.
+     * Any runtime or checked exception thrown during implementation will be uniformly wrapped into
+     * {@link CronInternalException}.
+     *
+     * @param expression Valid cron or periodic expression that passed framework verification
+     * @param runnable Original executable task body
+     * @return Globally unique task ID generated after successful registration
+     * @throws Exception Any exception thrown by the underlying scheduling framework during registration
      */
-    protected abstract String registerInternal(String expression, Runnable runnable)
-            throws CronInternalException;
+    protected abstract String registerInternal(String expression, Runnable runnable) throws Exception;
 
-    /*
-     * (NON-JavaDoc)
-     * @param expression
-     * @param runnable
-     * @return
-     * @throws CronInternalException
+    /**
+     * Underlying internal registration method for {@link CronMethodRunnable} scheduled task.
+     * <p>
+     * All input parameters have passed legality verification and framework expression rule verification
+     * in the outer public method.
+     * Subclasses implement the task persistence and scheduling registration logic for the current framework.
+     * Any runtime or checked exception thrown during implementation will be uniformly wrapped into
+     * {@link CronInternalException}.
+     *
+     * @param expression Valid cron or periodic expression that passed framework verification
+     * @param runnable Method reflection wrapped task executable body
+     * @return Globally unique task ID generated after successful registration
+     * @throws Exception Any exception thrown by the underlying scheduling framework during registration
      */
-    protected abstract String registerInternal(String expression, CronMethodRunnable runnable)
-            throws CronInternalException;
+    protected abstract String registerInternal(String expression, CronMethodRunnable runnable) throws Exception;
 
-    /*
-     * (NON-JavaDoc)
-     * @param expression
-     * @param body
-     * @return
-     * @throws CronInternalException
+    /**
+     * Underlying internal registration method for {@link RunnableTaskBody} scheduled task.
+     * <p>
+     * All input parameters have passed legality verification and framework expression rule verification
+     * in the outer public method.
+     * Subclasses implement the task persistence and scheduling registration logic for the current framework.
+     * Any runtime or checked exception thrown during implementation will be uniformly wrapped into
+     * {@link CronInternalException}.
+     *
+     * @param expression Valid cron or periodic expression that passed framework verification
+     * @param body Runnable encapsulated task metadata and execution body
+     * @return Globally unique task ID generated after successful registration
+     * @throws Exception Any exception thrown by the underlying scheduling framework during registration
      */
-    protected abstract String registerInternal(String expression, RunnableTaskBody body)
-            throws CronInternalException;
+    protected abstract String registerInternal(String expression, RunnableTaskBody body) throws Exception;
 
-    /*
-     * (NON-JavaDoc)
-     * @param expression
-     * @param body
-     * @return
-     * @throws CronInternalException
-     * @throws UnsupportedTaskBodyException
+    /**
+     * Underlying internal registration method for generic {@link TaskBody} custom task body.
+     * <p>
+     * All input parameters have passed legality verification and framework expression rule verification
+     * in the outer public method. Subclasses implement the task persistence and scheduling registration
+     * logic for the current framework.Any runtime or checked exception thrown during implementation will
+     * be uniformly wrapped into {@link CronInternalException}.
+     *
+     * @param expression Valid cron or periodic expression that passed framework verification
+     * @param body Generic custom encapsulated task body
+     * @return Globally unique task ID generated after successful registration
+     * @throws Exception Any exception thrown by the underlying scheduling framework during registration
+     * @throws UnsupportedTaskBodyException Thrown when the current scheduling framework does not support the incoming {@link TaskBody} type
      */
-    protected abstract String registerInternal(String expression, TaskBody body)
-            throws CronInternalException, UnsupportedTaskBodyException;
+    protected abstract String registerInternal(String expression, TaskBody body) throws Exception,
+            UnsupportedTaskBodyException;
 
-    /*
-     * (NON-JavaDoc)
-     * @param task
-     * @return
-     * @throws CronInternalException
+    /**
+     * Underlying internal registration method for complete {@link CronTask} metadata object.
+     * <p>
+     * The complete task metadata has completed parameter verification in the outer public method.
+     * Subclasses store the full task metadata and complete framework scheduling registration.
+     * Any runtime or checked exception thrown during implementation will be uniformly wrapped into
+     * {@link CronInternalException}.
+     *
+     * @param task Complete encapsulated cron task metadata
+     * @return Globally unique task ID generated after successful registration
+     * @throws Exception Any exception thrown by the underlying scheduling framework during registration
      */
-    protected abstract String registerInternal(CronTask task) throws CronInternalException;
+    protected abstract String registerInternal(CronTask task) throws Exception;
 
-    /*
-     * (NON-JavaDoc)
-     * @param id
-     * @param newExpression
-     * @throws CronInternalException
+    /**
+     * Underlying internal update method for modifying the cron expression of a specified task.
+     * <p>
+     * The task ID and new expression have passed parameter and framework rule verification in the
+     * outer public method.
+     * Subclasses implement the logic of updating the scheduled expression bound to the task.
+     * Any runtime or checked exception thrown during implementation will be uniformly wrapped into
+     * {@link CronInternalException}.
+     *
+     * @param id Unique identifier of the target task to be updated
+     * @param newExpression New valid cron expression that passed framework verification
+     * @throws Exception Any exception thrown by the underlying scheduling framework during update
      */
-    protected abstract void updateInternal(String id, String newExpression)
-            throws CronInternalException;
+    protected abstract void updateInternal(String id, String newExpression) throws Exception;
 
-    /*
-     * (NON-JavaDoc)
-     * @param id
-     * @throws CronInternalException
+    /**
+     * Underlying internal deletion method for releasing a scheduled task and its runtime resources.
+     * <p>
+     * The task ID has passed non-null parameter verification in the outer public method.
+     * Subclasses implement task metadata deletion and framework resource release logic.
+     * Any runtime or checked exception thrown during implementation will be uniformly wrapped into
+     * {@link CronInternalException}.
+     *
+     * @param id Unique identifier of the target task to be removed
+     * @throws Exception Any exception thrown by the underlying scheduling framework during deletion
      */
-    protected abstract void removeInternal(String id) throws CronInternalException;
+    protected abstract void removeInternal(String id) throws Exception;
 
-    /*
-     * (NON-JavaDoc)
-     * @param id
-     * @return
+    /**
+     * Underlying internal existence judgment method for specified task ID.
+     *
+     * @param id Unique identifier of the task to be queried
+     * @return {@code true} if the task exists in the current repository, otherwise {@code false}
      */
     protected abstract boolean hasCronTaskInfoInternal(String id);
 
-    /*
-     * (NON-JavaDoc)
-     * @param id
-     * @return
+    /**
+     * Underlying internal query method for obtaining complete task metadata.
+     *
+     * @param id Unique identifier of the target task
+     * @return Complete {@link CronTaskInfo} metadata of the task; return {@code null} if no matching task exists
      */
     @Nullable protected abstract CronTaskInfo getCronTaskInfoInternal(String id);
 }
