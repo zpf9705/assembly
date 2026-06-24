@@ -317,7 +317,7 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
          * @return A new {@link CronTaskInfo} by this.
          */
         public CronTaskInfo toCronTaskInfo() {
-            Runnable runnable = unwaperRunnable(rawRunnable);
+            Runnable runnable = unwrapRunnable(rawRunnable);
             if (runnable instanceof CronMethodRunnable) {
                 CronMethodRunnable cr = (CronMethodRunnable) runnable;
                 return customizeCronTaskInfo(new CronTaskInfo(listenerContext.id, cron.asString(), runnable,

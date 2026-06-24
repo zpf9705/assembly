@@ -337,7 +337,7 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
             return null;
         }
         Runnable runnable = getInitializedScheduler().getTaskRunnable(id);
-        runnable = unwaperRunnable(runnable);
+        runnable = unwrapRunnable(runnable);
         Object target = null;
         Method method = null;
         if (runnable instanceof CronMethodRunnable) {

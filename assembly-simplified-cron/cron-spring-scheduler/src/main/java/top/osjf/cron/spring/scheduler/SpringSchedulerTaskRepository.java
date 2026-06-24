@@ -248,7 +248,7 @@ public class SpringSchedulerTaskRepository
             expression = toPeriodicTriggerExpression(periodicTrigger);
         }
         Runnable runnable = listenableRunnable.getRunnable();
-        runnable = unwaperRunnable(runnable);
+        runnable = unwrapRunnable(runnable);
         Object target = null;
         Method method = null;
         if (runnable instanceof CronMethodRunnable) {

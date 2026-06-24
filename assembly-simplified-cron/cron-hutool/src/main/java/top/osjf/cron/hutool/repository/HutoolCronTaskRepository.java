@@ -354,7 +354,7 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
                     ((cn.hutool.cron.task.CronTask) task).getRaw() : task;
             if (sourceTask instanceof RunnableTask) {
                 runnable = (Runnable) ReflectUtil.getFieldValue(sourceTask, "runnable");
-                runnable = unwaperRunnable(runnable);
+                runnable = unwrapRunnable(runnable);
                 if (runnable instanceof CronMethodRunnable) {
                     CronMethodRunnable cmr = (CronMethodRunnable) runnable;
                     target = cmr.getTarget();
