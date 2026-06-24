@@ -24,7 +24,7 @@ package top.osjf.cron.core.exception;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public class UnsupportedLifecycleException extends UnsupportedOperationException {
+public class UnsupportedLifecycleException extends UnsupportedException {
 
     private static final long serialVersionUID = 7207060019635833868L;
 

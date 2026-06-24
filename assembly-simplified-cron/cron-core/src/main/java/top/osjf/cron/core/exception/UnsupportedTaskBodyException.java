@@ -25,7 +25,7 @@ import top.osjf.cron.core.repository.TaskBody;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public class UnsupportedTaskBodyException extends UnsupportedOperationException {
+public class UnsupportedTaskBodyException extends UnsupportedException {
 
     private static final long serialVersionUID = 8161867261983060710L;
 
