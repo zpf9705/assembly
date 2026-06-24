@@ -41,7 +41,7 @@ public abstract class AbstractListenerContext<T> implements ListenerContext {
     private RepositoryContext repositoryContext;
 
     /**
-     * Create an abstract listener context without args.
+     * Create an empty abstract listener context without parameters.
      */
     public AbstractListenerContext() {
     }
