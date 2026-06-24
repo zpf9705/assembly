@@ -20,22 +20,31 @@ package top.osjf.cron.core.listener;
 import top.osjf.cron.core.repository.RepositoryContext;
 
 /**
- * Abstract base implementation of {@link ListenerContext}.
+ /**
+ * Abstract base implementation of {@link ListenerContext}, encapsulates the common runtime context
+ * of scheduled tasks, including original business source context and repository operation context.
  *
- * <p>Encapsulates the two core context objects required for scheduled task listener callbacks:
- * the original task execution source context and the task repository operation context.
- * Subclasses inherit this abstract class and reuse the field initialization and getter implementations,
- * avoiding repetitive definition of context member variables and access methods.
+ * <p>It is recommended to use subclasses of this abstract class {@link ListenerContext} for inheritance,
+ * which can standardize and accommodate the dynamic creation of methods
+ * {@code ListenerLifecycle#createListenerContext(CronListenerCollector, Object, RepositoryContext)}
+ * related to {@link ListenerContext}, adapting the creation methods of Setter and constructor methods,
+ * and reducing the complexity of context search.
  *
- * @param <T> the type of source context.
+ * @param <T> generic type of original scheduled task business source context.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
  */
 public abstract class AbstractListenerContext<T> implements ListenerContext {
 
-    private final T sourceContext;
+    private T sourceContext;
 
-    private final RepositoryContext repositoryContext;
+    private RepositoryContext repositoryContext;
+
+    /**
+     * Create an abstract listener context without args.
+     */
+    public AbstractListenerContext() {
+    }
 
     /**
      * Create an abstract listener context with specified repository context and source execution context.
@@ -44,6 +53,22 @@ public abstract class AbstractListenerContext<T> implements ListenerContext {
      */
     public AbstractListenerContext(T sourceContext, RepositoryContext repositoryContext) {
         this.sourceContext = sourceContext;
+        this.repositoryContext = repositoryContext;
+    }
+
+    /**
+     * Set the original business source context of current scheduled task.
+     * @param sourceContext scheduled task trigger original business context
+     */
+    public void setSourceContext(T sourceContext) {
+        this.sourceContext = sourceContext;
+    }
+
+    /**
+     * Set the repository operation context for task data persistence.
+     * @param repositoryContext task repository operation context instance
+     */
+    public void setRepositoryContext(RepositoryContext repositoryContext) {
         this.repositoryContext = repositoryContext;
     }
 
