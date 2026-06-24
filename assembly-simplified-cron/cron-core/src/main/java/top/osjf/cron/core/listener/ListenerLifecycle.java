@@ -324,6 +324,7 @@ public enum ListenerLifecycle {
      * @param repositoryContext    repository context to be injected
      * @return fully initialized {@link ListenerContext} instance
      * @throws IllegalArgumentException if no no-arg constructor or compatible setter method can be found
+     * @throws RuntimeException If the reflection execution method fails, the exception is converted.
      * @since 3.0.2
      */
     private static ListenerContext createListenerContextBySetMethod(Class<? extends ListenerContext> listenerContextClass,
@@ -378,6 +379,7 @@ public enum ListenerLifecycle {
      * @param repositoryContext    repository context passed as constructor argument
      * @return instantiated {@link ListenerContext} instance
      * @throws IllegalArgumentException if no compatible two-parameter constructor can be located
+     * @throws BeanInstantiationException if the bean cannot be instantiated
      * @since 3.0.2
      */
     private static ListenerContext createListenerContextByConstructor(Class<? extends ListenerContext> listenerContextClass,
