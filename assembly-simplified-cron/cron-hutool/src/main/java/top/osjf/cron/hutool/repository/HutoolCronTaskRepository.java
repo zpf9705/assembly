@@ -271,7 +271,10 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
      */
     @Override
     @NotNull
-    public String registerInternal(@NotNull String expression, @NotNull RunnableTaskBody body) throws CronInternalException {
+    public String registerInternal(@NotNull String expression, @NotNull RunnableTaskBody body) {
+        if (body instanceof DefineIDRunnableTaskBody) {
+            return registerInternal(expression, (TaskBody) body);
+        }
         return registerInternal(expression, body.getRunnable());
     }
 

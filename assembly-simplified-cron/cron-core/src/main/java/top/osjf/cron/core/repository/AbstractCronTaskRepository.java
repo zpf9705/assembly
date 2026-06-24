@@ -21,7 +21,6 @@ import top.osjf.commons.lang.Nullable;
 import top.osjf.cron.core.exception.CronExpressionInvalidException;
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
-import top.osjf.cron.core.micrometer.CronTaskMicrometer;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -80,10 +79,8 @@ public abstract class AbstractCronTaskRepository
         String id;
         try {
             id = registerInternal(expression, runnable);
-            recordRegister(null);
         }
         catch (Exception ex) {
-            recordRegister(ex);
             throw new CronInternalException(ex);
         }
         call(expression, runnable, id);
@@ -99,10 +96,8 @@ public abstract class AbstractCronTaskRepository
         String id;
         try {
             id = registerInternal(expression, body);
-            recordRegister(null);
         }
         catch (Exception ex) {
-            recordRegister(ex);
             throw new CronInternalException(ex);
         }
         call(expression, body, id);
@@ -118,14 +113,11 @@ public abstract class AbstractCronTaskRepository
         String id;
         try {
             id = registerInternal(expression, body);
-            recordRegister(null);
         }
         catch (UnsupportedTaskBodyException ex) {
-            recordRegister(ex);
             throw ex;
         }
         catch (Exception ex) {
-            recordRegister(ex);
             throw new CronInternalException(ex);
         }
         call(expression, body, id);
@@ -141,23 +133,12 @@ public abstract class AbstractCronTaskRepository
         String id;
         try {
             id = registerInternal(task);
-            recordRegister(null);
         }
         catch (Exception ex) {
-            recordRegister(ex);
             throw new CronInternalException(ex);
         }
         call(task, id);
         return id;
-    }
-
-    private void recordRegister(@Nullable Throwable ex) {
-        if (ex == null) {
-            CronTaskMicrometer.recordRegister(this, true, null);
-        }
-        else {
-            CronTaskMicrometer.recordRegister(this, false, ex);
-        }
     }
 
     /**
