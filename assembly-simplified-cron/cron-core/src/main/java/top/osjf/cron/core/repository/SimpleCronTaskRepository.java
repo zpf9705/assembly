@@ -318,7 +318,7 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
          * expression is parsed.
          */
         @Nullable
-        public Long getNextExecuteMillSeconds() {
+        public Long getNextExecuteMilliseconds() {
             // Get the current time.
             ZonedDateTime now = ZonedDateTime.now();
             // Calculate the next execution time.
@@ -418,6 +418,40 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
                 throws InterruptedException, ExecutionException, TimeoutException {
             return getFuture().get(timeout, unit);
         }
+
+        /**
+         * Temporarily terminates the currently executing round of the scheduled task.
+         * <p>
+         * This method only sends a thread interrupt signal to the ongoing task execution
+         * cooperatively.
+         * It will NOT update the global {@code canceledFlag}, so subsequent scheduled cycles
+         * can still run normally after the current execution completes.
+         * <p>
+         * An exclusive lock is applied to ensure thread safety and mutual exclusion with the
+         * scheduling registration logic, avoiding concurrent state exceptions and duplicate
+         * task scheduling.
+         *
+         * <p>
+         * <b>Constraints:</b>
+         * <ul>
+         * <li>Directly returns if the task is not currently running</li>
+         * <li>Directly returns if the task has been marked as globally canceled permanently</li>
+         * <li>Bypasses the overridden {@code cancel()} method to prevent polluting the global
+         * cancel flag</li>
+         * </ul>
+         */
+        public void terminate() {
+            scheduleLock.lock();
+            try {
+                if (!isRunning() || canceledFlag.get()) {
+                    return;
+                }
+                getFuture().cancel(true);
+            }
+            finally {
+                scheduleLock.unlock();
+            }
+        }
     }
 
     /**
@@ -516,7 +550,7 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
         if (future == null) {
             return null;
         }
-        return future.getNextExecuteMillSeconds();
+        return future.getNextExecuteMilliseconds();
     }
 
     /**
@@ -553,6 +587,7 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
                 future.cancel(true);
             }
         }
+        futureCache.clear();
     }
 
     /**
@@ -562,5 +597,26 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
     protected CronTaskInfo getCronTaskInfoInternal(String id) {
         return Optional.ofNullable(futureCache.get(id)).map(SimpleRunnabledScheduledFuture::toCronTaskInfo)
                 .orElse(null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void terminateInternal(String id) {
+        SimpleRunnabledScheduledFuture future = futureCache.get(id);
+        if (future != null) {
+            future.terminate();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void terminateAllInternal() {
+        for (SimpleRunnabledScheduledFuture future : futureCache.values()) {
+            future.terminate();
+        }
     }
 }
