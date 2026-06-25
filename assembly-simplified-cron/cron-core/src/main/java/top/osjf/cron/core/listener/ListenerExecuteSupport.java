@@ -17,6 +17,8 @@
 
 package top.osjf.cron.core.listener;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * Abstract template support class for orchestrating cron task listener lifecycle execution.
  *
@@ -49,6 +51,8 @@ package top.osjf.cron.core.listener;
  */
 public abstract class ListenerExecuteSupport implements Runnable {
 
+    private final AtomicBoolean runningFlag = new AtomicBoolean(false);
+
     /**
      * @see #doStart()
      * @see #doSuccess()
@@ -56,6 +60,7 @@ public abstract class ListenerExecuteSupport implements Runnable {
      */
     @Override
     public void run() {
+        runningFlag.set(true);
         try {
             // Notify all cron listeners that the task is about to start
             doStart();
@@ -68,6 +73,9 @@ public abstract class ListenerExecuteSupport implements Runnable {
             // If an error occurs during task execution, notify all cron listeners
             // of the failure, passing the exception context for further handling
             doFailed(ex);
+        }
+        finally {
+            runningFlag.set(false);
         }
     }
 
@@ -94,6 +102,14 @@ public abstract class ListenerExecuteSupport implements Runnable {
      */
     private void doFailed(Throwable ex) {
         ListenerLifecycle.FAILED.consumerListeners(this::getListenerContext, ex, getCronListenerCollector());
+    }
+
+    /**
+     * Check whether the current cron task is being executed.
+     * @return {@code true} if the task is running, otherwise {@code false}
+     */
+    public boolean isRunning() {
+        return runningFlag.get();
     }
 
     /**
