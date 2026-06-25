@@ -42,7 +42,7 @@ public class RunnableJobFactory implements JobFactory {
 
         if (!jobDataMap.containsKey(JobConstants.ID_PROPERTY)
                 || !jobDataMap.containsKey(JobConstants.RUNNABLE_PROPERTY)) {
-            throw new SchedulerConfigException("Unknown task");
+            throw new SchedulerConfigException("Not have complete relevant data configuration");
         }
 
         String id = (String) jobDataMap.get(JobConstants.ID_PROPERTY);
