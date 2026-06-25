@@ -49,6 +49,8 @@ public abstract class CronListenerCollector {
 
     private final RepositoryContext repositoryContext;
 
+    @Nullable private RunningThreadHolder runningThreadHolder;
+
     /**
      * @param repository The resource class used for listening to callbacks
      *                   in {@link ListenerContext}.
@@ -369,5 +371,63 @@ public abstract class CronListenerCollector {
      */
     private void doListeners(ListenerLifecycle listenerLifecycle, Object sourceContext, @Nullable Throwable e) {
         listenerLifecycle.consumerListeners(sourceContext, repositoryContext, e, this);
+    }
+
+    /**
+     * Lazy initialize the {@link RunningThreadHolder} instance to implement the interruption function
+     * of the task thread, and subclasses can call the initialization as needed.
+     * @since 3.0.2
+     */
+    public CronListenerCollector initRunningHolder() {
+        if (runningThreadHolder == null)
+            runningThreadHolder = new RunningThreadHolder();
+        return this;
+    }
+
+    /**
+     * @return Return the record instance of the task running thread, and
+     * obtain it after initializing it by calling {@link #initRunningHolder()}
+     * as needed.
+     * @throws IllegalArgumentException if {@link #runningThreadHolder} uninitialized.
+     * @since 3.0.2
+     */
+    public RunningThreadHolder getRunningThreadHolder() {
+        Assert.notNull(runningThreadHolder, "Uninitialized RunningThreadHolder");
+        return runningThreadHolder;
+    }
+
+    /**
+     * Delegation method of {@link RunningThreadHolder#addCurrentRunningThread(String)}.
+     * @param id the unique identifier of the registered cron task.
+     * @since 3.0.2
+     */
+    public void addCurrentRunningThread(String id) {
+        getRunningThreadHolder().addCurrentRunningThread(id);
+    }
+
+    /**
+     * Delegation method of {@link RunningThreadHolder#removeCurrentRunningThread(String)}.
+     * @param id the unique identifier of the registered cron task.
+     * @since 3.0.2
+     */
+    public void removeCurrentRunningThread(String id) {
+        getRunningThreadHolder().removeCurrentRunningThread(id);
+    }
+
+    /**
+     * Delegation method of {@link RunningThreadHolder#removeRunningThreads(String)}.
+     * @param id the unique identifier of the registered cron task.
+     * @since 3.0.2
+     */
+    public void removeRunningThreads(String id) {
+        getRunningThreadHolder().removeRunningThreads(id);
+    }
+
+    /**
+     * Delegation method of {@link RunningThreadHolder#removeAllRunningThreads()}.
+     * @since 3.0.2
+     */
+    public void removeAllRunningThreads() {
+        getRunningThreadHolder().removeAllRunningThreads();
     }
 }
