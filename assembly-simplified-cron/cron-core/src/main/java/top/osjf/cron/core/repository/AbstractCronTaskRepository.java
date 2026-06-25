@@ -17,12 +17,15 @@
 
 package top.osjf.cron.core.repository;
 
+import top.osjf.commons.lang.NotNull;
 import top.osjf.commons.lang.Nullable;
 import top.osjf.cron.core.exception.CronExpressionInvalidException;
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * This abstract class encapsulates the unified public logic of all cron task repository
@@ -168,6 +171,9 @@ public abstract class AbstractCronTaskRepository
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void removeAll() throws CronInternalException {
         try {
@@ -182,8 +188,8 @@ public abstract class AbstractCronTaskRepository
      * {@inheritDoc}
      */
     @Override
-    public boolean hasCronTaskInfo(String id) {
-        return hasCronTaskInfoInternal(id);
+    public boolean hasCronTaskInfo(@NotNull String id) {
+        return getAllRegisteredTaskIds().contains(id);
     }
 
     /**
@@ -191,7 +197,38 @@ public abstract class AbstractCronTaskRepository
      */
     @Override
     public CronTaskInfo getCronTaskInfo(String id) {
-        return getCronTaskInfoInternal(id);
+        return customizeCronTaskInfo(getCronTaskInfoInternal(id));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<CronTaskInfo> getAllCronTaskInfos() {
+        return getAllRegisteredTaskIds().stream()
+                .map(this::getCronTaskInfo)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isTaskRunning(@NotNull String id) {
+        return getAllRunningTaskIds().contains(id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String, Long> getNextExecuteTimes(Collection<String> ids) {
+        Map<String, Long> result = new HashMap<>(ids.size());
+        for (String id : ids) {
+            result.put(id, getNextExecuteTime(id));
+        }
+        return result;
     }
 
     /**
@@ -243,10 +280,15 @@ public abstract class AbstractCronTaskRepository
         if (cronTaskInfo == null) {
             return null;
         }
+        String taskId = cronTaskInfo.getId();
         // Setting remaining number of runs.
-        cronTaskInfo.setRemainingNumberOfRuns(getTaskRemainingNumberOfRuns(cronTaskInfo.getId()));
+        cronTaskInfo.setRemainingNumberOfRuns(getTaskRemainingNumberOfRuns(taskId));
         // Setting running timeout config.
-        cronTaskInfo.setTimeoutConfig(getTimeoutConfig(cronTaskInfo.getId()));
+        cronTaskInfo.setTimeoutConfig(getTimeoutConfig(taskId));
+        // Setting running state.
+        cronTaskInfo.setRunning(isTaskRunning(taskId));
+        // Setting next execute timestamp.
+        cronTaskInfo.setNextExecuteTimestamp(getNextExecuteTime(taskId));
         return cronTaskInfo;
     }
 
@@ -382,19 +424,17 @@ public abstract class AbstractCronTaskRepository
     protected abstract void removeAllInternal() throws Exception;
 
     /**
-     * Underlying internal existence judgment method for specified task ID.
+     * Underlying internal query method to obtain the detailed information of the specified registered
+     * cron task.
+     * <p>
+     * After the underlying implementation obtains {@link CronTaskInfo}, there is no need to manually
+     * call {@link #customizeCronTaskInfo(CronTaskInfo)} to assign specific dynamic information, as it
+     * will be uniformly processed within {@link #getCronTaskInfo(String)}.
      *
-     * @param id Unique identifier of the task to be queried
-     * @return {@code true} if the task exists in the current repository, otherwise {@code false}
+     * @param id unique identifier of the target registered cron task
+     * @return detailed information of the specified cron task; returns {@code null} if the task does
+     * not exist
      */
-    protected abstract boolean hasCronTaskInfoInternal(String id);
-
-    /**
-     * Underlying internal query method for obtaining complete task metadata.
-     *
-     * @param id Unique identifier of the target task
-     * @return Complete {@link CronTaskInfo} metadata of the task; return {@code null} if no
-     * matching task exists
-     */
-    @Nullable protected abstract CronTaskInfo getCronTaskInfoInternal(String id);
+    @Nullable
+    protected abstract CronTaskInfo getCronTaskInfoInternal(String id);
 }
