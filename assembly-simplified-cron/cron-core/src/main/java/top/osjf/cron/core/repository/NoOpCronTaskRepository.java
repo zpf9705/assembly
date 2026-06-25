@@ -112,8 +112,11 @@ public class NoOpCronTaskRepository extends AbstractCronTaskRepository {
         return getWithoutOperationId();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public boolean hasCronTaskInfoInternal(@NotNull String id) {
+    public boolean hasCronTaskInfo(@NotNull String id) {
         return false;
     }
 
@@ -122,18 +125,41 @@ public class NoOpCronTaskRepository extends AbstractCronTaskRepository {
     /**
      * {@inheritDoc}
      */
-    @Nullable
     @Override
-    public CronTaskInfo getCronTaskInfoInternal(@NotNull String id) {
-        return null;
+    public List<CronTaskInfo> getAllCronTaskInfos() {
+        return Collections.emptyList();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<CronTaskInfo> getAllCronTaskInfo() {
+    public List<String> getAllRegisteredTaskIds() {
         return Collections.emptyList();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isTaskRunning(String id) {
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<String> getAllRunningTaskIds() {
+        return Collections.emptyList();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Long getNextExecuteTime(String id) {
+        return 0L;
     }
 
     /**
@@ -156,6 +182,15 @@ public class NoOpCronTaskRepository extends AbstractCronTaskRepository {
     @Override
     protected void removeAllInternal() {
 
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Nullable
+    @Override
+    protected CronTaskInfo getCronTaskInfoInternal(String id) {
+        return null;
     }
 
     @Override
