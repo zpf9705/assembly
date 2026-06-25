@@ -190,6 +190,9 @@ public abstract class AbstractCronTaskRepository
     @Override
     public void terminate(String id) throws CronInternalException {
         try {
+            if (!isTaskRunning(id)) {
+                return;
+            }
             terminateInternal(id);
         }
         catch (Exception ex) {
@@ -203,6 +206,9 @@ public abstract class AbstractCronTaskRepository
     @Override
     public void terminateAll() throws CronInternalException {
         try {
+            if (getAllRunningTaskIds().isEmpty()) {
+                return;
+            }
             terminateAllInternal();
         }
         catch (Exception ex) {
