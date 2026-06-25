@@ -326,6 +326,7 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
     public List<String> getAllRunningTaskIds() {
         return Arrays.stream(getInitializedScheduler().getExecutingTasks())
                 .map(taskExecutor -> taskExecutor.getTask().getId().toString())
+                .distinct()
                 .collect(Collectors.toList());
     }
 
