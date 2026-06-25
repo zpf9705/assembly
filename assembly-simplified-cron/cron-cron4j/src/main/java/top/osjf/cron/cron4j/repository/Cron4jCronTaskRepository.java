@@ -19,6 +19,7 @@ package top.osjf.cron.cron4j.repository;
 import it.sauronsoftware.cron4j.*;
 import top.osjf.commons.lang.NotNull;
 import top.osjf.commons.lang.Nullable;
+import top.osjf.commons.util.Assert;
 import top.osjf.commons.util.StringUtils;
 import top.osjf.cron.core.exception.CronExpressionInvalidException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
@@ -88,6 +89,12 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
      * @since 1.0.3
      */
     private final Map<String, File> fileIdMap = new ConcurrentHashMap<>(16);
+
+    /**
+     * The {@link TaskCollector} that stores task information in memory
+     * @since 3.0.2
+     */
+    private TaskCollector memoryTaskCollector;
 
     /**
      * @since 1.0.3
@@ -185,6 +192,14 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
     @NotNull
     public String getName() {
         return "CRON4J_SCHEDULER@" + super.getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isSupportedExpression(@NotNull String expression) {
+        return SchedulingPattern.validate(expression);
     }
 
     /**
@@ -289,17 +304,18 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
         return registerInternal(task.getExpression(), task.getRunnable());
     }
 
-    @Override
-    public boolean hasCronTaskInfoInternal(@NotNull String id) {
-        return getInitializedScheduler().getTask(id) != null;
-    }
-
     /**
      * {@inheritDoc}
      */
     @Override
-    public CronTaskInfo getCronTaskInfoInternal(@NotNull String id) {
-        return buildCronTaskInfo(id);
+    @NotNull
+    public List<String> getAllRegisteredTaskIds() {
+        TaskTable tasks = getMemoryTaskCollector().getTasks();
+        List<String> ids = new ArrayList<>();
+        for (int i = 0; i < tasks.size(); i++) {
+            ids.add(tasks.getTask(i).getId().toString());
+        }
+        return ids;
     }
 
     /**
@@ -307,29 +323,23 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
      */
     @Override
     @NotNull
-    public List<CronTaskInfo> getAllCronTaskInfo() {
+    public List<String> getAllRunningTaskIds() {
         return Arrays.stream(getInitializedScheduler().getExecutingTasks())
-                .map(taskExecutor -> buildCronTaskInfo(taskExecutor.getGuid()))
-                .filter(Objects::nonNull).collect(Collectors.toList());
+                .map(taskExecutor -> taskExecutor.getTask().getId().toString())
+                .collect(Collectors.toList());
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     @Nullable
-    private CronTaskInfo buildCronTaskInfo(String id) {
-        Task task = getInitializedScheduler().getTask(id);
-        SchedulingPattern schedulingPattern = getInitializedScheduler().getSchedulingPattern(id);
-        if (task == null || schedulingPattern == null) {
+    public Long getNextExecuteTime(@NotNull String id) {
+        SchedulingPattern pattern = getInitializedScheduler().getSchedulingPattern(id);
+        if (pattern == null) {
             return null;
         }
-        Runnable runnable = getInitializedScheduler().getTaskRunnable(id);
-        runnable = unwrapRunnable(runnable);
-        Object target = null;
-        Method method = null;
-        if (runnable instanceof CronMethodRunnable) {
-            CronMethodRunnable cronMethodRunnable = (CronMethodRunnable) runnable;
-            target = cronMethodRunnable.getTarget();
-            method = cronMethodRunnable.getMethod();
-        }
-        return customizeCronTaskInfo(new CronTaskInfo(id, schedulingPattern.toString(), runnable, target, method));
+        return new Predictor(pattern).nextMatchingDate().toInstant().toEpochMilli();
     }
 
     /**
@@ -365,23 +375,15 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
         getInitializedScheduler().deschedule(taskId);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void removeAllInternal() {
 
-        TaskCollector memoryTaskCollector = null;
-        for (TaskCollector taskCollector : getInitializedScheduler().getTaskCollectors()) {
-            if ("it.sauronsoftware.cron4j.MemoryTaskCollector"
-                    .equals(taskCollector.getClass().getName())) {
-                memoryTaskCollector = taskCollector;
-                break;
-            }
-        }
-
-        if (memoryTaskCollector != null) {
-            TaskTable tasks = memoryTaskCollector.getTasks();
-            for (int i = 0; i < tasks.size(); i++) {
-                tasks.remove(i);
-            }
+        TaskTable tasks = getMemoryTaskCollector().getTasks();
+        for (int i = 0; i < tasks.size(); i++) {
+            tasks.remove(i);
         }
 
         for (File scheduledFile : getInitializedScheduler().getScheduledFiles()) {
@@ -390,6 +392,49 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
         fileIdMap.clear();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CronTaskInfo getCronTaskInfoInternal(@NotNull String id) {
+        Task task = getInitializedScheduler().getTask(id);
+        SchedulingPattern schedulingPattern = getInitializedScheduler().getSchedulingPattern(id);
+        if (task == null || schedulingPattern == null) {
+            return null;
+        }
+        Runnable runnable = getInitializedScheduler().getTaskRunnable(id);
+        runnable = unwrapRunnable(runnable);
+        Object target = null;
+        Method method = null;
+        if (runnable instanceof CronMethodRunnable) {
+            CronMethodRunnable cronMethodRunnable = (CronMethodRunnable) runnable;
+            target = cronMethodRunnable.getTarget();
+            method = cronMethodRunnable.getMethod();
+        }
+        return new CronTaskInfo(id, schedulingPattern.toString(), runnable, target, method);
+    }
+
+    /**
+     * @return Return the {@link TaskCollector} that stores task information in memory.
+     * @since 3.0.2
+     */
+    private TaskCollector getMemoryTaskCollector() {
+        if (memoryTaskCollector == null) {
+            for (TaskCollector taskCollector : getInitializedScheduler().getTaskCollectors()) {
+                if ("it.sauronsoftware.cron4j.MemoryTaskCollector"
+                        .equals(taskCollector.getClass().getName())) {
+                    memoryTaskCollector = taskCollector;
+                    break;
+                }
+            }
+        }
+        Assert.notNull(memoryTaskCollector, "Should never go there");
+        return memoryTaskCollector;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @NotNull
     protected CronListenerCollector getCronListenerCollector() {
