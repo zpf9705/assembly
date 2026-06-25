@@ -23,10 +23,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.concurrent.DefaultManagedTaskScheduler;
-import org.springframework.scheduling.support.CronExpression;
-import org.springframework.scheduling.support.CronTrigger;
-import org.springframework.scheduling.support.PeriodicTrigger;
-import org.springframework.scheduling.support.ScheduledMethodRunnable;
+import org.springframework.scheduling.support.*;
 import org.springframework.util.Assert;
 import org.springframework.util.IdGenerator;
 import org.springframework.util.SimpleIdGenerator;
@@ -39,10 +36,9 @@ import top.osjf.cron.core.repository.*;
 import top.osjf.cron.core.util.GsonUtils;
 
 import java.lang.reflect.Method;
+import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 /**
  * The {@code SpringSchedulerTaskRepository} class is a scheduled task repository that
@@ -116,7 +112,7 @@ public class SpringSchedulerTaskRepository
      * {@inheritDoc}
      */
     @Override
-    protected ListenableRunnable wrapperRunnableToListenable(Runnable runnable, Trigger trigger) {
+    protected ListenableRunnable wrapperRunnableToListenable(Runnable runnable, @Nullable Trigger trigger) {
         String id = idGenerator.generateId().toString();
         return new DefaultListenableRunnable(id, runnable, trigger, getCronListenerCollector(), this);
     }
@@ -197,18 +193,13 @@ public class SpringSchedulerTaskRepository
         return registerInternal(task.getExpression(), task.getRunnable());
     }
 
-    @Override
-    public boolean hasCronTaskInfoInternal(@NotNull String id) {
-        return getFuture(id) != null;
-    }
-
     /**
      * {@inheritDoc}
      */
     @Override
-    @Nullable
-    public CronTaskInfo getCronTaskInfoInternal(@NotNull String id) {
-        return buildCronTaskInfo(id);
+    @NotNull
+    public List<String> getAllRegisteredTaskIds() {
+        return getFutureIds();
     }
 
     /**
@@ -216,50 +207,27 @@ public class SpringSchedulerTaskRepository
      */
     @Override
     @NotNull
-    public List<CronTaskInfo> getAllCronTaskInfo() {
-        return getFutureIds()
-                .stream()
-                .map(this::buildCronTaskInfo)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+    public List<String> getAllRunningTaskIds() {
+        return getRunningFutureIds();
     }
 
     /**
-     * Build a new {@code CronTaskInfo} by given id.
-     *
-     * @param id the given id.
-     * @return a new {@code CronTaskInfo}.
+     * {@inheritDoc}
      */
+    @Override
     @Nullable
-    private CronTaskInfo buildCronTaskInfo(String id) {
+    public Long getNextExecuteTime(@NotNull String id) {
         ListenableScheduledFuture future = getFuture(id);
         if (future == null) {
             return null;
         }
-        ListenableRunnable listenableRunnable = future.getListenableRunnable();
-        Trigger trigger = listenableRunnable.getTrigger();
-        String expression = null;
-        if (trigger instanceof CronTrigger) {
-            expression = ((CronTrigger) trigger).getExpression();
-        } else if (trigger instanceof PeriodicTrigger) {
-            PeriodicTrigger periodicTrigger = (PeriodicTrigger) trigger;
-            expression = toPeriodicTriggerExpression(periodicTrigger);
+        Trigger trigger = future.getListenableRunnable().getTrigger();
+        if (trigger == null) {
+            return null;
         }
-        Runnable runnable = listenableRunnable.getRunnable();
-        runnable = unwrapRunnable(runnable);
-        Object target = null;
-        Method method = null;
-        if (runnable instanceof CronMethodRunnable) {
-            CronMethodRunnable cronMethodRunnable = (CronMethodRunnable) runnable;
-            target = cronMethodRunnable.getTarget();
-            method = cronMethodRunnable.getMethod();
-        }
-        else if (runnable instanceof ScheduledMethodRunnable) {
-            ScheduledMethodRunnable scheduledMethodRunnable = (ScheduledMethodRunnable) runnable;
-            target = scheduledMethodRunnable.getTarget();
-            method = scheduledMethodRunnable.getMethod();
-        }
-        return customizeCronTaskInfo(new CronTaskInfo(id, expression, runnable, target, method));
+        Date nextExecutionTime
+                = trigger.nextExecutionTime(new SimpleTriggerContext());
+        return nextExecutionTime != null ? nextExecutionTime.toInstant().toEpochMilli() : null;
     }
 
     /**
@@ -298,6 +266,42 @@ public class SpringSchedulerTaskRepository
     @Override
     protected void removeAllInternal() {
         cancelAllFutures();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected CronTaskInfo getCronTaskInfoInternal(@NotNull String id) {
+        ListenableScheduledFuture future = getFuture(id);
+        if (future == null) {
+            return null;
+        }
+        ListenableRunnable listenableRunnable = future.getListenableRunnable();
+        Trigger trigger = listenableRunnable.getTrigger();
+        String expression = null;
+        if (trigger instanceof CronTrigger) {
+            expression = ((CronTrigger) trigger).getExpression();
+        }
+        else if (trigger instanceof PeriodicTrigger) {
+            PeriodicTrigger periodicTrigger = (PeriodicTrigger) trigger;
+            expression = toPeriodicTriggerExpression(periodicTrigger);
+        }
+        Runnable runnable = listenableRunnable.getRunnable();
+        runnable = unwrapRunnable(runnable);
+        Object target = null;
+        Method method = null;
+        if (runnable instanceof CronMethodRunnable) {
+            CronMethodRunnable cronMethodRunnable = (CronMethodRunnable) runnable;
+            target = cronMethodRunnable.getTarget();
+            method = cronMethodRunnable.getMethod();
+        }
+        else if (runnable instanceof ScheduledMethodRunnable) {
+            ScheduledMethodRunnable scheduledMethodRunnable = (ScheduledMethodRunnable) runnable;
+            target = scheduledMethodRunnable.getTarget();
+            method = scheduledMethodRunnable.getMethod();
+        }
+        return customizeCronTaskInfo(new CronTaskInfo(id, expression, runnable, target, method));
     }
 
     @Override
