@@ -227,7 +227,7 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
     @Override
     @NotNull
     public String registerInternal(@NotNull String expression, @NotNull Runnable runnable) {
-        return getInitializedScheduler().schedule(expression, runnable);
+        return getInitializedScheduler().schedule(expression, new ControllableRunnableTask(runnable));
     }
 
     /**
@@ -412,6 +412,42 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
             method = cronMethodRunnable.getMethod();
         }
         return new CronTaskInfo(id, schedulingPattern.toString(), runnable, target, method);
+    }
+
+    /**
+     * {@inheritDoc}
+     * @see ControllableRunnableTask
+     */
+    @Override
+    protected void terminateInternal(@NotNull String id) {
+        for (TaskExecutor taskExecutor : getInitializedScheduler().getExecutingTasks()) {
+            Task task = taskExecutor.getTask();
+            if (Objects.equals(task.getId(), id) && isControllableTask(task)) {
+                taskExecutor.stop();
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * @see ControllableRunnableTask
+     */
+    @Override
+    protected void terminateAllInternal() {
+        for (TaskExecutor taskExecutor : getInitializedScheduler().getExecutingTasks()) {
+            if (isControllableTask(taskExecutor.getTask())) {
+                taskExecutor.stop();
+            }
+        }
+    }
+
+    /**
+     * @param task the check {@link Task}
+     * @return Return {@code true} to indicate that it is controllable, otherwise it is not.
+     * @since 3.0.2
+     */
+    private boolean isControllableTask(Task task) {
+        return task instanceof ControllableRunnableTask;
     }
 
     /**
