@@ -101,7 +101,8 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
     /**
      * @since 1.0.3
      */
-    private final TaskListenerImpl taskListener = new TaskListenerImpl(this);
+    private final TaskListenerImpl taskListener
+            = (TaskListenerImpl) new TaskListenerImpl(this).initRunningHolder();
 
     /**
      * @since 1.0.3
@@ -344,6 +345,7 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
         return ((SchedulerWrapper) getInitializedScheduler())
                 .getTaskExecutorManager().getExecutors().stream()
                 .map(taskExecutor -> taskExecutor.getCronTask().getId())
+                .distinct()
                 .collect(Collectors.toList());
     }
 
@@ -426,6 +428,22 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
         }
         if (runnable == null) runnable = task::execute;
         return new CronTaskInfo(id, pattern.toString(), runnable, target, method);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void terminateInternal(@NotNull String id) {
+        taskListener.removeRunningThreads(id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void terminateAllInternal() {
+        taskListener.removeAllRunningThreads();
     }
 
     @Override
