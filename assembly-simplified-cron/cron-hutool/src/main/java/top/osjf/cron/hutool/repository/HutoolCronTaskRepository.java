@@ -20,25 +20,26 @@ import cn.hutool.core.exceptions.UtilException;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.cron.CronException;
 import cn.hutool.cron.Scheduler;
+import cn.hutool.cron.TaskExecutorManager;
 import cn.hutool.cron.pattern.CronPattern;
 import cn.hutool.cron.pattern.parser.PatternParser;
 import cn.hutool.cron.task.InvokeTask;
 import cn.hutool.cron.task.RunnableTask;
 import cn.hutool.cron.task.Task;
+import top.osjf.commons.lang.NotNull;
+import top.osjf.commons.lang.Nullable;
 import top.osjf.commons.util.StringUtils;
 import top.osjf.cron.core.exception.CronExpressionInvalidException;
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
-import top.osjf.commons.lang.NotNull;
-import top.osjf.commons.lang.Nullable;
 import top.osjf.cron.core.lifecycle.InitializeProperties;
 import top.osjf.cron.core.listener.CronListenerCollector;
 import top.osjf.cron.core.repository.*;
 import top.osjf.cron.hutool.listener.TaskListenerImpl;
 
 import java.lang.reflect.Method;
+import java.util.Calendar;
 import java.util.List;
-import java.util.Objects;
 import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
@@ -218,7 +219,7 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
     @Override
     public void initialize() throws Exception {
         super.initialize();
-        scheduler = new Scheduler();
+        scheduler = new SchedulerWrapper();
         scheduler.setDaemon(daemon);
         scheduler.setMatchSecond(isMatchSecond);
         scheduler.setTimeZone(timeZone);
@@ -316,15 +317,79 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
         throw new UnsupportedTaskBodyException(body.getClass());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @NotNull
     public String registerInternal(@NotNull CronTask task) {
         return registerInternal(task.getExpression(), new RunnableTaskBody(task.getRunnable()));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public boolean hasCronTaskInfoInternal(@NotNull String id) {
-        return getInitializedScheduler().getTask(id) != null;
+    @NotNull
+    public List<String> getAllRegisteredTaskIds() {
+        return getInitializedScheduler().getTaskTable().getIds();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @NotNull
+    public List<String> getAllRunningTaskIds() {
+        return ((SchedulerWrapper) getInitializedScheduler())
+                .getTaskExecutorManager().getExecutors().stream()
+                .map(taskExecutor -> taskExecutor.getCronTask().getId())
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Nullable
+    public Long getNextExecuteTime(@NotNull String id) {
+        CronPattern pattern = getInitializedScheduler().getPattern(id);
+        if (pattern == null) {
+            return null;
+        }
+        try {
+            return pattern.nextMatchAfter(Calendar.getInstance()).getTimeInMillis();
+        }
+        catch (Exception ex) {
+            /**
+             * {@code cn.hutool.cron.pattern.matcher.PartMatcher#getMin}
+             */
+            return null;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateInternal(@NotNull String taskId, @NotNull String newExpression) {
+        getInitializedScheduler().updatePattern(taskId, new CronPattern(newExpression));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void removeInternal(@NotNull String taskId) {
+        getInitializedScheduler().descheduleWithStatus(taskId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void removeAllInternal() {
+        getInitializedScheduler().clear();
     }
 
     /**
@@ -333,10 +398,6 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
     @Override
     @Nullable
     public CronTaskInfo getCronTaskInfoInternal(@NotNull String id) {
-        return customizeCronTaskInfo(getCronTaskInfoInternal0(id));
-    }
-
-    @Nullable private CronTaskInfo getCronTaskInfoInternal0(String id) {
         Task task = scheduler.getTask(id);
         CronPattern pattern = scheduler.getPattern(id);
         if (task == null || pattern == null) {
@@ -365,43 +426,6 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
         }
         if (runnable == null) runnable = task::execute;
         return new CronTaskInfo(id, pattern.toString(), runnable, target, method);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @NotNull
-    public List<CronTaskInfo> getAllCronTaskInfo() {
-        return getInitializedScheduler().getTaskTable()
-                .getIds()
-                .stream()
-                .map(this::getCronTaskInfo)
-                .filter(Objects::nonNull).collect(Collectors.toList());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void updateInternal(@NotNull String taskId, @NotNull String newExpression) {
-        getInitializedScheduler().updatePattern(taskId, new CronPattern(newExpression));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void removeInternal(@NotNull String taskId) {
-        getInitializedScheduler().descheduleWithStatus(taskId);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void removeAllInternal() {
-        getInitializedScheduler().clear();
     }
 
     @Override
@@ -463,6 +487,25 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
         ensureInitialized();
 
         return scheduler;
+    }
+
+    /**
+     * Wrapper class of {@link Scheduler}.
+     */
+    private static class SchedulerWrapper extends Scheduler {
+
+        private static final long serialVersionUID = -7724434510380735451L;
+
+        public SchedulerWrapper() {
+            super();
+        }
+
+        /**
+         * @return the {@link TaskExecutorManager} instance.
+         */
+        public TaskExecutorManager getTaskExecutorManager () {
+            return taskExecutorManager;
+        }
     }
 
     @NotNull
