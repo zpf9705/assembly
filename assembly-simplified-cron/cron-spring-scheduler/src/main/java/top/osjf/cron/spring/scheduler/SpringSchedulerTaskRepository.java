@@ -304,6 +304,22 @@ public class SpringSchedulerTaskRepository
         return customizeCronTaskInfo(new CronTaskInfo(id, expression, runnable, target, method));
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void terminateInternal(@NotNull String id) {
+        terminateFuture(id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void terminateAllInternal() {
+        terminateAllFutures();
+    }
+
     @Override
     public void destroy() {
         super.stop();
