@@ -38,10 +38,12 @@ import java.util.Objects;
 public class CronTaskInfo implements Serializable {
 
     private static final long serialVersionUID = 3944766838390077158L;
+
     /**
      * The unique registration ID for this scheduled task.
      */
     private final String id;
+
     /**
      * The determination expression for the registration execution frequency of
      * this scheduled task.
@@ -49,10 +51,12 @@ public class CronTaskInfo implements Serializable {
      * it is an exclusive expression used for it.
      */
     private final String expression;
+
     /**
      * The {@link Runnable} runtime encapsulated by this scheduled task.
      */
     private final Runnable runnable;
+
     /**
      * The target audience for this scheduled task execution.
      * <p>
@@ -61,6 +65,7 @@ public class CronTaskInfo implements Serializable {
      */
     @Nullable
     private final Object target;
+
     /**
      * The method instance for executing the target object of this scheduled task.
      * <p>
@@ -68,6 +73,7 @@ public class CronTaskInfo implements Serializable {
      */
     @Nullable
     private final Method method;
+
     /**
      * The remaining extension parameters can be customized by the user.
      */
@@ -90,6 +96,19 @@ public class CronTaskInfo implements Serializable {
     private RunningTimeout timeoutConfig;
 
     /**
+     * Whether the task is currently executing.
+     * @since 3.0.2
+     */
+    private boolean isRunning;
+
+    /**
+     * Next scheduled execution timestamp of the task, unit: milliseconds.
+     * Returns {@code null} if there is no subsequent trigger.
+     * @since 3.0.2
+     */
+    @Nullable private Long nextExecuteTimestamp;
+
+    /**
      * Constructs a {@code CronTaskInfo} with any task info.
      * @param id                        {@link #id}
      * @param expression                {@link #expression}
@@ -107,8 +126,8 @@ public class CronTaskInfo implements Serializable {
      * @param target                    {@link #target}
      * @param method                    {@link #method}
      */
-    public CronTaskInfo(String id, String expression, Runnable runnable,
-                        @Nullable Object target, @Nullable Method method) {
+    public CronTaskInfo(String id, String expression, Runnable runnable, @Nullable Object target,
+                        @Nullable Method method) {
         this.id = id;
         this.expression = expression;
         this.runnable = runnable;
@@ -137,7 +156,6 @@ public class CronTaskInfo implements Serializable {
 
     /**
      * Set the remaining extension parameter array for this {@code CronTaskInfo}.
-     *
      * @param args the remaining extension parameter array.
      */
     public void setArgs(@Nullable Object[] args) {
@@ -145,25 +163,21 @@ public class CronTaskInfo implements Serializable {
     }
 
     /**
-     * Get the corresponding parameter in the extension parameter array based on
-     * the specified class type.
-     *
-     * @param clazz the type of the parameter to retrieve.
-     * @param <T>   the generic of the parameter to retrieve.
-     * @return The found parameter of the specified type, or null if not found.
+     * Set whether the task is running.
+     * @param running task running status
+     * @since 3.0.2
      */
-    @Nullable
-    @SuppressWarnings("unchecked")
-    public <T> T getArg(Class<T> clazz) {
-        if (args == null || args.length < 1) {
-            return null;
-        }
-        for (Object arg : args) {
-            if (clazz.isInstance(arg)) {
-                return (T) arg;
-            }
-        }
-        return null;
+    public void setRunning(boolean running) {
+        isRunning = running;
+    }
+
+    /**
+     * Set the next task execution timestamp (milliseconds).
+     * @param nextExecuteTimestamp next execution time in milliseconds, may be {@code null}
+     * @since 3.0.2
+     */
+    public void setNextExecuteTimestamp(@Nullable Long nextExecuteTimestamp) {
+        this.nextExecuteTimestamp = nextExecuteTimestamp;
     }
 
     /**
@@ -205,6 +219,36 @@ public class CronTaskInfo implements Serializable {
     }
 
     /**
+     * @return {@link #args}
+     */
+    @Nullable
+    public Object[] getArgs() {
+        return args;
+    }
+
+    /**
+     * Get the corresponding parameter in the extension parameter array based on
+     * the specified class type.
+     *
+     * @param clazz the type of the parameter to retrieve.
+     * @param <T>   the generic of the parameter to retrieve.
+     * @return The found parameter of the specified type, or null if not found.
+     */
+    @Nullable
+    @SuppressWarnings("unchecked")
+    public <T> T getArg(Class<T> clazz) {
+        if (args == null || args.length < 1) {
+            return null;
+        }
+        for (Object arg : args) {
+            if (clazz.isInstance(arg)) {
+                return (T) arg;
+            }
+        }
+        return null;
+    }
+
+    /**
      * @return {@link #remainingNumberOfRuns}
      */
     public long getRemainingNumberOfRuns() {
@@ -217,6 +261,21 @@ public class CronTaskInfo implements Serializable {
     @Nullable
     public RunningTimeout getTimeoutConfig() {
         return timeoutConfig;
+    }
+
+    /**
+     * @return {@link #isRunning}
+     */
+    public boolean isRunning() {
+        return isRunning;
+    }
+
+    /**
+     * @return {@link #nextExecuteTimestamp}
+     */
+    @Nullable
+    public Long getNextExecuteTimestamp() {
+        return nextExecuteTimestamp;
     }
 
     @Override
@@ -247,6 +306,8 @@ public class CronTaskInfo implements Serializable {
                 ", args=" + Arrays.toString(args) +
                 ", remainingNumberOfRuns=" + remainingNumberOfRuns +
                 ", timeoutConfig=" + timeoutConfig +
+                ", isRunning=" + isRunning +
+                ", nextExecuteTimestamp=" + nextExecuteTimestamp +
                 '}';
     }
 }
