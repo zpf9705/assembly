@@ -219,6 +219,7 @@ public abstract class ListenableTaskScheduler extends AbstractCronTaskRepository
                 future.cancel(true);
             }
         }
+        futureCache.clear();
     }
 
     /**
