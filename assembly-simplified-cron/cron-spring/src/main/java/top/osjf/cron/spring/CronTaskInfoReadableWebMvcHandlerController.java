@@ -111,7 +111,7 @@ public class CronTaskInfoReadableWebMvcHandlerController
     @Override
     @ResponseBody
     public ResponseEntity<List<CronTaskInfoView>> get() {
-        List<CronTaskInfo> cronTaskInfos = cronTaskRepository.getAllCronTaskInfo();
+        List<CronTaskInfo> cronTaskInfos = cronTaskRepository.getAllCronTaskInfos();
         if (CollectionUtils.isEmpty(cronTaskInfos)) {
             return ResponseEntity.ok(Collections.emptyList());
         }
