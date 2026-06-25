@@ -219,10 +219,10 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
     @NotNull
     public String registerInternal(@NotNull String expression, @NotNull Runnable runnable)
             throws SchedulerException {
-        return doRegisterInternal(expression, new JobKeyWrapperdRunnable(runnable));
+        return doRegisterInternal(expression, new JobKeyWrappedRunnable(runnable));
     }
 
-    private String doRegisterInternal(String expression, JobKeyWrapperdRunnable runnable)
+    private String doRegisterInternal(String expression, JobKeyWrappedRunnable runnable)
             throws SchedulerException {
         JobKey jobKey = runnable.getJobKey();
         TriggerKey triggerKey = new TriggerKey(jobKey.getName(), jobKey.getGroup());
@@ -232,12 +232,12 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
                 .withSchedule(CronScheduleBuilder.cronSchedule(expression));
         JobDetail jobDetail = JobBuilder.newJob(RunnableJob.class)
                 .withIdentity(jobKey.getName(), jobKey.getGroup()).build();
-        String jobId = QuartzUtils.getJobIdentity(jobKey);
         JobDataMap jobDataMap = jobDetail.getJobDataMap();
         jobDataMap.put(JobConstants.RUNNABLE_PROPERTY, runnable);
-        jobDataMap.put(JobConstants.ID_PROPERTY, jobId);
+        String id = QuartzUtils.jobKeyAsId(jobKey);
+        jobDataMap.put(JobConstants.ID_PROPERTY, id);
         getInitializedScheduler().scheduleJob(jobDetail, triggerBuilder.build());
-        return jobId;
+        return id;
     }
 
     /**
@@ -282,24 +282,21 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
         return registerInternal(task.getExpression(), task.getRunnable());
     }
 
-    @Override
-    public boolean hasCronTaskInfoInternal(@NotNull String id) {
-        JobKey jobKey = QuartzUtils.getJobKey(id);
-        try {
-            return getInitializedScheduler().checkExists(jobKey);
-        }
-        catch (SchedulerException ex) {
-            return false;
-        }
-    }
-
     /**
      * {@inheritDoc}
      */
     @Override
-    @Nullable
-    public CronTaskInfo getCronTaskInfoInternal(@NotNull String id) {
-        return buildCronTaskInfo(id);
+    @NotNull
+    public List<String> getAllRegisteredTaskIds() {
+        try {
+            return getInitializedScheduler().getJobKeys(GroupMatcher.anyGroup())
+                    .stream()
+                    .map(QuartzUtils::jobKeyAsId)
+                    .collect(Collectors.toList());
+        }
+        catch (SchedulerException ex) {
+            return Collections.emptyList();
+        }
     }
 
     /**
@@ -307,63 +304,32 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      */
     @Override
     @NotNull
-    public List<CronTaskInfo> getAllCronTaskInfo() {
+    public List<String> getAllRunningTaskIds() {
         try {
-            return getInitializedScheduler().getJobKeys(GroupMatcher.anyGroup())
-                    .stream()
-                    .map(this::buildCronTaskInfo)
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
-        } catch (SchedulerException e) {
+            return getInitializedScheduler().getCurrentlyExecutingJobs().stream()
+                    .map(context -> (String) context.getJobDetail().getJobDataMap()
+                            .get(JobConstants.ID_PROPERTY)).collect(Collectors.toList());
+        }
+        catch (SchedulerException ex) {
             return Collections.emptyList();
         }
     }
 
     /**
-     * Build a {@link CronTaskInfo} by given id.
-     *
-     * @param id the given id.
-     * @return new {@link CronTaskInfo} by given id.
+     * {@inheritDoc}
      */
+    @Override
     @Nullable
-    private CronTaskInfo buildCronTaskInfo(String id) {
-        JobKey jobKey = QuartzUtils.getJobKey(id);
-        return buildCronTaskInfo(jobKey);
-    }
-
-    /**
-     * Build a {@link CronTaskInfo} by given {@code JobKey}.
-     *
-     * @param jobKey the given {@code JobKey}.
-     * @return new {@link CronTaskInfo} by given {@code JobKey}.
-     */
-    @Nullable
-    private CronTaskInfo buildCronTaskInfo(JobKey jobKey) {
-        String group = jobKey.getGroup();
+    public Long getNextExecuteTime(@NotNull String id) {
+        JobKey jobKey = QuartzUtils.resolveIdAsJobKey(id);
         try {
-            Set<JobKey> jobKeys = getInitializedScheduler().getJobKeys(GroupMatcher.groupEquals(group));
-            Trigger trigger = getInitializedScheduler().getTrigger(new TriggerKey(jobKey.getName(),
-                    jobKey.getGroup()));
-            if (!jobKeys.contains(jobKey)) {
+            Trigger trigger
+                    = getInitializedScheduler().getTrigger(new TriggerKey(jobKey.getName(), jobKey.getGroup()));
+            Date nextFileTime;
+            if (trigger == null || (nextFileTime = trigger.getNextFireTime()) == null) {
                 return null;
             }
-
-            String expression = QuartzUtils.getTriggerExpression(trigger);
-            JobDetail jobDetail = scheduler.getJobDetail(jobKey);
-            JobDataMap jobDataMap = jobDetail.getJobDataMap();
-            String id = (String) jobDataMap.get(JobConstants.ID_PROPERTY);
-            JobKeyWrapperdRunnable jobKeyWrapperdRunnable
-                    = (JobKeyWrapperdRunnable) jobDataMap.get(JobConstants.RUNNABLE_PROPERTY);
-            Runnable runnable = jobKeyWrapperdRunnable.getRaw();
-            runnable = unwrapRunnable(runnable);
-            Object target = null;
-            Method method = null;
-            if (runnable instanceof CronMethodRunnable) {
-                CronMethodRunnable cr = (CronMethodRunnable) runnable;
-                target = cr.getTarget();
-                method = cr.getMethod();
-            }
-            return customizeCronTaskInfo(new CronTaskInfo(id, expression, runnable, target, method));
+            return nextFileTime.toInstant().toEpochMilli();
         }
         catch (SchedulerException ex) {
             return null;
@@ -375,7 +341,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      */
     @Override
     public void updateInternal(@NotNull String id, @NotNull String newExpression) throws SchedulerException {
-        JobKey jobKey = QuartzUtils.getJobKey(id);
+        JobKey jobKey = QuartzUtils.resolveIdAsJobKey(id);
         TriggerKey triggerKey = new TriggerKey(jobKey.getName(), jobKey.getGroup());
         getInitializedScheduler().rescheduleJob(triggerKey,
                 TriggerBuilder.newTrigger()
@@ -390,7 +356,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      */
     @Override
     public void removeInternal(@NotNull String id) throws SchedulerException {
-        getInitializedScheduler().deleteJob(QuartzUtils.getJobKey(id));
+        getInitializedScheduler().deleteJob(QuartzUtils.resolveIdAsJobKey(id));
     }
 
     /**
@@ -399,6 +365,39 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
     @Override
     protected void removeAllInternal() throws Exception {
         getInitializedScheduler().clear();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected CronTaskInfo getCronTaskInfoInternal(@NotNull String id) {
+        JobKey jobKey = QuartzUtils.resolveIdAsJobKey(id);
+        Scheduler scheduler = getInitializedScheduler();
+        try {
+            Set<JobKey> jobKeys =
+                    getInitializedScheduler().getJobKeys(GroupMatcher.groupEquals(jobKey.getGroup()));
+            if (!jobKeys.contains(jobKey)) return null;
+            Trigger trigger = scheduler.getTrigger(new TriggerKey(jobKey.getName(), jobKey.getGroup()));
+            String expression = QuartzUtils.getTriggerExpression(trigger);
+            JobDetail jobDetail = scheduler.getJobDetail(jobKey);
+            JobDataMap jobDataMap = jobDetail.getJobDataMap();
+            JobKeyWrappedRunnable wrappedRunnable
+                    = (JobKeyWrappedRunnable) jobDataMap.get(JobConstants.RUNNABLE_PROPERTY);
+            Runnable runnable = wrappedRunnable.getRaw();
+            runnable = unwrapRunnable(runnable);
+            Object target = null;
+            Method method = null;
+            if (runnable instanceof CronMethodRunnable) {
+                CronMethodRunnable cr = (CronMethodRunnable) runnable;
+                target = cr.getTarget();
+                method = cr.getMethod();
+            }
+            return new CronTaskInfo(id, expression, runnable, target, method);
+        }
+        catch (SchedulerException ex) {
+            return null;
+        }
     }
 
     @Override
