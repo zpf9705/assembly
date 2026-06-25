@@ -102,7 +102,7 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
      * @since 1.0.3
      */
     private final TaskListenerImpl taskListener
-            = (TaskListenerImpl) new TaskListenerImpl(this).initRunningHolder();
+            = new TaskListenerImpl(this).initRunningHolder().unwrap(TaskListenerImpl.class);
 
     /**
      * @since 1.0.3

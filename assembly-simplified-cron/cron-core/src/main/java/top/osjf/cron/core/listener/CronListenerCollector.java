@@ -20,6 +20,7 @@ package top.osjf.cron.core.listener;
 import top.osjf.commons.lang.Nullable;
 import top.osjf.commons.lang.OrderComparator;
 import top.osjf.commons.lang.Ordered;
+import top.osjf.commons.lang.Wrapper;
 import top.osjf.commons.util.Assert;
 import top.osjf.commons.util.CollectionUtils;
 import top.osjf.cron.core.repository.Repository;
@@ -41,7 +42,7 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public abstract class CronListenerCollector {
+public abstract class CronListenerCollector implements Wrapper {
 
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
