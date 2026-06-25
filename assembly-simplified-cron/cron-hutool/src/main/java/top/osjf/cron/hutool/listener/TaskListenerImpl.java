@@ -19,10 +19,7 @@ package top.osjf.cron.hutool.listener;
 
 import cn.hutool.cron.TaskExecutor;
 import cn.hutool.cron.listener.TaskListener;
-import top.osjf.cron.core.listener.CronListenerCollector;
-import top.osjf.cron.core.listener.DefaultCronListenerCollector;
-import top.osjf.cron.core.listener.ListenerContext;
-import top.osjf.cron.core.listener.ListenerContextTypeProvider;
+import top.osjf.cron.core.listener.*;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
 
 /**
@@ -34,6 +31,7 @@ import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
  */
 @ListenerContextTypeProvider(HutoolListenerContent.class)
 public class TaskListenerImpl extends DefaultCronListenerCollector implements TaskListener {
+
     /**
      * @param repository The resource class used for listening to callbacks
      *                   in {@link ListenerContext}.
@@ -45,16 +43,19 @@ public class TaskListenerImpl extends DefaultCronListenerCollector implements Ta
 
     @Override
     public void onStart(TaskExecutor executor) {
+        addCurrentRunningThread(executor.getCronTask().getId());
         doStartListener(executor);
     }
 
     @Override
     public void onSucceeded(TaskExecutor executor) {
+        removeCurrentRunningThread(executor.getCronTask().getId());
         doSuccessListener(executor);
     }
 
     @Override
     public void onFailed(TaskExecutor executor, Throwable exception) {
+        removeCurrentRunningThread(executor.getCronTask().getId());
         doFailedListener(executor, exception);
     }
 }
