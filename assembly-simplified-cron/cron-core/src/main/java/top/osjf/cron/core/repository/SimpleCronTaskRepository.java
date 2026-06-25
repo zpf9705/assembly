@@ -314,16 +314,30 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
         }
 
         /**
+         * @return Returns the timestamp in milliseconds of the next execution time after the current
+         * expression is parsed.
+         */
+        @Nullable
+        public Long getNextExecuteMillSeconds() {
+            // Get the current time.
+            ZonedDateTime now = ZonedDateTime.now();
+            // Calculate the next execution time.
+            ExecutionTime executionTime = ExecutionTime.forCron(cron);
+            Optional<ZonedDateTime> optional = executionTime.nextExecution(now);
+            return optional.isPresent() ? optional.get().toInstant().toEpochMilli() : null;
+        }
+
+        /**
          * @return A new {@link CronTaskInfo} by this.
          */
         public CronTaskInfo toCronTaskInfo() {
             Runnable runnable = unwrapRunnable(rawRunnable);
             if (runnable instanceof CronMethodRunnable) {
                 CronMethodRunnable cr = (CronMethodRunnable) runnable;
-                return customizeCronTaskInfo(new CronTaskInfo(listenerContext.id, cron.asString(), runnable,
-                        cr.getTarget(), cr.getMethod()));
+                return new CronTaskInfo(listenerContext.id, cron.asString(), runnable,
+                        cr.getTarget(), cr.getMethod());
             }
-            return customizeCronTaskInfo(new CronTaskInfo(listenerContext.id, cron.asString(), runnable));
+            return new CronTaskInfo(listenerContext.id, cron.asString(), runnable);
         }
 
         @Override
@@ -472,29 +486,31 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
         return registerInternal(task.getExpression(), task.getRunnable());
     }
 
-    @Override
-    public boolean hasCronTaskInfoInternal(@NotNull String id) {
-        return futureCache.containsKey(id);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Nullable
-    @Override
-    public CronTaskInfo getCronTaskInfoInternal(@NotNull String id) {
-        return Optional.ofNullable(futureCache.get(id)).map(SimpleRunnabledScheduledFuture::toCronTaskInfo)
-                .orElse(null);
-    }
-
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<CronTaskInfo> getAllCronTaskInfo() {
+    public List<String> getAllRegisteredTaskIds() {
         return futureCache.values()
-                .stream().map(SimpleRunnabledScheduledFuture::toCronTaskInfo)
+                .stream().map(future -> future.listenerContext.id)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getAllRunningTaskIds() {
+        return futureCache.values()
+                .stream().filter(SimpleRunnabledScheduledFuture::isRunning)
+                .map(future -> future.listenerContext.id)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Long getNextExecuteTime(String id) {
+        SimpleRunnabledScheduledFuture future = futureCache.get(id);
+        if (future == null) {
+            return null;
+        }
+        return future.getNextExecuteMillSeconds();
     }
 
     /**
@@ -531,5 +547,14 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
                 future.cancel(true);
             }
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected CronTaskInfo getCronTaskInfoInternal(String id) {
+        return Optional.ofNullable(futureCache.get(id)).map(SimpleRunnabledScheduledFuture::toCronTaskInfo)
+                .orElse(null);
     }
 }
