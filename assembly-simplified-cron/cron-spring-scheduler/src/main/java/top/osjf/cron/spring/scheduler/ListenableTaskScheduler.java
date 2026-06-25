@@ -26,16 +26,17 @@ import org.springframework.scheduling.support.ScheduledMethodRunnable;
 import top.osjf.commons.lang.NotNull;
 import top.osjf.commons.lang.Nullable;
 import top.osjf.commons.util.StringUtils;
-import top.osjf.cron.core.repository.*;
+import top.osjf.cron.core.repository.AbstractCronTaskRepository;
+import top.osjf.cron.core.repository.CronMethodRunnable;
+import top.osjf.cron.core.repository.CronTask;
+import top.osjf.cron.core.repository.CronTaskRegistrar;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * {@code ListenerTaskScheduler} is a custom proxy implementation of an interface
@@ -168,11 +169,23 @@ public abstract class ListenableTaskScheduler extends AbstractCronTaskRepository
     }
 
     /**
-     * Return unmodifiable set of unique ID of the registered tasks.
-     * @return Unmodifiable set of unique ID of the registered tasks.
+     * Returns new list of unique ID of the registered tasks.
+     * @return new list of unique ID of the registered tasks.
      */
-    protected Set<String> getFutureIds() {
-        return Collections.unmodifiableSet(futureCache.keySet());
+    protected List<String> getFutureIds() {
+        return new ArrayList<>(futureCache.keySet());
+    }
+
+    /**
+     * Return new list of unique ID of the registered running tasks.
+     * @return new list of unique ID of the registered running tasks.
+     */
+    protected List<String> getRunningFutureIds() {
+        return futureCache.entrySet().stream().filter(entry -> {
+            DefaultListenableRunnable listenableRunnable =
+                    (DefaultListenableRunnable) entry.getValue().getListenableRunnable();
+            return listenableRunnable.isRunning();
+        }).map(Map.Entry::getKey).collect(Collectors.toList());
     }
 
     /**
@@ -246,7 +259,7 @@ public abstract class ListenableTaskScheduler extends AbstractCronTaskRepository
      * @param trigger  an implementation of the {@link Trigger} interface,
      * @return A {@link ListenableRunnable} that can be monitored and executed.
      */
-    protected abstract ListenableRunnable wrapperRunnableToListenable(Runnable runnable, Trigger trigger);
+    protected abstract ListenableRunnable wrapperRunnableToListenable(Runnable runnable, @Nullable Trigger trigger);
 
     /**
      * The function object that executes the given encapsulation task registration behavior
@@ -262,7 +275,7 @@ public abstract class ListenableTaskScheduler extends AbstractCronTaskRepository
      */
     @NotNull
     private ListenableScheduledFuture execute(Function<Runnable, ScheduledFuture<?>> func, Runnable runnable,
-                                              Trigger trigger, boolean exposeFuture) {
+                                              @Nullable Trigger trigger, boolean exposeFuture) {
         ListenableRunnable listenableRunnable = wrapperRunnableToListenable(runnable, trigger);
         ScheduledFuture<?> scheduledFuture = func.apply(listenableRunnable);
         ListenableScheduledFuture listenableScheduledFuture
