@@ -54,6 +54,7 @@ public class SpringRunnableJobFactory
         }
         BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(RunnableJob.class)
                 .setScope(BeanDefinition.SCOPE_SINGLETON)
+                .addConstructorArgValue(id)
                 .addConstructorArgValue(runnable);
         BeanDefinitionReaderUtils
                 .registerBeanDefinition(new BeanDefinitionHolder(builder.getBeanDefinition(), id), registry);
