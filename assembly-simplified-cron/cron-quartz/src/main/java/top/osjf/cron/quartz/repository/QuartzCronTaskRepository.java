@@ -308,7 +308,8 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
         try {
             return getInitializedScheduler().getCurrentlyExecutingJobs().stream()
                     .map(context -> (String) context.getJobDetail().getJobDataMap()
-                            .get(JobConstants.ID_PROPERTY)).collect(Collectors.toList());
+                            .get(JobConstants.ID_PROPERTY)).distinct()
+                            .collect(Collectors.toList());
         }
         catch (SchedulerException ex) {
             return Collections.emptyList();
@@ -400,6 +401,32 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void terminateInternal(@NotNull String id) throws SchedulerException {
+        getInitializedScheduler().interrupt(QuartzUtils.resolveIdAsJobKey(id));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void terminateAllInternal() throws SchedulerException {
+        for (JobExecutionContext currentlyExecutingJob : getInitializedScheduler().getCurrentlyExecutingJobs()) {
+            try {
+                getInitializedScheduler().interrupt(currentlyExecutingJob.getJobDetail().getKey());
+            }
+            catch (UnableToInterruptJobException ex) {
+                logger.info("Failed to terminate Job [{}]", currentlyExecutingJob.getJobDetail().getKey().toString(), ex);
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @NotNull
     protected CronListenerCollector getCronListenerCollector() {
