@@ -496,6 +496,9 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<String> getAllRunningTaskIds() {
         return futureCache.values()
@@ -504,6 +507,9 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Long getNextExecuteTime(String id) {
         SimpleRunnabledScheduledFuture future = futureCache.get(id);
