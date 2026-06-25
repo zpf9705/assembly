@@ -223,6 +223,32 @@ public abstract class ListenableTaskScheduler extends AbstractCronTaskRepository
     }
 
     /**
+     * Terminate the cache {@link ScheduledFuture} running task corresponding to the specified ID.
+     * @param id the Unique ID of the registered task.
+     * @since 3.0.2
+     */
+    protected void terminateFuture(@NotNull String id) {
+        ListenableScheduledFuture future = futureCache.get(id);
+        if (future != null && !future.isCancelled()
+                && ((DefaultListenableRunnable)future.getListenableRunnable()).isRunning()) {
+            future.cancel(true);
+        }
+    }
+
+    /**
+     * Terminate all cache running {@link ScheduledFuture} tasks.
+     * @since 3.0.2
+     */
+    protected void terminateAllFutures() {
+        for (ListenableScheduledFuture future : futureCache.values()) {
+            if (future != null && !future.isCancelled() &&
+                    ((DefaultListenableRunnable)future.getListenableRunnable()).isRunning()) {
+                future.cancel(true);
+            }
+        }
+    }
+
+    /**
      * The closing operation of the task scheduler and task cache cleaning should be completed by
      * this class, compatible with the Spring framework's bean cycle processing, and should be
      * completed by the resource class.
