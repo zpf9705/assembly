@@ -17,32 +17,68 @@
 
 package top.osjf.cron.quartz.repository;
 
-import org.quartz.Job;
-import org.quartz.JobExecutionContext;
+import org.quartz.*;
 import top.osjf.commons.lang.NotNull;
+import top.osjf.commons.util.Assert;
+import top.osjf.cron.core.listener.RunningThreadHolder;
 
 /**
  * {@code RunnableJob} is an implementation class that encapsulates a
- * single {@link Runnable} execution of {@link Job}.
+ * single {@link Runnable} execution of {@link Job}/{@link InterruptableJob}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
-public class RunnableJob implements Job {
+public class RunnableJob implements InterruptableJob {
 
+    private final RunningThreadHolder runningThreadHolder = new RunningThreadHolder();
+
+    @NotNull private final String id;
     @NotNull private final Runnable runnable;
 
     /**
      * Creates a {@code RunnableJob} by given {@code Runnable}.
+     *
+     * @param id the given task {@link JobKey#toString() id}.
      * @param runnable the given {@code Runnable}.
      */
-    public RunnableJob(@NotNull Runnable runnable) {
+    public RunnableJob(@NotNull String id, @NotNull Runnable runnable) {
+
+        Assert.hasText(id, "Runnable can not be null");
+        Assert.notNull(runnable, "Runnable can not be null");
+
+        this.id = id;
         this.runnable = runnable;
     }
 
 
     @Override
     public void execute(JobExecutionContext context) {
-        runnable.run();
+        runningThreadHolder.addCurrentRunningThread(id);
+        try {
+            runnable.run();
+        }
+        finally {
+            runningThreadHolder.removeCurrentRunningThread(id);
+        }
+    }
+
+    /**
+     * When multiple thread tasks are executing within a specified single task unit, executing this
+     * method for the first time will {@link Thread#interrupt()} all currently executing tasks.
+     * Subsequent calls to the {@link Scheduler#interrupt(JobKey)} method within the
+     * {@link Scheduler#getCurrentlyExecutingJobs()} snapshot loop in the process
+     * {@link org.quartz.impl.StdScheduler#interrupt(JobKey)} will be ineffective,
+     * meaning it is only effective for the first time. However, this is not a problem,
+     * as the ultimate goal is achieved.
+     *
+     * @see RunningThreadHolder#removeCurrentRunningThread
+     * @see org.quartz.impl.StdScheduler#interrupt(JobKey)
+     * @see Scheduler#interrupt(JobKey)
+     * @see Scheduler#getCurrentlyExecutingJobs()
+     */
+    @Override
+    public void interrupt() {
+        runningThreadHolder.removeRunningThreads(id);
     }
 }

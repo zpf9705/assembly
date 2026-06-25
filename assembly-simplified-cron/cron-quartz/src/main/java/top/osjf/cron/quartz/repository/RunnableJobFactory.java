@@ -63,6 +63,6 @@ public class RunnableJobFactory implements JobFactory {
             return job;
         }
 
-        return jobMap.computeIfAbsent(id, s -> new RunnableJob(runnable));
+        return jobMap.computeIfAbsent(id, s -> new RunnableJob(id, runnable));
     }
 }
