@@ -188,6 +188,32 @@ public abstract class AbstractCronTaskRepository
      * {@inheritDoc}
      */
     @Override
+    public void terminate(String id) throws CronInternalException {
+        try {
+            terminateInternal(id);
+        }
+        catch (Exception ex) {
+            throw new CronInternalException(ex);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void terminateAll() throws CronInternalException {
+        try {
+            terminateAllInternal();
+        }
+        catch (Exception ex) {
+            throw new CronInternalException(ex);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public boolean hasCronTaskInfo(@NotNull String id) {
         return getAllRegisteredTaskIds().contains(id);
     }
@@ -437,4 +463,34 @@ public abstract class AbstractCronTaskRepository
      */
     @Nullable
     protected abstract CronTaskInfo getCronTaskInfoInternal(String id);
+
+    /**
+     * Underlying internal method to terminate the currently executing instance of the specified cron task.
+     * <p>
+     * This method is invoked after parameter verification in the outer public method,
+     * no parameter check is required in subclasses. Only the running task thread will be interrupted,
+     * the task registration information and cron scheduling configuration will be retained,
+     * and the task can still be triggered normally at the next scheduled time.
+     * Any runtime or checked exception thrown during implementation will be uniformly caught and wrapped
+     * into {@link CronInternalException}.
+     *
+     * @param id unique identifier of the target registered cron task
+     * @throws Exception Any exception thrown by the underlying scheduling framework during task thread
+     * termination
+     */
+    protected abstract void terminateInternal(String id) throws Exception;
+
+    /**
+     * Underlying internal batch method to terminate all currently executing cron task instances.
+     * <p>
+     * This method is invoked after parameter verification in the outer public method,
+     * no parameter check is required in subclasses. All ongoing task threads will be interrupted,
+     * while all task metadata and cron scheduling rules remain unchanged without deletion.
+     * Any runtime or checked exception thrown during implementation will be uniformly caught and wrapped
+     * into {@link CronInternalException}.
+     *
+     * @throws Exception Any exception thrown by the underlying scheduling framework during batch task
+     * thread termination
+     */
+    protected abstract void terminateAllInternal() throws Exception;
 }

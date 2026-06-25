@@ -62,4 +62,30 @@ public interface ModifiableRepository extends Repository {
      * @since 3.0.2
      */
     void removeAll() throws CronInternalException;
+
+    /**
+     * Terminate the currently executing instance of the specified task immediately.
+     * <p>The task scheduling configuration and cron expression will not be modified,
+     * the task will still be triggered normally according to the cron rule at the next scheduled time.
+     * Only the ongoing executing thread of this task is interrupted.
+     *
+     * @param id the Unique ID of the registered task.
+     * @throws CronInternalException    if an unsupported or incorrect related exception occurs
+     *                                  within the scheduling architecture.
+     * @since 3.0.2
+     * @see ListableRepository#isTaskRunning(String)
+     */
+    void terminate(String id) throws CronInternalException;
+
+    /**
+     * Terminate all currently executing task instances in this repository.
+     * <p>All task metadata and cron scheduling rules are retained, subsequent scheduled triggers
+     * will not be affected.
+     *
+     * @throws CronInternalException    if an unsupported or incorrect related exception occurs
+     *                                  within the scheduling architecture.
+     * @since 3.0.2
+     */
+    void terminateAll() throws CronInternalException;
+
 }
