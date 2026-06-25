@@ -158,8 +158,9 @@ public class NoOpCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
+    @Nullable
     public Long getNextExecuteTime(String id) {
-        return 0L;
+        return null;
     }
 
     /**
