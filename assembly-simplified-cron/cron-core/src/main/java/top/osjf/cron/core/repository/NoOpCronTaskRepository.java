@@ -194,6 +194,22 @@ public class NoOpCronTaskRepository extends AbstractCronTaskRepository {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void terminateInternal(String id) {
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void terminateAllInternal() {
+
+    }
+
     @Override
     public String toString() {
         return " Non operational cronTaskRepository implementation class. ";
