@@ -19,7 +19,9 @@ package top.osjf.cron.core.repository;
 
 import top.osjf.commons.lang.Nullable;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Repository interface for querying registered scheduled task information.
@@ -63,5 +65,50 @@ public interface ListableRepository extends Repository {
      * @return A list containing information for all registered cron tasks. If the list is empty,
      * it indicates that no cron tasks are registered.
      */
-    List<CronTaskInfo> getAllCronTaskInfo();
+    List<CronTaskInfo> getAllCronTaskInfos();
+
+    /**
+     * Return all the scheduled task IDs that have been successfully registered
+     * in the system.
+     * @return all the scheduled task IDs that have been successfully registered
+     *         in the system.
+     * @since 3.0.2
+     */
+    List<String> getAllRegisteredTaskIds();
+
+    /**
+     * Check whether the specified task is currently running.
+     * @param id the unique identifier of the registered cron task.
+     * @return {@code true} if task is executing, otherwise {@code false}
+     * @since 3.0.2
+     */
+    boolean isTaskRunning(String id);
+
+    /**
+     * Return all currently running scheduled task IDs.
+     * @return all currently running scheduled task IDs.
+     * @since 3.0.2
+     */
+    List<String> getAllRunningTaskIds();
+
+    /**
+     * Returns the next scheduled execution time of the specified task.
+     *
+     * @param id the unique identifier of the registered cron task.
+     * @return next execution timestamp in milliseconds; return {@code null}
+     * if the task no longer has subsequent triggers.
+     */
+    @Nullable
+    Long getNextExecuteTime(String id);
+
+    /**
+     * Return the results of querying the next execution time based on the
+     * task ID in batch, returned in the format of {@link Map K:taskId,V:nextExecuteTime}.
+     *
+     * @param ids collection of task unique identifiers
+     * @return a map with taskId as key and the next execution time (timestamp
+     *         in milliseconds) as value; tasks without subsequent execution will
+     *         not be included in the returned map.
+     */
+    Map<String, Long> getNextExecuteTimes(Collection<String> ids);
 }
