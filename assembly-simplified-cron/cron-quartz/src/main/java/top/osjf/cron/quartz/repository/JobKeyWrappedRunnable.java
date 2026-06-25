@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
-public class JobKeyWrapperdRunnable implements Runnable {
+public class JobKeyWrappedRunnable implements Runnable {
 
     /** The default generator with incremental data as the task name.*/
     private static final AtomicLong DEFAULT_NAME_COUNTER = new AtomicLong(0);
@@ -45,10 +45,10 @@ public class JobKeyWrapperdRunnable implements Runnable {
     @NotNull private final Runnable raw;
 
     /**
-     * Constructs a {@link JobKeyWrapperdRunnable} with given raw {@link Runnable}.
+     * Constructs a {@link JobKeyWrappedRunnable} with given raw {@link Runnable}.
      * @param raw the original {@link Runnable}.
      */
-    public JobKeyWrapperdRunnable(@NotNull Runnable raw) {
+    public JobKeyWrappedRunnable(@NotNull Runnable raw) {
         this.raw = raw;
         if (raw instanceof CronMethodRunnable) {
             CronMethodRunnable cr = (CronMethodRunnable) raw;
