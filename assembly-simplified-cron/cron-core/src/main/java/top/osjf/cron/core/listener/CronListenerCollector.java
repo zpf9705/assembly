@@ -377,6 +377,7 @@ public abstract class CronListenerCollector implements Wrapper {
     /**
      * Lazy initialize the {@link RunningThreadHolder} instance to implement the interruption function
      * of the task thread, and subclasses can call the initialization as needed.
+     * @return self
      * @since 3.0.2
      */
     public CronListenerCollector initRunningHolder() {
