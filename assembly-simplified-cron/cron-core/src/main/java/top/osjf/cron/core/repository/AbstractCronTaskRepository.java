@@ -19,11 +19,11 @@ package top.osjf.cron.core.repository;
 
 import top.osjf.commons.lang.NotNull;
 import top.osjf.commons.lang.Nullable;
-import top.osjf.cron.core.exception.CronExpressionInvalidException;
-import top.osjf.cron.core.exception.CronInternalException;
-import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
+import top.osjf.cron.core.exception.*;
 
+import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -55,6 +55,8 @@ import java.util.stream.Collectors;
  */
 public abstract class AbstractCronTaskRepository
         extends AbstractRunTimeoutRegistrarRepository implements CronTaskRepository {
+
+    private final CopyOnWriteArrayList<String> disallowConcurrentExecutionIds = new CopyOnWriteArrayList<>();
 
     /**
      * {@inheritDoc}
@@ -333,6 +335,49 @@ public abstract class AbstractCronTaskRepository
             return ((TimeoutMonitoringRunnable) given).getReal();
         }
         return given;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isSupportConcurrentExecution() {
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void disallowConcurrentExecution(String id) throws NotSupportConcurrentExecutionException {
+        if (!isSupportConcurrentExecution()) {
+            throw new NotSupportConcurrentExecutionException(this);
+        }
+        disallowConcurrentExecutionIds.addIfAbsent(id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void cancelDisallowConcurrentExecution(String id) throws CannotCancelConcurrentException {
+        CronTaskInfo cronTaskInfo = getCronTaskInfo(id);
+        if (cronTaskInfo == null) {
+            throw new CannotCancelConcurrentException(String.format("Cannot cancel disallow-concurrent constraint, " +
+                    "scheduled task with id [%s] does not exist.", id));
+        }
+        Method method = cronTaskInfo.getMethod();
+        if (method != null && method.isAnnotationPresent(DisallowConcurrentExecution.class)) {
+            throw new CannotCancelConcurrentException(
+                    String.format("Cannot cancel disallow-concurrent constraint, task [%s] uses " +
+                            "@DisallowConcurrentExecution static annotation rule which cannot be dynamically revoked.",
+                            id));
+        }
+        if (!disallowConcurrentExecutionIds.contains(id)) {
+            throw new CannotCancelConcurrentException(String.format("Cannot cancel disallow-concurrent constraint, " +
+                    "no dynamic concurrency restriction is registered for task [%s].", id));
+        }
+        disallowConcurrentExecutionIds.remove(id);
     }
 
     /**
