@@ -26,7 +26,7 @@ package top.osjf.cron.core.exception;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public class CronInternalException extends RuntimeException {
+public class CronInternalException extends CronFrameworkException {
 
     private static final long serialVersionUID = 1460657936213652266L;
 
