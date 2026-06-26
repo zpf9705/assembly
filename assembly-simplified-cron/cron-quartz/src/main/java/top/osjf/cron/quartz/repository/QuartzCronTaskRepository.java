@@ -230,7 +230,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
                 .withIdentity(triggerKey)
                 .startNow()
                 .withSchedule(CronScheduleBuilder.cronSchedule(expression));
-        JobDetail jobDetail = JobBuilder.newJob(RunnableJob.class)
+        JobDetail jobDetail = QuartzJobBuilder.newJob(RunnableJob.class, this)
                 .withIdentity(jobKey.getName(), jobKey.getGroup()).build();
         JobDataMap jobDataMap = jobDetail.getJobDataMap();
         jobDataMap.put(JobConstants.RUNNABLE_PROPERTY, runnable);
