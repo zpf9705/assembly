@@ -18,7 +18,6 @@
 package top.osjf.cron.core.repository;
 
 import top.osjf.commons.util.Assert;
-import top.osjf.commons.lang.Nullable;
 
 import java.lang.reflect.Method;
 
@@ -56,39 +55,46 @@ public class CronTaskRegistrar {
 
     /**
      * Register {@link #cronTask} into the given {@link CronTaskRepository}, while
-     * simultaneously configuring annotations {@link RunTimes} and {@link RunTimeout}.
+     * simultaneously configuring annotations {@link RunTimes} and {@link RunTimeout}
+     * and {@link DisallowConcurrentExecution}.
      * @param cronTaskRepository the {@link CronTaskRepository}.
      * @return The unique ID for scheduling task registration, when running times
      * related to API registration, returns {@literal null}.
      */
-    @Nullable
     public String registerFor(CronTaskRepository cronTaskRepository) {
 
         Assert.notNull(cronTaskRepository, "CronTaskRepository not be null");
 
-        boolean needSpecifyRuntimes = targetMethod.isAnnotationPresent(RunTimes.class);
-        boolean needSpecifyRunTimeout = targetMethod.isAnnotationPresent(RunTimeout.class);
+        RunTimes runTimes = targetMethod.getAnnotation(RunTimes.class);
+        RunTimeout runTimeout = targetMethod.getAnnotation(RunTimeout.class);
 
-        if (needSpecifyRuntimes && needSpecifyRunTimeout) {
-            RunTimes runTimes = targetMethod.getAnnotation(RunTimes.class);
-            RunTimeout runTimeout = targetMethod.getAnnotation(RunTimeout.class);
-            cronTaskRepository.registerRunTimes(cronTask, runTimes.value(),
-                    new RunningTimeout(runTimeout.timeout(), runTimeout.timeUnit(),
-                            runTimeout.policy()));
+        RunningTimeout runningTimeout = null;
+        if (runTimeout != null) {
+            runningTimeout = new RunningTimeout(runTimeout.timeout(), runTimeout.timeUnit(), runTimeout.policy());
         }
-        else if (needSpecifyRuntimes) {
-            RunTimes runTimes = targetMethod.getAnnotation(RunTimes.class);
-            cronTaskRepository.registerRunTimes(cronTask, runTimes.value());
-        }
-        else if (needSpecifyRunTimeout) {
-            RunTimeout runTimeout = targetMethod.getAnnotation(RunTimeout.class);
-            return cronTaskRepository.register(cronTask,
-                    new RunningTimeout(runTimeout.timeout(), runTimeout.timeUnit(),
-                            runTimeout.policy()));
+
+        String id;
+        if (runTimes != null) {
+            if (runningTimeout != null) {
+                id = cronTaskRepository.registerRunTimes(cronTask, runTimes.value(), runningTimeout);
+            }
+            else {
+                id = cronTaskRepository.registerRunTimes(cronTask, runTimes.value());
+            }
         }
         else {
-            return cronTaskRepository.register(cronTask);
+            if (runningTimeout != null) {
+                id = cronTaskRepository.register(cronTask, runningTimeout);
+            }
+            else {
+                id = cronTaskRepository.register(cronTask);
+            }
         }
-        return null;
+
+        if (targetMethod.isAnnotationPresent(DisallowConcurrentExecution.class)) {
+            cronTaskRepository.disallowConcurrentExecution(id);
+        }
+
+        return id;
     }
 }
