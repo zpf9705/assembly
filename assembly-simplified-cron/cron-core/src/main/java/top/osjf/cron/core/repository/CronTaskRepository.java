@@ -170,7 +170,6 @@ public interface CronTaskRepository extends Repository, RunTimesRegistrarReposit
      * interval time for the next task to be executed, and the execution of a single task will
      * appear serial as a whole.</li>
      * </ul>
-     * </p>
      *
      * @return {@code true} the scheduler allows for concurrent execution of individual tasks under
      *          expression rules;
@@ -206,7 +205,7 @@ public interface CronTaskRepository extends Repository, RunTimesRegistrarReposit
      * <p>This method only works for constraints registered programmatically via {@link #disallowConcurrentExecution}.
      * Tasks annotated with {@link DisallowConcurrentExecution} adopt static declarative configuration, whose
      * concurrency restriction cannot be revoked at runtime. Attempting to cancel such constraints will throw
-     * an exception.</p>
+     * an exception.
      *
      * <p>After cancellation, the task will follow the default concurrency scheduling rule of the underlying
      * scheduler.
