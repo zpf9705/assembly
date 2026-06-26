@@ -115,13 +115,6 @@ public abstract class AbstractDatasourceDrivenScheduled
     public static final String PROFILES_SYSTEM_PROPERTY_NAME = "cron.datasource.driven.scheduled.profiles";
     @Nullable private static List<String> SYSTEM_PROFILES;
 
-    /**
-     * Due to compatibility limitations on {@link RunTimes} run times, it is not possible to return
-     * the task ID and a custom prefix constant is assigned to the combined task ID.
-     * @since 3.0.2
-     */
-    private static final String PREFIX_SIGN_OF_TIMES_REGISTED = "Frequency-limit-";
-
     static {  loadRegisterProfiles(); }
 
     /**
@@ -421,16 +414,7 @@ public abstract class AbstractDatasourceDrivenScheduled
 
                 // Here it is judged to be terminated.
                 if (element.willBePaused()) {
-
                     String taskId = element.getTaskId();
-                    // Tasks with limited registration times do not require manual deletion of tasks.
-                    if (isFrequencyLimitTask(element)) {
-                        debug("[Runtime-checked-Task-{}] Task name [{}] description [{}]  is a task that " +
-                                        "limits the number of registrations and does not require manual " +
-                                        "deletion of tasks.",
-                                element.getId(), element.getTaskName(), element.getTaskDescription());
-                        continue;
-                    }
                     cronTaskRepository.remove(taskId);
                     element.pausedClear();
                     debug("[Runtime-checked-Task-{}] [{}] execution has been stopped.",
@@ -445,17 +429,7 @@ public abstract class AbstractDatasourceDrivenScheduled
                 else {
                     // Check for changes in expressions.
                     String taskId = element.getTaskId();
-                    if (!StringUtils.isBlank(taskId)) {
-                        // Last time it was run as a limited number of task execution mechanism,
-                        // if you want to continue registering and executing, you need to set
-                        // this ID to a null value.
-                        if (isFrequencyLimitTask(element)) {
-                            debug("[Runtime-checked-Task-{}] Task name [{}] description [{}]  is a limited " +
-                                            "registration task. If you need to make any configuration changes, " +
-                                            "please change the task ID to a null value.",
-                                    element.getId(), element.getTaskName(), element.getTaskDescription());
-                            continue;
-                        }
+                    if (StringUtils.isNotBlank(taskId)) {
                         CronTaskInfo cronTaskInfo = cronTaskRepository.getCronTaskInfo(taskId);
                         String oldExpression = cronTaskInfo != null ? cronTaskInfo.getExpression() : null;
                         if (element.expressionNoSame(oldExpression)) {
@@ -485,10 +459,6 @@ public abstract class AbstractDatasourceDrivenScheduled
 
     private static String getActiveTime() {
         return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-    }
-
-    private static boolean isFrequencyLimitTask(TaskElement element) {
-        return element.getTaskId().startsWith(PREFIX_SIGN_OF_TIMES_REGISTED);
     }
 
     /**
@@ -563,11 +533,6 @@ public abstract class AbstractDatasourceDrivenScheduled
                 new CronTaskRegistrar(new CronTask(taskElement.getExpression(), (CronMethodRunnable) taskRunnable))
                         .registerFor(cronTaskRepository) :
                 cronTaskRepository.register(taskElement.getExpression(), taskRunnable);
-
-        // Registration with a limit on the number of runs will not be able to return the unique ID of the
-        // task. Therefore, a prefix+the task ID set by the user will be used as the task registration ID,
-        // in order to pause the registration of this task when checking again.
-        if (taskId == null) taskId = PREFIX_SIGN_OF_TIMES_REGISTED + taskElement.getId();
 
         taskElement.setTaskId(taskId);
         taskElement.setStatusDescription(true, "Running");
