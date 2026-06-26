@@ -349,6 +349,14 @@ public abstract class AbstractCronTaskRepository
      * {@inheritDoc}
      */
     @Override
+    public boolean hasDisallowConcurrentExecution(String id) {
+        return disallowConcurrentExecutionIds.contains(id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void disallowConcurrentExecution(String id) throws NotSupportConcurrentExecutionException {
         if (!isSupportConcurrentExecution()) {
             throw new NotSupportConcurrentExecutionException(this);
@@ -373,7 +381,7 @@ public abstract class AbstractCronTaskRepository
                             "@DisallowConcurrentExecution static annotation rule which cannot be dynamically revoked.",
                             id));
         }
-        if (!disallowConcurrentExecutionIds.contains(id)) {
+        if (!hasDisallowConcurrentExecution(id)) {
             throw new CannotCancelConcurrentException(String.format("Cannot cancel disallow-concurrent constraint, " +
                     "no dynamic concurrency restriction is registered for task [%s].", id));
         }

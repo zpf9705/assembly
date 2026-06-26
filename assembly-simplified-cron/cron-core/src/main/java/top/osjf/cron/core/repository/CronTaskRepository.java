@@ -179,6 +179,15 @@ public interface CronTaskRepository extends Repository, RunTimesRegistrarReposit
     boolean isSupportConcurrentExecution();
 
     /**
+     * Check whether the specified scheduled task is restricted from concurrent execution.
+     *
+     * @param id unique identifier of target scheduled task
+     * @return {@code true} if the task is prohibited from concurrent execution;
+     *         {@code false} if the task allows concurrent scheduling
+     */
+    boolean hasDisallowConcurrentExecution(String id);
+
+    /**
      * Bind the disallow-concurrent-execution constraint to the specified scheduled task programmatically.
      *
      * <p>This method provides the programmatic alternative to the {@link DisallowConcurrentExecution}
