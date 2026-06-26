@@ -19,7 +19,9 @@ package top.osjf.cron.core.repository;
 import top.osjf.commons.ability.Nameable;
 import top.osjf.commons.lang.Nullable;
 import top.osjf.commons.lang.Wrapper;
+import top.osjf.cron.core.exception.AnnotationConstraintCannotBeCancelledException;
 import top.osjf.cron.core.exception.CronExpressionInvalidException;
+import top.osjf.cron.core.exception.NotSupportConcurrentExecutionException;
 
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -115,23 +117,23 @@ public interface CronTaskRepository extends Repository, RunTimesRegistrarReposit
      * <li>Return positive number: the remaining available execution times of the task.</li>
      * </ul>
      *
-     * @param taskId unique identifier of target scheduled task
+     * @param id unique identifier of target scheduled task
      * @return remaining executable count of specified task
      * @since 3.0.2
      */
-    long getTaskRemainingNumberOfRuns(String taskId);
+    long getTaskRemainingNumberOfRuns(String id);
 
     /**
      * Query the single execution timeout configuration bound to the specified task from the
      * local cache.
      *
-     * @param taskId unique identifier of target scheduled task
+     * @param id unique identifier of target scheduled task
      * @return {@link RunningTimeout} timeout configuration instance of the task,
      *         returns {@code null} if no timeout configuration is bound for the task
      * @since 3.0.2
      */
     @Nullable
-    RunningTimeout getTimeoutConfig(String taskId);
+    RunningTimeout getTimeoutConfig(String id);
 
 
     /**
@@ -157,4 +159,64 @@ public interface CronTaskRepository extends Repository, RunTimesRegistrarReposit
      * @since 3.0.2
      */
     Runnable unwrapRunnable(Runnable given);
+
+    /**
+     * Check whether the current task scheduler natively supports concurrent task execution.
+     * <p>This method retrieves the underlying scheduling capability of the task scheduler:
+     * <ul>
+     * <li>{@code true}: Scheduler allows for immediate execution upon trigger by cron expressions
+     * and support concurrent execution of multiple tasks.</li>
+     * <li>{@code false}: After the previous task is completed, the scheduler will calculate the
+     * interval time for the next task to be executed, and the execution of a single task will
+     * appear serial as a whole.</li>
+     * </ul>
+     * </p>
+     *
+     * @return {@code true} the scheduler allows for concurrent execution of individual tasks under
+     *          expression rules;
+     *         {@code false} all tasks are sequential and cannot be executed concurrently.
+     * @since 3.0.2
+     */
+    boolean isSupportConcurrentExecution();
+
+    /**
+     * Bind the disallow-concurrent-execution constraint to the specified scheduled task programmatically.
+     *
+     * <p>This method provides the programmatic alternative to the {@link DisallowConcurrentExecution}
+     * annotation. When the task is triggered, if the previous execution has not finished, the new
+     * scheduling request will be blocked to prevent duplicate business processing, resource contention
+     * and data inconsistency caused by concurrent invocation.
+     *
+     * <p>Prerequisite: The scheduler must support concurrent scheduling (i.e. {@link #isSupportConcurrentExecution()}
+     * returns {@code true}), otherwise {@code NotSupportConcurrentExecutionException} will be thrown
+     * immediately as a fail-fast check.
+     *
+     * @param id unique identifier of target scheduled task
+     * @throws NotSupportConcurrentExecutionException if the underlying scheduler does not support concurrent
+     * scheduling, thus disallow-concurrent rule cannot be registered.
+     * @see DisallowConcurrentExecution
+     * @see CronTaskRegistrar
+     * @since 3.0.2
+     */
+    void disallowConcurrentExecution(String id) throws NotSupportConcurrentExecutionException;
+
+    /**
+     * Cancel the disallow-concurrent-execution constraint of the specified scheduled task.
+     *
+     * <p>This method only works for constraints registered programmatically via {@link #disallowConcurrentExecution}.
+     * Tasks annotated with {@link DisallowConcurrentExecution} adopt static declarative configuration, whose
+     * concurrency restriction cannot be revoked at runtime. Attempting to cancel such constraints will throw
+     * an exception.</p>
+     *
+     * <p>After cancellation, the task will follow the default concurrency scheduling rule of the underlying
+     * scheduler.
+     *
+     * @param id unique identifier of target scheduled task
+     * @throws UnsupportedOperationException thrown if the target task is marked with {@link DisallowConcurrentExecution}
+     * annotation
+     * @see #disallowConcurrentExecution(String)
+     * @see DisallowConcurrentExecution
+     * @since 3.0.2
+     */
+    void cancelDisallowConcurrentExecution(String id) throws AnnotationConstraintCannotBeCancelledException;
 }
