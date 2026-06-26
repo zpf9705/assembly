@@ -58,6 +58,9 @@ public abstract class AbstractCronTaskRepository
 
     private final CopyOnWriteArrayList<String> disallowConcurrentExecutionIds = new CopyOnWriteArrayList<>();
 
+    @Nullable
+    private IDGenerator idGenerator;
+
     /**
      * {@inheritDoc}
      */
@@ -410,6 +413,23 @@ public abstract class AbstractCronTaskRepository
                     "no dynamic concurrency restriction is registered for task [%s].", id));
         }
         disallowConcurrentExecutionIds.remove(id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setIDGenerator(@Nullable IDGenerator idGenerator) {
+        this.idGenerator = idGenerator;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Nullable
+    public IDGenerator getIDGenerator() {
+        return idGenerator;
     }
 
     /**

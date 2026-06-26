@@ -226,4 +226,23 @@ public interface CronTaskRepository extends Repository, RunTimesRegistrarReposit
      * @since 3.0.2
      */
     void cancelDisallowConcurrentExecution(String id) throws CannotCancelConcurrentException;
+
+    /**
+     * Set the task identity unique ID generator interface.
+     *
+     * <p>There is a mandatory requirement not to pass non {@code null} data. If it is passed as
+     * {@code null}, the default ID generation rule of the underlying scheduling class will be used.
+     * @param idGenerator the task identity unique ID generator interface.
+     */
+    void setIDGenerator(@Nullable IDGenerator idGenerator);
+
+    /**
+     * Returns the task identity unique ID generator for custom settings. If the {@link #setIDGenerator}
+     * setting is not called or the setting is invalid, it returns {@code null} and does not return the
+     * default generator of the underlying scheduler.
+     * @return Return the custom generator. If it is {@code null}, the underlying generator will be used
+     * by default.
+     */
+    @Nullable
+    IDGenerator getIDGenerator();
 }
