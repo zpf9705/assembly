@@ -110,44 +110,44 @@ public abstract class AbstractRunTimeoutRegistrarRepository
      * {@inheritDoc}
      */
     @Override
-    public void registerRunTimes(String expression, Runnable runnable, int times,
+    public String registerRunTimes(String expression, Runnable runnable, int times,
                                  RunningTimeout timeout) throws CronInternalException {
-        registerRunTimes(expression, wrapWithTimeoutMonitoring(runnable, timeout), times);
+        return registerRunTimes(expression, wrapWithTimeoutMonitoring(runnable, timeout), times);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void registerRunTimes(String expression, CronMethodRunnable runnable,
+    public String registerRunTimes(String expression, CronMethodRunnable runnable,
                                  int times, RunningTimeout timeout) throws CronInternalException {
-        registerRunTimes(expression, wrapWithTimeoutMonitoring(runnable, timeout), times);
+        return registerRunTimes(expression, wrapWithTimeoutMonitoring(runnable, timeout), times);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void registerRunTimes(String expression, RunnableTaskBody body, int times, RunningTimeout timeout)
+    public String registerRunTimes(String expression, RunnableTaskBody body, int times, RunningTimeout timeout)
             throws CronInternalException {
-        registerRunTimes(expression, body.getRunnable(), times, timeout);
+        return registerRunTimes(expression, body.getRunnable(), times, timeout);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void registerRunTimes(String expression, TaskBody body, int times, RunningTimeout timeout)
+    public String registerRunTimes(String expression, TaskBody body, int times, RunningTimeout timeout)
             throws CronInternalException {
-        registerRunTimes(expression, asRunnable(body), times, timeout);
+        return registerRunTimes(expression, asRunnable(body), times, timeout);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void registerRunTimes(CronTask task, int times, RunningTimeout timeout) throws CronInternalException {
-        registerRunTimes(task.getExpression(), task.getRunnable(), times, timeout);
+    public String registerRunTimes(CronTask task, int times, RunningTimeout timeout) throws CronInternalException {
+        return registerRunTimes(task.getExpression(), task.getRunnable(), times, timeout);
     }
 
     /**

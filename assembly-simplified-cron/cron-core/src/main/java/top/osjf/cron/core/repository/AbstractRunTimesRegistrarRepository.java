@@ -67,43 +67,43 @@ public abstract class AbstractRunTimesRegistrarRepository
      * {@inheritDoc}
      */
     @Override
-    public void registerRunTimes(String expression, Runnable runnable, int times)
+    public String registerRunTimes(String expression, Runnable runnable, int times)
             throws CronInternalException {
-        registerRunTimes(() -> register(expression, runnable), times);
+        return registerRunTimes(() -> register(expression, runnable), times);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void registerRunTimes(String expression, CronMethodRunnable runnable, int times)
+    public String registerRunTimes(String expression, CronMethodRunnable runnable, int times)
             throws CronInternalException {
-        registerRunTimes(() -> register(expression, runnable), times);
+        return registerRunTimes(() -> register(expression, runnable), times);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void registerRunTimes(String expression, RunnableTaskBody body, int times)
+    public String registerRunTimes(String expression, RunnableTaskBody body, int times)
             throws CronInternalException {
-        registerRunTimes(() -> register(expression, body), times);
+        return registerRunTimes(() -> register(expression, body), times);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void registerRunTimes(String expression, TaskBody body, int times) throws CronInternalException {
-        registerRunTimes(() -> register(expression, body), times);
+    public String registerRunTimes(String expression, TaskBody body, int times) throws CronInternalException {
+        return registerRunTimes(() -> register(expression, body), times);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void registerRunTimes(CronTask task, int times) throws CronInternalException {
-        registerRunTimes(() -> register(task), times);
+    public String registerRunTimes(CronTask task, int times) throws CronInternalException {
+        return registerRunTimes(() -> register(task), times);
     }
 
     /**
@@ -140,7 +140,7 @@ public abstract class AbstractRunTimesRegistrarRepository
      * @param times      the registration run times.
      * @since 3.0.1
      */
-    private void registerRunTimes(Supplier<String> idSupplier, int times) {
+    private String registerRunTimes(Supplier<String> idSupplier, int times) {
 
         // The specified number of runs cannot be less than or equal to 0.
         if (times <= 0) {
@@ -157,6 +157,8 @@ public abstract class AbstractRunTimesRegistrarRepository
 
         // Record the association mapping between task ID and execution frequency.
         taskRunTimesMap.putIfAbsent(id, new AtomicInteger(times));
+
+        return id;
     }
 
     /**
