@@ -49,11 +49,14 @@ public interface RunTimesRegistrarRepository
      * parameters,and return the unique identifier of the task after successful registration.
      * @param expression a valid cron expression.
      * @param runnable   the {@code Runnable} executed when cron expression expects time.
+     * @return After successful registration, return the unique ID of the registration task for
+     * subsequent update and deletion operations, but be cautious of the invalidation of the number
+     * of runs caused by update and deletion operations after opening.
      * @throws CronInternalException    if an unsupported or incorrect related exception occurs
      *                                  within the scheduling architecture.
      */
-    default void registerRunOnce(String expression, Runnable runnable) throws CronInternalException {
-        registerRunTimes(expression, runnable, 1);
+    default String registerRunOnce(String expression, Runnable runnable) throws CronInternalException {
+        return registerRunTimes(expression, runnable, 1);
     }
 
     /**
@@ -65,11 +68,14 @@ public interface RunTimesRegistrarRepository
      *
      * @param expression a valid cron expression.
      * @param runnable   the {@code CronMethodRunnable} executed when cron expression expects time.
+     * @return After successful registration, return the unique ID of the registration task for
+     * subsequent update and deletion operations, but be cautious of the invalidation of the number
+     * of runs caused by update and deletion operations after opening.
      * @throws CronInternalException    if an unsupported or incorrect related exception occurs
      *                                  within the scheduling architecture.
      */
-    default void registerRunOnce(String expression, CronMethodRunnable runnable) throws CronInternalException {
-        registerRunTimes(expression, runnable, 1);
+    default String registerRunOnce(String expression, CronMethodRunnable runnable) throws CronInternalException {
+       return registerRunTimes(expression, runnable, 1);
     }
 
     /**
@@ -80,11 +86,14 @@ public interface RunTimesRegistrarRepository
      *
      * @param expression a valid cron expression.
      * @param body       the {@code RunnableTaskBody} executed when cron expression expects time.
+     * @return After successful registration, return the unique ID of the registration task
+     * for subsequent update and deletion operations, but be cautious of the invalidation
+     * of the number of runs caused by update and deletion operations after opening.
      * @throws CronInternalException    if an unsupported or incorrect related exception occurs
      *                                  within the scheduling architecture.
      */
-    default void registerRunOnce(String expression, RunnableTaskBody body) throws CronInternalException {
-        registerRunTimes(expression, body, 1);
+    default String registerRunOnce(String expression, RunnableTaskBody body) throws CronInternalException {
+        return registerRunTimes(expression, body, 1);
     }
 
     /**
@@ -98,11 +107,14 @@ public interface RunTimesRegistrarRepository
      *
      * @param expression a valid cron expression.
      * @param body       the {@code TaskBody} executed when cron expression expects time.
+     * @return After successful registration, return the unique ID of the registration task
+     * for subsequent update and deletion operations, but be cautious of the invalidation
+     * of the number of runs caused by update and deletion operations after opening.
      * @throws CronInternalException    if an unsupported or incorrect related exception occurs
      *                                  within the scheduling architecture.
      */
-    default void registerRunOnce(String expression, TaskBody body) throws CronInternalException {
-        registerRunTimes(expression, body, 1);
+    default String registerRunOnce(String expression, TaskBody body) throws CronInternalException {
+        return registerRunTimes(expression, body, 1);
     }
 
     /**
@@ -113,11 +125,14 @@ public interface RunTimesRegistrarRepository
      * <p>This method takes a {@code CronTask} object as an input parameter and returns
      * the unique identifier of the task after successful registration.
      * @param task a task metadata encapsulation object {@code CronTask}.
+     * @return After successful registration, return the unique ID of the registration task
+     * for subsequent update and deletion operations, but be cautious of the invalidation
+     * of the number of runs caused by update and deletion operations after opening.
      * @throws CronInternalException    if an unsupported or incorrect related exception occurs
      *                                  within the scheduling architecture.
      */
-    default void registerRunOnce(CronTask task) throws CronInternalException {
-        registerRunTimes(task, 1);
+    default String registerRunOnce(CronTask task) throws CronInternalException {
+        return registerRunTimes(task, 1);
     }
 
     /**
@@ -129,10 +144,13 @@ public interface RunTimesRegistrarRepository
      * @param expression a valid cron expression.
      * @param runnable   the {@code Runnable} executed when cron expression expects time.
      * @param times      the number of runs specified based on the expression's runtime.
+     * @return After successful registration, return the unique ID of the registration task
+     * for subsequent update and deletion operations, but be cautious of the invalidation
+     * of the number of runs caused by update and deletion operations after opening.
      * @throws CronInternalException    if an unsupported or incorrect related exception occurs
      *                                  within the scheduling architecture.
      */
-    void registerRunTimes(String expression, Runnable runnable, int times) throws CronInternalException;
+    String registerRunTimes(String expression, Runnable runnable, int times) throws CronInternalException;
 
     /**
      * Register a new scheduled task using the given cron expression and a {@code CronMethodRunnable},
@@ -143,10 +161,13 @@ public interface RunTimesRegistrarRepository
      * @param expression a valid cron expression.
      * @param runnable   the {@code CronMethodRunnable} executed when cron expression expects time.
      * @param times      the number of runs specified based on the expression's runtime.
+     * @return After successful registration, return the unique ID of the registration task for
+     * subsequent update and deletion operations, but be cautious of the invalidation of the
+     * number of runs caused by update and deletion operations after opening.
      * @throws CronInternalException    if an unsupported or incorrect related exception occurs
      *                                  within the scheduling architecture.
      */
-    void registerRunTimes(String expression, CronMethodRunnable runnable, int times)
+    String registerRunTimes(String expression, CronMethodRunnable runnable, int times)
             throws CronInternalException;
 
     /**
@@ -157,10 +178,13 @@ public interface RunTimesRegistrarRepository
      * @param expression a valid cron expression.
      * @param body       the {@code RunnableTaskBody} executed when cron expression expects time.
      * @param times      the number of runs specified based on the expression's runtime.
+     * @return After successful registration, return the unique ID of the registration task for
+     * subsequent update and deletion operations, but be cautious of the invalidation of the number
+     * of runs caused by update and deletion operations after opening.
      * @throws CronInternalException    if an unsupported or incorrect related exception occurs
      *                                  within the scheduling architecture.
      */
-    void registerRunTimes(String expression, RunnableTaskBody body, int times)
+    String registerRunTimes(String expression, RunnableTaskBody body, int times)
             throws CronInternalException;
 
     /**
@@ -174,10 +198,13 @@ public interface RunTimesRegistrarRepository
      * @param expression a valid cron expression.
      * @param body       the {@code TaskBody} executed when cron expression expects time.
      * @param times      the number of runs specified based on the expression's runtime.
+     * @return After successful registration, return the unique ID of the registration task
+     * for subsequent update and deletion operations, but be cautious of the invalidation
+     * of the number of runs caused by update and deletion operations after opening.
      * @throws CronInternalException    if an unsupported or incorrect related exception occurs
      *                                  within the scheduling architecture.
      */
-    void registerRunTimes(String expression, TaskBody body, int times) throws CronInternalException;
+    String registerRunTimes(String expression, TaskBody body, int times) throws CronInternalException;
 
     /**
      * Register a new scheduled task using the given {@code CronTask} object,
@@ -188,8 +215,11 @@ public interface RunTimesRegistrarRepository
      * the unique identifier of the task after successful registration.
      * @param task  a task metadata encapsulation object {@code CronTask}.
      * @param times the number of runs specified based on the expression's runtime.
+     * @return After successful registration, return the unique ID of the registration task for
+     * subsequent update and deletion operations, but be cautious of the invalidation of the
+     * number of runs caused by update and deletion operations after opening.
      * @throws CronInternalException    if an unsupported or incorrect related exception occurs
      *                                  within the scheduling architecture.
      */
-    void registerRunTimes(CronTask task, int times) throws CronInternalException;
+    String registerRunTimes(CronTask task, int times) throws CronInternalException;
 }

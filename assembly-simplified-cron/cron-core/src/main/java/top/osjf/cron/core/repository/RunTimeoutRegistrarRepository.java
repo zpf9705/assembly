@@ -133,12 +133,15 @@ public interface RunTimeoutRegistrarRepository
      * @param expression a valid cron expression.
      * @param runnable   the {@code Runnable} executed when cron expression expects time.
      * @param timeout    configure instance for timeout control during task execution.
+     * @return After successful registration, return the unique ID of the registration task for
+     * subsequent update and deletion operations, but be cautious of the invalidation of the number
+     * of runs caused by update and deletion operations after opening.
      * @throws CronInternalException    if an unsupported or incorrect related exception occurs
      *                                  within the scheduling architecture.
      */
-    default void registerRunOnce(String expression, Runnable runnable, RunningTimeout timeout)
+    default String registerRunOnce(String expression, Runnable runnable, RunningTimeout timeout)
             throws CronInternalException {
-        registerRunTimes(expression, runnable, 1, timeout);
+        return registerRunTimes(expression, runnable, 1, timeout);
     }
 
     /**
@@ -152,12 +155,15 @@ public interface RunTimeoutRegistrarRepository
      * @param expression a valid cron expression.
      * @param runnable   the {@code CronMethodRunnable} executed when cron expression expects time.
      * @param timeout    configure instance for timeout control during task execution.
+     * @return After successful registration, return the unique ID of the registration task for
+     * subsequent update and deletion operations, but be cautious of the invalidation of the number
+     * of runs caused by update and deletion operations after opening.
      * @throws CronInternalException    if an unsupported or incorrect related exception occurs
      *                                  within the scheduling architecture.
      */
-    default void registerRunOnce(String expression, CronMethodRunnable runnable, RunningTimeout timeout)
+    default String registerRunOnce(String expression, CronMethodRunnable runnable, RunningTimeout timeout)
             throws CronInternalException {
-        registerRunTimes(expression, runnable, 1, timeout);
+        return registerRunTimes(expression, runnable, 1, timeout);
     }
 
     /**
@@ -170,12 +176,15 @@ public interface RunTimeoutRegistrarRepository
      * @param expression a valid cron expression.
      * @param body       the {@code RunnableTaskBody} executed when cron expression expects time.
      * @param timeout    configure instance for timeout control during task execution.
+     * @return After successful registration, return the unique ID of the registration task for
+     * subsequent update and deletion operations, but be cautious of the invalidation of the number
+     * of runs caused by update and deletion operations after opening.
      * @throws CronInternalException    if an unsupported or incorrect related exception occurs
      *                                  within the scheduling architecture.
      */
-    default void registerRunOnce(String expression, RunnableTaskBody body, RunningTimeout timeout)
+    default String registerRunOnce(String expression, RunnableTaskBody body, RunningTimeout timeout)
             throws CronInternalException {
-        registerRunTimes(expression, body, 1, timeout);
+        return registerRunTimes(expression, body, 1, timeout);
     }
 
     /**
@@ -191,12 +200,15 @@ public interface RunTimeoutRegistrarRepository
      * @param expression a valid cron expression.
      * @param body       the {@code TaskBody} executed when cron expression expects time.
      * @param timeout    configure instance for timeout control during task execution.
+     * @return After successful registration, return the unique ID of the registration task for
+     * subsequent update and deletion operations, but be cautious of the invalidation of the number
+     * of runs caused by update and deletion operations after opening.
      * @throws CronInternalException    if an unsupported or incorrect related exception occurs
      *                                  within the scheduling architecture.
      */
-    default void registerRunOnce(String expression, TaskBody body, RunningTimeout timeout)
+    default String registerRunOnce(String expression, TaskBody body, RunningTimeout timeout)
             throws CronInternalException {
-        registerRunTimes(expression, body, 1, timeout);
+        return registerRunTimes(expression, body, 1, timeout);
     }
 
     /**
@@ -210,11 +222,14 @@ public interface RunTimeoutRegistrarRepository
      *
      * @param task    a task metadata encapsulation object {@code CronTask}.
      * @param timeout configure instance for timeout control during task execution.
+     * @return After successful registration, return the unique ID of the registration task for
+     * subsequent update and deletion operations, but be cautious of the invalidation of the number
+     * of runs caused by update and deletion operations after opening.
      * @throws CronInternalException    if an unsupported or incorrect related exception occurs
      *                                  within the scheduling architecture.
      */
-    default void registerRunOnce(CronTask task, RunningTimeout timeout) throws CronInternalException {
-        registerRunTimes(task, 1, timeout);
+    default String registerRunOnce(CronTask task, RunningTimeout timeout) throws CronInternalException {
+        return registerRunTimes(task, 1, timeout);
     }
 
     /**
@@ -228,10 +243,13 @@ public interface RunTimeoutRegistrarRepository
      * @param runnable   the {@code Runnable} executed when cron expression expects time.
      * @param times   the number of runs specified based on the expression's runtime.
      * @param timeout    configure instance for timeout control during task execution.
+     * @return After successful registration, return the unique ID of the registration task for
+     * subsequent update and deletion operations, but be cautious of the invalidation of the number
+     * of runs caused by update and deletion operations after opening.
      * @throws CronInternalException    if an unsupported or incorrect related exception occurs
      *                                  within the scheduling architecture.
      */
-    void registerRunTimes(String expression, Runnable runnable, int times, RunningTimeout timeout)
+    String registerRunTimes(String expression, Runnable runnable, int times, RunningTimeout timeout)
             throws CronInternalException;
 
     /**
@@ -246,10 +264,13 @@ public interface RunTimeoutRegistrarRepository
      * @param runnable   the {@code CronMethodRunnable} executed when cron expression expects time.
      * @param times      the number of runs specified based on the expression's runtime.
      * @param timeout    configure instance for timeout control during task execution.
+     * @return After successful registration, return the unique ID of the registration task for
+     * subsequent update and deletion operations, but be cautious of the invalidation of the number
+     * of runs caused by update and deletion operations after opening.
      * @throws CronInternalException    if an unsupported or incorrect related exception occurs
      *                                  within the scheduling architecture.
      */
-    void registerRunTimes(String expression, CronMethodRunnable runnable, int times, RunningTimeout timeout)
+    String registerRunTimes(String expression, CronMethodRunnable runnable, int times, RunningTimeout timeout)
             throws CronInternalException;
 
     /**
@@ -263,10 +284,13 @@ public interface RunTimeoutRegistrarRepository
      * @param body       the {@code RunnableTaskBody} executed when cron expression expects time.
      * @param times      the number of runs specified based on the expression's runtime.
      * @param timeout    configure instance for timeout control during task execution.
+     * @return After successful registration, return the unique ID of the registration task for
+     * subsequent update and deletion operations, but be cautious of the invalidation of the number
+     * of runs caused by update and deletion operations after opening.
      * @throws CronInternalException    if an unsupported or incorrect related exception occurs
      *                                  within the scheduling architecture.
      */
-    void registerRunTimes(String expression, RunnableTaskBody body, int times, RunningTimeout timeout)
+    String registerRunTimes(String expression, RunnableTaskBody body, int times, RunningTimeout timeout)
             throws CronInternalException;
 
     /**
@@ -283,10 +307,13 @@ public interface RunTimeoutRegistrarRepository
      * @param body       the {@code TaskBody} executed when cron expression expects time.
      * @param times      the number of runs specified based on the expression's runtime.
      * @param timeout    configure instance for timeout control during task execution.
+     * @return After successful registration, return the unique ID of the registration task for
+     * subsequent update and deletion operations, but be cautious of the invalidation of the number
+     * of runs caused by update and deletion operations after opening.
      * @throws CronInternalException    if an unsupported or incorrect related exception occurs
      *                                  within the scheduling architecture.
      */
-    void registerRunTimes(String expression, TaskBody body, int times, RunningTimeout timeout)
+    String registerRunTimes(String expression, TaskBody body, int times, RunningTimeout timeout)
             throws CronInternalException;
 
     /**
@@ -301,8 +328,11 @@ public interface RunTimeoutRegistrarRepository
      * @param task    a task metadata encapsulation object {@code CronTask}.
      * @param times   the number of runs specified based on the expression's runtime.
      * @param timeout configure instance for timeout control during task execution.
+     * @return After successful registration, return the unique ID of the registration task for
+     * subsequent update and deletion operations, but be cautious of the invalidation of the number
+     * of runs caused by update and deletion operations after opening.
      * @throws CronInternalException    if an unsupported or incorrect related exception occurs
      *                                  within the scheduling architecture.
      */
-    void registerRunTimes(CronTask task, int times, RunningTimeout timeout) throws CronInternalException;
+    String registerRunTimes(CronTask task, int times, RunningTimeout timeout) throws CronInternalException;
 }
