@@ -255,9 +255,10 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
     @Override
     @NotNull
     public String registerInternal(@NotNull String expression, @NotNull Runnable runnable) {
-        if (getIDGenerator() != null) {
-            String id = getIDGenerator().generate();
-            getInitializedScheduler().schedule(getIDGenerator().generate(), expression, runnable);
+        IDGenerator idGenerator = getIDGenerator();
+        if (idGenerator != null) {
+            String id = idGenerator.generate();
+            getInitializedScheduler().schedule(id, expression, runnable);
             return id;
         }
         return getInitializedScheduler().schedule(expression, runnable);
@@ -307,8 +308,9 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
         }
         else if (body.isWrapperFor(InvokeTaskBody.class)) {
             InvokeTask invokeTask = body.unwrap(InvokeTaskBody.class).getInvokeTask();
-            if (getIDGenerator() != null) {
-                String id = getIDGenerator().generate();
+            IDGenerator idGenerator = getIDGenerator();
+            if (idGenerator != null) {
+                String id = idGenerator.generate();
                 getInitializedScheduler().schedule(id, expression, invokeTask);
                 return id;
             }

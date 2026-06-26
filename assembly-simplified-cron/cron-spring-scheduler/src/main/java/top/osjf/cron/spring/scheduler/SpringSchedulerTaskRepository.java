@@ -113,7 +113,14 @@ public class SpringSchedulerTaskRepository
      */
     @Override
     protected ListenableRunnable wrapperRunnableToListenable(Runnable runnable, @Nullable Trigger trigger) {
-        String id = idGenerator.generateId().toString();
+        String id;
+        IDGenerator idGenerator = getIDGenerator();
+        if (idGenerator != null) {
+            id = idGenerator.generate();
+        }
+        else {
+            id = this.idGenerator.generateId().toString();
+        }
         return new DefaultListenableRunnable(id, runnable, trigger, getCronListenerCollector(), this);
     }
 

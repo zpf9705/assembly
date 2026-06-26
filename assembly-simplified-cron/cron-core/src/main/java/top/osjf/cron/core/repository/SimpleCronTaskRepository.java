@@ -164,7 +164,11 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
      * @return The next gradually increasing value serves as the ID for task registration.
      */
     private String getNextId() {
-        return String.valueOf(idGenerator.incrementAndGet());
+        IDGenerator idGenerator = getIDGenerator();
+        if (idGenerator != null) {
+            return idGenerator.generate();
+        }
+        return String.valueOf(this.idGenerator.incrementAndGet());
     }
 
     @Override
