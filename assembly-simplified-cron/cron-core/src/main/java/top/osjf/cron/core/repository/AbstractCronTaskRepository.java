@@ -354,6 +354,30 @@ public abstract class AbstractCronTaskRepository
     }
 
     /**
+     * Judge whether to allow the current scheduled task trigger to execute.
+     * <p>The task will be permitted to run if either of the following two conditions is satisfied:
+     * <ul>
+     * <li>The task is not configured to disallow concurrent execution;</li>
+     * <li>The task enables disallow-concurrent restriction, but there is no running task instance
+     * currently.</li>
+     * </ul>
+     * Only when the task prohibits concurrent execution and the previous task is still running,
+     * the current trigger will be rejected.
+     *
+     * @param id Unique identifier of the target scheduled task
+     * @return {@code true} if task execution is allowed; {@code false} if concurrent conflict occurs
+     * and current trigger needs to be skipped
+     */
+    public boolean shouldAllowTaskExecute(String id) {
+        boolean shouldAllowTaskExecute = !hasDisallowConcurrentExecution(id) || !isTaskRunning(id);
+        if (shouldAllowTaskExecute) {
+            logger.warn("Task [{}] disallow concurrent execution and previous task is running, " +
+                    "skip current trigger", id);
+        }
+        return shouldAllowTaskExecute;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
