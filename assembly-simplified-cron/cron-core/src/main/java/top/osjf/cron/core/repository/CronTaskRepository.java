@@ -233,6 +233,7 @@ public interface CronTaskRepository extends Repository, RunTimesRegistrarReposit
      * <p>There is a mandatory requirement not to pass non {@code null} data. If it is passed as
      * {@code null}, the default ID generation rule of the underlying scheduling class will be used.
      * @param idGenerator the task identity unique ID generator interface.
+     * @since 3.0.2
      */
     void setIDGenerator(@Nullable IDGenerator idGenerator);
 
@@ -242,6 +243,7 @@ public interface CronTaskRepository extends Repository, RunTimesRegistrarReposit
      * default generator of the underlying scheduler.
      * @return Return the custom generator. If it is {@code null}, the underlying generator will be used
      * by default.
+     * @since 3.0.2
      */
     @Nullable
     IDGenerator getIDGenerator();
