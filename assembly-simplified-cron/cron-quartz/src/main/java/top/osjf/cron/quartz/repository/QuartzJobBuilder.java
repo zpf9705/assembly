@@ -18,6 +18,7 @@
 package top.osjf.cron.quartz.repository;
 
 import org.quartz.*;
+import org.quartz.impl.JobDetailImpl;
 import top.osjf.cron.core.repository.CronTaskRepository;
 
 /**
@@ -58,7 +59,7 @@ class QuartzJobBuilder extends JobBuilder {
         return new JobDetailWrapper(super.build(), repository);
     }
 
-    private static class JobDetailWrapper implements JobDetail {
+    private static class JobDetailWrapper extends JobDetailImpl {
 
         private static final long serialVersionUID = 5705579476858697787L;
 
@@ -123,7 +124,7 @@ class QuartzJobBuilder extends JobBuilder {
 
         @Override
         public Object clone() {
-            return source.clone();
+            return new JobDetailWrapper((JobDetailImpl) super.clone(), repository);
         }
 
         @Override
