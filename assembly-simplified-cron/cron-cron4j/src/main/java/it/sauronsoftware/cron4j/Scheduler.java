@@ -501,8 +501,9 @@ public class Scheduler {
 	 *            The task ID.
 	 * @return The Runnable object of the task, or null if the task was not
 	 *         found.
-	 * @deprecated Use {@link Scheduler#getTask(String)}.
+	 *
 	 */
+	/* Make a compatibility modification */
 	public Runnable getTaskRunnable(Object id) {
 		Task task = getTask((String) id);
 		if (task instanceof RunnableTask) {
@@ -655,7 +656,7 @@ public class Scheduler {
 	 *            The task.
 	 * @return The spawned task executor.
 	 */
-	TaskExecutor spawnExecutor(Task task) {
+	protected /* Make a compatibility modification */ TaskExecutor spawnExecutor(Task task) {
 		TaskExecutor e = new TaskExecutor(this, task);
 		synchronized (executors) {
 			executors.add(e);
