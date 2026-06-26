@@ -25,14 +25,16 @@ import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.scheduling.support.ScheduledMethodRunnable;
 import top.osjf.commons.lang.NotNull;
 import top.osjf.commons.lang.Nullable;
-import top.osjf.commons.util.StringUtils;
 import top.osjf.cron.core.repository.AbstractCronTaskRepository;
 import top.osjf.cron.core.repository.CronMethodRunnable;
 import top.osjf.cron.core.repository.CronTask;
 import top.osjf.cron.core.repository.CronTaskRegistrar;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.function.Function;
@@ -97,19 +99,9 @@ public abstract class ListenableTaskScheduler extends AbstractCronTaskRepository
                     ((ScheduledMethodRunnable) task).getMethod()));
             String id = new CronTaskRegistrar(cronTask).registerFor(this);
 
-            // If the ID is returned, it will continue to be pulled directly from the
-            // cache, otherwise it will be retrieved from the current context.
-            try {
-                if (StringUtils.isBlank(id)) {
-                    return ListenableScheduledFutureContext.local.get();
-                }
-                else {
-                    return futureCache.get(id);
-                }
-            }
-            finally {
-                ListenableScheduledFutureContext.local.remove();
-            }
+            // The new CronTaskRegistrar (cronTask). registrant For (this) will execute the internal
+            // brochure and retrieve it directly from the cache based on the ID after returning it.
+            return futureCache.get(id);
         }
 
         return triggerScheduleInternal(task, trigger);
@@ -318,6 +310,7 @@ public abstract class ListenableTaskScheduler extends AbstractCronTaskRepository
      * {@link ListenableScheduledFuture} threadLocal context.
      * @since 3.0.1
      */
+    @Deprecated
     static class ListenableScheduledFutureContext {
         static ThreadLocal<ListenableScheduledFuture> local = new NamedThreadLocal<>("ListenableScheduledFuture local");
     }
