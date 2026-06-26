@@ -20,6 +20,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import top.osjf.cron.core.lifecycle.InitializeProperties;
+import top.osjf.cron.core.listener.AsyncCronListener;
 import top.osjf.cron.core.repository.CronExecutorServiceSupplier;
 import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
 import top.osjf.cron.spring.AbstractCronTaskConfiguration;
@@ -56,7 +57,7 @@ public class QuartzCronTaskConfiguration extends AbstractCronTaskConfiguration {
         repository.setJobFactory(jobFactory);
         repository.setInitializeProperties(ObjectProviderUtils.getPriority(propertiesProvider));
         CronExecutorServiceSupplier executorServiceSupplier = ObjectProviderUtils.getPriority(executorProvider);
-        if (executorServiceSupplier != null){
+        if (executorServiceSupplier != null && !(executorServiceSupplier instanceof AsyncCronListener)){
             repository.setTaskExecutor(executorServiceSupplier.get());
         }
         return repository;

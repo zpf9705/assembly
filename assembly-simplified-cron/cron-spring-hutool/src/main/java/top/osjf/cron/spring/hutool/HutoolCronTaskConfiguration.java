@@ -19,6 +19,7 @@ package top.osjf.cron.spring.hutool;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Configuration;
 import top.osjf.cron.core.lifecycle.InitializeProperties;
+import top.osjf.cron.core.listener.AsyncCronListener;
 import top.osjf.cron.core.repository.CronExecutorServiceSupplier;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
 import top.osjf.cron.spring.AbstractCronTaskConfiguration;
@@ -54,7 +55,7 @@ public class HutoolCronTaskConfiguration extends AbstractCronTaskConfiguration {
                 (getImportAnnotationInitializeProperties(),
                         ObjectProviderUtils.getPriority(propertiesProvider)));
         CronExecutorServiceSupplier executorServiceSupplier = ObjectProviderUtils.getPriority(executorServiceProvider);
-        if (executorServiceSupplier != null) {
+        if (executorServiceSupplier != null && !(executorServiceSupplier instanceof AsyncCronListener)) {
             repository.setThreadExecutor(executorServiceSupplier.get());
         }
 
