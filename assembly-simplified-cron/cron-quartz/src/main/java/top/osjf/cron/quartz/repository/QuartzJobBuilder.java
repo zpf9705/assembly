@@ -19,7 +19,6 @@ package top.osjf.cron.quartz.repository;
 
 import org.quartz.*;
 import top.osjf.cron.core.repository.CronTaskRepository;
-import top.osjf.cron.quartz.QuartzUtils;
 
 /**
  * Compatibility implementation of new {@link JobBuilder} inherited instances of
@@ -108,8 +107,13 @@ class QuartzJobBuilder extends JobBuilder {
          */
         @Override
         public boolean isConcurrentExectionDisallowed() {
-            String id = QuartzUtils.jobKeyAsId(getKey());
-            return repository.hasDisallowConcurrentExecution(id);
+            try {
+                String id = repository.identityMemory.getIdByJobKey(getKey());
+                return repository.hasDisallowConcurrentExecution(id);
+            }
+            catch (IdentityMemoryException ex) {
+                return false;
+            }
         }
 
         @Override
