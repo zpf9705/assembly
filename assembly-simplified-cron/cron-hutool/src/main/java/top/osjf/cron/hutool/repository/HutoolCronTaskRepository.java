@@ -20,7 +20,6 @@ import cn.hutool.core.exceptions.UtilException;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.cron.CronException;
 import cn.hutool.cron.Scheduler;
-import cn.hutool.cron.TaskExecutorManager;
 import cn.hutool.cron.pattern.CronPattern;
 import cn.hutool.cron.pattern.parser.PatternParser;
 import cn.hutool.cron.task.InvokeTask;
@@ -220,7 +219,7 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
     @Override
     public void initialize() throws Exception {
         super.initialize();
-        scheduler = new SchedulerWrapper();
+        scheduler = new HutoolScheduler(this);
         scheduler.setDaemon(daemon);
         scheduler.setMatchSecond(isMatchSecond);
         scheduler.setTimeZone(timeZone);
@@ -342,7 +341,7 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
     @Override
     @NotNull
     public List<String> getAllRunningTaskIds() {
-        return ((SchedulerWrapper) getInitializedScheduler())
+        return ((HutoolScheduler) getInitializedScheduler())
                 .getTaskExecutorManager().getExecutors().stream()
                 .map(taskExecutor -> taskExecutor.getCronTask().getId())
                 .distinct()
@@ -505,25 +504,6 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
         ensureInitialized();
 
         return scheduler;
-    }
-
-    /**
-     * Wrapper class of {@link Scheduler}.
-     */
-    private static class SchedulerWrapper extends Scheduler {
-
-        private static final long serialVersionUID = -7724434510380735451L;
-
-        public SchedulerWrapper() {
-            super();
-        }
-
-        /**
-         * @return the {@link TaskExecutorManager} instance.
-         */
-        public TaskExecutorManager getTaskExecutorManager () {
-            return taskExecutorManager;
-        }
     }
 
     @NotNull
