@@ -94,6 +94,11 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
     private final JobListenerImpl jobListener = new JobListenerImpl(this);
 
     /**
+     * @since 3.0.2
+     */
+    protected final IdentityMemory identityMemory = new IdentityMemory();
+
+    /**
      * @since 1.0.3
      */
     public QuartzCronTaskRepository() {
@@ -234,7 +239,9 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
                 .withIdentity(jobKey.getName(), jobKey.getGroup()).build();
         JobDataMap jobDataMap = jobDetail.getJobDataMap();
         jobDataMap.put(JobConstants.RUNNABLE_PROPERTY, runnable);
-        String id = QuartzUtils.jobKeyAsId(jobKey);
+        IDGenerator idGenerator = getIDGenerator();
+        String id = idGenerator != null ? idGenerator.generate() : QuartzUtils.jobKeyAsId(jobKey);
+        identityMemory.put(id, jobKey);
         jobDataMap.put(JobConstants.ID_PROPERTY, id);
         getInitializedScheduler().scheduleJob(jobDetail, triggerBuilder.build());
         return id;
@@ -289,10 +296,11 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
     @NotNull
     public List<String> getAllRegisteredTaskIds() {
         try {
-            return getInitializedScheduler().getJobKeys(GroupMatcher.anyGroup())
-                    .stream()
-                    .map(QuartzUtils::jobKeyAsId)
-                    .collect(Collectors.toList());
+            List<String> ids = new ArrayList<>();
+            for (JobKey jobKey : getInitializedScheduler().getJobKeys(GroupMatcher.anyGroup())) {
+                ids.add(identityMemory.getIdByJobKey(jobKey));
+            }
+            return ids;
         }
         catch (SchedulerException ex) {
             return Collections.emptyList();
@@ -322,8 +330,8 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
     @Override
     @Nullable
     public Long getNextExecuteTime(@NotNull String id) {
-        JobKey jobKey = QuartzUtils.resolveIdAsJobKey(id);
         try {
+            JobKey jobKey = identityMemory.getJobKeyById(id);
             Trigger trigger
                     = getInitializedScheduler().getTrigger(new TriggerKey(jobKey.getName(), jobKey.getGroup()));
             Date nextFileTime;
@@ -342,7 +350,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      */
     @Override
     public void updateInternal(@NotNull String id, @NotNull String newExpression) throws SchedulerException {
-        JobKey jobKey = QuartzUtils.resolveIdAsJobKey(id);
+        JobKey jobKey = identityMemory.getJobKeyById(id);
         TriggerKey triggerKey = new TriggerKey(jobKey.getName(), jobKey.getGroup());
         getInitializedScheduler().rescheduleJob(triggerKey,
                 TriggerBuilder.newTrigger()
@@ -357,7 +365,8 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      */
     @Override
     public void removeInternal(@NotNull String id) throws SchedulerException {
-        getInitializedScheduler().deleteJob(QuartzUtils.resolveIdAsJobKey(id));
+        getInitializedScheduler().deleteJob(identityMemory.getJobKeyById(id));
+        identityMemory.removeById(id);
     }
 
     /**
@@ -366,6 +375,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
     @Override
     protected void removeAllInternal() throws Exception {
         getInitializedScheduler().clear();
+        identityMemory.clear();
     }
 
     /**
@@ -373,9 +383,9 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      */
     @Override
     protected CronTaskInfo getCronTaskInfoInternal(@NotNull String id) {
-        JobKey jobKey = QuartzUtils.resolveIdAsJobKey(id);
         Scheduler scheduler = getInitializedScheduler();
         try {
+            JobKey jobKey = identityMemory.getJobKeyById(id);
             Set<JobKey> jobKeys =
                     getInitializedScheduler().getJobKeys(GroupMatcher.groupEquals(jobKey.getGroup()));
             if (!jobKeys.contains(jobKey)) return null;
@@ -406,7 +416,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      */
     @Override
     protected void terminateInternal(@NotNull String id) throws SchedulerException {
-        getInitializedScheduler().interrupt(QuartzUtils.resolveIdAsJobKey(id));
+        getInitializedScheduler().interrupt(identityMemory.getJobKeyById(id));
     }
 
     /**
