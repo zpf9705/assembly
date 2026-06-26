@@ -47,11 +47,9 @@ class Cron4jScheduler extends Scheduler {
     @Nullable
     protected TaskExecutor spawnExecutor(Task task) {
         String id = task.getId().toString();
-        if (repository.hasDisallowConcurrentExecution(id)) {
-            if (repository.isTaskRunning(id)) {
-                return null;
-            }
+        if (repository.shouldAllowTaskExecute(id)) {
+            return super.spawnExecutor(task);
         }
-        return super.spawnExecutor(task);
+        return null;
     }
 }
