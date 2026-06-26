@@ -320,6 +320,14 @@ public class SpringSchedulerTaskRepository
         terminateAllFutures();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isSupportConcurrentExecution() {
+        return false;
+    }
+
     @Override
     public void destroy() {
         super.stop();

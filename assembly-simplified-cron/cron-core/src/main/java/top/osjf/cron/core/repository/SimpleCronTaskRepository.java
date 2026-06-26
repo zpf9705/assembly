@@ -619,4 +619,12 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
             future.terminate();
         }
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isSupportConcurrentExecution() {
+        return false;
+    }
 }
