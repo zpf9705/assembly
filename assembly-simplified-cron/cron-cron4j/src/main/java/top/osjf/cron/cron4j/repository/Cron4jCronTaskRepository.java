@@ -189,6 +189,15 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
+    public void setIDGenerator(@Nullable IDGenerator idGenerator) {
+        super.setIDGenerator(idGenerator);
+        getMemoryTaskCollector().setIDGenerator(idGenerator);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     @NotNull
     public String getName() {
         return "CRON4J_SCHEDULER@" + super.getName();
