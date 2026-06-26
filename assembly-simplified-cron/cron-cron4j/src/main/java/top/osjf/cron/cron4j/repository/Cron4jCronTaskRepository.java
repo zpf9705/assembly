@@ -179,7 +179,7 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
     @Override
     public void initialize() throws Exception {
         super.initialize();
-        scheduler = new Scheduler();
+        scheduler = new Cron4jScheduler(this);
         scheduler.setDaemon(daemon);
         scheduler.setTimeZone(timezone);
         scheduler.addSchedulerListener(schedulerListener);
