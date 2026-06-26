@@ -30,6 +30,7 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.Assert;
 import top.osjf.commons.lang.NotNull;
 import top.osjf.cron.core.repository.CronTaskRepository;
+import top.osjf.cron.core.repository.IDGenerator;
 import top.osjf.cron.spring.annotation.Cron;
 import top.osjf.cron.spring.annotation.Crones;
 
@@ -58,8 +59,9 @@ public class CronTaskAutoConfiguration {
 
     @Bean
     public CronClientValidator cronTaskAutoConfigurationValidator(CronProperties cronProperties,
-                                                                  ObjectProvider<CronTaskRepository> cronTaskRepositories) {
-        return new CronClientValidator(cronProperties, cronTaskRepositories);
+                                                                  ObjectProvider<CronTaskRepository> cronTaskRepositories,
+                                                                  ObjectProvider<IDGenerator> idGenerators) {
+        return new CronClientValidator(cronProperties, cronTaskRepositories, idGenerators);
     }
 
     @Bean
@@ -78,19 +80,26 @@ public class CronTaskAutoConfiguration {
 
         private final ObjectProvider<CronTaskRepository> cronTaskRepositories;
 
+        private final ObjectProvider<IDGenerator> idGenerators;
+
         public CronClientValidator(CronProperties cronProperties,
-                                   ObjectProvider<CronTaskRepository> cronTaskRepositories) {
+                                   ObjectProvider<CronTaskRepository> cronTaskRepositories,
+                                   ObjectProvider<IDGenerator> idGenerators) {
             this.cronProperties = cronProperties;
             this.cronTaskRepositories = cronTaskRepositories;
+            this.idGenerators = idGenerators;
         }
 
         @Override
         public void afterPropertiesSet() {
-            Assert.notNull(this.cronTaskRepositories.getIfAvailable(),
+            CronTaskRepository cronTaskRepository = this.cronTaskRepositories.getIfAvailable();
+
+            Assert.notNull(cronTaskRepository,
                     () -> "No cron task repository could be auto-configured, check your configuration (client type is '"
                             + this.cronProperties.getClientType() + "')");
-        }
 
+            idGenerators.orderedStream().findFirst().ifPresent(cronTaskRepository::setIDGenerator);
+        }
     }
 
     /**
