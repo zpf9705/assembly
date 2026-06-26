@@ -18,6 +18,9 @@
  */
 package it.sauronsoftware.cron4j;
 
+import top.osjf.commons.lang.Nullable;
+import top.osjf.cron.core.repository.IDGenerator;
+
 import java.util.ArrayList;
 
 /**
@@ -51,6 +54,8 @@ class MemoryTaskCollector implements TaskCollector {
 	 */
 	private ArrayList ids = new ArrayList();
 
+	@Nullable private IDGenerator idGenerator;
+
 	/**
 	 * Counts how many task are currently collected by this collector.
 	 * 
@@ -70,7 +75,7 @@ class MemoryTaskCollector implements TaskCollector {
 	 * @return An ID for the scheduled operation.
 	 */
 	public synchronized String add(SchedulingPattern pattern, Task task) {
-		String id = GUIDGenerator.generate();
+		String id = idGenerator != null ? idGenerator.generate() : GUIDGenerator.generate();
 		//set task id
 		task.setId(id);
 		patterns.add(pattern);
@@ -153,6 +158,13 @@ class MemoryTaskCollector implements TaskCollector {
 			ret.add(p, t);
 		}
 		return ret;
+	}
+
+	/**
+	 * Implements {@link TaskCollector#setIDGenerator(IDGenerator)}.
+	 */
+	public synchronized void setIDGenerator(@Nullable IDGenerator idGenerator) {
+		this.idGenerator = idGenerator;
 	}
 
 }

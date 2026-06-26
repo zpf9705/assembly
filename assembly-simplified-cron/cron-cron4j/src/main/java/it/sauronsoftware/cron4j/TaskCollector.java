@@ -18,6 +18,9 @@
  */
 package it.sauronsoftware.cron4j;
 
+import top.osjf.commons.lang.Nullable;
+import top.osjf.cron.core.repository.IDGenerator;
+
 /**
  * <p>
  * This interface describes a task collector. Task collectors can be registered
@@ -46,5 +49,13 @@ public interface TaskCollector {
 	 *         scheduler.
 	 */
 	public TaskTable getTasks();
+
+	/**
+	 * Set up a custom ID generator
+	 * @param idGenerator the custom ID Generator.
+	 * @since 2026.06.26
+	 */
+	default void setIDGenerator(@Nullable IDGenerator idGenerator) {
+	}
 
 }
