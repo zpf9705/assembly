@@ -19,7 +19,7 @@ package top.osjf.cron.core.repository;
 import top.osjf.commons.ability.Nameable;
 import top.osjf.commons.lang.Nullable;
 import top.osjf.commons.lang.Wrapper;
-import top.osjf.cron.core.exception.AnnotationConstraintCannotBeCancelledException;
+import top.osjf.cron.core.exception.CannotCancelConcurrentException;
 import top.osjf.cron.core.exception.CronExpressionInvalidException;
 import top.osjf.cron.core.exception.NotSupportConcurrentExecutionException;
 
@@ -212,11 +212,10 @@ public interface CronTaskRepository extends Repository, RunTimesRegistrarReposit
      * scheduler.
      *
      * @param id unique identifier of target scheduled task
-     * @throws UnsupportedOperationException thrown if the target task is marked with {@link DisallowConcurrentExecution}
-     * annotation
+     * @throws CannotCancelConcurrentException thrown if failing to cancel the disallow-concurrent execution.
      * @see #disallowConcurrentExecution(String)
      * @see DisallowConcurrentExecution
      * @since 3.0.2
      */
-    void cancelDisallowConcurrentExecution(String id) throws AnnotationConstraintCannotBeCancelledException;
+    void cancelDisallowConcurrentExecution(String id) throws CannotCancelConcurrentException;
 }
