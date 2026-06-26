@@ -28,8 +28,23 @@ import java.lang.annotation.*;
  * resource competition, and duplicate business processing caused by multi-threaded
  * concurrent execution of the same task.
  *
+ * <p>If the currently selected {@link CronTaskRepository} supports concurrent task execution,
+ * the method that annotates this annotation will lose its ability to execute concurrently.
+ * Otherwise, the annotation will be invalid. Please refer to Method
+ * {@link CronTaskRepository#isSupportConcurrentExecution()} for specific disabling capabilities.
+ *
+ * <p>The task method body marked by this annotation will not support calling
+ * {@link CronTaskRepository#cancelDisallowConcurrentExecution} to release the constraint that
+ * cannot be executed concurrently, as it has been considered as a static configuration and
+ * developers can consider making choices based on their actual situation.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
+ *
+ * @see CronTaskRepository#isSupportConcurrentExecution
+ * @see CronTaskRepository#disallowConcurrentExecution
+ * @see CronTaskRepository#cancelDisallowConcurrentExecution
+ * @see CronTaskRegistrar
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
