@@ -47,7 +47,7 @@ import java.util.List;
 @ConditionalOnClass({ RequestMappingHandlerMapping.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.ANY)
 @ConditionalOnBean({ RequestMappingHandlerMapping.class })
-public class CronWebMvcConfiguration {
+class CronWebMvcConfiguration {
 
     /**
      * Return the {@link CronTaskInfoView} readable controller, which is the HTTP access interface.
