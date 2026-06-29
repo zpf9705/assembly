@@ -82,5 +82,17 @@
       <version>3.0.2</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-core</artifactId>
+      <version>1.7.5</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>aspectjrt</artifactId>
+      <version>1.9.7</version>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 </project>
