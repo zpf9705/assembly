@@ -26,6 +26,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+import top.osjf.cron.core.micrometer.ExpressionResolver;
 import top.osjf.cron.core.micrometer.RepositoryGaugeIndicatorRegistrant;
 import top.osjf.cron.core.micrometer.RepositoryTagsBasedOnJoinPointFunction;
 import top.osjf.cron.core.repository.CronTaskRepository;
@@ -49,8 +51,15 @@ class CronMicrometerConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public RepositoryTagsBasedOnJoinPointFunction repositoryTagsBasedOnJoinPointFunction() {
-        return new RepositoryTagsBasedOnJoinPointFunction();
+    public ExpressionResolver expressionResolver(Environment environment) {
+        return environment::resolvePlaceholders;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public RepositoryTagsBasedOnJoinPointFunction repositoryTagsBasedOnJoinPointFunction
+            (ExpressionResolver expressionResolver) {
+        return new RepositoryTagsBasedOnJoinPointFunction(expressionResolver);
     }
 
     @Bean
