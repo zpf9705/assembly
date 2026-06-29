@@ -114,6 +114,7 @@ public enum ListenerLifecycle {
      *                                occurs
      * @param collector               the cron listener collector used to filter asynchronous, synchronous and
      *                                error-propagate listeners
+     * @since 3.0.2
      */
     void consumerListeners(Supplier<ListenerContext> listenerContextSupplier, @Nullable Throwable e,
                            CronListenerCollector collector) {
@@ -133,7 +134,22 @@ public enum ListenerLifecycle {
                 if (!(listenerContext instanceof ListenerErrorContext)) {
                     for (CronListener cronListener : collector.newQueryBuilder().async().sort().build()) {
                         ((AsyncCronListener) cronListener).get()
-                                .execute(() -> consumer.accept(cronListener, listenerContext, e));
+                                .execute(() -> {
+                                    try {
+                                        consumer.accept(cronListener, listenerContext, e);
+                                    }
+                                    catch (Throwable ex) {
+                                        LoggerFactory.getLogger(ListenerLifecycle.class).error(
+                                                "[AsyncCronListener] An exception occurred when executing " +
+                                                        "ListenerLifecycle method [{}]." +
+                                                        " Task ID: {}, Listener Name: {}, Exception Message: {}",
+                                                this.name(),
+                                                listenerContext.getID(),
+                                                cronListener.getName(),
+                                                ex.getMessage(), ex
+                                        );
+                                    }
+                                });
                     }
                 }
 
@@ -212,6 +228,7 @@ public enum ListenerLifecycle {
 
     /**
      * The help {@link ListenerLifecycle} wrapper class.
+     * @since 3.0.2
      */
     protected static class ListenerLifecycleWrapper {
 
