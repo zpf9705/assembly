@@ -18,6 +18,7 @@
 package top.osjf.spring.autoconfigure.cron.datasouce.driven.scheduled;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -60,11 +61,9 @@ public class DatasourceDrivenScheduledAutoConfiguration {
         return new NoOpDatasourceTaskElementsOperation();
     }
 
-    /**
-     * @since 3.0.2
-     */
     @Bean
     @ConditionalOnMissingBean(DataSourceConfigLoader.class)
+    @ConditionalOnBean(javax.sql.DataSource.class)
     @ConditionalOnProperty
             (prefix = "spring.schedule.cron.scheduled-driven.config-loader.javax-datasource", name = "query-config-qql")
     public DataSourceConfigLoader dataSourceConfigLoader(javax.sql.DataSource dataSource,
