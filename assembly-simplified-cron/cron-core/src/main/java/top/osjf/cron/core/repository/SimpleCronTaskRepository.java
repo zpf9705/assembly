@@ -598,6 +598,14 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
+    public boolean hasCronTaskInfo(@NotNull String id) {
+        return futureCache.containsKey(id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     protected CronTaskInfo getCronTaskInfoInternal(String id) {
         return Optional.ofNullable(futureCache.get(id)).map(SimpleRunnabledScheduledFuture::toCronTaskInfo)
                 .orElse(null);

@@ -279,6 +279,14 @@ public class SpringSchedulerTaskRepository
      * {@inheritDoc}
      */
     @Override
+    public boolean hasCronTaskInfo(@NotNull String id) {
+        return getFuture(id) != null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     protected CronTaskInfo getCronTaskInfoInternal(@NotNull String id) {
         ListenableScheduledFuture future = getFuture(id);
         if (future == null) {

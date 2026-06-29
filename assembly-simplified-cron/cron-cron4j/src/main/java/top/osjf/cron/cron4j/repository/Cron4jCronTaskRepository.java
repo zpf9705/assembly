@@ -406,6 +406,14 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
+    public boolean hasCronTaskInfo(@NotNull String id) {
+        return getInitializedScheduler().getTask(id) != null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public CronTaskInfo getCronTaskInfoInternal(@NotNull String id) {
         Task task = getInitializedScheduler().getTask(id);
         SchedulingPattern schedulingPattern = getInitializedScheduler().getSchedulingPattern(id);

@@ -409,6 +409,14 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
      * {@inheritDoc}
      */
     @Override
+    public boolean hasCronTaskInfo(@NotNull String id) {
+        return getInitializedScheduler().getTask(id) != null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     @Nullable
     public CronTaskInfo getCronTaskInfoInternal(@NotNull String id) {
         Task task = scheduler.getTask(id);

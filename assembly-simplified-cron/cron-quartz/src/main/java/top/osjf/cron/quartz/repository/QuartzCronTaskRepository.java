@@ -382,6 +382,19 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
      * {@inheritDoc}
      */
     @Override
+    public boolean hasCronTaskInfo(@NotNull String id) {
+        try {
+            return getInitializedScheduler().getJobDetail(identityMemory.getJobKeyById(id)) != null;
+        }
+        catch (SchedulerException ex) {
+            return false;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     protected CronTaskInfo getCronTaskInfoInternal(@NotNull String id) {
         Scheduler scheduler = getInitializedScheduler();
         try {
