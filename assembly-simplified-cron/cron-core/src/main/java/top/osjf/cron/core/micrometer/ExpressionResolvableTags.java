@@ -29,7 +29,10 @@ import java.lang.annotation.*;
  * designs, used to declare custom monitoring tag key value pairs on methods; Different
  * from native static tags, the tag Key and Value configured in this annotation will
  * be dynamically parsed through {@link ExpressionResolver} to achieve runtime dynamic
- * generation of indicator dimensions.
+ * generation of indicator dimensions,relying on slice classes
+ * {@code io.micrometer.core.aop.CountedAspect#tagsBasedOnJoinPoint}
+ * or
+ * {@code io.micrometer.core.aop.TimedAspect#tagsBasedOnJoinPoint} for dynamic parsing.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
