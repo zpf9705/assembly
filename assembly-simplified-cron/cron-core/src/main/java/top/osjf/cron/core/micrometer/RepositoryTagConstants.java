@@ -26,7 +26,42 @@ import top.osjf.cron.core.repository.CronTaskRepository;
 public interface RepositoryTagConstants {
 
     /**
-     * The name of the tag key for the implementation class of {@link CronTaskRepository}.
+     * Metric tag key used to identify implementation class of {@link CronTaskRepository}.
      */
-    String MODULE_NAME = "module";
+    String MODULE_TAG_KEY = "module";
+
+    /**
+     * Metric tag key for marking method signature of monitored method.
+     */
+    String METHOD_SIGNATURE_TAG_KEY = "method.signature";
+
+    /**
+     * Metric tag key used to identify cron task registration operation.
+     */
+    String REGISTER_TAG_KEY = "cron.task.register";
+
+    /**
+     * Metric tag key for cron task update operation.
+     */
+    String UPDATE_TAG_KEY = "cron.task.update";
+
+    /**
+     * Metric tag key for cron task remove operation.
+     */
+    String REMOVE_TAG_KEY = "cron.task.remove";
+
+    /**
+     * Metric tag key for cron task terminate operation.
+     */
+    String TERMINATE_TAG_KEY = "cron.task.terminate";
+
+    /**
+     * Metric gauge key for real-time count of currently running cron tasks.
+     */
+    String RUNNING_TASK_COUNT_GAUGE_KEY = "cron.task.count";
+
+    /**
+     * Metric gauge key for the total count of all registered cron tasks.
+     */
+    String REGISTERED_TOTAL_TASK_COUNT_GAUGE_KEY = "cron.task.registered.count";
 }
