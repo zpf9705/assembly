@@ -20,6 +20,7 @@ package top.osjf.spring.autoconfigure.cron;
 import io.micrometer.core.aop.CountedAspect;
 import io.micrometer.core.aop.TimedAspect;
 import io.micrometer.core.instrument.MeterRegistry;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -39,7 +40,8 @@ import top.osjf.cron.core.repository.CronTaskRepository;
  * @since 3.0.2
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({MeterRegistry.class, CountedAspect.class, TimedAspect.class})
+@ConditionalOnClass({MeterRegistry.class, CountedAspect.class,
+        TimedAspect.class, ProceedingJoinPoint.class})
 @ConditionalOnBean({ MeterRegistry.class })
 class CronMicrometerConfiguration {
 
