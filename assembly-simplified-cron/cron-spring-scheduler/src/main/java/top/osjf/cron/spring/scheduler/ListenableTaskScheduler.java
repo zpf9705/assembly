@@ -127,37 +127,37 @@ public abstract class ListenableTaskScheduler extends AbstractCronTaskRepository
                                 " execute the task.");
             }
             return scheduledFuture;
-        }, task, trigger, true);
+        }, task, trigger);
     }
 
     @Override
     @NotNull
     public ListenableScheduledFuture schedule(@NotNull Runnable task, @NotNull Date startTime) {
-        return execute(r -> taskScheduler.schedule(r, startTime), task, null, false);
+        return execute(r -> taskScheduler.schedule(r, startTime), task, null);
     }
 
     @Override
     @NotNull
     public ListenableScheduledFuture scheduleAtFixedRate(@NotNull Runnable task, @NotNull Date startTime, long period) {
-        return execute(r -> taskScheduler.scheduleAtFixedRate(r, startTime, period), task, null, false);
+        return execute(r -> taskScheduler.scheduleAtFixedRate(r, startTime, period), task, null);
     }
 
     @Override
     @NotNull
     public ListenableScheduledFuture scheduleAtFixedRate(@NotNull Runnable task, long period) {
-        return execute(r -> taskScheduler.scheduleAtFixedRate(r, period), task, null, false);
+        return execute(r -> taskScheduler.scheduleAtFixedRate(r, period), task, null);
     }
 
     @Override
     @NotNull
     public ListenableScheduledFuture scheduleWithFixedDelay(@NotNull Runnable task, @NotNull Date startTime, long delay) {
-        return execute(r -> taskScheduler.scheduleWithFixedDelay(r, startTime, delay), task, null, false);
+        return execute(r -> taskScheduler.scheduleWithFixedDelay(r, startTime, delay), task, null);
     }
 
     @Override
     @NotNull
     public ListenableScheduledFuture scheduleWithFixedDelay(@NotNull Runnable task, long delay) {
-        return execute(r -> taskScheduler.scheduleWithFixedDelay(r, delay), task, null, false);
+        return execute(r -> taskScheduler.scheduleWithFixedDelay(r, delay), task, null);
     }
 
     /**
@@ -289,20 +289,16 @@ public abstract class ListenableTaskScheduler extends AbstractCronTaskRepository
      * @param func         get the function object of the {@link ScheduledFuture} instance.
      * @param runnable     the Runnable to execute whenever the trigger fires
      * @param trigger      an implementation of the {@link Trigger} interface,
-     * @param exposeFuture Whether to expose the current {@link ListenableScheduledFuture} in context.
      * @return An instance of {@link ListenableScheduledFuture} with added listening function.
      */
     @NotNull
     private ListenableScheduledFuture execute(Function<Runnable, ScheduledFuture<?>> func, Runnable runnable,
-                                              @Nullable Trigger trigger, boolean exposeFuture) {
+                                              @Nullable Trigger trigger) {
         ListenableRunnable listenableRunnable = wrapperRunnableToListenable(runnable, trigger);
         ScheduledFuture<?> scheduledFuture = func.apply(listenableRunnable);
         ListenableScheduledFuture listenableScheduledFuture
                 = new ListenableScheduledFuture(listenableRunnable, scheduledFuture);
         futureCache.putIfAbsent(listenableRunnable.getId(), listenableScheduledFuture);
-        if (exposeFuture) {
-            ListenableScheduledFutureContext.local.set(listenableScheduledFuture);
-        }
         return listenableScheduledFuture;
     }
 
