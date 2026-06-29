@@ -54,7 +54,7 @@ public class RepositoryTagsBasedOnJoinPointFunction implements Function<Proceedi
      * a {@link SystemPropertyExpressionResolver}.
      */
     public RepositoryTagsBasedOnJoinPointFunction() {
-        expressionResolver = new SystemPropertyExpressionResolver();
+        this(new SystemPropertyExpressionResolver());
     }
 
     /**
@@ -76,7 +76,7 @@ public class RepositoryTagsBasedOnJoinPointFunction implements Function<Proceedi
 
         // Splicing built-in storage module labels...
         CronTaskRepository repository = (CronTaskRepository) target;
-        tagList.add(Tag.of(RepositoryTagConstants.MODULE_NAME, repository.getName()));
+        tagList.add(Tag.of(RepositoryTagConstants.MODULE_TAG_KEY, repository.getName()));
 
         // Get the current execution method...
         MethodSignature methodSignature = (MethodSignature) pjp.getSignature();
