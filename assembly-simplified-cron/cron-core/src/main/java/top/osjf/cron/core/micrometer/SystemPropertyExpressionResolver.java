@@ -17,6 +17,8 @@
 
 package top.osjf.cron.core.micrometer;
 
+import top.osjf.commons.util.SystemPropertyUtils;
+
 /**
  * Resolves configuration keys from JVM system properties and OS environment variables.
  *
@@ -27,10 +29,6 @@ public class SystemPropertyExpressionResolver implements ExpressionResolver {
 
     @Override
     public String resolveExpression(String strVal) {
-        String value = System.getProperty(strVal);
-        if (value == null) {
-            value = System.getenv(strVal);
-        }
-        return value != null ? value : strVal;
+        return SystemPropertyUtils.resolvePlaceholders(strVal);
     }
 }
