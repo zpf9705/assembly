@@ -41,7 +41,7 @@ import top.osjf.cron.core.repository.CronTaskRepository;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({MeterRegistry.class, CountedAspect.class,
-        TimedAspect.class, ProceedingJoinPoint.class})
+        TimedAspect.class, ProceedingJoinPoint.class, MeterRegistryCustomizer.class})
 @ConditionalOnBean({ MeterRegistry.class })
 class CronMicrometerConfiguration {
 
