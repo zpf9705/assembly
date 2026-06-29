@@ -40,4 +40,13 @@ public class NotSupportConcurrentExecutionException extends CronInternalExceptio
     public NotSupportConcurrentExecutionException(Nameable nameable) {
         super("Repository [" + nameable.getName() + "] does not support concurrent execution of tasks");
     }
+
+    /**
+     * Constructs a new {@code NotSupportConcurrentExecutionException} with the specified detail message.
+     *
+     * @param message the internal detail message.
+     */
+    public NotSupportConcurrentExecutionException(String message) {
+        super(message);
+    }
 }

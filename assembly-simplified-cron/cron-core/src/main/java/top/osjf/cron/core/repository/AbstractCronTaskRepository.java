@@ -56,10 +56,11 @@ import java.util.stream.Collectors;
 public abstract class AbstractCronTaskRepository
         extends AbstractRunTimeoutRegistrarRepository implements CronTaskRepository {
 
+    /** A unique identity list record that prohibits concurrent scheduling of individual tasks. */
     private final CopyOnWriteArrayList<String> disallowConcurrentExecutionIds = new CopyOnWriteArrayList<>();
 
-    @Nullable
-    private IDGenerator idGenerator;
+    /** Provide a custom task unique ID generator. */
+    @Nullable private IDGenerator idGenerator;
 
     /**
      * {@inheritDoc}
@@ -387,6 +388,10 @@ public abstract class AbstractCronTaskRepository
     public void disallowConcurrentExecution(String id) throws NotSupportConcurrentExecutionException {
         if (!isSupportConcurrentExecution()) {
             throw new NotSupportConcurrentExecutionException(this);
+        }
+        if (!hasCronTaskInfo(id)) {
+            throw new NotSupportConcurrentExecutionException
+                    (String.format("Scheduled task with id [%s] does not exist.", id));
         }
         disallowConcurrentExecutionIds.addIfAbsent(id);
     }
