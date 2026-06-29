@@ -17,7 +17,6 @@
 
 package top.osjf.cron.core.exception;
 
-import top.osjf.commons.ability.Nameable;
 import top.osjf.cron.core.repository.CronTaskRepository;
 
 /**
@@ -33,12 +32,12 @@ public class NotSupportConcurrentExecutionException extends CronInternalExceptio
     private static final long serialVersionUID = 5773989423519563555L;
 
     /**
-     * Constructs a new {@code NotSupportConcurrentExecutionException} with the specified {@link Nameable}.
+     * Constructs a new {@code NotSupportConcurrentExecutionException} with the specified {@link CronTaskRepository}.
      *
-     * @param nameable {@link Nameable the not support concurrent execution repository name}.
+     * @param taskRepository {@link CronTaskRepository#getName() the not support concurrent execution repository name}.
      */
-    public NotSupportConcurrentExecutionException(Nameable nameable) {
-        super("Repository [" + nameable.getName() + "] does not support concurrent execution of tasks");
+    public NotSupportConcurrentExecutionException(CronTaskRepository taskRepository) {
+        super("CronTaskRepository [" + taskRepository.getName() + "] does not support concurrent execution of tasks");
     }
 
     /**
