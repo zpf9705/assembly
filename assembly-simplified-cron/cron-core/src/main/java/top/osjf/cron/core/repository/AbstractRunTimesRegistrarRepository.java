@@ -126,11 +126,22 @@ public abstract class AbstractRunTimesRegistrarRepository
      * {@inheritDoc}
      */
     @Override
-    public void removeListener(CronListener listener) {
+    public boolean removeListener(CronListener listener) {
         if (Objects.equals(listener, checkedCronListener)) {
             throw new IllegalStateException("Unsupported listener objects for deletion " + listener);
         }
-        super.removeListener(listener);
+        return super.removeListener(listener);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean removeListener(String listenerName) {
+        if (Objects.equals(listenerName, checkedCronListener.getName())) {
+            throw new IllegalStateException("Unsupported listener objects for deletion " + listenerName);
+        }
+        return super.removeListener(listenerName);
     }
 
     /**
@@ -197,6 +208,11 @@ public abstract class AbstractRunTimesRegistrarRepository
      * Check the listener class for tasks that limit the number of runs.
      */
     private class RunTimesCheckedCronListener extends SimpleCronListener {
+        @Override
+        public String getName() {
+            return "Run frequency check listener";
+        }
+
         @Override
         public void successWithId(@NotNull String id) {
             checkRunTimes(id);

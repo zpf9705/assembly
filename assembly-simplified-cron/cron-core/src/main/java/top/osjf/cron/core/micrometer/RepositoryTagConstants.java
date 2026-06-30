@@ -55,6 +55,16 @@ public interface RepositoryTagConstants {
      */
     String TERMINATE_TAG_KEY = "cron.task.terminate";
 
+    /**
+     * Metric tag key for cron listener add operation.
+     */
+    String ADD_LISTENER_TAG_KEY = "cron.task.listener.add";
+
+    /**
+     * Metric tag key for cron listener remove operation.
+     */
+    String REMOVE_LISTENER_TAG_KEY = "cron.task.listener.remove";
+
 
     /* ====================================== current ========================================== */
 
@@ -67,4 +77,9 @@ public interface RepositoryTagConstants {
      * Metric gauge key for real-time count of currently running cron tasks.
      */
     String RUNNING_TASK_COUNT_GAUGE_KEY = "cron.task.running";
+
+    /**
+     * Metric gauge key for the real-time number of currently valid registered cron listeners.
+     */
+    String REGISTERED_TASK_LISTENER_CURRENT_GAUGE_KEY = "cron.task.listener.current";
 }

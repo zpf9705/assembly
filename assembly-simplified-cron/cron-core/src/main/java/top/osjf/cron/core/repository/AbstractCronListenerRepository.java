@@ -24,6 +24,8 @@ import top.osjf.cron.core.listener.DefaultCronListenerCollector;
 import top.osjf.cron.core.micrometer.RepositoryTagConstants;
 import top.osjf.cron.core.micrometer.SystemPropertiesTags;
 
+import java.util.List;
+
 /**
  * The abstract implementation class of {@link CronTaskRepository} utilizes
  * {@link CronListenerCollector} to centrally manage {@link CronListener}
@@ -58,7 +60,7 @@ public abstract class AbstractCronListenerRepository
     @Counted(value = RepositoryTagConstants.ADD_LISTENER_TAG_KEY,
             extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
                     "addFirstListener(CronListener listener)"},
-            description = "Counts invocation times of adding the first cron listener")
+            description = "Counts invocation times of adding a cron listener")
     @SystemPropertiesTags
     @Override
     public void addFirstListener(CronListener listener) {
@@ -71,7 +73,7 @@ public abstract class AbstractCronListenerRepository
     @Counted(value = RepositoryTagConstants.ADD_LISTENER_TAG_KEY,
             extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
                     "addLastListener(CronListener listener)"},
-            description = "Counts invocation times of adding the last cron listener")
+            description = "Counts invocation times of adding a cron listener")
     @SystemPropertiesTags
     @Override
     public void addLastListener(CronListener listener) {
@@ -95,8 +97,45 @@ public abstract class AbstractCronListenerRepository
             description = "Counts invocation times of removing a cron listener")
     @SystemPropertiesTags
     @Override
-    public void removeListener(CronListener listener) {
-        getCronListenerCollector().removeCronListener(listener);
+    public boolean removeListener(CronListener listener) {
+        return getCronListenerCollector().removeCronListener(listener);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Counted(value = RepositoryTagConstants.REMOVE_LISTENER_TAG_KEY,
+            extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
+                    "removeListener(String listenerName)"},
+            description = "Counts invocation times of removing a cron listener")
+    @SystemPropertiesTags
+    @Override
+    public boolean removeListener(String listenerName) {
+        return getCronListenerCollector().removeCronListener(listenerName);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CronListener getListener(String listenerName) {
+        return getCronListenerCollector().getListener(listenerName);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public long getListenerSize() {
+        return getCronListenerCollector().getListenerSize();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<CronListener> getAllListeners() {
+        return getCronListenerCollector().getCronListeners();
     }
 
     /**

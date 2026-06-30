@@ -133,6 +133,7 @@ public abstract class CronListenerCollector implements Wrapper {
      * @param listenerName the {@code CronListener} name to be removed.
      * @return {@code true} if the listener existed and was successfully removed;
      *         {@code false} if the listener was not found in the {@link #cronListeners}.
+     * @since 3.0.2
      */
     public boolean removeCronListener(String listenerName) {
         final Lock writeLock = lock.writeLock();
@@ -154,6 +155,7 @@ public abstract class CronListenerCollector implements Wrapper {
     /**
      * Return the specified {@code CronListener} by the input listener name.
      * @param listenerName the {@code CronListener} name to query.
+     * @since 3.0.2
      */
     @Nullable
     public CronListener getListener(String listenerName) {
@@ -173,6 +175,7 @@ public abstract class CronListenerCollector implements Wrapper {
 
     /**
      * @return Return the number of registered listeners.
+     * @since 3.0.2
      */
     public long getListenerSize() {
         final Lock readLock = lock.readLock();

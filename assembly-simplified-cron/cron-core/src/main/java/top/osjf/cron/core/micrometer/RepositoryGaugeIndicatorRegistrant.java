@@ -21,6 +21,7 @@ import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Metrics;
 import top.osjf.commons.util.Assert;
+import top.osjf.cron.core.repository.CronListenerRepository;
 import top.osjf.cron.core.repository.CronTaskRepository;
 
 import java.util.function.ToDoubleFunction;
@@ -100,6 +101,12 @@ public class RepositoryGaugeIndicatorRegistrant {
                 repository -> repository.getAllRunningTaskIds().size(),
                 "List<String> getAllRunningTaskIds()",
                 "Real-time total number of currently running cron tasks");
+
+        // Register gauge metric for the real-time number of currently valid registered cron listeners...
+        doRegisterInternal(RepositoryTagConstants.REGISTERED_TASK_LISTENER_CURRENT_GAUGE_KEY,
+                CronListenerRepository::getListenerSize,
+                "long getListenerSize()",
+                "Real-time total quantity of all currently valid registered cron listeners");
 
         registerFlag = true;
     }
