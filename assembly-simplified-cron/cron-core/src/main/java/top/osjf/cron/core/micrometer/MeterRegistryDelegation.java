@@ -42,13 +42,28 @@ import java.util.function.ToDoubleFunction;
 public abstract class MeterRegistryDelegation {
 
     public static MeterRegistry meterRegistry = Metrics.globalRegistry;
+    public static ExpressionResolver expressionResolver;
+    public static Tags systemTags;
+
+    static {
+        expressionResolver = new SystemPropertyExpressionResolver();
+        systemTags = SystemPropertiesTagUtils.getResolvedSystemTags(expressionResolver);
+    }
 
     /**
-     * Initialize the global MeterRegistry instance and replace the default global registry.
+     * Initialize the global {@code MeterRegistry} instance and replace the default global registry.
      * @param meterRegistry the custom indicator registry instance.
      */
     public static void initMeterRegistry(MeterRegistry meterRegistry) {
         MeterRegistryDelegation.meterRegistry = meterRegistry;
+    }
+
+    /**
+     * Given an {@code ExpressionResolver} instance to initialize {@link #systemTags}.
+     * @param expressionResolver the custom {@code ExpressionResolver} instance.
+     */
+    public static void initExpressionResolver(ExpressionResolver expressionResolver) {
+        systemTags = SystemPropertiesTagUtils.getResolvedSystemTags(expressionResolver);
     }
 
     /**
@@ -104,7 +119,7 @@ public abstract class MeterRegistryDelegation {
      * @return A new or existing counter.
      */
     public static Counter counter(String name, Iterable<Tag> tags) {
-        return meterRegistry.counter(name, tags);
+        return meterRegistry.counter(name, systemTags.and(tags));
     }
 
     /**
@@ -115,7 +130,7 @@ public abstract class MeterRegistryDelegation {
      * @return A new or existing counter.
      */
     public static Counter counter(String name, String... tags) {
-        return meterRegistry.counter(name, tags);
+        return counter(name, systemTags.and(tags));
     }
 
     /**
@@ -126,7 +141,7 @@ public abstract class MeterRegistryDelegation {
      * @return A new or existing distribution summary.
      */
     public static DistributionSummary summary(String name, Iterable<Tag> tags) {
-        return meterRegistry.summary(name, tags);
+        return meterRegistry.summary(name, systemTags.and(tags));
     }
 
     /**
@@ -137,7 +152,7 @@ public abstract class MeterRegistryDelegation {
      * @return A new or existing distribution summary.
      */
     public static DistributionSummary summary(String name, String... tags) {
-        return meterRegistry.summary(name, tags);
+        return summary(name, systemTags.and(tags));
     }
 
     /**
@@ -148,7 +163,7 @@ public abstract class MeterRegistryDelegation {
      * @return A new or existing timer.
      */
     public static Timer timer(String name, Iterable<Tag> tags) {
-        return meterRegistry.timer(name, tags);
+        return meterRegistry.timer(name, systemTags.and(tags));
     }
 
     /**
@@ -159,7 +174,7 @@ public abstract class MeterRegistryDelegation {
      * @return A new or existing timer.
      */
     public static Timer timer(String name, String... tags) {
-        return meterRegistry.timer(name, tags);
+        return timer(name, systemTags.and(tags));
     }
 
     /**
