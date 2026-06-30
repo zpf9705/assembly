@@ -46,15 +46,17 @@ import top.osjf.cron.core.repository.CronTaskRepository;
 class CronMicrometerConfiguration {
 
     @Bean
-    public MeterRegistryCustomizer<MeterRegistry> cronTaskMeterRegistryCustomizer(CronTaskRepository cronTaskRepository)
-    {
-        return registry -> new RepositoryGaugeIndicatorRegistrant(registry, cronTaskRepository).doRegister();
-    }
-
-    @Bean
     @ConditionalOnMissingBean
     public ExpressionResolver expressionResolver(Environment environment) {
         return environment::resolvePlaceholders;
+    }
+
+    @Bean
+    public MeterRegistryCustomizer<MeterRegistry> cronTaskMeterRegistryCustomizer(CronTaskRepository cronTaskRepository,
+                                                                                  ExpressionResolver expressionResolver)
+    {
+        return registry -> new RepositoryGaugeIndicatorRegistrant(registry, cronTaskRepository, expressionResolver)
+                .doRegister();
     }
 
     @Bean
