@@ -20,6 +20,7 @@ package top.osjf.cron.core.micrometer;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Metrics;
+import io.micrometer.core.instrument.Tags;
 import top.osjf.commons.util.Assert;
 import top.osjf.cron.core.repository.CronListenerRepository;
 import top.osjf.cron.core.repository.CronTaskRepository;
@@ -120,12 +121,12 @@ public class RepositoryGaugeIndicatorRegistrant {
 
     private void doRegisterInternal(String name, ToDoubleFunction<CronTaskRepository> f, String methodSignature,
                                     String description) {
+
+        Tags tags = Tags.of(RepositoryTagConstants.MODULE_TAG_KEY, cronTaskRepository.getName(),
+                RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY, methodSignature);
+
         Gauge.builder(name, cronTaskRepository, f)
-                .tags(RepositoryTagConstants.MODULE_TAG_KEY, cronTaskRepository.getName(),
-                        RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY, methodSignature,
-                        "os.name", expressionResolver.resolveExpression("${os.name}"),
-                        "java.version", expressionResolver.resolveExpression("${java.version}"),
-                        "hostname", expressionResolver.resolveExpression("${HOSTNAME:local}"))
+                .tags(SystemPropertiesTagUtils.mergResolvedSystemTags(tags, expressionResolver))
                 .description(description)
                 .register(meterRegistry);
     }
