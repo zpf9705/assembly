@@ -41,6 +41,22 @@ public interface RepositoryTagConstants {
     String REGISTER_TAG_KEY = "cron.task.register";
 
     /**
+     * Metric tag key for identifying the timeout duration of cron task registration operations.
+     */
+    String REGISTER_TIMEOUT_TAG_KEY = "cron.task.timeout.register";
+
+    /**
+     * Metric tag key used to identify cron tasks executed with a specified number of run times.
+     */
+    String REGISTER_RUNTIMES_TAG_KEY = "cron.task.runtimes.register";
+
+    /**
+     * Metric tag key for identifying cron tasks configured with both execution run limit and timeout
+     * rule during registration.
+     */
+    String REGISTER_TIMEOUT_RUNTIMES_TAG_KEY = "cron.task.timeout.runtimes.register";
+
+    /**
      * Metric tag key for cron task update operation.
      */
     String UPDATE_TAG_KEY = "cron.task.update";
