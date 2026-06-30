@@ -23,6 +23,8 @@ import io.micrometer.core.instrument.Metrics;
 import top.osjf.commons.util.Assert;
 import top.osjf.cron.core.repository.CronTaskRepository;
 
+import java.util.function.ToDoubleFunction;
+
 /**
  * The unified registry for timed task storage dashboard indicators is responsible for batch
  * registering all Gauge type instantaneous monitoring indicators under the current timed
@@ -36,26 +38,43 @@ public class RepositoryGaugeIndicatorRegistrant {
 
     private final MeterRegistry meterRegistry;
     private final CronTaskRepository cronTaskRepository;
+    private final ExpressionResolver expressionResolver;
     private boolean registerFlag;
 
     /**
-     * Constructor: Initialize the registrant instance with Micrometer's global default meter registry.
-     * @param cronTaskRepository the cron task repository business instance.
+     * Constructs an indicator registrant using Micrometer global default {@link MeterRegistry}
+     * and the system built-in configuration placeholder resolver.
+     *
+     * @param cronTaskRepository the target cron task repository instance for gauge metrics collection
      */
     public RepositoryGaugeIndicatorRegistrant(CronTaskRepository cronTaskRepository) {
-        this(Metrics.globalRegistry, cronTaskRepository);
+        this(cronTaskRepository, new SystemPropertyExpressionResolver());
     }
 
     /**
-     * Constructor: Specify the custom meter registry and cron task repository instance to complete
-     * registrant initialization.
+     * Constructs an indicator registrant using Micrometer global default {@link MeterRegistry}
+     * with a custom placeholder expression resolver.
      *
-     * @param meterRegistry      the custom monitoring meter registry manager
-     * @param cronTaskRepository the cron task repository business instance
+     * @param cronTaskRepository the target cron task repository instance for gauge metrics collection
+     * @param expressionResolver the custom resolver used to parse placeholder expressions in metric tags
      */
-    public RepositoryGaugeIndicatorRegistrant(MeterRegistry meterRegistry, CronTaskRepository cronTaskRepository) {
+    public RepositoryGaugeIndicatorRegistrant(CronTaskRepository cronTaskRepository, ExpressionResolver expressionResolver) {
+        this(Metrics.globalRegistry, cronTaskRepository, expressionResolver);
+    }
+
+    /**
+     * Fully customized constructor, specifies a dedicated {@link MeterRegistry}, cron task repository
+     * and placeholder resolver for gauge metric registration.
+     *
+     * @param meterRegistry the custom metric registry for registering cron task runtime gauge indicators
+     * @param cronTaskRepository the target cron task repository instance for gauge metrics collection
+     * @param expressionResolver the resolver responsible for parsing placeholder expressions within metric tags
+     */
+    public RepositoryGaugeIndicatorRegistrant(MeterRegistry meterRegistry, CronTaskRepository cronTaskRepository,
+                                              ExpressionResolver expressionResolver) {
         this.meterRegistry = meterRegistry;
         this.cronTaskRepository = cronTaskRepository;
+        this.expressionResolver = expressionResolver;
     }
 
     /**
@@ -70,22 +89,27 @@ public class RepositoryGaugeIndicatorRegistrant {
                 String.format("Gauge metric for repository [%s] has already been registered, repeated registration " +
                                 "is not allowed", cronTaskRepository.getName()));
 
-        // Register gauge metric for the count of currently executing cron tasks
-        Gauge.builder(RepositoryTagConstants.RUNNING_TASK_COUNT_GAUGE_KEY, cronTaskRepository,
-                        repository -> repository.getAllRunningTaskIds().size())
-                .tag(RepositoryTagConstants.MODULE_TAG_KEY, cronTaskRepository.getName())
-                .tag(RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY, "List<String> getAllRunningTaskIds()")
-                .description("Total Real-time quantity of currently executing cron scheduled tasks")
-                .register(meterRegistry);
+        // Register gauge metric for the count of currently executing cron tasks...
+        doRegisterInternal(repository -> repository.getAllRunningTaskIds().size(),
+                "List<String> getAllRunningTaskIds()",
+                "Total Real-time quantity of currently executing cron scheduled tasks");
 
-        // Register gauge metric for the total number of all registered cron tasks in current repository
-        Gauge.builder(RepositoryTagConstants.REGISTERED_TOTAL_TASK_COUNT_GAUGE_KEY, cronTaskRepository,
-                        repository -> repository.getAllRegisteredTaskIds().size())
-                .tag(RepositoryTagConstants.MODULE_TAG_KEY, cronTaskRepository.getName())
-                .tag(RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY, "List<String> getAllRegisteredTaskIds()")
-                .description("Total quantity of all registered cron tasks under current task repository")
-                .register(meterRegistry);
+        // Register gauge metric for the total number of all registered cron tasks in current repository...
+        doRegisterInternal(repository -> repository.getAllRegisteredTaskIds().size(),
+                "List<String> getAllRegisteredTaskIds()",
+                "Total quantity of all registered cron tasks under current task repository");
 
         registerFlag = true;
+    }
+
+    private void doRegisterInternal(ToDoubleFunction<CronTaskRepository> f, String methodSignature, String description) {
+        Gauge.builder(RepositoryTagConstants.REGISTERED_TOTAL_TASK_COUNT_GAUGE_KEY, cronTaskRepository, f)
+                .tags(RepositoryTagConstants.MODULE_TAG_KEY, cronTaskRepository.getName(),
+                        RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY, methodSignature,
+                        "os.name", expressionResolver.resolveExpression("${os.name}"),
+                        "java.version", expressionResolver.resolveExpression("${java.version}"),
+                        "hostname", expressionResolver.resolveExpression("${HOSTNAME:local}"))
+                .description(description)
+                .register(meterRegistry);
     }
 }
