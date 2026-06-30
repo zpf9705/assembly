@@ -17,9 +17,12 @@
 
 package top.osjf.cron.core.repository;
 
+import io.micrometer.core.annotation.Counted;
 import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.listener.CronListenerCollector;
 import top.osjf.cron.core.listener.DefaultCronListenerCollector;
+import top.osjf.cron.core.micrometer.RepositoryTagConstants;
+import top.osjf.cron.core.micrometer.SystemPropertiesTags;
 
 /**
  * The abstract implementation class of {@link CronTaskRepository} utilizes
@@ -39,6 +42,11 @@ public abstract class AbstractCronListenerRepository
     /**
      * {@inheritDoc}
      */
+    @Counted(value = RepositoryTagConstants.ADD_LISTENER_TAG_KEY,
+            extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
+                    "addListener(CronListener listener)"},
+            description = "Counts invocation times of adding a cron listener")
+    @SystemPropertiesTags
     @Override
     public void addListener(CronListener listener) {
         getCronListenerCollector().addCronListener(listener);
@@ -47,6 +55,11 @@ public abstract class AbstractCronListenerRepository
     /**
      * {@inheritDoc}
      */
+    @Counted(value = RepositoryTagConstants.ADD_LISTENER_TAG_KEY,
+            extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
+                    "addFirstListener(CronListener listener)"},
+            description = "Counts invocation times of adding the first cron listener")
+    @SystemPropertiesTags
     @Override
     public void addFirstListener(CronListener listener) {
         getCronListenerCollector().addFirstCronListener(listener);
@@ -55,6 +68,11 @@ public abstract class AbstractCronListenerRepository
     /**
      * {@inheritDoc}
      */
+    @Counted(value = RepositoryTagConstants.ADD_LISTENER_TAG_KEY,
+            extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
+                    "addLastListener(CronListener listener)"},
+            description = "Counts invocation times of adding the last cron listener")
+    @SystemPropertiesTags
     @Override
     public void addLastListener(CronListener listener) {
         getCronListenerCollector().addLastCronListener(listener);
@@ -71,6 +89,11 @@ public abstract class AbstractCronListenerRepository
     /**
      * {@inheritDoc}
      */
+    @Counted(value = RepositoryTagConstants.REMOVE_LISTENER_TAG_KEY,
+            extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
+                    "removeListener(CronListener listener)"},
+            description = "Counts invocation times of removing a cron listener")
+    @SystemPropertiesTags
     @Override
     public void removeListener(CronListener listener) {
         getCronListenerCollector().removeCronListener(listener);
