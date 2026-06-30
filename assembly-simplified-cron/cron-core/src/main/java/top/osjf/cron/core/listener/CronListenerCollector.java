@@ -155,6 +155,7 @@ public abstract class CronListenerCollector implements Wrapper {
     /**
      * Return the specified {@code CronListener} by the input listener name.
      * @param listenerName the {@code CronListener} name to query.
+     * @return the specified {@code CronListener}.
      * @since 3.0.2
      */
     @Nullable
