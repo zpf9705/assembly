@@ -49,7 +49,7 @@ public abstract class AnnotationUtils {
      * @param <T>        the concrete type of the target annotation
      * @return an ordered {@link Set} containing all matched annotations; never {@code null}
      */
-    public static <T extends Annotation> Set<T> findMethodAnnotations(Method method, Class<T> targetType) {
+    public static <T extends Annotation> Set<T> findMethodMergedAnnotations(Method method, Class<T> targetType) {
         Set<T> result = new LinkedHashSet<>();
 
         Set<Class<? extends Annotation>> visited = new LinkedHashSet<>();
