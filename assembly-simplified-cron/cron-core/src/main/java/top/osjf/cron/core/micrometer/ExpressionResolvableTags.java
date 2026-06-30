@@ -38,6 +38,7 @@ import java.lang.annotation.*;
  * @since 3.0.2
  *
  * @see RepositoryTagsBasedOnJoinPointFunction
+ * @see SystemPropertiesTags
  * @see Counted#extraTags()
  * @see Timed#extraTags()
  * @see io.micrometer.core.aop.CountedAspect

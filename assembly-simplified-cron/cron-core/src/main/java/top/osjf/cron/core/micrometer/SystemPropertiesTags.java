@@ -27,6 +27,8 @@ import java.lang.annotation.*;
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
+ * @see ExpressionResolvableTags
+ * @see RepositoryTagsBasedOnJoinPointFunction
  */
 @Inherited
 @Target(ElementType.METHOD)
