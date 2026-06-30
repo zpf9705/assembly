@@ -90,16 +90,16 @@ public class RepositoryGaugeIndicatorRegistrant {
                                 "is not allowed", cronTaskRepository.getName()));
 
         // Register gauge metric for the total number of all registered cron tasks in current repository...
-        doRegisterInternal(RepositoryTagConstants.REGISTERED_TOTAL_TASK_COUNT_GAUGE_KEY,
+        doRegisterInternal(RepositoryTagConstants.REGISTERED_TASK_CURRENT_GAUGE_KEY,
                 repository -> repository.getAllRegisteredTaskIds().size(),
                 "List<String> getAllRegisteredTaskIds()",
-                "Total quantity of all registered cron tasks under current task repository");
+                "Real-time total quantity of all currently valid registered cron tasks");
 
         // Register gauge metric for the count of currently executing cron tasks...
         doRegisterInternal(RepositoryTagConstants.RUNNING_TASK_COUNT_GAUGE_KEY,
                 repository -> repository.getAllRunningTaskIds().size(),
                 "List<String> getAllRunningTaskIds()",
-                "Total Real-time quantity of currently executing cron scheduled tasks");
+                "Real-time total number of currently running cron tasks");
 
         registerFlag = true;
     }

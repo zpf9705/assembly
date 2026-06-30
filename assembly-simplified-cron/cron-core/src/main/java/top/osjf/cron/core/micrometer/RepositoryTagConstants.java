@@ -56,12 +56,12 @@ public interface RepositoryTagConstants {
     String TERMINATE_TAG_KEY = "cron.task.terminate";
 
     /**
-     * Metric gauge key for real-time count of currently running cron tasks.
+     * Metric gauge key for the real-time number of currently valid registered cron tasks.
      */
-    String RUNNING_TASK_COUNT_GAUGE_KEY = "cron.task.running.count";
+    String REGISTERED_TASK_CURRENT_GAUGE_KEY = "cron.task.registered.current";
 
     /**
-     * Metric gauge key for the total count of all registered cron tasks.
+     * Metric gauge key for real-time count of currently running cron tasks.
      */
-    String REGISTERED_TOTAL_TASK_COUNT_GAUGE_KEY = "cron.task.registered.count";
+    String RUNNING_TASK_COUNT_GAUGE_KEY = "cron.task.running";
 }
