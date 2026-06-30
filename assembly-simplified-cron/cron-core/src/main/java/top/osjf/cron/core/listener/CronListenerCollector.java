@@ -30,6 +30,7 @@ import top.osjf.cron.core.repository.TypedRepositoryContext;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -114,14 +115,72 @@ public abstract class CronListenerCollector implements Wrapper {
     /**
      * Remove the specified {@code CronListener} from the listener list.
      * @param cronListener {@code CronListener} instance to be removed.
+     * @return {@code true} if the listener existed and was successfully removed;
+     *         {@code false} if the listener was not found in the {@link #cronListeners}.
      */
-    public void removeCronListener(CronListener cronListener) {
+    public boolean removeCronListener(CronListener cronListener) {
         final Lock writeLock = lock.writeLock();
         writeLock.lock();
         try {
-            cronListeners.remove(cronListener);
+            return cronListeners.remove(cronListener);
         } finally {
             writeLock.unlock();
+        }
+    }
+
+    /**
+     * Remove the specified {@code CronListener} by the input listener name.
+     * @param listenerName the {@code CronListener} name to be removed.
+     * @return {@code true} if the listener existed and was successfully removed;
+     *         {@code false} if the listener was not found in the {@link #cronListeners}.
+     */
+    public boolean removeCronListener(String listenerName) {
+        final Lock writeLock = lock.writeLock();
+        writeLock.lock();
+        try {
+            CronListener specified = null;
+            for (CronListener cronListener : cronListeners) {
+                if (Objects.equals(listenerName, cronListener.getName())) {
+                    specified = cronListener;
+                    break;
+                }
+            }
+            return specified != null && cronListeners.remove(specified);
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+    /**
+     * Return the specified {@code CronListener} by the input listener name.
+     * @param listenerName the {@code CronListener} name to query.
+     */
+    @Nullable
+    public CronListener getListener(String listenerName) {
+        final Lock readLock = lock.readLock();
+        readLock.lock();
+        try {
+            for (CronListener cronListener : cronListeners) {
+                if (Objects.equals(listenerName, cronListener.getName())) {
+                    return cronListener;
+                }
+            }
+            return null;
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    /**
+     * @return Return the number of registered listeners.
+     */
+    public long getListenerSize() {
+        final Lock readLock = lock.readLock();
+        readLock.lock();
+        try {
+            return cronListeners.size();
+        } finally {
+            readLock.unlock();
         }
     }
 
