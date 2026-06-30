@@ -90,6 +90,11 @@ public interface RepositoryTagConstants {
     String REGISTERED_TASK_CURRENT_GAUGE_KEY = "cron.task.registered.current";
 
     /**
+     * Metric gauge key for the real-time number of currently valid registered limit run times cron tasks.
+     */
+    String REGISTERED_RUN_TIMES_TASK_CURRENT_GAUGE_KEY = "cron.task.runtimes.registered.current";
+
+    /**
      * Metric gauge key for real-time count of currently running cron tasks.
      */
     String RUNNING_TASK_COUNT_GAUGE_KEY = "cron.task.running";

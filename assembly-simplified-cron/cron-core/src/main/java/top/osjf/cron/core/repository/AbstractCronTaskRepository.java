@@ -356,6 +356,14 @@ public abstract class AbstractCronTaskRepository
     /**
      * {@inheritDoc}
      */
+    @Override
+    public long getRemainingLimitedRunTimesTaskCount() {
+        return getTaskRunTimesMap().size();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Nullable
     @Override
     public RunningTimeout getTimeoutConfig(String taskId) {

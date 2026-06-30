@@ -90,11 +90,18 @@ public class RepositoryGaugeIndicatorRegistrant {
                 String.format("Gauge metric for repository [%s] has already been registered, repeated registration " +
                                 "is not allowed", cronTaskRepository.getName()));
 
-        // Register gauge metric for the total number of all registered cron tasks in current repository...
+        // Register gauge metric for the real-time total number of all registered cron tasks in current repository...
         doRegisterInternal(RepositoryTagConstants.REGISTERED_TASK_CURRENT_GAUGE_KEY,
                 repository -> repository.getAllRegisteredTaskIds().size(),
                 "List<String> getAllRegisteredTaskIds()",
                 "Real-time total quantity of all currently valid registered cron tasks");
+
+        // Register gauge metrics for the real-time remaining total count of all registered limited run count
+        // cron tasks in the current repository...
+        doRegisterInternal(RepositoryTagConstants.REGISTERED_RUN_TIMES_TASK_CURRENT_GAUGE_KEY,
+                CronTaskRepository::getRemainingLimitedRunTimesTaskCount,
+                "long getRemainingLimitedRunTimesTaskCount()",
+                "Real-time total of all valid registered cron tasks with specified run times");
 
         // Register gauge metric for the count of currently executing cron tasks...
         doRegisterInternal(RepositoryTagConstants.RUNNING_TASK_COUNT_GAUGE_KEY,

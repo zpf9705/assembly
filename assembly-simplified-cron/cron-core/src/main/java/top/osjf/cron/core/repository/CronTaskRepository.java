@@ -124,6 +124,15 @@ public interface CronTaskRepository extends Repository, RunTimesRegistrarReposit
     long getTaskRemainingNumberOfRuns(String id);
 
     /**
+     * Returns the total number of registered cron tasks with remaining limited execution times.
+     * @return the total number of registered cron tasks with remaining limited execution times.
+     * @see #getTaskRemainingNumberOfRuns
+     * @see RunTimesRegistrarRepository
+     * @since 3.0.2
+     */
+    long getRemainingLimitedRunTimesTaskCount();
+
+    /**
      * Query the single execution timeout configuration bound to the specified task from the
      * local cache.
      *
