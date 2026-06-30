@@ -17,10 +17,13 @@
 
 package top.osjf.cron.core.repository;
 
+import io.micrometer.core.annotation.Counted;
 import top.osjf.commons.lang.NotNull;
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.listener.SimpleCronListener;
+import top.osjf.cron.core.micrometer.RepositoryTagConstants;
+import top.osjf.cron.core.micrometer.SystemPropertiesTags;
 
 import java.util.Collections;
 import java.util.Map;
@@ -67,6 +70,11 @@ public abstract class AbstractRunTimesRegistrarRepository
      * {@inheritDoc}
      */
     @Override
+    @Counted(value = RepositoryTagConstants.REGISTER_RUNTIMES_TAG_KEY,
+            extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
+                    "registerRunTimes(String expression, Runnable runnable, int times)"},
+            description = "Counts invocation times of cron task registration with limited run times configuration")
+    @SystemPropertiesTags
     public String registerRunTimes(String expression, Runnable runnable, int times)
             throws CronInternalException {
         return registerRunTimes(() -> register(expression, runnable), times);
@@ -76,6 +84,11 @@ public abstract class AbstractRunTimesRegistrarRepository
      * {@inheritDoc}
      */
     @Override
+    @Counted(value = RepositoryTagConstants.REGISTER_RUNTIMES_TAG_KEY,
+            extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
+                    "registerRunTimes(String expression, CronMethodRunnable runnable, int times)"},
+            description = "Counts invocation times of cron task registration with limited run times configuration")
+    @SystemPropertiesTags
     public String registerRunTimes(String expression, CronMethodRunnable runnable, int times)
             throws CronInternalException {
         return registerRunTimes(() -> register(expression, runnable), times);
@@ -85,6 +98,11 @@ public abstract class AbstractRunTimesRegistrarRepository
      * {@inheritDoc}
      */
     @Override
+    @Counted(value = RepositoryTagConstants.REGISTER_RUNTIMES_TAG_KEY,
+            extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
+                    "registerRunTimes(String expression, RunnableTaskBody body, int times)"},
+            description = "Counts invocation times of cron task registration with limited run times configuration")
+    @SystemPropertiesTags
     public String registerRunTimes(String expression, RunnableTaskBody body, int times)
             throws CronInternalException {
         return registerRunTimes(() -> register(expression, body), times);
@@ -94,6 +112,11 @@ public abstract class AbstractRunTimesRegistrarRepository
      * {@inheritDoc}
      */
     @Override
+    @Counted(value = RepositoryTagConstants.REGISTER_RUNTIMES_TAG_KEY,
+            extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
+                    "registerRunTimes(String expression, TaskBody body, int times)"},
+            description = "Counts invocation times of cron task registration with limited run times configuration")
+    @SystemPropertiesTags
     public String registerRunTimes(String expression, TaskBody body, int times) throws CronInternalException {
         return registerRunTimes(() -> register(expression, body), times);
     }
@@ -102,6 +125,11 @@ public abstract class AbstractRunTimesRegistrarRepository
      * {@inheritDoc}
      */
     @Override
+    @Counted(value = RepositoryTagConstants.REGISTER_RUNTIMES_TAG_KEY,
+            extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
+                    "registerRunTimes(CronTask task, int times)"},
+            description = "Counts invocation times of cron task registration with limited run times configuration")
+    @SystemPropertiesTags
     public String registerRunTimes(CronTask task, int times) throws CronInternalException {
         return registerRunTimes(() -> register(task), times);
     }
@@ -110,6 +138,11 @@ public abstract class AbstractRunTimesRegistrarRepository
      * {@inheritDoc}
      */
     @Override
+    @Counted(value = RepositoryTagConstants.ADD_LISTENER_TAG_KEY,
+            extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
+                    "addListener(CronListener listener)"},
+            description = "Counts invocation times of adding a cron listener")
+    @SystemPropertiesTags
     public void addListener(CronListener listener) {
         ensureCheckedListenerIsLastIfRuntime(() -> super.addListener(listener));
     }
@@ -118,6 +151,11 @@ public abstract class AbstractRunTimesRegistrarRepository
      * {@inheritDoc}
      */
     @Override
+    @Counted(value = RepositoryTagConstants.ADD_LISTENER_TAG_KEY,
+            extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
+                    "addLastListener(CronListener listener)"},
+            description = "Counts invocation times of adding a cron listener")
+    @SystemPropertiesTags
     public void addLastListener(CronListener listener) {
         ensureCheckedListenerIsLastIfRuntime(() -> super.addLastListener(listener));
     }
@@ -126,6 +164,11 @@ public abstract class AbstractRunTimesRegistrarRepository
      * {@inheritDoc}
      */
     @Override
+    @Counted(value = RepositoryTagConstants.REMOVE_LISTENER_TAG_KEY,
+            extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
+                    "removeListener(CronListener listener)"},
+            description = "Counts invocation times of removing a cron listener")
+    @SystemPropertiesTags
     public boolean removeListener(CronListener listener) {
         if (Objects.equals(listener, checkedCronListener)) {
             throw new IllegalStateException("Unsupported listener objects for deletion " + listener);
@@ -137,6 +180,11 @@ public abstract class AbstractRunTimesRegistrarRepository
      * {@inheritDoc}
      */
     @Override
+    @Counted(value = RepositoryTagConstants.REMOVE_LISTENER_TAG_KEY,
+            extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
+                    "removeListener(String listenerName)"},
+            description = "Counts invocation times of removing a cron listener")
+    @SystemPropertiesTags
     public boolean removeListener(String listenerName) {
         if (Objects.equals(listenerName, checkedCronListener.getName())) {
             throw new IllegalStateException("Unsupported listener objects for deletion " + listenerName);
