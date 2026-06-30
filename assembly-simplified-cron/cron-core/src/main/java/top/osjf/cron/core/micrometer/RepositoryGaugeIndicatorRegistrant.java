@@ -89,21 +89,24 @@ public class RepositoryGaugeIndicatorRegistrant {
                 String.format("Gauge metric for repository [%s] has already been registered, repeated registration " +
                                 "is not allowed", cronTaskRepository.getName()));
 
-        // Register gauge metric for the count of currently executing cron tasks...
-        doRegisterInternal(repository -> repository.getAllRunningTaskIds().size(),
-                "List<String> getAllRunningTaskIds()",
-                "Total Real-time quantity of currently executing cron scheduled tasks");
-
         // Register gauge metric for the total number of all registered cron tasks in current repository...
-        doRegisterInternal(repository -> repository.getAllRegisteredTaskIds().size(),
+        doRegisterInternal(RepositoryTagConstants.REGISTERED_TOTAL_TASK_COUNT_GAUGE_KEY,
+                repository -> repository.getAllRegisteredTaskIds().size(),
                 "List<String> getAllRegisteredTaskIds()",
                 "Total quantity of all registered cron tasks under current task repository");
+
+        // Register gauge metric for the count of currently executing cron tasks...
+        doRegisterInternal(RepositoryTagConstants.RUNNING_TASK_COUNT_GAUGE_KEY,
+                repository -> repository.getAllRunningTaskIds().size(),
+                "List<String> getAllRunningTaskIds()",
+                "Total Real-time quantity of currently executing cron scheduled tasks");
 
         registerFlag = true;
     }
 
-    private void doRegisterInternal(ToDoubleFunction<CronTaskRepository> f, String methodSignature, String description) {
-        Gauge.builder(RepositoryTagConstants.REGISTERED_TOTAL_TASK_COUNT_GAUGE_KEY, cronTaskRepository, f)
+    private void doRegisterInternal(String name, ToDoubleFunction<CronTaskRepository> f, String methodSignature,
+                                    String description) {
+        Gauge.builder(name, cronTaskRepository, f)
                 .tags(RepositoryTagConstants.MODULE_TAG_KEY, cronTaskRepository.getName(),
                         RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY, methodSignature,
                         "os.name", expressionResolver.resolveExpression("${os.name}"),

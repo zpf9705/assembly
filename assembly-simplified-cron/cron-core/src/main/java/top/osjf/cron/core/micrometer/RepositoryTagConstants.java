@@ -58,7 +58,7 @@ public interface RepositoryTagConstants {
     /**
      * Metric gauge key for real-time count of currently running cron tasks.
      */
-    String RUNNING_TASK_COUNT_GAUGE_KEY = "cron.task.count";
+    String RUNNING_TASK_COUNT_GAUGE_KEY = "cron.task.running.count";
 
     /**
      * Metric gauge key for the total count of all registered cron tasks.
