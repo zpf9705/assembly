@@ -91,9 +91,8 @@ public class RepositoryTagsBasedOnJoinPointFunction implements Function<Proceedi
             for (ExpressionResolvableTags resolvableTags : annotations) {
                 // Traverse the configured tag array and perform expression parsing on key and value separately.
                 for (Tag originalTag : /* Using native adaptation methods */Tags.of(resolvableTags.value())) {
-                    String resolvedKey = expressionResolver.resolveExpression(originalTag.getKey());
                     String resolvedValue = expressionResolver.resolveExpression(originalTag.getValue());
-                    tagList.add(Tag.of(resolvedKey, resolvedValue));
+                    tagList.add(Tag.of(originalTag.getKey(), resolvedValue));
                 }
             }
         }
