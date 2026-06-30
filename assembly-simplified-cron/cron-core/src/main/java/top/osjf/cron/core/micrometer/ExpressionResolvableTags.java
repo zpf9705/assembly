@@ -44,7 +44,7 @@ import java.lang.annotation.*;
  * @see io.micrometer.core.aop.TimedAspect
  */
 @Inherited
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ExpressionResolvableTags {
 
