@@ -21,8 +21,8 @@ import io.micrometer.core.annotation.Counted;
 import top.osjf.commons.lang.NotNull;
 import top.osjf.commons.lang.Nullable;
 import top.osjf.cron.core.exception.*;
-import top.osjf.cron.core.micrometer.ExpressionResolvableTags;
 import top.osjf.cron.core.micrometer.RepositoryTagConstants;
+import top.osjf.cron.core.micrometer.SystemPropertiesTags;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -73,8 +73,7 @@ public abstract class AbstractCronTaskRepository
             extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
                     "register(String expression, Runnable runnable)"},
             description = "Counts the number of cron task registration invocations")
-    @ExpressionResolvableTags
-            ({"os.name", "${os.name}", "java.version", "${java.version}", "hostname", "${HOSTNAME:local}"})
+    @SystemPropertiesTags
     public String register(String expression, Runnable runnable) throws CronInternalException {
         checkSupportedExpression(expression);
         String id;
@@ -96,8 +95,7 @@ public abstract class AbstractCronTaskRepository
             extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
                     "register(String expression, CronMethodRunnable runnable)"},
             description = "Counts the number of cron task registration invocations")
-    @ExpressionResolvableTags
-            ({"os.name", "${os.name}", "java.version", "${java.version}", "hostname", "${HOSTNAME:local}"})
+    @SystemPropertiesTags
     public String register(String expression, CronMethodRunnable runnable) throws CronInternalException {
         checkSupportedExpression(expression);
         String id;
@@ -119,8 +117,7 @@ public abstract class AbstractCronTaskRepository
             extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
                     "register(String expression, RunnableTaskBody body)"},
             description = "Counts the number of cron task registration invocations")
-    @ExpressionResolvableTags
-            ({"os.name", "${os.name}", "java.version", "${java.version}", "hostname", "${HOSTNAME:local}"})
+    @SystemPropertiesTags
     public String register(String expression, RunnableTaskBody body) throws CronInternalException {
         checkSupportedExpression(expression);
         String id;
@@ -142,8 +139,7 @@ public abstract class AbstractCronTaskRepository
             extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
                     "register(String expression, TaskBody body)"},
             description = "Counts the number of cron task registration invocations")
-    @ExpressionResolvableTags
-            ({"os.name", "${os.name}", "java.version", "${java.version}", "hostname", "${HOSTNAME:local}"})
+    @SystemPropertiesTags
     public String register(String expression, TaskBody body) throws CronInternalException {
         checkSupportedExpression(expression);
         String id;
@@ -167,8 +163,7 @@ public abstract class AbstractCronTaskRepository
     @Counted(value = RepositoryTagConstants.REGISTER_TAG_KEY,
             extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY, "register(CronTask task)"},
             description = "Counts the number of cron task registration invocations")
-    @ExpressionResolvableTags
-            ({"os.name", "${os.name}", "java.version", "${java.version}", "hostname", "${HOSTNAME:local}"})
+    @SystemPropertiesTags
     public String register(CronTask task) throws CronInternalException {
         checkSupportedExpression(task.getExpression());
         String id;
@@ -189,8 +184,7 @@ public abstract class AbstractCronTaskRepository
     @Counted(value = RepositoryTagConstants.UPDATE_TAG_KEY,
             extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY, "update(String id, String newExpression)"},
             description = "Counts the number of cron task update invocations")
-    @ExpressionResolvableTags
-            ({"os.name", "${os.name}", "java.version", "${java.version}", "hostname", "${HOSTNAME:local}"})
+    @SystemPropertiesTags
     public void update(String id, String newExpression) throws CronInternalException {
         checkSupportedExpression(newExpression);
         try {
@@ -208,8 +202,7 @@ public abstract class AbstractCronTaskRepository
     @Counted(value = RepositoryTagConstants.REMOVE_TAG_KEY,
             extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY, "remove(String id)"},
             description = "Counts the number of cron task remove invocations")
-    @ExpressionResolvableTags
-            ({"os.name", "${os.name}", "java.version", "${java.version}", "hostname", "${HOSTNAME:local}"})
+    @SystemPropertiesTags
     public void remove(String id) throws CronInternalException {
         try {
             removeInternal(id);
@@ -226,8 +219,7 @@ public abstract class AbstractCronTaskRepository
     @Counted(value = RepositoryTagConstants.REMOVE_TAG_KEY,
             extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY, "removeAll()"},
             description = "Counts the number of cron task remove invocations")
-    @ExpressionResolvableTags
-            ({"os.name", "${os.name}", "java.version", "${java.version}", "hostname", "${HOSTNAME:local}"})
+    @SystemPropertiesTags
     public void removeAll() throws CronInternalException {
         try {
             removeAllInternal();
@@ -247,8 +239,7 @@ public abstract class AbstractCronTaskRepository
                     RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY, "terminate(String id)"},
             description = "Counts the number of cron task terminate invocations"
     )
-    @ExpressionResolvableTags
-            ({"os.name", "${os.name}", "java.version", "${java.version}", "hostname", "${HOSTNAME:local}"})
+    @SystemPropertiesTags
     public void terminate(String id) throws CronInternalException {
         try {
             if (!isTaskRunning(id)) {
@@ -271,8 +262,7 @@ public abstract class AbstractCronTaskRepository
                     RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY, "terminateAll()"},
             description = "Counts the number of cron task terminate invocations"
     )
-    @ExpressionResolvableTags
-            ({"os.name", "${os.name}", "java.version", "${java.version}", "hostname", "${HOSTNAME:local}"})
+    @SystemPropertiesTags
     public void terminateAll() throws CronInternalException {
         try {
             if (getAllRunningTaskIds().isEmpty()) {
