@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import top.osjf.cron.core.micrometer.ExpressionResolver;
+import top.osjf.cron.core.micrometer.MeterRegistryDelegation;
 import top.osjf.cron.core.micrometer.RepositoryGaugeIndicatorRegistrant;
 import top.osjf.cron.core.micrometer.RepositoryTagsBasedOnJoinPointFunction;
 import top.osjf.cron.core.repository.CronTaskRepository;
@@ -55,8 +56,11 @@ class CronMicrometerConfiguration {
     public MeterRegistryCustomizer<MeterRegistry> cronTaskMeterRegistryCustomizer(CronTaskRepository cronTaskRepository,
                                                                                   ExpressionResolver expressionResolver)
     {
-        return registry -> new RepositoryGaugeIndicatorRegistrant(registry, cronTaskRepository, expressionResolver)
-                .doRegister();
+        return registry -> {
+            MeterRegistryDelegation.initMeterRegistry(registry);
+            new RepositoryGaugeIndicatorRegistrant(registry, cronTaskRepository, expressionResolver)
+                    .doRegister();
+        };
     }
 
     @Bean
