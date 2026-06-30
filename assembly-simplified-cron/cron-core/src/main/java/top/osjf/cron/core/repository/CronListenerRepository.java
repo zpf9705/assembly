@@ -17,7 +17,10 @@
 
 package top.osjf.cron.core.repository;
 
+import top.osjf.commons.lang.Nullable;
 import top.osjf.cron.core.listener.CronListener;
+
+import java.util.List;
 
 /**
  * This interface provides functionalities for managing cron task listeners
@@ -77,6 +80,42 @@ public interface CronListenerRepository extends Repository {
      * <p>This method takes a task listener {@code CronListener} object as an input parameter
      * and removes it from the listener list.
      * @param listener the task listener object to be removed.
+     * @return {@code true} if the listener existed and was successfully removed;
+     *         {@code false} if the listener was not found in the registry.
      */
-    void removeListener(CronListener listener);
+    boolean removeListener(CronListener listener);
+
+    /**
+     * Removes the registered cron task listener by {@link CronListener#getName() its unique listener name}.
+     * @param listenerName the unique name of the listener to remove.
+     * @return {@code true} if the listener existed and was successfully removed;
+     *         {@code false} if the listener was not found in the registry.
+     * @since 3.0.2
+     */
+    boolean removeListener(String listenerName);
+
+    /**
+     * Returns the registered cron task listener by listener name.
+     * @param listenerName the unique name of the target listener
+     * @return the matched {@code CronListener} instance, returns {@code null} if not found.
+     * @since 3.0.2
+     */
+    @Nullable
+    CronListener getListener(String listenerName);
+
+    /**
+     * Gets the total number of currently registered cron task listeners.
+     * @return registered listener count.
+     * @since 3.0.2
+     */
+    long getListenerSize();
+
+    /**
+     * Returns an immutable list of all currently added cron task listeners.
+     * <p>The returned collection cannot be modified to avoid unintended changes to the internal
+     * listener list.
+     * @return all registered {@code CronListener} instances.
+     * @since 3.0.2
+     */
+    List<CronListener> getAllListeners();
 }
