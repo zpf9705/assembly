@@ -32,11 +32,12 @@ import java.util.List;
  */
 public abstract class SystemPropertiesTagUtils {
 
-    /** System tag template constant: Key is fixed tag name, Value is environment variable placeholder expression */
-    private static final Tags systemTags
-            = Tags.of(
-            "os.name", "${os.name}", "java.version", "${java.version}", "hostname", "${HOSTNAME:local}"
-    );
+    /** Key is fixed tag name, Value is environment variable placeholder expression */
+    public static final String[] systemTagArray =
+            { "os.name", "${os.name}", "java.version", "${java.version}", "hostname", "${HOSTNAME:local}" };
+
+    /** System tag template constant */
+    private static final Tags systemTags = Tags.of(systemTagArray);
 
     /**
      * Merge resolved global system tags into source business tags and return the combined tags
