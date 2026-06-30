@@ -21,6 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.osjf.commons.util.Assert;
 import top.osjf.commons.lang.Nullable;
+import top.osjf.cron.core.micrometer.MeterRegistryDelegation;
+import top.osjf.cron.core.micrometer.RepositoryTagConstants;
 
 import java.util.UUID;
 import java.util.concurrent.*;
@@ -148,6 +150,7 @@ public class TimeoutMonitoringRunnable implements Runnable {
             future.get(timeout.getTimeout(), timeout.getTimeUnit());
         }
         catch (TimeoutException ex) {
+            MeterRegistryDelegation.counter(RepositoryTagConstants.TIMEOUT_TAG_KEY);
             handlerTimeoutPolicy(future);
         }
         catch (Exception ex) {
