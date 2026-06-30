@@ -21,13 +21,15 @@ import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
+import top.osjf.commons.util.AnnotationUtils;
 import top.osjf.commons.util.Assert;
-import top.osjf.commons.util.compat.ArrayUtils;
+import top.osjf.commons.util.CollectionUtils;
 import top.osjf.cron.core.repository.CronTaskRepository;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -82,14 +84,17 @@ public class RepositoryTagsBasedOnJoinPointFunction implements Function<Proceedi
         MethodSignature methodSignature = (MethodSignature) pjp.getSignature();
         Method targetMethod = methodSignature.getMethod();
 
-        // Analyze custom expression label annotations if exists.
-        ExpressionResolvableTags resolvableTags = targetMethod.getAnnotation(ExpressionResolvableTags.class);
-        if (resolvableTags != null && ArrayUtils.isNotEmpty(resolvableTags.value())) {
-            // Traverse the configured tag array and perform expression parsing on key and value separately.
-            for (Tag originalTag : /* Using native adaptation methods */Tags.of(resolvableTags.value())) {
-                String resolvedKey = expressionResolver.resolveExpression(originalTag.getKey());
-                String resolvedValue = expressionResolver.resolveExpression(originalTag.getValue());
-                tagList.add(Tag.of(resolvedKey, resolvedValue));
+        // Find merged ExpressionResolvableTags of the specified type from the target method.
+        Set<ExpressionResolvableTags> annotations
+                = AnnotationUtils.findMethodMergedAnnotations(targetMethod, ExpressionResolvableTags.class);
+        if (CollectionUtils.isNotEmpty(annotations)) {
+            for (ExpressionResolvableTags resolvableTags : annotations) {
+                // Traverse the configured tag array and perform expression parsing on key and value separately.
+                for (Tag originalTag : /* Using native adaptation methods */Tags.of(resolvableTags.value())) {
+                    String resolvedKey = expressionResolver.resolveExpression(originalTag.getKey());
+                    String resolvedValue = expressionResolver.resolveExpression(originalTag.getValue());
+                    tagList.add(Tag.of(resolvedKey, resolvedValue));
+                }
             }
         }
 
