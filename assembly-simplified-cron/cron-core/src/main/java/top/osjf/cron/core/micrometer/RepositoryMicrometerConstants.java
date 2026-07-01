@@ -23,7 +23,7 @@ import top.osjf.cron.core.repository.CronTaskRepository;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
  */
-public interface RepositoryTagConstants {
+public interface RepositoryMicrometerConstants {
 
     /* ====================================== Sign ============================================= */
 

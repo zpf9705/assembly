@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
+import static top.osjf.cron.core.micrometer.RepositoryMicrometerConstants.MODULE_TAG_KEY;
+
 /**
  * Function implementation class for generating storage layer monitoring labels based on
  * cross-sectional connection points.
@@ -78,7 +80,7 @@ public class RepositoryTagsBasedOnJoinPointFunction implements Function<Proceedi
 
         // Splicing built-in storage module labels...
         CronTaskRepository repository = (CronTaskRepository) target;
-        tagList.add(Tag.of(RepositoryTagConstants.MODULE_TAG_KEY, repository.getName()));
+        tagList.add(Tag.of(MODULE_TAG_KEY, repository.getName()));
 
         // Get the current execution method...
         MethodSignature methodSignature = (MethodSignature) pjp.getSignature();

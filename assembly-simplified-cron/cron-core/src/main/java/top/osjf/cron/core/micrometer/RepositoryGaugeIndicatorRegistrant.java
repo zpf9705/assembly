@@ -27,6 +27,8 @@ import top.osjf.cron.core.repository.CronTaskRepository;
 
 import java.util.function.ToDoubleFunction;
 
+import static top.osjf.cron.core.micrometer.RepositoryMicrometerConstants.*;
+
 /**
  * The unified registry for timed task storage dashboard indicators is responsible for batch
  * registering all Gauge type instantaneous monitoring indicators under the current timed
@@ -92,26 +94,26 @@ public class RepositoryGaugeIndicatorRegistrant {
                                 "is not allowed", cronTaskRepository.getName()));
 
         // Register gauge metric for the real-time total number of all registered cron tasks in current repository...
-        doRegisterInternal(RepositoryTagConstants.REGISTERED_TASK_CURRENT_GAUGE_KEY,
+        doRegisterInternal(REGISTERED_TASK_CURRENT_GAUGE_KEY,
                 repository -> repository.getAllRegisteredTaskIds().size(),
                 "List<String> getAllRegisteredTaskIds()",
                 "Real-time total quantity of all currently valid registered cron tasks");
 
         // Register gauge metrics for the real-time remaining total count of all registered limited run count
         // cron tasks in the current repository...
-        doRegisterInternal(RepositoryTagConstants.REGISTERED_RUN_TIMES_TASK_CURRENT_GAUGE_KEY,
+        doRegisterInternal(REGISTERED_RUN_TIMES_TASK_CURRENT_GAUGE_KEY,
                 CronTaskRepository::getRemainingLimitedRunTimesTaskCount,
                 "long getRemainingLimitedRunTimesTaskCount()",
                 "Real-time total of all valid registered cron tasks with specified run times");
 
         // Register gauge metric for the count of currently executing cron tasks...
-        doRegisterInternal(RepositoryTagConstants.RUNNING_TASK_GAUGE_KEY,
+        doRegisterInternal(RUNNING_TASK_GAUGE_KEY,
                 repository -> repository.getAllRunningTaskIds().size(),
                 "List<String> getAllRunningTaskIds()",
                 "Real-time total number of currently running cron tasks");
 
         // Register gauge metric for the real-time number of currently valid registered cron listeners...
-        doRegisterInternal(RepositoryTagConstants.REGISTERED_TASK_LISTENER_CURRENT_GAUGE_KEY,
+        doRegisterInternal(REGISTERED_TASK_LISTENER_CURRENT_GAUGE_KEY,
                 CronListenerRepository::getListenerSize,
                 "long getListenerSize()",
                 "Real-time total quantity of all currently valid registered cron listeners");
@@ -122,8 +124,8 @@ public class RepositoryGaugeIndicatorRegistrant {
     private void doRegisterInternal(String name, ToDoubleFunction<CronTaskRepository> f, String methodSignature,
                                     String description) {
 
-        Tags tags = Tags.of(RepositoryTagConstants.MODULE_TAG_KEY, cronTaskRepository.getName(),
-                RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY, methodSignature);
+        Tags tags = Tags.of(MODULE_TAG_KEY, cronTaskRepository.getName(),
+                METHOD_SIGNATURE_TAG_KEY, methodSignature);
 
         Gauge.builder(name, cronTaskRepository, f)
                 .tags(SystemPropertiesTagUtils.mergResolvedSystemTags(tags, expressionResolver))
