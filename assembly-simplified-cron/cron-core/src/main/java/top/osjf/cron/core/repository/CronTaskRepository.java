@@ -256,4 +256,57 @@ public interface CronTaskRepository extends Repository, RunTimesRegistrarReposit
      */
     @Nullable
     IDGenerator getIDGenerator();
+
+    /**
+     * Create a long-task monitoring executor for observability of asynchronous scheduled tasks.
+     * <p>
+     * Implemented based on Micrometer {@link io.micrometer.core.instrument.LongTaskTimer}, it is used to
+     * count the current concurrent number of running tasks and the blocking duration of tasks.It can
+     * effectively discover online risks such as duplicate concurrent execution of scheduled tasks, thread
+     * deadlock, IO blocking and thread hang, and task backlog.
+     * <p>
+     * Cooperated with ordinary Timer metrics, it can realize full-link observability including running
+     * concurrency monitoring, execution duration statistics and exception tracking.
+     *
+     * @param description the description of metric, used to display business meaning of scheduled task
+     *                    metric on monitoring platform, can be null
+     * @param tags {@link io.micrometer.core.instrument.Tags the variable-length array of static low-cardinality tags.}
+     * @return {@code LongTimedExecutor} Long-task monitor executor. Invoke {@code start()} before business logic
+     * execution, and {@code stop()} must be called after task finished (whether succeeded or failed) to
+     * terminate timing and report metrics.
+     * @since 3.0.2
+     * @see LongTimedExecutor
+     */
+    LongTimedExecutor longTimed(@Nullable String description, String... tags);
+
+    /**
+     * Executor interface for long-task metrics monitoring.
+     * <p>
+     * Encapsulates start and stop operations for Micrometer {@link io.micrometer.core.instrument.LongTaskTimer},
+     * designed for runtime observability of asynchronous scheduled long-running tasks.
+     * <p>
+     * Usage Specification:
+     * <ul>
+     * <li>1.Call {@link #start()} right before the execution of task business logic to start timing and register
+     * running task instance.</li>
+     * <li>2.Invoke {@link #stop()} in finally block no matter the task succeeds or throws exceptions, to decrease
+     * active task counter.</li>
+     * <li>3.This interface only monitors runtime concurrency and blocking duration.</li>
+     * </ul>
+     */
+    interface LongTimedExecutor {
+
+        /**
+         * Start timing for current long-running task, register task instance to metric system and increment
+         * active task counter.
+         */
+        void start();
+
+        /**
+         * Terminate task timing and unregister running task, decrement active task counter.
+         * This method must be guaranteed to execute, otherwise active task metrics will be permanently accumulated
+         * and cause monitoring data distortion.
+         */
+        void stop();
+    }
 }
