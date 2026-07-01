@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.osjf.commons.lang.NotNull;
 import top.osjf.commons.util.Assert;
+import top.osjf.commons.util.StreamUtils;
 import top.osjf.commons.util.StringUtils;
 import top.osjf.cron.datasource.driven.scheduled.ResolvedRunnablePostProcessor;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
@@ -241,7 +242,8 @@ public class LocalServerlessResolvedRunnablePostProcessor
                                 taskElement.getId(), taskElement.getTaskName(), taskParameter, applicationStartupCommand);
                     }
                     else {
-                        String errorOutput = copyToString(process.getErrorStream());
+                        String errorOutput
+                                = StreamUtils.copyToString(process.getErrorStream(), StandardCharsets.UTF_8);
                         LOGGER.error("Failed to execute task function [{} - {}] && parameter [{}] && command [{}], error message [{}]",
                                 taskElement.getId(), taskElement.getTaskName(), taskParameter,
                                 applicationStartupCommand, errorOutput);
@@ -311,29 +313,6 @@ public class LocalServerlessResolvedRunnablePostProcessor
             shellCommands.add("-c");
             shellCommands.add(String.join(" && ", commands));
             return shellCommands;
-        }
-
-        /**
-         * Copy the contents of the given InputStream into a String.
-         * <p>Leaves the stream open when done.
-         *
-         * @param in the InputStream to copy from (may be {@code null} or empty)
-         * @return the String that has been copied to (possibly empty)
-         * @throws IOException in case of I/O errors
-         */
-        private static String copyToString(InputStream in) throws IOException {
-            if (in == null) {
-                return "";
-            }
-
-            StringBuilder out = new StringBuilder(4096);
-            InputStreamReader reader = new InputStreamReader(in, StandardCharsets.UTF_8);
-            char[] buffer = new char[4096];
-            int charsRead;
-            while ((charsRead = reader.read(buffer)) != -1) {
-                out.append(buffer, 0, charsRead);
-            }
-            return out.toString();
         }
     }
 }
