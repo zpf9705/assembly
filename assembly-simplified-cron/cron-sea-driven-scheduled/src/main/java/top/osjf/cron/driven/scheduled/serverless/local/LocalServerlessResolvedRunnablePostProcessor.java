@@ -24,10 +24,7 @@ import top.osjf.commons.util.Assert;
 import top.osjf.commons.util.StringUtils;
 import top.osjf.cron.datasource.driven.scheduled.ResolvedRunnablePostProcessor;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
-import top.osjf.cron.driven.scheduled.serverless.DefaultTaskParameterRegistry;
-import top.osjf.cron.driven.scheduled.serverless.Parameter;
-import top.osjf.cron.driven.scheduled.serverless.ParameterHelp;
-import top.osjf.cron.driven.scheduled.serverless.TaskParameter;
+import top.osjf.cron.driven.scheduled.serverless.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -53,7 +50,7 @@ import java.util.concurrent.TimeUnit;
  * @since 3.0.2
  */
 public class LocalServerlessResolvedRunnablePostProcessor
-        extends DefaultTaskParameterRegistry implements ResolvedRunnablePostProcessor {
+        extends AbstractTaskParameterRegistry implements ResolvedRunnablePostProcessor {
 
 
     /** Mapping of task unique custom ID {@link TaskElement#getId()} and the specific function jar package.*/
@@ -201,17 +198,17 @@ public class LocalServerlessResolvedRunnablePostProcessor
 
         private final TaskParameter taskParameter;
 
-        private final DefaultTaskParameterRegistry defaultTaskParameterRegistry;
+        private final AbstractTaskParameterRegistry parameterRegistry;
 
         public LocalServerlessRunnable(Runnable resolvedRunnable, TaskElement taskElement, File functionJarFile,
                                        Timeout processTimeout, TaskParameter taskParameter,
-                                       DefaultTaskParameterRegistry defaultTaskParameterRegistry) {
+                                       AbstractTaskParameterRegistry parameterRegistry) {
             this.resolvedRunnable = resolvedRunnable;
             this.taskElement = taskElement;
             this.functionJarFile = functionJarFile;
             this.processTimeout = processTimeout;
             this.taskParameter = taskParameter;
-            this.defaultTaskParameterRegistry = defaultTaskParameterRegistry;
+            this.parameterRegistry = parameterRegistry;
         }
 
         @Override
@@ -219,8 +216,8 @@ public class LocalServerlessResolvedRunnablePostProcessor
 
             // Local parameters are prioritized for startup execution.
             TaskParameter modTaskParameter =
-                    defaultTaskParameterRegistry.getLocalTaskParameter() != null ?
-                            defaultTaskParameterRegistry.getLocalTaskParameter() : taskParameter;
+                    parameterRegistry.getLocalTaskParameter() != null ?
+                            parameterRegistry.getLocalTaskParameter() : taskParameter;
 
             // After disabling the function service, directly call the local task to run.
             if (modTaskParameter instanceof DisabledLocalServerlessTaskParameter) {
@@ -267,8 +264,8 @@ public class LocalServerlessResolvedRunnablePostProcessor
             }
             finally {
                 // Clear local parameters...
-                if (defaultTaskParameterRegistry.getLocalTaskParameter() != null) {
-                    defaultTaskParameterRegistry.setLocalTaskParameter(null);
+                if (parameterRegistry.getLocalTaskParameter() != null) {
+                    parameterRegistry.setLocalTaskParameter(null);
                 }
             }
         }

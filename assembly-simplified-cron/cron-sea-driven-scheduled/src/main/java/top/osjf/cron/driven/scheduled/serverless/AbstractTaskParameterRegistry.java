@@ -24,15 +24,15 @@ import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * The default {@link TaskParameter} registration abstract class provides a registration
- * mapping between {@link TaskParameter} and the ID. At runtime, relevant parameters are
- * obtained by default from {@link #LOCAL_PARAM}, and specific dynamic parameters can be
- * dynamically set to {@link TaskParameter} and prioritized for use.
+ * The abstract {@link TaskParameter} registration class provides a registration mapping
+ * between {@link TaskParameter} and the ID. At runtime, relevant parameters are obtained
+ * by default from {@link #LOCAL_PARAM}, and specific dynamic parameters can be dynamically
+ * set to {@link TaskParameter} and prioritized for use.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
  */
-public abstract class DefaultTaskParameterRegistry {
+public abstract class AbstractTaskParameterRegistry {
 
     private static final ThreadLocal<TaskParameter> LOCAL_PARAM = new ThreadLocal<>();
 
