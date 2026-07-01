@@ -44,7 +44,7 @@ public abstract class AbstractCronListenerRepository
     /**
      * {@inheritDoc}
      */
-    @Counted(value = RepositoryTagConstants.ADD_LISTENER_TAG_KEY,
+    @Counted(value = RepositoryTagConstants.ADD_LISTENER_COUNTER_KEY,
             extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
                     "addListener(CronListener listener)"},
             description = "Counts invocation times of adding a cron listener")
@@ -57,7 +57,7 @@ public abstract class AbstractCronListenerRepository
     /**
      * {@inheritDoc}
      */
-    @Counted(value = RepositoryTagConstants.ADD_LISTENER_TAG_KEY,
+    @Counted(value = RepositoryTagConstants.ADD_LISTENER_COUNTER_KEY,
             extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
                     "addFirstListener(CronListener listener)"},
             description = "Counts invocation times of adding a cron listener")
@@ -70,7 +70,7 @@ public abstract class AbstractCronListenerRepository
     /**
      * {@inheritDoc}
      */
-    @Counted(value = RepositoryTagConstants.ADD_LISTENER_TAG_KEY,
+    @Counted(value = RepositoryTagConstants.ADD_LISTENER_COUNTER_KEY,
             extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
                     "addLastListener(CronListener listener)"},
             description = "Counts invocation times of adding a cron listener")
@@ -91,7 +91,7 @@ public abstract class AbstractCronListenerRepository
     /**
      * {@inheritDoc}
      */
-    @Counted(value = RepositoryTagConstants.REMOVE_LISTENER_TAG_KEY,
+    @Counted(value = RepositoryTagConstants.REMOVE_LISTENER_COUNTER_KEY,
             extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
                     "removeListener(CronListener listener)"},
             description = "Counts invocation times of removing a cron listener")
@@ -104,7 +104,7 @@ public abstract class AbstractCronListenerRepository
     /**
      * {@inheritDoc}
      */
-    @Counted(value = RepositoryTagConstants.REMOVE_LISTENER_TAG_KEY,
+    @Counted(value = RepositoryTagConstants.REMOVE_LISTENER_COUNTER_KEY,
             extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
                     "removeListener(String listenerName)"},
             description = "Counts invocation times of removing a cron listener")
