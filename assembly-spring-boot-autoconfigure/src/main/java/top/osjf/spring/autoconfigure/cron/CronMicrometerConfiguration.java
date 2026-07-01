@@ -57,8 +57,7 @@ class CronMicrometerConfiguration {
                                                                                   ExpressionResolver expressionResolver)
     {
         return registry -> {
-            MeterRegistryDelegation.initMeterRegistry(registry);
-            MeterRegistryDelegation.initExpressionResolver(expressionResolver);
+            MeterRegistryDelegation.initProperties(registry, expressionResolver);
             new RepositoryGaugeIndicatorRegistrant(registry, cronTaskRepository, expressionResolver)
                     .doRegister();
         };
