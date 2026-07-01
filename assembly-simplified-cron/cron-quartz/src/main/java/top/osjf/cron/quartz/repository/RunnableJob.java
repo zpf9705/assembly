@@ -24,6 +24,8 @@ import top.osjf.commons.util.Assert;
 import top.osjf.cron.core.listener.RunningThreadHolder;
 import top.osjf.cron.core.repository.CronTaskRepository;
 
+import static top.osjf.cron.core.micrometer.RepositoryMicrometerConstants.WRAPPER_RUNNABLE_TYPE_TAG_KEY;
+
 /**
  * {@code RunnableJob} is an implementation class that encapsulates a
  * single {@link Runnable} execution of {@link Job}/{@link InterruptableJob}.
@@ -76,7 +78,10 @@ public class RunnableJob implements InterruptableJob {
         if (!(repositoryObj instanceof QuartzCronTaskRepository)) {
             return null;
         }
-        return ((QuartzCronTaskRepository) repositoryObj).longTimed(null);
+        return ((QuartzCronTaskRepository) repositoryObj).longTimed
+                (String.format("Tasks whose scheduling capability is provided by the {%s} resource client",
+                        ((QuartzCronTaskRepository) repositoryObj).getName()),
+                        WRAPPER_RUNNABLE_TYPE_TAG_KEY, RunnableJob.class.getName());
     }
 
     /**
