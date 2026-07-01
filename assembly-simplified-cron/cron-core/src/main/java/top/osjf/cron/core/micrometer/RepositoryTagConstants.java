@@ -25,6 +25,8 @@ import top.osjf.cron.core.repository.CronTaskRepository;
  */
 public interface RepositoryTagConstants {
 
+    /* ====================================== Sign ============================================= */
+
     /**
      * Metric tag key used to identify implementation class of {@link CronTaskRepository}.
      */
@@ -35,59 +37,60 @@ public interface RepositoryTagConstants {
      */
     String METHOD_SIGNATURE_TAG_KEY = "method.signature";
 
-    /**
-     * Metric tag key used to identify cron task registration operation.
-     */
-    String REGISTER_TAG_KEY = "cron.task.register";
+    /* ====================================== Counter ========================================== */
 
     /**
-     * Metric tag key for identifying the timeout duration of cron task registration operations.
+     * Metric counter key used to identify cron task registration operation.
      */
-    String REGISTER_TIMEOUT_TAG_KEY = "cron.task.timeout.register";
+    String REGISTER_COUNTER_KEY = "cron.task.register";
 
     /**
-     * Metric tag key used to count the total number of cron task execution timeouts.
+     * Metric counter key for identifying the timeout duration of cron task registration operations.
      */
-    String TIMEOUT_TAG_KEY = "cron.task.timeout";
+    String REGISTER_TIMEOUT_COUNTER_KEY = "cron.task.timeout.register";
 
     /**
-     * Metric tag key used to identify cron tasks executed with a specified number of run times.
+     * Metric counter key used to count the total number of cron task execution timeouts.
      */
-    String REGISTER_RUNTIMES_TAG_KEY = "cron.task.runtimes.register";
+    String TIMEOUT_COUNTER_KEY = "cron.task.timeout";
 
     /**
-     * Metric tag key for identifying cron tasks configured with both execution run limit and timeout
+     * Metric counter key used to identify cron tasks executed with a specified number of run times.
+     */
+    String REGISTER_RUNTIMES_COUNTER_KEY = "cron.task.runtimes.register";
+
+    /**
+     * Metric counter key for identifying cron tasks configured with both execution run limit and timeout
      * rule during registration.
      */
-    String REGISTER_TIMEOUT_RUNTIMES_TAG_KEY = "cron.task.timeout.runtimes.register";
+    String REGISTER_TIMEOUT_RUNTIMES_COUNTER_KEY = "cron.task.timeout.runtimes.register";
 
     /**
-     * Metric tag key for cron task update operation.
+     * Metric counter key for cron task update operation.
      */
-    String UPDATE_TAG_KEY = "cron.task.update";
+    String UPDATE_COUNTER_KEY = "cron.task.update";
 
     /**
-     * Metric tag key for cron task remove operation.
+     * Metric counter key for cron task remove operation.
      */
-    String REMOVE_TAG_KEY = "cron.task.remove";
+    String REMOVE_COUNTER_KEY = "cron.task.remove";
 
     /**
-     * Metric tag key for cron task terminate operation.
+     * Metric counter key for cron task terminate operation.
      */
-    String TERMINATE_TAG_KEY = "cron.task.terminate";
+    String TERMINATE_COUNTER_KEY = "cron.task.terminate";
 
     /**
-     * Metric tag key for cron listener add operation.
+     * Metric counter key for cron listener add operation.
      */
-    String ADD_LISTENER_TAG_KEY = "cron.task.listener.add";
+    String ADD_LISTENER_COUNTER_KEY = "cron.task.listener.add";
 
     /**
-     * Metric tag key for cron listener remove operation.
+     * Metric counter key for cron listener remove operation.
      */
-    String REMOVE_LISTENER_TAG_KEY = "cron.task.listener.remove";
+    String REMOVE_LISTENER_COUNTER_KEY = "cron.task.listener.remove";
 
-
-    /* ====================================== current ========================================== */
+    /* ====================================== Gauge ========================================== */
 
     /**
      * Metric gauge key for the real-time number of currently valid registered cron tasks.
@@ -102,10 +105,17 @@ public interface RepositoryTagConstants {
     /**
      * Metric gauge key for real-time count of currently running cron tasks.
      */
-    String RUNNING_TASK_COUNT_GAUGE_KEY = "cron.task.running";
+    String RUNNING_TASK_GAUGE_KEY = "cron.task.running";
 
     /**
      * Metric gauge key for the real-time number of currently valid registered cron listeners.
      */
     String REGISTERED_TASK_LISTENER_CURRENT_GAUGE_KEY = "cron.task.listener.current";
+
+    /* ====================================== Timer ============================================= */
+
+    /**
+     * Metric timer key for cron task body execution.
+     */
+    String TASK_BODY_EXECUTION_TIMER_KEY = "cron.task.body.execution";
 }
