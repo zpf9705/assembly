@@ -17,14 +17,14 @@
 
 package top.osjf.cron.datasource.driven.scheduled;
 
-import top.osjf.cron.core.exception.CronInternalException;
+import top.osjf.cron.core.exception.CronFrameworkException;
 
 /**
  * Indicate errors thrown during the data source configuration task.
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
-public class DataSourceDrivenException extends CronInternalException {
+public class DataSourceDrivenException extends CronFrameworkException {
 
     private static final long serialVersionUID = -642360262042974699L;
 
