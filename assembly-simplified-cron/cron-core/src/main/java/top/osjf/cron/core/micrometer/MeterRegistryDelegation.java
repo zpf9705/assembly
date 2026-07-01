@@ -23,10 +23,12 @@ import io.micrometer.core.instrument.search.MeterNotFoundException;
 import io.micrometer.core.instrument.search.RequiredSearch;
 import io.micrometer.core.instrument.search.Search;
 import top.osjf.commons.lang.Nullable;
+import top.osjf.commons.util.StringUtils;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.ToDoubleFunction;
 
@@ -41,29 +43,73 @@ import java.util.function.ToDoubleFunction;
  */
 public abstract class MeterRegistryDelegation {
 
-    public static MeterRegistry meterRegistry = Metrics.globalRegistry;
-    public static ExpressionResolver expressionResolver;
-    public static Tags systemTags;
-
-    static {
-        expressionResolver = new SystemPropertyExpressionResolver();
-        systemTags = SystemPropertiesTagUtils.getResolvedSystemTags(expressionResolver);
-    }
+    private static MeterRegistry meterRegistry = Metrics.globalRegistry;
+    private static Tags systemTags
+            = SystemPropertiesTagUtils.getResolvedSystemTags(new SystemPropertyExpressionResolver());
 
     /**
-     * Initialize the global {@code MeterRegistry} instance and replace the default global registry.
-     * @param meterRegistry the custom indicator registry instance.
+     * Initialization method for global indicator related attributes.
+     * @param meterRegistry   the global metric registry instance.
+     * @param expressionResolver the configuration expression resolver, used to parse placeholders
+     *                           and extract system tags.
      */
-    public static void initMeterRegistry(MeterRegistry meterRegistry) {
+    public static void initProperties(MeterRegistry meterRegistry, ExpressionResolver expressionResolver) {
         MeterRegistryDelegation.meterRegistry = meterRegistry;
+        MeterRegistryDelegation.systemTags = SystemPropertiesTagUtils.getResolvedSystemTags(expressionResolver);
     }
 
     /**
-     * Given an {@code ExpressionResolver} instance to initialize {@link #systemTags}.
-     * @param expressionResolver the custom {@code ExpressionResolver} instance.
+     * Create and register a long task timer to monitor the concurrent count and running duration
+     * of currently executing tasks in real time.
+     * <p>
+     * Suitable for long-running scenarios such as scheduled tasks and batch processing to detect
+     * task blocking, duplicate execution and thread pool backpressure in a timely manner.
+     *
+     * @param metricName  the unique metric name
+     * @param description the metric description; ignored if blank
+     * @param tags        the variable business tags in key-value pairs
+     * @return the registered {@code LongTaskTimer} instance.
      */
-    public static void initExpressionResolver(ExpressionResolver expressionResolver) {
-        systemTags = SystemPropertiesTagUtils.getResolvedSystemTags(expressionResolver);
+    public static Optional<LongTaskTimer> longTaskTimer(String metricName,
+                                                        @Nullable String description, String... tags) {
+        try {
+            return Optional.of(LongTaskTimer.builder(metricName)
+                    .description(StringUtils.isNotBlank(description) ? description : null)
+                    .tags(systemTags.and(tags))
+                    .register(meterRegistry));
+        }
+        catch (Exception ex) {
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * Safely start the {@code LongTaskTimer} sample of to avoid disrupting business flow caused by
+     * metric tracking exceptions.
+     * @param longTaskTimer the nullable {@code LongTaskTimer} instance to start.
+     */
+    public static Optional<LongTaskTimer.Sample> startLongTaskTimer(@Nullable LongTaskTimer longTaskTimer) {
+        if (longTaskTimer == null) return Optional.empty();
+        try {
+            return Optional.of(longTaskTimer.start());
+        }
+        catch (Exception ex) {
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * Safely stop the sample of {@code LongTaskTimer} to avoid disrupting business flow caused by
+     * metric tracking exceptions.
+     * @param sample the {@code Sample} instance of {@code LongTaskTimer}.
+     */
+    public static void stopSample(LongTaskTimer.Sample sample) {
+        try {
+            sample.stop();
+        }
+        catch (Exception ex) {
+            // ignoring on purpose
+        }
     }
 
     /**
