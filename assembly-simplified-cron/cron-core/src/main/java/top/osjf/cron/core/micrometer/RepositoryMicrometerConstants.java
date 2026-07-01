@@ -37,6 +37,11 @@ public interface RepositoryMicrometerConstants {
      */
     String METHOD_SIGNATURE_TAG_KEY = "method.signature";
 
+    /**
+     * Metric tag key for marking the type of wrapped runnable task.
+     */
+    String WRAPPER_RUNNABLE_TYPE_TAG_KEY = "wrapper.runnable.type";
+
     /* ====================================== Counter ========================================== */
 
     /**
