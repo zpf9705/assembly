@@ -87,6 +87,7 @@ public abstract class MeterRegistryDelegation {
      * Safely start the {@code LongTaskTimer} sample of to avoid disrupting business flow caused by
      * metric tracking exceptions.
      * @param longTaskTimer the nullable {@code LongTaskTimer} instance to start.
+     * @return the {@link Optional LongTaskTimer.Sample} instance.
      */
     public static Optional<LongTaskTimer.Sample> startLongTaskTimer(@Nullable LongTaskTimer longTaskTimer) {
         if (longTaskTimer == null) return Optional.empty();
