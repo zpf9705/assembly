@@ -470,7 +470,7 @@ public abstract class AbstractDatasourceDrivenScheduled
 
         for (TaskElement element : datasourceTaskElementsOperation.getDatasourceTaskElements()) {
             String taskId = element.getTaskId();
-            if (!StringUtils.isBlank(taskId)) {
+            if (StringUtils.isNotBlank(taskId)) {
                 cronTaskRepository.remove(taskId);
             }
         }
