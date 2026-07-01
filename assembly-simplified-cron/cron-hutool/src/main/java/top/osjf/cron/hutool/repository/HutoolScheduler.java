@@ -100,7 +100,7 @@ class HutoolScheduler extends Scheduler {
         @Override
         public void execute() {
             CronTaskRepository.LongTimedExecutor executor = repository.longTimed(null);
-            repository.start();
+            executor.start();
             try {
                 super.execute();
             }
