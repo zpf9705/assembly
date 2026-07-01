@@ -105,7 +105,7 @@ public class RepositoryGaugeIndicatorRegistrant {
                 "Real-time total of all valid registered cron tasks with specified run times");
 
         // Register gauge metric for the count of currently executing cron tasks...
-        doRegisterInternal(RepositoryTagConstants.RUNNING_TASK_COUNT_GAUGE_KEY,
+        doRegisterInternal(RepositoryTagConstants.RUNNING_TASK_GAUGE_KEY,
                 repository -> repository.getAllRunningTaskIds().size(),
                 "List<String> getAllRunningTaskIds()",
                 "Real-time total number of currently running cron tasks");
