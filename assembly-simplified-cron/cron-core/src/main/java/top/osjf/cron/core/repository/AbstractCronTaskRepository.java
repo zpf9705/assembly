@@ -22,6 +22,7 @@ import io.micrometer.core.instrument.LongTaskTimer;
 import top.osjf.commons.lang.NotNull;
 import top.osjf.commons.lang.Nullable;
 import top.osjf.commons.util.Assert;
+import top.osjf.commons.util.compat.ArrayUtils;
 import top.osjf.cron.core.exception.*;
 import top.osjf.cron.core.micrometer.MeterRegistryDelegation;
 import top.osjf.cron.core.micrometer.SystemPropertiesTags;
@@ -509,7 +510,9 @@ public abstract class AbstractCronTaskRepository
     public LongTimedExecutor longTimed(@Nullable String description, String... tags) {
 
         Optional<LongTaskTimer> timer
-                = MeterRegistryDelegation.longTaskTimer(TASK_BODY_EXECUTION_TIMER_KEY, description, tags);
+                = MeterRegistryDelegation.longTaskTimer(TASK_BODY_EXECUTION_TIMER_KEY, description,
+                ArrayUtils.addAll(tags, MODULE_TAG_KEY, getName()));
+
         return new LongTimedExecutor() {
 
             @Nullable private LongTaskTimer.Sample sample;
