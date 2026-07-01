@@ -39,6 +39,11 @@ public interface JobConstants {
     String ID_PROPERTY = "ID_PROPERTY";
 
     /**
+     * The property name of self {@link QuartzCronTaskRepository}.
+     */
+    String SELF_REPOSITORY = "SELF_REPOSITORY";
+
+    /**
      * The default group for scheduling entities, with the value "DEFAULT".
      */
     String DEFAULT_GROUP = Key.DEFAULT_GROUP;

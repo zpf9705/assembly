@@ -238,6 +238,7 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
         JobDetail jobDetail = QuartzJobBuilder.newJob(RunnableJob.class, this)
                 .withIdentity(jobKey.getName(), jobKey.getGroup()).build();
         JobDataMap jobDataMap = jobDetail.getJobDataMap();
+        jobDataMap.put(JobConstants.SELF_REPOSITORY, this);
         jobDataMap.put(JobConstants.RUNNABLE_PROPERTY, runnable);
         IDGenerator idGenerator = getIDGenerator();
         String id = idGenerator != null ? idGenerator.generate() : QuartzUtils.jobKeyAsId(jobKey);

@@ -19,8 +19,10 @@ package top.osjf.cron.quartz.repository;
 
 import org.quartz.*;
 import top.osjf.commons.lang.NotNull;
+import top.osjf.commons.lang.Nullable;
 import top.osjf.commons.util.Assert;
 import top.osjf.cron.core.listener.RunningThreadHolder;
+import top.osjf.cron.core.repository.CronTaskRepository;
 
 /**
  * {@code RunnableJob} is an implementation class that encapsulates a
@@ -55,12 +57,26 @@ public class RunnableJob implements InterruptableJob {
     @Override
     public void execute(JobExecutionContext context) {
         runningThreadHolder.addCurrentRunningThread(id);
+        CronTaskRepository.LongTimedExecutor executor = longTimed(context);
+        if (executor != null) executor.start();
         try {
             runnable.run();
         }
         finally {
             runningThreadHolder.removeCurrentRunningThread(id);
+            if (executor != null) executor.stop();
         }
+    }
+
+    @Nullable
+    private CronTaskRepository.LongTimedExecutor longTimed(JobExecutionContext context) {
+        JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
+        // Verify here whether the stored resource class is its own.
+        Object repositoryObj = jobDataMap.get(JobConstants.SELF_REPOSITORY);
+        if (!(repositoryObj instanceof QuartzCronTaskRepository)) {
+            return null;
+        }
+        return ((QuartzCronTaskRepository) repositoryObj).longTimed(null);
     }
 
     /**
