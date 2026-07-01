@@ -20,6 +20,7 @@ package top.osjf.cron.cron4j.repository;
 import it.sauronsoftware.cron4j.InvalidPatternException;
 import it.sauronsoftware.cron4j.Task;
 import it.sauronsoftware.cron4j.TaskExecutionContext;
+import top.osjf.cron.core.repository.CronTaskRepository;
 
 /**
  * {@code Runnable} type controllable scheduled task wrapper implementation class.
@@ -39,16 +40,21 @@ class ControllableRunnableTask extends Task {
      */
     private final Runnable runnable;
 
+    private final CronTaskRepository repository;
+
     /**
      * Builds the task.
      *
      * @param runnable
      *            The wrapped Runnable object.
+     * @param repository
+     *            The repository object.
      * @throws InvalidPatternException
      *             If the supplied pattern is not valid.
      */
-    public ControllableRunnableTask(Runnable runnable) throws InvalidPatternException {
+    public ControllableRunnableTask(Runnable runnable, CronTaskRepository repository) throws InvalidPatternException {
         this.runnable = runnable;
+        this.repository = repository;
     }
 
     /**
@@ -73,7 +79,16 @@ class ControllableRunnableTask extends Task {
      * {@link Runnable#run()} method on the wrapped object.
      */
     public void execute(TaskExecutionContext context) {
-        runnable.run();
+
+        CronTaskRepository.LongTimedExecutor executor = repository.longTimed(null);
+        executor.start();
+        try {
+            runnable.run();
+        }
+        finally {
+            executor.stop();
+        }
+
     }
 
     /**

@@ -236,7 +236,7 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
     @Override
     @NotNull
     public String registerInternal(@NotNull String expression, @NotNull Runnable runnable) {
-        return getInitializedScheduler().schedule(expression, new ControllableRunnableTask(runnable));
+        return getInitializedScheduler().schedule(expression, new ControllableRunnableTask(runnable, this));
     }
 
     /**
