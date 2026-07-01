@@ -77,8 +77,8 @@ public abstract class ListenerExecuteSupport implements Runnable {
             // Start collecting long task metrics...
             Optional<LongTaskTimer.Sample> sample
                     = MeterRegistryDelegation.startLongTaskTimer(timer.orElse(null));
-            // Execute the main logic of the runnable
             try {
+                // Execute the main logic of the runnable
                 getRaw().run();
             }
             finally {
