@@ -23,7 +23,8 @@ import top.osjf.cron.core.micrometer.MeterRegistryDelegation;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static top.osjf.cron.core.micrometer.RepositoryTagConstants.*;
+import static top.osjf.cron.core.micrometer.RepositoryMicrometerConstants.MODULE_TAG_KEY;
+import static top.osjf.cron.core.micrometer.RepositoryMicrometerConstants.TASK_BODY_EXECUTION_TIMER_KEY;
 
 /**
  * Abstract template support class for orchestrating cron task listener lifecycle execution.
