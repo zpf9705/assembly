@@ -18,10 +18,12 @@
 package top.osjf.cron.core.repository;
 
 import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.instrument.LongTaskTimer;
 import top.osjf.commons.lang.NotNull;
 import top.osjf.commons.lang.Nullable;
+import top.osjf.commons.util.Assert;
 import top.osjf.cron.core.exception.*;
-import top.osjf.cron.core.micrometer.RepositoryTagConstants;
+import top.osjf.cron.core.micrometer.MeterRegistryDelegation;
 import top.osjf.cron.core.micrometer.SystemPropertiesTags;
 
 import java.lang.reflect.Method;
@@ -29,6 +31,8 @@ import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+
+import static top.osjf.cron.core.micrometer.RepositoryMicrometerConstants.*;
 
 /**
  * This abstract class encapsulates the unified public logic of all cron task repository
@@ -69,8 +73,8 @@ public abstract class AbstractCronTaskRepository
      * {@inheritDoc}
      */
     @Override
-    @Counted(value = RepositoryTagConstants.REGISTER_COUNTER_KEY,
-            extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
+    @Counted(value = REGISTER_COUNTER_KEY,
+            extraTags = {METHOD_SIGNATURE_TAG_KEY,
                     "register(String expression, Runnable runnable)"},
             description = "Counts the number of cron task registration invocations")
     @SystemPropertiesTags
@@ -91,8 +95,8 @@ public abstract class AbstractCronTaskRepository
      * {@inheritDoc}
      */
     @Override
-    @Counted(value = RepositoryTagConstants.REGISTER_COUNTER_KEY,
-            extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
+    @Counted(value = REGISTER_COUNTER_KEY,
+            extraTags = {METHOD_SIGNATURE_TAG_KEY,
                     "register(String expression, CronMethodRunnable runnable)"},
             description = "Counts the number of cron task registration invocations")
     @SystemPropertiesTags
@@ -113,8 +117,8 @@ public abstract class AbstractCronTaskRepository
      * {@inheritDoc}
      */
     @Override
-    @Counted(value = RepositoryTagConstants.REGISTER_COUNTER_KEY,
-            extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
+    @Counted(value = REGISTER_COUNTER_KEY,
+            extraTags = {METHOD_SIGNATURE_TAG_KEY,
                     "register(String expression, RunnableTaskBody body)"},
             description = "Counts the number of cron task registration invocations")
     @SystemPropertiesTags
@@ -135,8 +139,8 @@ public abstract class AbstractCronTaskRepository
      * {@inheritDoc}
      */
     @Override
-    @Counted(value = RepositoryTagConstants.REGISTER_COUNTER_KEY,
-            extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
+    @Counted(value = REGISTER_COUNTER_KEY,
+            extraTags = {METHOD_SIGNATURE_TAG_KEY,
                     "register(String expression, TaskBody body)"},
             description = "Counts the number of cron task registration invocations")
     @SystemPropertiesTags
@@ -160,8 +164,8 @@ public abstract class AbstractCronTaskRepository
      * {@inheritDoc}
      */
     @Override
-    @Counted(value = RepositoryTagConstants.REGISTER_COUNTER_KEY,
-            extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY, "register(CronTask task)"},
+    @Counted(value = REGISTER_COUNTER_KEY,
+            extraTags = {METHOD_SIGNATURE_TAG_KEY, "register(CronTask task)"},
             description = "Counts the number of cron task registration invocations")
     @SystemPropertiesTags
     public String register(CronTask task) throws CronInternalException {
@@ -181,8 +185,8 @@ public abstract class AbstractCronTaskRepository
      * {@inheritDoc}
      */
     @Override
-    @Counted(value = RepositoryTagConstants.UPDATE_COUNTER_KEY,
-            extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY, "update(String id, String newExpression)"},
+    @Counted(value = UPDATE_COUNTER_KEY,
+            extraTags = {METHOD_SIGNATURE_TAG_KEY, "update(String id, String newExpression)"},
             description = "Counts the number of cron task update invocations")
     @SystemPropertiesTags
     public void update(String id, String newExpression) throws CronInternalException {
@@ -199,8 +203,8 @@ public abstract class AbstractCronTaskRepository
      * {@inheritDoc}
      */
     @Override
-    @Counted(value = RepositoryTagConstants.REMOVE_COUNTER_KEY,
-            extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY, "remove(String id)"},
+    @Counted(value = REMOVE_COUNTER_KEY,
+            extraTags = {METHOD_SIGNATURE_TAG_KEY, "remove(String id)"},
             description = "Counts the number of cron task remove invocations")
     @SystemPropertiesTags
     public void remove(String id) throws CronInternalException {
@@ -216,8 +220,8 @@ public abstract class AbstractCronTaskRepository
      * {@inheritDoc}
      */
     @Override
-    @Counted(value = RepositoryTagConstants.REMOVE_COUNTER_KEY,
-            extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY, "removeAll()"},
+    @Counted(value = REMOVE_COUNTER_KEY,
+            extraTags = {METHOD_SIGNATURE_TAG_KEY, "removeAll()"},
             description = "Counts the number of cron task remove invocations")
     @SystemPropertiesTags
     public void removeAll() throws CronInternalException {
@@ -234,9 +238,9 @@ public abstract class AbstractCronTaskRepository
      */
     @Override
     @Counted(
-            value = RepositoryTagConstants.TERMINATE_COUNTER_KEY,
+            value = TERMINATE_COUNTER_KEY,
             extraTags = {
-                    RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY, "terminate(String id)"},
+                    METHOD_SIGNATURE_TAG_KEY, "terminate(String id)"},
             description = "Counts the number of cron task terminate invocations"
     )
     @SystemPropertiesTags
@@ -257,9 +261,9 @@ public abstract class AbstractCronTaskRepository
      */
     @Override
     @Counted(
-            value = RepositoryTagConstants.TERMINATE_COUNTER_KEY,
+            value = TERMINATE_COUNTER_KEY,
             extraTags = {
-                    RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY, "terminateAll()"},
+                    METHOD_SIGNATURE_TAG_KEY, "terminateAll()"},
             description = "Counts the number of cron task terminate invocations"
     )
     @SystemPropertiesTags
@@ -496,6 +500,32 @@ public abstract class AbstractCronTaskRepository
     @Nullable
     public IDGenerator getIDGenerator() {
         return idGenerator;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public LongTimedExecutor longTimed(@Nullable String description, String... tags) {
+
+        Optional<LongTaskTimer> timer
+                = MeterRegistryDelegation.longTaskTimer(TASK_BODY_EXECUTION_TIMER_KEY, description, tags);
+        return new LongTimedExecutor() {
+
+            @Nullable private LongTaskTimer.Sample sample;
+
+            @Override
+            public void start() {
+                sample = MeterRegistryDelegation
+                        .startLongTaskTimer(timer.orElse(null)).orElse(null);
+            }
+
+            @Override
+            public void stop() {
+                Assert.state(sample != null, "Start action has not been executed.");
+                MeterRegistryDelegation.stopSample(sample);
+            }
+        };
     }
 
     /**
