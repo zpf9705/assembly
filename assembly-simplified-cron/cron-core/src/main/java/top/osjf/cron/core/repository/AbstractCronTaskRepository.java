@@ -511,6 +511,7 @@ public abstract class AbstractCronTaskRepository
 
         Optional<LongTaskTimer> timer
                 = MeterRegistryDelegation.longTaskTimer(TASK_BODY_EXECUTION_TIMER_KEY, description,
+                // Fixed with the name of the current resource model attached...
                 ArrayUtils.addAll(tags, MODULE_TAG_KEY, getName()));
 
         return new LongTimedExecutor() {
@@ -523,6 +524,9 @@ public abstract class AbstractCronTaskRepository
                         .startLongTaskTimer(timer.orElse(null)).orElse(null);
             }
 
+            /**
+             * @throws IllegalStateException if {@link #start() Start action} has not been executed.
+             */
             @Override
             public void stop() {
                 Assert.state(sample != null, "Start action has not been executed.");
