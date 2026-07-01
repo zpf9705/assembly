@@ -17,7 +17,7 @@
 
 package top.osjf.cron.driven.scheduled.serverless;
 
-import top.osjf.cron.core.exception.CronInternalException;
+import top.osjf.cron.core.exception.CronFrameworkException;
 
 /**
  * Indicate errors that occur during the startup process of the serverless function.
@@ -25,7 +25,7 @@ import top.osjf.cron.core.exception.CronInternalException;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
  */
-public class ServerlessException extends CronInternalException {
+public class ServerlessException extends CronFrameworkException {
     private static final long serialVersionUID = -4058750405000310384L;
 
     /**
