@@ -19,13 +19,14 @@ package top.osjf.cron.core.repository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import top.osjf.commons.util.Assert;
 import top.osjf.commons.lang.Nullable;
+import top.osjf.commons.util.Assert;
 import top.osjf.cron.core.micrometer.MeterRegistryDelegation;
-import top.osjf.cron.core.micrometer.RepositoryTagConstants;
 
 import java.util.UUID;
 import java.util.concurrent.*;
+
+import static top.osjf.cron.core.micrometer.RepositoryMicrometerConstants.TIMEOUT_COUNTER_KEY;
 
 /**
  * Internally using {@link FutureTask} timeout calculation API
@@ -150,7 +151,10 @@ public class TimeoutMonitoringRunnable implements Runnable {
             future.get(timeout.getTimeout(), timeout.getTimeUnit());
         }
         catch (TimeoutException ex) {
-            MeterRegistryDelegation.counter(RepositoryTagConstants.TIMEOUT_COUNTER_KEY).increment();
+            LOGGER.warn("Task {} has exceeded the predefined timeout configuration of {} ms. " +
+                    "The system will trigger the {} fallback policy automatically.", taskId,
+                    timeout.getTimeUnit().toMillis(timeout.getTimeout()), timeout.getPolicy());
+            MeterRegistryDelegation.counter(TIMEOUT_COUNTER_KEY).increment();
             handlerTimeoutPolicy(future);
         }
         catch (Exception ex) {
