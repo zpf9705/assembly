@@ -23,8 +23,7 @@ import top.osjf.cron.core.micrometer.MeterRegistryDelegation;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static top.osjf.cron.core.micrometer.RepositoryMicrometerConstants.MODULE_TAG_KEY;
-import static top.osjf.cron.core.micrometer.RepositoryMicrometerConstants.TASK_BODY_EXECUTION_TIMER_KEY;
+import static top.osjf.cron.core.micrometer.RepositoryMicrometerConstants.*;
 
 /**
  * Abstract template support class for orchestrating cron task listener lifecycle execution.
@@ -68,8 +67,11 @@ public abstract class ListenerExecuteSupport implements Runnable {
     @Override
     public void run() {
         // Basic information for registering long tasks...
+        String name = getListenerContext().getRepositoryContext().getRepository().getName();
         Optional<LongTaskTimer> timer = MeterRegistryDelegation.longTaskTimer(TASK_BODY_EXECUTION_TIMER_KEY,
-                null, MODULE_TAG_KEY, getListenerContext().getRepositoryContext().getRepository().getName());
+                String.format("Tasks whose scheduling capability is provided by the {%s} resource client", name),
+                MODULE_TAG_KEY, name,
+                WRAPPER_RUNNABLE_TYPE_TAG_KEY, getClass().getName());
         // Set the task start marker...
         runningFlag.set(true);
         try {
