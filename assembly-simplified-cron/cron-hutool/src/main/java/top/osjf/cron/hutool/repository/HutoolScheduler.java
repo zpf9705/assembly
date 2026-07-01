@@ -22,6 +22,7 @@ import cn.hutool.cron.TaskExecutor;
 import cn.hutool.cron.TaskExecutorManager;
 import cn.hutool.cron.task.CronTask;
 import top.osjf.commons.lang.Nullable;
+import top.osjf.cron.core.repository.CronTaskRepository;
 
 /**
  * Based on the original {@link Scheduler} extended scheduler, compatible with task
@@ -76,9 +77,36 @@ class HutoolScheduler extends Scheduler {
         public TaskExecutor spawnExecutor(CronTask task) {
             String id = task.getId();
             if (repository.shouldAllowTaskExecute(id)) {
-                return super.spawnExecutor(task);
+                return super.spawnExecutor(new MicrometerCronTask(task, repository));
             }
             return null;
+        }
+    }
+
+    private static class MicrometerCronTask extends CronTask {
+
+        private final HutoolCronTaskRepository repository;
+
+        public MicrometerCronTask(CronTask source, HutoolCronTaskRepository repository) {
+            super(source.getId(), source.getPattern(), source.getRaw());
+            this.repository = repository;
+        }
+
+        /**
+         * {@inheritDoc}
+         *
+         * Enable long task monitoring for scheduled task, release counter after execution.
+         */
+        @Override
+        public void execute() {
+            CronTaskRepository.LongTimedExecutor executor = repository.longTimed(null);
+            repository.start();
+            try {
+                super.execute();
+            }
+            finally {
+                executor.stop();
+            }
         }
     }
 }
