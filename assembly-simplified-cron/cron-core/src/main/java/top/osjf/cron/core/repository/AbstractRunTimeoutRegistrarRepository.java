@@ -18,16 +18,17 @@
 package top.osjf.cron.core.repository;
 
 import io.micrometer.core.annotation.Counted;
+import top.osjf.commons.lang.Nullable;
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
-import top.osjf.commons.lang.Nullable;
 import top.osjf.cron.core.lifecycle.InitializeProperties;
-import top.osjf.cron.core.micrometer.RepositoryTagConstants;
 import top.osjf.cron.core.micrometer.SystemPropertiesTags;
 
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static top.osjf.cron.core.micrometer.RepositoryMicrometerConstants.*;
 
 /**
  * An abstract implementation class of {@link RunTimeoutRegistrarRepository} that adds
@@ -69,8 +70,8 @@ public abstract class AbstractRunTimeoutRegistrarRepository
     /**
      * {@inheritDoc}
      */
-    @Counted(value = RepositoryTagConstants.REGISTER_TIMEOUT_COUNTER_KEY,
-            extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
+    @Counted(value = REGISTER_TIMEOUT_COUNTER_KEY,
+            extraTags = {METHOD_SIGNATURE_TAG_KEY,
                     "register(String expression, Runnable runnable, RunningTimeout timeout)"},
             description = "Counts invocation times of cron task registration with execution timeout configuration")
     @SystemPropertiesTags
@@ -84,8 +85,8 @@ public abstract class AbstractRunTimeoutRegistrarRepository
      * {@inheritDoc}
      */
     @Override
-    @Counted(value = RepositoryTagConstants.REGISTER_TIMEOUT_COUNTER_KEY,
-            extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
+    @Counted(value = REGISTER_TIMEOUT_COUNTER_KEY,
+            extraTags = {METHOD_SIGNATURE_TAG_KEY,
                     "register(String expression, CronMethodRunnable runnable, RunningTimeout timeout)"},
             description = "Counts invocation times of cron task registration with execution timeout configuration")
     @SystemPropertiesTags
@@ -98,8 +99,8 @@ public abstract class AbstractRunTimeoutRegistrarRepository
      * {@inheritDoc}
      */
     @Override
-    @Counted(value = RepositoryTagConstants.REGISTER_TIMEOUT_COUNTER_KEY,
-            extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
+    @Counted(value = REGISTER_TIMEOUT_COUNTER_KEY,
+            extraTags = {METHOD_SIGNATURE_TAG_KEY,
                     "register(String expression, RunnableTaskBody body, RunningTimeout timeout)"},
             description = "Counts invocation times of cron task registration with execution timeout configuration")
     @SystemPropertiesTags
@@ -112,8 +113,8 @@ public abstract class AbstractRunTimeoutRegistrarRepository
      * {@inheritDoc}
      */
     @Override
-    @Counted(value = RepositoryTagConstants.REGISTER_TIMEOUT_COUNTER_KEY,
-            extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
+    @Counted(value = REGISTER_TIMEOUT_COUNTER_KEY,
+            extraTags = {METHOD_SIGNATURE_TAG_KEY,
                     "register(String expression, TaskBody body, RunningTimeout timeout)"},
             description = "Counts invocation times of cron task registration with execution timeout configuration")
     @SystemPropertiesTags
@@ -125,8 +126,8 @@ public abstract class AbstractRunTimeoutRegistrarRepository
      * {@inheritDoc}
      */
     @Override
-    @Counted(value = RepositoryTagConstants.REGISTER_TIMEOUT_COUNTER_KEY,
-            extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
+    @Counted(value = REGISTER_TIMEOUT_COUNTER_KEY,
+            extraTags = {METHOD_SIGNATURE_TAG_KEY,
                     "register(CronTask task, RunningTimeout timeout)"},
             description = "Counts invocation times of cron task registration with execution timeout configuration")
     @SystemPropertiesTags
@@ -138,8 +139,8 @@ public abstract class AbstractRunTimeoutRegistrarRepository
      * {@inheritDoc}
      */
     @Override
-    @Counted(value = RepositoryTagConstants.REGISTER_TIMEOUT_RUNTIMES_COUNTER_KEY,
-            extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
+    @Counted(value = REGISTER_TIMEOUT_RUNTIMES_COUNTER_KEY,
+            extraTags = {METHOD_SIGNATURE_TAG_KEY,
                     "registerRunTimes(String expression, Runnable runnable, int times, RunningTimeout timeout)"},
             description = "Counts invocation times of cron task registration with execution timeout and limited " +
                     "run times configuration")
@@ -153,8 +154,8 @@ public abstract class AbstractRunTimeoutRegistrarRepository
      * {@inheritDoc}
      */
     @Override
-    @Counted(value = RepositoryTagConstants.REGISTER_TIMEOUT_RUNTIMES_COUNTER_KEY,
-            extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
+    @Counted(value = REGISTER_TIMEOUT_RUNTIMES_COUNTER_KEY,
+            extraTags = {METHOD_SIGNATURE_TAG_KEY,
                     "registerRunTimes(String expression, CronMethodRunnable runnable, int times, RunningTimeout timeout)"},
             description = "Counts invocation times of cron task registration with execution timeout and limited " +
                     "run times configuration")
@@ -168,8 +169,8 @@ public abstract class AbstractRunTimeoutRegistrarRepository
      * {@inheritDoc}
      */
     @Override
-    @Counted(value = RepositoryTagConstants.REGISTER_TIMEOUT_RUNTIMES_COUNTER_KEY,
-            extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
+    @Counted(value = REGISTER_TIMEOUT_RUNTIMES_COUNTER_KEY,
+            extraTags = {METHOD_SIGNATURE_TAG_KEY,
                     "registerRunTimes(String expression, RunnableTaskBody body, int times, RunningTimeout timeout)"},
             description = "Counts invocation times of cron task registration with execution timeout and limited " +
                     "run times configuration")
@@ -183,8 +184,8 @@ public abstract class AbstractRunTimeoutRegistrarRepository
      * {@inheritDoc}
      */
     @Override
-    @Counted(value = RepositoryTagConstants.REGISTER_TIMEOUT_RUNTIMES_COUNTER_KEY,
-            extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
+    @Counted(value = REGISTER_TIMEOUT_RUNTIMES_COUNTER_KEY,
+            extraTags = {METHOD_SIGNATURE_TAG_KEY,
                     "registerRunTimes(String expression, TaskBody body, int times, RunningTimeout timeout)"},
             description = "Counts invocation times of cron task registration with execution timeout and limited " +
                     "run times configuration")
@@ -198,8 +199,8 @@ public abstract class AbstractRunTimeoutRegistrarRepository
      * {@inheritDoc}
      */
     @Override
-    @Counted(value = RepositoryTagConstants.REGISTER_TIMEOUT_RUNTIMES_COUNTER_KEY,
-            extraTags = {RepositoryTagConstants.METHOD_SIGNATURE_TAG_KEY,
+    @Counted(value = REGISTER_TIMEOUT_RUNTIMES_COUNTER_KEY,
+            extraTags = {METHOD_SIGNATURE_TAG_KEY,
                     "registerRunTimes(CronTask task, int times, RunningTimeout timeout)"},
             description = "Counts invocation times of cron task registration with execution timeout and limited " +
                     "run times configuration")
