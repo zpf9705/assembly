@@ -23,8 +23,7 @@ import top.osjf.cron.core.micrometer.MeterRegistryDelegation;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static top.osjf.cron.core.micrometer.RepositoryTagConstants.MODULE_TAG_KEY;
-import static top.osjf.cron.core.micrometer.RepositoryTagConstants.TASK_EXECUTION_TIMER_KEY;
+import static top.osjf.cron.core.micrometer.RepositoryTagConstants.*;
 
 /**
  * Abstract template support class for orchestrating cron task listener lifecycle execution.
@@ -68,7 +67,7 @@ public abstract class ListenerExecuteSupport implements Runnable {
     @Override
     public void run() {
         // Basic information for registering long tasks...
-        Optional<LongTaskTimer> timer = MeterRegistryDelegation.longTaskTimer(TASK_EXECUTION_TIMER_KEY,
+        Optional<LongTaskTimer> timer = MeterRegistryDelegation.longTaskTimer(TASK_BODY_EXECUTION_TIMER_KEY,
                 null, MODULE_TAG_KEY, getListenerContext().getRepositoryContext().getRepository().getName());
         // Set the task start marker...
         runningFlag.set(true);
@@ -79,9 +78,13 @@ public abstract class ListenerExecuteSupport implements Runnable {
             Optional<LongTaskTimer.Sample> sample
                     = MeterRegistryDelegation.startLongTaskTimer(timer.orElse(null));
             // Execute the main logic of the runnable
-            getRaw().run();
-            // End collecting long task metrics...
-            sample.ifPresent(MeterRegistryDelegation::stopSample);
+            try {
+                getRaw().run();
+            }
+            finally {
+                // End collecting long task metrics...
+                sample.ifPresent(MeterRegistryDelegation::stopSample);
+            }
             // Notify all cron listeners that the task has completed successfully
             doSuccess();
         }
