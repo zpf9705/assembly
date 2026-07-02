@@ -28,13 +28,23 @@ import java.util.List;
 import static top.osjf.cron.core.micrometer.RepositoryMicrometerConstants.*;
 
 /**
- * The abstract implementation class of {@link CronTaskRepository} utilizes
- * {@link CronListenerCollector} to centrally manage {@link CronListener}
- * and ensure thread safety, while opening subclasses for customizing
- * {@link CronListenerCollector} to further ensure business functionality.
+ * Abstract base implementation of {@link CronListenerRepository}.
+ *
+ * <p>This abstract class delegates all listener management operations to
+ * {@link CronListenerCollector} to guarantee thread-safe access to the listener registry.
+ * A default implementation {@link DefaultCronListenerCollector} is provided out of the box;
+ * subclasses may override {@link #getCronListenerCollector()} to supply a custom collector
+ * implementation for extended business requirements.
+ *
+ * <p>Micrometer metrics are integrated for observability: all listener add/remove operations
+ * are counted to monitor the invocation frequency of listener management methods.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
+ * @see CronListenerRepository
+ * @see AbstractLifecycleRepository
+ * @see CronListenerCollector
+ * @see DefaultCronListenerCollector
  */
 public abstract class AbstractCronListenerRepository
         extends AbstractLifecycleRepository implements CronListenerRepository {
@@ -140,8 +150,14 @@ public abstract class AbstractCronListenerRepository
     }
 
     /**
-     * @return A {@link CronListenerCollector} manager, default to {@link #listenerCollector},
-     * supports subclass customization.
+     * Returns the delegate collector used to manage all {@link CronListener} instances.
+     *
+     * <p>The default implementation returns the internally created
+     * {@link DefaultCronListenerCollector}. Subclasses may override this method
+     * to provide a custom {@link CronListenerCollector} implementation for custom
+     * listener storage, ordering or governance logic.
+     *
+     * @return the thread-safe cron listener collector
      */
     protected CronListenerCollector getCronListenerCollector() {
         return listenerCollector;

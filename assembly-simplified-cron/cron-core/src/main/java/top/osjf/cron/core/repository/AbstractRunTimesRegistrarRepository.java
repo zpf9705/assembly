@@ -36,14 +36,27 @@ import java.util.function.Supplier;
 import static top.osjf.cron.core.micrometer.RepositoryMicrometerConstants.*;
 
 /**
- * The abstract implementation class of {@link RunTimesRegistrarRepository} implements
- * monitoring of the number of runs.
+ * Abstract base implementation of {@link RunTimesRegistrarRepository},
+ * which provides thread-safe limited execution scheduling capability for cron tasks.
  *
- * <p>This abstract class uses atomic Boolean notation {@link #isRunTimesCheckListenerRegistered}
- * to specify whether a {@link #checkedCronListener} task runtime listener has been placed when
- * registering related API tasks based on the number of runs, ensuring that it always processes
- * the last check bit to ensure post-processing. Use a thread safe map {@link #taskRunTimesMap} to
- * incrementally decrease the specified number of executions to implement the relevant API logic.
+ * <p>Core implementation mechanism:
+ * <ol>
+ * <li>Registers a global built-in {@link CronListener} to the tail of the listener execution chain,
+ * which automatically decrements the remaining execution count after each task completes successfully
+ * or fails.Once the remaining count drops to 0, the corresponding task will be automatically unregistered.
+ * </li>
+ * <li>Uses {@link AtomicBoolean} to ensure the built-in run-time check listener is registered only once
+ * throughout the repository lifecycle.</li>
+ * <li>Overrides listener registration methods to guarantee the built-in count-check listener always
+ * stays at the last position of the listener chain, ensuring all business listeners execute first.</li>
+ * <li>Prohibits external deletion of the built-in run-time check listener to avoid invalidation of
+ * limited execution scheduling rules.</li>
+ * <li>Maintains task remaining execution counts via thread-safe {@link ConcurrentMap} with
+ * {@link AtomicInteger}.</li>
+ * </ol>
+ *
+ * <p>All limited-run task registration methods integrate Micrometer metrics to count registration
+ * invocations for runtime observability.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
@@ -52,7 +65,7 @@ public abstract class AbstractRunTimesRegistrarRepository
         extends AbstractCronListenerRepository implements RunTimesRegistrarRepository {
 
     /**
-     * Number of runs, task scheduling listener.
+     * @see RunTimesCheckedCronListener
      */
     private final RunTimesCheckedCronListener checkedCronListener = new RunTimesCheckedCronListener();
 
@@ -63,7 +76,7 @@ public abstract class AbstractRunTimesRegistrarRepository
     private final AtomicBoolean isRunTimesCheckListenerRegistered = new AtomicBoolean(false);
 
     /**
-     * Used to record tasks with specified running times.
+     * Thread-safe map used to record the remaining executable times of each limited-run task,
      */
     private final ConcurrentMap<String, AtomicInteger> taskRunTimesMap = new ConcurrentHashMap<>(16);
 
@@ -194,10 +207,15 @@ public abstract class AbstractRunTimesRegistrarRepository
     }
 
     /**
-     * Register a public method for running a specified number of tasks.
+     * Executes the task registration logic and binds the specified maximum execution count
+     * to the task.
+     *
+     * Registers the global run-times check listener only once, then records the task's remaining
+     * execution times.
      *
      * @param idSupplier the task registration function.
      * @param times      the registration run times.
+     * @return unique registered task ID
      * @since 3.0.1
      */
     private String registerRunTimes(Supplier<String> idSupplier, int times) {
@@ -247,14 +265,18 @@ public abstract class AbstractRunTimesRegistrarRepository
     }
 
     /**
-     * @return Return an immutable run count record map.
+     * Returns an immutable view of the task remaining execution count map to prevent external
+     * modification of internal runtime data.
+     *
+     * @return immutable map containing task ID and corresponding remaining execution counter.
      */
     protected Map<String, AtomicInteger> getTaskRunTimesMap() {
         return Collections.unmodifiableMap(taskRunTimesMap);
     }
 
     /**
-     * Check the listener class for tasks that limit the number of runs.
+     * Built-in listener used to decrement task remaining execution times after each task execution,
+     * and automatically unregister the task once the maximum execution limit is reached.
      */
     private class RunTimesCheckedCronListener extends SimpleCronListener {
         @Override
