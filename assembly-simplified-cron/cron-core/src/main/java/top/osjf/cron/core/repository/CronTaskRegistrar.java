@@ -22,6 +22,7 @@ import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.NotSupportConcurrentExecutionException;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Registrar component for registering annotated cron scheduled tasks.
@@ -35,17 +36,23 @@ import java.lang.reflect.Method;
  *
  * <p><strong>Usage Constraint:</strong> The wrapped {@link CronTask} must be constructed
  * from {@link CronMethodRunnable} bound to a Java method.
+ * <p><strong>One-time Usage Constraint:</strong> Each {@code CronTaskRegistrar} instance
+ * only supports one registration call, repeated invocation of {@link #registerFor(CronTaskRepository)}
+ * will throw {@link IllegalStateException}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
 public class CronTaskRegistrar {
 
-    /** the pending registration {@link CronTask} .*/
+    /** The pending registration {@link CronTask}. */
     private final CronTask cronTask;
 
-    /** the target method .*/
+    /** The target method parsed from cron task runnable, used to resolve governance annotations. */
     private final Method targetMethod;
+
+    /** Atomic flag to guarantee each registrar only executes registration once. */
+    private final AtomicBoolean registered = new AtomicBoolean(false);
 
     /**
      * Creates a {@code CronTaskRegistrar} bound to the specified cron task metadata.
@@ -54,12 +61,9 @@ public class CronTaskRegistrar {
      *                 must be created via method-bound {@link CronMethodRunnable}
      */
     public CronTaskRegistrar(CronTask cronTask) {
-
         Assert.notNull(cronTask, "CronTask not be null");
-
         this.cronTask = cronTask;
-        this.targetMethod = cronTask.getRunnable().getMethod();
-    }
+        this.targetMethod = cronTask.getRunnable().getMethod();}
 
     /**
      * Resolves annotations on the bound target method and registers the current cron task
@@ -67,6 +71,7 @@ public class CronTaskRegistrar {
      *
      * <p>Registration process:
      * <ol>
+     * <li>Check whether the current registrar has been used for registration, repeated call is forbidden;</li>
      * <li>Parses {@link RunTimes} to confirm whether to enable limited execution scheduling;</li>
      * <li>Parses {@link RunTimeout} to encapsulate single-task execution timeout configuration;</li>
      * <li>Selects the matching overloaded register method according to the above two annotations;</li>
@@ -83,6 +88,9 @@ public class CronTaskRegistrar {
      */
     public String registerFor(CronTaskRepository cronTaskRepository) {
 
+        Assert.state(registered.compareAndSet(false, true),
+                "Current CronTaskRegistrar instance has already finished task registration.");
+
         Assert.notNull(cronTaskRepository, "CronTaskRepository not be null");
 
         RunTimes runTimes = targetMethod.getAnnotation(RunTimes.class);
@@ -97,16 +105,13 @@ public class CronTaskRegistrar {
         if (runTimes != null) {
             if (runningTimeout != null) {
                 id = cronTaskRepository.registerRunTimes(cronTask, runTimes.value(), runningTimeout);
-            }
-            else {
+            } else {
                 id = cronTaskRepository.registerRunTimes(cronTask, runTimes.value());
             }
-        }
-        else {
+        } else {
             if (runningTimeout != null) {
                 id = cronTaskRepository.register(cronTask, runningTimeout);
-            }
-            else {
+            } else {
                 id = cronTaskRepository.register(cronTask);
             }
         }
