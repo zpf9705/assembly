@@ -26,46 +26,63 @@ import top.osjf.cron.core.exception.NotSupportConcurrentExecutionException;
 import javax.annotation.concurrent.ThreadSafe;
 
 /**
- * <p>{@code CronTaskRepository} is a composite interface that defines the core management
- * capabilities for cron-triggered tasks within the system. By extending multiple well-defined
- * sub-interfaces,it forms a comprehensive and extensible framework for task persistence and
- * runtime control.
+ * A composite top-level interface that aggregates all core capabilities for scheduled cron task
+ * management.It inherits multiple functional sub-interfaces to build a complete, extensible runtime
+ * scheduling governance framework.
  *
- * <p>This interface is primarily used to support platform-level functionalities such as
- * dynamic task registration,execution monitoring, lifecycle management, run-time tracking,
- * timeout handling, and event listening.Typical use cases include: dynamically adding or
- * removing scheduled tasks, monitoring execution frequency and duration,reacting to task
- * state changes, and controlling task startup/shutdown behavior.
+ * <p>This interface provides full lifecycle governance for scheduled tasks, covering dynamic task
+ * registration,runtime execution monitoring, lifecycle start-stop control, limited execution scheduling,
+ * execution timeout interception, task event listening, task metadata querying, and decorator wrapping
+ * capability.Typical application scenarios include dynamically managing scheduled tasks, monitoring task
+ * execution status, customizing task scheduling rules, and uniformly handling task runtime exceptions.
  *
- * <p>The responsibilities of the extended interfaces are as follows:
+ * <p>The responsibilities of each inherited sub-interface are as follows:
  * <ul>
- *   <li>{@link Repository}: Used to mark it as a resource operation interface.</li>
- *   <li>{@link RunTimesRegistrarRepository}: Manages the registration and persistence of
- *   task execution counts,used for statistics and scheduling decisions.</li>
- *   <li>{@link RunTimeoutRegistrarRepository}: Handles maximum allowed execution time (timeout
- *   thresholds) for tasks,enabling timeout detection and interruption mechanisms.</li>
- *   <li>{@link ListableRepository}: Provide task scheduling list access capability to dynamically
- *   obtain relevant information.</li>
- *   <li>{@link CronListenerRepository}: Allows registration and management of event listeners
- *   related to cron tasks (e.g., on-start, on-completion, on-failure), facilitating an event-driven
- *   architecture.</li>
- *   <li>{@link LifecycleRepository}: Defines lifecycle control methods such as start, stop, and
- *   restart.</li>
- *   <li>{@link top.osjf.commons.lang.Wrapper}: Enables decorator pattern support, allowing task instances
- *   to be wrapped with cross-cutting concerns like logging, monitoring, retry logic, etc.</li>
+ *   <li>{@link Repository}: Marker interface, identifying the current type as a task resource repository
+ *   .</li>
+ *   <li>{@link RunTimesRegistrarRepository}: Supports limited scheduled task registration, controls the
+ *   maximum number of task executions, and automatically clears tasks after reaching the execution limit.
+ *   </li>
+ *   <li>{@link RunTimeoutRegistrarRepository}: Provides single-task execution timeout governance, interrupts
+ *   blocked long-running tasks to avoid thread pool exhaustion.</li>
+ *   <li>{@link ListableRepository}: Exposes task metadata query capability, supporting task existence check,
+ *   task detail query, running status judgment, and next trigger time batch query.</li>
+ *   <li>{@link CronListenerRepository}: Supports registration of task lifecycle event listeners to implement
+ *   event-driven governance such as task start, completion, and failure callbacks.</li>
+ *   <li>{@link LifecycleRepository}: Defines the component lifecycle, supporting repository start, stop,
+ *   and restart operations.</li>
+ *   <li>{@link Wrapper}: Implements the decorator pattern, enabling cross-cutting capability extension such
+ *   as logging, monitoring, and retry for task execution bodies.</li>
+ *   <li>{@link Nameable}: Standardizes the naming capability of repository instances for multi-repository
+ *   scenario identification.</li>
  * </ul>
  *
- * <p>The differentiation and combination of the above modules were gathered in version 3.0.1,
- * aiming to provide developers with different feature choices for task scheduling based on
- * cron expressions. This solution fully covers all inherited functions of the interface and
- * helps developers quickly understand the collaborative relationships of multiple blocks
- * through structured display.
+ * <p>All modular capabilities above were merged and standardized in version 3.0.1, providing developers with
+ * modular, optional scheduling capabilities based on cron expressions, and clarifying the collaborative
+ * relationship between each functional module.
  *
- * <p> In version 3.0.2, this interface has also extended multiple unique business capabilities:
- * framework-adaptive Cron expression validity verification, querying the remaining executable
- * times of a specified task, obtaining task runtime timeout configuration, standardized customization
- * of task metadata, and monitoring overdue task executable instances for unpacking operations,
- * to achieve adaptive scheduling for various different scheduled task frameworks.
+ * <p><strong>New capabilities introduced in version 3.0.2:</strong>
+ * <ol>
+ * <li>Cron expression compatibility check: Provides {@link #isSupportedExpression(String)} and
+ * {@link #checkSupportedExpression(String)} to adapt the expression parsing rules of different underlying
+ * scheduling frameworks and avoid invalid task registration.</li>
+ * <li>Limited execution statistics: Supports querying the remaining execution times of a single task and
+ * counting the total number of tasks with execution limit constraints.</li>
+ * <li>Task timeout configuration query: Obtains the bound single-task execution timeout rule from the
+ * repository cache.</li>
+ * <li>Task metadata normalization: Standardizes and supplements default fields for {@link CronTaskInfo}
+ * to ensure unified specification of task metadata in multi-framework adaptation scenarios.</li>
+ * <li>Wrapped task unwrapping: Parses the original task execution body from wrapped {@link Runnable} to
+ * obtain the real business task instance.</li>
+ * <li>Concurrency governance capability: Detects the native concurrency support of the underlying scheduler,
+ * dynamically binds or revokes task concurrency prohibition constraints, and provides a programmatic
+ * alternative to the {@code @DisallowConcurrentExecution} annotation.</li>
+ * <li>Custom task ID generation: Supports configuring a global custom task unique ID generator to replace
+ * the framework's default ID generation rule.</li>
+ * <li>Micrometer observability monitoring: Integrates {@code LongTaskTimer} to implement long-running task
+ * runtime metrics monitoring, which can track task concurrent count, execution blocking duration, thread
+ * blocking, deadlock and other online risks.</li>
+ * </ol>
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
