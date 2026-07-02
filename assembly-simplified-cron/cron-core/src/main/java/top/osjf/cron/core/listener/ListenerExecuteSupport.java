@@ -20,9 +20,6 @@ package top.osjf.cron.core.listener;
 import top.osjf.cron.core.repository.CronTaskRepository;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Function;
-
-import static top.osjf.cron.core.micrometer.RepositoryMicrometerConstants.WRAPPER_RUNNABLE_TYPE_TAG_KEY;
 
 /**
  * Abstract template support class for orchestrating cron task listener lifecycle execution.
@@ -58,10 +55,6 @@ public abstract class ListenerExecuteSupport implements Runnable {
 
     private final AtomicBoolean runningFlag = new AtomicBoolean(false);
 
-    public static final Function<String, String> SCHEDULER_REPO_METRIC_DESC_FORMAT
-            = repositoryName -> String.format("Tasks whose scheduling capability is provided by the {%s} " +
-            "repository client", repositoryName);
-
     /**
      * @see #doStart()
      * @see #doSuccess()
@@ -70,10 +63,8 @@ public abstract class ListenerExecuteSupport implements Runnable {
     @Override
     public void run() {
         // Basic information for registering long tasks...
-        CronTaskRepository repository = getListenerContext().getRepositoryContext().getRepository();
-        String name = repository.getName();
-        CronTaskRepository.LongTimedExecutor executor = repository.longTimed(SCHEDULER_REPO_METRIC_DESC_FORMAT
-                .apply(name), WRAPPER_RUNNABLE_TYPE_TAG_KEY, getClass().getName());
+        CronTaskRepository.LongTimedExecutor executor =
+                getListenerContext().getRepositoryContext().getRepository().longTimed();
         // Set the task start marker...
         runningFlag.set(true);
         try {
