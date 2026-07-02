@@ -21,6 +21,7 @@ import top.osjf.commons.lang.NotNull;
 import top.osjf.cron.core.repository.CronExecutorServiceSupplier;
 
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Cron scheduled task listener supporting asynchronous execution callbacks.
@@ -64,12 +65,25 @@ public interface AsyncCronListener extends CronListener, CronExecutorServiceSupp
     }
 
     /**
-     * Automatically close the thread pool used by the current asynchronous scheduled task and use the
-     * shutdownNow method to forcibly terminate all tasks.
-     * @throws Exception Exception that occurs when thread pool is closed.
+     * Automatically release the thread pool resources provided by the developer.
+     * <p>Default closing strategy: perform graceful shutdown first, wait 5 seconds for running tasks
+     * to complete;if timeout occurs, force termination of unfinished tasks to avoid thread leakage.
+     *
+     * <p><strong>Note:</strong> If the provided {@link ExecutorService} is a global-shared thread pool
+     * whose lifecycle is managed externally, you must override this method with an empty implementation
+     * to prevent repeated shutdown of the shared thread pool.
+     *
+     * @throws Exception thrown when an error occurs during thread pool shutdown
      */
     @Override
     default void close() throws Exception {
-        get().shutdownNow();
+        ExecutorService executor = get();
+        if (executor.isShutdown()) {
+            return;
+        }
+        executor.shutdown();
+        if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
+            executor.shutdownNow();
+        }
     }
 }
