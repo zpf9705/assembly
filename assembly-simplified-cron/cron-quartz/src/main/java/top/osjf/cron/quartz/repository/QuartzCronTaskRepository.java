@@ -451,6 +451,15 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
     /**
      * {@inheritDoc}
      */
+    @NotNull
+    @Override
+    protected String runBodyWrapperClassName() {
+        return RunnableJob.class.getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @NotNull
     protected CronListenerCollector getCronListenerCollector() {
