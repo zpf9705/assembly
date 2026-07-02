@@ -18,11 +18,13 @@
 package top.osjf.cron.core.repository;
 
 /**
- * The Repository interface is a task resource scheduling tagging interface, and
- * currently no methods are defined. Usually used to indicate that a class implements
- * the interface in order to be recognized and processed within a specific framework
- * or context. For example, in some frameworks, classes implementing this interface
- * may be automatically registered as some type of data store or repository.
+ * Marker interface for all scheduled task repository implementations.
+ *
+ * <p>This interface declares no methods. It serves only as a tag to identify
+ * that the implementing class is a scheduled task resource repository component,
+ * enabling unified scanning, recognition and special processing within the framework.
+ * Implementations of all cron task registration, query, modification and lifecycle
+ * management repositories must inherit this marker interface.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
