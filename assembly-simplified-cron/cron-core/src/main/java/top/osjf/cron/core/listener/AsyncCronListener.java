@@ -40,7 +40,7 @@ import java.util.concurrent.ExecutorService;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
  */
-public interface AsyncCronListener extends CronListener, CronExecutorServiceSupplier {
+public interface AsyncCronListener extends CronListener, CronExecutorServiceSupplier, AutoCloseable {
     /**
      * Return a non-null {@link ExecutorService} instance for asynchronous non-blocking
      * execution when executing the callback {@link #start}/{@link #success}/{@link #failed}
@@ -61,5 +61,15 @@ public interface AsyncCronListener extends CronListener, CronExecutorServiceSupp
     default ListenerErrorPropagateStrategy getListenerErrorPropagateStrategy() {
         throw new UnsupportedOperationException
                 ("AsyncCronListener does not support custom exception propagation strategy.");
+    }
+
+    /**
+     * Automatically close the thread pool used by the current asynchronous scheduled task and use the
+     * shutdownNow method to forcibly terminate all tasks.
+     * @throws Exception Exception that occurs when thread pool is closed.
+     */
+    @Override
+    default void close() throws Exception {
+        get().shutdownNow();
     }
 }
