@@ -82,13 +82,7 @@ class ControllableRunnableTask extends Task {
 
         CronTaskRepository.LongTimedExecutor executor = repository.longTimed();
 
-        executor.start();
-        try {
-            runnable.run();
-        }
-        finally {
-            executor.stop();
-        }
+        executor.record(runnable);
 
     }
 
