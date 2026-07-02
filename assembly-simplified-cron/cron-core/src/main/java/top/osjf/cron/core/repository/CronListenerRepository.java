@@ -23,18 +23,20 @@ import top.osjf.cron.core.listener.CronListener;
 import java.util.List;
 
 /**
- * This interface provides functionalities for managing cron task listeners
- * {@code CronListener},including adding, removing, and checking the existence
- * of listeners. It allows the registration of custom logic to be executed before
- * and after the execution of scheduled tasks.
+ * Repository interface for managing lifecycle listeners of scheduled cron tasks.
  *
- * <p>By implementing this interface, developers can flexibly control the order
- * and execution logic of listeners {@code CronListener},thereby enhancing the
- * extensibility and flexibility of task scheduling.
+ * <p>Supports registering, querying and removing {@link CronListener} instances.
+ * Registered listeners will be triggered during task runtime lifecycle events such as
+ * task startup, completion and failure, enabling developers to extend custom cross-cutting
+ * logic like execution logging, exception alerting and execution statistics.
  *
- * <p>The API of modifying the interface is derived from {@link CronTaskRepository},
- * which is an independent extension in version 3.0.1 to provide more powerful and
- * detailed API support.
+ * <p>This interface provides flexible listener registration modes, supporting specifying
+ * execution order by adding listeners to the head, tail or default position of the listener chain.
+ * Listener lookup and removal can be implemented either by listener instance or unique listener name.
+ *
+ * <p>This capability was introduced as an independent extension module in version 3.0.1,
+ * and enhanced with name-based listener management APIs in version 3.0.2,
+ * and finally aggregated into {@link CronTaskRepository}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
