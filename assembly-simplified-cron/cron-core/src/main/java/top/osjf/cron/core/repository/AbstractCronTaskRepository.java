@@ -58,6 +58,13 @@ import static top.osjf.cron.core.micrometer.RepositoryMicrometerConstants.*;
  * qualified class name of the subclass as the unique repository name for log tracking, exception
  * location and monitoring statistics.
  *
+ * <p>Write operations including task registration, update, removal and task termination are equipped
+ * with Micrometer counter metrics tagged with method signatures, which can record invocation frequency
+ * for runtime traffic analysis and fault location. This class also provides long-task monitoring based
+ * on {@link io.micrometer.core.instrument.LongTaskTimer} to track task execution duration, real-time
+ * concurrency and blocking latency, facilitating the discovery of online risks such as thread deadlock,
+ * IO blocking and task backlog.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
