@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-
 package top.osjf.cron.core.repository;
 
 import top.osjf.cron.core.exception.CronInternalException;
 
 /**
- * Provides operations to manage registered scheduled tasks, including updating
- * the cron expression and removing tasks.
+ * Repository interface for modifying and terminating registered scheduled tasks.
+ *
+ * <p>Provides capabilities to update task cron expressions, delete single or all tasks,
+ * and interrupt ongoing executing task threads without altering task scheduling metadata.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
@@ -29,63 +30,53 @@ import top.osjf.cron.core.exception.CronInternalException;
 public interface ModifiableRepository extends Repository {
 
     /**
-     * Update the cron expression for registered scheduled tasks.
+     * Updates the cron expression of a registered scheduled task.
      *
-     * <p>This method takes the unique identifier of the task and a new cron expression
-     * as input parameters, and updates the execution time of the task based on the new
-     * cron expression.
-     *
-     * @param id            the Unique ID of the registered task.
-     * @param newExpression a valid new cron expression.
-     * @throws CronInternalException    if an unsupported or incorrect related exception occurs
-     *                                  within the scheduling architecture.
+     * @param id            unique identifier of the target registered task
+     * @param newExpression valid new cron expression to replace the original trigger rule
+     * @throws CronInternalException if the task cannot be found, cron parsing fails
+     *                               or any internal scheduling exception occurs
      */
     void update(String id, String newExpression) throws CronInternalException;
 
     /**
-     * Delete registered scheduled tasks.
+     * Deletes the registered scheduled task matching the specified task ID.
      *
-     * <p>This method receives the unique identifier of the task as an input parameter
-     * and deletes the corresponding scheduled task based on that identifier.
-     *
-     * @param id the Unique ID of the registered task.
-     * @throws CronInternalException    if an unsupported or incorrect related exception occurs
-     *                                  within the scheduling architecture.
+     * @param id unique identifier of the target registered task
+     * @throws CronInternalException if the task cannot be found or any internal scheduling exception occurs
      */
     void remove(String id) throws CronInternalException;
 
     /**
-     * Remove all registered cron tasks within the current repository and release all scheduling
-     * resources.
-     * @throws CronInternalException    if an unsupported or incorrect related exception occurs
-     *                                  within the scheduling architecture.
+     * Deletes all registered scheduled tasks and releases all occupied scheduling resources.
+     *
+     * @throws CronInternalException if any internal scheduling exception occurs during batch deletion
      * @since 3.0.2
      */
     void removeAll() throws CronInternalException;
 
     /**
-     * Terminate the currently executing instance of the specified task immediately.
-     * <p>The task scheduling configuration and cron expression will not be modified,
-     * the task will still be triggered normally according to the cron rule at the next scheduled time.
-     * Only the ongoing executing thread of this task is interrupted.
+     * Immediately terminates the currently running execution thread of the specified task.
      *
-     * @param id the Unique ID of the registered task.
-     * @throws CronInternalException    if an unsupported or incorrect related exception occurs
-     *                                  within the scheduling architecture.
+     * <p>The task's cron configuration and metadata remain unchanged. The task will still be
+     * scheduled and triggered normally at its next scheduled time; only the ongoing running thread
+     * will be interrupted.
+     *
+     * @param id unique identifier of the target registered task
+     * @throws CronInternalException if the task cannot be found or any internal scheduling exception occurs
      * @since 3.0.2
      * @see ListableRepository#isTaskRunning(String)
      */
     void terminate(String id) throws CronInternalException;
 
     /**
-     * Terminate all currently executing task instances in this repository.
-     * <p>All task metadata and cron scheduling rules are retained, subsequent scheduled triggers
-     * will not be affected.
+     * Terminates all currently running task execution threads in the current repository.
      *
-     * @throws CronInternalException    if an unsupported or incorrect related exception occurs
-     *                                  within the scheduling architecture.
+     * <p>All task metadata and cron trigger configurations are preserved, and subsequent scheduled
+     * executions will continue to take effect normally.
+     *
+     * @throws CronInternalException if any internal scheduling exception occurs during batch termination
      * @since 3.0.2
      */
     void terminateAll() throws CronInternalException;
-
 }

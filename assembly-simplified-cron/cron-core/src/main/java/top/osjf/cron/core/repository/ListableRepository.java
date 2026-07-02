@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 package top.osjf.cron.core.repository;
 
 import top.osjf.commons.lang.Nullable;
@@ -24,9 +23,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Repository interface for querying registered scheduled task information.
- * Provides operations to check task existence, retrieve a single task's details,
- * and obtain a list of all registered tasks.
+ * Repository interface for querying metadata of registered scheduled tasks.
+ *
+ * <p>Supports common query capabilities including task existence verification,
+ * single task detail query, full task list retrieval, running status judgment,
+ * and next scheduled execution time acquisition.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
@@ -34,81 +35,71 @@ import java.util.Map;
 public interface ListableRepository extends Repository {
 
     /**
-     * Return a {@code Boolean} tag indicating whether there is a corresponding
-     * scheduled task {@link CronTaskInfo} for the given ID.
+     * Checks whether a scheduled task exists for the given task ID.
      *
-     * @param id the unique identifier of the registered cron task.
-     * @return if {@code true} prove this id's task exist,{@code false} otherwise.
+     * @param id unique identifier of the registered cron task
+     * @return {@code true} if the task exists; {@code false} otherwise
      */
     boolean hasCronTaskInfo(String id);
 
     /**
-     * Retrieves cron task information based on a given unique identifier.
+     * Retrieves the detailed metadata of the scheduled task corresponding to the specified ID.
      *
-     * <p>This method is used to query the information of a registered cron task that matches
-     * the specified ID. If a cron task with this ID exists in the system,it returns the task's
-     * information; otherwise, it returns null.
-     *
-     * @param id the unique identifier of the registered cron task.
-     * @return The cron task information object that matches the given ID (if exists); otherwise,
-     * returns {@literal null}.
+     * @param id unique identifier of the registered cron task
+     * @return the {@link CronTaskInfo} of the target task if exists; {@code null} otherwise
      */
     @Nullable
     CronTaskInfo getCronTaskInfo(String id);
 
     /**
-     * Retrieves information for all registered cron tasks.
+     * Retrieves metadata for all registered scheduled tasks.
      *
-     * <p>This method returns a list of information for all registered cron tasks in the system.
-     * If no cron tasks are registered in the system,it returns an empty list.
-     *
-     * @return A list containing information for all registered cron tasks. If the list is empty,
-     * it indicates that no cron tasks are registered.
+     * @return a list containing all registered task metadata; returns an empty list
+     *         when no tasks have been registered
      */
     List<CronTaskInfo> getAllCronTaskInfos();
 
     /**
-     * Return all the scheduled task IDs that have been successfully registered
-     * in the system.
-     * @return all the scheduled task IDs that have been successfully registered
-     *         in the system.
+     * Obtains all unique identifiers of successfully registered scheduled tasks.
+     *
+     * @return list of all registered task IDs
      * @since 3.0.2
      */
     List<String> getAllRegisteredTaskIds();
 
     /**
-     * Check whether the specified task is currently running.
-     * @param id the unique identifier of the registered cron task.
-     * @return {@code true} if task is executing, otherwise {@code false}
+     * Checks whether the specified task is currently being executed.
+     *
+     * @param id unique identifier of the registered cron task
+     * @return {@code true} if the task is running; {@code false} otherwise
      * @since 3.0.2
      */
     boolean isTaskRunning(String id);
 
     /**
-     * Return all currently running scheduled task IDs.
-     * @return all currently running scheduled task IDs.
+     * Obtains unique identifiers of all currently executing scheduled tasks.
+     *
+     * @return list of task IDs for all running tasks
      * @since 3.0.2
      */
     List<String> getAllRunningTaskIds();
 
     /**
-     * Returns the next scheduled execution time of the specified task.
+     * Gets the next scheduled execution timestamp of the specified task.
      *
-     * @param id the unique identifier of the registered cron task.
-     * @return next execution timestamp in milliseconds; return {@code null}
-     * if the task no longer has subsequent triggers.
+     * @param id unique identifier of the registered cron task
+     * @return next execution timestamp in milliseconds; returns {@code null}
+     *         if the task has no subsequent trigger schedule
      */
     @Nullable
     Long getNextExecuteTime(String id);
 
     /**
-     * Return the results of querying the next execution time based on the
-     * task ID in batch, returned in the format of {@link Map K:taskId,V:nextExecuteTime}.
+     * Batch queries the next scheduled execution timestamp for multiple tasks.
      *
-     * @param ids collection of task unique identifiers
-     * @return a map with taskId as key and the next execution time (timestamp
-     *         in milliseconds) as value; tasks without subsequent execution will
-     *         not be included in the returned map.
+     * @param ids collection of target task unique identifiers
+     * @return a {@link Map} with task ID as key and next execution timestamp (ms) as value;
+     *         tasks without subsequent trigger schedules will not be included in the result map
      */
     Map<String, Long> getNextExecuteTimes(Collection<String> ids);
 }

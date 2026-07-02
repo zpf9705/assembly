@@ -14,64 +14,61 @@
  * limitations under the License.
  */
 
-
 package top.osjf.cron.core.repository;
 
 import top.osjf.cron.core.lifecycle.Lifecycle;
+import top.osjf.cron.core.exception.UnsupportedLifecycleException;
 
 /**
- * The {@code LifecycleRepository} interface extends the Lifecycle interface, providing
- * lifecycle management functionality for repository components.
+ * {@link Repository} extension interface that adds lifecycle management capabilities
+ * by inheriting {@link Lifecycle}.
  *
- * <p>The design of the Lifecycle Repository interface aims to meet the needs of application
- * scenarios that require flexible management of the lifecycle of repository components.
- * For example, in scenarios such as database connection pools, message queue clients, or
- * file storage systems, warehouse components may need to be frequently started and stopped
- * in response to changes in application requirements or resource limitations. By implementing
- * the Lifecycle Repository interface, these components can handle lifecycle events more
- * elegantly, improving system stability and reliability.
+ * <p>This interface is designed to flexibly manage the startup, shutdown and restart
+ * lifecycle of repository components. Typical applicable scenarios include components
+ * such as database connection pools, message queue clients and file storage modules,
+ * which require frequent startup and shutdown in response to application changes or
+ * resource constraints. Implementing this interface allows components to gracefully
+ * handle lifecycle events and enhance overall system stability.
  *
- * <p>Used to define components with clear lifecycle management capabilities, their lifecycle
- * management involves key stages such as component initialization, startup, shutdown, and
- * destruction.
- * <p><strong>Code case:</strong></p>
- * <pre>
- *     {@code
- *     LifecycleRepository repository = new ExampleLifecycleRepository();
- *     repository.start();
- *     if(repository.isStarted()){
- *         //... do any things.
+ * <p>It standardizes core lifecycle phases including initialization, startup, shutdown
+ * and destruction for scheduled task repository implementations.
+ *
+ * <p><strong>Code Example:</strong>
+ * <pre>{@code
+ * LifecycleRepository repository = new ExampleLifecycleRepository();
+ * repository.start();
+ * if (repository.isStarted()) {
+ *     // Execute business logic
+ * }
+ * Thread.sleep(50000);
+ * try {
+ *     repository.reStart();
+ * } catch (UnsupportedLifecycleException e) {
+ *     if (repository.isStarted()) {
+ *         repository.stop();
  *     }
- *     Thread.sleep(50000);
- *     try{
- *        repository.restart();
- *     } catch(UnsupportedOperationException e){
- *         if(repository.isStarted()){
- *             repository.stop();
- *         }
- *     }
- *    }
- * </pre>
- * <p>Developers need to be particularly careful to avoid issues such as resource leaks or data
- * inconsistencies during the stop and restart process. Certain types of repository components
- * (such as database connection pools) may require re establishing connections with backend
- * services or reloading configuration information during restart.
+ * }
+ * }</pre>
+ *
+ * <p>Developers must pay attention to avoiding resource leaks and data inconsistency
+ * during stop and restart operations. Some components like database connection pools
+ * may need to rebuild backend connections or reload configuration when restarting.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
+ * @see Lifecycle
+ * @see Repository
  */
 public interface LifecycleRepository extends Lifecycle, Repository {
 
     /**
-     * A default method used to restart the repository component.
+     * Restarts the current repository component.
      *
-     * <p>The default method is to determine whether to restart based on different
-     * scenarios. If the implementation framework has a special restart plan, please
-     * override this method. If restart is not supported, you can override this method
-     * to throw a {@link top.osjf.cron.core.exception.UnsupportedLifecycleException}
-     * exception.
+     * <p>The default implementation provides general restart logic. Framework implementations
+     * with custom restart policies may override this method. If restart is not supported,
+     * the implementation should throw {@link UnsupportedLifecycleException}.
      *
-     * @throws ReStartedUnsupportedException if reStart operation cannot be supported.
+     * @throws UnsupportedLifecycleException if the restart operation is not supported
      */
     void reStart();
 }
