@@ -343,6 +343,15 @@ public class SpringSchedulerTaskRepository
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @NotNull
+    @Override
+    protected String runBodyWrapperClassName() {
+        return DefaultListenableRunnable.class.getName();
+    }
+
     @Override
     public void destroy() {
         super.stop();

@@ -213,6 +213,15 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @NotNull
+    @Override
+    protected String runBodyWrapperClassName() {
+        return SimpleRunnabledScheduledFuture.class.getName();
+    }
+
+    /**
      * A simple implementation class for the {@link ScheduledFuture} interface to calculate the
      * next execution time and store mutable {@link ScheduledFuture}.
      */
