@@ -17,96 +17,96 @@
 
 package top.osjf.cron.core.repository;
 
+
 import top.osjf.cron.core.exception.CronInternalException;
 
+
 /**
- * {@code GeneralRegistrarRepository} is a universal and fundamental task resource interface.
+ * Base generic repository interface for scheduling task registration.
  *
- * <p>This interface is used for registering task scheduling and running using specified
- * information, which requires direct implementation by components and is the most basic
- * method of task scheduling. In this interface, you can specify a cron expression and
- * perform task editing with {@link Runnable}/{@link CronMethodRunnable}/{@link TaskBody}
- * /{@link CronTask}, etc. Here is a simple example of API {@link #register(String, Runnable)}
- * code:
+ * <p>This interface defines the fundamental capability for registering cron tasks,
+ * which must be implemented directly by underlying components. It supports registering
+ * tasks with a cron expression paired with multiple types of task execution carriers,
+ * including {@link Runnable}, {@link CronMethodRunnable}, {@link TaskBody},
+ * and the integrated metadata wrapper {@link CronTask}.
+ *
+ * <p>Each registration method returns a globally unique task ID. This identifier can be
+ * used to query task details via {@link ListableRepository} and modify or remove tasks
+ * via {@link ModifiableRepository}.
+ *
+ * <p>Sample usage:
  * <pre>{@code
  * repository.register("0 0 12 * * ?", () -> System.out.println("Execute at 12:00 noon"));
  * }</pre>
- * Each method returns a unique ID of the scheduled task, which can be used for query
- * operations on interface {@link ListableRepository} and modification operations on interface
- * {@link ModifiableRepository}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
+ * @see Repository
+ * @see RegistrationCallback
+ * @see ListableRepository
+ * @see ModifiableRepository
  */
 public interface GeneralRegistrarRepository extends Repository, RegistrationCallback {
 
+
     /**
-     * Register a new scheduled task using the given cron expression and a {@code Runnable}.
-     * <p>This method receives a valid cron expression and a {@code Runnable} as input
-     * parameters,and return the unique identifier of the task after successful registration.
-     * @param expression a valid cron expression.
-     * @param runnable   the {@code Runnable} executed when cron expression expects time.
-     * @return After successful registration, return the unique ID of the registration task,
-     * which can be used for subsequent updates and deletions.
-     * @throws CronInternalException    if an unsupported or incorrect related exception occurs
-     *                                  within the scheduling architecture.
+     * Registers a new scheduled task with the specified cron expression and {@link Runnable}.
+     *
+     * @param expression valid cron expression defining the task trigger rule
+     * @param runnable   the task logic to execute when the cron trigger fires
+     * @return unique task registration ID for subsequent update and delete operations
+     * @throws CronInternalException if cron parsing fails, registration conflict occurs
+     *                               or any internal scheduling exception is thrown
      */
     String register(String expression, Runnable runnable) throws CronInternalException;
 
+
     /**
-     * Register a new scheduled task using the given cron expression and a {@code CronMethodRunnable}.
-     * <p>This method receives a valid cron expression and a {@code CronMethodRunnable}
-     * as input parameters,and return the unique identifier of the task after successful
-     * registration.
-     * @param expression a valid cron expression.
-     * @param runnable   the {@code CronMethodRunnable} executed when cron expression expects time.
-     * @return After successful registration, return the unique ID of the registration task,
-     * which can be used for subsequent updates and deletions.
-     * @throws CronInternalException    if an unsupported or incorrect related exception occurs
-     *                                  within the scheduling architecture.
+     * Registers a new scheduled task with the specified cron expression and {@link CronMethodRunnable}.
+     *
+     * @param expression valid cron expression defining the task trigger rule
+     * @param runnable   method-wrapped task logic to execute when the cron trigger fires
+     * @return unique task registration ID for subsequent update and delete operations
+     * @throws CronInternalException if cron parsing fails, registration conflict occurs
+     *                               or any internal scheduling exception is thrown
      */
     String register(String expression, CronMethodRunnable runnable) throws CronInternalException;
 
+
     /**
-     * Register a new scheduled task using the given cron expression and a {@code RunnableTaskBody}.
-     * <p>This method receives a valid cron expression and a {@code RunnableTaskBody} as input
-     * parameters,and return the unique identifier of the task after successful registration.
-     * @param expression a valid cron expression.
-     * @param body       the {@code RunnableTaskBody} executed when cron expression expects time.
-     * @return After successful registration, return the unique ID of the registration task,
-     * which can be used for subsequent updates and deletions.
-     * @throws CronInternalException    if an unsupported or incorrect related exception occurs
-     *                                  within the scheduling architecture.
+     * Registers a new scheduled task with the specified cron expression and {@link RunnableTaskBody}.
+     *
+     * @param expression valid cron expression defining the task trigger rule
+     * @param body       encapsulated runnable task body to execute when the cron trigger fires
+     * @return unique task registration ID for subsequent update and delete operations
+     * @throws CronInternalException if cron parsing fails, registration conflict occurs
+     *                               or any internal scheduling exception is thrown
      */
     String register(String expression, RunnableTaskBody body) throws CronInternalException;
 
+
     /**
-     * Register a new scheduled task using the given cron expression and a {@code TaskBody}.
-     * <p>This method receives a valid cron expression and a {@code TaskBody} as input
-     * parameters,and return the unique identifier of the task after successful registration.
-     * <p>The execution parameter {@code TaskBody} is a custom parameter, which is determined
-     * based on the framework implementation used. Developers can create and pass custom
-     * parameters based on this.
-     * @param expression a valid cron expression.
-     * @param body       the {@code TaskBody} executed when cron expression expects time.
-     * @return After successful registration, return the unique ID of the registration task,
-     * which can be used for subsequent updates and deletions.
-     * @throws CronInternalException    if an unsupported or incorrect related exception occurs
-     *                                  within the scheduling architecture.
+     * Registers a new scheduled task with the specified cron expression and custom {@link TaskBody}.
+     *
+     * <p>{@link TaskBody} allows developers to implement custom task execution logic
+     * with self-defined business parameters.
+     *
+     * @param expression valid cron expression defining the task trigger rule
+     * @param body       custom encapsulated task body to execute when the cron trigger fires
+     * @return unique task registration ID for subsequent update and delete operations
+     * @throws CronInternalException if cron parsing fails, registration conflict occurs
+     *                               or any internal scheduling exception is thrown
      */
     String register(String expression, TaskBody body) throws CronInternalException;
 
+
     /**
-     * Register a new scheduled task using the given {@code CronTask} object.
-     * <p>The {@code CronTask} object encapsulates the cron expression and task body
-     * information of the task.
-     * <p>This method takes a {@code CronTask} object as an input parameter and returns
-     * the unique identifier of the task after successful registration.
-     * @param task a task metadata encapsulation object {@code CronTask}.
-     * @return After successful registration, return the unique ID of the registration task,
-     * which can be used for subsequent updates and deletions.
-     * @throws CronInternalException    if an unsupported or incorrect related exception occurs
-     *                                  within the scheduling architecture.
+     * Registers a new scheduled task using the encapsulated {@link CronTask} metadata.
+     *
+     * @param task encapsulated cron task metadata containing trigger rule and task execution body
+     * @return unique task registration ID for subsequent update and delete operations
+     * @throws CronInternalException if cron parsing fails, registration conflict occurs
+     *                               or any internal scheduling exception is thrown
      */
     String register(CronTask task) throws CronInternalException;
 }
