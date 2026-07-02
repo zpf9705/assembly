@@ -268,8 +268,6 @@ public interface CronTaskRepository extends Repository, RunTimesRegistrarReposit
      * Cooperated with ordinary Timer metrics, it can realize full-link observability including running
      * concurrency monitoring, execution duration statistics and exception tracking.
      *
-     * @param description the description of metric, used to display business meaning of scheduled task
-     *                    metric on monitoring platform, can be null
      * @param tags {@link io.micrometer.core.instrument.Tags the variable-length array of static low-cardinality tags.}
      * @return {@code LongTimedExecutor} Long-task monitor executor. Invoke {@code start()} before business logic
      * execution, and {@code stop()} must be called after task finished (whether succeeded or failed) to
@@ -277,7 +275,7 @@ public interface CronTaskRepository extends Repository, RunTimesRegistrarReposit
      * @since 3.0.2
      * @see LongTimedExecutor
      */
-    LongTimedExecutor longTimed(@Nullable String description, String... tags);
+    LongTimedExecutor longTimed(String... tags);
 
     /**
      * Executor interface for long-task metrics monitoring.
