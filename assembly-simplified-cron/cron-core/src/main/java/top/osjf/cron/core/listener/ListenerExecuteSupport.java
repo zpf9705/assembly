@@ -17,13 +17,13 @@
 
 package top.osjf.cron.core.listener;
 
-import io.micrometer.core.instrument.LongTaskTimer;
-import top.osjf.cron.core.micrometer.MeterRegistryDelegation;
+import top.osjf.cron.core.repository.CronTaskRepository;
 
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 
-import static top.osjf.cron.core.micrometer.RepositoryMicrometerConstants.*;
+import static top.osjf.cron.core.micrometer.RepositoryMicrometerConstants.MODULE_TAG_KEY;
+import static top.osjf.cron.core.micrometer.RepositoryMicrometerConstants.WRAPPER_RUNNABLE_TYPE_TAG_KEY;
 
 /**
  * Abstract template support class for orchestrating cron task listener lifecycle execution.
@@ -59,6 +59,10 @@ public abstract class ListenerExecuteSupport implements Runnable {
 
     private final AtomicBoolean runningFlag = new AtomicBoolean(false);
 
+    public static final Function<String, String> SCHEDULER_REPO_METRIC_DESC_FORMAT
+            = repositoryName -> String.format("Tasks whose scheduling capability is provided by the {%s} " +
+            "repository client", repositoryName);
+
     /**
      * @see #doStart()
      * @see #doSuccess()
@@ -67,27 +71,17 @@ public abstract class ListenerExecuteSupport implements Runnable {
     @Override
     public void run() {
         // Basic information for registering long tasks...
-        String name = getListenerContext().getRepositoryContext().getRepository().getName();
-        Optional<LongTaskTimer> timer = MeterRegistryDelegation.longTaskTimer(TASK_BODY_EXECUTION_TIMER_KEY,
-                String.format("Tasks whose scheduling capability is provided by the {%s} resource client", name),
-                MODULE_TAG_KEY, name,
-                WRAPPER_RUNNABLE_TYPE_TAG_KEY, getClass().getName());
+        CronTaskRepository repository = getListenerContext().getRepositoryContext().getRepository();
+        String name = repository.getName();
+        CronTaskRepository.LongTimedExecutor executor = repository.longTimed(SCHEDULER_REPO_METRIC_DESC_FORMAT
+                .apply(name), MODULE_TAG_KEY, name, WRAPPER_RUNNABLE_TYPE_TAG_KEY, getClass().getName());
         // Set the task start marker...
         runningFlag.set(true);
         try {
             // Notify all cron listeners that the task is about to start
             doStart();
-            // Start collecting long task metrics...
-            Optional<LongTaskTimer.Sample> sample
-                    = MeterRegistryDelegation.startLongTaskTimer(timer.orElse(null));
-            try {
-                // Execute the main logic of the runnable
-                getRaw().run();
-            }
-            finally {
-                // End collecting long task metrics...
-                sample.ifPresent(MeterRegistryDelegation::stopSample);
-            }
+            // Execute raw runnable and collect long task metrics...
+            executor.record(getRaw());
             // Notify all cron listeners that the task has completed successfully
             doSuccess();
         }
