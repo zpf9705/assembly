@@ -532,6 +532,17 @@ public abstract class AbstractCronTaskRepository
                 Assert.state(sample != null, "Start action has not been executed.");
                 MeterRegistryDelegation.stopSample(sample);
             }
+
+            @Override
+            public void record(Runnable runnable) {
+                start();
+                try {
+                    runnable.run();
+                }
+                finally {
+                    stop();
+                }
+            }
         };
     }
 

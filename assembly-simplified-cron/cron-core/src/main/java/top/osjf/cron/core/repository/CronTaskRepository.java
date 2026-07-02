@@ -284,14 +284,17 @@ public interface CronTaskRepository extends Repository, RunTimesRegistrarReposit
      * <p>
      * Encapsulates start and stop operations for Micrometer {@link io.micrometer.core.instrument.LongTaskTimer},
      * designed for runtime observability of asynchronous scheduled long-running tasks.
+     * It can manually control task timing lifecycle via {@link #start()} and {@link #stop()},
+     * or use the wrapped {@link #record(Runnable)} method for automatic timing management.
      * <p>
      * Usage Specification:
      * <ul>
-     * <li>1.Call {@link #start()} right before the execution of task business logic to start timing and register
-     * running task instance.</li>
-     * <li>2.Invoke {@link #stop()} in finally block no matter the task succeeds or throws exceptions, to decrease
-     * active task counter.</li>
-     * <li>3.This interface only monitors runtime concurrency and blocking duration.</li>
+     * <li>1. Manual mode: Call {@link #start()} right before the execution of task business logic to start timing
+     * and register running task instance; invoke {@link #stop()} in finally block no matter the task succeeds
+     * or throws exceptions, to decrease active task counter and stop timing.</li>
+     * <li>2. Automatic wrapping mode: Use {@link #record(Runnable)} to execute the task directly,
+     * which internally calls start() before task execution and guarantees stop() execution in finally block.</li>
+     * <li>3. This interface only monitors runtime concurrency, active task count and task blocking duration.</li>
      * </ul>
      */
     interface LongTimedExecutor {
@@ -308,5 +311,22 @@ public interface CronTaskRepository extends Repository, RunTimesRegistrarReposit
          * and cause monitoring data distortion.
          */
         void stop();
+
+        /**
+         * Automatically wrap and execute target runnable task with full lifecycle metrics timing.
+         * <p>
+         * Internal execution logic:
+         * <ol>
+         * <li>Call {@link #start()} to start task timing before executing business runnable</li>
+         * <li>Execute the target task business logic</li>
+         * <li>Execute {@link #stop()} in finally block to ensure timing is closed normally whether task succeeds
+         * or throws any runtime exception</li>
+         * </ol>
+         * <p>
+         * Recommended preferred usage for most scenarios to avoid missing stop() invocation manually.
+         *
+         * @param runnable target asynchronous/scheduled business task that needs long-task metrics monitoring.
+         */
+        void record(Runnable runnable);
     }
 }
