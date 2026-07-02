@@ -34,7 +34,21 @@ public abstract class SystemPropertiesTagUtils {
 
     /** Key is fixed tag name, Value is environment variable placeholder expression */
     public static final String[] systemTagArray =
-            { "os.name", "${os.name}", "java.version", "${java.version}", "hostname", "${HOSTNAME:local}" };
+            {
+                    /* os */
+                    "os.name", "${os.name}",
+                    "os.arch", "${os.arch}",
+                    "os.version", "${os.version}",
+
+                    /* java */
+                    "java.vendor", "${java.vendor}",
+                    "java.version", "${java.version}",
+                    "java.vm.name", "${java.vm.name}",
+                    "java.specification.version", "${java.specification.version}",
+
+                    /* coding */
+                    "file.encoding", "${file.encoding}"
+            };
 
     /** System tag template constant */
     private static final Tags systemTags = Tags.of(systemTagArray);
