@@ -465,6 +465,15 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
         taskListener.removeAllRunningThreads();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @NotNull
+    protected String runBodyWrapperClassName() {
+        return "top.osjf.cron.hutool.repository.HutoolScheduler$MicrometerCronTask" ;
+    }
+
     @Override
     @NotNull
     protected CronListenerCollector getCronListenerCollector() {

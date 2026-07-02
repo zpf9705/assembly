@@ -102,9 +102,7 @@ class HutoolScheduler extends Scheduler {
         @Override
         public void execute() {
             CronTaskRepository.LongTimedExecutor executor = repository.longTimed
-                    (String.format("Tasks whose scheduling capability is provided by the {%s} resource client",
-                            repository.getName()),
-                            WRAPPER_RUNNABLE_TYPE_TAG_KEY, MicrometerCronTask.class.getName());
+                    (WRAPPER_RUNNABLE_TYPE_TAG_KEY, MicrometerCronTask.class.getName());
             executor.start();
             try {
                 super.execute();
