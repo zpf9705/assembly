@@ -62,4 +62,12 @@ public abstract class AbstractPropertiesConfiguredAsyncCronListener implements A
     public ExecutorService get() {
         return executorService;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void close() throws Exception {
+        executorService.close();
+    }
 }
