@@ -518,10 +518,13 @@ public abstract class AbstractCronTaskRepository
 
             @Nullable private LongTaskTimer.Sample sample;
 
+            private boolean started;
+
             @Override
             public void start() {
                 sample = MeterRegistryDelegation
                         .startLongTaskTimer(timer.orElse(null)).orElse(null);
+                started = true;
             }
 
             /**
@@ -529,8 +532,10 @@ public abstract class AbstractCronTaskRepository
              */
             @Override
             public void stop() {
-                Assert.state(sample != null, "Start action has not been executed.");
-                MeterRegistryDelegation.stopSample(sample);
+                Assert.state(started, "Start action has not been executed.");
+                if (sample != null) {
+                    MeterRegistryDelegation.stopSample(sample);
+                }
             }
 
             @Override

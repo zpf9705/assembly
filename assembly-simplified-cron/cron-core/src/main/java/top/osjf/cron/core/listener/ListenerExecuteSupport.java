@@ -22,7 +22,6 @@ import top.osjf.cron.core.repository.CronTaskRepository;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
-import static top.osjf.cron.core.micrometer.RepositoryMicrometerConstants.MODULE_TAG_KEY;
 import static top.osjf.cron.core.micrometer.RepositoryMicrometerConstants.WRAPPER_RUNNABLE_TYPE_TAG_KEY;
 
 /**
@@ -74,7 +73,7 @@ public abstract class ListenerExecuteSupport implements Runnable {
         CronTaskRepository repository = getListenerContext().getRepositoryContext().getRepository();
         String name = repository.getName();
         CronTaskRepository.LongTimedExecutor executor = repository.longTimed(SCHEDULER_REPO_METRIC_DESC_FORMAT
-                .apply(name), MODULE_TAG_KEY, name, WRAPPER_RUNNABLE_TYPE_TAG_KEY, getClass().getName());
+                .apply(name), WRAPPER_RUNNABLE_TYPE_TAG_KEY, getClass().getName());
         // Set the task start marker...
         runningFlag.set(true);
         try {
