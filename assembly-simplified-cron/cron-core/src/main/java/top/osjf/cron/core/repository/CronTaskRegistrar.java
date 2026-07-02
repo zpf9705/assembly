@@ -18,17 +18,23 @@
 package top.osjf.cron.core.repository;
 
 import top.osjf.commons.util.Assert;
+import top.osjf.cron.core.exception.CronInternalException;
+import top.osjf.cron.core.exception.NotSupportConcurrentExecutionException;
 
 import java.lang.reflect.Method;
 
 /**
- * This class is responsible for registering methods annotated with {@code CronTask}
- * and processing associated annotations such as {@link RunTimes} (for execution count
- * limits) and {@link RunTimeout} (for execution timeout control).
+ * Registrar component for registering annotated cron scheduled tasks.
  *
- * <p> During registration, it checks whether the target method is annotated with these
- * annotations and registers the corresponding configuration into the {@link CronTaskRepository},
- * enabling fine-grained task scheduling management.
+ * <p>This class resolves task governance annotations marked on target methods,
+ * including {@link RunTimes} (limited execution count), {@link RunTimeout}
+ * (single task execution timeout), and {@link DisallowConcurrentExecution}
+ * (concurrent execution prohibition). It encapsulates various annotation combination
+ * registration branches and completes unified task registration to
+ * {@link CronTaskRepository}.
+ *
+ * <p><strong>Usage Constraint:</strong> The wrapped {@link CronTask} must be constructed
+ * from {@link CronMethodRunnable} bound to a Java method.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
@@ -42,8 +48,10 @@ public class CronTaskRegistrar {
     private final Method targetMethod;
 
     /**
-     * Construct a {@link CronTaskRegistrar} with given arguments.
-     * @param cronTask       the pending registration {@link CronTask}.
+     * Creates a {@code CronTaskRegistrar} bound to the specified cron task metadata.
+     *
+     * @param cronTask the cron task metadata to be registered, must not be {@code null};
+     *                 must be created via method-bound {@link CronMethodRunnable}
      */
     public CronTaskRegistrar(CronTask cronTask) {
 
@@ -54,12 +62,24 @@ public class CronTaskRegistrar {
     }
 
     /**
-     * Register {@link #cronTask} into the given {@link CronTaskRepository}, while
-     * simultaneously configuring annotations {@link RunTimes} and {@link RunTimeout}
-     * and {@link DisallowConcurrentExecution}.
-     * @param cronTaskRepository the {@link CronTaskRepository}.
-     * @return The unique ID for scheduling task registration, when running times
-     * related to API registration, returns {@literal null}.
+     * Resolves annotations on the bound target method and registers the current cron task
+     * into the specified {@link CronTaskRepository}.
+     *
+     * <p>Registration process:
+     * <ol>
+     * <li>Parses {@link RunTimes} to confirm whether to enable limited execution scheduling;</li>
+     * <li>Parses {@link RunTimeout} to encapsulate single-task execution timeout configuration;</li>
+     * <li>Selects the matching overloaded register method according to the above two annotations;</li>
+     * <li>If {@link DisallowConcurrentExecution} is marked, dynamically binds the concurrency prohibition
+     * constraint to the registered task after successful registration.</li>
+     * </ol>
+     *
+     * @param cronTaskRepository the task repository for registering cron tasks, must not be {@code null}
+     * @return the globally unique task registration ID generated after successful task registration
+     * @throws CronInternalException               thrown when cron parsing fails, registration conflict
+     *                                              or internal scheduling error occurs.
+     * @throws NotSupportConcurrentExecutionException if the underlying scheduler does not support concurrent
+     *                                               execution when enabling the concurrency prohibition constraint.
      */
     public String registerFor(CronTaskRepository cronTaskRepository) {
 
