@@ -31,15 +31,36 @@ import java.util.concurrent.ConcurrentHashMap;
 import static top.osjf.cron.core.micrometer.RepositoryMicrometerConstants.*;
 
 /**
- * An abstract implementation class of {@link RunTimeoutRegistrarRepository} that adds
- * a single timeout run on top of regular registration and run limit registration.
+ * Abstract base implementation of {@link RunTimeoutRegistrarRepository}.
  *
- * <p>Relying on {@link TimeoutMonitoringRunnable} to achieve operational control over
- * {@link Runnable}, regular registration still uses APIs for {@link RunTimesRegistrarRepository}
- * and {@link GeneralRegistrarRepository}.
+ * <p>This implementation extends {@link AbstractRunTimesRegistrarRepository}, adding
+ * task execution timeout governance capability based on the existing limited-run scheduling feature.
+ * It wraps the original task {@link Runnable} into {@link TimeoutMonitoringRunnable} to implement
+ * interrupt control for long-running blocked tasks.
+ *
+ * <p>Core capabilities:
+ * <ul>
+ * <li>Initializes a dedicated thread pool for timeout task monitoring via {@link #initialize()},
+ * configured from framework initialization properties or system default configurations.</li>
+ * <li>Provides overloaded registration methods to bind {@link RunningTimeout} rules for tasks,
+ * supporting both ordinary scheduled tasks and limited-execution scheduled tasks.</li>
+ * <li>Automatically records each task's timeout configuration to a thread-safe map during task startup,
+ * enabling subsequent query of task timeout rules via repository APIs.</li>
+ * <li>Properly releases monitoring thread pool resources when the repository stops to avoid thread
+ * leaks.</li>
+ * <li>Supports conversion of various {@link TaskBody} types to standard {@link Runnable} for unified
+ * timeout wrapping.</li>
+ * </ul>
+ *
+ * <p>All timeout-related task registration methods integrate Micrometer metrics to count invocation times
+ * for runtime observability analysis.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
+ * @see AbstractRunTimesRegistrarRepository
+ * @see RunTimeoutRegistrarRepository
+ * @see TimeoutMonitoringRunnable
+ * @see PropertiesParsedThreadPoolExecutor
  */
 public abstract class AbstractRunTimeoutRegistrarRepository
         extends AbstractRunTimesRegistrarRepository implements RunTimeoutRegistrarRepository {
@@ -220,6 +241,9 @@ public abstract class AbstractRunTimeoutRegistrarRepository
 
     /**
      * {@inheritDoc}
+     *
+     * <p>Binds the unique task ID to the wrapped timeout monitoring runnable, and persists the task
+     * timeout configuration to the local cache for subsequent metadata query.
      */
     @Override
     public void call(String expression, Runnable runnable, String id) {
@@ -230,8 +254,10 @@ public abstract class AbstractRunTimeoutRegistrarRepository
     }
 
     /**
-     * Returns an unmodifiable view of the task running timeout map.
-     * @return an unmodifiable Map mapping task IDs (String) to their {@code RunningTimeout} objects.
+     * Returns an immutable view of the task timeout configuration map to prevent external tampering
+     * with internal runtime configuration data.
+     *
+     * @return unmodifiable map associating task ID with its bound {@link RunningTimeout} configuration
      * @since 3.0.2
      */
     protected Map<String, RunningTimeout> getTaskRunTimeoutMap() {
@@ -239,7 +265,8 @@ public abstract class AbstractRunTimeoutRegistrarRepository
     }
 
     /**
-     * Close {@link #monitoringExecutor}.
+     * Shuts down the timeout monitoring thread pool if it has been initialized,
+     * releasing all occupied thread resources.
      */
     protected void closeMonitoringExecutor() {
         if (monitoringExecutor != null) {
@@ -248,9 +275,12 @@ public abstract class AbstractRunTimeoutRegistrarRepository
     }
 
     /**
-     * Convert {@link TaskBody} as {@link Runnable}.
-     * @param body the {@link TaskBody}.
-     * @return the {@link Runnable} result after convert.
+     * Unwraps the specified {@link TaskBody} instance and converts it to a standard {@link Runnable}.
+     * Supports both native {@link Runnable} and wrapped {@link RunnableTaskBody} types.
+     *
+     * @param body the generic task body instance to unwrap
+     * @return the underlying {@link Runnable} extracted from the task body
+     * @throws UnsupportedTaskBodyException if the task body type cannot be converted to Runnable
      */
     protected Runnable asRunnable(TaskBody body) throws UnsupportedTaskBodyException {
         if (body.isWrapperFor(Runnable.class)) {
@@ -262,10 +292,12 @@ public abstract class AbstractRunTimeoutRegistrarRepository
     }
 
     /**
-     * Wrap the original {@link Runnable} into a timeout-detectable {@link TimeoutMonitoringRunnable}.
-     * @param raw       the original {@link Runnable}.
-     * @param timeout   the Timeout configuration parameters.
-     * @return          Wrapper {@link TimeoutMonitoringRunnable} result.
+     * Wraps the original raw {@link Runnable} into a timeout-aware {@link TimeoutMonitoringRunnable},
+     * binding the specified timeout rule and the dedicated monitoring thread pool.
+     *
+     * @param raw     original user-defined task runnable
+     * @param timeout task execution timeout governance configuration
+     * @return wrapped runnable with timeout interrupt monitoring capability
      */
     protected Runnable wrapWithTimeoutMonitoring(Runnable raw, RunningTimeout timeout) {
         return new TimeoutMonitoringRunnable(raw, timeout, monitoringExecutor);

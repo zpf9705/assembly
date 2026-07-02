@@ -60,6 +60,8 @@ import static top.osjf.cron.core.micrometer.RepositoryMicrometerConstants.*;
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
+ * @see AbstractCronListenerRepository
+ * @see RunTimesRegistrarRepository
  */
 public abstract class AbstractRunTimesRegistrarRepository
         extends AbstractCronListenerRepository implements RunTimesRegistrarRepository {
