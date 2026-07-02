@@ -469,6 +469,15 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @NotNull
+    @Override
+    protected String runBodyWrapperClassName() {
+        return ControllableRunnableTask.class.getName();
+    }
+
+    /**
      * @return Return the {@link TaskCollector} that stores task information in memory.
      * @since 3.0.2
      */

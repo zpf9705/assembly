@@ -22,8 +22,6 @@ import it.sauronsoftware.cron4j.Task;
 import it.sauronsoftware.cron4j.TaskExecutionContext;
 import top.osjf.cron.core.repository.CronTaskRepository;
 
-import static top.osjf.cron.core.micrometer.RepositoryMicrometerConstants.WRAPPER_RUNNABLE_TYPE_TAG_KEY;
-
 /**
  * {@code Runnable} type controllable scheduled task wrapper implementation class.
  * <p>
@@ -82,10 +80,8 @@ class ControllableRunnableTask extends Task {
      */
     public void execute(TaskExecutionContext context) {
 
-        CronTaskRepository.LongTimedExecutor executor = repository.longTimed
-                ( String.format("Tasks whose scheduling capability is provided by the {%s} resource client",
-                        repository.getName()),
-                        WRAPPER_RUNNABLE_TYPE_TAG_KEY, ControllableRunnableTask.class.getName());
+        CronTaskRepository.LongTimedExecutor executor = repository.longTimed();
+
         executor.start();
         try {
             runnable.run();
