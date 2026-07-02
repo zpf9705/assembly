@@ -14,130 +14,112 @@
  * limitations under the License.
  */
 
-
 package top.osjf.cron.core.repository;
 
 import top.osjf.cron.core.exception.CronInternalException;
 
 /**
- * {@code RunTimeoutRegistrarRepository} is a task scheduling runtime that specifies the
- * timeout period for a single run.
+ * Extension of {@link Repository} that supports task execution timeout control.
  *
- * <p>This interface is compatible with the APIs of {@link GeneralRegistrarRepository}
- * and {@link RunTimesRegistrarRepository}, and adds a {@link RunningTimeout} parameter
- * on top of them to control the timeout of task execution, limit the number of joint runs,
- * and add more precise control to task execution. It is often used in temporary scheduling
- * tasks for precise control.
+ * <p>Inherits the capabilities of {@link GeneralRegistrarRepository} and
+ * {@link RunTimesRegistrarRepository}, adding {@link RunningTimeout} parameter
+ * to limit the maximum execution duration of a single scheduled task.
+ * Combined with fixed-run times capability, it provides fine-grained control
+ * for temporary scheduled task scenarios.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
+ * @see GeneralRegistrarRepository
+ * @see RunTimesRegistrarRepository
+ * @see RunTimes
+ * @see RunningTimeout
  * @see RunTimeout
  */
 public interface RunTimeoutRegistrarRepository
         extends Repository, RunTimesRegistrarRepository, GeneralRegistrarRepository {
 
     /**
-     * Register a new scheduled task using the given cron expression and a {@code Runnable}
-     * and an instance of timeout control configuration during task execution.
-     * <p>This method receives a valid cron expression and a {@code Runnable} as input
-     * parameters,and return the unique identifier of the task after successful registration.
-     * @param expression a valid cron expression.
-     * @param runnable   the {@code Runnable} executed when cron expression expects time.
-     * @param timeout    configure instance for timeout control during task execution.
-     * @return After successful registration, return the unique ID of the registration task,
-     * which can be used for subsequent updates and deletions.
-     * @throws CronInternalException    if an unsupported or incorrect related exception occurs
-     *                                  within the scheduling architecture.
+     * Register a scheduled task with the specified cron expression, {@link Runnable}
+     * and task execution timeout configuration.
+     *
+     * @param expression valid cron expression defining the task trigger rule
+     * @param runnable   the task logic to execute when the cron trigger fires
+     * @param timeout    timeout configuration for a single task execution
+     * @return unique task registration ID used for subsequent update and delete operations
+     * @throws CronInternalException if cron parsing fails, registration conflict occurs
+     *                               or any internal scheduling exception is thrown
      */
     String register(String expression, Runnable runnable, RunningTimeout timeout)
             throws CronInternalException;
 
     /**
-     * Register a new scheduled task using the given cron expression and a {@code CronMethodRunnable}
-     * and an instance of timeout control configuration during task execution.
-     * <p>This method receives a valid cron expression and a {@code CronMethodRunnable}
-     * as input parameters,and return the unique identifier of the task after successful
-     * registration.
+     * Register a scheduled task with the specified cron expression, {@link CronMethodRunnable}
+     * and task execution timeout configuration.
      *
-     * @param expression a valid cron expression.
-     * @param runnable   the {@code CronMethodRunnable} executed when cron expression expects time.
-     * @param timeout    configure instance for timeout control during task execution.
-     * @return After successful registration, return the unique ID of the registration task,
-     * which can be used for subsequent updates and deletions.
-     * @throws CronInternalException    if an unsupported or incorrect related exception occurs
-     *                                  within the scheduling architecture.
+     * @param expression valid cron expression defining the task trigger rule
+     * @param runnable   method-wrapped task logic to execute when the cron trigger fires
+     * @param timeout    timeout configuration for a single task execution
+     * @return unique task registration ID used for subsequent update and delete operations
+     * @throws CronInternalException if cron parsing fails, registration conflict occurs
+     *                               or any internal scheduling exception is thrown
      */
     String register(String expression, CronMethodRunnable runnable, RunningTimeout timeout)
             throws CronInternalException;
 
     /**
-     * Register a new scheduled task using the given cron expression and a {@code RunnableTaskBody}
-     * and an instance of timeout control configuration during task execution.
-     * <p>This method receives a valid cron expression and a {@code RunnableTaskBody} as input
-     * parameters,and return the unique identifier of the task after successful registration.
+     * Register a scheduled task with the specified cron expression, {@link RunnableTaskBody}
+     * and task execution timeout configuration.
      *
-     * @param expression a valid cron expression.
-     * @param body       the {@code RunnableTaskBody} executed when cron expression expects time.
-     * @param timeout    configure instance for timeout control during task execution.
-     * @return After successful registration, return the unique ID of the registration task,
-     * which can be used for subsequent updates and deletions.
-     * @throws CronInternalException    if an unsupported or incorrect related exception occurs
-     *                                  within the scheduling architecture.
+     * @param expression valid cron expression defining the task trigger rule
+     * @param body       encapsulated runnable task body to execute when the cron trigger fires
+     * @param timeout    timeout configuration for a single task execution
+     * @return unique task registration ID used for subsequent update and delete operations
+     * @throws CronInternalException if cron parsing fails, registration conflict occurs
+     *                               or any internal scheduling exception is thrown
      */
     String register(String expression, RunnableTaskBody body, RunningTimeout timeout)
             throws CronInternalException;
 
     /**
-     * Register a new scheduled task using the given cron expression and a {@code TaskBody}.
-     * and an instance of timeout control configuration during task execution.
-     * <p>This method receives a valid cron expression and a {@code TaskBody} as input
-     * parameters,and return the unique identifier of the task after successful registration.
-     * <p>The execution parameter {@code TaskBody} is a custom parameter, which is determined
-     * based on the framework implementation used. Developers can create and pass custom
-     * parameters based on this.
+     * Register a scheduled task with the specified cron expression, custom {@link TaskBody}
+     * and task execution timeout configuration.
      *
-     * @param expression a valid cron expression.
-     * @param body       the {@code TaskBody} executed when cron expression expects time.
-     * @param timeout    configure instance for timeout control during task execution.
-     * @return After successful registration, return the unique ID of the registration task,
-     * which can be used for subsequent updates and deletions.
-     * @throws CronInternalException    if an unsupported or incorrect related exception occurs
-     *                                  within the scheduling architecture.
+     * <p>{@link TaskBody} allows developers to implement custom task execution logic
+     * with self-defined parameters.
+     *
+     * @param expression valid cron expression defining the task trigger rule
+     * @param body       custom encapsulated task body to execute when the cron trigger fires
+     * @param timeout    timeout configuration for a single task execution
+     * @return unique task registration ID used for subsequent update and delete operations
+     * @throws CronInternalException if cron parsing fails, registration conflict occurs
+     *                               or any internal scheduling exception is thrown
      */
     String register(String expression, TaskBody body, RunningTimeout timeout) throws CronInternalException;
 
     /**
-     * Register a new scheduled task using the given {@code CronTask} object
-     * and an instance of timeout control configuration during task execution.
-     * <p>The {@code CronTask} object encapsulates the cron expression and task body
-     * information of the task.
-     * <p>This method takes a {@code CronTask} object as an input parameter and returns
-     * the unique identifier of the task after successful registration.
+     * Register a scheduled task using the encapsulated {@link CronTask} metadata
+     * and task execution timeout configuration.
      *
-     * @param task    a task metadata encapsulation object {@code CronTask}.
-     * @param timeout configure instance for timeout control during task execution.
-     * @return After successful registration, return the unique ID of the registration task,
-     * which can be used for subsequent updates and deletions.
-     * @throws CronInternalException    if an unsupported or incorrect related exception occurs
-     *                                  within the scheduling architecture.
+     * @param task     encapsulated cron task metadata containing trigger and task body
+     * @param timeout  timeout configuration for a single task execution
+     * @return unique task registration ID used for subsequent update and delete operations
+     * @throws CronInternalException if cron parsing fails, registration conflict occurs
+     *                               or any internal scheduling exception is thrown
      */
     String register(CronTask task, RunningTimeout timeout) throws CronInternalException;
 
     /**
-     * Register a new scheduled task using the given cron expression and a {@code Runnable}
-     * and an instance of timeout control configuration during task execution,and it will
-     * be automatically cleared after running once
-     * <p>This method receives a valid cron expression and a {@code Runnable} as input
-     * parameters,and return the unique identifier of the task after successful registration.
+     * Register a one-time scheduled task that will be automatically unregistered
+     * after its first successful execution.
      *
-     * @param expression a valid cron expression.
-     * @param runnable   the {@code Runnable} executed when cron expression expects time.
-     * @param timeout    configure instance for timeout control during task execution.
-     * @return After successful registration, return the unique ID of the registration task for
-     * subsequent update and deletion operations, but be cautious of the invalidation of the number
-     * of runs caused by update and deletion operations after opening.
-     * @throws CronInternalException    if an unsupported or incorrect related exception occurs
-     *                                  within the scheduling architecture.
+     * @param expression valid cron expression defining the task trigger rule
+     * @param runnable   the task logic to execute when the cron trigger fires
+     * @param timeout    timeout configuration for a single task execution
+     * @return unique task registration ID for later task management
+     * <p><strong>Note:</strong> Task update operations may reset the remaining run count,
+     * which could invalidate the one-time execution constraint.
+     * @throws CronInternalException if cron parsing fails, registration conflict occurs
+     *                               or any internal scheduling exception is thrown
      */
     default String registerRunOnce(String expression, Runnable runnable, RunningTimeout timeout)
             throws CronInternalException {
@@ -145,21 +127,17 @@ public interface RunTimeoutRegistrarRepository
     }
 
     /**
-     * Register a new scheduled task using the given cron expression and a {@code CronMethodRunnable}
-     * and an instance of timeout control configuration during task execution, and it will be
-     * automatically cleared after running once.
-     * <p>This method receives a valid cron expression and a {@code CronMethodRunnable}
-     * as input parameters,and return the unique identifier of the task after successful
-     * registration.
+     * Register a one-time scheduled task that will be automatically unregistered
+     * after its first successful execution.
      *
-     * @param expression a valid cron expression.
-     * @param runnable   the {@code CronMethodRunnable} executed when cron expression expects time.
-     * @param timeout    configure instance for timeout control during task execution.
-     * @return After successful registration, return the unique ID of the registration task for
-     * subsequent update and deletion operations, but be cautious of the invalidation of the number
-     * of runs caused by update and deletion operations after opening.
-     * @throws CronInternalException    if an unsupported or incorrect related exception occurs
-     *                                  within the scheduling architecture.
+     * @param expression valid cron expression defining the task trigger rule
+     * @param runnable   method-wrapped task logic to execute when the cron trigger fires
+     * @param timeout    timeout configuration for a single task execution
+     * @return unique task registration ID for later task management
+     * <p><strong>Note:</strong> Task update operations may reset the remaining run count,
+     * which could invalidate the one-time execution constraint.
+     * @throws CronInternalException if cron parsing fails, registration conflict occurs
+     *                               or any internal scheduling exception is thrown
      */
     default String registerRunOnce(String expression, CronMethodRunnable runnable, RunningTimeout timeout)
             throws CronInternalException {
@@ -167,20 +145,17 @@ public interface RunTimeoutRegistrarRepository
     }
 
     /**
-     * Register a new scheduled task using the given cron expression and a {@code RunnableTaskBody}
-     * and an instance of timeout control configuration during task execution, and it will be
-     * automatically cleared after running once.
-     * <p>This method receives a valid cron expression and a {@code RunnableTaskBody} as input
-     * parameters,and return the unique identifier of the task after successful registration.
+     * Register a one-time scheduled task that will be automatically unregistered
+     * after its first successful execution.
      *
-     * @param expression a valid cron expression.
-     * @param body       the {@code RunnableTaskBody} executed when cron expression expects time.
-     * @param timeout    configure instance for timeout control during task execution.
-     * @return After successful registration, return the unique ID of the registration task for
-     * subsequent update and deletion operations, but be cautious of the invalidation of the number
-     * of runs caused by update and deletion operations after opening.
-     * @throws CronInternalException    if an unsupported or incorrect related exception occurs
-     *                                  within the scheduling architecture.
+     * @param expression valid cron expression defining the task trigger rule
+     * @param body       encapsulated runnable task body to execute when the cron trigger fires
+     * @param timeout    timeout configuration for a single task execution
+     * @return unique task registration ID for later task management
+     * <p><strong>Note:</strong> Task update operations may reset the remaining run count,
+     * which could invalidate the one-time execution constraint.
+     * @throws CronInternalException if cron parsing fails, registration conflict occurs
+     *                               or any internal scheduling exception is thrown
      */
     default String registerRunOnce(String expression, RunnableTaskBody body, RunningTimeout timeout)
             throws CronInternalException {
@@ -188,23 +163,20 @@ public interface RunTimeoutRegistrarRepository
     }
 
     /**
-     * Register a new scheduled task using the given cron expression and a {@code TaskBody}
-     * and an instance of timeout control configuration during task execution, and it will
-     * be automatically cleared after running once.
-     * <p>This method receives a valid cron expression and a {@code TaskBody} as input
-     * parameters,and return the unique identifier of the task after successful registration.
-     * <p>The execution parameter {@code TaskBody} is a custom parameter, which is determined
-     * based on the framework implementation used. Developers can create and pass custom
-     * parameters based on this.
+     * Register a one-time scheduled task that will be automatically unregistered
+     * after its first successful execution.
      *
-     * @param expression a valid cron expression.
-     * @param body       the {@code TaskBody} executed when cron expression expects time.
-     * @param timeout    configure instance for timeout control during task execution.
-     * @return After successful registration, return the unique ID of the registration task for
-     * subsequent update and deletion operations, but be cautious of the invalidation of the number
-     * of runs caused by update and deletion operations after opening.
-     * @throws CronInternalException    if an unsupported or incorrect related exception occurs
-     *                                  within the scheduling architecture.
+     * <p>{@link TaskBody} allows developers to implement custom task execution logic
+     * with self-defined parameters.
+     *
+     * @param expression valid cron expression defining the task trigger rule
+     * @param body       custom encapsulated task body to execute when the cron trigger fires
+     * @param timeout    timeout configuration for a single task execution
+     * @return unique task registration ID for later task management
+     * <p><strong>Note:</strong> Task update operations may reset the remaining run count,
+     * which could invalidate the one-time execution constraint.
+     * @throws CronInternalException if cron parsing fails, registration conflict occurs
+     *                               or any internal scheduling exception is thrown
      */
     default String registerRunOnce(String expression, TaskBody body, RunningTimeout timeout)
             throws CronInternalException {
@@ -212,127 +184,104 @@ public interface RunTimeoutRegistrarRepository
     }
 
     /**
-     * Register a new scheduled task using the given {@code CronTask} object and an instance of
-     * timeout control configuration during task execution, and it will be automatically cleared
-     * after running once.
-     * <p>The {@code CronTask} object encapsulates the cron expression and task body
-     * information of the task.
-     * <p>This method takes a {@code CronTask} object as an input parameter and returns
-     * the unique identifier of the task after successful registration.
+     * Register a one-time scheduled task that will be automatically unregistered
+     * after its first successful execution.
      *
-     * @param task    a task metadata encapsulation object {@code CronTask}.
-     * @param timeout configure instance for timeout control during task execution.
-     * @return After successful registration, return the unique ID of the registration task for
-     * subsequent update and deletion operations, but be cautious of the invalidation of the number
-     * of runs caused by update and deletion operations after opening.
-     * @throws CronInternalException    if an unsupported or incorrect related exception occurs
-     *                                  within the scheduling architecture.
+     * @param task    encapsulated cron task metadata containing trigger and task body
+     * @param timeout timeout configuration for a single task execution
+     * @return unique task registration ID for later task management
+     * <p><strong>Note:</strong> Task update operations may reset the remaining run count,
+     * which could invalidate the one-time execution constraint.
+     * @throws CronInternalException if cron parsing fails, registration conflict occurs
+     *                               or any internal scheduling exception is thrown
      */
     default String registerRunOnce(CronTask task, RunningTimeout timeout) throws CronInternalException {
         return registerRunTimes(task, 1, timeout);
     }
 
     /**
-     * Register a new scheduled task using the given cron expression and {@code Runnable}
-     * and an instance of timeout control configuration during task execution,and automatically
-     * clear it after running the specified number of times.
-     * <p>This method receives a valid cron expression and a {@code Runnable} as input
-     * parameters,and return the unique identifier of the task after successful registration.
+     * Register a scheduled task that will be automatically unregistered after
+     * the specified number of executions.
      *
-     * @param expression a valid cron expression.
-     * @param runnable   the {@code Runnable} executed when cron expression expects time.
-     * @param times   the number of runs specified based on the expression's runtime.
-     * @param timeout    configure instance for timeout control during task execution.
-     * @return After successful registration, return the unique ID of the registration task for
-     * subsequent update and deletion operations, but be cautious of the invalidation of the number
-     * of runs caused by update and deletion operations after opening.
-     * @throws CronInternalException    if an unsupported or incorrect related exception occurs
-     *                                  within the scheduling architecture.
+     * @param expression valid cron expression defining the task trigger rule
+     * @param runnable   the task logic to execute when the cron trigger fires
+     * @param times      maximum allowed execution times, must be a positive integer
+     * @param timeout    timeout configuration for a single task execution
+     * @return unique task registration ID for later task management
+     * <p><strong>Note:</strong> Task update operations may reset the remaining run count,
+     * which could invalidate the predefined execution limit.
+     * @throws CronInternalException if cron parsing fails, registration conflict occurs
+     *                               or any internal scheduling exception is thrown
      */
     String registerRunTimes(String expression, Runnable runnable, int times, RunningTimeout timeout)
             throws CronInternalException;
 
     /**
-     * Register a new scheduled task using the given cron expression and a {@code CronMethodRunnable}
-     * and an instance of timeout control configuration during task execution, and automatically clear
-     * it after running the specified number of times.
-     * <p>This method receives a valid cron expression and a {@code CronMethodRunnable}
-     * as input parameters,and return the unique identifier of the task after successful
-     * registration.
+     * Register a scheduled task that will be automatically unregistered after
+     * the specified number of executions.
      *
-     * @param expression a valid cron expression.
-     * @param runnable   the {@code CronMethodRunnable} executed when cron expression expects time.
-     * @param times      the number of runs specified based on the expression's runtime.
-     * @param timeout    configure instance for timeout control during task execution.
-     * @return After successful registration, return the unique ID of the registration task for
-     * subsequent update and deletion operations, but be cautious of the invalidation of the number
-     * of runs caused by update and deletion operations after opening.
-     * @throws CronInternalException    if an unsupported or incorrect related exception occurs
-     *                                  within the scheduling architecture.
+     * @param expression valid cron expression defining the task trigger rule
+     * @param runnable   method-wrapped task logic to execute when the cron trigger fires
+     * @param times      maximum allowed execution times, must be a positive integer
+     * @param timeout    timeout configuration for a single task execution
+     * @return unique task registration ID for later task management
+     * <p><strong>Note:</strong> Task update operations may reset the remaining run count,
+     * which could invalidate the predefined execution limit.
+     * @throws CronInternalException if cron parsing fails, registration conflict occurs
+     *                               or any internal scheduling exception is thrown
      */
     String registerRunTimes(String expression, CronMethodRunnable runnable, int times, RunningTimeout timeout)
             throws CronInternalException;
 
     /**
-     * Register a new scheduled task using the given cron expression and a {@code RunnableTaskBody},
-     * and an instance of timeout control configuration during task execution and automatically
-     * clear it after running the specified number of times.
-     * <p>This method receives a valid cron expression and a {@code RunnableTaskBody} as input
-     * parameters,and return the unique identifier of the task after successful registration.
+     * Register a scheduled task that will be automatically unregistered after
+     * the specified number of executions.
      *
-     * @param expression a valid cron expression.
-     * @param body       the {@code RunnableTaskBody} executed when cron expression expects time.
-     * @param times      the number of runs specified based on the expression's runtime.
-     * @param timeout    configure instance for timeout control during task execution.
-     * @return After successful registration, return the unique ID of the registration task for
-     * subsequent update and deletion operations, but be cautious of the invalidation of the number
-     * of runs caused by update and deletion operations after opening.
-     * @throws CronInternalException    if an unsupported or incorrect related exception occurs
-     *                                  within the scheduling architecture.
+     * @param expression valid cron expression defining the task trigger rule
+     * @param body       encapsulated runnable task body to execute when the cron trigger fires
+     * @param times      maximum allowed execution times, must be a positive integer
+     * @param timeout    timeout configuration for a single task execution
+     * @return unique task registration ID for later task management
+     * <p><strong>Note:</strong> Task update operations may reset the remaining run count,
+     * which could invalidate the predefined execution limit.
+     * @throws CronInternalException if cron parsing fails, registration conflict occurs
+     *                               or any internal scheduling exception is thrown
      */
     String registerRunTimes(String expression, RunnableTaskBody body, int times, RunningTimeout timeout)
             throws CronInternalException;
 
     /**
-     * Register a new scheduled task using the given cron expression and a {@code TaskBody}
-     * and an instance of timeout control configuration during task execution and automatically
-     * clear it after running the specified number of times.
-     * <p>This method receives a valid cron expression and a {@code TaskBody} as input
-     * parameters,and return the unique identifier of the task after successful registration.
-     * <p>The execution parameter {@code TaskBody} is a custom parameter, which is determined
-     * based on the framework implementation used. Developers can create and pass custom
-     * parameters based on this.
+     * Register a scheduled task that will be automatically unregistered after
+     * the specified number of executions.
      *
-     * @param expression a valid cron expression.
-     * @param body       the {@code TaskBody} executed when cron expression expects time.
-     * @param times      the number of runs specified based on the expression's runtime.
-     * @param timeout    configure instance for timeout control during task execution.
-     * @return After successful registration, return the unique ID of the registration task for
-     * subsequent update and deletion operations, but be cautious of the invalidation of the number
-     * of runs caused by update and deletion operations after opening.
-     * @throws CronInternalException    if an unsupported or incorrect related exception occurs
-     *                                  within the scheduling architecture.
+     * <p>{@link TaskBody} allows developers to implement custom task execution logic
+     * with self-defined parameters.
+     *
+     * @param expression valid cron expression defining the task trigger rule
+     * @param body       custom encapsulated task body to execute when the cron trigger fires
+     * @param times      maximum allowed execution times, must be a positive integer
+     * @param timeout    timeout configuration for a single task execution
+     * @return unique task registration ID for later task management
+     * <p><strong>Note:</strong> Task update operations may reset the remaining run count,
+     * which could invalidate the predefined execution limit.
+     * @throws CronInternalException if cron parsing fails, registration conflict occurs
+     *                               or any internal scheduling exception is thrown
      */
     String registerRunTimes(String expression, TaskBody body, int times, RunningTimeout timeout)
             throws CronInternalException;
 
     /**
-     * Register a new scheduled task using the given {@code CronTask} object
-     * and an instance of timeout control configuration during task execution,
-     * and automatically clear it after running the specified number of times.
-     * <p>The {@code CronTask} object encapsulates the cron expression and task body
-     * information of the task.
-     * <p>This method takes a {@code CronTask} object as an input parameter and returns
-     * the unique identifier of the task after successful registration.
+     * Register a scheduled task that will be automatically unregistered after
+     * the specified number of executions.
      *
-     * @param task    a task metadata encapsulation object {@code CronTask}.
-     * @param times   the number of runs specified based on the expression's runtime.
-     * @param timeout configure instance for timeout control during task execution.
-     * @return After successful registration, return the unique ID of the registration task for
-     * subsequent update and deletion operations, but be cautious of the invalidation of the number
-     * of runs caused by update and deletion operations after opening.
-     * @throws CronInternalException    if an unsupported or incorrect related exception occurs
-     *                                  within the scheduling architecture.
+     * @param task     encapsulated cron task metadata containing trigger and task body
+     * @param times    maximum allowed execution times, must be a positive integer
+     * @param timeout  timeout configuration for a single task execution
+     * @return unique task registration ID for later task management
+     * <p><strong>Note:</strong> Task update operations may reset the remaining run count,
+     * which could invalidate the predefined execution limit.
+     * @throws CronInternalException if cron parsing fails, registration conflict occurs
+     *                               or any internal scheduling exception is thrown
      */
     String registerRunTimes(CronTask task, int times, RunningTimeout timeout) throws CronInternalException;
 }
