@@ -507,12 +507,20 @@ public abstract class AbstractCronTaskRepository
      * {@inheritDoc}
      */
     @Override
-    public LongTimedExecutor longTimed(@Nullable String description, String... tags) {
+    public LongTimedExecutor longTimed(String... tags) {
 
         Optional<LongTaskTimer> timer
-                = MeterRegistryDelegation.longTaskTimer(TASK_BODY_EXECUTION_TIMER_KEY, description,
+                = MeterRegistryDelegation.longTaskTimer(TASK_BODY_EXECUTION_TIMER_KEY,
+                // Description is the name of the resource client carrier where the task runs...
+                String.format("Tasks whose scheduling capability is provided by the {%s} " +
+                        "repository client", getName()),
                 // Fixed with the name of the current resource model attached...
-                ArrayUtils.addAll(tags, MODULE_TAG_KEY, getName()));
+                ArrayUtils.addAll(tags, // the customized tags
+                        // the module name tag key-value.
+                        MODULE_TAG_KEY, getName(),
+                        // the wrapper runnable body tag key-value
+                        WRAPPER_RUNNABLE_TYPE_TAG_KEY, runBodyWrapperClassName())
+        );
 
         return new LongTimedExecutor() {
 
@@ -549,6 +557,16 @@ public abstract class AbstractCronTaskRepository
                 }
             }
         };
+    }
+
+    /**
+     * The class object name that runs the body wrapper returns {@link Runnable java.lang.Runnable}
+     * by default.
+     * @since 3.0.2
+     * @return The class object name that runs the body wrapper.
+     */
+    protected String runBodyWrapperClassName() {
+        return "java.lang.Runnable";
     }
 
     /**
