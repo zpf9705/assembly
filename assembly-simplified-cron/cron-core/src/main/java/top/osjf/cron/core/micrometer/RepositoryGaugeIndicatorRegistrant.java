@@ -25,6 +25,7 @@ import top.osjf.commons.util.Assert;
 import top.osjf.cron.core.repository.CronListenerRepository;
 import top.osjf.cron.core.repository.CronTaskRepository;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.ToDoubleFunction;
 
 import static top.osjf.cron.core.micrometer.RepositoryMicrometerConstants.*;
@@ -43,7 +44,7 @@ public class RepositoryGaugeIndicatorRegistrant {
     private final MeterRegistry meterRegistry;
     private final CronTaskRepository cronTaskRepository;
     private final ExpressionResolver expressionResolver;
-    private boolean registerFlag;
+    private final AtomicBoolean registerFlag = new AtomicBoolean(false);
 
     /**
      * Constructs an indicator registrant using Micrometer global default {@link MeterRegistry}
@@ -89,7 +90,7 @@ public class RepositoryGaugeIndicatorRegistrant {
      */
     public void doRegister() {
 
-        Assert.isTrue(!registerFlag,
+        Assert.state(registerFlag.compareAndSet(false, true),
                 String.format("Gauge metric for repository [%s] has already been registered, repeated registration " +
                                 "is not allowed", cronTaskRepository.getName()));
 
@@ -117,8 +118,6 @@ public class RepositoryGaugeIndicatorRegistrant {
                 CronListenerRepository::getListenerSize,
                 "long getListenerSize()",
                 "Real-time total quantity of all currently valid registered cron listeners");
-
-        registerFlag = true;
     }
 
     private void doRegisterInternal(String name, ToDoubleFunction<CronTaskRepository> f, String methodSignature,
