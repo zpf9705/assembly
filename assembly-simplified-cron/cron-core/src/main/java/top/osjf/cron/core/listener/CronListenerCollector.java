@@ -255,7 +255,7 @@ public abstract class CronListenerCollector implements Wrapper {
 
         private boolean sort = false;
 
-        private AtomicBoolean buildFlag = new AtomicBoolean(false);
+        private final AtomicBoolean buildFlag = new AtomicBoolean(false);
 
         /**
          * Private constructor, create builder via {@link #newQueryBuilder()}
