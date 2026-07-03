@@ -408,6 +408,7 @@ public abstract class CronListenerCollector implements Wrapper {
      *                      for executing scheduled tasks.
      */
     protected void doStartListener(Object sourceContext) {
+        Assert.notNull(sourceContext, "sourceContext must not be null");
         doListeners(ListenerLifecycle.START, sourceContext, null);
     }
 
@@ -419,6 +420,7 @@ public abstract class CronListenerCollector implements Wrapper {
      *                      for executing scheduled tasks.
      */
     protected void doSuccessListener(Object sourceContext) {
+        Assert.notNull(sourceContext, "sourceContext must not be null");
         doListeners(ListenerLifecycle.SUCCESS, sourceContext, null);
     }
 
@@ -430,6 +432,7 @@ public abstract class CronListenerCollector implements Wrapper {
      * @param e             error type object thrown during task execution.
      */
     protected void doFailedListener(Object sourceContext, Throwable e) {
+        Assert.notNull(sourceContext, "sourceContext must not be null");
         doListeners(ListenerLifecycle.FAILED, sourceContext,  e);
     }
 
