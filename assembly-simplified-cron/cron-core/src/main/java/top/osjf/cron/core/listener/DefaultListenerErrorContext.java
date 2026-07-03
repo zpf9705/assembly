@@ -17,6 +17,7 @@
 
 package top.osjf.cron.core.listener;
 
+import top.osjf.commons.util.Assert;
 import top.osjf.cron.core.repository.RepositoryContext;
 
 /**
@@ -57,6 +58,11 @@ public class DefaultListenerErrorContext implements ListenerErrorContext {
      */
     public DefaultListenerErrorContext(ListenerContext listenerContext,
                                        ListenerLifecycle errorListenerLifecycle, CronListener errorCronListener) {
+
+        Assert.notNull(listenerContext, "listenerContext must not be null");
+        Assert.notNull(errorListenerLifecycle, "errorListenerLifecycle must not be null");
+        Assert.notNull(errorCronListener, "errorCronListener must not be null");
+
         this.listenerContext = listenerContext;
         this.errorListenerLifecycle = errorListenerLifecycle;
         this.errorCronListener = errorCronListener;
