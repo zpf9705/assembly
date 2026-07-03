@@ -237,7 +237,7 @@ public interface CronTaskRepository extends Repository, RunTimesRegistrarReposit
      * @throws NotSupportConcurrentExecutionException if the underlying scheduler does not support concurrent
      * scheduling, thus disallow-concurrent rule cannot be registered.
      * @see DisallowConcurrentExecution
-     * @see CronTaskRegistrar
+     * @see AnnotationMethodRegistrar
      * @since 3.0.2
      */
     void disallowConcurrentExecution(String id) throws NotSupportConcurrentExecutionException;

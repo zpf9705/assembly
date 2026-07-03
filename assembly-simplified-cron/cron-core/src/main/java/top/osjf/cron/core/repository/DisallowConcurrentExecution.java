@@ -44,7 +44,7 @@ import java.lang.annotation.*;
  * @see CronTaskRepository#isSupportConcurrentExecution
  * @see CronTaskRepository#disallowConcurrentExecution
  * @see CronTaskRepository#cancelDisallowConcurrentExecution
- * @see CronTaskRegistrar
+ * @see AnnotationMethodRegistrar
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
