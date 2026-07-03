@@ -17,6 +17,8 @@
 
 package top.osjf.cron.core.repository;
 
+import java.lang.annotation.*;
+
 /**
  * Annotate the business display name of the scheduled task on the
  * scheduled execution method.
@@ -24,6 +26,9 @@ package top.osjf.cron.core.repository;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
  */
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
 public @interface Name {
 
     /**
