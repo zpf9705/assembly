@@ -347,6 +347,7 @@ public class CronTaskInfo implements Serializable {
     public String toString() {
         return "CronTaskInfo{" +
                 "id='" + id + '\'' +
+                ", name='" + name + '\'' +
                 ", expression='" + expression + '\'' +
                 ", runnable=" + runnable +
                 ", target=" + target +
@@ -357,6 +358,7 @@ public class CronTaskInfo implements Serializable {
                 ", isRunning=" + isRunning +
                 ", nextExecuteTimestamp=" + nextExecuteTimestamp +
                 ", disallowConcurrentExecution=" + disallowConcurrentExecution +
+                ", description='" + description + '\'' +
                 '}';
     }
 }
