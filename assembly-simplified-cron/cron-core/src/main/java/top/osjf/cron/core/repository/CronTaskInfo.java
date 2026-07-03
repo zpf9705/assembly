@@ -39,6 +39,12 @@ public class CronTaskInfo implements Serializable {
     /**  The unique ID of this task within its lifetime. */
     private final String id;
 
+    /**
+     * The custom name for this task.
+     * @since 3.0.2
+     */
+    @Nullable private String name;
+
     /** The cron expression for executing this task.*/
     private final String expression;
 
@@ -90,6 +96,12 @@ public class CronTaskInfo implements Serializable {
     private boolean disallowConcurrentExecution;
 
     /**
+     * The description of the role of this task
+     * @since 3.0.2
+     */
+    @Nullable private String description;
+
+    /**
      * Construct a scheduled task metadata instance for common {@link Runnable} type tasks.
      * <p>This constructor is applicable to anonymous task scenarios without binding target
      * objects and execution methods.
@@ -120,6 +132,14 @@ public class CronTaskInfo implements Serializable {
         this.runnable = runnable;
         this.target = target;
         this.method = method;
+    }
+
+    /**
+     * Set the custom task name.
+     * @param name the custom task name.
+     */
+    public void setName(@Nullable String name) {
+        this.name = name;
     }
 
     /**
@@ -177,10 +197,27 @@ public class CronTaskInfo implements Serializable {
     }
 
     /**
+     * Set the description of the role of this task
+     * @param description the description of the role of this task
+     * @since 3.0.2
+     */
+    public void setDescription(@Nullable String description) {
+        this.description = description;
+    }
+
+    /**
      * @return {@link #id}
      */
     public String getId() {
         return id;
+    }
+
+    /**
+     * @return {@link #id}
+     */
+    @Nullable
+    public String getName() {
+        return name;
     }
 
     /**
@@ -279,6 +316,14 @@ public class CronTaskInfo implements Serializable {
      */
     public boolean isDisallowConcurrentExecution() {
         return disallowConcurrentExecution;
+    }
+
+    /**
+     * @return {@link #description}
+     */
+    @Nullable
+    public String getDescription() {
+        return description;
     }
 
     @Override
