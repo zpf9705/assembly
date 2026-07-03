@@ -38,7 +38,7 @@ import static top.osjf.cron.core.micrometer.RepositoryMicrometerConstants.*;
  * It wraps the original task {@link Runnable} into {@link TimeoutMonitoringRunnable} to implement
  * interrupt control for long-running blocked tasks.
  *
- * <p>Core capabilities:
+ * <p>This abstract class mainly implements the following common logic capabilities.:
  * <ul>
  * <li>Initializes a dedicated thread pool for timeout task monitoring via {@link #initialize()},
  * configured from framework initialization properties or system default configurations.</li>

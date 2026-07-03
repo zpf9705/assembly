@@ -39,7 +39,7 @@ import static top.osjf.cron.core.micrometer.RepositoryMicrometerConstants.*;
  * Abstract base implementation of {@link RunTimesRegistrarRepository},
  * which provides thread-safe limited execution scheduling capability for cron tasks.
  *
- * <p>Core implementation mechanism:
+ * <p>This abstract class mainly implements the following common logic capabilities.:
  * <ol>
  * <li>Registers a global built-in {@link CronListener} to the tail of the listener execution chain,
  * which automatically decrements the remaining execution count after each task completes successfully
