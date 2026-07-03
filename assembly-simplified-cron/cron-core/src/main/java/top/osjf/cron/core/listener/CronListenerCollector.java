@@ -220,6 +220,7 @@ public abstract class CronListenerCollector implements Wrapper {
      * @since 1.0.4
      */
     public boolean hasCronListener(CronListener cronListener) {
+        Assert.notNull(cronListener, "cronListener must not be null");
         final Lock readLock = lock.readLock();
         readLock.lock();
         try {

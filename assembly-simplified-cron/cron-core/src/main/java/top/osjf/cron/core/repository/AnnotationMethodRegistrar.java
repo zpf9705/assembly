@@ -61,6 +61,9 @@ public class AnnotationMethodRegistrar {
      * for the expression.
      */
     public AnnotationMethodRegistrar(Object target, Method method) {
+        Assert.notNull(target, "target must not be null");
+        Assert.notNull(method, "method must not be null");
+
         this.targetMethod = method;
         CronMethodRunnable runnable = new CronMethodRunnable(target, method);
         Expression expression = method.getAnnotation(Expression.class);
@@ -74,6 +77,8 @@ public class AnnotationMethodRegistrar {
      * @param cronTask predefined core cron task definition
      */
     public AnnotationMethodRegistrar(CronTask cronTask) {
+        Assert.notNull(cronTask, "cronTask must not be null");
+
         this.cronTask = cronTask;
         this.targetMethod = cronTask.getRunnable().getMethod();
     }
@@ -88,6 +93,8 @@ public class AnnotationMethodRegistrar {
      * @throws IllegalStateException if this registrar has already finished registration
      */
     public String registerFor(CronTaskRepository cronTaskRepository) {
+
+        Assert.notNull(cronTaskRepository, "cronTaskRepository must not be null");
 
         Assert.state(registered.compareAndSet(false, true),
                 "AnnotationMethodRegistrar method registerFor() only invoke once.");

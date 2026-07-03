@@ -98,6 +98,10 @@ public abstract class AbstractCronTaskRepository
             description = "Counts the number of cron task registration invocations")
     @SystemPropertiesTags
     public String register(String expression, Runnable runnable) throws CronInternalException {
+
+        Assert.hasText(expression, "expression must not be null or blank");
+        Assert.notNull(runnable, "Runnable must not be null");
+
         checkSupportedExpression(expression);
         String id;
         try {
@@ -120,6 +124,10 @@ public abstract class AbstractCronTaskRepository
             description = "Counts the number of cron task registration invocations")
     @SystemPropertiesTags
     public String register(String expression, CronMethodRunnable runnable) throws CronInternalException {
+
+        Assert.hasText(expression, "expression must not be null or blank");
+        Assert.notNull(runnable, "CronMethodRunnable must not be null");
+
         checkSupportedExpression(expression);
         String id;
         try {
@@ -142,6 +150,10 @@ public abstract class AbstractCronTaskRepository
             description = "Counts the number of cron task registration invocations")
     @SystemPropertiesTags
     public String register(String expression, RunnableTaskBody body) throws CronInternalException {
+
+        Assert.hasText(expression, "expression must not be null or blank");
+        Assert.notNull(body, "RunnableTaskBody must not be null");
+
         checkSupportedExpression(expression);
         String id;
         try {
@@ -164,6 +176,10 @@ public abstract class AbstractCronTaskRepository
             description = "Counts the number of cron task registration invocations")
     @SystemPropertiesTags
     public String register(String expression, TaskBody body) throws CronInternalException {
+
+        Assert.hasText(expression, "expression must not be null or blank");
+        Assert.notNull(body, "TaskBody must not be null");
+
         checkSupportedExpression(expression);
         String id;
         try {
@@ -188,6 +204,9 @@ public abstract class AbstractCronTaskRepository
             description = "Counts the number of cron task registration invocations")
     @SystemPropertiesTags
     public String register(CronTask task) throws CronInternalException {
+
+        Assert.notNull(task, "CronTask must not be null");
+
         checkSupportedExpression(task.getExpression());
         String id;
         try {
@@ -209,6 +228,10 @@ public abstract class AbstractCronTaskRepository
             description = "Counts the number of cron task update invocations")
     @SystemPropertiesTags
     public void update(String id, String newExpression) throws CronInternalException {
+
+        Assert.hasText(id, "id must not be null or blank");
+        Assert.hasText(newExpression, "newExpression must not be null or blank");
+
         checkSupportedExpression(newExpression);
         try {
             updateInternal(id, newExpression);
@@ -227,6 +250,8 @@ public abstract class AbstractCronTaskRepository
             description = "Counts the number of cron task remove invocations")
     @SystemPropertiesTags
     public void remove(String id) throws CronInternalException {
+        Assert.hasText(id, "id must not be null or blank");
+
         try {
             removeInternal(id);
         }
@@ -264,6 +289,8 @@ public abstract class AbstractCronTaskRepository
     )
     @SystemPropertiesTags
     public void terminate(String id) throws CronInternalException {
+        Assert.hasText(id, "id must not be null or blank");
+
         try {
             if (!isTaskRunning(id)) {
                 return;
@@ -303,6 +330,7 @@ public abstract class AbstractCronTaskRepository
      */
     @Override
     public boolean hasCronTaskInfo(@NotNull String id) {
+        Assert.hasText(id, "id must not be null or blank");
         return getAllRegisteredTaskIds().contains(id);
     }
 
@@ -311,6 +339,7 @@ public abstract class AbstractCronTaskRepository
      */
     @Override
     public CronTaskInfo getCronTaskInfo(String id) {
+        Assert.hasText(id, "id must not be null or blank");
         return customizeCronTaskInfo(getCronTaskInfoInternal(id));
     }
 
@@ -330,6 +359,7 @@ public abstract class AbstractCronTaskRepository
      */
     @Override
     public boolean isTaskRunning(@NotNull String id) {
+        Assert.hasText(id, "id must not be null or blank");
         return getAllRunningTaskIds().contains(id);
     }
 
@@ -338,6 +368,8 @@ public abstract class AbstractCronTaskRepository
      */
     @Override
     public Map<String, Long> getNextExecuteTimes(Collection<String> ids) {
+        Assert.notNull(ids, "ids not be null");
+
         Map<String, Long> result = new HashMap<>(ids.size());
         for (String id : ids) {
             result.put(id, getNextExecuteTime(id));
@@ -358,6 +390,8 @@ public abstract class AbstractCronTaskRepository
      */
     @Override
     public boolean isSupportedExpression(String expression) {
+        Assert.hasText(expression, "expression must not be null or blank");
+
         try {
             checkSupportedExpression(expression);
             return true;
@@ -371,9 +405,11 @@ public abstract class AbstractCronTaskRepository
      * {@inheritDoc}
      */
     @Override
-    public long getTaskRemainingNumberOfRuns(String taskId) {
-        AtomicInteger count = getTaskRunTimesMap().getOrDefault(taskId, null);
-        return count == null ? hasCronTaskInfo(taskId) ? -1 : 0 : count.get();
+    public long getTaskRemainingNumberOfRuns(String id) {
+        Assert.hasText(id, "id must not be null or blank");
+
+        AtomicInteger count = getTaskRunTimesMap().getOrDefault(id, null);
+        return count == null ? hasCronTaskInfo(id) ? -1 : 0 : count.get();
     }
 
     /**
@@ -389,8 +425,10 @@ public abstract class AbstractCronTaskRepository
      */
     @Nullable
     @Override
-    public RunningTimeout getTimeoutConfig(String taskId) {
-        return getTaskRunTimeoutMap().getOrDefault(taskId, null);
+    public RunningTimeout getTimeoutConfig(String id) {
+        Assert.hasText(id, "id must not be null or blank");
+
+        return getTaskRunTimeoutMap().getOrDefault(id, null);
     }
 
     /**
@@ -427,6 +465,8 @@ public abstract class AbstractCronTaskRepository
      */
     @Override
     public Runnable unwrapRunnable(Runnable given) {
+        Assert.notNull(given, "Runnable must not be null");
+
         if (given instanceof TimeoutMonitoringRunnable) {
             return ((TimeoutMonitoringRunnable) given).getReal();
         }
@@ -446,6 +486,8 @@ public abstract class AbstractCronTaskRepository
      */
     @Override
     public boolean hasDisallowConcurrentExecution(String id) {
+        Assert.hasText(id, "id must not be null or blank");
+
         return disallowConcurrentExecutionIds.contains(id);
     }
 
@@ -465,6 +507,8 @@ public abstract class AbstractCronTaskRepository
      * and current trigger needs to be skipped
      */
     public boolean shouldAllowTaskExecute(String id) {
+        Assert.hasText(id, "id must not be null or blank");
+
         boolean shouldAllowTaskExecute = !hasDisallowConcurrentExecution(id) || !isTaskRunning(id);
         if (shouldAllowTaskExecute) {
             logger.warn("Task [{}] disallow concurrent execution and previous task is running, " +
@@ -478,6 +522,8 @@ public abstract class AbstractCronTaskRepository
      */
     @Override
     public void disallowConcurrentExecution(String id) throws NotSupportConcurrentExecutionException {
+        Assert.hasText(id, "id must not be null or blank");
+
         if (!isSupportConcurrentExecution()) {
             throw new NotSupportConcurrentExecutionException(this);
         }
@@ -493,6 +539,8 @@ public abstract class AbstractCronTaskRepository
      */
     @Override
     public void cancelDisallowConcurrentExecution(String id) throws CannotCancelConcurrentException {
+        Assert.hasText(id, "id must not be null or blank");
+
         CronTaskInfo cronTaskInfo = getCronTaskInfo(id);
         if (cronTaskInfo == null) {
             throw new CannotCancelConcurrentException(String.format("Cannot cancel disallow-concurrent constraint, " +
@@ -608,6 +656,8 @@ public abstract class AbstractCronTaskRepository
     @Override
     @NotNull
     public CronTaskExtendInfo getExtendInfo(String id) {
+        Assert.hasText(id, "id must not be null or blank");
+
         if (!hasCronTaskInfo(id)) {
             throw new CronInternalException(String.format("Scheduled task with id [%s] does not exist.", id));
         }

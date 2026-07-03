@@ -19,6 +19,7 @@ package top.osjf.cron.core.repository;
 
 import io.micrometer.core.annotation.Counted;
 import top.osjf.commons.lang.NotNull;
+import top.osjf.commons.util.Assert;
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.listener.SimpleCronListener;
@@ -223,9 +224,7 @@ public abstract class AbstractRunTimesRegistrarRepository
     private String registerRunTimes(Supplier<String> idSupplier, int times) {
 
         // The specified number of runs cannot be less than or equal to 0.
-        if (times <= 0) {
-            throw new IllegalArgumentException("Specify run times must be greater than 0");
-        }
+        Assert.isTrue(times > 0, "Specify run times must be greater than 0");
 
         // Check if the listener for task frequency management has been registered.
         if (isRunTimesCheckListenerRegistered.compareAndSet(false, true)) {

@@ -19,6 +19,7 @@ package top.osjf.cron.core.repository;
 
 import io.micrometer.core.annotation.Counted;
 import top.osjf.commons.lang.Nullable;
+import top.osjf.commons.util.Assert;
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 import top.osjf.cron.core.lifecycle.InitializeProperties;
@@ -127,6 +128,7 @@ public abstract class AbstractRunTimeoutRegistrarRepository
     @SystemPropertiesTags
     public String register(String expression, RunnableTaskBody body, RunningTimeout timeout)
             throws CronInternalException {
+        Assert.notNull(body, "RunnableTaskBody must not be null");
         return register(expression, body.getRunnable(), timeout);
     }
 
@@ -153,6 +155,7 @@ public abstract class AbstractRunTimeoutRegistrarRepository
             description = "Counts invocation times of cron task registration with execution timeout configuration")
     @SystemPropertiesTags
     public String register(CronTask task, RunningTimeout timeout) throws CronInternalException {
+        Assert.notNull(task, "CronTask must not be null");
         return register(task.getExpression(), task.getRunnable(), timeout);
     }
 
@@ -198,6 +201,7 @@ public abstract class AbstractRunTimeoutRegistrarRepository
     @SystemPropertiesTags
     public String registerRunTimes(String expression, RunnableTaskBody body, int times, RunningTimeout timeout)
             throws CronInternalException {
+        Assert.notNull(body, "RunnableTaskBody must not be null");
         return registerRunTimes(expression, body.getRunnable(), times, timeout);
     }
 
@@ -227,6 +231,7 @@ public abstract class AbstractRunTimeoutRegistrarRepository
                     "run times configuration")
     @SystemPropertiesTags
     public String registerRunTimes(CronTask task, int times, RunningTimeout timeout) throws CronInternalException {
+        Assert.notNull(task, "CronTask must not be null");
         return registerRunTimes(task.getExpression(), task.getRunnable(), times, timeout);
     }
 
@@ -283,6 +288,7 @@ public abstract class AbstractRunTimeoutRegistrarRepository
      * @throws UnsupportedTaskBodyException if the task body type cannot be converted to Runnable
      */
     protected Runnable asRunnable(TaskBody body) throws UnsupportedTaskBodyException {
+        Assert.notNull(body, "TaskBody must not be null");
         if (body.isWrapperFor(Runnable.class)) {
             return body.unwrap(Runnable.class);
         } else if (body.isWrapperFor(RunnableTaskBody.class)) {
@@ -300,6 +306,9 @@ public abstract class AbstractRunTimeoutRegistrarRepository
      * @return wrapped runnable with timeout interrupt monitoring capability
      */
     protected Runnable wrapWithTimeoutMonitoring(Runnable raw, RunningTimeout timeout) {
+        Assert.notNull(raw, "Raw Runnable must not be null");
+        Assert.notNull(timeout, "RunningTimeout must not be null");
+
         return new TimeoutMonitoringRunnable(raw, timeout, monitoringExecutor);
     }
 }

@@ -17,6 +17,8 @@
 
 package top.osjf.cron.core.repository;
 
+import top.osjf.commons.util.Assert;
+
 /**
  * The default implementation class of interface {@link RepositoryContext}.
  * <p>
@@ -31,6 +33,7 @@ public class DefaultRepositoryContext implements RepositoryContext {
     private final CronTaskRepository cronTaskRepository;
 
     public DefaultRepositoryContext(CronTaskRepository cronTaskRepository) {
+        Assert.notNull(cronTaskRepository, "cronTaskRepository must not be null");
         this.cronTaskRepository = cronTaskRepository;
     }
 

@@ -20,6 +20,7 @@ package top.osjf.cron.core.repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.osjf.commons.lang.Nullable;
+import top.osjf.commons.util.Assert;
 import top.osjf.commons.util.Attributes;
 
 /**
@@ -43,6 +44,7 @@ public class CronTaskExtendInfo extends Attributes {
      */
     public CronTaskExtendInfo(String id) {
         super();
+        Assert.hasText(id, "id must not be null or blank");
         this.id = id;
     }
 

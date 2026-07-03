@@ -41,6 +41,7 @@ public class TypedRepositoryContext implements RepositoryContext {
      * @param repository the underlying repository to wrap and convert to various typed views
      */
     public TypedRepositoryContext(Repository repository) {
+        Assert.notNull(repository, "repository must not be null");
         this.repository = repository;
     }
 

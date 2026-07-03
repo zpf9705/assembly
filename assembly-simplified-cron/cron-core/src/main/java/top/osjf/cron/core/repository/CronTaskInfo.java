@@ -18,6 +18,7 @@
 package top.osjf.cron.core.repository;
 
 import top.osjf.commons.lang.Nullable;
+import top.osjf.commons.util.Assert;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -127,6 +128,11 @@ public class CronTaskInfo implements Serializable {
      */
     public CronTaskInfo(String id, String expression, Runnable runnable,
                         @Nullable Object target, @Nullable Method method) {
+
+        Assert.hasText(id, "id must not be null or blank");
+        Assert.hasText(expression, "expression must not be null or blank");
+        Assert.notNull(runnable, "source Runnable not be null");
+
         this.id = id;
         this.expression = expression;
         this.runnable = runnable;
