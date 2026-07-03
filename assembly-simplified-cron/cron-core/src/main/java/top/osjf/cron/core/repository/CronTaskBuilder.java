@@ -242,9 +242,10 @@ public class CronTaskBuilder implements CronTaskRepository.Builder {
         Assert.state(built.compareAndSet(false, true),
                 "Current CronTaskBuilder instance can only call build() once");
 
-        Assert.hasText(expression, "Cron expression must be specified");
-
         Assert.notNull(task, "Task execution body must be specified");
+
+        Assert.isTrue(task instanceof CronTask || StringUtils.isNotBlank(expression),
+                "Cron expression must be specified");
 
         return buildInternal();
     }
