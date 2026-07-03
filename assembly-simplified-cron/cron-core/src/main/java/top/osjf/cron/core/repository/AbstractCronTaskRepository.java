@@ -29,6 +29,8 @@ import top.osjf.cron.core.micrometer.SystemPropertiesTags;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -71,11 +73,20 @@ import static top.osjf.cron.core.micrometer.RepositoryMicrometerConstants.*;
 public abstract class AbstractCronTaskRepository
         extends AbstractRunTimeoutRegistrarRepository implements CronTaskRepository {
 
+    /** Key used to store task business name in default basic extend attribute group. */
+    private static final String EXTEND_INFO_OF_NAME = "CRON_TASK_NAME";
+
+    /** Key used to store task business description in default basic extend attribute group.*/
+    private static final String EXTEND_INFO_OF_DESCRIPTION = "CRON_TASK_DESCRIPTION";
+
     /** A unique identity list record that prohibits concurrent scheduling of individual tasks. */
     private final CopyOnWriteArrayList<String> disallowConcurrentExecutionIds = new CopyOnWriteArrayList<>();
 
     /** Provide a custom task unique ID generator. */
     @Nullable private IDGenerator idGenerator;
+
+    /** Thread-safe multi-dimensional extended attribute storage container for custom business metadata. */
+    private final ConcurrentMap<String, CronTaskExtendInfo> extendInfos = new ConcurrentHashMap<>();
 
     /**
      * {@inheritDoc}
@@ -402,6 +413,12 @@ public abstract class AbstractCronTaskRepository
         cronTaskInfo.setNextExecuteTimestamp(getNextExecuteTime(id));
         // Setting whether concurrent execution is prohibited.
         cronTaskInfo.setDisallowConcurrentExecution(hasDisallowConcurrentExecution(id));
+        // Setting extend info.
+        CronTaskExtendInfo extendInfo = getExtendInfo(id);
+        // Setting extend name info.
+        cronTaskInfo.setName(extendInfo.getString(EXTEND_INFO_OF_NAME));
+        // Setting extend description info.
+        cronTaskInfo.setDescription(extendInfo.getString(EXTEND_INFO_OF_DESCRIPTION));
         return cronTaskInfo;
     }
 
@@ -583,6 +600,18 @@ public abstract class AbstractCronTaskRepository
     @SuppressWarnings("unchecked")
     public Class<? extends TaskBody>[] getSupportTaskBodyClasses() {
         return new Class[] { RunnableTaskBody.class };
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @NotNull
+    public CronTaskExtendInfo getExtendInfo(String id) {
+        if (!hasCronTaskInfo(id)) {
+            throw new CronInternalException(String.format("Scheduled task with id [%s] does not exist.", id));
+        }
+        return extendInfos.computeIfAbsent(id, CronTaskExtendInfo::new);
     }
 
     /**
