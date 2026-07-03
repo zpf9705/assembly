@@ -66,6 +66,7 @@ public class RepositoryTagsBasedOnJoinPointFunction implements Function<Proceedi
      * @param expressionResolver the given {@link ExpressionResolver}.
      */
     public RepositoryTagsBasedOnJoinPointFunction(ExpressionResolver expressionResolver) {
+        Assert.notNull(expressionResolver, "expressionResolver must not be null");
         this.expressionResolver = expressionResolver;
     }
 

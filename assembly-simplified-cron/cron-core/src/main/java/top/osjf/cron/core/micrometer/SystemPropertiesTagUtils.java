@@ -19,6 +19,7 @@ package top.osjf.cron.core.micrometer;
 
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
+import top.osjf.commons.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +62,9 @@ public abstract class SystemPropertiesTagUtils {
      * @return the combined tags of business tags and system tags.
      */
     public static Tags mergResolvedSystemTags(Tags source, ExpressionResolver expressionResolver) {
+
+        Assert.notNull(source, "source Tags must not be null");
+
         return source.and(getResolvedSystemTags(expressionResolver));
     }
 
@@ -71,6 +75,8 @@ public abstract class SystemPropertiesTagUtils {
      * @return the resolved system dimension tags.
      */
     public static Tags getResolvedSystemTags(ExpressionResolver expressionResolver) {
+
+        Assert.notNull(expressionResolver, "expressionResolver must not be null");
 
         List<Tag> tags = new ArrayList<>();
 

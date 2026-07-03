@@ -77,6 +77,11 @@ public class RepositoryGaugeIndicatorRegistrant {
      */
     public RepositoryGaugeIndicatorRegistrant(MeterRegistry meterRegistry, CronTaskRepository cronTaskRepository,
                                               ExpressionResolver expressionResolver) {
+
+        Assert.notNull(meterRegistry, "meterRegistry must not be null");
+        Assert.notNull(cronTaskRepository, "cronTaskRepository must not be null");
+        Assert.notNull(expressionResolver, "expressionResolver must not be null");
+
         this.meterRegistry = meterRegistry;
         this.cronTaskRepository = cronTaskRepository;
         this.expressionResolver = expressionResolver;
