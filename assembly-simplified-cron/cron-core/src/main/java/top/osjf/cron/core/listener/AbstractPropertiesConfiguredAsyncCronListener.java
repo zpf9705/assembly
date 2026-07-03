@@ -18,6 +18,7 @@
 package top.osjf.cron.core.listener;
 
 import top.osjf.commons.lang.NotNull;
+import top.osjf.commons.util.Assert;
 import top.osjf.cron.core.lifecycle.InitializeProperties;
 import top.osjf.cron.core.repository.PropertiesParsedThreadPoolExecutor;
 
@@ -49,6 +50,7 @@ public abstract class AbstractPropertiesConfiguredAsyncCronListener implements A
      * @param initializeProperties the initialization configuration parameters related to thread pool.
      */
     public AbstractPropertiesConfiguredAsyncCronListener(InitializeProperties initializeProperties) {
+        Assert.notNull(initializeProperties, "initializeProperties must not be null");
         this.executorService = new PropertiesParsedThreadPoolExecutor(initializeProperties);
     }
 

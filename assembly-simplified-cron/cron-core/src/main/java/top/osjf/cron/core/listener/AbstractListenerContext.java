@@ -17,6 +17,7 @@
 
 package top.osjf.cron.core.listener;
 
+import top.osjf.commons.util.Assert;
 import top.osjf.cron.core.repository.RepositoryContext;
 
 /**
@@ -52,6 +53,10 @@ public abstract class AbstractListenerContext<T> implements ListenerContext {
      * @param repositoryContext task repository operation context
      */
     public AbstractListenerContext(T sourceContext, RepositoryContext repositoryContext) {
+
+        Assert.notNull(sourceContext, "sourceContext must not be null");
+        Assert.notNull(repositoryContext, "repositoryContext must not be null");
+
         this.sourceContext = sourceContext;
         this.repositoryContext = repositoryContext;
     }
@@ -61,6 +66,7 @@ public abstract class AbstractListenerContext<T> implements ListenerContext {
      * @param sourceContext scheduled task trigger original business context
      */
     public void setSourceContext(T sourceContext) {
+        Assert.notNull(sourceContext, "sourceContext must not be null");
         this.sourceContext = sourceContext;
     }
 
@@ -69,6 +75,7 @@ public abstract class AbstractListenerContext<T> implements ListenerContext {
      * @param repositoryContext task repository operation context instance
      */
     public void setRepositoryContext(RepositoryContext repositoryContext) {
+        Assert.notNull(repositoryContext, "repositoryContext must not be null");
         this.repositoryContext = repositoryContext;
     }
 

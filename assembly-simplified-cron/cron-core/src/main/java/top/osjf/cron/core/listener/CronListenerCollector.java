@@ -60,6 +60,7 @@ public abstract class CronListenerCollector implements Wrapper {
      * @since 3.0.2
      */
     public CronListenerCollector(Repository repository) {
+        Assert.notNull(repository, "repository must not be null");
         this.repositoryContext = new TypedRepositoryContext(repository);
     }
 
@@ -68,6 +69,7 @@ public abstract class CronListenerCollector implements Wrapper {
      * @param cronListener The {@code CronListener}  instance to be added.
      */
     public void addCronListener(CronListener cronListener) {
+        Assert.notNull(cronListener, "cronListener must not be null");
         final Lock writeLock = lock.writeLock();
         writeLock.lock();
         try {
@@ -85,6 +87,7 @@ public abstract class CronListenerCollector implements Wrapper {
      * @param cronListener The {@code CronListener}  instance to be added.
      */
     public void addFirstCronListener(CronListener cronListener){
+        Assert.notNull(cronListener, "cronListener must not be null");
         final Lock writeLock = lock.writeLock();
         writeLock.lock();
         try {
@@ -102,6 +105,7 @@ public abstract class CronListenerCollector implements Wrapper {
      * @param cronListener The {@code CronListener}  instance to be added.
      */
     public void addLastCronListener(CronListener cronListener){
+        Assert.notNull(cronListener, "cronListener must not be null");
         final Lock writeLock = lock.writeLock();
         writeLock.lock();
         try {
@@ -120,6 +124,7 @@ public abstract class CronListenerCollector implements Wrapper {
      *         {@code false} if the listener was not found in the {@link #cronListeners}.
      */
     public boolean removeCronListener(CronListener cronListener) {
+        Assert.notNull(cronListener, "cronListener must not be null");
         final Lock writeLock = lock.writeLock();
         writeLock.lock();
         try {
@@ -137,6 +142,7 @@ public abstract class CronListenerCollector implements Wrapper {
      * @since 3.0.2
      */
     public boolean removeCronListener(String listenerName) {
+        Assert.hasText(listenerName, "listenerName must not be null or blank");
         final Lock writeLock = lock.writeLock();
         writeLock.lock();
         try {
@@ -161,6 +167,7 @@ public abstract class CronListenerCollector implements Wrapper {
      */
     @Nullable
     public CronListener getListener(String listenerName) {
+        Assert.hasText(listenerName, "listenerName must not be null or blank");
         final Lock readLock = lock.readLock();
         readLock.lock();
         try {
