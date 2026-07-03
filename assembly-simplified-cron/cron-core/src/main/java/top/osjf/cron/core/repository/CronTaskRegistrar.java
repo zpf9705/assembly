@@ -105,13 +105,16 @@ public class CronTaskRegistrar {
         if (runTimes != null) {
             if (runningTimeout != null) {
                 id = cronTaskRepository.registerRunTimes(cronTask, runTimes.value(), runningTimeout);
-            } else {
+            }
+            else {
                 id = cronTaskRepository.registerRunTimes(cronTask, runTimes.value());
             }
-        } else {
+        }
+        else {
             if (runningTimeout != null) {
                 id = cronTaskRepository.register(cronTask, runningTimeout);
-            } else {
+            }
+            else {
                 id = cronTaskRepository.register(cronTask);
             }
         }
