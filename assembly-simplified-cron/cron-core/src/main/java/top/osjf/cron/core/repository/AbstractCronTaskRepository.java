@@ -74,10 +74,10 @@ public abstract class AbstractCronTaskRepository
         extends AbstractRunTimeoutRegistrarRepository implements CronTaskRepository {
 
     /** Key used to store task business name in default basic extend attribute group. */
-    private static final String EXTEND_INFO_OF_NAME = "CRON_TASK_NAME";
+    public static final String EXTEND_INFO_OF_NAME = "CRON_TASK_NAME";
 
     /** Key used to store task business description in default basic extend attribute group.*/
-    private static final String EXTEND_INFO_OF_DESCRIPTION = "CRON_TASK_DESCRIPTION";
+    public static final String EXTEND_INFO_OF_DESCRIPTION = "CRON_TASK_DESCRIPTION";
 
     /** A unique identity list record that prohibits concurrent scheduling of individual tasks. */
     private final CopyOnWriteArrayList<String> disallowConcurrentExecutionIds = new CopyOnWriteArrayList<>();
