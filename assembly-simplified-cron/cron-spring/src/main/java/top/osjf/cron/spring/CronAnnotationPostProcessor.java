@@ -41,10 +41,7 @@ import org.springframework.util.StringUtils;
 import top.osjf.commons.util.compat.ArrayUtils;
 import top.osjf.cron.core.lifecycle.Lifecycle;
 import top.osjf.cron.core.listener.CronListener;
-import top.osjf.cron.core.repository.CronMethodRunnable;
-import top.osjf.cron.core.repository.CronTask;
-import top.osjf.cron.core.repository.CronTaskRegistrar;
-import top.osjf.cron.core.repository.CronTaskRepository;
+import top.osjf.cron.core.repository.*;
 import top.osjf.cron.spring.annotation.Cron;
 import top.osjf.cron.spring.annotation.Crones;
 
@@ -95,7 +92,7 @@ public class CronAnnotationPostProcessor implements ApplicationContextAware,
 
     private final Set<Class<?>> nonAnnotatedClasses = Collections.newSetFromMap(new ConcurrentHashMap<>(16));
 
-    private final Set<CronTaskRegistrar> cronTasks = Collections.newSetFromMap(new ConcurrentHashMap<>(16));
+    private final Set<AnnotationMethodRegistrar> cronTasks = Collections.newSetFromMap(new ConcurrentHashMap<>(16));
 
     @Override
     public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
@@ -169,18 +166,23 @@ public class CronAnnotationPostProcessor implements ApplicationContextAware,
      * @since 1.0.3
      */
     protected void processCron(Cron cron, Method method, Object bean) {
-        CronMethodRunnable runnable = createRunnable(bean, method);
-        String expression = cron.expression(); // Must not be blank in 3.0.2
-        Assert.hasText(expression, "Cron expression cannot be blank");
         String[] profiles = cron.profiles();
         synchronized (this.cronTasks) {
             //No environment specified or specified environment adapted
             // to the current activated environment.
             if (ArrayUtils.isEmpty(profiles) ||
                     Arrays.stream(profiles).anyMatch(activeProfiles::contains)) {
-                CronTaskRegistrar cronTask
-                        = new CronTaskRegistrar(new CronTask(expression, runnable));
-                cronTasks.add(cronTask);
+            // Prioritize using the cron expression configured in @Cron annotation.
+            // If the expression is blank, resolve the {@link Expression} annotation on the target
+                // method automatically.
+                String expression = cron.expression();
+                if (StringUtils.hasText(expression)) {
+                    cronTasks.add(new AnnotationMethodRegistrar
+                            (new CronTask(expression, createRunnable(bean, method))));
+                }
+                else {
+                    cronTasks.add(new AnnotationMethodRegistrar(bean, method));
+                }
             }
         }
     }
@@ -210,7 +212,7 @@ public class CronAnnotationPostProcessor implements ApplicationContextAware,
 
         // Register the scheduled task collection.
         CronTaskRepository cronTaskRepository = applicationContext.getBean(CronTaskRepository.class);
-        for (CronTaskRegistrar cronTask : cronTasks) {
+        for (AnnotationMethodRegistrar cronTask : cronTasks) {
             cronTask.registerFor(cronTaskRepository);
         }
 

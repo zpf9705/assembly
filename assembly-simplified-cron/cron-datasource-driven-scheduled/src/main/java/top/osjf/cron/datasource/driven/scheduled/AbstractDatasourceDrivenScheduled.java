@@ -530,7 +530,7 @@ public abstract class AbstractDatasourceDrivenScheduled
         // target object and method, dynamic registration support based on the maximum number of method
         // runs and timeout mechanism will be supported.
         String taskId = taskRunnable instanceof CronMethodRunnable ?
-                new CronTaskRegistrar(new CronTask(taskElement.getExpression(), (CronMethodRunnable) taskRunnable))
+                new AnnotationMethodRegistrar(new CronTask(taskElement.getExpression(), (CronMethodRunnable) taskRunnable))
                         .registerFor(cronTaskRepository) :
                 cronTaskRepository.register(taskElement.getExpression(), taskRunnable);
 

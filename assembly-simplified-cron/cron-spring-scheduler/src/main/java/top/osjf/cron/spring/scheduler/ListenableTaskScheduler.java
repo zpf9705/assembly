@@ -25,10 +25,7 @@ import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.scheduling.support.ScheduledMethodRunnable;
 import top.osjf.commons.lang.NotNull;
 import top.osjf.commons.lang.Nullable;
-import top.osjf.cron.core.repository.AbstractCronTaskRepository;
-import top.osjf.cron.core.repository.CronMethodRunnable;
-import top.osjf.cron.core.repository.CronTask;
-import top.osjf.cron.core.repository.CronTaskRegistrar;
+import top.osjf.cron.core.repository.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -97,7 +94,7 @@ public abstract class ListenableTaskScheduler extends AbstractCronTaskRepository
             CronTask cronTask = new CronTask(((CronTrigger) trigger).getExpression()
                     , new CronMethodRunnable(((ScheduledMethodRunnable) task).getTarget(),
                     ((ScheduledMethodRunnable) task).getMethod()));
-            String id = new CronTaskRegistrar(cronTask).registerFor(this);
+            String id = new AnnotationMethodRegistrar(cronTask).registerFor(this);
 
             // The new CronTaskRegistrar (cronTask). registrant For (this) will execute the internal
             // brochure and retrieve it directly from the cache based on the ID after returning it.

@@ -99,6 +99,9 @@ public @interface Cron {
      * Alias for {@link #expression}.
      * <p>Intended to be used when no other attributes are needed, for example:
      * {@code @Cron("0/1 * * * * ?")}.
+     * <p>
+     * Can be replaced by annotation {@link top.osjf.cron.core.repository.Expression},
+     * but explicitly set values take higher priority.
      *
      * @return an expression that can be parsed to a cron schedule.
      * @see #expression
@@ -125,6 +128,9 @@ public @interface Cron {
      * <li>month</li>
      * <li>day of week</li>
      * </ul>
+     * <p>
+     * Can be replaced by annotation {@link top.osjf.cron.core.repository.Expression},
+     * but explicitly set values take higher priority.
      *
      * @return an expression that can be parsed to a cron schedule.
      */
