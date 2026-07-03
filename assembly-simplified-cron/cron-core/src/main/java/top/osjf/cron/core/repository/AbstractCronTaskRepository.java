@@ -391,15 +391,17 @@ public abstract class AbstractCronTaskRepository
         if (cronTaskInfo == null) {
             return null;
         }
-        String taskId = cronTaskInfo.getId();
+        String id = cronTaskInfo.getId();
         // Setting remaining number of runs.
-        cronTaskInfo.setRemainingNumberOfRuns(getTaskRemainingNumberOfRuns(taskId));
+        cronTaskInfo.setRemainingNumberOfRuns(getTaskRemainingNumberOfRuns(id));
         // Setting running timeout config.
-        cronTaskInfo.setTimeoutConfig(getTimeoutConfig(taskId));
+        cronTaskInfo.setTimeoutConfig(getTimeoutConfig(id));
         // Setting running state.
-        cronTaskInfo.setRunning(isTaskRunning(taskId));
+        cronTaskInfo.setRunning(isTaskRunning(id));
         // Setting next execute timestamp.
-        cronTaskInfo.setNextExecuteTimestamp(getNextExecuteTime(taskId));
+        cronTaskInfo.setNextExecuteTimestamp(getNextExecuteTime(id));
+        // Setting whether concurrent execution is prohibited.
+        cronTaskInfo.setDisallowConcurrentExecution(hasDisallowConcurrentExecution(id));
         return cronTaskInfo;
     }
 

@@ -25,12 +25,9 @@ import java.util.Arrays;
 import java.util.Objects;
 
 /**
- * The {@code CronTaskInfo} class encapsulates the relevant information of
- * a scheduled task.
- *
- * <p>This class is used to store and manage the basic information of a
- * scheduled task, including the task ID, execution expression, runnable,
- * target object, method instance, and extended parameters.
+ * This class encapsulates the complete runtime metadata of a cron scheduled task,
+ * which is used for task runtime management, governance control, execution monitoring
+ * and metadata persistence.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
@@ -39,46 +36,24 @@ public class CronTaskInfo implements Serializable {
 
     private static final long serialVersionUID = 3944766838390077158L;
 
-    /**
-     * The unique registration ID for this scheduled task.
-     */
+    /**  The unique ID of this task within its lifetime. */
     private final String id;
 
-    /**
-     * The determination expression for the registration execution frequency of
-     * this scheduled task.
-     * <p>In general, it is a valid cron expression, but in extended scenarios,
-     * it is an exclusive expression used for it.
-     */
+    /** The cron expression for executing this task.*/
     private final String expression;
 
-    /**
-     * The {@link Runnable} runtime encapsulated by this scheduled task.
-     */
+    /** The function runtime for this task.*/
     private final Runnable runnable;
 
-    /**
-     * The target audience for this scheduled task execution.
-     * <p>
-     * Static call or anonymous inner class of {@link Runnable}, this value may
-     * be null.
-     */
-    @Nullable
-    private final Object target;
+    /** The target object for this task execution.*/
+    @Nullable private final Object target;
 
-    /**
-     * The method instance for executing the target object of this scheduled task.
-     * <p>
-     * If it is an anonymous inner class {@link Runnable}, then this value is null.
-     */
+    /** The target method for executing this task.*/
     @Nullable
     private final Method method;
 
-    /**
-     * The remaining extension parameters can be customized by the user.
-     */
-    @Nullable
-    private Object[] args;
+    /** The accompanying parameters for executing this task.*/
+    @Nullable private Object[] args;
 
     /**
      * The remaining number of runs for this task.
@@ -109,25 +84,37 @@ public class CronTaskInfo implements Serializable {
     @Nullable private Long nextExecuteTimestamp;
 
     /**
-     * Constructs a {@code CronTaskInfo} with any task info.
-     * @param id                        {@link #id}
-     * @param expression                {@link #expression}
-     * @param runnable                  {@link #runnable}
+     * The flag to indicate whether concurrent execution is prohibited.
+     * @since 3.0.2
+     */
+    private boolean disallowConcurrentExecution;
+
+    /**
+     * Construct a scheduled task metadata instance for common {@link Runnable} type tasks.
+     * <p>This constructor is applicable to anonymous task scenarios without binding target
+     * objects and execution methods.
+     *
+     * @param id         Unique task identifier
+     * @param expression Cron trigger expression
+     * @param runnable   Task execution logic carrier
      */
     public CronTaskInfo(String id, String expression, Runnable runnable) {
         this(id, expression, runnable, null, null);
     }
 
     /**
-     * Constructs a {@code CronTaskInfo} with any task info.
-     * @param id                        {@link #id}
-     * @param expression                {@link #expression}
-     * @param runnable                  {@link #runnable}
-     * @param target                    {@link #target}
-     * @param method                    {@link #method}
+     * Construct a scheduled task metadata instance for method-type scheduled tasks.
+     * <p>Applicable to task scenarios parsed from annotation methods, which can record target
+     * beans and execution method metadata.
+     *
+     * @param id         Unique task identifier
+     * @param expression Cron trigger expression
+     * @param runnable   Task execution logic carrier
+     * @param target     Target bean instance of the execution method
+     * @param method     Reflected target execution method
      */
-    public CronTaskInfo(String id, String expression, Runnable runnable, @Nullable Object target,
-                        @Nullable Method method) {
+    public CronTaskInfo(String id, String expression, Runnable runnable,
+                        @Nullable Object target, @Nullable Method method) {
         this.id = id;
         this.expression = expression;
         this.runnable = runnable;
@@ -178,6 +165,15 @@ public class CronTaskInfo implements Serializable {
      */
     public void setNextExecuteTimestamp(@Nullable Long nextExecuteTimestamp) {
         this.nextExecuteTimestamp = nextExecuteTimestamp;
+    }
+
+    /**
+     * Set a flag to indicate whether concurrent execution is prohibited.
+     * @param disallowConcurrentExecution flag to indicate whether concurrent execution is prohibited.
+     * @since 3.0.2
+     */
+    public void setDisallowConcurrentExecution(boolean disallowConcurrentExecution) {
+        this.disallowConcurrentExecution = disallowConcurrentExecution;
     }
 
     /**
@@ -278,6 +274,13 @@ public class CronTaskInfo implements Serializable {
         return nextExecuteTimestamp;
     }
 
+    /**
+     * @return {@link #disallowConcurrentExecution}
+     */
+    public boolean isDisallowConcurrentExecution() {
+        return disallowConcurrentExecution;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -308,6 +311,7 @@ public class CronTaskInfo implements Serializable {
                 ", timeoutConfig=" + timeoutConfig +
                 ", isRunning=" + isRunning +
                 ", nextExecuteTimestamp=" + nextExecuteTimestamp +
+                ", disallowConcurrentExecution=" + disallowConcurrentExecution +
                 '}';
     }
 }
