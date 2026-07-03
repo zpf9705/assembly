@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -254,7 +255,7 @@ public abstract class CronListenerCollector implements Wrapper {
 
         private boolean sort = false;
 
-        private boolean buildFlag = false;
+        private AtomicBoolean buildFlag = new AtomicBoolean(false);
 
         /**
          * Private constructor, create builder via {@link #newQueryBuilder()}
@@ -332,12 +333,13 @@ public abstract class CronListenerCollector implements Wrapper {
          * Execute filtering rules and return the matched listener list.
          *
          * @return filtered listener list, empty list if original collection is empty
+         * @throws IllegalStateException if build() method invokes multiple times.
          * @throws IllegalArgumentException if asynchronous query specifies propagation strategy
          */
         public List<CronListener> build() {
-            checkBuildFlag();
+            Assert.state(buildFlag.compareAndSet(false, true),
+                    "The build() method can only be invoked once.");
             if (CollectionUtils.isEmpty(cronListeners)) {
-                buildFlag = true;
                 return Collections.emptyList();
             }
             Assert.isTrue(!(!sync && propagateStrategy != null),
@@ -347,7 +349,6 @@ public abstract class CronListenerCollector implements Wrapper {
                     (propagateStrategy == null || propagateStrategy == cronListener.getListenerErrorPropagateStrategy()))
                     .collect(Collectors.toList());
             if (sort) OrderComparator.sort(result);
-            buildFlag = true;
             return result;
         }
 
@@ -357,7 +358,7 @@ public abstract class CronListenerCollector implements Wrapper {
          * @throws IllegalStateException if already built
          */
         private void checkBuildFlag() {
-            Assert.state(!buildFlag, "The build() method can only be invoked once.");
+            Assert.state(!buildFlag.get(), "The build() method can only be invoked once.");
         }
     }
 
