@@ -17,6 +17,7 @@
 package top.osjf.cron.core.repository;
 
 import top.osjf.commons.ability.Nameable;
+import top.osjf.commons.lang.NotNull;
 import top.osjf.commons.lang.Nullable;
 import top.osjf.commons.lang.Wrapper;
 import top.osjf.cron.core.exception.CannotCancelConcurrentException;
@@ -382,6 +383,13 @@ public interface CronTaskRepository extends Repository, RunTimesRegistrarReposit
         Builder withExpression(String expression);
 
         /**
+         * Sets the business display name of the scheduled task.
+         * @param name task custom name
+         * @return current builder instance for chained calls
+         */
+        Builder withName(String name);
+
+        /**
          * Sets task execution body using native {@link Runnable}.
          * @param runnable task execution logic
          * @return current builder instance for chained calls
@@ -438,6 +446,20 @@ public interface CronTaskRepository extends Repository, RunTimesRegistrarReposit
         Builder timeout(RunningTimeout timeout);
 
         /**
+         * Prohibits concurrent execution of this scheduled task.
+         * The next trigger will be skipped if the previous task instance is still running.
+         * @return current builder instance for chained calls
+         */
+        Builder disallowConcurrentExecution();
+
+        /**
+         * Sets the detailed business description of the scheduled task.
+         * @param description task remark information
+         * @return current builder instance for chained calls
+         */
+        Builder withDescription(String description);
+
+        /**
          * Validates assembled parameters, matches the corresponding overloaded
          * registration method, completes cron task registration and returns the
          * globally unique task ID.
@@ -456,4 +478,20 @@ public interface CronTaskRepository extends Repository, RunTimesRegistrarReposit
      * @since 3.0.2
      */
     Class<? extends TaskBody>[] getSupportTaskBodyClasses();
+
+    /**
+     * Retrieve the extended attribute container of the specified scheduled task by task ID.
+     *
+     * <p>If the target task exists but no extended attributes have been set yet, a brand-new
+     * empty {@link CronTaskExtendInfo} instance will be returned by default.Developers are
+     * allowed to freely perform add, delete, modify and query operations on the returned
+     * extended attribute container.
+     *
+     * @param id the unique identifier of the target scheduled task
+     * @return non-null extended attribute container of the task
+     * @throws CronInternalException if no task can be found for the given task id
+     * @since 3.0.2
+     */
+    @NotNull
+    CronTaskExtendInfo getExtendInfo(String id);
 }
