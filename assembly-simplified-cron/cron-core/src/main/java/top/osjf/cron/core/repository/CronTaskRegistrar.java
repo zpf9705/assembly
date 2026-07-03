@@ -42,7 +42,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
+ * @deprecated 3.0.2 {@link AnnotationMethodRegistrar}
  */
+@Deprecated
 public class CronTaskRegistrar {
 
     /** The pending registration {@link CronTask}. */
