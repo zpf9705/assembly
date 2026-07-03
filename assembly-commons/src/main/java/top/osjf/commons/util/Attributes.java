@@ -230,7 +230,6 @@ public class Attributes extends LinkedHashMap<String, Object> {
         Assert.hasText(attributeName, "'attributeName' must not be null or empty");
         Object value = get(attributeName);
         assertAttributePresence(attributeName, value);
-        assertNotException(attributeName, value);
         if (!expectedType.isInstance(value) && expectedType.isArray() &&
                 expectedType.getComponentType().isInstance(value)) {
             Object array = Array.newInstance(expectedType.getComponentType(), 1);
@@ -244,14 +243,6 @@ public class Attributes extends LinkedHashMap<String, Object> {
     private void assertAttributePresence(String attributeName, Object attributeValue) {
         Assert.notNull(attributeValue, () -> String.format(
                 "Attribute '%s' not found in attributes", attributeName));
-    }
-
-    private void assertNotException(String attributeName, Object attributeValue) {
-        if (attributeValue instanceof Throwable) {
-            throw new IllegalArgumentException(String.format(
-                    "Attribute '%s' was not resolvable due to exception [%s]",
-                    attributeName,  attributeValue), (Throwable) attributeValue);
-        }
     }
 
     private void assertAttributeType(String attributeName, Object attributeValue, Class<?> expectedType) {
