@@ -254,7 +254,7 @@ public abstract class AbstractRunTimesRegistrarRepository
 
         if (shouldAddCheckedLast && hasListener(checkedCronListener)) {
             // Remove checkedCronListener if it exists
-            removeListener(checkedCronListener);
+            super.removeListener(checkedCronListener);
         }
 
         // Execute the next consumer
