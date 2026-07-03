@@ -474,6 +474,17 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
         return "top.osjf.cron.hutool.repository.HutoolScheduler$MicrometerCronTask" ;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    @NotNull
+    public Class<? extends TaskBody>[] getSupportTaskBodyClasses() {
+        return new Class[] { RunnableTaskBody.class, InvokeTaskBody.class,
+                SettingTaskBody.class, DefineIDRunnableTaskBody.class };
+    }
+
     @Override
     @NotNull
     protected CronListenerCollector getCronListenerCollector() {

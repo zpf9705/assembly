@@ -478,6 +478,16 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    @NotNull
+    public Class<? extends TaskBody>[] getSupportTaskBodyClasses() {
+        return new Class[] { RunnableTaskBody.class, FileTaskBody.class };
+    }
+
+    /**
      * @return Return the {@link TaskCollector} that stores task information in memory.
      * @since 3.0.2
      */
