@@ -18,6 +18,7 @@
 package top.osjf.cron.datasource.driven.scheduled.external.file;
 
 import top.osjf.commons.lang.Nullable;
+import top.osjf.commons.util.Assert;
 import top.osjf.commons.util.CollectionUtils;
 import top.osjf.cron.core.lifecycle.InitializeAble;
 import top.osjf.cron.datasource.driven.scheduled.DataSourceDrivenException;
@@ -62,8 +63,8 @@ import java.util.function.Function;
  * </ul>
  *
  * <p>The aggregation implementation class needs to sequentially implement
- * internal write operations ({@link #purgeInternal(TaskElement)} and
- * {@link #updateInternal(TaskElement)} and {@link #refresh()}) based on the
+ * internal write operations ({@link #purgeInternal(ExternalFileDatasourceTaskElement)} and
+ * {@link #updateInternal(ExternalFileDatasourceTaskElement)} and {@link #refresh()}) based on the
  * implementation method of the domain, while this abstract class only completes
  * process level file operations and JVM access thread safety control (according
  * to {@link FileReadWriteLock}).
@@ -73,7 +74,7 @@ import java.util.function.Function;
  * @since 3.0.1
  */
 @ThreadSafe
-public abstract class ExternalFileTaskElementLoader<T extends TaskElement> implements InitializeAble, Closeable {
+public abstract class ExternalFileTaskElementLoader<T extends ExternalFileDatasourceTaskElement> implements InitializeAble, Closeable {
 
     /** The path to the base directory.*/
     @Nullable private String baseDir;
@@ -202,6 +203,8 @@ public abstract class ExternalFileTaskElementLoader<T extends TaskElement> imple
     @SuppressWarnings("unchecked")
     public void checkedUpdate(List<TaskElement> updateElements) {
 
+        Assert.notNull(updateElements, "updateElements must not be null");
+
         obtainRawType();
 
         List<T> elements = new ArrayList<>();
@@ -218,7 +221,7 @@ public abstract class ExternalFileTaskElementLoader<T extends TaskElement> imple
      * Sets a {@link TaskElement} raw type.
      * @param rawType a {@link TaskElement} raw type.
      */
-    protected void setRawType(Class<T> rawType) {
+    protected void setRawType(@Nullable Class<T> rawType) {
         this.rawType = rawType;
     }
 
@@ -244,6 +247,8 @@ public abstract class ExternalFileTaskElementLoader<T extends TaskElement> imple
      */
     public void update(List<T> updateElements) {
 
+        Assert.notNull(updateElements, "updateElements must not be null");
+
         final Lock writeLock = getReadWriteLock().writeLock();
         writeLock.lock();
         try {
@@ -266,10 +271,7 @@ public abstract class ExternalFileTaskElementLoader<T extends TaskElement> imple
      * element.
      */
     protected boolean purgeInternal(T taskElement) {
-        if (taskElement instanceof ExternalFileDatasourceTaskElement) {
-            return ((ExternalFileDatasourceTaskElement) taskElement).purge();
-        }
-        return false;
+        return taskElement.purge();
     }
 
     /**

@@ -20,6 +20,7 @@ package top.osjf.cron.datasource.driven.scheduled.external.file;
 import com.sun.nio.file.SensitivityWatchEventModifier;
 import top.osjf.commons.lang.NotNull;
 import top.osjf.commons.lang.Nullable;
+import top.osjf.commons.util.Assert;
 import top.osjf.cron.core.lifecycle.InitializeAble;
 import top.osjf.cron.datasource.driven.scheduled.AbstractDatasourceDrivenScheduled;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
@@ -80,7 +81,7 @@ import java.util.function.Function;
  * @see TaskElement
  */
 public abstract
-class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement>
+class ExternalFileDatasourceTaskElementsOperation<T extends ExternalFileDatasourceTaskElement>
         extends FilterableDatasourceTaskElementsQueryOperation implements DatasourceTaskElementsOperation, InitializeAble {
 
     private final ExternalFileTaskElementLoader<T> loader;
@@ -102,6 +103,7 @@ class ExternalFileDatasourceTaskElementsOperation<T extends TaskElement>
      * @param loader the given {@link ExternalFileTaskElementLoader} instance.
      */
     public ExternalFileDatasourceTaskElementsOperation(ExternalFileTaskElementLoader<T> loader) {
+        Assert.notNull(loader, "ExternalFileTaskElementLoader must not be null");
         this.loader = loader;
     }
 
