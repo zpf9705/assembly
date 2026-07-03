@@ -20,6 +20,7 @@ package top.osjf.cron.datasource.driven.scheduled.serialization.remote;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.osjf.commons.lang.Nullable;
+import top.osjf.commons.util.Assert;
 import top.osjf.cron.datasource.driven.scheduled.AbstractDatasourceDrivenScheduled;
 import top.osjf.cron.datasource.driven.scheduled.serialization.ConfigurableTaskElement;
 
@@ -72,6 +73,7 @@ public abstract class RemoteListener {
      *                        used to initialize the initial task elements and provide deserialization capability
      */
     public RemoteListener(RemoteDatasourceTaskElementsOperation remoteOperation) {
+        Assert.notNull(remoteOperation, "RemoteDatasourceTaskElementsOperation must not be null");
         this.remoteOperation = remoteOperation;
         elements = remoteOperation.getRemoteElements();
     }
@@ -82,6 +84,7 @@ public abstract class RemoteListener {
      * @param scheduled task scheduling data source management instance object.
      */
     protected void setAbstractDatasourceDrivenScheduled(AbstractDatasourceDrivenScheduled scheduled) {
+        Assert.notNull(remoteOperation, "AbstractDatasourceDrivenScheduled must not be null");
         this.scheduled = scheduled;
     }
 
