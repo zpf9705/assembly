@@ -33,7 +33,7 @@ import java.util.function.Supplier;
  * {@link TaskBody}, native {@link Runnable}, and provides two governance capabilities: limited execution
  * times and task timeout control. Each builder instance can only call {@link #build()} once to avoid duplicate
  * task registration.
- * <p>
+ *
  * <h3>Code Usage Example</h3>
  * <pre>{@code
  * // 1. Register common Runnable scheduled task
