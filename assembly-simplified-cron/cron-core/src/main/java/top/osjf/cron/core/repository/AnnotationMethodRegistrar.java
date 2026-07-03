@@ -113,9 +113,9 @@ public class AnnotationMethodRegistrar {
         if (targetMethod.isAnnotationPresent(DisallowConcurrentExecution.class))
             builder.disallowConcurrentExecution();
 
-        RunTimes runTimes;
-        builder.limitRunTimes((runTimes = targetMethod.getAnnotation(RunTimes.class)) != null
-                ? runTimes.value() : 1);
+        if (targetMethod.isAnnotationPresent(RunTimes.class)) {
+            builder.limitRunTimes(targetMethod.getAnnotation(RunTimes.class).value());
+        }
 
         RunTimeout runTimeout;
         builder.timeout((runTimeout = targetMethod.getAnnotation(RunTimeout.class)) != null
