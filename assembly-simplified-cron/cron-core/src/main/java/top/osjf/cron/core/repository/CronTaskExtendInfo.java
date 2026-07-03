@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.osjf.commons.lang.Nullable;
 import top.osjf.commons.util.Assert;
-import top.osjf.commons.util.Attributes;
+import top.osjf.commons.util.OptionalAttributes;
 
 /**
  * Cron task extended attribute container, allows developers to freely operate attributes
@@ -31,7 +31,7 @@ import top.osjf.commons.util.Attributes;
  * @since 3.0.2
  */
 @SuppressWarnings("serial")
-public class CronTaskExtendInfo extends Attributes {
+public class CronTaskExtendInfo extends OptionalAttributes {
 
     private static final Logger log = LoggerFactory.getLogger(CronTaskExtendInfo.class);
 
