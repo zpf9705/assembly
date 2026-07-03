@@ -18,11 +18,15 @@ package top.osjf.cron.core.repository;
 
 import top.osjf.commons.lang.Nullable;
 import top.osjf.commons.util.Assert;
+import top.osjf.commons.util.StringUtils;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
+
+import static top.osjf.cron.core.repository.AbstractCronTaskRepository.EXTEND_INFO_OF_DESCRIPTION;
+import static top.osjf.cron.core.repository.AbstractCronTaskRepository.EXTEND_INFO_OF_NAME;
 
 /**
  * Fluent builder implementation for {@link CronTaskRepository}, used to assemble task registration
@@ -72,9 +76,15 @@ public class CronTaskBuilder implements CronTaskRepository.Builder {
     private Object task;
 
     // Optional governance parameters
+    @Nullable private String name;
+
     @Nullable private Integer maxRunTimes;
 
     @Nullable private RunningTimeout runningTimeout;
+
+    private boolean disallowConcurrentExecution;
+
+    @Nullable private String description;
 
     /** Mark to ensure build() only execute once for current builder instance. */
     private final AtomicBoolean built = new AtomicBoolean(false);
@@ -106,6 +116,16 @@ public class CronTaskBuilder implements CronTaskRepository.Builder {
     public CronTaskBuilder withExpression(String expression) {
         checkBuildFlag();
         this.expression = expression;
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CronTaskRepository.Builder withName(String name) {
+        checkBuildFlag();
+        this.name = name;
         return this;
     }
 
@@ -183,6 +203,26 @@ public class CronTaskBuilder implements CronTaskRepository.Builder {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CronTaskRepository.Builder disallowConcurrentExecution() {
+        checkBuildFlag();
+        this.disallowConcurrentExecution = true;
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CronTaskRepository.Builder withDescription(String description) {
+        checkBuildFlag();
+        this.description = description;
+        return this;
+    }
+
+    /**
      * Check whether the builder has completed construction.
      * If built, forbid modifying builder conditions.
      * @throws IllegalStateException if already built
@@ -210,15 +250,43 @@ public class CronTaskBuilder implements CronTaskRepository.Builder {
     }
 
     /**
+     * @return the registed task id.
+     * @throws top.osjf.cron.core.exception.NotSupportConcurrentExecutionException
+     *                                  See {@link CronTaskRepository#disallowConcurrentExecution}
+     */
+    private String buildInternal() {
+
+        // Resolve task register.
+        String id = doRegister();
+
+        // Resolve disallowConcurrentExecution flag.
+        if (disallowConcurrentExecution) {
+            repository.disallowConcurrentExecution(id);
+        }
+
+        // Resolve name string val.
+        if (StringUtils.isNotBlank(name)) {
+            repository.getExtendInfo(id).put(EXTEND_INFO_OF_NAME, name);
+        }
+
+        // Resolve description string val.
+        if (StringUtils.isNotBlank(description)) {
+            repository.getExtendInfo(id).put(EXTEND_INFO_OF_DESCRIPTION, description);
+        }
+
+        return id;
+    }
+
+    /**
      * Distribute different registration logic according to the actual type of task execution body,
      * and call the corresponding task registration method after matching governance rules.
      *
      * @return unique identifier of registered cron task
      */
-    private String buildInternal() {
+    private String doRegister() {
         if (task instanceof CronTask) {
             CronTask cronTask = (CronTask) task;
-            return doRegisterCronTask(cronTask);
+            return matchRegisterMethod(cronTask);
         }
         else if (task instanceof CronMethodRunnable) {
             CronMethodRunnable methodRunnable = (CronMethodRunnable) task;
@@ -241,13 +309,12 @@ public class CronTaskBuilder implements CronTaskRepository.Builder {
     }
 
     /**
-     * Execute registration for integrated {@link CronTask} object,
-     * automatically match the registration method according to timeout and limited execution rules.
+     * Register integrated {@link CronTask} type task with governance rules.
      *
      * @param cronTask integrated full metadata of scheduled task
      * @return unique identifier of registered cron task
      */
-    private String doRegisterCronTask(CronTask cronTask) {
+    private String matchRegisterMethod(CronTask cronTask) {
         return doMatchRegisterMethod(
                 (maxRunTimes, runningTimeout) -> repository.registerRunTimes(cronTask, maxRunTimes, runningTimeout),
                 (maxRunTimes) ->  repository.registerRunTimes(cronTask, maxRunTimes),
