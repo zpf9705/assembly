@@ -575,6 +575,15 @@ public abstract class AbstractCronTaskRepository
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public Class<? extends TaskBody>[] getSupportTaskBodyClasses() {
+        return new Class[] { RunnableTaskBody.class };
+    }
+
+    /**
      * The class object name that runs the body wrapper returns {@link Runnable java.lang.Runnable}
      * by default.
      * @since 3.0.2

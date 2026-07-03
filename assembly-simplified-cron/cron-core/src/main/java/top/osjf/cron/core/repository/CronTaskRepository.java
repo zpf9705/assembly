@@ -86,6 +86,9 @@ import javax.annotation.concurrent.ThreadSafe;
  * <li>Fluent task registration builder: Added the {@link #newBuilder()} method and built-in {@link Builder}
  * interface to support chained parameter configuration for scheduled tasks, which automatically adapts various
  * task types and governance rules to simplify the coding complexity of task registration.</li>
+ * <li>By using method {@link #getSupportTaskBodyClasses()}, you can further understand the types of
+ * {@link TaskBody} supported by the underlying timing architecture, making it easier to use methods that
+ * support {@link TaskBody} registration for scalable task registration..</li>
  * </ol>
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
@@ -445,4 +448,12 @@ public interface CronTaskRepository extends Repository, RunTimesRegistrarReposit
          */
         String build();
     }
+
+    /**
+     * Returns all {@link TaskBody} implementation classes supported by the current task
+     * repository.
+     * @return array of supported {@link TaskBody} implementation types
+     * @since 3.0.2
+     */
+    Class<? extends TaskBody>[] getSupportTaskBodyClasses();
 }
