@@ -18,6 +18,7 @@
 package top.osjf.cron.cron4j.repository;
 
 import it.sauronsoftware.cron4j.Scheduler;
+import top.osjf.commons.util.Assert;
 import top.osjf.cron.core.repository.TaskBody;
 
 import java.io.File;
@@ -39,6 +40,7 @@ public class FileTaskBody implements TaskBody {
      * @param file the executable {@code Runnable}.
      */
     public FileTaskBody(File file) {
+        Assert.notNull(file, "file must not be null");
         this.file = file;
     }
 
