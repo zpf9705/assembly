@@ -20,6 +20,7 @@ package top.osjf.cron.quartz.repository;
 import com.google.common.collect.HashBiMap;
 import org.quartz.JobKey;
 import top.osjf.commons.lang.NotNull;
+import top.osjf.commons.util.Assert;
 import top.osjf.commons.util.StringUtils;
 
 import java.util.concurrent.locks.Lock;
@@ -49,6 +50,9 @@ public class IdentityMemory {
      * bound to another ID, or storage fails
      */
     public void put(@NotNull String id, @NotNull JobKey jobKey) throws IdentityMemoryException {
+        Assert.hasText(id, "id must not null or blank");
+        Assert.notNull(jobKey, "jobKey must not null");
+
         Lock writeLock = readWriteLock.writeLock();
         writeLock.lock();
         try {
@@ -69,6 +73,8 @@ public class IdentityMemory {
      * @throws IdentityMemoryException Thrown if no mapping record matches the input task ID
      */
     public JobKey getJobKeyById(@NotNull String id) throws IdentityMemoryException {
+        Assert.hasText(id, "id must not null or blank");
+
         Lock readLock = readWriteLock.readLock();
         readLock.lock();
         try {
@@ -92,6 +98,8 @@ public class IdentityMemory {
      * @throws IdentityMemoryException Thrown if no task ID is bound to the input {@code JobKey}
      */
     public String getIdByJobKey(@NotNull JobKey jobKey) throws IdentityMemoryException {
+        Assert.notNull(jobKey, "jobKey must not null");
+
         Lock readLock = readWriteLock.readLock();
         readLock.lock();
         try {
@@ -113,6 +121,8 @@ public class IdentityMemory {
      * @throws IdentityMemoryException Thrown if no mapping exists for the input task ID
      */
     public void removeById(@NotNull String id) throws IdentityMemoryException {
+        Assert.hasText(id, "id must not null or blank");
+
         Lock writeLock = readWriteLock.writeLock();
         writeLock.lock();
         try {

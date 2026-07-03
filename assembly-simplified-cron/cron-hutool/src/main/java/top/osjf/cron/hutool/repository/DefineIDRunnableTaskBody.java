@@ -17,6 +17,7 @@
 
 package top.osjf.cron.hutool.repository;
 
+import top.osjf.commons.util.Assert;
 import top.osjf.cron.core.repository.RunnableTaskBody;
 import top.osjf.cron.core.repository.TaskBody;
 
@@ -43,6 +44,7 @@ public class DefineIDRunnableTaskBody extends RunnableTaskBody {
      */
     public DefineIDRunnableTaskBody(Runnable runnable, String id) {
         super(runnable);
+        Assert.hasText(id, "id must not null or blank");
         this.id = id;
     }
     /**

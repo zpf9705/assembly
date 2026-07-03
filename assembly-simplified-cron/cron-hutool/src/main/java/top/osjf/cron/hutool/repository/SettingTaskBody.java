@@ -18,6 +18,7 @@
 package top.osjf.cron.hutool.repository;
 
 import cn.hutool.setting.Setting;
+import top.osjf.commons.util.Assert;
 import top.osjf.cron.core.repository.TaskBody;
 
 /**
@@ -40,6 +41,7 @@ public class SettingTaskBody implements TaskBody {
      *                (configuring) files.
      */
     public SettingTaskBody(Setting setting) {
+        Assert.notNull(setting, "Setting must not null");
         this.setting = setting;
     }
 

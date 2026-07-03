@@ -18,6 +18,7 @@
 package top.osjf.cron.hutool.repository;
 
 import cn.hutool.cron.task.InvokeTask;
+import top.osjf.commons.util.Assert;
 import top.osjf.cron.core.repository.TaskBody;
 
 /**
@@ -38,6 +39,7 @@ public class InvokeTaskBody implements TaskBody {
      * @param invokeTask the reflection the execution task object.
      */
     public InvokeTaskBody(InvokeTask invokeTask) {
+        Assert.notNull(invokeTask, "invokeTask must not null");
         this.invokeTask = invokeTask;
     }
     /**

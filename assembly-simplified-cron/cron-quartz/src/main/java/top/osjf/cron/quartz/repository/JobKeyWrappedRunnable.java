@@ -19,6 +19,7 @@ package top.osjf.cron.quartz.repository;
 
 import org.quartz.JobKey;
 import top.osjf.commons.lang.NotNull;
+import top.osjf.commons.util.Assert;
 import top.osjf.cron.core.repository.CronMethodRunnable;
 
 import java.lang.reflect.Method;
@@ -49,6 +50,8 @@ public class JobKeyWrappedRunnable implements Runnable {
      * @param raw the original {@link Runnable}.
      */
     public JobKeyWrappedRunnable(@NotNull Runnable raw) {
+        Assert.notNull(raw, "Runnable must not null");
+
         this.raw = raw;
         if (raw instanceof CronMethodRunnable) {
             CronMethodRunnable cr = (CronMethodRunnable) raw;
