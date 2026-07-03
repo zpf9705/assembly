@@ -21,6 +21,7 @@ import top.osjf.commons.lang.Nullable;
 import top.osjf.commons.lang.Wrapper;
 import top.osjf.cron.core.exception.CannotCancelConcurrentException;
 import top.osjf.cron.core.exception.CronExpressionInvalidException;
+import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.NotSupportConcurrentExecutionException;
 
 import javax.annotation.concurrent.ThreadSafe;
@@ -82,6 +83,9 @@ import javax.annotation.concurrent.ThreadSafe;
  * <li>Micrometer observability monitoring: Integrates {@code LongTaskTimer} to implement long-running task
  * runtime metrics monitoring, which can track task concurrent count, execution blocking duration, thread
  * blocking, deadlock and other online risks.</li>
+ * <li>Fluent task registration builder: Added the {@link #newBuilder()} method and built-in {@link Builder}
+ * interface to support chained parameter configuration for scheduled tasks, which automatically adapts various
+ * task types and governance rules to simplify the coding complexity of task registration.</li>
  * </ol>
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
@@ -343,5 +347,102 @@ public interface CronTaskRepository extends Repository, RunTimesRegistrarReposit
          * @param runnable target asynchronous/scheduled business task that needs long-task metrics monitoring.
          */
         void record(Runnable runnable);
+    }
+
+    /**
+     * Creates a builder instance for fluent registration of cron scheduled tasks.
+     *
+     * <p>Supports chained configuration of cron expression, task body, maximum execution times and
+     * task timeout rules, and automatically matches the corresponding overloaded registration method
+     * when executing {@link Builder#build()}.
+     *
+     * @return the fluent builder for cron task registration.
+     * @since 3.0.2
+     */
+    Builder newBuilder();
+
+    /**
+     * Fluent builder interface for registering cron scheduled tasks with governance capabilities.
+     * <p>
+     * Bind to the current {@link CronTaskRepository} instance, used to assemble task registration
+     * parameters in a chained manner, and complete task registration after calling {@link #build()}.
+     *
+     * @see CronTaskBuilder
+     */
+    interface Builder {
+
+        /**
+         * Sets the cron trigger expression for scheduled task.
+         * @param expression valid cron expression string
+         * @return current builder instance for chained calls
+         */
+        Builder withExpression(String expression);
+
+        /**
+         * Sets task execution body using native {@link Runnable}.
+         * @param runnable task execution logic
+         * @return current builder instance for chained calls
+         */
+        Builder withTask(Runnable runnable);
+
+        /**
+         * Sets task execution body using {@link CronMethodRunnable}
+         * wrapped method task.
+         * @param methodRunnable method encapsulated task runnable
+         * @return current builder instance for chained calls
+         */
+        Builder withTask(CronMethodRunnable methodRunnable);
+
+        /**
+         * Sets task execution body using {@link RunnableTaskBody}
+         * wrapped runnable task.
+         * @param runnableTaskBody runnable type task wrapper
+         * @return current builder instance for chained calls
+         */
+        Builder withTask(RunnableTaskBody runnableTaskBody);
+
+        /**
+         * Sets task execution body using generic {@link TaskBody}.
+         * @param taskBody universal task body wrapper
+         * @return current builder instance for chained calls
+         */
+        Builder withTask(TaskBody taskBody);
+
+        /**
+         * Sets the complete {@link CronTask} object as task
+         * registration metadata.
+         * @param cronTask integrated cron task information
+         * @return current builder instance for chained calls
+         */
+        Builder withTask(CronTask cronTask);
+
+        /**
+         * Enables limited execution times governance for the scheduled task.
+         * The task will be automatically unregistered after reaching the configured
+         * maximum execution count.
+         * @param maxTimes maximum allowed execution times.
+         * @return current builder instance for chained calls
+         */
+        Builder limitRunTimes(int maxTimes);
+
+        /**
+         * Enables timeout governance for the scheduled task.
+         * The running task will be interrupted if execution duration exceeds the
+         * configured timeout threshold.
+         * @param timeout task timeout configuration rule.
+         * @return current builder instance for chained calls.
+         */
+        Builder timeout(RunningTimeout timeout);
+
+        /**
+         * Validates assembled parameters, matches the corresponding overloaded
+         * registration method, completes cron task registration and returns the
+         * globally unique task ID.
+         * @return globally unique registered task identifier
+         * @throws IllegalArgumentException required parameter missing or unsupported
+         * task type.
+         * @throws CronInternalException If task registration occurs error.
+         */
+        String build();
     }
 }
