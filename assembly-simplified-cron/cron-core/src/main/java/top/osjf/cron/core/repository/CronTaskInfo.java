@@ -77,7 +77,7 @@ public class CronTaskInfo implements Serializable {
     private RunningTimeout timeoutConfig;
 
     /**
-     * Whether the task is currently executing.
+     * The {@code boolean} flag to indicate whether the task is currently executing.
      * @since 3.0.2
      */
     private boolean isRunning;
@@ -90,7 +90,7 @@ public class CronTaskInfo implements Serializable {
     @Nullable private Long nextExecuteTimestamp;
 
     /**
-     * The flag to indicate whether concurrent execution is prohibited.
+     * The {@code boolean} to indicate whether concurrent execution is prohibited.
      * @since 3.0.2
      */
     private boolean disallowConcurrentExecution;
@@ -260,28 +260,6 @@ public class CronTaskInfo implements Serializable {
     }
 
     /**
-     * Get the corresponding parameter in the extension parameter array based on
-     * the specified class type.
-     *
-     * @param clazz the type of the parameter to retrieve.
-     * @param <T>   the generic of the parameter to retrieve.
-     * @return The found parameter of the specified type, or null if not found.
-     */
-    @Nullable
-    @SuppressWarnings("unchecked")
-    public <T> T getArg(Class<T> clazz) {
-        if (args == null || args.length < 1) {
-            return null;
-        }
-        for (Object arg : args) {
-            if (clazz.isInstance(arg)) {
-                return (T) arg;
-            }
-        }
-        return null;
-    }
-
-    /**
      * @return {@link #remainingNumberOfRuns}
      */
     public long getRemainingNumberOfRuns() {
@@ -343,22 +321,4 @@ public class CronTaskInfo implements Serializable {
         return result;
     }
 
-    @Override
-    public String toString() {
-        return "CronTaskInfo{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", expression='" + expression + '\'' +
-                ", runnable=" + runnable +
-                ", target=" + target +
-                ", method=" + method +
-                ", args=" + Arrays.toString(args) +
-                ", remainingNumberOfRuns=" + remainingNumberOfRuns +
-                ", timeoutConfig=" + timeoutConfig +
-                ", isRunning=" + isRunning +
-                ", nextExecuteTimestamp=" + nextExecuteTimestamp +
-                ", disallowConcurrentExecution=" + disallowConcurrentExecution +
-                ", description='" + description + '\'' +
-                '}';
-    }
 }
