@@ -17,6 +17,7 @@
 
 package top.osjf.cron.core.listener;
 
+import top.osjf.commons.util.Assert;
 import top.osjf.commons.util.CollectionUtils;
 
 import java.util.Map;
@@ -51,6 +52,7 @@ public class RunningThreadHolder {
      * @param id the unique identifier of the registered cron task.
      */
     public void addCurrentRunningThread(String id) {
+        Assert.hasText(id, "id must not be null or blank");
         Thread currentThread = Thread.currentThread();
         runningThreadMap.computeIfAbsent(id,  k -> ConcurrentHashMap.newKeySet()).add(currentThread);
     }
@@ -60,6 +62,7 @@ public class RunningThreadHolder {
      * @param id the unique identifier of the registered cron task.
      */
     public void removeCurrentRunningThread(String id) {
+        Assert.hasText(id, "id must not be null or blank");
         Set<Thread> threads = runningThreadMap.get(id);
         if (CollectionUtils.isEmpty(threads)) return;
         Thread thread = Thread.currentThread();
@@ -71,6 +74,7 @@ public class RunningThreadHolder {
      * @param id the unique identifier of the registered cron task.
      */
     public void removeRunningThreads(String id) {
+        Assert.hasText(id, "id must not be null or blank");
         Set<Thread> threads = runningThreadMap.remove(id);
         if (CollectionUtils.isEmpty(threads)) return;
         interruptThreads(threads);
