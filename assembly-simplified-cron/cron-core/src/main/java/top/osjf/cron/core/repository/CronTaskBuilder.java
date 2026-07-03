@@ -1,25 +1,80 @@
+/*
+ * Copyright 2026-? the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package top.osjf.cron.core.repository;
 
 import top.osjf.commons.lang.Nullable;
 import top.osjf.commons.util.Assert;
-import top.osjf.cron.core.exception.CronInternalException;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
+/**
+ * Fluent builder implementation for {@link CronTaskRepository}, used to assemble task registration
+ * parameters in a chained way and automatically match the overloaded registration method to complete
+ * scheduled task registration.
+ * <p>
+ * Supports five types of task bodies: {@link CronTask}, {@link CronMethodRunnable}, {@link RunnableTaskBody},
+ * {@link TaskBody}, native {@link Runnable}, and provides two governance capabilities: limited execution
+ * times and task timeout control. Each builder instance can only call {@link #build()} once to avoid duplicate
+ * task registration.
+ * <p>
+ * <h3>Code Usage Example</h3>
+ * <pre>{@code
+ * // 1. Register common Runnable scheduled task
+ * String taskId1 = CronTaskBuilder.forRepository(cronTaskRepository)
+ *         .withExpression("0/5 * * * * ?")
+ *         .withTask(() -> System.out.println("Execute common runnable task"))
+ *         .build();
+ *
+ * // 2. Register method-type scheduled task with execution limit and timeout governance
+ * CronMethodRunnable methodRunnable
+ *               = new CronMethodRunnable(targetBean, TargetClass.class.getDeclaredMethod("taskMethod"));
+ * String taskId2 = CronTaskBuilder.forRepository(cronTaskRepository)
+ *         .withExpression("0 0 8 * * ?")
+ *         .withTask(methodRunnable)
+ *         .limitRunTimes(100)
+ *         .timeout(new RunningTimeout(30, TimeUnit.SECONDS))
+ *         .build();
+ *
+ * // 3. Register task via integrated CronTask object
+ * CronTask cronTask = new CronTask("task-001", "0 30 9 * * ?", () -> System.out.println("Integrated cron task"));
+ * String taskId3 = CronTaskBuilder.forRepository(cronTaskRepository)
+ *         .withExpression(cronTask.getExpression())
+ *         .withTask(cronTask)
+ *         .build();
+ * }</pre>
+ *
+ * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
+ * @since 3.0.2
+ */
 public class CronTaskBuilder implements CronTaskRepository.Builder {
 
     private final CronTaskRepository repository;
 
     // Required parameters
     private String expression;
-    private Object taskBody;
+    private Object task;
 
     // Optional governance parameters
-    @Nullable
-    private Integer maxRunTimes;
+    @Nullable private Integer maxRunTimes;
 
-    @Nullable
-    private RunningTimeout runningTimeout;
+    @Nullable private RunningTimeout runningTimeout;
 
     /** Mark to ensure build() only execute once for current builder instance. */
     private final AtomicBoolean built = new AtomicBoolean(false);
@@ -45,10 +100,7 @@ public class CronTaskBuilder implements CronTaskRepository.Builder {
     }
 
     /**
-     * Set cron trigger expression.
-     *
-     * @param expression valid cron expression
-     * @return current builder instance for chained call
+     * {@inheritDoc}
      */
     @Override
     public CronTaskBuilder withExpression(String expression) {
@@ -57,71 +109,54 @@ public class CronTaskBuilder implements CronTaskRepository.Builder {
     }
 
     /**
-     * Set task execution body with raw {@link Runnable}.
-     *
-     * @param runnable task runnable
-     * @return current builder instance for chained call
+     * {@inheritDoc}
      */
     @Override
     public CronTaskBuilder withTask(Runnable runnable) {
-        this.taskBody = runnable;
+        this.task = runnable;
         return this;
     }
 
     /**
-     * Set task execution body with {@link CronMethodRunnable}.
-     *
-     * @param methodRunnable method wrapped runnable
-     * @return current builder instance for chained call
+     * {@inheritDoc}
      */
     @Override
     public CronTaskBuilder withTask(CronMethodRunnable methodRunnable) {
-        this.taskBody = methodRunnable;
+        this.task = methodRunnable;
         return this;
     }
 
     /**
-     * Set task execution body with {@link RunnableTaskBody}.
-     *
-     * @param runnableTaskBody runnable task wrapper
-     * @return current builder instance for chained call
+     * {@inheritDoc}
      */
     @Override
     public CronTaskBuilder withTask(RunnableTaskBody runnableTaskBody) {
-        this.taskBody = runnableTaskBody;
+        this.task = runnableTaskBody;
         return this;
     }
 
     /**
-     * Set task execution body with generic {@link TaskBody}.
-     *
-     * @param taskBody generic task wrapper
-     * @return current builder instance for chained call
+     * {@inheritDoc}
      */
     @Override
     public CronTaskBuilder withTask(TaskBody taskBody) {
-        this.taskBody = taskBody;
+        this.task = taskBody;
         return this;
     }
 
     /**
-     * Set task execution body with complete {@link CronTask}.
-     *
-     * @param cronTask full cron task metadata
-     * @return current builder instance for chained call
+     * {@inheritDoc}
      */
     @Override
     public CronTaskBuilder withTask(CronTask cronTask) {
-        this.taskBody = cronTask;
+        this.task = cronTask;
         return this;
     }
 
     /**
-     * Enable limited execution times governance.
-     * The task will be automatically unregistered after reaching the maximum execution count.
+     * {@inheritDoc}
      *
-     * @param maxTimes maximum allowed execution count, must greater than 0
-     * @return current builder instance for chained call
+     * @throws IllegalArgumentException max times non be greater than 0
      */
     @Override
     public CronTaskBuilder limitRunTimes(int maxTimes) {
@@ -131,11 +166,7 @@ public class CronTaskBuilder implements CronTaskRepository.Builder {
     }
 
     /**
-     * Enable task execution timeout governance.
-     * The running task will be interrupted if execution exceeds the configured duration.
-     *
-     * @param timeout task timeout config
-     * @return current builder instance for chained call
+     * {@inheritDoc}
      */
     @Override
     public CronTaskBuilder timeout(RunningTimeout timeout) {
@@ -144,92 +175,154 @@ public class CronTaskBuilder implements CronTaskRepository.Builder {
     }
 
     /**
-     * Perform parameter validation, match the corresponding overloaded registration method according to the configured parameters,
-     * complete the task registration, and return the globally unique task ID generated by the repository.
-     * <p>This method can only be called once per builder instance. Repeated call will throw {@link IllegalStateException}.
+     * {@inheritDoc}
      *
-     * @return registered globally unique task ID
-     * @throws IllegalStateException    if build() method is called repeatedly
-     * @throws IllegalArgumentException if required cron expression or task body is missing, or unsupported task body type
-     * @throws CronInternalException    if underlying repository throws exception during task registration
+     * @throws IllegalStateException Current CronTaskBuilder instance can only call build() once.
      */
     public String build() {
-        // Prevent repeated build call for current builder instance
+
         Assert.state(built.compareAndSet(false, true),
-                "The current CronTaskBuilder instance can only call build() once, please create a new builder for new task registration.");
+                "Current CronTaskBuilder instance can only call build() once");
 
-        // Global parameter validity check
         Assert.hasText(expression, "Cron expression must be specified");
-        Assert.notNull(taskBody, "Task execution body must be specified");
 
-        String taskId;
+        Assert.notNull(task, "Task execution body must be specified");
 
-        // Scenario 1: Register by integrated CronTask object
-        if (taskBody instanceof CronTask) {
-            CronTask cronTask = (CronTask) taskBody;
-            if (maxRunTimes != null && runningTimeout != null) {
-                taskId = repository.registerRunTimes(cronTask, maxRunTimes, runningTimeout);
-            } else if (maxRunTimes != null) {
-                taskId = repository.registerRunTimes(cronTask, maxRunTimes);
-            } else if (runningTimeout != null) {
-                taskId = repository.register(cronTask, runningTimeout);
-            } else {
-                taskId = repository.register(cronTask);
-            }
-        } else {
-            // Scenario 2: Register with cron expression + various raw task body types
-            if (maxRunTimes != null && runningTimeout != null) {
-                if (taskBody instanceof Runnable) {
-                    taskId = repository.registerRunTimes(expression, (Runnable) taskBody, maxRunTimes, runningTimeout);
-                } else if (taskBody instanceof CronMethodRunnable) {
-                    taskId = repository.registerRunTimes(expression, (CronMethodRunnable) taskBody, maxRunTimes, runningTimeout);
-                } else if (taskBody instanceof RunnableTaskBody) {
-                    taskId = repository.registerRunTimes(expression, (RunnableTaskBody) taskBody, maxRunTimes, runningTimeout);
-                } else if (taskBody instanceof TaskBody) {
-                    taskId = repository.registerRunTimes(expression, (TaskBody) taskBody, maxRunTimes, runningTimeout);
-                } else {
-                    throw new IllegalArgumentException("Unsupported task body type: " + taskBody.getClass().getName());
-                }
-            } else if (maxRunTimes != null) {
-                if (taskBody instanceof Runnable) {
-                    taskId = repository.registerRunTimes(expression, (Runnable) taskBody, maxRunTimes);
-                } else if (taskBody instanceof CronMethodRunnable) {
-                    taskId = repository.registerRunTimes(expression, (CronMethodRunnable) taskBody, maxRunTimes);
-                } else if (taskBody instanceof RunnableTaskBody) {
-                    taskId = repository.registerRunTimes(expression, (RunnableTaskBody) taskBody, maxRunTimes);
-                } else if (taskBody instanceof TaskBody) {
-                    taskId = repository.registerRunTimes(expression, (TaskBody) taskBody, maxRunTimes);
-                } else {
-                    throw new IllegalArgumentException("Unsupported task body type: " + taskBody.getClass().getName());
-                }
-            } else if (runningTimeout != null) {
-                if (taskBody instanceof Runnable) {
-                    taskId = repository.register(expression, (Runnable) taskBody, runningTimeout);
-                } else if (taskBody instanceof CronMethodRunnable) {
-                    taskId = repository.register(expression, (CronMethodRunnable) taskBody, runningTimeout);
-                } else if (taskBody instanceof RunnableTaskBody) {
-                    taskId = repository.register(expression, (RunnableTaskBody) taskBody, runningTimeout);
-                } else if (taskBody instanceof TaskBody) {
-                    taskId = repository.register(expression, (TaskBody) taskBody, runningTimeout);
-                } else {
-                    throw new IllegalArgumentException("Unsupported task body type: " + taskBody.getClass().getName());
-                }
-            } else {
-                if (taskBody instanceof Runnable) {
-                    taskId = repository.register(expression, (Runnable) taskBody);
-                } else if (taskBody instanceof CronMethodRunnable) {
-                    taskId = repository.register(expression, (CronMethodRunnable) taskBody);
-                } else if (taskBody instanceof RunnableTaskBody) {
-                    taskId = repository.register(expression, (RunnableTaskBody) taskBody);
-                } else if (taskBody instanceof TaskBody) {
-                    taskId = repository.register(expression, (TaskBody) taskBody);
-                } else {
-                    throw new IllegalArgumentException("Unsupported task body type: " + taskBody.getClass().getName());
-                }
-            }
+        return buildInternal();
+    }
+
+    /**
+     * Distribute different registration logic according to the actual type of task execution body,
+     * and call the corresponding task registration method after matching governance rules.
+     *
+     * @return unique identifier of registered cron task
+     */
+    private String buildInternal() {
+        if (task instanceof CronTask) {
+            CronTask cronTask = (CronTask) task;
+            return doRegisterCronTask(cronTask);
         }
+        else if (task instanceof CronMethodRunnable) {
+            CronMethodRunnable methodRunnable = (CronMethodRunnable) task;
+            return matchRegisterMethod(methodRunnable);
+        }
+        else if (task instanceof RunnableTaskBody) {
+            RunnableTaskBody taskBody = (RunnableTaskBody) task;
+            return matchRegisterMethod(taskBody);
+        }
+        else if (task instanceof TaskBody) {
+            TaskBody taskBody = (TaskBody) task;
+            return matchRegisterMethod(taskBody);
+        }
+        else if (task instanceof Runnable) {
+            Runnable runnable = (Runnable) task;
+            return matchRegisterMethod(runnable);
+        }
+        throw new IllegalArgumentException
+                ("Coming here should be an extension of the task type without code compatibility!");
+    }
 
-        // Unified post-processing: log, metrics can be added here
-        return taskId;
+    /**
+     * Execute registration for integrated {@link CronTask} object,
+     * automatically match the registration method according to timeout and limited execution rules.
+     *
+     * @param cronTask integrated full metadata of scheduled task
+     * @return unique identifier of registered cron task
+     */
+    private String doRegisterCronTask(CronTask cronTask) {
+        return doMatchRegisterMethod(
+                (maxRunTimes, runningTimeout) -> repository.registerRunTimes(cronTask, maxRunTimes, runningTimeout),
+                (maxRunTimes) ->  repository.registerRunTimes(cronTask, maxRunTimes),
+                (runningTimeout) -> repository.register(cronTask, runningTimeout),
+                () -> repository.register(cronTask));
+    }
+
+    /**
+     * Register native {@link Runnable} type task with specified cron expression and governance rules.
+     *
+     * @param runnable native task execution logic
+     * @return unique identifier of registered cron task
+     */
+    private String matchRegisterMethod(Runnable runnable) {
+        return doMatchRegisterMethod(
+                (maxRunTimes, runningTimeout) -> repository.registerRunTimes(expression, runnable, maxRunTimes,
+                        runningTimeout),
+                (maxRunTimes) ->  repository.registerRunTimes(expression, runnable, maxRunTimes),
+                (runningTimeout) -> repository.register(expression, runnable, runningTimeout),
+                () -> repository.register(expression, runnable));
+    }
+
+    /**
+     * Register {@link CronMethodRunnable} method-type task with specified cron expression and governance rules.
+     * This type can resolve the target execution bean and method metadata of the task.
+     *
+     * @param methodRunnable encapsulated method task instance
+     * @return unique identifier of registered cron task
+     */
+    private String matchRegisterMethod(CronMethodRunnable methodRunnable) {
+        return doMatchRegisterMethod(
+                (maxRunTimes, runningTimeout) -> repository.registerRunTimes(expression, methodRunnable, maxRunTimes,
+                        runningTimeout),
+                (maxRunTimes) ->  repository.registerRunTimes(expression, methodRunnable, maxRunTimes),
+                (runningTimeout) -> repository.register(expression, methodRunnable, runningTimeout),
+                () -> repository.register(expression, methodRunnable));
+    }
+
+    /**
+     * Register {@link RunnableTaskBody} wrapped runnable task with specified cron expression and governance rules.
+     *
+     * @param taskBody wrapped runnable task instance
+     * @return unique identifier of registered cron task
+     */
+    private String matchRegisterMethod(RunnableTaskBody taskBody) {
+        return doMatchRegisterMethod(
+                (maxRunTimes, runningTimeout) -> repository.registerRunTimes(expression, taskBody, maxRunTimes,
+                        runningTimeout),
+                (maxRunTimes) ->  repository.registerRunTimes(expression, taskBody, maxRunTimes),
+                (runningTimeout) -> repository.register(expression, taskBody, runningTimeout),
+                () -> repository.register(expression, taskBody));
+    }
+
+    /**
+     * Register general {@link TaskBody} task wrapper with specified cron expression and governance rules.
+     *
+     * @param taskBody general task wrapper instance
+     * @return unique identifier of registered cron task
+     */
+    private String matchRegisterMethod(TaskBody taskBody) {
+        return doMatchRegisterMethod(
+                (maxRunTimes, runningTimeout) -> repository.registerRunTimes(expression, taskBody, maxRunTimes,
+                        runningTimeout),
+                (maxRunTimes) ->  repository.registerRunTimes(expression, taskBody, maxRunTimes),
+                (runningTimeout) -> repository.register(expression, taskBody, runningTimeout),
+                () -> repository.register(expression, taskBody));
+    }
+
+    /**
+     * General governance rule matching template method, select the corresponding registration method
+     * according to whether the two governance parameters of limited execution times and timeout are configured.
+     *
+     * @param bothFunc       execute when both maxRunTimes and runningTimeout are configured
+     * @param onlyTimesFunc  execute when only maxRunTimes is configured
+     * @param onlyTimeoutFunc execute when only runningTimeout is configured
+     * @param defaultFunc    execute when no governance rules are configured
+     * @return unique identifier of registered cron task
+     */
+    private String doMatchRegisterMethod(BiFunction<Integer, RunningTimeout, String> bothFunc,
+                                         Function<Integer, String> onlyTimesFunc,
+                                         Function<RunningTimeout, String> onlyTimeoutFunc,
+                                         Supplier<String> defaultFunc) {
+        if (maxRunTimes != null && runningTimeout != null) {
+            return bothFunc.apply(maxRunTimes, runningTimeout);
+        }
+        else if (maxRunTimes != null) {
+            return onlyTimesFunc.apply(maxRunTimes);
+        }
+        else if (runningTimeout != null) {
+            return onlyTimeoutFunc.apply(runningTimeout);
+        }
+        else {
+            return defaultFunc.get();
+        }
     }
 }
