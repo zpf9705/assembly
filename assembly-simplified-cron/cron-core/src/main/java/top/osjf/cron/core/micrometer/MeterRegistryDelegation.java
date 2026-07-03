@@ -23,6 +23,7 @@ import io.micrometer.core.instrument.search.MeterNotFoundException;
 import io.micrometer.core.instrument.search.RequiredSearch;
 import io.micrometer.core.instrument.search.Search;
 import top.osjf.commons.lang.Nullable;
+import top.osjf.commons.util.Assert;
 import top.osjf.commons.util.StringUtils;
 
 import java.util.Collection;
@@ -54,6 +55,10 @@ public abstract class MeterRegistryDelegation {
      *                           and extract system tags.
      */
     public static void initProperties(MeterRegistry meterRegistry, ExpressionResolver expressionResolver) {
+
+        Assert.notNull(meterRegistry, "meterRegistry must not be null");
+        Assert.notNull(expressionResolver, "expressionResolver must not be null");
+
         MeterRegistryDelegation.meterRegistry = meterRegistry;
         MeterRegistryDelegation.systemTags = SystemPropertiesTagUtils.getResolvedSystemTags(expressionResolver);
     }
@@ -72,6 +77,9 @@ public abstract class MeterRegistryDelegation {
      */
     public static Optional<LongTaskTimer> longTaskTimer(String metricName,
                                                         @Nullable String description, String... tags) {
+
+        Assert.hasText(metricName, "metricName must not be null or blank");
+
         try {
             return Optional.of(LongTaskTimer.builder(metricName)
                     .description(StringUtils.isNotBlank(description) ? description : null)
@@ -105,6 +113,8 @@ public abstract class MeterRegistryDelegation {
      * @param sample the {@code Sample} instance of {@code LongTaskTimer}.
      */
     public static void stopSample(LongTaskTimer.Sample sample) {
+        Assert.notNull(sample, "sample not be null");
+
         try {
             sample.stop();
         }
