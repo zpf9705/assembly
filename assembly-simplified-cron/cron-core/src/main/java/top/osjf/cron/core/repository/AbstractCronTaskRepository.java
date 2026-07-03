@@ -567,6 +567,14 @@ public abstract class AbstractCronTaskRepository
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Builder newBuilder() {
+        return CronTaskBuilder.forRepository(this);
+    }
+
+    /**
      * The class object name that runs the body wrapper returns {@link Runnable java.lang.Runnable}
      * by default.
      * @since 3.0.2
