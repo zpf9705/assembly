@@ -104,6 +104,7 @@ public class CronTaskBuilder implements CronTaskRepository.Builder {
      */
     @Override
     public CronTaskBuilder withExpression(String expression) {
+        checkBuildFlag();
         this.expression = expression;
         return this;
     }
@@ -113,6 +114,7 @@ public class CronTaskBuilder implements CronTaskRepository.Builder {
      */
     @Override
     public CronTaskBuilder withTask(Runnable runnable) {
+        checkBuildFlag();
         this.task = runnable;
         return this;
     }
@@ -122,6 +124,7 @@ public class CronTaskBuilder implements CronTaskRepository.Builder {
      */
     @Override
     public CronTaskBuilder withTask(CronMethodRunnable methodRunnable) {
+        checkBuildFlag();
         this.task = methodRunnable;
         return this;
     }
@@ -131,6 +134,7 @@ public class CronTaskBuilder implements CronTaskRepository.Builder {
      */
     @Override
     public CronTaskBuilder withTask(RunnableTaskBody runnableTaskBody) {
+        checkBuildFlag();
         this.task = runnableTaskBody;
         return this;
     }
@@ -140,6 +144,7 @@ public class CronTaskBuilder implements CronTaskRepository.Builder {
      */
     @Override
     public CronTaskBuilder withTask(TaskBody taskBody) {
+        checkBuildFlag();
         this.task = taskBody;
         return this;
     }
@@ -149,6 +154,7 @@ public class CronTaskBuilder implements CronTaskRepository.Builder {
      */
     @Override
     public CronTaskBuilder withTask(CronTask cronTask) {
+        checkBuildFlag();
         this.task = cronTask;
         return this;
     }
@@ -160,6 +166,7 @@ public class CronTaskBuilder implements CronTaskRepository.Builder {
      */
     @Override
     public CronTaskBuilder limitRunTimes(int maxTimes) {
+        checkBuildFlag();
         Assert.isTrue(maxTimes > 0, "Max run times must be greater than 0");
         this.maxRunTimes = maxTimes;
         return this;
@@ -170,6 +177,7 @@ public class CronTaskBuilder implements CronTaskRepository.Builder {
      */
     @Override
     public CronTaskBuilder timeout(RunningTimeout timeout) {
+        checkBuildFlag();
         this.runningTimeout = timeout;
         return this;
     }
