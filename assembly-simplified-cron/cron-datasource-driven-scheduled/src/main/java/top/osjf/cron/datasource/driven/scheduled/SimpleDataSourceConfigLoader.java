@@ -18,6 +18,7 @@
 package top.osjf.cron.datasource.driven.scheduled;
 
 import top.osjf.commons.lang.Nullable;
+import top.osjf.commons.util.Assert;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,11 +41,13 @@ public class SimpleDataSourceConfigLoader implements ConfigurableDataSourceConfi
     @Nullable
     @Override
     public String getConfig(String configKey) {
+        Assert.hasText(configKey, "configKey must not be null or blank");
         return configMap.get(configKey);
     }
 
     @Override
     public void setConfig(String configKey, String configValue) {
+        Assert.hasText(configKey, "configKey must not be null or blank");
         configMap.put(configKey, configValue);
     }
 }

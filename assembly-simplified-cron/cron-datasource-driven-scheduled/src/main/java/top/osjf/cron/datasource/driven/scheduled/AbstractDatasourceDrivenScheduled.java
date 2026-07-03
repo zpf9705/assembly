@@ -135,6 +135,10 @@ public abstract class AbstractDatasourceDrivenScheduled
      */
     public AbstractDatasourceDrivenScheduled(CronTaskRepository cronTaskRepository,
                                              DatasourceTaskElementsOperation datasourceTaskElementsOperation) {
+
+        Assert.notNull(cronTaskRepository, "cronTaskRepository must not be null");
+        Assert.notNull(datasourceTaskElementsOperation, "datasourceTaskElementsOperation must not be null");
+
         this.cronTaskRepository = cronTaskRepository;
         this.datasourceTaskElementsOperation = datasourceTaskElementsOperation;
         this.datasourceTaskElementsOperation.setAbstractDatasourceDrivenScheduled(this);

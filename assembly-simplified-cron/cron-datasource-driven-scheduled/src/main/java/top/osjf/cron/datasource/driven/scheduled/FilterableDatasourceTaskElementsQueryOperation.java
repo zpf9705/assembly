@@ -18,6 +18,7 @@
 package top.osjf.cron.datasource.driven.scheduled;
 
 import top.osjf.commons.lang.Nullable;
+import top.osjf.commons.util.Assert;
 import top.osjf.commons.util.CollectionUtils;
 import top.osjf.commons.util.StringUtils;
 
@@ -70,6 +71,7 @@ public abstract class FilterableDatasourceTaskElementsQueryOperation
     @Nullable
     @Override
     public TaskElement getElementById(String id) {
+        Assert.hasText(id, "id must not be null or blank");
         return filterSingle(t-> Objects.equals(t.getId(), id));
     }
 
@@ -79,6 +81,7 @@ public abstract class FilterableDatasourceTaskElementsQueryOperation
     @Nullable
     @Override
     public TaskElement getElementByTaskId(String taskId) {
+        Assert.hasText(taskId, "taskId must not be null or blank");
         return filterSingle(t-> Objects.equals(t.getTaskId(), taskId));
     }
 
@@ -87,6 +90,7 @@ public abstract class FilterableDatasourceTaskElementsQueryOperation
      */
     @Override
     public List<TaskElement> getElementsByTaskName(String taskName) {
+        Assert.hasText(taskName, "taskName must not be null or blank");
         return filterList(t-> Objects.equals(t.getTaskName(), taskName));
     }
 
@@ -95,6 +99,7 @@ public abstract class FilterableDatasourceTaskElementsQueryOperation
      */
     @Override
     public List<TaskElement> getElementsByTaskStatus(Status status) {
+        Assert.notNull(status, "status must not be null");
         return filterList(t-> Objects.equals(t.getStatus(), status.name()));
     }
 
