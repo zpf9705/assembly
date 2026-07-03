@@ -358,7 +358,8 @@ public abstract class CronListenerCollector implements Wrapper {
          * @throws IllegalStateException if already built
          */
         private void checkBuildFlag() {
-            Assert.state(!buildFlag.get(), "The build() method can only be invoked once.");
+            Assert.state(!buildFlag.get(),
+                    "This ListenerQueryBuilder has been finalized via build(), configuration cannot be updated.");
         }
     }
 

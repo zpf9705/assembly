@@ -175,6 +175,16 @@ public class CronTaskBuilder implements CronTaskRepository.Builder {
     }
 
     /**
+     * Check whether the builder has completed construction.
+     * If built, forbid modifying builder conditions.
+     * @throws IllegalStateException if already built
+     */
+    private void checkBuildFlag() {
+        Assert.state(!built.get(),
+                "This CronTaskBuilder has been finalized via build(), configuration cannot be updated.");
+    }
+
+    /**
      * {@inheritDoc}
      *
      * @throws IllegalStateException Current CronTaskBuilder instance can only call build() once.
