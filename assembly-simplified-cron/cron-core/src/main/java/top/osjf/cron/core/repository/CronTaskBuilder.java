@@ -123,7 +123,7 @@ public class CronTaskBuilder implements CronTaskRepository.Builder {
      * {@inheritDoc}
      */
     @Override
-    public CronTaskRepository.Builder withName(String name) {
+    public CronTaskRepository.Builder withName(@Nullable String name) {
         checkBuildFlag();
         this.name = name;
         return this;
@@ -196,7 +196,7 @@ public class CronTaskBuilder implements CronTaskRepository.Builder {
      * {@inheritDoc}
      */
     @Override
-    public CronTaskBuilder timeout(RunningTimeout timeout) {
+    public CronTaskBuilder timeout(@Nullable RunningTimeout timeout) {
         checkBuildFlag();
         this.runningTimeout = timeout;
         return this;
@@ -216,7 +216,7 @@ public class CronTaskBuilder implements CronTaskRepository.Builder {
      * {@inheritDoc}
      */
     @Override
-    public CronTaskRepository.Builder withDescription(String description) {
+    public CronTaskRepository.Builder withDescription(@Nullable String description) {
         checkBuildFlag();
         this.description = description;
         return this;

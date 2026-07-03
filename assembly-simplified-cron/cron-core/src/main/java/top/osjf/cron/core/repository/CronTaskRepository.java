@@ -387,7 +387,7 @@ public interface CronTaskRepository extends Repository, RunTimesRegistrarReposit
          * @param name task custom name
          * @return current builder instance for chained calls
          */
-        Builder withName(String name);
+        Builder withName(@Nullable String name);
 
         /**
          * Sets task execution body using native {@link Runnable}.
@@ -443,7 +443,7 @@ public interface CronTaskRepository extends Repository, RunTimesRegistrarReposit
          * @param timeout task timeout configuration rule.
          * @return current builder instance for chained calls.
          */
-        Builder timeout(RunningTimeout timeout);
+        Builder timeout(@Nullable RunningTimeout timeout);
 
         /**
          * Prohibits concurrent execution of this scheduled task.
@@ -457,7 +457,7 @@ public interface CronTaskRepository extends Repository, RunTimesRegistrarReposit
          * @param description task remark information
          * @return current builder instance for chained calls
          */
-        Builder withDescription(String description);
+        Builder withDescription(@Nullable String description);
 
         /**
          * Validates assembled parameters, matches the corresponding overloaded
