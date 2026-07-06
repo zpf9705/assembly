@@ -21,7 +21,7 @@ import org.springframework.context.annotation.Configuration;
 import top.osjf.cron.core.lifecycle.InitializeProperties;
 import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
 import top.osjf.cron.spring.AbstractCronTaskConfiguration;
-import top.osjf.cron.spring.CronAnnotationPostProcessor;
+import top.osjf.cron.spring.annotation.CronAnnotationPostProcessor;
 import top.osjf.cron.spring.ObjectProviderUtils;
 import top.osjf.cron.spring.PropertiesUtils;
 import top.osjf.cron.spring.annotation.Cron;

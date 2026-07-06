@@ -23,7 +23,7 @@ import top.osjf.cron.core.listener.AsyncCronListener;
 import top.osjf.cron.core.repository.CronExecutorServiceSupplier;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
 import top.osjf.cron.spring.AbstractCronTaskConfiguration;
-import top.osjf.cron.spring.CronAnnotationPostProcessor;
+import top.osjf.cron.spring.annotation.CronAnnotationPostProcessor;
 import top.osjf.cron.spring.ObjectProviderUtils;
 import top.osjf.cron.spring.PropertiesUtils;
 import top.osjf.cron.spring.annotation.Cron;
