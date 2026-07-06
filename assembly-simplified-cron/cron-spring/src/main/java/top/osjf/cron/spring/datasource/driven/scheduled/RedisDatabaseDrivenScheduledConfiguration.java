@@ -35,6 +35,11 @@ import top.osjf.cron.spring.Utils;
 @Configuration(proxyBeanMethods = false)
 public class RedisDatabaseDrivenScheduledConfiguration {
 
+    public static final String PREFIX = "spring.schedule.cron.scheduled-driven.redis";
+    public static final String KEY_RULE_KEY = PREFIX + ".rule-key";
+    public static final String KEY_CHANNEL = PREFIX + ".channel";
+    public static final String KEY_CONFIG_FORMAT = PREFIX + ".config-format";
+
     @Bean
     public RedisDatasourceTaskElementsOperation redisDatasourceTaskElementsOperation
             (ObjectProvider<RedisConnectionConfig> builders, Environment environment) {
@@ -42,11 +47,10 @@ public class RedisDatabaseDrivenScheduledConfiguration {
         if (config == null) {
             config = RedisConnectionConfig.builder().build();
         }
-        String ruleKey = environment.getProperty("spring.schedule.cron.scheduled-driven.redis.rule-key");
-        String channel = environment.getProperty("spring.schedule.cron.scheduled-driven.redis.channel");
+        String ruleKey = environment.getProperty(KEY_RULE_KEY);
+        String channel = environment.getProperty(KEY_CHANNEL);
         SubstituteConfigFormat configFormat = environment
-                .getProperty("spring.schedule.cron.scheduled-driven.redis.config-format",
-                        SubstituteConfigFormat.class, SubstituteConfigFormat.JSON);
+                .getProperty(KEY_CONFIG_FORMAT, SubstituteConfigFormat.class, SubstituteConfigFormat.JSON);
         return new RedisDatasourceTaskElementsOperation(config, ruleKey,
                 channel, ConfigFormat.valueOf(configFormat.name()));
     }
