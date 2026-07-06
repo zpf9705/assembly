@@ -56,9 +56,11 @@ public class CronTaskInfo implements Serializable {
     private final Runnable runnable;
 
     /** The target object for this task execution.*/
+    @Expose(serialize = false, deserialize = false)
     @Nullable private final Object target;
 
     /** The target method for executing this task.*/
+    @Expose(serialize = false, deserialize = false)
     @Nullable
     private final Method method;
 
@@ -253,11 +255,27 @@ public class CronTaskInfo implements Serializable {
     }
 
     /**
+     * @return {@link #target}
+     */
+    @Nullable
+    public String getTargetClassName() {
+        return target != null ? target.getClass().getName() : null;
+    }
+
+    /**
      * @return {@link #method}
      */
     @Nullable
     public Method getMethod() {
         return method;
+    }
+
+    /**
+     * @return {@link #method}
+     */
+    @Nullable
+    public String getMethodName() {
+        return method != null ? method.getName() : null;
     }
 
     /**
