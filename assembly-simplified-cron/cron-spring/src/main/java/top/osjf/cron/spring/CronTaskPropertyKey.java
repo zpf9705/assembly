@@ -30,4 +30,21 @@ public interface CronTaskPropertyKey {
      * Cron scheduled task configuration global root prefix
      */
     String PREFIX = "spring.schedule.cron";
+
+    /**
+     * Prefix for web request authentication configuration
+     */
+    String WEB_AUTH_PREFIX = PREFIX + ".web-request-authentication";
+
+    /**
+     * Switch to enable web request authentication
+     */
+    String KEY_WEB_AUTH_ENABLE = WEB_AUTH_PREFIX + ".enable";
+
+    /**
+     * Configuration key for web authentication token
+     */
+    String KEY_OF_AUTHENTICATION_TOKEN = WEB_AUTH_PREFIX + ".token";
+
+
 }
