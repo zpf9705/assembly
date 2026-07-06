@@ -230,7 +230,7 @@ public class CronAnnotationPostProcessor implements ApplicationContextAware,
                         "Registered task count: {}, loaded listener count: {}", cronTasks.size(), listeners.size());
 
         // Auto start cron task repository if auto-startup switch is enabled and not running
-        if (environment.getProperty(CronTaskPropertyKey.AUTO_STARTUP, boolean.class, false)
+        if (environment.getProperty(CronTaskPropertyKey.AUTO_STARTUP, boolean.class, true)
                 && !cronTaskRepository.isStarted()) {
             cronTaskRepository.start();
         }

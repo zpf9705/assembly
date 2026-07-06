@@ -17,6 +17,8 @@
 
 package top.osjf.cron.spring;
 
+import top.osjf.cron.core.repository.CronTaskRepository;
+
 /**
  * Unified interface for storing key constants related to cron scheduled
  * task configuration files.
@@ -42,7 +44,7 @@ public interface CronTaskPropertyKey {
     String WEB_AUTH_PREFIX = PREFIX + ".web-request-authentication";
 
     /**
-     * Switch to control whether {@link CronTaskPropertyKey} start automatically on application boot.
+     * Switch to control whether {@link CronTaskRepository} start automatically on application boot.
      */
     String AUTO_STARTUP = PREFIX + ".auto-startup";
 
