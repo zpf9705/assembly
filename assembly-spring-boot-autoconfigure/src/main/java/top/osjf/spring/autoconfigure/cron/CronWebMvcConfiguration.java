@@ -21,6 +21,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +31,7 @@ import top.osjf.commons.util.CollectionUtils;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.spring.CronTaskInfoReadableWebMvcHandlerController;
 import top.osjf.cron.spring.CronTaskInfoView;
+import top.osjf.cron.spring.CronTaskPropertyKey;
 import top.osjf.cron.spring.auth.AuthenticationPredicate;
 import top.osjf.cron.spring.auth.WebRequestAuthenticationInterceptor;
 import top.osjf.cron.spring.datasource.driven.scheduled.SpringHandlerMappingDatasourceDrivenScheduled;
@@ -37,6 +39,7 @@ import top.osjf.cron.spring.datasource.driven.scheduled.SpringHandlerMappingData
 import java.util.List;
 
 import static top.osjf.cron.spring.datasource.driven.scheduled.ScheduledDrivenPropertyKey.KEY_OF_ENABLE_SCHEDULED_DRIVEN;
+import static top.osjf.cron.spring.datasource.driven.scheduled.ScheduledDrivenPropertyKey.KEY_OF_ENABLE_SCHEDULED_DRIVEN_WEB_INSPECT;
 
 /**
  * {@link Configuration Configuration} for expose HTTP request interfaces
@@ -58,6 +61,7 @@ class CronWebMvcConfiguration {
      * @return the configured {@link CronTaskInfoView} readable controller.
      */
     @Bean
+    @ConditionalOnProperty(prefix = CronTaskPropertyKey.PREFIX, name = "enable-web-query-task-list", havingValue = "true")
     public CronTaskInfoReadableWebMvcHandlerController cronTaskInfoReadableWebMvcHandlerController
     (CronTaskRepository cronTaskRepository,
      RequestMappingHandlerMapping requestMappingHandlerMapping) {
@@ -77,11 +81,15 @@ class CronWebMvcConfiguration {
      @Autowired(required = false) List<WebRequestAuthenticationInterceptor.AuthenticationProvider> providers) {
         WebRequestAuthenticationInterceptor authenticationInterceptor
                 = new WebRequestAuthenticationInterceptor(provider, environment);
-
-        // The default URL that requires registration and authentication.
-        authenticationInterceptor.registerAuthenticationPath
-                (CronTaskInfoReadableWebMvcHandlerController.REQUEST_MAPPING_PATH_OF_GET_CRON_TASK_LIST);
-        if (environment.getProperty(KEY_OF_ENABLE_SCHEDULED_DRIVEN, boolean.class, false)) {
+        // Enable authentication interface address registration when opening the web endpoint query access task list.
+        if (environment.getProperty(CronTaskPropertyKey.KEY_WEB_QUERY_TASK_LIST_ENABLE, boolean.class, false)) {
+            authenticationInterceptor.registerAuthenticationPath
+                    (CronTaskInfoReadableWebMvcHandlerController.REQUEST_MAPPING_PATH_OF_GET_CRON_TASK_LIST);
+        }
+        // Activate the data source driven task and enable the web interface to check endpoint access
+        // before intercepting and registering.
+        if (environment.getProperty(KEY_OF_ENABLE_SCHEDULED_DRIVEN, boolean.class, false)
+         && environment.getProperty(KEY_OF_ENABLE_SCHEDULED_DRIVEN_WEB_INSPECT, boolean.class, false)) {
             authenticationInterceptor.registerAuthenticationPath
                     (SpringHandlerMappingDatasourceDrivenScheduled.RUNNING_MAPPING_PATH);
         }

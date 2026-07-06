@@ -33,7 +33,7 @@ import top.osjf.cron.spring.annotation.CronRepositoryBean;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnMissingBean(CronTaskRepository.class)
-@Conditional(CronCondition.class)
+@Conditional(CronClientCondition.class)
 class NoOpCornConfiguration {
 
     @CronRepositoryBean

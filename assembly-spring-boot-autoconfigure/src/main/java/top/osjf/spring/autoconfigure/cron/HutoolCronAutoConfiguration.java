@@ -39,7 +39,7 @@ import top.osjf.cron.spring.hutool.HutoolCronTaskConfiguration;
 @ConditionalOnClass(HutoolCronTaskConfiguration.class) // Restricted by cron-spring-hutool
 @Import({ HutoolCronTaskConfiguration.class, CronTaskConfiguration.class })
 @ConditionalOnMissingBean(CronTaskRepository.class)
-@Conditional(CronCondition.class)
+@Conditional(CronClientCondition.class)
 class HutoolCronAutoConfiguration {
 
     @Bean

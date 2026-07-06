@@ -41,7 +41,7 @@ import java.util.List;
 @ConditionalOnClass(QuartzCronTaskConfiguration.class)  // Restricted by cron-spring-quartz
 @Import({ QuartzCronTaskConfiguration.class, CronTaskConfiguration.class })
 @ConditionalOnMissingBean(CronTaskRepository.class)
-@Conditional(CronCondition.class)
+@Conditional(CronClientCondition.class)
 class QuartzCronAutoConfiguration {
 
     @Bean
