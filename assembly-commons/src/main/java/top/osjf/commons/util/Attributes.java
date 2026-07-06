@@ -133,6 +133,8 @@ public class Attributes extends LinkedHashMap<String, Object> {
      * never {@code null} or empty
      * @param expectedType the expected type; never {@code null}
      * @return the value
+     * @throws IllegalArgumentException If the type of the obtained value is not
+     *                                  the expected input type.
      */
     @Nullable
     @SuppressWarnings("unchecked")
