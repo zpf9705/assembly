@@ -16,6 +16,7 @@
 
 package top.osjf.spring.autoconfigure.cron;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -24,25 +25,31 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import top.osjf.cron.core.lifecycle.InitializeProperties;
 import top.osjf.cron.core.repository.CronTaskRepository;
-import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
-import top.osjf.cron.spring.CronTaskConfiguration;
-import top.osjf.cron.spring.hutool.HutoolCronTaskConfiguration;
+import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
+import top.osjf.cron.spring.annotation.CronTaskConfiguration;
+import top.osjf.cron.spring.quartz.QuartzCronTaskConfiguration;
+
+import java.util.List;
 
 /**
- * {@link Configuration Configuration} for {@link HutoolCronTaskRepository}.
+ * {@link Configuration Configuration} for {@link QuartzCronTaskRepository}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({HutoolCronTaskRepository.class, HutoolCronTaskConfiguration.class})
-@Import({HutoolCronTaskConfiguration.class, CronTaskConfiguration.class})
+@ConditionalOnClass(QuartzCronTaskConfiguration.class)  // Restricted by cron-spring-quartz
+@Import({ QuartzCronTaskConfiguration.class, CronTaskConfiguration.class })
 @ConditionalOnMissingBean(CronTaskRepository.class)
 @Conditional(CronCondition.class)
-class HutoolCronConfiguration {
+class QuartzCronAutoConfiguration {
 
     @Bean
-    public InitializeProperties hutoolProperties(CronProperties cronProperties) {
-        return cronProperties.getClientProperties(ClientType.HUTOOL);
+    public InitializeProperties quartzProperties(ObjectProvider<List<QuartzPropertiesCustomizer>> provider,
+                                               CronProperties cronProperties) {
+        InitializeProperties properties = cronProperties.getClientProperties(ClientType.QUARTZ);
+        provider.orderedStream()
+                .forEach(customizers -> customizers.forEach(c -> c.customize(properties)));
+        return properties;
     }
 }

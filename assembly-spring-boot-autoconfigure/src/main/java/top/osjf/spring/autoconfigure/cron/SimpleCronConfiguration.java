@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Import;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.core.repository.SimpleCronTaskRepository;
 import top.osjf.cron.spring.AbstractCronTaskConfiguration;
-import top.osjf.cron.spring.CronTaskConfiguration;
+import top.osjf.cron.spring.annotation.CronTaskConfiguration;
 import top.osjf.cron.spring.annotation.CronRepositoryBean;
 
 import java.util.concurrent.Executors;
@@ -39,7 +39,7 @@ import java.util.concurrent.ScheduledExecutorService;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnMissingBean(CronTaskRepository.class)
-@Import({CronTaskConfiguration.class})
+@Import(CronTaskConfiguration.class)
 @Conditional(CronCondition.class)
 class SimpleCronConfiguration {
 
