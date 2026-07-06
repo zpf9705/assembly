@@ -122,18 +122,6 @@ public class Attributes extends LinkedHashMap<String, Object> {
     }
 
     /**
-     * Get the {@link Attributes} stored under the specified
-     * {@code attributeName}.
-     * @param attributeName the name of the attribute to get;
-     * never {@code null} or empty
-     * @return the {@code Attributes}
-     */
-    @Nullable
-    public Attributes getAttributes(String attributeName) {
-        return getAttribute(attributeName, Attributes.class);
-    }
-
-    /**
      * Get the value stored under the specified {@code attributeName},
      * ensuring that the value is of the {@code expectedType}.
      * <p>If the {@code expectedType} is an array and the value stored
