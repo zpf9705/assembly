@@ -217,17 +217,14 @@ public class CronAnnotationPostProcessor implements ApplicationContextAware,
         }
 
         // Register the scheduled task listener collection.
-        for (CronListener listener : applicationContext.getBeansOfType(CronListener.class).values()) {
+        Collection<CronListener> listeners = applicationContext.getBeansOfType(CronListener.class).values();
+        for (CronListener listener : listeners) {
             cronTaskRepository.addListener(listener);
         }
 
-        // Start the scheduled task repository if not start.
-        if (!cronTaskRepository.isStarted()) {
-            cronTaskRepository.start();
-        }
-
-        logger.info("A total of {} timed tasks were registered by the post processor [{}] during application startup.",
-                cronTasks.size(), getClass().getName());
+        // Print registration summary log
+        logger.info("[CronAnnotationPostProcessor] Annotated cron tasks loaded successfully. " +
+                        "Registered task count: {}, loaded listener count: {}", cronTasks.size(), listeners.size());
 
         // clare registered task instances.
         cronTasks.clear();
