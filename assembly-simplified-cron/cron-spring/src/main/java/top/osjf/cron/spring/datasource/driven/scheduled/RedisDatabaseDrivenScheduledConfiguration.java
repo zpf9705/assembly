@@ -26,6 +26,8 @@ import top.osjf.cron.datasource.driven.scheduled.redis.config.RedisConnectionCon
 import top.osjf.cron.datasource.driven.scheduled.serialization.ConfigFormat;
 import top.osjf.cron.spring.Utils;
 
+import static top.osjf.cron.spring.datasource.driven.scheduled.ScheduledDrivenPropertyKey.*;
+
 /**
  * {@link Configuration Configuration} for {@link RedisDatasourceTaskElementsOperation}.
  *
@@ -34,11 +36,6 @@ import top.osjf.cron.spring.Utils;
  */
 @Configuration(proxyBeanMethods = false)
 public class RedisDatabaseDrivenScheduledConfiguration {
-
-    public static final String PREFIX = "spring.schedule.cron.scheduled-driven.redis";
-    public static final String KEY_RULE_KEY = PREFIX + ".rule-key";
-    public static final String KEY_CHANNEL = PREFIX + ".channel";
-    public static final String KEY_CONFIG_FORMAT = PREFIX + ".config-format";
 
     @Bean
     public RedisDatasourceTaskElementsOperation redisDatasourceTaskElementsOperation

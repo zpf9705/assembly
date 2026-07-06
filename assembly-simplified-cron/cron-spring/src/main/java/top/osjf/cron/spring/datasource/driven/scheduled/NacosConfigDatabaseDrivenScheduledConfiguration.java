@@ -23,6 +23,8 @@ import org.springframework.core.env.Environment;
 import top.osjf.cron.datasource.driven.scheduled.nacosconfig.NacosConfigDatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.serialization.ConfigFormat;
 
+import static top.osjf.cron.spring.datasource.driven.scheduled.ScheduledDrivenPropertyKey.*;
+
 /**
  * {@link Configuration Configuration} for {@link NacosConfigDatasourceTaskElementsOperation}.
  *
@@ -31,12 +33,6 @@ import top.osjf.cron.datasource.driven.scheduled.serialization.ConfigFormat;
  */
 @Configuration(proxyBeanMethods = false)
 public class NacosConfigDatabaseDrivenScheduledConfiguration {
-
-    public static final String PREFIX = "spring.schedule.cron.scheduled-driven.nacos-config";
-    public static final String KEY_NACOS_SERVER_ADDR = PREFIX + ".server-addr";
-    public static final String KEY_NACOS_GROUP_ID = PREFIX + ".group-id";
-    public static final String KEY_NACOS_DATA_ID = PREFIX + ".data-id";
-    public static final String KEY_NACOS_CONFIG_FORMAT = PREFIX + ".config-format";
 
     @Bean
     public NacosConfigDatasourceTaskElementsOperation nacosConfigDatasourceTaskElementsOperation

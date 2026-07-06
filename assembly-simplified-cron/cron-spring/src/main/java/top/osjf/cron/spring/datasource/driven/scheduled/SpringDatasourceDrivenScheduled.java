@@ -48,6 +48,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static top.osjf.cron.spring.datasource.driven.scheduled.ScheduledDrivenPropertyKey.KEY_LOGGER_NAME;
+import static top.osjf.cron.spring.datasource.driven.scheduled.ScheduledDrivenPropertyKey.KEY_MONITOR_CHECK_INTERNAL;
+
 /**
  * {@code SpringDatasourceDrivenScheduled} Extension {@link AbstractDatasourceDrivenScheduled},
  * Spring integrates to implement a data-driven scheduling task manager, where task retrieval
@@ -99,10 +102,6 @@ public class SpringDatasourceDrivenScheduled
         extends DefaultDatasourceDrivenScheduled
         implements EnvironmentAware, InitializingBean, ApplicationContextAware,
         ApplicationListener<ContextRefreshedEvent>, DisposableBean {
-
-    public static final String PREFIX = "spring.schedule.cron.scheduled-driven";
-    public static final String KEY_LOGGER_NAME = PREFIX + ".logger-name";
-    public static final String KEY_MONITOR_CHECK_INTERNAL = PREFIX + ".monitor-check-internal";
 
     private final SpelExpressionParser expressionParser = new SpelExpressionParser();
     private final StandardEvaluationContext evaluationContext = new StandardEvaluationContext();

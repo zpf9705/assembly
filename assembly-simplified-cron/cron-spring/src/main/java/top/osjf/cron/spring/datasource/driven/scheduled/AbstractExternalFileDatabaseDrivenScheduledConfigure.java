@@ -24,6 +24,9 @@ import top.osjf.cron.datasource.driven.scheduled.external.file.ExternalFileTaskE
 
 import java.util.function.Consumer;
 
+import static top.osjf.cron.spring.datasource.driven.scheduled.ScheduledDrivenPropertyKey.KEY_BASE_DIR;
+import static top.osjf.cron.spring.datasource.driven.scheduled.ScheduledDrivenPropertyKey.KEY_CONFIG_FILE_NAME;
+
 /**
  * Commons {@link Configuration Configuration} for {@link ExternalFileTaskElementLoader}.
  *
@@ -32,10 +35,6 @@ import java.util.function.Consumer;
  */
 @Configuration(proxyBeanMethods = false)
 public abstract class AbstractExternalFileDatabaseDrivenScheduledConfigure implements EnvironmentAware {
-
-    public static final String PREFIX_EXTERNAL = "spring.schedule.cron.scheduled-driven.external";
-    public static final String KEY_BASE_DIR = PREFIX_EXTERNAL + ".base-dir";
-    public static final String KEY_CONFIG_FILE_NAME = PREFIX_EXTERNAL + ".config-file-name";
 
     /**
      * {@link ExternalFileTaskElementLoader#setBaseDir(String)}
