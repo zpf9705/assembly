@@ -42,6 +42,11 @@ public interface CronTaskPropertyKey {
     String WEB_AUTH_PREFIX = PREFIX + ".web-request-authentication";
 
     /**
+     * Switch to control whether {@link CronTaskPropertyKey} start automatically on application boot.
+     */
+    String AUTO_STARTUP = PREFIX + ".auto-startup";
+
+    /**
      * Switch to enable web request authentication
      */
     String KEY_WEB_AUTH_ENABLE = WEB_AUTH_PREFIX + ".enable";
