@@ -22,7 +22,7 @@ package top.osjf.cron.spring.datasource.driven.scheduled;
  * {@link top.osjf.cron.datasource.driven.scheduled.serialization.ConfigFormat}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 2026.01.28
+ * @since 3.0.1
  */
 public enum SubstituteConfigFormat {
 
