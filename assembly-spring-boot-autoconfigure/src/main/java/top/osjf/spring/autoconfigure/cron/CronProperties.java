@@ -19,6 +19,7 @@ package top.osjf.spring.autoconfigure.cron;
 import com.cronutils.model.CronType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import top.osjf.cron.core.lifecycle.InitializeProperties;
+import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.core.repository.RunTimeoutRegistrarRepository;
 import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
@@ -69,6 +70,13 @@ public class CronProperties {
      * @see RunTimeoutMonitoring
      */
     private RunTimeoutMonitoring runTimeoutMonitoring = new RunTimeoutMonitoring();
+
+    /**
+     * Whether to automatically start the cron task container after all tasks and listeners are registered.
+     * Defaults to true, set to false if you need to manually call {@link CronTaskRepository#start()} later.
+     * @since 3.0.2
+     */
+    private boolean autoStartup = true;
 
     /**
      * Get the configuration of the specified {@link ClientType}.
@@ -129,6 +137,14 @@ public class CronProperties {
 
     public void setRunTimeoutMonitoring(RunTimeoutMonitoring runTimeoutMonitoring) {
         this.runTimeoutMonitoring = runTimeoutMonitoring;
+    }
+
+    public boolean isAutoStartup() {
+        return autoStartup;
+    }
+
+    public void setAutoStartup(boolean autoStartup) {
+        this.autoStartup = autoStartup;
     }
 
     /**

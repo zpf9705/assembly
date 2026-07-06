@@ -21,6 +21,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.LazyInitializationExcludeFilter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.Lifecycle;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +34,8 @@ import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.core.repository.IDGenerator;
 import top.osjf.cron.spring.annotation.Cron;
 import top.osjf.cron.spring.annotation.Crones;
+
+import java.util.function.Supplier;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link CronTaskRepository}.
@@ -66,8 +69,9 @@ public class CronTaskAutoConfiguration {
     }
 
     @Bean
-    public CronTaskRepositorySmartLifecycle cronTaskRepositorySmartLifecycle(CronTaskRepository cronTaskRepository) {
-        return new CronTaskRepositorySmartLifecycle(cronTaskRepository);
+    public Lifecycle cronTaskRepositoryLifecycle(CronTaskRepository cronTaskRepository,
+                                                 CronProperties cronProperties) {
+        return new CronTaskRepositoryLifecycleSupplier(cronTaskRepository, cronProperties).get();
     }
 
     /**
@@ -123,30 +127,43 @@ public class CronTaskAutoConfiguration {
     }
 
     /**
-     * {@link CronTaskRepository}'s intelligent lifecycle manager.
-     * @since 3.0.1
+     * {@link CronTaskRepository}'s lifecycle Supplier.
+     * @since 3.0.2
      */
-    static class CronTaskRepositorySmartLifecycle implements SmartLifecycle {
+    static class CronTaskRepositoryLifecycleSupplier implements Supplier<Lifecycle> {
 
         private final CronTaskRepository cronTaskRepository;
 
-        public CronTaskRepositorySmartLifecycle(CronTaskRepository cronTaskRepository) {
+        private final CronProperties cronProperties;
+
+        public CronTaskRepositoryLifecycleSupplier(CronTaskRepository cronTaskRepository,
+                                                CronProperties cronProperties) {
             this.cronTaskRepository = cronTaskRepository;
+            this.cronProperties = cronProperties;
         }
 
         @Override
-        public void start() {
-            cronTaskRepository.start();
+        public Lifecycle get() {
+            return cronProperties.isAutoStartup() ?
+                    new CronTaskRepositorySmartLifecycle() : new CronTaskRepositoryLifecycle();
         }
 
-        @Override
-        public void stop() {
-            cronTaskRepository.stop();
+        /**
+         * {@link Lifecycle} for {@link CronTaskRepository}.
+         */
+        class CronTaskRepositoryLifecycle implements Lifecycle {
+
+            @Override public void start() { cronTaskRepository.start(); }
+
+            @Override public void stop() { cronTaskRepository.stop(); }
+
+            @Override public boolean isRunning() { return cronTaskRepository.isStarted(); }
         }
 
-        @Override
-        public boolean isRunning() {
-            return cronTaskRepository.isStarted();
-        }
+        /**
+         * {@link SmartLifecycle} for {@link CronTaskRepository}.
+         */
+        class CronTaskRepositorySmartLifecycle
+                extends CronTaskRepositoryLifecycle implements SmartLifecycle { }
     }
 }
