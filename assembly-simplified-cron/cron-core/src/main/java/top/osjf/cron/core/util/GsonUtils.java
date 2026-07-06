@@ -31,7 +31,7 @@ public abstract class GsonUtils {
     static Gson defatultGson;
 
     static {
-        defatultGson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+        defatultGson = new GsonBuilder().create();
     }
 
     /**
