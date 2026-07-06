@@ -17,8 +17,10 @@
 
 package top.osjf.cron.core.repository;
 
+import com.google.gson.annotations.Expose;
 import top.osjf.commons.lang.Nullable;
 import top.osjf.commons.util.Assert;
+import top.osjf.cron.core.util.GsonUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -50,6 +52,7 @@ public class CronTaskInfo implements Serializable {
     private final String expression;
 
     /** The function runtime for this task.*/
+    @Expose(serialize = false, deserialize = false)
     private final Runnable runnable;
 
     /** The target object for this task execution.*/
@@ -310,6 +313,10 @@ public class CronTaskInfo implements Serializable {
         return description;
     }
 
+    public String toJsonView() {
+        return GsonUtils.toJson(this);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -327,4 +334,22 @@ public class CronTaskInfo implements Serializable {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return "CronTaskInfo{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", expression='" + expression + '\'' +
+                ", runnable=" + runnable +
+                ", target=" + target +
+                ", method=" + method +
+                ", args=" + Arrays.toString(args) +
+                ", remainingNumberOfRuns=" + remainingNumberOfRuns +
+                ", timeoutConfig=" + timeoutConfig +
+                ", isRunning=" + isRunning +
+                ", nextExecuteTimestamp=" + nextExecuteTimestamp +
+                ", disallowConcurrentExecution=" + disallowConcurrentExecution +
+                ", description='" + description + '\'' +
+                '}';
+    }
 }
