@@ -33,6 +33,11 @@ public interface ScheduledDrivenPropertyKey {
     String PREFIX = CronTaskPropertyKey.PREFIX + ".scheduled-driven";
 
     /**
+     * Switch to enable scheduled driven function
+     */
+    String KEY_OF_ENABLE_SCHEDULED_DRIVEN  = PREFIX + ".enable";
+
+    /**
      * Prefix for external file data source configurations
      */
     String PREFIX_EXTERNAL = PREFIX + ".external";
