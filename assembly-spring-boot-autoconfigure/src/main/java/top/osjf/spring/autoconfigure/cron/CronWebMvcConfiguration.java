@@ -36,6 +36,8 @@ import top.osjf.cron.spring.datasource.driven.scheduled.SpringHandlerMappingData
 
 import java.util.List;
 
+import static top.osjf.cron.spring.datasource.driven.scheduled.ScheduledDrivenPropertyKey.KEY_OF_ENABLE_SCHEDULED_DRIVEN;
+
 /**
  * {@link Configuration Configuration} for expose HTTP request interfaces
  * using MVC for cron tasks.
@@ -49,7 +51,6 @@ import java.util.List;
 @ConditionalOnBean({ RequestMappingHandlerMapping.class })
 class CronWebMvcConfiguration {
 
-    public static final String KEY_OF_ENABLE_SCHEDULED_DRIVEN  = "spring.schedule.cron.scheduled-driven.enable";
     /**
      * Return the {@link CronTaskInfoView} readable controller, which is the HTTP access interface.
      * @param cronTaskRepository            the configured {@link CronTaskRepository}.
