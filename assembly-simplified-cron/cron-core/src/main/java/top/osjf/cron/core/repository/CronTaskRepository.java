@@ -90,6 +90,9 @@ import javax.annotation.concurrent.ThreadSafe;
  * <li>By using method {@link #getSupportTaskBodyClasses()}, you can further understand the types of
  * {@link TaskBody} supported by the underlying timing architecture, making it easier to use methods that
  * support {@link TaskBody} registration for scalable task registration..</li>
+ * <li>In order to adapt to tasks with more information maintenance and compatibility with attributes such
+ * as {@link Description} and {@link Name}, open {@link #getExtendInfo(String)} for developers to manage
+ * {@link CronTaskExtendInfo}, and developers can perform relevant operations as needed.</li>
  * </ol>
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
