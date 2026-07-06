@@ -38,6 +38,8 @@ import java.util.Objects;
  */
 public class EnvironmentPropertyAuthenticationPredicate implements AuthenticationPredicate {
 
+    public static final String KEY_OF_AUTHENTICATION_TOKEN = "spring.schedule.cron.web-request-authentication.token";
+
     private final Environment environment;
 
     public EnvironmentPropertyAuthenticationPredicate(Environment environment) {
@@ -46,6 +48,6 @@ public class EnvironmentPropertyAuthenticationPredicate implements Authenticatio
 
     @Override
     public boolean test(@NotNull String token) {
-        return Objects.equals(environment.getProperty("spring.schedule.cron.web-request-authentication.token"), token);
+        return Objects.equals(environment.getProperty(KEY_OF_AUTHENTICATION_TOKEN), token);
     }
 }

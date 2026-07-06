@@ -33,6 +33,10 @@ import java.util.function.Consumer;
 @Configuration(proxyBeanMethods = false)
 public abstract class AbstractExternalFileDatabaseDrivenScheduledConfigure implements EnvironmentAware {
 
+    public static final String PREFIX_EXTERNAL = "spring.schedule.cron.scheduled-driven.external";
+    public static final String KEY_BASE_DIR = PREFIX_EXTERNAL + ".base-dir";
+    public static final String KEY_CONFIG_FILE_NAME = PREFIX_EXTERNAL + ".config-file-name";
+
     /**
      * {@link ExternalFileTaskElementLoader#setBaseDir(String)}
      */
@@ -45,8 +49,8 @@ public abstract class AbstractExternalFileDatabaseDrivenScheduledConfigure imple
 
     @Override
     public void setEnvironment(Environment environment) {
-        baseDir = environment.getProperty("spring.schedule.cron.scheduled-driven.external.base-dir");
-        configFileName = environment.getProperty("spring.schedule.cron.scheduled-driven.external.config-file-name");
+        baseDir = environment.getProperty(KEY_BASE_DIR);
+        configFileName = environment.getProperty(KEY_CONFIG_FILE_NAME);
     }
 
     /**
