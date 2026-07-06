@@ -17,7 +17,7 @@
 
 package top.osjf.cron.spring.auth;
 
-import top.osjf.cron.core.lang.NotNull;
+import top.osjf.commons.lang.NotNull;
 
 import java.util.function.Predicate;
 
