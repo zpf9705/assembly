@@ -34,9 +34,9 @@ import top.osjf.spring.autoconfigure.SourceClassMessageCondition;
  * logging to help the user diagnose what {@link ClientType} configuration classes are loaded.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.4
+ * @since 3.0.2
  */
-class CronCondition extends SourceClassMessageCondition {
+class CronClientCondition extends SourceClassMessageCondition {
     @Override
     public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata,
                                             ConditionMessage.Builder message) {
@@ -47,7 +47,7 @@ class CronCondition extends SourceClassMessageCondition {
             if (!specified.isBound()) {
                 return ConditionOutcome.match(message.because("automatic cron client type"));
             }
-            ClientType required = CronConfigurations.getType(((AnnotationMetadata) metadata)
+            ClientType required = CronAutoConfigurations.getType(((AnnotationMetadata) metadata)
                     .getClassName());
             if (specified.get() == required) {
                 return ConditionOutcome.match(message.because(specified.get() + " cron client type"));

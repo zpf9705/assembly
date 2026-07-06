@@ -39,7 +39,7 @@ import top.osjf.cron.spring.cron4j.Cron4jCronTaskConfiguration;
 @ConditionalOnClass(Cron4jCronTaskConfiguration.class) // Restricted by cron-spring-ron4j
 @Import({ Cron4jCronTaskConfiguration.class, CronTaskConfiguration.class })
 @ConditionalOnMissingBean(CronTaskRepository.class)
-@Conditional(CronCondition.class)
+@Conditional(CronClientCondition.class)
 class Cron4jCronAutoConfiguration {
 
     @Bean
