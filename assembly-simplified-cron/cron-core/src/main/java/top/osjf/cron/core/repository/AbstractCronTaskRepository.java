@@ -661,17 +661,25 @@ public abstract class AbstractCronTaskRepository
         if (!hasCronTaskInfo(id)) {
             throw new CronInternalException(String.format("Scheduled task with id [%s] does not exist.", id));
         }
-        return extendInfos.computeIfAbsent(id, CronTaskExtendInfo::new);
+        return extendInfos.computeIfAbsent(id, this::newCronTaskExtendInfo);
     }
 
     /**
      * The class object name that runs the body wrapper returns {@link Runnable java.lang.Runnable}
      * by default.
-     * @since 3.0.2
      * @return The class object name that runs the body wrapper.
      */
     protected String runBodyWrapperClassName() {
         return "java.lang.Runnable";
+    }
+
+    /**
+     * Create a new {@code CronTaskExtendedInfo} based on the ID.
+     * @param id the unique identifier of the target scheduled task
+     * @return the new {@code CronTaskExtendInfo}.
+     */
+    protected CronTaskExtendInfo newCronTaskExtendInfo(String id) {
+        return new CronTaskExtendInfo(id);
     }
 
     /**
