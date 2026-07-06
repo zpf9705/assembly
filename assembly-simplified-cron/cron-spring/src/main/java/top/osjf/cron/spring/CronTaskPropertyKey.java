@@ -32,6 +32,11 @@ public interface CronTaskPropertyKey {
     String PREFIX = "spring.schedule.cron";
 
     /**
+     * Switch to enable web task list query interface
+     */
+    String KEY_WEB_QUERY_TASK_LIST_ENABLE = PREFIX + ".enable-web-query-task-list";
+
+    /**
      * Prefix for web request authentication configuration
      */
     String WEB_AUTH_PREFIX = PREFIX + ".web-request-authentication";

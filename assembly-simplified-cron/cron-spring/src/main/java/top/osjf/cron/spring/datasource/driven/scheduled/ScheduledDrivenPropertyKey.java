@@ -38,6 +38,11 @@ public interface ScheduledDrivenPropertyKey {
     String KEY_OF_ENABLE_SCHEDULED_DRIVEN  = PREFIX + ".enable";
 
     /**
+     * Switch to enable web inspection endpoint for scheduled driven
+     */
+    String KEY_OF_ENABLE_SCHEDULED_DRIVEN_WEB_INSPECT  = PREFIX + ".enable-web-inspect";
+
+    /**
      * Prefix for external file data source configurations
      */
     String PREFIX_EXTERNAL = PREFIX + ".external";
