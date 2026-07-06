@@ -35,10 +35,10 @@ final class CronConfigurations {
 
     static {
         Map<ClientType, String> mappings = new EnumMap<>(ClientType.class);
-        mappings.put(ClientType.SPRING_SCHEDULER, SpringSchedulerConfiguration.class.getName());
-        mappings.put(ClientType.HUTOOL, HutoolCronConfiguration.class.getName());
-        mappings.put(ClientType.QUARTZ, QuartzCronConfiguration.class.getName());
-        mappings.put(ClientType.CRON4J, Cron4jCronConfiguration.class.getName());
+        mappings.put(ClientType.SPRING_SCHEDULER, SpringSchedulerAutoConfiguration.class.getName());
+        mappings.put(ClientType.HUTOOL, HutoolCronAutoConfiguration.class.getName());
+        mappings.put(ClientType.QUARTZ, QuartzCronAutoConfiguration.class.getName());
+        mappings.put(ClientType.CRON4J, Cron4jCronAutoConfiguration.class.getName());
         mappings.put(ClientType.SIMPLE, SimpleCronConfiguration.class.getName());
         mappings.put(ClientType.NONE, NoOpCornConfiguration.class.getName());
         MAPPINGS = Collections.unmodifiableMap(mappings);
