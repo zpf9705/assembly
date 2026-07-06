@@ -17,7 +17,6 @@
 
 package top.osjf.cron.core.repository;
 
-import com.google.gson.annotations.Expose;
 import top.osjf.commons.lang.Nullable;
 import top.osjf.commons.util.Assert;
 import top.osjf.cron.core.util.GsonUtils;
@@ -52,17 +51,13 @@ public class CronTaskInfo implements Serializable {
     private final String expression;
 
     /** The function runtime for this task.*/
-    @Expose(serialize = false, deserialize = false)
     private final Runnable runnable;
 
     /** The target object for this task execution.*/
-    @Expose(serialize = false, deserialize = false)
     @Nullable private final Object target;
 
     /** The target method for executing this task.*/
-    @Expose(serialize = false, deserialize = false)
-    @Nullable
-    private final Method method;
+    @Nullable private final Method method;
 
     /** The accompanying parameters for executing this task.*/
     @Nullable private Object[] args;
@@ -79,8 +74,7 @@ public class CronTaskInfo implements Serializable {
      * An instance of timeout configuration for a single task run.
      * @since 3.0.2
      */
-    @Nullable
-    private RunningTimeout timeoutConfig;
+    @Nullable private RunningTimeout timeoutConfig;
 
     /**
      * The {@code boolean} flag to indicate whether the task is currently executing.
