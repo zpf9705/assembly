@@ -55,27 +55,10 @@ public class Attributes extends LinkedHashMap<String, Object> {
      * @param attributeName the name of the attribute to get;
      * never {@code null} or empty
      * @return the value
-     * @throws IllegalArgumentException if the attribute does not exist or
-     * if it is not of the expected type
      */
+    @Nullable
     public String getString(String attributeName) {
-        return getRequiredAttribute(attributeName, String.class);
-    }
-
-    /**
-     * Get the value stored under the specified {@code attributeName} as an
-     * array of strings.
-     * <p>If the value stored under the specified {@code attributeName} is
-     * a string, it will be wrapped in a single-element array before
-     * returning it.
-     * @param attributeName the name of the attribute to get;
-     * never {@code null} or empty
-     * @return the value
-     * @throws IllegalArgumentException if the attribute does not exist or
-     * if it is not of the expected type
-     */
-    public String[] getStringArray(String attributeName) {
-        return getRequiredAttribute(attributeName, String[].class);
+        return getAttribute(attributeName, String.class);
     }
 
     /**
@@ -83,11 +66,10 @@ public class Attributes extends LinkedHashMap<String, Object> {
      * @param attributeName the name of the attribute to get;
      * never {@code null} or empty
      * @return the value
-     * @throws IllegalArgumentException if the attribute does not exist or
-     * if it is not of the expected type
      */
-    public boolean getBoolean(String attributeName) {
-        return getRequiredAttribute(attributeName, Boolean.class);
+    @Nullable
+    public Boolean getBoolean(String attributeName) {
+        return getAttribute(attributeName, Boolean.class);
     }
 
     /**
@@ -95,12 +77,11 @@ public class Attributes extends LinkedHashMap<String, Object> {
      * @param attributeName the name of the attribute to get;
      * never {@code null} or empty
      * @return the value
-     * @throws IllegalArgumentException if the attribute does not exist or
-     * if it is not of the expected type
      */
+    @Nullable
     @SuppressWarnings("unchecked")
     public <N extends Number> N getNumber(String attributeName) {
-        return (N) getRequiredAttribute(attributeName, Number.class);
+        return (N) getAttribute(attributeName, Number.class);
     }
 
     /**
@@ -108,12 +89,11 @@ public class Attributes extends LinkedHashMap<String, Object> {
      * @param attributeName the name of the attribute to get;
      * never {@code null} or empty
      * @return the value
-     * @throws IllegalArgumentException if the attribute does not exist or
-     * if it is not of the expected type
      */
+    @Nullable
     @SuppressWarnings("unchecked")
     public <E extends Enum<?>> E getEnum(String attributeName) {
-        return (E) getRequiredAttribute(attributeName, Enum.class);
+        return (E) getAttribute(attributeName, Enum.class);
     }
 
     /**
@@ -121,42 +101,11 @@ public class Attributes extends LinkedHashMap<String, Object> {
      * @param attributeName the name of the attribute to get;
      * never {@code null} or empty
      * @return the value
-     * @throws IllegalArgumentException if the attribute does not exist or
-     * if it is not of the expected type
      */
+    @Nullable
     @SuppressWarnings("unchecked")
     public <T> Class<? extends T> getClass(String attributeName) {
-        return getRequiredAttribute(attributeName, Class.class);
-    }
-
-    /**
-     * Get the value stored under the specified {@code attributeName} as an
-     * array of classes.
-     * <p>If the value stored under the specified {@code attributeName} is a class,
-     * it will be wrapped in a single-element array before returning it.
-     * @param attributeName the name of the attribute to get;
-     * never {@code null} or empty
-     * @return the value
-     * @throws IllegalArgumentException if the attribute does not exist or
-     * if it is not of the expected type
-     */
-    public Class<?>[] getClassArray(String attributeName) {
-        return getRequiredAttribute(attributeName, Class[].class);
-    }
-
-    /**
-     * Get the {@link Attributes} stored under the specified
-     * {@code attributeName}.
-     * <p>Note: if you expect an actual annotation, invoke
-     * {@link #getAnnotation(String, Class)} instead.
-     * @param attributeName the name of the attribute to get;
-     * never {@code null} or empty
-     * @return the {@code Attributes}
-     * @throws IllegalArgumentException if the attribute does not exist or
-     * if it is not of the expected type
-     */
-    public Attributes getAnnotation(String attributeName) {
-        return getRequiredAttribute(attributeName, Attributes.class);
+        return getAttribute(attributeName, Class.class);
     }
 
     /**
@@ -166,48 +115,22 @@ public class Attributes extends LinkedHashMap<String, Object> {
      * never {@code null} or empty
      * @param annotationType the expected annotation type; never {@code null}
      * @return the annotation
-     * @throws IllegalArgumentException if the attribute does not exist or
-     * if it is not of the expected type
      */
+    @Nullable
     public <A extends Annotation> A getAnnotation(String attributeName, Class<A> annotationType) {
-        return getRequiredAttribute(attributeName, annotationType);
+        return getAttribute(attributeName, annotationType);
     }
 
     /**
-     * Get the array of {@link Attributes} stored under the specified
+     * Get the {@link Attributes} stored under the specified
      * {@code attributeName}.
-     * <p>If the value stored under the specified {@code attributeName} is
-     * an instance of {@code Attributes}, it will be wrapped in
-     * a single-element array before returning it.
-     * <p>Note: if you expect an actual array of annotations, invoke
-     * {@link #getAnnotationArray(String, Class)} instead.
      * @param attributeName the name of the attribute to get;
      * never {@code null} or empty
-     * @return the array of {@code Attributes}
-     * @throws IllegalArgumentException if the attribute does not exist or
-     * if it is not of the expected type
+     * @return the {@code Attributes}
      */
-    public Attributes[] getAnnotationArray(String attributeName) {
-        return getRequiredAttribute(attributeName, Attributes[].class);
-    }
-
-    /**
-     * Get the array of type {@code annotationType} stored under the specified
-     * {@code attributeName}.
-     * <p>If the value stored under the specified {@code attributeName} is
-     * an {@code Annotation}, it will be wrapped in a single-element array
-     * before returning it.
-     * @param attributeName the name of the attribute to get;
-     * never {@code null} or empty
-     * @param annotationType the expected annotation type; never {@code null}
-     * @return the annotation array
-     * @throws IllegalArgumentException if the attribute does not exist or
-     * if it is not of the expected type
-     */
-    @SuppressWarnings("unchecked")
-    public <A extends Annotation> A[] getAnnotationArray(String attributeName, Class<A> annotationType) {
-        Object array = Array.newInstance(annotationType, 0);
-        return (A[]) getRequiredAttribute(attributeName, array.getClass());
+    @Nullable
+    public Attributes getAttributes(String attributeName) {
+        return getAttribute(attributeName, Attributes.class);
     }
 
     /**
@@ -222,14 +145,15 @@ public class Attributes extends LinkedHashMap<String, Object> {
      * never {@code null} or empty
      * @param expectedType the expected type; never {@code null}
      * @return the value
-     * @throws IllegalArgumentException if the attribute does not exist or
-     * if it is not of the expected type
      */
+    @Nullable
     @SuppressWarnings("unchecked")
-    private <T> T getRequiredAttribute(String attributeName, Class<T> expectedType) {
+    public <T> T getAttribute(String attributeName, Class<T> expectedType) {
         Assert.hasText(attributeName, "'attributeName' must not be null or empty");
         Object value = get(attributeName);
-        assertAttributePresence(attributeName, value);
+        if (value == null) {
+            return null;
+        }
         if (!expectedType.isInstance(value) && expectedType.isArray() &&
                 expectedType.getComponentType().isInstance(value)) {
             Object array = Array.newInstance(expectedType.getComponentType(), 1);
@@ -238,11 +162,6 @@ public class Attributes extends LinkedHashMap<String, Object> {
         }
         assertAttributeType(attributeName, value, expectedType);
         return (T) value;
-    }
-
-    private void assertAttributePresence(String attributeName, Object attributeValue) {
-        Assert.notNull(attributeValue, () -> String.format(
-                "Attribute '%s' not found in attributes", attributeName));
     }
 
     private void assertAttributeType(String attributeName, Object attributeValue, Class<?> expectedType) {
