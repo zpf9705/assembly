@@ -28,9 +28,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import top.osjf.commons.util.CollectionUtils;
+import top.osjf.cron.core.repository.CronTaskInfo;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.spring.CronTaskInfoReadableWebMvcHandlerController;
-import top.osjf.cron.spring.CronTaskInfoView;
 import top.osjf.cron.spring.CronTaskPropertyKey;
 import top.osjf.cron.spring.auth.AuthenticationPredicate;
 import top.osjf.cron.spring.auth.WebRequestAuthenticationInterceptor;
@@ -55,10 +55,10 @@ import static top.osjf.cron.spring.datasource.driven.scheduled.ScheduledDrivenPr
 class CronWebMvcConfiguration {
 
     /**
-     * Return the {@link CronTaskInfoView} readable controller, which is the HTTP access interface.
+     * Return the {@link CronTaskInfo} readable controller, which is the HTTP access interface.
      * @param cronTaskRepository            the configured {@link CronTaskRepository}.
      * @param requestMappingHandlerMapping  the configured {@link RequestMappingHandlerMapping}.
-     * @return the configured {@link CronTaskInfoView} readable controller.
+     * @return the configured {@link CronTaskInfo} readable controller.
      */
     @Bean
     @ConditionalOnProperty(value = CronTaskPropertyKey.KEY_WEB_QUERY_TASK_LIST_ENABLE, havingValue = "true")
@@ -73,7 +73,7 @@ class CronWebMvcConfiguration {
      * @param provider     the lazy loader of {@link AuthenticationPredicate}.
      * @param environment  the {@link Environment} instance.
      * @param providers    the {@link WebRequestAuthenticationInterceptor.AuthenticationProvider} instances.
-     * @return the configured {@link CronTaskInfoView} readable controller.
+     * @return the configured {@link CronTaskInfo} readable controller.
      */
     @Bean
     public WebRequestAuthenticationInterceptor webRequestAuthenticationInterceptor
