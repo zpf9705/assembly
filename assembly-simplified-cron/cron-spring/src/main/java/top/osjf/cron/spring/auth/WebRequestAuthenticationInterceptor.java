@@ -53,6 +53,8 @@ import java.util.stream.Collectors;
  */
 public class WebRequestAuthenticationInterceptor implements AuthenticationInterceptor, WebMvcConfigurer {
 
+    public static final String KEY_WEB_AUTH_ENABLE = "spring.schedule.cron.web-request-authentication.enable";
+
     /**
      * Authentication header name
      * Clients must include this header with a valid token for authentication
@@ -66,7 +68,7 @@ public class WebRequestAuthenticationInterceptor implements AuthenticationInterc
 
     /**
      * Authentication enable flag
-     * Read from configuration property: {@code spring.schedule.cron.web-request-authentication.enable}
+     * Read from configuration property: {@link #KEY_WEB_AUTH_ENABLE}
      */
     private final boolean enableAuthentication;
 
@@ -88,8 +90,7 @@ public class WebRequestAuthenticationInterceptor implements AuthenticationInterc
     public WebRequestAuthenticationInterceptor(ObjectProvider<AuthenticationPredicate> provider,
                                                Environment environment) {
         enableAuthentication
-                = environment.getProperty("spring.schedule.cron.web-request-authentication.enable", boolean.class,
-                false);
+                = environment.getProperty(KEY_WEB_AUTH_ENABLE, boolean.class, false);
         if (enableAuthentication) {
             List<AuthenticationPredicate> authenticationPredicates = provider.orderedStream().collect(Collectors.toList());
             if (CollectionUtils.isNotEmpty(authenticationPredicates)) {

@@ -100,6 +100,10 @@ public class SpringDatasourceDrivenScheduled
         implements EnvironmentAware, InitializingBean, ApplicationContextAware,
         ApplicationListener<ContextRefreshedEvent>, DisposableBean {
 
+    public static final String PREFIX = "spring.schedule.cron.scheduled-driven";
+    public static final String KEY_LOGGER_NAME = PREFIX + ".logger-name";
+    public static final String KEY_MONITOR_CHECK_INTERNAL = PREFIX + ".monitor-check-internal";
+
     private final SpelExpressionParser expressionParser = new SpelExpressionParser();
     private final StandardEvaluationContext evaluationContext = new StandardEvaluationContext();
 
@@ -256,8 +260,7 @@ public class SpringDatasourceDrivenScheduled
     }
 
     private void initLogger() {
-        String loggerName
-                = environment.getProperty("spring.schedule.cron.scheduled-driven.logger-name", "");
+        String loggerName = environment.getProperty(KEY_LOGGER_NAME, "");
         if (!StringUtils.isBlank(loggerName)) {
             logger = LoggerFactory.getLogger(loggerName);
         }
@@ -265,7 +268,6 @@ public class SpringDatasourceDrivenScheduled
 
     @Override
     protected long getTaskMonitorCheckInternal() {
-        return environment.getProperty("spring.schedule.cron.scheduled-driven.monitor-check-internal",
-                long.class, super.getTaskMonitorCheckInternal());
+        return environment.getProperty(KEY_MONITOR_CHECK_INTERNAL, long.class, super.getTaskMonitorCheckInternal());
     }
 }

@@ -49,6 +49,7 @@ import java.util.List;
 @ConditionalOnBean({ RequestMappingHandlerMapping.class })
 class CronWebMvcConfiguration {
 
+    public static final String KEY_OF_ENABLE_SCHEDULED_DRIVEN  = "spring.schedule.cron.scheduled-driven.enable";
     /**
      * Return the {@link CronTaskInfoView} readable controller, which is the HTTP access interface.
      * @param cronTaskRepository            the configured {@link CronTaskRepository}.
@@ -79,7 +80,7 @@ class CronWebMvcConfiguration {
         // The default URL that requires registration and authentication.
         authenticationInterceptor.registerAuthenticationPath
                 (CronTaskInfoReadableWebMvcHandlerController.REQUEST_MAPPING_PATH_OF_GET_CRON_TASK_LIST);
-        if (environment.getProperty("spring.schedule.cron.scheduled-driven.enable", boolean.class, false)) {
+        if (environment.getProperty(KEY_OF_ENABLE_SCHEDULED_DRIVEN, boolean.class, false)) {
             authenticationInterceptor.registerAuthenticationPath
                     (SpringHandlerMappingDatasourceDrivenScheduled.RUNNING_MAPPING_PATH);
         }
