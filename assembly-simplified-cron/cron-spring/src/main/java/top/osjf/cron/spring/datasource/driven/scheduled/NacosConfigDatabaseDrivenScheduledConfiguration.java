@@ -32,17 +32,20 @@ import top.osjf.cron.datasource.driven.scheduled.serialization.ConfigFormat;
 @Configuration(proxyBeanMethods = false)
 public class NacosConfigDatabaseDrivenScheduledConfiguration {
 
+    public static final String PREFIX = "spring.schedule.cron.scheduled-driven.nacos-config";
+    public static final String KEY_NACOS_SERVER_ADDR = PREFIX + ".server-addr";
+    public static final String KEY_NACOS_GROUP_ID = PREFIX + ".group-id";
+    public static final String KEY_NACOS_DATA_ID = PREFIX + ".data-id";
+    public static final String KEY_NACOS_CONFIG_FORMAT = PREFIX + ".config-format";
+
     @Bean
     public NacosConfigDatasourceTaskElementsOperation nacosConfigDatasourceTaskElementsOperation
             (Environment environment) {
-        String serverAddr = environment.getProperty("spring.schedule.cron.scheduled-driven.nacos-config.server-addr",
-                "localhost:8848");
-        String groupId = environment.getProperty("spring.schedule.cron.scheduled-driven.nacos-config.group-id",
-                "DEFAULT_GROUP");
-        String dataId = environment.getProperty("spring.schedule.cron.scheduled-driven.nacos-config.data-id");
+        String serverAddr = environment.getProperty(KEY_NACOS_SERVER_ADDR, "localhost:8848");
+        String groupId = environment.getProperty(KEY_NACOS_GROUP_ID, "DEFAULT_GROUP");
+        String dataId = environment.getProperty(KEY_NACOS_DATA_ID);
         SubstituteConfigFormat configFormat = environment
-                .getProperty("spring.schedule.cron.scheduled-driven.nacos-config.config-format",
-                        SubstituteConfigFormat.class, SubstituteConfigFormat.JSON);
+                .getProperty(KEY_NACOS_CONFIG_FORMAT, SubstituteConfigFormat.class, SubstituteConfigFormat.JSON);
         return new NacosConfigDatasourceTaskElementsOperation(serverAddr, groupId,
                 dataId, ConfigFormat.valueOf(configFormat.name()));
     }
