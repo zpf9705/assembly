@@ -1,12 +1,14 @@
 
 package top.osjf.commons.lang;
 
+import top.osjf.commons.util.CollectionUtils;
+import top.osjf.commons.util.ReflectionUtils;
 import top.osjf.commons.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.lang.annotation.*;
+import java.lang.reflect.Field;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * This class was copied from {@code cn.hutool.core.lang}, with minor modifications
@@ -33,6 +35,25 @@ import java.util.List;
  * ｜　2074044199956606977　｜　0 0/2 * * * ? ｜　true　　　｜
  * +-----------------------+-----------------+------------+
  * </pre>
+ *
+ * <p>2. Auto generate table via entity annotation {@link Header} (recommended):
+ * <pre>{@code
+ *  // Step1: Define entity with @Header annotation
+ *  public class Task {
+ *      {@literal @}Header(value = "Task ID", order = 1)
+ *      private String id;
+ *      {@literal @}Header(value = "Cron Expression", order = 2)
+ *      private String expression;
+ *      {@literal @}Header(value = "Running State", order = 3)
+ *      private boolean running;
+ *      // getter & setter
+ *  }
+ *
+ *  // Step2: Auto build table from List<Task>
+ *  List&lt;Task&gt; taskList = new ArrayList&lt;&gt;();
+ *  TableText table = TableText.toTableText(taskList, Task.class);
+ *  System.out.println(table);
+ *  }</pre>
  */
 public class TableText {
 
@@ -174,5 +195,61 @@ public class TableText {
             }
         }
         return count;
+    }
+
+    /**
+     * Annotation for entity field, mark table header display name and column sort order.
+     * Only fields annotated by this will be parsed when auto-generate table via {@link #toTableText(List, Class)}.
+     */
+    @Target(ElementType.FIELD)
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    public @interface Header {
+        /**
+         * Table header display text of current field
+         */
+        String value();
+
+        /**
+         * Column sort order, fields will be sorted ascending by this value when generating table
+         */
+        int order();
+    }
+
+    /**
+     * Auto build TableText from entity list, parse header and column order via {@link Header} annotation
+     * on entity field.
+     * <p>Logic flow:
+     * 1. Scan all declared fields of clazz, filter fields with {@link Header};
+     * 2. Sort fields ascending by annotation {@link Header#order()};
+     * 3. Extract {@link Header#value()} as table header row;
+     * 4. Traverse entity list, read each field value as table data row.
+     * @param objects entity data list to render
+     * @param clazz entity class with {@link Header} annotation on fields
+     * @param <T> generic type of entity
+     * @return complete formatted TableText instance
+     */
+    public static <T>TableText toTableText(List<T> objects, Class<T> clazz) {
+        TableText tableText = TableText.create();
+        if (CollectionUtils.isEmpty(objects)) {
+            return tableText;
+        }
+        List<Field> fields = Arrays.stream(clazz.getDeclaredFields())
+                .filter(field -> field.isAnnotationPresent(Header.class))
+                .sorted(Comparator.comparingInt(o -> o.getAnnotation(Header.class).order()))
+                .collect(Collectors.toList());
+        if (fields.isEmpty()) {
+            return tableText;
+        }
+        tableText.addHeader
+                (fields.stream().map(field -> field.getAnnotation(Header.class).value()).toArray(String[]::new));
+        for (T object : objects) {
+            tableText.addBody
+                    (fields.stream().map(field -> {
+                        ReflectionUtils.makeAccessible(field);
+                        return String.valueOf(ReflectionUtils.getField(field, object));
+                    }).toArray(String[]::new));
+        }
+        return tableText;
     }
 }
