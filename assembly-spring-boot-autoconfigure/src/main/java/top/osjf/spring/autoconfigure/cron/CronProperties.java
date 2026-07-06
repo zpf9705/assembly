@@ -23,6 +23,7 @@ import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.core.repository.RunTimeoutRegistrarRepository;
 import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
+import top.osjf.cron.spring.CronTaskPropertyKey;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +39,7 @@ import static top.osjf.cron.core.repository.PropertiesParsedThreadPoolExecutor.*
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.1
  */
-@ConfigurationProperties(prefix = "spring.schedule.cron")
+@ConfigurationProperties(prefix = CronTaskPropertyKey.PREFIX)
 public class CronProperties {
 
     /**
