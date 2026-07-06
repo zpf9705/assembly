@@ -39,6 +39,7 @@ public class CronDatasourceDrivenProperties {
 
     /**
      * Whether to enable web inspection endpoint for scheduled driven.
+     * @see top.osjf.cron.spring.datasource.driven.scheduled.SpringHandlerMappingDatasourceDrivenScheduled
      */
     private boolean enableWebInspect = false;
 
