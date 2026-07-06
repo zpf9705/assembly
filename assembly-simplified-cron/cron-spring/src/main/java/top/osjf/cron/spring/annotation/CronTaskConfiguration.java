@@ -15,13 +15,13 @@
  */
 
 
-package top.osjf.cron.spring;
+package top.osjf.cron.spring.annotation;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
-import top.osjf.cron.spring.annotation.Cron;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * {@code @Configuration} class that registers a {@link CronAnnotationPostProcessor}
@@ -32,6 +32,7 @@ import top.osjf.cron.spring.annotation.Cron;
  */
 @Configuration(proxyBeanMethods = false)
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+@EnableScheduling
 public class CronTaskConfiguration {
 
     /**

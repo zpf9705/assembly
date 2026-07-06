@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.osjf.cron.spring;
+package top.osjf.cron.spring.annotation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,8 +42,6 @@ import top.osjf.commons.util.compat.ArrayUtils;
 import top.osjf.cron.core.lifecycle.Lifecycle;
 import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.repository.*;
-import top.osjf.cron.spring.annotation.Cron;
-import top.osjf.cron.spring.annotation.Crones;
 
 import java.lang.reflect.Method;
 import java.util.*;
