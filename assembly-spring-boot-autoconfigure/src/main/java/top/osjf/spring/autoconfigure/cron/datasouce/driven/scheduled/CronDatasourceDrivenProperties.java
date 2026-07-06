@@ -20,6 +20,7 @@ package top.osjf.spring.autoconfigure.cron.datasouce.driven.scheduled;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import top.osjf.cron.datasource.driven.scheduled.Constants;
 import top.osjf.cron.spring.datasource.driven.scheduled.DataSource;
+import top.osjf.cron.spring.datasource.driven.scheduled.ScheduledDrivenPropertyKey;
 import top.osjf.cron.spring.datasource.driven.scheduled.SubstituteConfigFormat;
 
 /**
@@ -28,7 +29,7 @@ import top.osjf.cron.spring.datasource.driven.scheduled.SubstituteConfigFormat;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
  */
-@ConfigurationProperties(prefix = "spring.schedule.cron.scheduled-driven")
+@ConfigurationProperties(prefix = ScheduledDrivenPropertyKey.PREFIX)
 public class CronDatasourceDrivenProperties {
 
     /**
