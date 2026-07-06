@@ -29,10 +29,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import top.osjf.commons.lang.NotNull;
 import top.osjf.commons.util.CollectionUtils;
 import top.osjf.commons.util.StringUtils;
+import top.osjf.cron.spring.CronTaskPropertyKey;
 
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import static top.osjf.cron.spring.CronTaskPropertyKey.KEY_WEB_AUTH_ENABLE;
 
 /**
  * Specify the request interceptor {@link WebRequestInterceptor} instance for the relevant operations
@@ -53,8 +56,6 @@ import java.util.stream.Collectors;
  */
 public class WebRequestAuthenticationInterceptor implements AuthenticationInterceptor, WebMvcConfigurer {
 
-    public static final String KEY_WEB_AUTH_ENABLE = "spring.schedule.cron.web-request-authentication.enable";
-
     /**
      * Authentication header name
      * Clients must include this header with a valid token for authentication
@@ -68,7 +69,7 @@ public class WebRequestAuthenticationInterceptor implements AuthenticationInterc
 
     /**
      * Authentication enable flag
-     * Read from configuration property: {@link #KEY_WEB_AUTH_ENABLE}
+     * Read from configuration property: {@link CronTaskPropertyKey#KEY_WEB_AUTH_ENABLE}
      */
     private final boolean enableAuthentication;
 

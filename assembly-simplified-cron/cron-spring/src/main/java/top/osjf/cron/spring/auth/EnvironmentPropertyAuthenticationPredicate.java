@@ -22,6 +22,8 @@ import top.osjf.commons.lang.NotNull;
 
 import java.util.Objects;
 
+import static top.osjf.cron.spring.CronTaskPropertyKey.KEY_OF_AUTHENTICATION_TOKEN;
+
 /**
  * Environment-based Authentication Predicate
  * <p>
@@ -37,8 +39,6 @@ import java.util.Objects;
  * @see AuthenticationPredicate
  */
 public class EnvironmentPropertyAuthenticationPredicate implements AuthenticationPredicate {
-
-    public static final String KEY_OF_AUTHENTICATION_TOKEN = "spring.schedule.cron.web-request-authentication.token";
 
     private final Environment environment;
 
