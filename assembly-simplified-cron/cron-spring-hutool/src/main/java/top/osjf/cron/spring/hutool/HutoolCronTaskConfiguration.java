@@ -23,10 +23,9 @@ import top.osjf.cron.core.listener.AsyncCronListener;
 import top.osjf.cron.core.repository.CronExecutorServiceSupplier;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
 import top.osjf.cron.spring.AbstractCronTaskConfiguration;
-import top.osjf.cron.spring.annotation.CronAnnotationPostProcessor;
-import top.osjf.cron.spring.ObjectProviderUtils;
-import top.osjf.cron.spring.PropertiesUtils;
+import top.osjf.cron.spring.Utils;
 import top.osjf.cron.spring.annotation.Cron;
+import top.osjf.cron.spring.annotation.CronAnnotationPostProcessor;
 import top.osjf.cron.spring.annotation.CronRepositoryBean;
 
 import java.lang.annotation.Annotation;
@@ -51,14 +50,15 @@ public class HutoolCronTaskConfiguration extends AbstractCronTaskConfiguration {
                                                              ObjectProvider<CronExecutorServiceSupplier> executorServiceProvider) {
 
         HutoolCronTaskRepository repository = new HutoolCronTaskRepository();
-        repository.setInitializeProperties(PropertiesUtils.compositeSuperiorProperties
+        repository.setInitializeProperties(Utils.compositeSuperiorProperties
                 (getImportAnnotationInitializeProperties(),
-                        ObjectProviderUtils.getPriority(propertiesProvider)));
-        CronExecutorServiceSupplier executorServiceSupplier = ObjectProviderUtils.getPriority(executorServiceProvider);
-        if (executorServiceSupplier != null && !(executorServiceSupplier instanceof AsyncCronListener)) {
+                        Utils.getHighestPriorityMatchingInstance(propertiesProvider)));
+        CronExecutorServiceSupplier executorServiceSupplier
+                = Utils.getHighestPriorityMatchingInstance(executorServiceProvider,
+                cronExecutorServiceSupplier -> !(cronExecutorServiceSupplier instanceof AsyncCronListener));
+        if (executorServiceSupplier != null) {
             repository.setThreadExecutor(executorServiceSupplier.get());
         }
-
         return repository;
     }
 

@@ -36,7 +36,6 @@ import org.springframework.scheduling.config.TaskManagementConfigUtils;
 import top.osjf.cron.core.lifecycle.InitializeProperties;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.spring.AbstractCronTaskConfiguration;
-import top.osjf.cron.spring.ObjectProviderUtils;
 import top.osjf.cron.spring.scheduler.SpringSchedulerTaskRepository;
 import top.osjf.cron.spring.scheduler.config.EnableScheduling;
 import top.osjf.cron.spring.scheduler.config.SchedulingRepositoryConfiguration;

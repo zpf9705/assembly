@@ -24,7 +24,6 @@ import org.springframework.core.env.Environment;
 import top.osjf.cron.datasource.driven.scheduled.redis.RedisDatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.redis.config.RedisConnectionConfig;
 import top.osjf.cron.datasource.driven.scheduled.serialization.ConfigFormat;
-import top.osjf.cron.spring.ObjectProviderUtils;
 
 /**
  * {@link Configuration Configuration} for {@link RedisDatasourceTaskElementsOperation}.

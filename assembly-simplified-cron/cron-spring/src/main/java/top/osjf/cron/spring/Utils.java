@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-? the original author or authors.
+ * Copyright 2026-? the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,37 @@
 
 package top.osjf.cron.spring;
 
+import org.springframework.beans.factory.ObjectProvider;
 import top.osjf.commons.lang.Nullable;
 import top.osjf.cron.core.lifecycle.InitializeProperties;
 
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+
 /**
- * Simple {@link InitializeProperties} related tool classes.
+ * Spring-related utility class dedicated to the cron-spring component.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
  */
-public abstract class PropertiesUtils {
+public abstract class Utils {
+
+    @Nullable
+    public static <T> T getHighestPriorityMatchingInstance(ObjectProvider<T> provider) {
+        return getHighestPriorityMatchingInstance(provider, null);
+    }
+
+    @Nullable
+    public static <T> T getHighestPriorityMatchingInstance(ObjectProvider<T> provider, @Nullable Predicate<T> filter) {
+        if (provider == null) {
+            return null;
+        }
+        Stream<T> stream = provider.orderedStream();
+        if (filter != null) {
+            stream = stream.filter(filter);
+        }
+        return stream.findFirst().orElse(null);
+    }
 
     @Nullable
     public static InitializeProperties compositeSuperiorProperties(InitializeProperties s1, InitializeProperties s2) {

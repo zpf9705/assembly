@@ -24,8 +24,8 @@ import top.osjf.cron.core.listener.AsyncCronListener;
 import top.osjf.cron.core.repository.CronExecutorServiceSupplier;
 import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
 import top.osjf.cron.spring.AbstractCronTaskConfiguration;
+import top.osjf.cron.spring.Utils;
 import top.osjf.cron.spring.annotation.CronAnnotationPostProcessor;
-import top.osjf.cron.spring.ObjectProviderUtils;
 import top.osjf.cron.spring.annotation.Cron;
 import top.osjf.cron.spring.annotation.CronRepositoryBean;
 
@@ -55,8 +55,10 @@ public class QuartzCronTaskConfiguration extends AbstractCronTaskConfiguration {
                                                              SpringRunnableJobFactory jobFactory) {
         QuartzCronTaskRepository repository = new QuartzCronTaskRepository();
         repository.setJobFactory(jobFactory);
-        repository.setInitializeProperties(ObjectProviderUtils.getPriority(propertiesProvider));
-        CronExecutorServiceSupplier executorServiceSupplier = ObjectProviderUtils.getPriority(executorProvider);
+        repository.setInitializeProperties(Utils.getHighestPriorityMatchingInstance(propertiesProvider));
+        CronExecutorServiceSupplier executorServiceSupplier
+                = Utils.getHighestPriorityMatchingInstance(executorProvider,
+                cronExecutorServiceSupplier -> !(cronExecutorServiceSupplier instanceof AsyncCronListener));
         if (executorServiceSupplier != null && !(executorServiceSupplier instanceof AsyncCronListener)){
             repository.setTaskExecutor(executorServiceSupplier.get());
         }
