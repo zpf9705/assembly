@@ -45,7 +45,7 @@ import top.osjf.cron.spring.scheduler.config.SchedulingRepositoryConfiguration;
  * {@link EnableAutoConfiguration Configuration} for {@link SpringSchedulerTaskRepository}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.3
+ * @since 3.0.2
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(SpringSchedulerTaskRepository.class)

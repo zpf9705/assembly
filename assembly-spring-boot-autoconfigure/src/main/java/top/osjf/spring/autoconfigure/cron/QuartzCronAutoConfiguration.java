@@ -35,7 +35,7 @@ import java.util.List;
  * {@link Configuration Configuration} for {@link QuartzCronTaskRepository}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.3
+ * @since 3.0.2
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(QuartzCronTaskConfiguration.class)  // Restricted by cron-spring-quartz

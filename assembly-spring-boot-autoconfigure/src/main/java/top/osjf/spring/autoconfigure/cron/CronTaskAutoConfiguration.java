@@ -45,7 +45,7 @@ import java.util.function.Supplier;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(CronProperties.class)
-@Import({CronTaskAutoConfiguration.CronConfigurationImportSelector.class, CronWebMvcConfiguration.class,
+@Import({CronTaskAutoConfiguration.CronAutoConfigurationImportSelector.class, CronWebMvcConfiguration.class,
         CronMicrometerConfiguration.class})
 public class CronTaskAutoConfiguration {
 
@@ -109,9 +109,9 @@ public class CronTaskAutoConfiguration {
 
     /**
      * {@link ImportSelector} to add {@link ClientType} configuration classes.
-     * @since 1.0.4
+     * @since 3.0.2
      */
-    static class CronConfigurationImportSelector implements ImportSelector {
+    static class CronAutoConfigurationImportSelector implements ImportSelector {
 
         @Override
         @NotNull
@@ -119,7 +119,7 @@ public class CronTaskAutoConfiguration {
             ClientType[] types = ClientType.values();
             String[] imports = new String[types.length];
             for (int i = 0; i < types.length; i++) {
-                imports[i] = CronConfigurations.getConfigurationClass(types[i]);
+                imports[i] = CronAutoConfigurations.getConfigurationClass(types[i]);
             }
             return imports;
         }

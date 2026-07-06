@@ -24,12 +24,12 @@ import java.util.EnumMap;
 import java.util.Map;
 
 /**
- * Mappings between {@link ClientType} and {@code @Configuration}.
+ * Mapping between {@link ClientType client type}, automatic configuration, and default configuration
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.4
+ * @since 3.0.2
  */
-final class CronConfigurations {
+final class CronAutoConfigurations {
 
     private static final Map<ClientType, String> MAPPINGS;
 
@@ -44,7 +44,7 @@ final class CronConfigurations {
         MAPPINGS = Collections.unmodifiableMap(mappings);
     }
 
-    private CronConfigurations() {
+    private CronAutoConfigurations() {
     }
 
     static String getConfigurationClass(ClientType clientType) {
