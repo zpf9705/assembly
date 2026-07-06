@@ -93,7 +93,7 @@ public class SpringSchedulerTaskRepository
     @Override
     public void afterPropertiesSet() throws Exception {
         super.initialize();
-        super.start();
+        super.start(); // self-starting
     }
 
     /**

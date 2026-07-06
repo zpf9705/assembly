@@ -137,6 +137,7 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
     public SimpleCronTaskRepository(ScheduledExecutorService scheduledExecutorService, CronType cronType) {
         this.scheduledExecutorService = scheduledExecutorService;
         this.cronParser = new CronParser(CronDefinitionBuilder.instanceDefinitionFor(cronType));
+        super.start(); // self-starting
     }
 
     /**
