@@ -18,9 +18,9 @@ package top.osjf.cron.spring.hutool;
 
 import org.springframework.context.annotation.Import;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
-import top.osjf.cron.spring.CronAnnotationPostProcessor;
-import top.osjf.cron.spring.CronTaskConfiguration;
 import top.osjf.cron.spring.annotation.Cron;
+import top.osjf.cron.spring.annotation.CronAnnotationPostProcessor;
+import top.osjf.cron.spring.annotation.EnableCronTaskRegister;
 
 import java.lang.annotation.*;
 
@@ -39,7 +39,7 @@ import java.lang.annotation.*;
  * the scheduled task processor.
  *
  * <p>This annotation will import two configurations, {@link HutoolCronTaskConfiguration}
- * and {@link CronTaskConfiguration}, respectively configuring the core repository of
+ * and {@link EnableCronTaskRegister CronTaskConfiguration}, respectively configuring the core repository of
  * {@link HutoolCronTaskRepository} and the post processor of {@link CronAnnotationPostProcessor}
  * that scans the relevant beans wearing the annotation {@link Cron} and registers the task.
  *
@@ -55,8 +55,8 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import({HutoolCronTaskConfiguration.class,
-        CronTaskConfiguration.class})
+@Import(HutoolCronTaskConfiguration.class)
+@EnableCronTaskRegister
 public @interface EnableHutoolCronTaskRegister {
 
     /**

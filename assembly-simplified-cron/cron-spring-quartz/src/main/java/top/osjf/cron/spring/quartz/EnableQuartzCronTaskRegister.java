@@ -19,9 +19,9 @@ package top.osjf.cron.spring.quartz;
 import org.springframework.context.annotation.Import;
 import top.osjf.cron.core.lifecycle.InitializeProperties;
 import top.osjf.cron.quartz.repository.QuartzCronTaskRepository;
-import top.osjf.cron.spring.CronAnnotationPostProcessor;
-import top.osjf.cron.spring.CronTaskConfiguration;
 import top.osjf.cron.spring.annotation.Cron;
+import top.osjf.cron.spring.annotation.CronAnnotationPostProcessor;
+import top.osjf.cron.spring.annotation.EnableCronTaskRegister;
 
 import java.lang.annotation.*;
 
@@ -40,7 +40,7 @@ import java.lang.annotation.*;
  * the scheduled task processor.
  *
  * <p>This annotation will import two configurations, {@link QuartzCronTaskConfiguration}
- * and {@link CronTaskConfiguration}, respectively configuring the core repository of
+ * and {@link EnableCronTaskRegister CronTaskConfiguration}, respectively configuring the core repository of
  * {@link QuartzCronTaskRepository} and the post processor of {@link CronAnnotationPostProcessor}
  * that scans the relevant beans wearing the annotation {@link Cron} and registers the task.
  *
@@ -57,7 +57,7 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import({QuartzCronTaskConfiguration.class,
-        CronTaskConfiguration.class})
+@Import(QuartzCronTaskConfiguration.class)
+@EnableCronTaskRegister
 public @interface EnableQuartzCronTaskRegister {
 }

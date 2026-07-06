@@ -18,9 +18,9 @@ package top.osjf.cron.spring.cron4j;
 
 import org.springframework.context.annotation.Import;
 import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
-import top.osjf.cron.spring.CronAnnotationPostProcessor;
-import top.osjf.cron.spring.CronTaskConfiguration;
 import top.osjf.cron.spring.annotation.Cron;
+import top.osjf.cron.spring.annotation.CronAnnotationPostProcessor;
+import top.osjf.cron.spring.annotation.EnableCronTaskRegister;
 
 import java.lang.annotation.*;
 
@@ -39,8 +39,8 @@ import java.lang.annotation.*;
  * the scheduled task processor.
  *
  * <p>This annotation will import two configurations, {@link Cron4jCronTaskConfiguration}
- * and {@link CronTaskConfiguration}, respectively configuring the core repository of
- * {@link Cron4jCronTaskRepository} and the post processor of {@link CronAnnotationPostProcessor}
+ * and {@link EnableCronTaskRegister CronTaskConfiguration}, respectively configuring the core
+ * repository of{@link Cron4jCronTaskRepository} and the post processor of {@link CronAnnotationPostProcessor}
  * that scans the relevant beans wearing the annotation {@link Cron} and registers the task.
  *
  * <p>The registered attribute entries are all {@link it.sauronsoftware.cron4j.Scheduler}
@@ -55,8 +55,8 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import({Cron4jCronTaskConfiguration.class,
-        CronTaskConfiguration.class})
+@Import(Cron4jCronTaskConfiguration.class)
+@EnableCronTaskRegister
 public @interface EnableCron4jCronTaskRegister {
 
     /**

@@ -46,5 +46,5 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Import(CronTaskConfiguration.class)
 @Documented
-public @interface EnableCronTask {
+public @interface EnableCronTaskRegister {
 }
