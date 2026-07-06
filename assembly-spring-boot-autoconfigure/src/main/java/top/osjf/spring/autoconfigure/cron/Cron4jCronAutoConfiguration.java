@@ -16,6 +16,7 @@
 
 package top.osjf.spring.autoconfigure.cron;
 
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -25,21 +26,21 @@ import org.springframework.context.annotation.Import;
 import top.osjf.cron.core.lifecycle.InitializeProperties;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
-import top.osjf.cron.spring.CronTaskConfiguration;
+import top.osjf.cron.spring.annotation.CronTaskConfiguration;
 import top.osjf.cron.spring.cron4j.Cron4jCronTaskConfiguration;
 
 /**
- * {@link Configuration Configuration} for {@link Cron4jCronTaskRepository}.
+ * {@link EnableAutoConfiguration Configuration} for {@link Cron4jCronTaskRepository}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 1.0.3
+ * @since 3.0.2
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({Cron4jCronTaskRepository.class, Cron4jCronTaskConfiguration.class})
-@Import({Cron4jCronTaskConfiguration.class, CronTaskConfiguration.class})
+@ConditionalOnClass(Cron4jCronTaskConfiguration.class) // Restricted by cron-spring-ron4j
+@Import({ Cron4jCronTaskConfiguration.class, CronTaskConfiguration.class })
 @ConditionalOnMissingBean(CronTaskRepository.class)
 @Conditional(CronCondition.class)
-class Cron4jCronConfiguration {
+class Cron4jCronAutoConfiguration {
 
     @Bean
     public InitializeProperties cron4jProperties(CronProperties cronProperties) {
