@@ -41,7 +41,10 @@ import org.springframework.util.StringUtils;
 import top.osjf.commons.util.compat.ArrayUtils;
 import top.osjf.cron.core.lifecycle.Lifecycle;
 import top.osjf.cron.core.listener.CronListener;
-import top.osjf.cron.core.repository.*;
+import top.osjf.cron.core.repository.AnnotationMethodRegistrar;
+import top.osjf.cron.core.repository.CronMethodRunnable;
+import top.osjf.cron.core.repository.CronTask;
+import top.osjf.cron.core.repository.CronTaskRepository;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -86,7 +89,7 @@ public class CronAnnotationPostProcessor implements ApplicationContextAware,
 
     private ApplicationContext applicationContext;
 
-    private List<String> activeProfiles;
+    private Environment environment;
 
     private final Set<Class<?>> nonAnnotatedClasses = Collections.newSetFromMap(new ConcurrentHashMap<>(16));
 
@@ -99,7 +102,7 @@ public class CronAnnotationPostProcessor implements ApplicationContextAware,
 
     @Override
     public void setEnvironment(@NonNull Environment environment) {
-        activeProfiles = Arrays.asList(environment.getActiveProfiles());
+        this.environment = environment;
     }
 
     @Override
@@ -169,7 +172,8 @@ public class CronAnnotationPostProcessor implements ApplicationContextAware,
             //No environment specified or specified environment adapted
             // to the current activated environment.
             if (ArrayUtils.isEmpty(profiles) ||
-                    Arrays.stream(profiles).anyMatch(activeProfiles::contains)) {
+                    Arrays.stream(profiles)
+                            .anyMatch(profileName -> ArrayUtils.contains(environment.getActiveProfiles(), profileName))) {
             // Prioritize using the cron expression configured in @Cron annotation.
             // If the expression is blank, resolve the {@link Expression} annotation on the target
                 // method automatically.
