@@ -28,6 +28,7 @@ import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import top.osjf.cron.core.lifecycle.InitializeProperties;
 import top.osjf.cron.spring.AbstractCronTaskConfiguration;
+import top.osjf.cron.spring.Utils;
 import top.osjf.cron.spring.scheduler.SpringSchedulerTaskRepository;
 
 /**
@@ -56,7 +57,7 @@ public class SchedulingRepositoryConfiguration extends AbstractCronTaskConfigura
             ObjectProvider<InitializeProperties> provider) {
         SpringSchedulerTaskRepository repository = taskScheduler != null ?
                 new SpringSchedulerTaskRepository(taskScheduler) : new SpringSchedulerTaskRepository();
-        InitializeProperties properties = ObjectProviderUtils.getPriority(provider);
+        InitializeProperties properties = Utils.getHighestPriorityMatchingInstance(provider);
         if (properties != null) {
             repository.setInitializeProperties(properties);
         }

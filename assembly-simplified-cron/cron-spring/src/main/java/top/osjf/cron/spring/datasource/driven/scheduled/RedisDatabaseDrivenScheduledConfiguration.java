@@ -24,6 +24,7 @@ import org.springframework.core.env.Environment;
 import top.osjf.cron.datasource.driven.scheduled.redis.RedisDatasourceTaskElementsOperation;
 import top.osjf.cron.datasource.driven.scheduled.redis.config.RedisConnectionConfig;
 import top.osjf.cron.datasource.driven.scheduled.serialization.ConfigFormat;
+import top.osjf.cron.spring.Utils;
 
 /**
  * {@link Configuration Configuration} for {@link RedisDatasourceTaskElementsOperation}.
@@ -37,7 +38,7 @@ public class RedisDatabaseDrivenScheduledConfiguration {
     @Bean
     public RedisDatasourceTaskElementsOperation redisDatasourceTaskElementsOperation
             (ObjectProvider<RedisConnectionConfig> builders, Environment environment) {
-        RedisConnectionConfig config = ObjectProviderUtils.getPriority(builders);
+        RedisConnectionConfig config = Utils.getHighestPriorityMatchingInstance(builders);
         if (config == null) {
             config = RedisConnectionConfig.builder().build();
         }

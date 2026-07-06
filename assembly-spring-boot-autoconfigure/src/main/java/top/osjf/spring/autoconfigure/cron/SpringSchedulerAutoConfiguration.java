@@ -36,6 +36,7 @@ import org.springframework.scheduling.config.TaskManagementConfigUtils;
 import top.osjf.cron.core.lifecycle.InitializeProperties;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.spring.AbstractCronTaskConfiguration;
+import top.osjf.cron.spring.Utils;
 import top.osjf.cron.spring.scheduler.SpringSchedulerTaskRepository;
 import top.osjf.cron.spring.scheduler.config.EnableScheduling;
 import top.osjf.cron.spring.scheduler.config.SchedulingRepositoryConfiguration;
@@ -80,7 +81,7 @@ class SpringSchedulerAutoConfiguration {
                 @Qualifier(SchedulingRepositoryConfiguration.TASK_SCHEDULER_INTERNAL_BEAN_NAME)
                 TaskScheduler taskScheduler, ObjectProvider<InitializeProperties> provider) {
             SpringSchedulerTaskRepository repository = new SpringSchedulerTaskRepository(taskScheduler);
-            InitializeProperties properties = ObjectProviderUtils.getPriority(provider);
+            InitializeProperties properties = Utils.getHighestPriorityMatchingInstance(provider);
             if (properties != null) {
                 repository.setInitializeProperties(properties);
             }
