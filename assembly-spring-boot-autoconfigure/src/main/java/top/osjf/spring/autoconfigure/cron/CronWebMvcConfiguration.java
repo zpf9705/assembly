@@ -61,7 +61,7 @@ class CronWebMvcConfiguration {
      * @return the configured {@link CronTaskInfoView} readable controller.
      */
     @Bean
-    @ConditionalOnProperty(prefix = CronTaskPropertyKey.PREFIX, name = "enable-web-query-task-list", havingValue = "true")
+    @ConditionalOnProperty(value = CronTaskPropertyKey.KEY_WEB_QUERY_TASK_LIST_ENABLE, havingValue = "true")
     public CronTaskInfoReadableWebMvcHandlerController cronTaskInfoReadableWebMvcHandlerController
     (CronTaskRepository cronTaskRepository,
      RequestMappingHandlerMapping requestMappingHandlerMapping) {
