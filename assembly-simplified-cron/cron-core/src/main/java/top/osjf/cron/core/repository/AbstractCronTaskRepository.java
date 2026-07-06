@@ -661,7 +661,7 @@ public abstract class AbstractCronTaskRepository
         if (!hasCronTaskInfo(id)) {
             throw new CronInternalException(String.format("Scheduled task with id [%s] does not exist.", id));
         }
-        return extendInfos.computeIfAbsent(id, CronTaskExtendInfo::new);
+        return extendInfos.computeIfAbsent(id, DefaultCronTaskExtendInfo::new);
     }
 
     /**
