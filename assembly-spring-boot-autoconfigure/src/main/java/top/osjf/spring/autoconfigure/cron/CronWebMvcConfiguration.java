@@ -97,8 +97,8 @@ class CronWebMvcConfiguration {
         // The URL provided externally that requires authentication.
         if (CollectionUtils.isNotEmpty(providers)) {
             for (WebRequestAuthenticationInterceptor.AuthenticationProvider authenticationProvider : providers) {
-                for (String authenticationPaths : authenticationProvider.get()) {
-                    authenticationInterceptor.registerAuthenticationPath(authenticationPaths);
+                for (String authenticationPath : authenticationProvider.get()) {
+                    authenticationInterceptor.registerAuthenticationPath(authenticationPath);
                 }
             }
         }
