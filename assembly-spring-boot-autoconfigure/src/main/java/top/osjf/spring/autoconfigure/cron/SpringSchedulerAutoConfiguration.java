@@ -51,7 +51,7 @@ import top.osjf.cron.spring.scheduler.config.SchedulingRepositoryConfiguration;
 @ConditionalOnClass(SpringSchedulerTaskRepository.class)
 @AutoConfigureBefore(TaskSchedulingAutoConfiguration.class)
 @ConditionalOnMissingBean(CronTaskRepository.class)
-@Conditional(CronCondition.class)
+@Conditional(CronClientCondition.class)
 class SpringSchedulerAutoConfiguration {
 
     @Bean(SchedulingRepositoryConfiguration.TASK_SCHEDULER_INTERNAL_BEAN_NAME)
