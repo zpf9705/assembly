@@ -38,6 +38,11 @@ public class CronDatasourceDrivenProperties {
     private boolean enable = false;
 
     /**
+     * Whether to enable web inspection endpoint for scheduled driven.
+     */
+    private boolean enableWebInspect = false;
+
+    /**
      * The datasource-driven matched profiles.
      * @see org.springframework.core.env.Profiles
      */
@@ -88,6 +93,14 @@ public class CronDatasourceDrivenProperties {
 
     public void setEnable(boolean enable) {
         this.enable = enable;
+    }
+
+    public boolean isEnableWebInspect() {
+        return enableWebInspect;
+    }
+
+    public void setEnableWebInspect(boolean enableWebInspect) {
+        this.enableWebInspect = enableWebInspect;
     }
 
     public String getActiveProfilesMatched() {
