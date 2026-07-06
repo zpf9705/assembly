@@ -19,9 +19,12 @@ package top.osjf.cron.quartz.repository;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.impl.matchers.GroupMatcher;
+import org.quartz.simpl.RAMJobStore;
 import org.quartz.simpl.SimpleThreadPool;
 import top.osjf.commons.lang.NotNull;
 import top.osjf.commons.lang.Nullable;
+import top.osjf.commons.util.Assert;
+import top.osjf.commons.util.StringUtils;
 import top.osjf.cron.core.exception.CronExpressionInvalidException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
 import top.osjf.cron.core.lifecycle.InitializeProperties;
@@ -36,6 +39,8 @@ import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import static org.quartz.impl.StdSchedulerFactory.PROP_JOB_STORE_CLASS;
 
 /**
  * The {@link CronTaskRepository} implementation class of quartz.
@@ -173,6 +178,9 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepository impleme
     @Override
     public void initialize() throws Exception {
         super.initialize();
+        String userJobStoreClass = quartzProperties.getProperty(PROP_JOB_STORE_CLASS);
+        Assert.isTrue(StringUtils.isBlank(userJobStoreClass) || Objects.equals(userJobStoreClass,
+                RAMJobStore.class.getName()), "Currently only supports local memory scheduling");
         if (!quartzProperties.containsKey(StdSchedulerFactory.PROP_THREAD_POOL_CLASS)) {
             if (taskExecutor != null) {
                 TaskExecutorDelegateThreadPool.setTaskExecutor(taskExecutor);
