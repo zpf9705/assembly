@@ -30,6 +30,7 @@ import java.lang.reflect.Method;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
+@Deprecated
 public final class CronTaskInfoView implements Serializable {
 
     private static final long serialVersionUID = -1770339670512525063L;

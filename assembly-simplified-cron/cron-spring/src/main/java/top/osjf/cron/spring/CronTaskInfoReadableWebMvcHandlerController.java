@@ -50,8 +50,8 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public class CronTaskInfoReadableWebMvcHandlerController
-        implements InitializingBean, Supplier<ResponseEntity<List<CronTaskInfoView>>> {
+public class CronTaskInfoReadableWebMvcHandlerController implements InitializingBean,
+        Supplier<ResponseEntity<List<String>>> {
     /**
      * Retrieve the web mapping path for all registered task information.
      */
@@ -110,11 +110,11 @@ public class CronTaskInfoReadableWebMvcHandlerController
      */
     @Override
     @ResponseBody
-    public ResponseEntity<List<CronTaskInfoView>> get() {
+    public ResponseEntity<List<String>> get() {
         List<CronTaskInfo> cronTaskInfos = cronTaskRepository.getAllCronTaskInfos();
         if (CollectionUtils.isEmpty(cronTaskInfos)) {
             return ResponseEntity.ok(Collections.emptyList());
         }
-        return ResponseEntity.ok(cronTaskInfos.stream().map(CronTaskInfoView::new).collect(Collectors.toList()));
+        return ResponseEntity.ok(cronTaskInfos.stream().map(CronTaskInfo::toJsonView).collect(Collectors.toList()));
     }
 }
