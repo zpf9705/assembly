@@ -45,6 +45,7 @@ import top.osjf.cron.core.repository.AnnotationMethodRegistrar;
 import top.osjf.cron.core.repository.CronMethodRunnable;
 import top.osjf.cron.core.repository.CronTask;
 import top.osjf.cron.core.repository.CronTaskRepository;
+import top.osjf.cron.spring.CronTaskPropertyKey;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -227,6 +228,12 @@ public class CronAnnotationPostProcessor implements ApplicationContextAware,
         // Print registration summary log
         logger.info("[CronAnnotationPostProcessor] Annotated cron tasks loaded successfully. " +
                         "Registered task count: {}, loaded listener count: {}", cronTasks.size(), listeners.size());
+
+        // Auto start cron task repository if auto-startup switch is enabled and not running
+        if (environment.getProperty(CronTaskPropertyKey.AUTO_STARTUP, boolean.class, false)
+                && !cronTaskRepository.isStarted()) {
+            cronTaskRepository.start();
+        }
 
         // clare registered task instances.
         cronTasks.clear();
