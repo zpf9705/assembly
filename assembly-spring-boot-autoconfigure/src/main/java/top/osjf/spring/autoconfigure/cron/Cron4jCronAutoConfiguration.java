@@ -30,7 +30,7 @@ import top.osjf.cron.spring.annotation.CronTaskConfiguration;
 import top.osjf.cron.spring.cron4j.Cron4jCronTaskConfiguration;
 
 /**
- * {@link EnableAutoConfiguration Configuration} for {@link Cron4jCronTaskRepository}.
+ * {@link EnableAutoConfiguration EnableAutoConfiguration} for {@link Cron4jCronTaskRepository}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2

@@ -17,6 +17,7 @@
 package top.osjf.spring.autoconfigure.cron;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -32,7 +33,7 @@ import top.osjf.cron.spring.quartz.QuartzCronTaskConfiguration;
 import java.util.List;
 
 /**
- * {@link Configuration Configuration} for {@link QuartzCronTaskRepository}.
+ * {@link EnableAutoConfiguration EnableAutoConfiguration} for {@link QuartzCronTaskRepository}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2

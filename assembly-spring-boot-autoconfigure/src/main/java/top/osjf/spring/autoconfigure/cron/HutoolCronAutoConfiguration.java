@@ -30,7 +30,7 @@ import top.osjf.cron.spring.annotation.CronTaskConfiguration;
 import top.osjf.cron.spring.hutool.HutoolCronTaskConfiguration;
 
 /**
- * {@link EnableAutoConfiguration Configuration} for {@link HutoolCronTaskRepository}.
+ * {@link EnableAutoConfiguration EnableAutoConfiguration} for {@link HutoolCronTaskRepository}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
