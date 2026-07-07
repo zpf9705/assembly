@@ -36,6 +36,7 @@ public interface CronTaskPropertyKey {
     /**
      * Prefix for web request authentication configuration
      */
+    @Deprecated
     String WEB_AUTH_PREFIX = PREFIX + ".web-request-authentication";
 
     /**
@@ -46,11 +47,13 @@ public interface CronTaskPropertyKey {
     /**
      * Switch to enable web request authentication
      */
+    @Deprecated
     String KEY_WEB_AUTH_ENABLE = WEB_AUTH_PREFIX + ".enable";
 
     /**
      * Configuration key for web authentication token
      */
+    @Deprecated
     String KEY_OF_AUTHENTICATION_TOKEN = WEB_AUTH_PREFIX + ".token";
 
 

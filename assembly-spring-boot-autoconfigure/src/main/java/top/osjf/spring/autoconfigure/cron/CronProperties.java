@@ -65,6 +65,7 @@ public class CronProperties {
     /**
      * @see WebRequestAuthentication
      */
+    @Deprecated
     private WebRequestAuthentication webRequestAuthentication = new WebRequestAuthentication();
 
     /**
@@ -124,10 +125,12 @@ public class CronProperties {
         return simple;
     }
 
+    @Deprecated
     public WebRequestAuthentication getWebRequestAuthentication() {
         return webRequestAuthentication;
     }
 
+    @Deprecated
     public void setWebRequestAuthentication(WebRequestAuthentication webRequestAuthentication) {
         this.webRequestAuthentication = webRequestAuthentication;
     }
@@ -376,6 +379,7 @@ public class CronProperties {
      * @see top.osjf.cron.spring.auth.WebRequestAuthenticationInterceptor
      * @since 3.0.1
      */
+    @Deprecated
     public static class WebRequestAuthentication {
 
         /**
