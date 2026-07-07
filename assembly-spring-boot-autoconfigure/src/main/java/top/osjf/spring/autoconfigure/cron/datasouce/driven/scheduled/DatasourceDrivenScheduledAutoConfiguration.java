@@ -46,7 +46,7 @@ import top.osjf.cron.spring.datasource.driven.scheduled.SpringDatasourceDrivenSc
 public class DatasourceDrivenScheduledAutoConfiguration {
 
     @Configuration(proxyBeanMethods = false)
-    @Import({DatasourceDrivenConfigurationImportSelector.class, DatasourceDrivenScheduledConfiguration.class})
+    @Import({DatasourceDrivenAutoConfigurationImportSelector.class, DatasourceDrivenScheduledConfiguration.class})
     @EnableDatasourceScheduledProfiles
     static class DatasourceDrivenScheduledProfilesMatchedImportConfiguration {
     }
@@ -80,10 +80,10 @@ public class DatasourceDrivenScheduledAutoConfiguration {
     }
 
     /**
-     * {@link ImportSelector} to add {@link DataSource} configuration classes.
-     * @since 1.0.4
+     * {@link ImportSelector} to add {@link DataSource} auto configuration classes.
+     * @since 3.0.2
      */
-    static class DatasourceDrivenConfigurationImportSelector implements ImportSelector {
+    static class DatasourceDrivenAutoConfigurationImportSelector implements ImportSelector {
         @Override
         @NotNull
         public String[] selectImports(@NotNull AnnotationMetadata importingClassMetadata) {

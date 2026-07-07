@@ -17,11 +17,9 @@
 
 package top.osjf.cron.spring.annotation;
 
-import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.annotation.AnnotationAttributes;
-import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
 import top.osjf.commons.lang.NotNull;
 import top.osjf.cron.spring.datasource.driven.scheduled.*;
@@ -36,14 +34,7 @@ import java.util.List;
  * @since 1.0.4
  */
 @Configuration(proxyBeanMethods = false)
-public class DatasourceDrivenScheduledConfiguration implements ImportSelector, EnvironmentAware {
-
-    private Environment environment;
-
-    @Override
-    public void setEnvironment(@NotNull Environment environment) {
-        this.environment = environment;
-    }
+public class DatasourceDrivenScheduledConfiguration implements ImportSelector {
 
     @Override
     @NotNull

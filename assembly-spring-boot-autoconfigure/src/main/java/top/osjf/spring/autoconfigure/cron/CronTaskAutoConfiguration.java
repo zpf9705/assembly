@@ -97,7 +97,7 @@ public class CronTaskAutoConfiguration {
     }
 
     /**
-     * {@link ImportSelector} to add {@link ClientType} configuration classes.
+     * {@link ImportSelector} to add {@link ClientType} auto or default configuration classes.
      * @since 3.0.2
      */
     static class CronAutoConfigurationImportSelector implements ImportSelector {
