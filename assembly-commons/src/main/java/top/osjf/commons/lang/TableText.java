@@ -1,7 +1,7 @@
 
 package top.osjf.commons.lang;
 
-import top.osjf.commons.util.CollectionUtils;
+import top.osjf.commons.util.Assert;
 import top.osjf.commons.util.ReflectionUtils;
 import top.osjf.commons.util.StringUtils;
 
@@ -217,23 +217,40 @@ public class TableText {
     }
 
     /**
+     * Convert single entity object to formatted {@code TableText}.
+     * Simply wrap single object as list and delegate to {@link #toTableText(List, Class)}.
+     * @param obj entity data to render.
+     * @param clazz entity class with {@link Header} annotation on fields
+     * @return complete formatted {@code TableText} instance
+     * @param <T> generic type of entity
+     */
+    public static <T>TableText toTableText(T obj, Class<T> clazz) {
+        return toTableText(Collections.singletonList(obj), clazz);
+    }
+
+    /**
      * Auto build TableText from entity list, parse header and column order via {@link Header} annotation
      * on entity field.
-     * <p>Logic flow:
-     * 1. Scan all declared fields of clazz, filter fields with {@link Header};
-     * 2. Sort fields ascending by annotation {@link Header#order()};
-     * 3. Extract {@link Header#value()} as table header row;
-     * 4. Traverse entity list, read each field value as table data row.
+     * <p>
+     * <strong>Logic flow:</strong>
+     * <ol>
+     * <li>Scan all declared fields of clazz, filter fields with {@link Header};</li>
+     * <li>Sort fields ascending by annotation {@link Header#order()};</li>
+     * <li>Extract {@link Header#value()} as table header row;</li>
+     * <li>Traverse entity list, read each field value as table data row.</li>
+     * </ol>
      * @param objects entity data list to render
      * @param clazz entity class with {@link Header} annotation on fields
      * @param <T> generic type of entity
-     * @return complete formatted TableText instance
+     * @return complete formatted {@code TableText} instance
+     * @throws IllegalArgumentException If invalid parameters are entered.
      */
     public static <T>TableText toTableText(List<T> objects, Class<T> clazz) {
+
+        Assert.notEmpty(objects, "Input objects not be empty");
+        Assert.notNull(clazz, "Input class not be null");
+
         TableText tableText = TableText.create();
-        if (CollectionUtils.isEmpty(objects)) {
-            return tableText;
-        }
         List<Field> fields = Arrays.stream(clazz.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(Header.class))
                 .sorted(Comparator.comparingInt(o -> o.getAnnotation(Header.class).order()))
