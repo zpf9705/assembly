@@ -18,8 +18,8 @@
 package top.osjf.cron.core.repository;
 
 import top.osjf.commons.lang.Nullable;
+import top.osjf.commons.lang.TableText;
 import top.osjf.commons.util.Assert;
-import top.osjf.cron.core.util.GsonUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -39,15 +39,18 @@ public class CronTaskInfo implements Serializable {
     private static final long serialVersionUID = 3944766838390077158L;
 
     /**  The unique ID of this task within its lifetime. */
+    @TableText.Header(value = "Task-ID", order = 0)
     private final String id;
 
     /**
      * The custom name for this task.
      * @since 3.0.2
      */
+    @TableText.Header(value = "Task-Name", order = 1)
     @Nullable private String name;
 
     /** The cron expression for executing this task.*/
+    @TableText.Header(value = "Task-Expression", order = 2)
     private final String expression;
 
     /** The function runtime for this task.*/
@@ -68,18 +71,21 @@ public class CronTaskInfo implements Serializable {
      * Otherwise, it is the remaining number of runs.
      * @since 3.0.1
      */
+    @TableText.Header(value = "Task-remainingNumberOfRuns", order = 3)
     private long remainingNumberOfRuns;
 
     /**
      * An instance of timeout configuration for a single task run.
      * @since 3.0.2
      */
+    @TableText.Header(value = "Task-timeoutConfig", order = 4)
     @Nullable private RunningTimeout timeoutConfig;
 
     /**
      * The {@code boolean} flag to indicate whether the task is currently executing.
      * @since 3.0.2
      */
+    @TableText.Header(value = "Task-isRunning", order = 5)
     private boolean isRunning;
 
     /**
@@ -87,18 +93,21 @@ public class CronTaskInfo implements Serializable {
      * Returns {@code null} if there is no subsequent trigger.
      * @since 3.0.2
      */
+    @TableText.Header(value = "Task-nextExecuteTimestamp", order = 6)
     @Nullable private Long nextExecuteTimestamp;
 
     /**
      * The {@code boolean} to indicate whether concurrent execution is prohibited.
      * @since 3.0.2
      */
+    @TableText.Header(value = "Task-disallowConcurrentExecution", order = 7)
     private boolean disallowConcurrentExecution;
 
     /**
      * The description of the role of this task
      * @since 3.0.2
      */
+    @TableText.Header(value = "Task-description", order = 8)
     @Nullable private String description;
 
     /**
@@ -325,10 +334,6 @@ public class CronTaskInfo implements Serializable {
         return description;
     }
 
-    public String toJsonView() {
-        return GsonUtils.toJson(this);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -348,20 +353,6 @@ public class CronTaskInfo implements Serializable {
 
     @Override
     public String toString() {
-        return "CronTaskInfo{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", expression='" + expression + '\'' +
-                ", runnable=" + runnable +
-                ", target=" + target +
-                ", method=" + method +
-                ", args=" + Arrays.toString(args) +
-                ", remainingNumberOfRuns=" + remainingNumberOfRuns +
-                ", timeoutConfig=" + timeoutConfig +
-                ", isRunning=" + isRunning +
-                ", nextExecuteTimestamp=" + nextExecuteTimestamp +
-                ", disallowConcurrentExecution=" + disallowConcurrentExecution +
-                ", description='" + description + '\'' +
-                '}';
+        return TableText.toTableText(this, CronTaskInfo.class).toString();
     }
 }
