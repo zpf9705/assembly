@@ -23,7 +23,6 @@ import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.core.repository.RunTimeoutRegistrarRepository;
 import top.osjf.cron.cron4j.repository.Cron4jCronTaskRepository;
 import top.osjf.cron.hutool.repository.HutoolCronTaskRepository;
-import top.osjf.cron.spring.CronTaskInfoReadableWebMvcHandlerController;
 import top.osjf.cron.spring.CronTaskPropertyKey;
 
 import java.util.HashMap;
@@ -81,11 +80,10 @@ public class CronProperties {
     private boolean autoStartup = true;
 
     /**
-     * Switch to enable web endpoint for querying task list.
-     * @see CronTaskInfoReadableWebMvcHandlerController
+     * Global switch for exposing cron task web api controller.
      * @since 3.0.2
      */
-    public boolean enableWebQueryTaskList = false;
+    private boolean enableTaskWebEndpoint = false;
 
     /**
      * Get the configuration of the specified {@link ClientType}.
@@ -156,12 +154,12 @@ public class CronProperties {
         this.autoStartup = autoStartup;
     }
 
-    public boolean isEnableWebQueryTaskList() {
-        return enableWebQueryTaskList;
+    public boolean isEnableTaskWebEndpoint() {
+        return enableTaskWebEndpoint;
     }
 
-    public void setEnableWebQueryTaskList(boolean enableWebQueryTaskList) {
-        this.enableWebQueryTaskList = enableWebQueryTaskList;
+    public void setEnableTaskWebEndpoint(boolean enableTaskWebEndpoint) {
+        this.enableTaskWebEndpoint = enableTaskWebEndpoint;
     }
 
     /**
