@@ -17,25 +17,26 @@
 
 package top.osjf.spring.autoconfigure.cron.datasouce.driven.scheduled;
 
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation;
-import top.osjf.cron.datasource.driven.scheduled.mp.MybatisPlusDatasourceTaskElementsOperation;
-import top.osjf.cron.spring.datasource.driven.scheduled.MybatisPlusDatabaseDrivenScheduledConfiguration;
+import top.osjf.cron.datasource.driven.scheduled.nacosconfig.NacosConfigDatasourceTaskElementsOperation;
+import top.osjf.cron.spring.datasource.driven.scheduled.NacosConfigDatabaseDrivenScheduledConfiguration;
 
 /**
- * {@link Configuration Configuration} for {@link MybatisPlusDatasourceTaskElementsOperation}.
+ * {@link EnableAutoConfiguration EnableAutoConfiguration} for {@link NacosConfigDatasourceTaskElementsOperation}.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 3.0.1
+ * @since 3.0.2
  */
 @Configuration(proxyBeanMethods = false)
-@Import(MybatisPlusDatabaseDrivenScheduledConfiguration.class)
-@ConditionalOnClass(MybatisPlusDatasourceTaskElementsOperation.class)
+@Import(NacosConfigDatabaseDrivenScheduledConfiguration.class)
+@ConditionalOnClass(NacosConfigDatasourceTaskElementsOperation.class)
 @ConditionalOnMissingBean(DatasourceTaskElementsOperation.class)
 @Conditional(DatasourceDrivenCondition.class)
-class MybatisPlusDatasourceTaskElementsOperationConfiguration {
+class NacosConfigDatabaseDrivenScheduledAutoConfiguration {
 }

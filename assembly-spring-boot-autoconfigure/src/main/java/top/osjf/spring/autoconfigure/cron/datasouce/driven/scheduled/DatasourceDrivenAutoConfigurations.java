@@ -25,33 +25,33 @@ import java.util.EnumMap;
 import java.util.Map;
 
 /**
- * Mappings between {@link DataSource} and {@code @Configuration}.
+ * Mapping between {@link DataSource DataSource}, automatic configuration.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
- * @since 3.0.1
+ * @since 3.0.2
  */
-final class DatasourceDrivenConfigurations {
+final class DatasourceDrivenAutoConfigurations {
 
     private static final Map<DataSource, String> MAPPINGS;
 
     static {
         Map<DataSource, String> mappings = new EnumMap<>(DataSource.class);
         mappings.put(DataSource.YAML_CONFIG,
-                YamlConfigDatasourceTaskElementsOperationConfiguration.class.getName());
+                YamlDatabaseDrivenScheduledAutoConfiguration.class.getName());
         mappings.put(DataSource.MY_BATIS_PLUS_ORM_DATABASE,
-                MybatisPlusDatasourceTaskElementsOperationConfiguration.class.getName());
+                MybatisPlusDatabaseDrivenScheduledAutoConfiguration.class.getName());
         mappings.put(DataSource.SPRING_JPA_ORM_DATABASE,
-                JpaDatasourceTaskElementsOperationConfiguration.class.getName());
+                JpaDatabaseDrivenScheduledAutoConfiguration.class.getName());
         mappings.put(DataSource.EXCEL_CONFIG,
-                ExcelDatasourceTaskElementsOperationConfiguration.class.getName());
+                ExcelDatabaseDrivenScheduledAutoConfiguration.class.getName());
         mappings.put(DataSource.NACOS_CONFIG,
-                NaocsConfigDatasourceTaskElementsOperationConfiguration.class.getName());
+                NacosConfigDatabaseDrivenScheduledAutoConfiguration.class.getName());
         mappings.put(DataSource.REDIS,
-                RedisDatasourceTaskElementsOperationConfiguration.class.getName());
+                RedisDatabaseDrivenScheduledAutoConfiguration.class.getName());
         MAPPINGS = Collections.unmodifiableMap(mappings);
     }
 
-    private DatasourceDrivenConfigurations() {
+    private DatasourceDrivenAutoConfigurations() {
     }
 
     static String getConfigurationClass(DataSource dataSource) {
