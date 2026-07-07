@@ -80,12 +80,6 @@ public class CronProperties {
     private boolean autoStartup = true;
 
     /**
-     * Global switch for exposing cron task web api controller.
-     * @since 3.0.2
-     */
-    private boolean enableTaskWebEndpoint = false;
-
-    /**
      * Get the configuration of the specified {@link ClientType}.
      * @param clientType the input {@link ClientType}.
      * @return the {@link InitializeProperties} created by {@link ClientType}.
@@ -152,14 +146,6 @@ public class CronProperties {
 
     public void setAutoStartup(boolean autoStartup) {
         this.autoStartup = autoStartup;
-    }
-
-    public boolean isEnableTaskWebEndpoint() {
-        return enableTaskWebEndpoint;
-    }
-
-    public void setEnableTaskWebEndpoint(boolean enableTaskWebEndpoint) {
-        this.enableTaskWebEndpoint = enableTaskWebEndpoint;
     }
 
     /**

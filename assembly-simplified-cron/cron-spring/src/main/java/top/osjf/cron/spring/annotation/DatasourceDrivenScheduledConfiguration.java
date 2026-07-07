@@ -52,13 +52,7 @@ public class DatasourceDrivenScheduledConfiguration implements ImportSelector, E
                 = AnnotationAttributes
                 .fromMap(metadata.getAnnotationAttributes(EnableDataSourceDrivenScheduled.class.getCanonicalName()));
         List<String> configs = new ArrayList<>();
-        if (environment.getProperty(ScheduledDrivenPropertyKey.KEY_OF_ENABLE_SCHEDULED_DRIVEN_WEB_INSPECT,
-                boolean.class, false)) {
-            configs.add(SpringHandlerMappingDatasourceDrivenScheduled.class.getCanonicalName());
-        }
-        else {
-            configs.add(SpringDatasourceDrivenScheduled.class.getCanonicalName());
-        }
+        configs.add(SpringDatasourceDrivenScheduled.class.getCanonicalName());
         if (attributes != null) {
             DataSource dataSource = attributes.getEnum("value");
             switch (dataSource){

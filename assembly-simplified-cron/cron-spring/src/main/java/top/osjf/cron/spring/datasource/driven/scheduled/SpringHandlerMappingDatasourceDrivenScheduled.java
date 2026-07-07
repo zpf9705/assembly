@@ -43,6 +43,7 @@ import top.osjf.cron.datasource.driven.scheduled.DatasourceTaskElementsOperation
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
+@Deprecated
 public class SpringHandlerMappingDatasourceDrivenScheduled
         extends SpringDatasourceDrivenScheduled implements WebMvcConfigurer {
 
