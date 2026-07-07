@@ -35,6 +35,20 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @ExpressionResolvableTags
-        ({"os.name", "${os.name}", "java.version", "${java.version}", "hostname", "${HOSTNAME:local}"})
+        ({
+                /* os */
+                "os.name", "${os.name}",
+                "os.arch", "${os.arch}",
+                "os.version", "${os.version}",
+
+                /* java */
+                "java.vendor", "${java.vendor}",
+                "java.version", "${java.version}",
+                "java.vm.name", "${java.vm.name}",
+                "java.specification.version", "${java.specification.version}",
+
+                /* coding */
+                "file.encoding", "${file.encoding}"
+        })
 public @interface SystemPropertiesTags {
 }
