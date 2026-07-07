@@ -54,6 +54,7 @@ import static top.osjf.cron.spring.CronTaskPropertyKey.KEY_WEB_AUTH_ENABLE;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
+@Deprecated
 public class WebRequestAuthenticationInterceptor implements AuthenticationInterceptor, WebMvcConfigurer {
 
     /**

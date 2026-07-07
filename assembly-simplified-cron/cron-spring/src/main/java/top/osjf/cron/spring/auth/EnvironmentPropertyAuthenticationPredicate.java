@@ -38,6 +38,7 @@ import static top.osjf.cron.spring.CronTaskPropertyKey.KEY_OF_AUTHENTICATION_TOK
  * @since 1.0.4
  * @see AuthenticationPredicate
  */
+@Deprecated
 public class EnvironmentPropertyAuthenticationPredicate implements AuthenticationPredicate {
 
     private final Environment environment;

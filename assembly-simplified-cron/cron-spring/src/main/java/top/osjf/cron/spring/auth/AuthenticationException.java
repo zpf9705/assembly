@@ -24,6 +24,7 @@ import top.osjf.cron.core.exception.CronInternalException;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
+@Deprecated
 public class AuthenticationException extends CronInternalException {
     private static final long serialVersionUID = 4221179881970995431L;
     /**

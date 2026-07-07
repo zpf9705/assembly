@@ -43,6 +43,7 @@ import java.util.function.Predicate;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
+@Deprecated
 public interface AuthenticationPredicate extends Predicate<String> {
 
     /**

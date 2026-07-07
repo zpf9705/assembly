@@ -30,6 +30,7 @@ import top.osjf.commons.lang.Nullable;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
+@Deprecated
 public interface AuthenticationInterceptor extends WebRequestInterceptor {
 
     @Override
