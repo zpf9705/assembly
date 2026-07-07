@@ -35,8 +35,9 @@ public interface CronTaskPropertyKey {
 
     /**
      * Switch to enable web task list query interface
+     * enableTaskWebEndpoint
      */
-    String KEY_WEB_QUERY_TASK_LIST_ENABLE = PREFIX + ".enable-web-query-task-list";
+    String KEY_TASK_WEB_ENDPOINT_ENABLE = PREFIX + ".enable-task-web-endpoint";
 
     /**
      * Prefix for web request authentication configuration
