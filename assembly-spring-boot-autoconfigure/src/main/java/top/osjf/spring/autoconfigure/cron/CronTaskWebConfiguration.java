@@ -28,13 +28,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import top.osjf.commons.util.CollectionUtils;
-import top.osjf.cron.core.repository.CronTaskInfo;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.spring.CronTaskInfoReadableWebMvcHandlerController;
 import top.osjf.cron.spring.CronTaskPropertyKey;
 import top.osjf.cron.spring.auth.AuthenticationPredicate;
 import top.osjf.cron.spring.auth.WebRequestAuthenticationInterceptor;
 import top.osjf.cron.spring.datasource.driven.scheduled.SpringHandlerMappingDatasourceDrivenScheduled;
+import top.osjf.cron.spring.web.CronTaskRepositoryController;
 
 import java.util.List;
 
@@ -52,29 +52,16 @@ import static top.osjf.cron.spring.datasource.driven.scheduled.ScheduledDrivenPr
 @ConditionalOnClass({ RequestMappingHandlerMapping.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.ANY)
 @ConditionalOnBean({ RequestMappingHandlerMapping.class })
-class CronWebMvcConfiguration {
+class CronTaskWebConfiguration {
 
-    /**
-     * Return the {@link CronTaskInfo} readable controller, which is the HTTP access interface.
-     * @param cronTaskRepository            the configured {@link CronTaskRepository}.
-     * @param requestMappingHandlerMapping  the configured {@link RequestMappingHandlerMapping}.
-     * @return the configured {@link CronTaskInfo} readable controller.
-     */
     @Bean
-    @ConditionalOnProperty(value = CronTaskPropertyKey.KEY_WEB_QUERY_TASK_LIST_ENABLE, havingValue = "true")
-    public CronTaskInfoReadableWebMvcHandlerController cronTaskInfoReadableWebMvcHandlerController
+    @ConditionalOnProperty(value = CronTaskPropertyKey.KEY_TASK_WEB_ENDPOINT_ENABLE, havingValue = "true")
+    public CronTaskRepositoryController cronTaskRepositoryController
     (CronTaskRepository cronTaskRepository,
      RequestMappingHandlerMapping requestMappingHandlerMapping) {
-        return new CronTaskInfoReadableWebMvcHandlerController(cronTaskRepository, requestMappingHandlerMapping);
+        return new CronTaskRepositoryController(cronTaskRepository);
     }
 
-    /**
-     * Return the authentication interceptor for accessing task scheduling information.
-     * @param provider     the lazy loader of {@link AuthenticationPredicate}.
-     * @param environment  the {@link Environment} instance.
-     * @param providers    the {@link WebRequestAuthenticationInterceptor.AuthenticationProvider} instances.
-     * @return the configured {@link CronTaskInfo} readable controller.
-     */
     @Bean
     public WebRequestAuthenticationInterceptor webRequestAuthenticationInterceptor
     (ObjectProvider<AuthenticationPredicate> provider, Environment environment,
@@ -82,7 +69,8 @@ class CronWebMvcConfiguration {
         WebRequestAuthenticationInterceptor authenticationInterceptor
                 = new WebRequestAuthenticationInterceptor(provider, environment);
         // Enable authentication interface address registration when opening the web endpoint query access task list.
-        if (environment.getProperty(CronTaskPropertyKey.KEY_WEB_QUERY_TASK_LIST_ENABLE, boolean.class, false)) {
+        if (environment.getProperty(CronTaskPropertyKey.KEY_TASK_WEB_ENDPOINT_ENABLE, boolean.class, false)) {
+
             authenticationInterceptor.registerAuthenticationPath
                     (CronTaskInfoReadableWebMvcHandlerController.REQUEST_MAPPING_PATH_OF_GET_CRON_TASK_LIST);
         }

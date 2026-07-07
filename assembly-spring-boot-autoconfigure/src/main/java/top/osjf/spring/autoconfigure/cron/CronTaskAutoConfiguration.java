@@ -41,8 +41,8 @@ import top.osjf.cron.spring.annotation.Crones;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(CronProperties.class)
-@Import({CronTaskAutoConfiguration.CronAutoConfigurationImportSelector.class, CronWebMvcConfiguration.class,
-        CronMicrometerConfiguration.class})
+@Import({CronTaskAutoConfiguration.CronAutoConfigurationImportSelector.class, CronTaskWebConfiguration.class,
+        CronTaskMicrometerConfiguration.class})
 public class CronTaskAutoConfiguration {
 
     /**
