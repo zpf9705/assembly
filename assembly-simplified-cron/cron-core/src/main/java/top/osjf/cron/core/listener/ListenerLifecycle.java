@@ -376,7 +376,7 @@ public enum ListenerLifecycle {
      * <pre>
      *     {@code
      *
-     *     pubic class DefaultSourceContext {}
+     *     public class DefaultSourceContext {}
      *
      *     public class DefaultListenerContext extend AbstractListenerContext<DefaultSourceContext> {
      *
