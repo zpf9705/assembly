@@ -72,6 +72,7 @@ public abstract class AbstractRunTimeoutRegistrarRepository
      */
     private final Map<String, RunningTimeout> taskRunTimeoutMap = new ConcurrentHashMap<>(16);
 
+    /** A thread pool object used to support timeout control for running tasks. */
     @Nullable private PropertiesParsedThreadPoolExecutor monitoringExecutor;
 
 
