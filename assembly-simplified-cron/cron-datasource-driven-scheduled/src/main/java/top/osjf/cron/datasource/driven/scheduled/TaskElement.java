@@ -268,7 +268,7 @@ public interface TaskElement extends Serializable {
      * processed and restored.
      */
     default void resetUpdateStatus() {
-        setUpdateSign(0);
+        setUpdateSign(UpdateSign.NO_UPDATE.getCode());
     }
 
     /**
