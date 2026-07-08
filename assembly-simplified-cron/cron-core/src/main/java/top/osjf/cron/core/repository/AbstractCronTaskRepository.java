@@ -340,8 +340,10 @@ public abstract class AbstractCronTaskRepository
     @Override
     public CronTaskInfo getCronTaskInfo(String id) {
         Assert.hasText(id, "id must not be null or blank");
-        CronTaskInfo cronTaskInfo = getCronTaskInfoInternal(id);
-        return customizeCronTaskInfo();
+
+        return Optional.ofNullable(getCronTaskInfoInternal(id))
+                .map(this::customizeCronTaskInfo)
+                .orElse(null);
     }
 
     /**
