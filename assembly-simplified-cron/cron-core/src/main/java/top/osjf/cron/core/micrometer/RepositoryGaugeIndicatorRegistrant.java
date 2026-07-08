@@ -21,6 +21,8 @@ import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.Tags;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import top.osjf.commons.util.Assert;
 import top.osjf.cron.core.repository.CronListenerRepository;
 import top.osjf.cron.core.repository.CronTaskRepository;
@@ -40,6 +42,8 @@ import static top.osjf.cron.core.micrometer.RepositoryMicrometerConstants.*;
  * @since 3.0.2
  */
 public class RepositoryGaugeIndicatorRegistrant {
+
+    private static final Logger log = LoggerFactory.getLogger(RepositoryGaugeIndicatorRegistrant.class);
 
     private final MeterRegistry meterRegistry;
     private final CronTaskRepository cronTaskRepository;
@@ -128,12 +132,21 @@ public class RepositoryGaugeIndicatorRegistrant {
     private void doRegisterInternal(String name, ToDoubleFunction<CronTaskRepository> f, String methodSignature,
                                     String description) {
 
-        Tags tags = Tags.of(MODULE_TAG_KEY, cronTaskRepository.getName(),
-                METHOD_SIGNATURE_TAG_KEY, methodSignature);
+        Tags fixedTags = Tags.of(MODULE_TAG_KEY, cronTaskRepository.getName(), METHOD_SIGNATURE_TAG_KEY, methodSignature);
 
-        Gauge.builder(name, cronTaskRepository, f)
-                .tags(SystemPropertiesTagUtils.mergResolvedSystemTags(tags, expressionResolver))
-                .description(description)
-                .register(meterRegistry);
+        Tags completeTags = SystemPropertiesTagUtils.mergResolvedSystemTags(fixedTags, expressionResolver);
+
+        Gauge gauge = meterRegistry.find(name).tags(completeTags).gauge();
+        if (gauge != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Scheduled task gauge metric already exists, reuse it. metricName={}, tags={}",
+                        name, completeTags);
+            }
+        }
+        else {
+            Gauge.builder(name, cronTaskRepository, f)
+                    .tags(completeTags).description(description).register(meterRegistry);
+            log.info("Register new scheduled task gauge metric. metricName={}, tags={}", name, completeTags);
+        }
     }
 }
