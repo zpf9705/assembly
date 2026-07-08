@@ -17,6 +17,8 @@
 
 package top.osjf.cron.datasource.driven.scheduled;
 
+import top.osjf.commons.util.StringUtils;
+
 import java.util.Arrays;
 
 /**
@@ -48,7 +50,8 @@ public enum Status {
      * {@code false} otherwise.
      */
     public static boolean isStatus(String status) {
-        return Arrays.stream(Status.values()).anyMatch(s -> s.name().equalsIgnoreCase(status));
+        return StringUtils.isNotBlank(status) &&
+                Arrays.stream(Status.values()).anyMatch(s -> s.name().equalsIgnoreCase(status));
     }
 
     /**
