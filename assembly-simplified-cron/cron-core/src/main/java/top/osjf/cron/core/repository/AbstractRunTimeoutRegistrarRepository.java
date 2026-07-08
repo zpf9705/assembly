@@ -289,9 +289,11 @@ public abstract class AbstractRunTimeoutRegistrarRepository
      */
     protected Runnable asRunnable(TaskBody body) throws UnsupportedTaskBodyException {
         Assert.notNull(body, "TaskBody must not be null");
+
         if (body.isWrapperFor(Runnable.class)) {
             return body.unwrap(Runnable.class);
-        } else if (body.isWrapperFor(RunnableTaskBody.class)) {
+        }
+        else if (body.isWrapperFor(RunnableTaskBody.class)) {
             return body.unwrap(RunnableTaskBody.class).getRunnable();
         }
         throw new UnsupportedTaskBodyException(body.getClass());
