@@ -335,15 +335,9 @@ public abstract class AbstractDatasourceDrivenScheduled
      */
     private void startInternal() {
 
-        //Check if initialization has been performed before starting.
-        if (!inited) {
-            throw new IllegalStateException("Drive scheduler has not been initialized !");
-        }
+        Assert.state(inited, "Drive scheduler has not been initialized !");
 
-        // Check if dynamic task management has been started.
-        if (started) {
-            throw new IllegalStateException("Driven Scheduler already started !");
-        }
+        Assert.state(!started, "Driven Scheduler already started !");
 
         List<TaskElement> taskElements = datasourceTaskElementsOperation.getDatasourceTaskElements();
         if (CollectionUtils.isEmpty(taskElements)) {
