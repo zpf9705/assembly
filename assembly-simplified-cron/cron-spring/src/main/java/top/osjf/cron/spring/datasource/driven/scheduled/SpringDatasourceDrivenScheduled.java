@@ -110,7 +110,7 @@ public class SpringDatasourceDrivenScheduled
     private final List<String> activeProfiles = new ArrayList<>();
     private ApplicationContext applicationContext;
 
-    private Logger logger;
+    private Logger customLogger;
 
     /**
      * Constructs a new {@code SpringDatasourceDrivenScheduled} with {@code CronTaskRepository}
@@ -255,13 +255,13 @@ public class SpringDatasourceDrivenScheduled
     @Override
     @NotNull
     protected Logger getLogger() {
-        return logger != null ? logger : super.getLogger();
+        return customLogger != null ? customLogger : super.getLogger();
     }
 
     private void initLogger() {
-        String loggerName = environment.getProperty(KEY_LOGGER_NAME, "");
-        if (!StringUtils.isBlank(loggerName)) {
-            logger = LoggerFactory.getLogger(loggerName);
+        String customLoggerName = environment.getProperty(KEY_LOGGER_NAME);
+        if (StringUtils.isNotBlank(customLoggerName)) {
+            customLogger = LoggerFactory.getLogger(customLoggerName);
         }
     }
 
