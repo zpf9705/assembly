@@ -34,6 +34,7 @@ import org.springframework.core.ResolvableType;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.env.Environment;
 import org.springframework.expression.Expression;
+import org.springframework.expression.ParseException;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import top.osjf.commons.lang.NotNull;
@@ -195,20 +196,22 @@ public class SpringDatasourceDrivenScheduled
      *         System.out.println("Chain call result: " + result3);
      * </pre>
      *
-     * @throws org.springframework.expression.ParseException      It has been clearly stated that [an exception
-     *                                                            occurred during parsing] is not encapsulated
-     *                                                            as {@link DataSourceDrivenException}.
-     * @throws org.springframework.expression.EvaluationException It has been clearly stated that [if there is a
-     *                                                            problem during evaluation] is not encapsulated
-     *                                                            as {@link DataSourceDrivenException}.
-     *
      * @return {@inheritDoc}
      */
-    @NotNull
+
+    @Nullable
     @Override
-    protected Runnable resolveTaskRunnable(@NotNull TaskElement element) {
-        String taskName = element.getTaskName();
-        Expression expression = expressionParser.parseExpression(taskName);
+    protected Runnable resolveTaskRunnable(@NotNull TaskElement taskElement) {
+        String taskName = taskElement.getTaskName();
+        Expression expression;
+        try {
+            expression = expressionParser.parseExpression(taskName);
+        }
+        catch (ParseException ex) {
+            resolveRegistrationState(()-> false, taskElement,
+                    taskName + " does not conform to Spring EL expression rules");
+            return null;
+        }
         Method sourceMethod = getSourceMethod(expression);
         // If the source method cannot be found, simply call the expression to execute it.
         if (sourceMethod == null) {
