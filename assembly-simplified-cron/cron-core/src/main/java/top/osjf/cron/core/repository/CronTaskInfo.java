@@ -39,18 +39,18 @@ public class CronTaskInfo implements Serializable {
     private static final long serialVersionUID = 3944766838390077158L;
 
     /**  The unique ID of this task within its lifetime. */
-    @TableText.Header(value = "Task-ID", order = 0)
+    @TableText.Header(value = "ID", order = 0)
     private final String id;
 
     /**
      * The custom name for this task.
      * @since 3.0.2
      */
-    @TableText.Header(value = "Task-Name", order = 1)
+    @TableText.Header(value = "Name", order = 1)
     @Nullable private String name;
 
     /** The cron expression for executing this task.*/
-    @TableText.Header(value = "Task-Expression", order = 2)
+    @TableText.Header(value = "Expression", order = 2)
     private final String expression;
 
     /** The function runtime for this task.*/
@@ -71,21 +71,21 @@ public class CronTaskInfo implements Serializable {
      * Otherwise, it is the remaining number of runs.
      * @since 3.0.1
      */
-    @TableText.Header(value = "Task-remainingNumberOfRuns", order = 3)
+    @TableText.Header(value = "RemainingRunTimes", order = 3)
     private long remainingNumberOfRuns;
 
     /**
      * An instance of timeout configuration for a single task run.
      * @since 3.0.2
      */
-    @TableText.Header(value = "Task-timeoutConfig", order = 4)
+    @TableText.Header(value = "TimeoutConfig", order = 4)
     @Nullable private RunningTimeout timeoutConfig;
 
     /**
      * The {@code boolean} flag to indicate whether the task is currently executing.
      * @since 3.0.2
      */
-    @TableText.Header(value = "Task-isRunning", order = 5)
+    @TableText.Header(value = "IsRunning", order = 5)
     private boolean isRunning;
 
     /**
@@ -93,21 +93,21 @@ public class CronTaskInfo implements Serializable {
      * Returns {@code null} if there is no subsequent trigger.
      * @since 3.0.2
      */
-    @TableText.Header(value = "Task-nextExecuteTimestamp", order = 6)
+    @TableText.Header(value = "NextExecuteTimestamp", order = 6)
     @Nullable private Long nextExecuteTimestamp;
 
     /**
      * The {@code boolean} to indicate whether concurrent execution is prohibited.
      * @since 3.0.2
      */
-    @TableText.Header(value = "Task-disallowConcurrentExecution", order = 7)
+    @TableText.Header(value = "DisallowConcurrentExecution", order = 7)
     private boolean disallowConcurrentExecution;
 
     /**
      * The description of the role of this task
      * @since 3.0.2
      */
-    @TableText.Header(value = "Task-description", order = 8)
+    @TableText.Header(value = "Description", order = 8)
     @Nullable private String description;
 
     /**
