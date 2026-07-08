@@ -103,6 +103,7 @@ public interface TaskElement extends Serializable {
      * type {@link Status}. Otherwise, it is considered as not meeting the registration requirements.
      *
      * @return The registration status of the current task.
+     * @see Status
      */
     String getStatus();
 
@@ -110,6 +111,7 @@ public interface TaskElement extends Serializable {
      * Set a {@link Status#name()} status value after registration processing.
      *
      * @param status The names of {@link Status} values according to {@link Status#name()}.
+     * @see Status
      */
     void setStatus(String status);
 
@@ -164,6 +166,7 @@ public interface TaskElement extends Serializable {
      * <p>Values outside of 0/1 will be considered invalid, please pay special attention.
      *
      * @return The reference indicators modified by the current task
+     * @see UpdateSign
      */
     Integer getUpdateSign();
 
@@ -174,6 +177,7 @@ public interface TaskElement extends Serializable {
      *
      * @param updateSign The reference indicators modified by the current task.
      * @see #resetUpdateStatus()
+     * @see UpdateSign
      */
     void setUpdateSign(Integer updateSign);
 
@@ -256,7 +260,7 @@ public interface TaskElement extends Serializable {
      * @return {@code true} is indicating that they are different. and {@code false} otherwise.
      */
     default boolean expressionNoSame(@Nullable String oldExpression) {
-        return !StringUtils.isBlank(oldExpression) && !Objects.equals(oldExpression, getExpression());
+        return StringUtils.isNotBlank(oldExpression) && !Objects.equals(oldExpression, getExpression());
     }
 
     /**
@@ -274,7 +278,7 @@ public interface TaskElement extends Serializable {
      * @return {@code true} is indicating that update exists. and {@code false} otherwise.
      */
     default boolean isAfterUpdate() {
-        return getUpdateSign() == 1;
+        return Objects.equals(UpdateSign.NEED_DYNAMIC_PROCESS.getCode(), getUpdateSign());
     }
 
     /**
