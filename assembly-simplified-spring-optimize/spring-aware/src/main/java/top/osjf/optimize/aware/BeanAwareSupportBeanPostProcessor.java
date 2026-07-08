@@ -50,9 +50,11 @@ public class BeanAwareSupportBeanPostProcessor implements MergedBeanDefinitionPo
      *
      * <p>Phase: After bean definition merging, before instantiation
      * <p>Logic Flow:
-     * 1. Check if bean class implements {@link BeanAware} interface
-     * 2. Resolve generic parameters to determine dependency type
-     * 3. Register {@link RuntimeBeanReference} to property values
+     * <ol>
+     * <li>Check if bean class implements {@link BeanAware} interface</li>
+     * <li>Resolve generic parameters to determine dependency type</li>
+     * <li>Register {@link RuntimeBeanReference} to property values</li>
+     * </ol>
      *
      * @param beanDefinition {@inheritDoc}
      * @param beanType       {@inheritDoc}
@@ -79,10 +81,11 @@ public class BeanAwareSupportBeanPostProcessor implements MergedBeanDefinitionPo
      * Recursively resolves generic parameter type of {@link BeanAware} interface.
      *
      * <p>Algorithm features:
-     * 1. Depth-first search through type hierarchy
-     * 2. Multi-level generic parameter inference
-     * 3. Strict type safety checks
-     *
+     * <ol>
+     * <li>Depth-first search through type hierarchy</li>
+     * <li>Multi-level generic parameter inference</li>
+     * <li>Strict type safety checks</li>
+     * </ol>
      * @param beanType bean type to analyze
      * @return Resolved generic parameter type
      * @throws IllegalArgumentException thrown when cannot determine generic type.
