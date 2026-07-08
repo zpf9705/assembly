@@ -321,7 +321,7 @@ public abstract class AbstractDatasourceDrivenScheduled
                 if (loadConfigValue != null) taskMonitorCheckInternal = loadConfigValue;
             }
             catch (Throwable ex) {
-                logger.error("Failed to obtain config [{}]", KEY_OF_TASK_CHECK_INTERNAL, ex);
+                getLogger().error("Failed to obtain config [{}]", KEY_OF_TASK_CHECK_INTERNAL, ex);
             }
             return taskMonitorCheckInternal;
         }
@@ -386,8 +386,8 @@ public abstract class AbstractDatasourceDrivenScheduled
         Assert.hasText(element.getTaskName(), "Bad Element : No task name");
         Assert.hasText(element.getExpression(), "Bad Element : No cron expression");
         Assert.notNull(element.getUpdateSign(), "Bad Element : No update sign");
-        Assert.isTrue(element.getUpdateSign() == 0 ||
-                element.getUpdateSign() == 1, "Bad Element : update sign can only be 0 or 1");
+        Assert.isTrue(UpdateSign.isUpdateSign(element.getUpdateSign()),
+                "Bad Element : update sign can only be 0 or 1");
     }
 
     /**
