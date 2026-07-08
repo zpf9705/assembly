@@ -340,7 +340,8 @@ public abstract class AbstractCronTaskRepository
     @Override
     public CronTaskInfo getCronTaskInfo(String id) {
         Assert.hasText(id, "id must not be null or blank");
-        return customizeCronTaskInfo(getCronTaskInfoInternal(id));
+        CronTaskInfo cronTaskInfo = getCronTaskInfoInternal(id);
+        return customizeCronTaskInfo();
     }
 
     /**
@@ -368,7 +369,7 @@ public abstract class AbstractCronTaskRepository
      */
     @Override
     public Map<String, Long> getNextExecuteTimes(Collection<String> ids) {
-        Assert.notNull(ids, "ids not be null");
+        Assert.notEmpty(ids, "ids must not be empty");
 
         Map<String, Long> result = new HashMap<>(ids.size());
         for (String id : ids) {
@@ -434,12 +435,10 @@ public abstract class AbstractCronTaskRepository
     /**
      * {@inheritDoc}
      */
-    @Nullable
     @Override
-    public CronTaskInfo customizeCronTaskInfo(@Nullable CronTaskInfo cronTaskInfo) {
-        if (cronTaskInfo == null) {
-            return null;
-        }
+    public CronTaskInfo customizeCronTaskInfo(CronTaskInfo cronTaskInfo) {
+        Assert.notNull(cronTaskInfo, "cronTaskInfo must not be null");
+
         String id = cronTaskInfo.getId();
         // Setting remaining number of runs.
         cronTaskInfo.setRemainingNumberOfRuns(getTaskRemainingNumberOfRuns(id));

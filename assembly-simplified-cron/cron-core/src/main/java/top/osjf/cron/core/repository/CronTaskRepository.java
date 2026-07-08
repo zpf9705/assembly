@@ -179,12 +179,11 @@ public interface CronTaskRepository extends Repository, RunTimesRegistrarReposit
      * Implementations will fill missing default fields, verify parameter legality, or rewrite
      * custom attributes based on the current repository's scheduling rules.
      *
-     * @param cronTaskInfo original scheduled task metadata to be customized, can be {@code null}
+     * @param cronTaskInfo original scheduled task metadata to be customized.
      * @return completed and standardized {@link CronTaskInfo} task metadata instance
      * @since 3.0.2
      */
-    @Nullable
-    CronTaskInfo customizeCronTaskInfo(@Nullable CronTaskInfo cronTaskInfo);
+    CronTaskInfo customizeCronTaskInfo(CronTaskInfo cronTaskInfo);
 
     /**
      * Unwrap the original real task from the wrapped {@link Runnable} instance.
