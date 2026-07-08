@@ -306,9 +306,6 @@ public abstract class AbstractRunTimeoutRegistrarRepository
      * @return wrapped runnable with timeout interrupt monitoring capability
      */
     protected Runnable wrapWithTimeoutMonitoring(Runnable raw, RunningTimeout timeout) {
-        Assert.notNull(raw, "Raw Runnable must not be null");
-        Assert.notNull(timeout, "RunningTimeout must not be null");
-
         return new TimeoutMonitoringRunnable(raw, timeout, monitoringExecutor);
     }
 }
