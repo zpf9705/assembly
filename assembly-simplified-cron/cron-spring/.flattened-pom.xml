@@ -66,27 +66,6 @@
     </dependency>
     <dependency>
       <groupId>top.osjf.cron</groupId>
-      <artifactId>cron-hutool</artifactId>
-      <version>3.0.2</version>
-      <scope>compile</scope>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>top.osjf.cron</groupId>
-      <artifactId>cron-quartz</artifactId>
-      <version>3.0.2</version>
-      <scope>compile</scope>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>top.osjf.cron</groupId>
-      <artifactId>cron-cron4j</artifactId>
-      <version>3.0.2</version>
-      <scope>compile</scope>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>top.osjf.cron</groupId>
       <artifactId>cron-mybatis-plus-datasource-driven-scheduled</artifactId>
       <version>3.0.2</version>
       <scope>compile</scope>
