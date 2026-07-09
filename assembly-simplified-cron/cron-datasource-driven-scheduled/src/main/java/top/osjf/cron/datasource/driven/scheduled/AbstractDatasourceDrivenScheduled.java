@@ -17,19 +17,18 @@
 
 package top.osjf.cron.datasource.driven.scheduled;
 
+import com.cronutils.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import top.osjf.commons.lang.NotNull;
 import top.osjf.commons.lang.Nullable;
 import top.osjf.commons.util.*;
 import top.osjf.cron.core.repository.*;
 
 import java.lang.reflect.Method;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -208,39 +207,83 @@ public abstract class AbstractDatasourceDrivenScheduled
     }
 
     /**
-     * Synchronize the execution of various stages of the lifecycle.
-     * @param r {@link DatasourceDrivenScheduledLifecycle} action.
-     * @param loggerCatch     the boolean flag of catch do error logger.
-     * @param lifecycleName   the specify lifecycle name.
+     * Execute lifecycle steps with thread lock protection, support optional exception logging or
+     * rethrow wrapped error.
+     *
+     * @param r Runnable logic of target lifecycle stage
+     * @param loggerCatch If true, print error log only when exception occurs; If false, wrap and
+     *                   throw exception
+     * @param lifecycleName Identity name of current lifecycle step for log recognition
      */
     private void lifecycleStepExecute(ThrowableRunnable r, boolean loggerCatch, String lifecycleName) {
         lock.lock();
         try {
             r.run();
-        }
-        catch (Throwable ex) {
+        } catch (Throwable ex) {
             if (loggerCatch) {
-                getLogger().error("Failed to execute lifecycle step [{}] ", lifecycleName, ex);
+                getLogger().error("Lifecycle step [{}] execution failed", lifecycleName, ex);
+            } else {
+                throw new DataSourceDrivenException(lifecycleName, ex);
             }
-            else throw new DataSourceDrivenException(lifecycleName, ex);
-        }
-        finally {
+        } finally {
             lock.unlock();
         }
     }
 
     /**
-     * The internal method of {@link #init()}.
+     * Internal initialization logic, invoked by {@link #init()}.
      */
     private void initInternal() {
 
         // Purge data.
         datasourceTaskElementsOperation.purgeDatasourceTaskElements();
 
-        // The marking has been init.
+        // Mark scheduler initialization state as completed
         inited = true;
 
-        debug("Drive scheduler service has been successfully inited !");
+        getLogger().info("Drive scheduler service has been successfully inited !");
+    }
+
+    /**
+     * Internal implementation for scheduler startup logic, invoked by {@link #start()}.
+     *
+     * @throws IllegalStateException Thrown if the driven scheduler is uninitialized or already running
+     */
+    private void startInternal() {
+
+        Assert.state(inited, "Drive scheduler has not been initialized !");
+
+        Assert.state(!started, "Driven Scheduler already started !");
+
+        List<TaskElement> taskElements = datasourceTaskElementsOperation.getDatasourceTaskElements();
+
+        if (CollectionUtils.isEmpty(taskElements)) {
+            getLogger().info(("No registrable data source task objects were obtained from the data source."));
+            return;
+        }
+
+        // Register all loaded task elements to cron repository
+        for (TaskElement taskElement : taskElements) {
+            registerTaskElement(taskElement);
+        }
+
+        datasourceTaskElementsOperation.afterStart(taskElements);
+
+        // Determine startup mode based on monitor strategy: use internal thread polling or
+        // execute custom monitor logic
+
+        if (datasourceTaskElementsOperation.useThreadPolling()) {
+            // Use built-in thread polling mode: start the background thread for task schedule monitoring
+
+            new CronTaskScheduleMonitorThread().start();
+        }
+        // Do not use internal polling: execute custom monitor startup logic
+        else { datasourceTaskElementsOperation.elseMonitorStartAction(); }
+
+        // The marking has been start.
+        started = true;
+
+        getLogger().info(("Drive scheduler service has been successfully started !"));
     }
 
     /**
@@ -329,194 +372,183 @@ public abstract class AbstractDatasourceDrivenScheduled
     }
 
     /**
-     * The internal method of {@link #start()}.
-     * @throws IllegalStateException if Drive scheduler has not been initialized
-     *                               or already started.
-     */
-    private void startInternal() {
-
-        Assert.state(inited, "Drive scheduler has not been initialized !");
-
-        Assert.state(!started, "Driven Scheduler already started !");
-
-        List<TaskElement> taskElements = datasourceTaskElementsOperation.getDatasourceTaskElements();
-        if (CollectionUtils.isEmpty(taskElements)) {
-            debug("No registrable data source task objects were obtained from the data source.");
-            return;
-        }
-
-        for (TaskElement taskElement : taskElements) {
-
-            elementCheck(taskElement);
-
-            registerTask(taskElement);
-        }
-
-        datasourceTaskElementsOperation.afterStart(taskElements);
-
-        // Determine startup mode based on monitor strategy: use internal thread polling or
-        // execute custom monitor logic
-
-        if (datasourceTaskElementsOperation.useThreadPolling()) {
-            // Use built-in thread polling mode: start the background thread for task schedule monitoring
-
-            new CronTaskScheduleMonitorThread().start();
-        }
-        // Do not use internal polling: execute custom monitor startup logic
-        else { datasourceTaskElementsOperation.elseMonitorStartAction(); }
-
-        // The marking has been start.
-        started = true;
-
-        debug("Drive scheduler service has been successfully started !");
-    }
-
-    /**
-     * @since 3.0.2
-     * @param element the task element.
-     */
-    private void elementCheck(TaskElement element) {
-        Assert.hasText(element.getId(), "Bad Element : No unique ID");
-        Assert.hasText(element.getTaskName(), "Bad Element : No task name");
-        Assert.hasText(element.getExpression(), "Bad Element : No cron expression");
-        Assert.notNull(element.getUpdateSign(), "Bad Element : No update sign");
-        Assert.isTrue(UpdateSign.isUpdateSign(element.getUpdateSign()),
-                "Bad Element : update sign can only be 0 or 1");
-    }
-
-    /**
-     * The internal method of {@link #inspect()}.
+     /**
+     * Internal execution logic for dynamic scheduled task inspection.
+     * <p>Responsible for batch processing tasks that need add/update/remove operations at runtime:
+     * <ul>
+     * <li>Check scheduler startup state before inspection execution</li>
+     * <li>Query eligible task metadata list from data source</li>
+     * <li>Process each task by update sign: stop registration / register new task / update cron expression</li>
+     * <li>Reset update flag after single task processed</li>
+     * <li>Trigger post-inspect callback for batch data synchronization</li>
+     * </ul>
+     * @throws IllegalStateException if drive scheduler not started.
      */
     private void inspectInternal() {
 
-        assertStarted();
+        Assert.state(started, "Driven scheduler not started !");
 
-        debug("[Time-{}] => Drive scheduler service checks on scheduled information.",
-                getActiveTime());
+        getLogger().info("Driven scheduler starts scheduled task inspection");
 
-        List<TaskElement> runtimeCheckedDatasourceTaskElements =
+        List<TaskElement> checkDatasourceTaskElements =
                 datasourceTaskElementsOperation.getRuntimeNeedCheckDatasourceTaskElements();
 
-        if (CollectionUtils.isEmpty(runtimeCheckedDatasourceTaskElements)) {
-            debug("[Time-{}] => Drive scheduler service check of timing information has " +
-                            "ended : No processable data provided.", getActiveTime());
+        if (CollectionUtils.isEmpty(checkDatasourceTaskElements)) {
+            getLogger().info("No tasks requiring dynamic processing found, inspection finished");
             return;
         }
 
-        for (TaskElement element : runtimeCheckedDatasourceTaskElements) {
+        // Process each task element that needs dynamic operation
+        for (TaskElement e : checkDatasourceTaskElements) {
+            int currentUpdateSign = e.getUpdateSign();
+            boolean needProcess = UpdateSign.NEED_DYNAMIC_PROCESS.getCode() == currentUpdateSign;
 
-            elementCheck(element);
+            if (needProcess) {
+                String taskId = e.getTaskId();
+                String rawStatus = e.getStatus();
+                boolean hasTaskId = StringUtils.hasText(taskId);
 
-            // Pre-check for dynamic changes in markers.
-            if (element.isAfterUpdate()) {
-
-                // Here it is judged to be terminated.
-                if (element.willBePaused()) {
-                    String taskId = element.getTaskId();
+                // Branch 1: Task exists & paused state , remove cron registration
+                if (hasTaskId
+                        && cronTaskRepository.hasCronTaskInfo(taskId) && Status.PAUSED.name().equals(rawStatus)) {
                     cronTaskRepository.remove(taskId);
-                    element.pausedClear();
-                    debug("[Runtime-checked-Task-{}] [{}] execution has been stopped.",
-                            element.getId(), element.getTaskDescription());
+                    e.setTaskId(""); // Clear registered task id binding
+                    recordState(e, Status.PAUSED, "Stop Running"); // Record the current state.
+                    getLogger().info("[Inspect-Task-{}] Task execution stopped", e.getId());
                 }
 
-                // Determine the pending startup here.
-                else if (element.willBeActive()) {
-                    registerTask(element);
+                // Branch 2: No taskId & active status, perform new task registration
+                else if (!hasTaskId && Status.ACTIVE.name().equals(rawStatus)) {
+                    registerTaskElement(e);
                 }
 
                 else {
-                    // Check for changes in expressions.
-                    String taskId = element.getTaskId();
-                    if (StringUtils.isNotBlank(taskId)) {
-                        CronTaskInfo cronTaskInfo = cronTaskRepository.getCronTaskInfo(taskId);
-                        String oldExpression = cronTaskInfo != null ? cronTaskInfo.getExpression() : null;
-                        if (element.expressionNoSame(oldExpression)) {
-                            cronTaskRepository.update(element.getTaskId(), element.getExpression());
-                            debug("[Runtime-checked-Task-{}] Task name [{}] description [{}] change " +
-                                            "expression old [{}] to new [{}].", element.getId(), element.getTaskName(),
-                                    element.getTaskDescription(), oldExpression, element.getExpression());
-                        }
+
+                    // Branch 3: Existing task, compare and update cron expression if changed
+                    CronTaskInfo cronTaskInfo = cronTaskRepository.getCronTaskInfo(taskId);
+                    String oldExpression = cronTaskInfo != null ? cronTaskInfo.getExpression() : null;
+                    String newExpression = e.getExpression();
+                    if (!Objects.equals(oldExpression, newExpression)) {
+                        cronTaskRepository.update(taskId, newExpression);
+                        getLogger().info(
+                                "[Inspect-Task-{}] cron expression updated, old=[{}] new=[{}]",
+                                e.getId(),
+                                oldExpression,
+                                newExpression
+                        );
                     }
                 }
 
-                // Reset update tag.
-                element.resetUpdateStatus();
+                // Clear update mark after processing
+                e.setUpdateSign(UpdateSign.NO_UPDATE.getCode());
             }
 
-            // Check the status of dynamically added tasks.
-            else if (element.isAfterInsert()) {
-                registerTask(element);
+            // Handle newly added dynamic task without taskId
+            else if (StringUtils.isBlank(e.getTaskId())
+                    && UpdateSign.NO_UPDATE.getCode() == currentUpdateSign
+                    && Status.isActive(e.getStatus())) {
+                registerTaskElement(e);
             }
         }
 
-        datasourceTaskElementsOperation.afterInspect(runtimeCheckedDatasourceTaskElements);
-
-        debug("[Time-{}] => Drive scheduler service check of timing information has ended.",
-                getActiveTime());
-    }
-
-    private static String getActiveTime() {
-        return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        // Execute post-processing callback after batch inspection finished
+        datasourceTaskElementsOperation.afterInspect(checkDatasourceTaskElements);
+        getLogger().info("Driven scheduler scheduled task inspection completed");
     }
 
     /**
-     * The internal method of {@link #stop()}.
+     * Internal implementation for scheduler stop logic, invoked by {@link #stop()}.
+     *
+     * @throws IllegalStateException Thrown when the driven scheduler has not been started
+     * @throws Exception Propagated exceptions from data source operation closing
      */
     private void stopInternal() throws Exception {
 
-        assertStarted();
+        Assert.state(started, "Driven scheduler not started !");
 
+        // Remove all registered cron tasks from repository
         for (TaskElement element : datasourceTaskElementsOperation.getDatasourceTaskElements()) {
             String taskId = element.getTaskId();
             if (StringUtils.isNotBlank(taskId)) {
                 cronTaskRepository.remove(taskId);
             }
         }
+
+        // Clean data source information...
         datasourceTaskElementsOperation.purgeDatasourceTaskElements();
 
-        // Close datasourceTaskElementsOperation.
+        // Close datasourceTaskElementsOperation...
         datasourceTaskElementsOperation.close();
 
-        // The marking has been stopped.
+        // The marking has been stopped...
         started = false;
 
-        debug("Drive scheduler service has stopped running. To reactivate" +
+        getLogger().info("Drive scheduler service has stopped running. To reactivate" +
                 " the service, trigger the startup operation via the dynamic lifecycle management interface.");
     }
 
     /**
-     * Check if dynamic task management has been started, and if it has not been started,
-     * throw a status exception error.
-     * @throws IllegalStateException if Driven Scheduler not started.
-     */
-    private void assertStarted() {
-        if (!started) {
-            throw new IllegalStateException("Driven Scheduler not started !");
-        }
-    }
-
-    /**
-     * Register tasks that require dynamic management to the task registration manager.
+     * Complete registration logic for task element.
+     * <p>Execution flow:
+     * <ol>
+     * <li>Execute basic non-blank verification of task core fields, interrupt registration if any field empty</li>
+     * <li>Check enum validity of task status & update sign, and match runtime environment profile</li>
+     * <li>Resolve target executable Runnable instance by parsing task name rule</li>
+     * <li>Process resolved Runnable through custom post-processors if exists</li>
+     * <li>Register cron task to repository, get unique task id and bind to task element</li>
+     * <li>Mark task status as {@link Status#ACTIVE} and print registration success log</li>
+     * </ol>
+     * <p>All failed validation will mark task state to {@link Status#PAUSED} and terminate the
+     * registration flow directly.
      *
-     * @param taskElement the Task element information.
+     * @param taskElement Metadata carrier object of target scheduled task
+     * @since 3.0.2
      */
-    private void registerTask(@NotNull TaskElement taskElement) {
-        if (taskElement.noActive()) {
-            if (taskElement.noActiveDescriptionExist()) {
-                taskElement.setStatusDescription(false, "Status not activated");
-            }
-            debug("[Task-{}] Failed to register : Status not activated", taskElement.getId());
-            return;
-        }
-        if (!profilesMatch(taskElement.getProfiles())) {
-            taskElement.setStatusDescription(false, "Environment mismatch");
-            debug("[Task-{}] Failed to register : Environment mismatch", taskElement.getId());
+    private void registerTaskElement(TaskElement taskElement) {
+        // ====================== 1. Non empty verification of basic fields======================
+        if (!resolveRegistrationState(e -> StringUtils.isNotBlank(e.getId()), taskElement,
+                "Task unique ID cannot be blank")) {
             return;
         }
 
+        if (!resolveRegistrationState(e -> StringUtils.isNotBlank(e.getTaskName()), taskElement,
+                "Task name cannot be blank")) {
+            return;
+        }
+
+        if (!resolveRegistrationState(e -> StringUtils.isNotBlank(e.getExpression()), taskElement,
+                "Cron expression cannot be blank")) {
+            return;
+        }
+
+        // ====================== 2. Enumeration legality+business status verification======================
+        // Verify task status: enumeration is valid and active
+        if (!resolveRegistrationState(e -> Status.isStatus(e.getStatus()) && Status.isActive(e.getStatus()), taskElement,
+                "Illegal task status (only values defined in " +
+                        "top.osjf.cron.datasource.driven.scheduled.Status enum are allowed) " +
+                        "or task status is not activated")) {
+            return;
+        }
+
+        // Verify the updated identifier enumeration value
+        if (!resolveRegistrationState(e -> UpdateSign.isUpdateSign(e.getUpdateSign()), taskElement,
+                "Illegal update sign, only values defined in " +
+                        "top.osjf.cron.datasource.driven.scheduled.UpdateSign enum are allowed")) {
+            return;
+        }
+
+        // Verify that the running environment configuration matches
+        if (!resolveRegistrationState(e -> profilesMatch(e.getProfiles()), taskElement,
+                "Task environment profile does not match the current runtime environment")) {
+            return;
+        }
+
+        // ====================== 3. Analyze task execution Runnable instance======================
         Runnable taskRunnable = resolveTaskRunnable(taskElement);
 
-        // Apply post processing to the resolved task Runnable if any post processors exist.
+        if (taskRunnable == null) return;
+
+       // ====================== 4. Execute Runnable Post Processor======================
         if (resolvedRunnablePostProcessors != null) {
             for (ResolvedRunnablePostProcessor postProcessor : resolvedRunnablePostProcessors) {
                 // Invoke the post processor to handle the resolved task Runnable.
@@ -524,25 +556,65 @@ public abstract class AbstractDatasourceDrivenScheduled
             }
         }
 
-        // When returning [top.osjf.cron.core.repository.CronMethodRunnable] instances that know the
-        // target object and method, dynamic registration support based on the maximum number of method
-        // runs and timeout mechanism will be supported.
+        // ====================== 5. Register tasks with the scheduled task repository======================
         String taskId = taskRunnable instanceof CronMethodRunnable ?
-                new AnnotationMethodRegistrar(new CronTask(taskElement.getExpression(), (CronMethodRunnable) taskRunnable))
-                        .registerFor(cronTaskRepository) :
+                new AnnotationMethodRegistrar(new CronTask(taskElement.getExpression(),
+                        (CronMethodRunnable) taskRunnable)).registerFor(cronTaskRepository) :
                 cronTaskRepository.register(taskElement.getExpression(), taskRunnable);
 
+        // Unique ID of the task generated by back filling
         taskElement.setTaskId(taskId);
-        taskElement.setStatusDescription(true, "Running");
-        debug("[Task-{}] Successfully to register : name [{}] ||  description [{}] || expression [{}]",
-                taskElement.getId(), taskElement.getTaskName(), taskElement.getTaskDescription(),
-                taskElement.getExpression());
+
+        // Mark task registration successful, status set to running
+        recordState(taskElement, Status.ACTIVE,"Running");
+
+        // Print registration success log
+        getLogger().info("[Task-{}] Successfully to register : name [{}] ||  description [{}] || expression [{}]",
+                taskElement.getId(), taskElement.getTaskName(), taskElement.getTaskDescription(), taskElement.getExpression());
     }
 
     /**
-     * Return the log object, which can be provided by subclasses.
+     * Resolve task registration state based on custom check logic.
+     * <p>Execute check function with current task element:
+     * <ul>
+     * <li>Return {@code true}: verification passed, no state change;</li>
+     * <li>Return {@code false}: mark task as {@link Status#PAUSED} and record failure message.</li>
+     * </ul>
      *
-     * @return the log object.
+     * @param checkFunction Custom verification logic receiving TaskElement and returning boolean result
+     * @param taskElement Target task metadata instance to operate status
+     * @param message Failure prompt text when verification fails
+     * @return Verification result: true=pass, false=fail
+     * @since 3.0.2
+     */
+    protected boolean resolveRegistrationState(Function<TaskElement, Boolean> checkFunction, TaskElement taskElement,
+                                              String message) {
+        boolean result = checkFunction.apply(taskElement);
+        if (!result) {
+            recordState(taskElement, Status.PAUSED, message);
+        }
+        return result;
+    }
+
+    /**
+     * Uniformly update task status and status description remark.
+     * Format rule: [StatusName] => [detail message]
+     *
+     * @param taskElement Target task element to update state info
+     * @param status Target status enum to set
+     * @param stateMessage Business detail text for this status
+     * @since 3.0.2
+     */
+    protected void recordState(TaskElement taskElement, Status status, String stateMessage) {
+        taskElement.setStatus(status.name());
+        String statusDescription = String.format("%s => %s", status.name(), stateMessage);
+        taskElement.setStatusDescription(statusDescription);
+    }
+
+    /**
+     * Get the logger instance for current scheduled task component, allow subclass override
+     * to customize logger.
+     * @return {@link Logger} instance, never {@literal null}.
      */
     protected Logger getLogger() {
         return logger;
@@ -550,7 +622,6 @@ public abstract class AbstractDatasourceDrivenScheduled
 
     /**
      * Judging whether the registration environment matches is determined by the subclass.
-     *
      * @param profiles Recorded environmental information.
      * @return {@code true} indicates that the environment matches, otherwise it does not match.
      */
@@ -562,27 +633,32 @@ public abstract class AbstractDatasourceDrivenScheduled
     }
 
     /**
-     * Analyze the running function of the sub-task through task information parsing.
+     * Resolve the executable Runnable instance corresponding to the task element.
+     * <p>Parsing rule of taskName: full qualified class name @ target method name, split by "@".
+     * <p>Processing logic:
+     * <ul>
+     * <li>Split task name with symbol "@", return null and mark task PAUSED if split result length is not
+     * equal to 2;</li>
+     * <li>Load target class, instantiate bean object and fetch target execution method by reflection;</li>
+     * <li>Return null and record failure description if any reflection exception occurs during parsing;</li>
+     * <li>Return wrapped CronMethodRunnable when parsing completes successfully.</li>
+     * </ul>
      *
-     * <p>The fully qualified name interval "@" of the default class plus the name of
-     * the method is used as a candidate resolution for {@link TaskElement#getTaskName()}.
-     *
-     * @param element the task element information.
-     * @return Return the {@link CronMethodRunnable} type, which supports the parsing of annotations
-     * {@link RunTimes} and {@link RunTimeout} by the source method, and supports a registration
-     * mechanism with timeout control and limit on the number of times. Otherwise, execute {@link Runnable}
-     * normally. For detailed implementation, please refer to method {@link #registerTask(TaskElement)}.
-     * @throws DataSourceDrivenException If the parsing rules are not met or the task fails to run.
+     * @param taskElement Target task metadata element to resolve runnable
+     * @return Parsed {@code CronMethodRunnable}; return {@code null} if parsing rule mismatch or reflection
+     * load fails.
      */
-    @NotNull
-    protected Runnable resolveTaskRunnable(TaskElement element) {
-        String taskName = element.getTaskName();
-        String[] nameArray = taskName.split("@"); /*class.name()@method.name()*/
-        if (nameArray.length != 2) {
-            debug("{} does not comply with parsing rules [class's qualified name @ method name]", taskName);
-            throw new DataSourceDrivenException(taskName + " does not comply with parsing rules " +
-                    "[class's qualified name @ method name].");
+    @Nullable
+    protected Runnable resolveTaskRunnable(TaskElement taskElement) {
+        String taskName = taskElement.getTaskName();
+
+        String[] nameArray = taskName.split("@"); /* class.name()@method.name() */
+
+        if (!resolveRegistrationState(e -> nameArray.length != 2, taskElement,
+                taskName + " does not comply with parsing rules [class's qualified name @ method name]")) {
+            return null;
         }
+
         Object target;
         Method targetMethod;
         try {
@@ -591,50 +667,20 @@ public abstract class AbstractDatasourceDrivenScheduled
             targetMethod = ClassUtils.getMethod(clazz, nameArray[1]);
         }
         catch (Exception ex) {
-            debug("Failed to resolve task [" + element.getId() + "] to runnable.", ex);
-            throw new DataSourceDrivenException("Failed to resolve task runnable " + element.getId(), ex);
+            recordState(taskElement, Status.PAUSED, taskName + " parsing failed: " + ex.getMessage());
+            return null;
         }
 
         return new CronMethodRunnable(target, targetMethod);
     }
 
     /**
-     * Gets the polling interval of the task monitor thread.
-     * @return the polling interval for task monitor checking, unit: millisecond
+     * Get the polling interval of the task status monitor thread.
+     * @return Task monitor polling interval in milliseconds
      * @since 3.0.2
+     * @see CronTaskScheduleMonitorThread
      */
     protected long getTaskMonitorCheckInternal() {
         return Constants.MONITOR_CHECK_INTERNAL;
-    }
-
-    /**
-     * @return {@code boolean} flag that the logger instance enabled for the DEBUG level.
-     */
-    private boolean isLoggerDebug() {
-        return getLogger().isDebugEnabled();
-    }
-
-    /**
-     * Log a message at the DEBUG level according to the specified format
-     * and arguments.
-     * @param format    the format string
-     * @param arguments a list of 3 or more arguments
-     */
-    private void debug(String format, Object... arguments) {
-        if (isLoggerDebug()) {
-            getLogger().debug(format, arguments);
-        }
-    }
-
-    /**
-     * Log an exception (throwable) at the DEBUG level with an
-     * accompanying message.
-     * @param msg the message accompanying the exception
-     * @param t   the exception (throwable) to log
-     */
-    private void debug(String msg, Throwable t) {
-        if (isLoggerDebug()) {
-            getLogger().debug(msg, t);
-        }
     }
 }
