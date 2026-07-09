@@ -46,13 +46,10 @@ import java.util.ServiceLoader;
  * @since 3.0.2
  * @see CronTaskRepository#buildDefaultCronTaskRepository()
  */
-class CronTaskRepositoryLoader {
+public class CronTaskRepositoryLoader {
 
     /** Selected highest priority cron task repository instance */
     private CronTaskRepository cronTaskRepository;
-
-    /** Mark whether {@link #configure()} has been executed */
-    private boolean configured;
 
     private CronTaskRepositoryLoader() {
     }
@@ -101,7 +98,6 @@ class CronTaskRepositoryLoader {
                 "Please execute loading() before configure()");
         cronTaskRepository.initialize();
         cronTaskRepository.start();
-        configured = true;
         return this;
     }
 
@@ -110,13 +106,11 @@ class CronTaskRepositoryLoader {
      * <p><strong>Execution sequence reminder:</strong> loading() &gt; configure() &gt; buildCronTaskRepository().
      *
      * @return selected ready-to-use {@link CronTaskRepository}
-     * @throws IllegalStateException    if loading() or configure() has not been executed
+     * @throws IllegalStateException    if loading() has not been executed
      */
     public CronTaskRepository buildCronTaskRepository() {
         Assert.state(cronTaskRepository != null,
-                "Please execute loading() and configure() before buildCronTaskRepository()");
-        Assert.state(configured,
-                "Please execute configure() before buildCronTaskRepository()");
+                "Please execute loading() before buildCronTaskRepository()");
 
         return cronTaskRepository;
     }
