@@ -18,6 +18,7 @@
 package top.osjf.cron.datasource.driven.scheduled;
 
 import top.osjf.commons.lang.Nullable;
+import top.osjf.commons.util.StringUtils;
 
 /**
  * Common internal utility for datasource driven scheduler.
@@ -41,5 +42,21 @@ abstract class Utils {
             // Any loading error, fallback to default value
             return defaultValue;
         }
+    }
+
+    /**
+     * Clear task binding id, reset update mark and status description for task element.
+     * @param element target task element to purge
+     * @return {@code true} if any data cleared, {@code false} if task id is blank
+     */
+    public static boolean purgeElement(TaskElement element) {
+        String taskId = element.getTaskId();
+        if (StringUtils.isNotBlank(taskId)) {
+            element.setTaskId("");
+            element.setUpdateSign(UpdateSign.NO_UPDATE.getCode());
+            element.setStatusDescription("");
+            return true;
+        }
+        return false;
     }
 }
