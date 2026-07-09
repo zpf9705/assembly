@@ -26,6 +26,9 @@ import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.NotSupportConcurrentExecutionException;
 
 import javax.annotation.concurrent.ThreadSafe;
+import java.util.ServiceLoader;
+
+import static top.osjf.cron.core.repository.CronTaskRepositoryLoader.byDefaultLoader;
 
 /**
  * A composite top-level interface that aggregates all core capabilities for scheduled cron task
@@ -512,4 +515,21 @@ public interface CronTaskRepository extends Repository, RunTimesRegistrarReposit
      */
     @NotNull
     CronTaskExtendInfo getExtendInfo(String id);
+
+    /**
+     * Builds and returns a ready-to-use {@link CronTaskRepository} instance.
+     * <p>
+     * Automatically discovers all {@link CronTaskRepository} implementations via JDK
+     * {@link ServiceLoader}, selects the highest priority implementation, and completes
+     * the lifecycle initialization and startup.
+     *
+     * @return {@code CronTaskRepository} instance
+     *
+     * @throws NoRepositoryFoundException if no SPI implementation of {@link CronTaskRepository} is found
+     * @throws Exception any exception thrown during configure().
+     * @see 3.0.2
+     */
+    static CronTaskRepository buildDefaultCronTaskRepository() throws Exception {
+        return byDefaultLoader().loading().configure().buildCronTaskRepository();
+    }
 }
