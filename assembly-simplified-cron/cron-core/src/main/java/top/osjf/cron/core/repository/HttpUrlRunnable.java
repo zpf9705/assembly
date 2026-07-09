@@ -93,6 +93,13 @@ public class HttpUrlRunnable implements Runnable {
         this.readTimeout = readTimeout;
     }
 
+    /**
+     * <strong>WARN: This built-in HTTP task will print the complete HTTP response body to the log,
+     * it is strongly recommended that the URL accessed during task execution be lightweight and
+     * return a URL that returns short content (such as boolean values, simple status text).
+     * Avoid returning large HTML, JSON, or text addresses, as this may result in overSized logs
+     * and additional memory overhead.</strong>
+     */
     @Override
     public void run() {
 
