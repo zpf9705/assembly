@@ -37,37 +37,43 @@ import java.util.List;
 public interface DatasourceTaskElementsQueryOperation {
 
     /**
-     * Retrieves the current set of task information from the datasource, which may include the primary task.
+     * Query all full task metadata records from the data source.
      *
-     * <p>The returned task information is used for:
+     * <p>Scenarios where the returned task list is applied:
      * <ul>
-     *   <li>Task registration (e.g., adding to a scheduler)</li>
-     *   <li>Runtime dynamic information checks (e.g., task state validation)</li>
+     *   <li>New task registration: add qualified tasks to cron scheduler container</li>
+     *   <li>Runtime dynamic inspection: global verification of task status and configuration</li>
      * </ul>
      *
-     * <p><b>Note:</b> The returned collection might be a reference to the original data.
-     * External modifications could affect internal state. Implementations are encouraged
-     * to return copies or immutable collections.
+     * <p><b>Important Constraint:</b>
+     * The returned list may be a direct reference to the internal original data structure.
+     * External write operations on this collection will tamper with the internal cached state.
+     * It is highly recommended for implementors to return deep copies or immutable list instances.
      *
-     * @return Current set of task information from the datasource (may include primary task)
+     * @return Full {@link TaskElement} list queried from datasource.
      */
     List<TaskElement> getDatasourceTaskElements();
 
     /**
-     * Returning to dynamic operation requires the main task to check and update the relevant
-     * {@link TaskElement} dataset of the entry.
+     * Query the list of task metadata that need registration or update check at runtime.
+     * This interface is used by the scheduled monitor thread to fetch tasks requiring dynamic operation.
      *
-     * <p>The return collection data of this method is not equivalent to {@link #getDatasourceTaskElements()},
-     * and developers need to filter it according to the actual situation of the data source.
+     * <p>Difference from {@link #getDatasourceTaskElements()}:
+     * The returned collection only contains tasks that meet the update/add criteria, developers should filter
+     raw data according to the actual data source business rules.
      *
-     * <p>However, in general, the situation is: {@link TaskElement#getUpdateSign()} is 1 (i.e. waiting to be
-     * updated) or {@link TaskElement#getUpdateSign()} is 0 and there is no {@link TaskElement#getTaskId()}
-     * (this situation is a dynamically added task).
+     * <p>General filtering rules for eligible TaskElement:
+     * <ul>
+     * <li>Rule 1: {@link TaskElement#getUpdateSign()} = 1, task pending to be updated;</li>
+     * <li>Rule 2: {@link TaskElement#getUpdateSign()} = 0 and {@link TaskElement#getTaskId()} is empty,
+     dynamically newly added task without registered task id.</li>
+     * </ul>
      *
-     * <p><b>Note:</b>Given the modification callback for obtaining data, it is recommended that the query
-     * return an immutable collection list.
+     * <p><b>Important Constraint:</b>
+     * To avoid concurrent modification exceptions during data callback operations, it is strongly recommended
+     * to return an immutable collection/list for the query result.
      *
-     * @return the main task to check and update the relevant {@link TaskElement} dataset of the entry.
+     * @return Filtered {@link TaskElement} collection requiring runtime registration/update verification
      */
     List<TaskElement> getRuntimeNeedCheckDatasourceTaskElements();
 
