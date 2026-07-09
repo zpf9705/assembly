@@ -340,7 +340,8 @@ public abstract class AbstractDatasourceDrivenScheduled
 
                 try {
                     // Sleep for the configured polling interval to release CPU resources
-                    Thread.sleep(getTaskMonitorCheckInternal());
+                    Thread.sleep(Utils.getConfigSafe(configLoader, KEY_OF_TASK_CHECK_INTERNAL, Long.class,
+                            AbstractDatasourceDrivenScheduled.this.getTaskMonitorCheckInternal()));
                 }
                 catch (InterruptedException ex) {
                     // Respond to interrupt signal, restore interrupt status and exit loop safely
@@ -349,26 +350,6 @@ public abstract class AbstractDatasourceDrivenScheduled
                 }
             }
         }
-
-        /**
-         * @return Dynamic config if exists, otherwise return default fixed config
-         */
-        private Long getTaskMonitorCheckInternal() {
-            Long taskMonitorCheckInternal = AbstractDatasourceDrivenScheduled.this.getTaskMonitorCheckInternal();
-            if (configLoader == null) {
-                return taskMonitorCheckInternal;
-            }
-            try {
-                Long loadConfigValue
-                        = configLoader.getConfig(KEY_OF_TASK_CHECK_INTERNAL, Long.class);
-                if (loadConfigValue != null) taskMonitorCheckInternal = loadConfigValue;
-            }
-            catch (Throwable ex) {
-                getLogger().error("Failed to obtain config [{}]", KEY_OF_TASK_CHECK_INTERNAL, ex);
-            }
-            return taskMonitorCheckInternal;
-        }
-
     }
 
     /**
