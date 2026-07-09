@@ -582,7 +582,6 @@ public abstract class AbstractDatasourceDrivenScheduled
 
     /**
      * Uniformly update task status and status description remark.
-     * Format rule: [StatusName] => [detail message]
      *
      * @param taskElement Target task element to update state info
      * @param status Target status enum to set
