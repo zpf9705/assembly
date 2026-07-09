@@ -89,6 +89,11 @@ public class CronTaskRepositoryLoader {
      * Execute lifecycle initialization and startup logic for selected repository.
      * <p><strong>Must invoke {@link #loading()} before calling this method.</strong>
      *
+     * <p>Some {@link CronTaskRepository} implementations (such as {@link SimpleCronTaskRepository})
+     * are self-initialized and self-started during instantiation. Invoking this method manually
+     * may cause exceptions caused by repeated initialization or repeated startup. Please invoke
+     * this method based on the characteristics of the specific implementation.
+     *
      * @return current loader instance for chained calls
      * @throws IllegalStateException    if loading() has not been executed
      * @throws Exception any exception thrown during initialize or start execution
