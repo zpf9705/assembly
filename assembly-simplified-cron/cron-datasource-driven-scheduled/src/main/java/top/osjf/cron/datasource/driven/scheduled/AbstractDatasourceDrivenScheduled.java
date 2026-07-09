@@ -569,8 +569,11 @@ public abstract class AbstractDatasourceDrivenScheduled
         recordState(taskElement, Status.ACTIVE,"Running");
 
         // Print registration success log
-        getLogger().info("[Task-{}] Successfully to register : name [{}] ||  description [{}] || expression [{}]",
-                taskElement.getId(), taskElement.getTaskName(), taskElement.getTaskDescription(), taskElement.getExpression());
+        getLogger().info("[Task-{}] Successfully to register : name [{}] ||  expression [{}] || description [{}]",
+                taskElement.getId(),
+                taskElement.getTaskName(),
+                taskElement.getExpression(),
+                taskElement.getTaskDescription());
     }
 
     /**
