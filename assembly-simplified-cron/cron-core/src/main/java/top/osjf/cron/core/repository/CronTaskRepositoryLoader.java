@@ -30,9 +30,8 @@ import java.util.ServiceLoader;
  * <p>The standard execution chain: {@code loading() -> configure() -> buildCronTaskRepository()}.
  * <ol>
  *     <li>{@link #loading()}: Discover all SPI implementations, sort by priority, pick the highest priority one.</li>
- *     <li>{@link #configure()}: Trigger lifecycle methods {@link CronTaskRepository#initialize()} and
- *     {@link CronTaskRepository#start()}.</li>
- *     <li>{@link #buildCronTaskRepository()}: Return the final ready-to-use repository instance.</li>
+ *     <li>{@link #configure()}: Trigger lifecycle method {@link CronTaskRepository#initialize()}.</li>
+ *     <li>{@link #buildCronTaskRepository()}: Return the final initialized repository instance.</li>
  * </ol>
  * <p>Typical usage example:
  * <pre>{@code
@@ -50,6 +49,13 @@ public class CronTaskRepositoryLoader {
 
     /** Selected highest priority cron task repository instance */
     private CronTaskRepository cronTaskRepository;
+
+    /** Marker to identify whether {@link #loading()} has been executed */
+    private boolean loaded;
+
+
+    /** Marker to identify whether {@link #configure()} has been executed */
+    private boolean configured;
 
     private CronTaskRepositoryLoader() {
     }
@@ -71,6 +77,9 @@ public class CronTaskRepositoryLoader {
      * @throws NoRepositoryFoundException if no {@link CronTaskRepository} implementation registered in SPI
      */
     public CronTaskRepositoryLoader loading() throws NoRepositoryFoundException {
+
+        Assert.state(!loaded, "loading() can only be executed once per loader instance");
+
         ServiceLoader<CronTaskRepository> serviceLoader = ServiceLoader.load(CronTaskRepository.class);
         Iterator<CronTaskRepository> iterator = serviceLoader.iterator();
         List<CronTaskRepository> repositories = new ArrayList<>();
@@ -82,6 +91,7 @@ public class CronTaskRepositoryLoader {
         }
         OrderComparator.sort(repositories);
         cronTaskRepository = repositories.get(0);
+        loaded = true;
         return this;
     }
 
@@ -89,33 +99,30 @@ public class CronTaskRepositoryLoader {
      * Execute lifecycle initialization and startup logic for selected repository.
      * <p><strong>Must invoke {@link #loading()} before calling this method.</strong>
      *
-     * <p>Some {@link CronTaskRepository} implementations (such as {@link SimpleCronTaskRepository})
-     * are self-initialized and self-started during instantiation. Invoking this method manually
-     * may cause exceptions caused by repeated initialization or repeated startup. Please invoke
-     * this method based on the characteristics of the specific implementation.
-     *
      * @return current loader instance for chained calls
-     * @throws IllegalStateException    if loading() has not been executed
+     * @throws IllegalStateException if {@link #loading()} has not been executed or
+     *                               self has already been executed.
      * @throws Exception any exception thrown during initialize or start execution
      */
     public CronTaskRepositoryLoader configure() throws Exception {
-        Assert.state(cronTaskRepository != null,
-                "Please execute loading() before configure()");
+
+        Assert.state(loaded, "Please execute loading() before configure()");
+        Assert.state(!configured, "configure() can only be executed once per loader instance");
+
         cronTaskRepository.initialize();
-        cronTaskRepository.start();
+        configured = true;
         return this;
     }
 
     /**
-     * Obtain the fully initialized and started {@link CronTaskRepository}.
+     * Returns the fully initialized and started {@link CronTaskRepository}.
      * <p><strong>Execution sequence reminder:</strong> loading() &gt; configure() &gt; buildCronTaskRepository().
      *
      * @return selected ready-to-use {@link CronTaskRepository}
-     * @throws IllegalStateException    if loading() has not been executed
+     * @throws IllegalStateException    if {@link #loading()} has not been executed
      */
     public CronTaskRepository buildCronTaskRepository() {
-        Assert.state(cronTaskRepository != null,
-                "Please execute loading() before buildCronTaskRepository()");
+        Assert.state(loaded, "Please execute loading() before buildCronTaskRepository()");
 
         return cronTaskRepository;
     }
