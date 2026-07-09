@@ -102,7 +102,7 @@ public class CronTaskRepositoryLoader {
      * @return current loader instance for chained calls
      * @throws IllegalStateException if {@link #loading()} has not been executed or
      *                               self has already been executed.
-     * @throws Exception any exception thrown during initialize or start execution
+     * @throws Exception any exception thrown during initialize.
      */
     public CronTaskRepositoryLoader configure() throws Exception {
 
