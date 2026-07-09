@@ -17,7 +17,6 @@
 package top.osjf.cron.core.repository;
 
 import top.osjf.commons.ability.Nameable;
-import top.osjf.commons.lang.NotNull;
 import top.osjf.commons.lang.Nullable;
 import top.osjf.commons.lang.Wrapper;
 import top.osjf.cron.core.exception.CannotCancelConcurrentException;
@@ -513,7 +512,6 @@ public interface CronTaskRepository extends Repository, RunTimesRegistrarReposit
      * @throws CronInternalException if no task can be found for the given task id
      * @since 3.0.2
      */
-    @NotNull
     CronTaskExtendInfo getExtendInfo(String id);
 
     /**
