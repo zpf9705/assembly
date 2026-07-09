@@ -143,6 +143,22 @@ public class CronTaskBuilder implements CronTaskRepository.Builder {
      * {@inheritDoc}
      */
     @Override
+    public CronTaskRepository.Builder withTask(String url) {
+        return withTask(new HttpUrlRunnable(url));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CronTaskRepository.Builder withTask(String url, int connectTimeout, int readTimeout) {
+        return withTask(new HttpUrlRunnable(url, connectTimeout, readTimeout));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public CronTaskBuilder withTask(CronMethodRunnable methodRunnable) {
         checkBuildFlag();
         this.task = methodRunnable;

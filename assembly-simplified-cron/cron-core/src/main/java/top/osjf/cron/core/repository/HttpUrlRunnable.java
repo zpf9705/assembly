@@ -74,13 +74,15 @@ public class HttpUrlRunnable implements Runnable {
      * Create {@link HttpUrlRunnable} with custom timeout config.
      *
      * @param url             target request url
-     * @param connectTimeout connect timeout in milliseconds
+     * @param connectTimeout  connect timeout in milliseconds
      * @param readTimeout     response read timeout in milliseconds
      * @throws IllegalArgumentException if url blank or timeout less than or equal zero
      */
     public HttpUrlRunnable(String url, int connectTimeout, int readTimeout) {
 
         Assert.hasText(url, "Url must not be null or blank");
+        Assert.isTrue(url.startsWith("http://") || url.startsWith("https://"),
+                "Url must start with http:// or https://");
         Assert.isTrue(connectTimeout > 0, "Connect timeout must greater than 0");
         Assert.isTrue(readTimeout > 0, "Read timeout must greater than 0");
 
