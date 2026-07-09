@@ -30,6 +30,11 @@ import java.nio.charset.StandardCharsets;
  * Runnable implementation for executing HTTP callback tasks in cron scheduler.
  * <p>
  * Only support GET request, used to actively trigger external HTTP interface when cron task arrives.
+ * <p>
+ * <strong>Tips:</strong> This built-in HTTP task prints full response body to logs. Prefer lightweight
+ * APIs returning short content such as boolean or simple status text, avoid endpoints returning large
+ * HTML/JSON/text to prevent over-sized logs and extra memory overhead, and keep in mind this task is
+ * merely a simple trigger — target APIs should respond quickly to avoid task thread congestion.
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
@@ -95,13 +100,6 @@ public class HttpUrlRunnable implements Runnable {
         this.readTimeout = readTimeout;
     }
 
-    /**
-     * <strong>WARN: This built-in HTTP task will print the complete HTTP response body to the log,
-     * it is strongly recommended that the URL accessed during task execution be lightweight and
-     * return a URL that returns short content (such as boolean values, simple status text).
-     * Avoid returning large HTML, JSON, or text addresses, as this may result in overSized logs
-     * and additional memory overhead.</strong>
-     */
     @Override
     public void run() {
 
