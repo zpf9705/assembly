@@ -36,7 +36,7 @@ import top.osjf.cron.datasource.driven.scheduled.TaskElement;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
-public abstract class ExternalFileDatasourceTaskElement extends PurgedTaskElement {
+public abstract class ExternalFileDatasourceTaskElement implements PurgedTaskElement {
 
     private static final long serialVersionUID = -3079249310272365214L;
 

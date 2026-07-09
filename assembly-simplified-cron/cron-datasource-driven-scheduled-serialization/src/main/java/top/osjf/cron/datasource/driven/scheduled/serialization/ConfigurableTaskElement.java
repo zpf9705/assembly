@@ -19,6 +19,7 @@ package top.osjf.cron.datasource.driven.scheduled.serialization;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import top.osjf.cron.datasource.driven.scheduled.DefaultTaskElement;
+import top.osjf.cron.datasource.driven.scheduled.PurgedTaskElement;
 
 /**
  * Represents a configurable scheduled task element.
@@ -43,18 +44,20 @@ import top.osjf.cron.datasource.driven.scheduled.DefaultTaskElement;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
  */
-public class ConfigurableTaskElement extends DefaultTaskElement {
+public class ConfigurableTaskElement extends DefaultTaskElement implements PurgedTaskElement {
 
     private static final long serialVersionUID = 2576911210334659473L;
 
     @Override
     @JsonIgnore
+    @Deprecated
     public boolean isAfterUpdate() {
         return super.isAfterUpdate();
     }
 
     @Override
     @JsonIgnore
+    @Deprecated
     public boolean isAfterInsert() {
         return super.isAfterInsert();
     }
