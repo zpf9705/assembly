@@ -85,20 +85,18 @@ public abstract class AbstractDatasourceDrivenScheduled
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    /** Extend key: mark whether task loaded from datasource */
+    public static final String EXTEND_INFO_OF_DATASOURCE_DRIVEN_TASK = "datasource.driven.task";
+
+    /** Extend key: primary id of task record in datasource */
+    public static final String EXTEND_INFO_OF_DATASOURCE_DRIVEN_ID = "datasource.driven.id";
+
     private final CronTaskRepository cronTaskRepository;
 
     private final DatasourceTaskElementsOperation datasourceTaskElementsOperation;
 
-    /**
-     * Based on the {@link Runnable} post processor set parsed from {@link TaskElement}.
-     * @since 3.0.2
-     */
-    @Nullable
-    private List<ResolvedRunnablePostProcessor> resolvedRunnablePostProcessors;
+    @Nullable private List<ResolvedRunnablePostProcessor> resolvedRunnablePostProcessors;
 
-    /**
-     * @since 3.0.2
-     */
     @Nullable private DataSourceConfigLoader configLoader;
 
     /** Flag that indicates whether this driven scheduler is currently init. */
@@ -107,18 +105,18 @@ public abstract class AbstractDatasourceDrivenScheduled
     /** Flag that indicates whether this driven scheduler is currently start. */
     private boolean started = false;
 
+    /** Lock for protecting lifecycle method execution to prevent concurrent conflicts.*/
     private final Lock lock = new ReentrantLock();
 
-    /** Property name that determines the task execution environment can be configured in the system
-     * variable {@link System#setProperty}. */
+    /** System property key for task execution environment. */
     public static final String PROFILES_SYSTEM_PROPERTY_NAME = "cron.datasource.driven.scheduled.profiles";
+
+    /** Cached parsed environment profiles from system property. */
     @Nullable private static List<String> SYSTEM_PROFILES;
 
     static {  loadRegisterProfiles(); }
 
-    /**
-     * Load the system level configuration task loading environment.
-     */
+    /** Load and cache environment profiles from system property. */
     static void loadRegisterProfiles() {
         String property = System.getProperty(PROFILES_SYSTEM_PROPERTY_NAME);
         SYSTEM_PROFILES = StringUtils.isBlank(property)
@@ -175,24 +173,36 @@ public abstract class AbstractDatasourceDrivenScheduled
         return configLoader;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void init() {
 
         lifecycleStepExecute(this::initInternal, false, "init");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void start() {
 
         lifecycleStepExecute(this::startInternal, false, "start");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void stop() {
 
         lifecycleStepExecute(this::stopInternal, false, "stop");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void inspect() {
 
@@ -548,12 +558,37 @@ public abstract class AbstractDatasourceDrivenScheduled
         // Mark task registration successful, status set to running
         recordState(taskElement, Status.ACTIVE,"Running");
 
+        // Fill extend info for datasource-driven task
+        putExtendInfo(taskId, taskElement);
+
         // Print registration success log
         getLogger().info("[Task-{}] Successfully to register : name [{}] ||  expression [{}] || description [{}]",
                 taskElement.getId(),
                 taskElement.getTaskName(),
                 taskElement.getExpression(),
                 taskElement.getTaskDescription());
+    }
+
+    /**
+     * Fill extended properties for datasource-driven task.
+     * <ol>
+     * <li>Force write datasource mark and task primary id, overwrite existing value.</li>
+     * <li>Task name and description will only be set if absent to preserve custom extend info.</li>
+     * </ol>
+     * @param taskId Unique task identifier in scheduler memory
+     * @param taskElement Raw task entity loaded from datasource
+     * @since 3.0.2
+     */
+    private void putExtendInfo(String taskId, TaskElement taskElement) {
+        CronTaskExtendInfo extendInfo = cronTaskRepository.getExtendInfo(taskId);
+        // Mark task loaded from datasource
+        extendInfo.put(EXTEND_INFO_OF_DATASOURCE_DRIVEN_TASK, true);
+        // Store primary id of task record in datasource
+        extendInfo.put(EXTEND_INFO_OF_DATASOURCE_DRIVEN_ID, taskElement.getId());
+        // Set task name only when absent, keep existed extend data first
+        extendInfo.putIfAbsent(AbstractCronTaskRepository.EXTEND_INFO_OF_NAME, taskElement.getTaskName());
+        // Set task description only when absent, keep existed extend data first
+        extendInfo.putIfAbsent(AbstractCronTaskRepository.EXTEND_INFO_OF_DESCRIPTION, taskElement.getTaskDescription());
     }
 
     /**
