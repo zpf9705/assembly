@@ -30,26 +30,32 @@ public abstract class Utils {
 
     /**
      * Safely load configuration value via {@link DataSourceConfigLoader}.
-     * Any throwable during loading will be caught and return {@literal null} instead of throwing.
+     * If any throwable occurs during loading or the config value is null,
+     * the provided default value will be returned instead of throwing an exception.
      *
-     * @param loader    Config loader instance, cannot be {@literal null}
-     * @param configKey Target configuration unique key, cannot be blank
-     * @param type      Target value conversion type, cannot be {@literal null}
-     * @return Parsed config value; {@literal null} if config missing or loading exception occurs
+     * @param loader       Config loader instance, cannot be {@literal null}
+     * @param configKey    Target configuration unique key, cannot be blank
+     * @param type         Target value conversion type, cannot be {@literal null}
+     * @param defaultValue Fallback value returned when config missing or load failed
+     * @return Parsed config value or specified default fallback value
      * @param <T> Generic type of target configuration value
      */
     @Nullable
-    public static <T>T getConfigSafe(DataSourceConfigLoader loader, String configKey, Class<T> type) {
-
+    public static <T> T getConfigSafe(DataSourceConfigLoader loader,
+                                      String configKey,
+                                      Class<T> type,
+                                      @Nullable T defaultValue) {
         Assert.notNull(loader, "DataSourceConfigLoader cannot be null");
-        Assert.hasText(configKey, "ConfigKey cannot be null or blank");
+        Assert.hasText(configKey, "configKey cannot be null or blank");
         Assert.notNull(type, "Target config value type cannot be null");
 
         try {
-            return loader.getConfig(configKey, type);
-        }
-        catch (Throwable e) {
-            return null;
+            T configValue = loader.getConfig(configKey, type);
+            // Config exists but value is null, use default
+            return configValue != null ? configValue : defaultValue;
+        } catch (Throwable e) {
+            // Any loading error, fallback to default value
+            return defaultValue;
         }
     }
 }
