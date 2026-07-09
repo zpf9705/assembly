@@ -17,6 +17,7 @@
 
 package top.osjf.cron.datasource.driven.scheduled.external.file;
 
+import top.osjf.cron.datasource.driven.scheduled.PurgedTaskElement;
 import top.osjf.cron.datasource.driven.scheduled.TaskElement;
 
 /**
@@ -35,7 +36,7 @@ import top.osjf.cron.datasource.driven.scheduled.TaskElement;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.1
  */
-public abstract class ExternalFileDatasourceTaskElement implements TaskElement {
+public abstract class ExternalFileDatasourceTaskElement extends PurgedTaskElement {
 
     private static final long serialVersionUID = -3079249310272365214L;
 
@@ -83,9 +84,4 @@ public abstract class ExternalFileDatasourceTaskElement implements TaskElement {
      * Config file key name of {@link TaskElement#getUpdateSign()}.
      */
     public static final String UPDATE_SIGN_KEY_NAME = "updateSign";
-
-    @Override
-    public boolean purge() {
-        return TaskElement.super.purge();
-    }
 }
