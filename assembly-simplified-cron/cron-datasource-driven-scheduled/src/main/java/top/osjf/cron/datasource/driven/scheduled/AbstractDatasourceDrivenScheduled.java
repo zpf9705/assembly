@@ -536,7 +536,12 @@ public abstract class AbstractDatasourceDrivenScheduled
         // ====================== 3. Analyze task execution Runnable instance======================
         Runnable taskRunnable = resolveTaskRunnable(taskElement);
 
-        if (taskRunnable == null) return;
+        // Skip register when runnable unresolved
+        if (taskRunnable == null) {
+            if (getLogger().isWarnEnabled())
+                getLogger().warn("[Task-{}] Task runnable cannot be resolved, skip registration", taskElement.getId());
+            return;
+        }
 
        // ====================== 4. Execute Runnable Post Processor======================
         if (resolvedRunnablePostProcessors != null) {
