@@ -208,7 +208,7 @@ public class SpringDatasourceDrivenScheduled
             expression = expressionParser.parseExpression(taskName);
         }
         catch (ParseException ex) {
-            resolveRegistrationState(()-> false, taskElement,
+            recordState(taskElement, Status.PAUSED,
                     taskName + " does not conform to Spring EL expression rules");
             return null;
         }
