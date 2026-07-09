@@ -527,7 +527,7 @@ public interface CronTaskRepository extends Repository, RunTimesRegistrarReposit
      *
      * @throws NoRepositoryFoundException if no SPI implementation of {@link CronTaskRepository} is found
      * @throws Exception any exception thrown during configure().
-     * @see 3.0.2
+     * @since  3.0.2
      */
     static CronTaskRepository buildDefaultCronTaskRepository() throws Exception {
         return byDefaultLoader().loading().configure().buildCronTaskRepository();
