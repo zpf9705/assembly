@@ -17,7 +17,6 @@
 
 package top.osjf.cron.datasource.driven.scheduled;
 
-import top.osjf.commons.lang.Nullable;
 import top.osjf.commons.util.StringUtils;
 import top.osjf.cron.core.repository.CronTaskRepository;
 
@@ -194,6 +193,7 @@ public interface TaskElement extends Serializable {
      *
      * @return {@code true} is inactive and {@code false} is activated.
      */
+    @Deprecated
     default boolean noActive() {
         String status = getStatus();
         return StringUtils.isNotBlank(status) && Status.isStatus(status) && Status.valueOf(status) != Status.ACTIVE;
@@ -205,6 +205,7 @@ public interface TaskElement extends Serializable {
      *
      * @return {@code true} is unactivated existence status information and {@code false} otherwise.
      */
+    @Deprecated
     default boolean noActiveDescriptionExist() {
         return noActive() && getStatusDescription() == null;
     }
@@ -218,6 +219,7 @@ public interface TaskElement extends Serializable {
      * @param statusDescription The relevant status description information of the linkage success marker
      *                          defined.
      */
+    @Deprecated
     default void setStatusDescription(boolean success, String statusDescription) {
         Status status = success ? Status.ACTIVE : Status.PAUSED;
         setStatus(status.name());
@@ -228,6 +230,7 @@ public interface TaskElement extends Serializable {
      * Clear the scheduled task registration ID and set the status description to stop running, usually
      * in the case of dynamically stopping the task.
      */
+    @Deprecated
     default void pausedClear() {
         setTaskId("");
         setStatusDescription(Status.PAUSED.name() + " => stop running");
@@ -239,6 +242,7 @@ public interface TaskElement extends Serializable {
      *
      * @return {@code true} is Indicating that it is about to stop. and {@code false} otherwise.
      */
+    @Deprecated
     default boolean willBePaused() {
         return !StringUtils.isBlank(getTaskId()) && Status.PAUSED.name().equals(getStatus());
     }
@@ -249,24 +253,16 @@ public interface TaskElement extends Serializable {
      *
      * @return {@code true} is indicating that it is about to run. and {@code false} otherwise.
      */
+    @Deprecated
     default boolean willBeActive() {
         return StringUtils.isBlank(getTaskId()) && Status.ACTIVE.name().equals(getStatus());
-    }
-
-    /**
-     * Determine whether the frequency expressions for dynamic updates are different.
-     *
-     * @param oldExpression The old expression.
-     * @return {@code true} is indicating that they are different. and {@code false} otherwise.
-     */
-    default boolean expressionNoSame(@Nullable String oldExpression) {
-        return StringUtils.isNotBlank(oldExpression) && !Objects.equals(oldExpression, getExpression());
     }
 
     /**
      * Reset the update status to 'not updated', which means that the update has been
      * processed and restored.
      */
+    @Deprecated
     default void resetUpdateStatus() {
         setUpdateSign(UpdateSign.NO_UPDATE.getCode());
     }
@@ -277,6 +273,7 @@ public interface TaskElement extends Serializable {
      *
      * @return {@code true} is indicating that update exists. and {@code false} otherwise.
      */
+    @Deprecated
     default boolean isAfterUpdate() {
         return Objects.equals(UpdateSign.NEED_DYNAMIC_PROCESS.getCode(), getUpdateSign());
     }
@@ -292,23 +289,9 @@ public interface TaskElement extends Serializable {
      *
      * @return {@code true} is indicating that meet the dynamic registration task and {@code false} otherwise.
      */
+    @Deprecated
     default boolean isAfterInsert() {
         String status = getStatus();
         return getTaskId() == null && getUpdateSign() == 0 && (status == null || Status.isActive(status));
-    }
-
-    /**
-     * Purge potential task IDs, update tags, and task status descriptions from the data.
-     * @return if {@code true} has been purge out，{@code false} otherwise.
-     * @since 3.0.2
-     */
-    default boolean purge() {
-        if (!StringUtils.isBlank(getTaskId())) {
-            setTaskId("");
-            setUpdateSign(0);
-            setStatusDescription("");
-            return true;
-        }
-        return false;
     }
 }
