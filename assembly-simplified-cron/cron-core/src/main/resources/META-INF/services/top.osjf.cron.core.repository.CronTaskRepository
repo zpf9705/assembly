@@ -1,1 +1,2 @@
 top.osjf.cron.core.repository.SimpleCronTaskRepository
+top.osjf.cron.core.repository.NoOpCronTaskRepository
