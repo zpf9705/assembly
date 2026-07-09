@@ -127,7 +127,7 @@ public class JpaDatasourceTaskElementsOperation
 
     @Override
     @NotNull
-    public List<TaskElement> getElementsByTaskStatus(Status status) {
+    public List<TaskElement> getElementsByTaskStatus(@NotNull Status status) {
         DatabaseTaskElement element = new DatabaseTaskElement();
         element.setStatus(status.name());
         return Collections.unmodifiableList(jpaRepository.findAll(Example.of(element)));

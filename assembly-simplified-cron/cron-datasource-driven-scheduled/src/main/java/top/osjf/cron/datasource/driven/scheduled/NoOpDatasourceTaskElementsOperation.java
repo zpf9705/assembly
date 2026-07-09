@@ -17,6 +17,8 @@
 
 package top.osjf.cron.datasource.driven.scheduled;
 
+import top.osjf.commons.lang.NotNull;
+
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
@@ -74,7 +76,7 @@ public class NoOpDatasourceTaskElementsOperation implements DatasourceTaskElemen
     }
 
     @Override
-    public List<TaskElement> getElementsByTaskStatus(Status status) {
+    public List<TaskElement> getElementsByTaskStatus(@NotNull Status status) {
         return Collections.emptyList();
     }
 

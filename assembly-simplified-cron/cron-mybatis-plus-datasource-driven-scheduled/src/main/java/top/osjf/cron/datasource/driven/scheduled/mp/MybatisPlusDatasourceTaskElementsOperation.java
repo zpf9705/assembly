@@ -132,7 +132,7 @@ public class MybatisPlusDatasourceTaskElementsOperation
 
     @Override
     @NotNull
-    public List<TaskElement> getElementsByTaskStatus(Status status) {
+    public List<TaskElement> getElementsByTaskStatus(@NotNull Status status) {
         return Collections.unmodifiableList(taskElementService.list(Wrappers.<DatabaseTaskElement>lambdaQuery()
                 .eq(DatabaseTaskElement::getStatus, status.name())));
     }
