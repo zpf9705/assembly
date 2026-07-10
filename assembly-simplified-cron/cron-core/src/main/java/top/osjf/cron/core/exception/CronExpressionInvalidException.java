@@ -18,7 +18,6 @@
 package top.osjf.cron.core.exception;
 
 /**
- /**
  * Exception thrown when the cron expression fails validation against the rule
  * of target task repository.Occurs when the cron expression cannot be parsed
  * or is not supported by the current scheduling framework repository.
