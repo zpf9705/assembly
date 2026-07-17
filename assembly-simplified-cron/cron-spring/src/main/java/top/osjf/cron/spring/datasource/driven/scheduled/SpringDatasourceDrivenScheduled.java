@@ -19,6 +19,7 @@ package top.osjf.cron.spring.datasource.driven.scheduled;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -29,21 +30,25 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.expression.BeanFactoryResolver;
-import org.springframework.core.MethodParameter;
-import org.springframework.core.ResolvableType;
-import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.env.Environment;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParseException;
+import org.springframework.expression.common.CompositeStringExpression;
+import org.springframework.expression.spel.SpelNode;
+import org.springframework.expression.spel.ast.BeanReference;
+import org.springframework.expression.spel.ast.MethodReference;
+import org.springframework.expression.spel.standard.SpelExpression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import top.osjf.commons.lang.NotNull;
 import top.osjf.commons.lang.Nullable;
+import top.osjf.commons.util.ReflectionUtils;
 import top.osjf.commons.util.StringUtils;
 import top.osjf.cron.core.repository.CronMethodRunnable;
 import top.osjf.cron.core.repository.CronTaskRepository;
 import top.osjf.cron.datasource.driven.scheduled.*;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -212,42 +217,11 @@ public class SpringDatasourceDrivenScheduled
                     taskName + " does not conform to Spring EL expression rules");
             return null;
         }
-        Method sourceMethod = getSourceMethod(expression);
-        // If the source method cannot be found, simply call the expression to execute it.
-        if (sourceMethod == null) {
+        CronMethodRunnable methodRunnable = resolveExpressionToMethodRunnable(expression);
+        if (methodRunnable == null) {
             return ()-> expression.getValue(evaluationContext);
         }
-        Object target = applicationContext.getBean(sourceMethod.getDeclaringClass());
-        return new CronMethodRunnable(target, sourceMethod) {
-
-            /**
-             * The actual method execution is not handed over to the incoming objects and
-             * methods, but to the parsed expression for execution.
-             */
-            @Override
-            public void run() {
-                expression.getValue(evaluationContext);
-            }
-        };
-    }
-
-    /**
-     * Return an instance of the source method that parses the given {@link Expression}.
-     * @param expression the expression instance.
-     * @return the source method.
-     * @since 3.0.2
-     */
-    @Nullable
-    private Method getSourceMethod(Expression expression) {
-        TypeDescriptor descriptor = expression.getValueTypeDescriptor(evaluationContext);
-        if (descriptor != null) {
-            ResolvableType resolvableType = descriptor.getResolvableType();
-            Object source = resolvableType.getSource();
-            if (source instanceof MethodParameter) {
-                return ((MethodParameter) source).getMethod();
-            }
-        }
-        return null;
+        return methodRunnable;
     }
 
     @Override
@@ -271,5 +245,124 @@ public class SpringDatasourceDrivenScheduled
     @Override
     protected long getTaskMonitorCheckInternal() {
         return environment.getProperty(KEY_MONITOR_CHECK_INTERNAL, long.class, super.getTaskMonitorCheckInternal());
+    }
+
+    /**
+     * Resolve SpEL expression to {@code CronMethodRunnable} for cron task execution.
+     * Only supports @beanName.methodName() format expressions.
+     * @param expression Raw SpEL expression
+     * @return {@code CronMethodRunnable} if parse success, {@literal null} otherwise.
+     * @since 3.0.2
+     */
+    @Nullable
+    private CronMethodRunnable resolveExpressionToMethodRunnable(Expression expression) {
+
+        SpelExpression spelExpression = null;
+
+        // Direct cast for standard SpEL expression
+        if (expression instanceof SpelExpression) {
+            spelExpression = (SpelExpression) expression;
+        }
+        // Handle template composite expression (mixed text with #{@bean.xxx()})
+        // Traverse sub-expressions and pick the first SpEL logic segment
+        else if (expression instanceof CompositeStringExpression) {
+            for (Expression member : ((CompositeStringExpression) expression).getExpressions()) {
+                if (member instanceof SpelExpression) {
+                    spelExpression = (SpelExpression) member;
+                    break;
+                }
+            }
+        }
+
+        if (spelExpression == null) {
+            return null;
+        }
+
+        // Get AST root node of expression, scan for bean & method reference recursively
+        SpelNode node = spelExpression.getAST();
+        Reference reference = new Reference();
+        doScanReference(reference, node);
+
+        // Missing bean reference or method call node, invalid @bean.method() syntax
+        if (reference.beanReference == null || reference.methodReference == null) {
+            return null;
+        }
+
+        // Reflect private field "beanName" inside BeanReference to fetch target bean name
+        Field beanNameField = ReflectionUtils
+                .findField(BeanReference.class, "beanName", String.class);
+        if (beanNameField == null) {
+            return null;
+        }
+        ReflectionUtils.makeAccessible(beanNameField);
+        String targetBeanName = (String) ReflectionUtils.getField(beanNameField, reference.beanReference);
+
+        // Check if target bean exists in Spring ApplicationContext
+        if (StringUtils.isBlank(targetBeanName) || !applicationContext.containsBean(targetBeanName)) {
+            return null;
+        }
+        Object target = applicationContext.getBean(targetBeanName);
+
+        // Get raw target class to eliminate AOP proxy wrapper
+        Class<?> targetClass = AopUtils.getTargetClass(target);
+        // Locate target method by method name from MethodReference
+        Method method = ReflectionUtils
+                .findMethod(targetClass, reference.methodReference.getName());
+        // Target method not matched, return null
+        if (method == null) {
+            return null;
+        }
+
+        return new CronMethodRunnable(target, method) {
+            /**
+             * The actual method execution is not handed over to the incoming objects and
+             * methods, but to the parsed expression for execution.
+             */
+            @Override
+            public void run() {
+                expression.getValue(evaluationContext);
+            }
+        };
+    }
+
+    /**
+     * Recursively traverse SpEL AST nodes to locate BeanReference and MethodReference.
+     * @param reference Container to store scanned bean reference and method reference
+     * @param node Current traversed AST node
+     */
+    private void doScanReference(Reference reference, SpelNode node) {
+        if (node instanceof BeanReference) {
+            reference.beanReference = (BeanReference) node;
+        }
+        else if (node instanceof MethodReference) {
+            reference.methodReference = (MethodReference) node;
+        }
+        if (reference.isComplete()) {
+            return;
+        }
+        for (int i = 0; i < node.getChildCount(); i++) {
+            doScanReference(reference, node.getChild(i));
+            if (reference.isComplete()) {
+                return;
+            }
+        }
+    }
+
+    /**
+     * DTO to hold AST scan results: BeanReference and MethodReference nodes
+     */
+    static class Reference {
+        /** SpEL bean reference node parsed from {@code @beanName} */
+        BeanReference beanReference;
+        /** SpEL method invocation node parsed from {@code .method()} */
+        MethodReference methodReference;
+
+        /**
+         * Check whether both bean reference and method reference are successfully located
+         * @return true if both references exist, false otherwise
+         */
+        public boolean isComplete() {
+            return beanReference != null && methodReference != null;
+        }
     }
 }
