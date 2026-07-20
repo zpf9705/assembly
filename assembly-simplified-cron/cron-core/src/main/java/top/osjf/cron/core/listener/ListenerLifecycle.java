@@ -23,6 +23,10 @@ import top.osjf.cron.core.repository.RepositoryContext;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 /**
@@ -53,12 +57,9 @@ public enum ListenerLifecycle {
     final ListenerConsumer consumer;
 
     /**
-     * At the beginning stage, a {@link ListenerContext} instance will be generated based
-     * on the provided {@code ListenerContext} type and related parameters. This instance
-     * will be retained in {@link ThreadLocal} and deleted after the {@link #SUCCESS} or
-     * {@link #FAILED} stage.
+     * Thread-local storage, isolate listener context data exclusive to each thread.
      */
-    private static final ThreadLocal<ListenerContext> CONTEXT_LOCAL = new ThreadLocal<>();
+    private static final ThreadLocal<ListenerContextLocalData> CONTEXT_LOCAL = new ThreadLocal<>();
 
     ListenerLifecycle(ListenerConsumer consumer) {
         this.consumer = consumer;
@@ -122,34 +123,38 @@ public enum ListenerLifecycle {
         ListenerLifecycleWrapper lifecycleWrapper = new ListenerLifecycleWrapper(this);
         if (lifecycleWrapper.matchLifecycle(START)) {
             ListenerContext listenerContext = listenerContextSupplier.get();
-            CONTEXT_LOCAL.set(listenerContext);
+            CONTEXT_LOCAL.set(new ListenerContextLocalData(listenerContext));
         }
 
-        ListenerContext listenerContext = CONTEXT_LOCAL.get();
-        if (listenerContext != null) {
+        ListenerContextLocalData localData = CONTEXT_LOCAL.get();
+        if (localData != null) {
+            ListenerContext listenerContext = localData.listenerContext;
 
             try {
                 // When the isolation strategy is in effect, the event is directly terminated and not
                 // propagated outward. Only the current listener consumes this abnormal event
                 if (!(listenerContext instanceof ListenerErrorContext)) {
-                    for (CronListener cronListener : collector.newQueryBuilder().async().sort().build()) {
-                        ((AsyncCronListener) cronListener).get()
-                                .execute(() -> {
-                                    try {
-                                        consumer.accept(cronListener, listenerContext, e);
-                                    }
-                                    catch (Throwable ex) {
-                                        LoggerFactory.getLogger(ListenerLifecycle.class).error(
-                                                "[AsyncCronListener] An exception occurred when executing " +
-                                                        "ListenerLifecycle method [{}]." +
-                                                        " Task ID: {}, Listener Name: {}, Exception Message: {}",
-                                                this.name(),
-                                                listenerContext.getID(),
-                                                cronListener.getName(),
-                                                ex.getMessage(), ex
-                                        );
-                                    }
-                                });
+                    List<AsyncCronListener> asyncCronListeners = collector.newQueryBuilder().async().sort().build();
+                    for (AsyncCronListener asyncCronListener : asyncCronListeners) {
+
+                        // When executing the current asynchronous listener, it is necessary to determine whether
+                        // the listener has been interrupted abnormally. Only non interrupt asynchronous listeners
+                        // are supported to perform listening tasks.
+                        AtomicBoolean interruptionFlag = localData.getInterruptionFlag(asyncCronListener);
+                        if (!interruptionFlag.get()) {
+                            asyncCronListener.get()
+                                    .execute(() -> {
+                                        try {
+                                            consumer.accept(asyncCronListener, listenerContext, e);
+                                        }
+                                        catch (Throwable ex) {
+                                            // If an error occurs, mark the interrupt status directly.
+                                            interruptionFlag.set(true);
+
+                                            failed(asyncCronListener, listenerContext, ex);
+                                        }
+                                    });
+                        }
                     }
                 }
 
@@ -166,8 +171,8 @@ public enum ListenerLifecycle {
                                 lifecycleWrapper.notAllow();
                             }
                             // Create a new error listening context for listening and passing.
-                            CONTEXT_LOCAL.set(new DefaultListenerErrorContext(listenerContext, this,
-                                    cronListener));
+                            localData.listenerContext
+                                    = new DefaultListenerErrorContext(listenerContext, this, cronListener);
                             throw ex;
                         }
                     }
@@ -211,14 +216,25 @@ public enum ListenerLifecycle {
         }
     }
 
+    private static void failed(AsyncCronListener ac, ListenerContext listenerContext, Throwable ex) {
+        try {
+            ac.failed(listenerContext, ex);
+        }
+        catch (Throwable exf) {
+
+            failedFallback(ac, listenerContext, ex);
+        }
+    }
+
     private static void failedFallback(CronListener c, ListenerContext listenerContext, Throwable ex) {
         try {
             c.failedFallback(ex);
         }
         catch (Throwable e) {
             LoggerFactory.getLogger(ListenerLifecycle.class).error(
-                    "[CronListener] An exception occurred when executing listener fallback method [failedFallback]." +
+                    "[{}] An exception occurred when executing listener fallback method [failedFallback]." +
                             " Task ID: {}, Listener Name: {}, Exception Message: {}",
+                    c instanceof AsyncCronListener ? "AsyncCronListener" : "CronListener",
                     listenerContext.getID(),
                     c.getName(),
                     ex.getMessage(), ex
@@ -227,10 +243,32 @@ public enum ListenerLifecycle {
     }
 
     /**
+     * Listener context thread-local data wrapper.
+     * @since 3.0.2
+     */
+    private static class ListenerContextLocalData {
+
+        /** Bound listener context instance. */
+        private ListenerContext listenerContext;
+
+        /** A mapping used to mark the asynchronous listener name and whether it is in an interrupt state. */
+        private final Map<String, AtomicBoolean> asyncListenerInterruptionFlags = new HashMap<>();
+
+        public ListenerContextLocalData(ListenerContext listenerContext) {
+            this.listenerContext = listenerContext;
+        }
+
+        public AtomicBoolean getInterruptionFlag(AsyncCronListener asyncCronListener) {
+            return asyncListenerInterruptionFlags
+                    .computeIfAbsent(asyncCronListener.getName(), s -> new AtomicBoolean(false));
+        }
+    }
+
+    /**
      * The help {@link ListenerLifecycle} wrapper class.
      * @since 3.0.2
      */
-    protected static class ListenerLifecycleWrapper {
+    private static class ListenerLifecycleWrapper {
 
         ListenerLifecycle lifecycle;
 

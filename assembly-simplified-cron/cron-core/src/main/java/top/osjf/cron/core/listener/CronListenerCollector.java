@@ -343,8 +343,10 @@ public abstract class CronListenerCollector implements Wrapper {
          * @return filtered listener list, empty list if original collection is empty
          * @throws IllegalStateException if build() method invokes multiple times.
          * @throws IllegalArgumentException if asynchronous query specifies propagation strategy
+         * @param <C> listener type of hope.
          */
-        public List<CronListener> build() {
+        @SuppressWarnings("unchecked")
+        public <C extends CronListener> List<C> build() {
             Assert.state(buildFlag.compareAndSet(false, true),
                     "The build() method can only be invoked once.");
             if (CollectionUtils.isEmpty(cronListeners)) {
@@ -357,7 +359,7 @@ public abstract class CronListenerCollector implements Wrapper {
                     (propagateStrategy == null || propagateStrategy == cronListener.getListenerErrorPropagateStrategy()))
                     .collect(Collectors.toList());
             if (sort) OrderComparator.sort(result);
-            return result;
+            return (List<C>) result;
         }
 
         /**
