@@ -92,9 +92,9 @@ public enum ListenerLifecycle {
      *     <ul>
      *         <li>Execute all {@link AsyncCronListener} asynchronously using their own bound thread pools
      *         first;</li>
-     *         <li>Then execute all registered cron listeners synchronously; if any listener throws an exception,
-     *         wrap the exception scene into {@link ListenerErrorContext}, store it in thread-local and rethrow
-     *         the exception;</li>
+     *         <li>Then synchronously execute all registered synchronous cron listeners; if any listener
+     *         throws an exception, wrap the exception scene into {@link ListenerErrorContext}, store it
+     *         in thread-local and rethrow the exception;</li>
      *     </ul>
      * </li>
      * <li>If the context is {@link ListenerErrorContext} (single listener execution exception):
@@ -154,7 +154,7 @@ public enum ListenerLifecycle {
                 }
 
                 if (!(listenerContext instanceof ListenerErrorContext)) {
-                    for (CronListener cronListener : collector.getCronListeners()) {
+                    for (CronListener cronListener : collector.newQueryBuilder().sync().sort().build()) {
                         try {
                             consumer.accept(cronListener, listenerContext, e);
                         }
