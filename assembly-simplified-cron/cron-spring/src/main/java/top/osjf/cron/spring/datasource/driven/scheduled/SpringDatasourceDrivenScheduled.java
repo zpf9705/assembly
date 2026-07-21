@@ -284,7 +284,7 @@ public class SpringDatasourceDrivenScheduled
         doScanReference(reference, node);
 
         // Missing bean reference or method call node, invalid @bean.method() syntax
-        if (reference.beanReference == null || reference.methodReference == null) {
+        if (!reference.isComplete()) {
             return null;
         }
 
