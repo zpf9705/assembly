@@ -205,6 +205,7 @@ public interface HttpUrlRunnable extends Runnable {
         private final Charset charset;
         /** Response callback consumer */
         @Nullable private final Consumer<ResponseEntity> responseConsumer;
+        /** Custom logger. */
         @Nullable private final Logger logger;
 
         /**
