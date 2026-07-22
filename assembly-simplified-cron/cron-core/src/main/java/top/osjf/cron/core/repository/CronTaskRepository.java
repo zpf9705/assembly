@@ -401,20 +401,11 @@ public interface CronTaskRepository extends Repository, RunTimesRegistrarReposit
         Builder withTask(Runnable runnable);
 
         /**
-         * Sets http callback url for task execution, using default timeout values.
-         * @param url target http request url
+         * Sets an HTTP callback task based on the assembled {@link HttpUrlRunnable.HttpRequestEntity}.
+         * @param requestEntity complete assembled HTTP request parameter entity.
          * @return current builder instance for chained calls
          */
-        Builder withTask(String url);
-
-        /**
-         * Sets http callback url and timeout config for task execution.
-         * @param url target http request url
-         * @param connectTimeout connect timeout in milliseconds
-         * @param readTimeout read timeout in milliseconds
-         * @return current builder instance for chained calls
-         */
-        Builder withTask(String url, int connectTimeout, int readTimeout);
+        Builder withTask(HttpUrlRunnable.HttpRequestEntity requestEntity);
 
         /**
          * Sets task execution body using {@link CronMethodRunnable}
