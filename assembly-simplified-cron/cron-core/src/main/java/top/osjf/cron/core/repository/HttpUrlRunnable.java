@@ -62,8 +62,9 @@ public interface HttpUrlRunnable extends Runnable {
 
     /**
      * Default implementation class of {@link HttpUrlRunnable}, based on JDK native {@code HttpURLConnection}
-     * implementation. Complete the whole life cycle of HTTP request: parameter assembly -> request sending ->
-     * response reading -> custom callback execution -> unified resource closing and exception logging.
+     * implementation. Complete the whole life cycle of HTTP request: parameter assembly {@code ->} request sending
+     * {@code ->} response reading {@code ->} custom callback execution {@code ->} unified resource closing and
+     * exception logging.
      */
     class DefaultHttpUrlRunnable implements HttpUrlRunnable {
 
