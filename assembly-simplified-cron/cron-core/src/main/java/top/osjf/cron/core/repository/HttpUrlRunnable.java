@@ -160,21 +160,21 @@ public interface HttpUrlRunnable extends Runnable {
             }
             finally {
                 // Close all resources
-                try {
-                    if (outStream != null) {
-                        outStream.close();
-                    }
-                } catch (IOException ignored) {
-                }
-                try {
-                    if (reader != null) {
-                        reader.close();
-                    }
-                } catch (IOException ignored) {
-                }
+                close(outStream);
+                close(reader);
+
                 if (connection != null) {
                     connection.disconnect();
                 }
+            }
+        }
+
+        static void close(@Nullable Closeable closeable) {
+            try {
+                if (closeable != null) {
+                    closeable.close();
+                }
+            } catch (IOException ignored) {
             }
         }
     }
