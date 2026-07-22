@@ -53,7 +53,7 @@ public interface HttpUrlRunnable extends Runnable {
     void run();
 
     /**
-     * Static method for Quickly construct the default implementation object of {@link HttpUrlRunnable}.
+     * Static method for quickly construct the default implementation object of {@link HttpUrlRunnable}.
      * @param requestEntity encapsulated complete HTTP request parameter entity
      * @return default http runnable implementation instance
      */
