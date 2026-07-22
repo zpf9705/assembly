@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import top.osjf.commons.lang.Nullable;
 import top.osjf.commons.util.Assert;
 import top.osjf.commons.util.CollectionUtils;
+import top.osjf.commons.util.StringUtils;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -105,7 +106,7 @@ public interface HttpUrlRunnable extends Runnable {
 
                 // Handle request body (POST/PUT etc.)
                 String requestBody = requestEntity.getRequestBody();
-                if (requestBody != null && !requestBody.isEmpty()) {
+                if (StringUtils.isNotBlank(requestBody)) {
                     connection.setDoOutput(true);
                     outStream = new BufferedOutputStream(connection.getOutputStream());
                     outStream.write(requestBody.getBytes(requestEntity.getCharset()));
@@ -199,8 +200,7 @@ public interface HttpUrlRunnable extends Runnable {
         /** Custom request header collection */
         private final Map<String, String> headers;
         /** Request body string, effective for POST/PUT and other write requests, can be {@code null} */
-        @Nullable
-        private final String requestBody;
+        @Nullable private final String requestBody;
         /** Request and response content encoding */
         private final Charset charset;
         /** Response callback consumer */
