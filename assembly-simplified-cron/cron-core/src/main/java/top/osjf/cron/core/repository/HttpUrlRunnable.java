@@ -43,6 +43,7 @@ import java.util.function.Consumer;
  *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
+ * @see CronTaskRepository.Builder#withTask(HttpRequestEntity)
  */
 public interface HttpUrlRunnable extends Runnable {
     /**
