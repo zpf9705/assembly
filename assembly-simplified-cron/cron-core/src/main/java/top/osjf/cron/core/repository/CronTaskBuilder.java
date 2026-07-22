@@ -139,12 +139,14 @@ public class CronTaskBuilder implements CronTaskRepository.Builder {
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CronTaskBuilder withTask(HttpUrlRunnable.HttpRequestEntity requestEntity) {
         checkBuildFlag();
         return withTask(HttpUrlRunnable.of(requestEntity));
     }
-
 
     /**
      * {@inheritDoc}
