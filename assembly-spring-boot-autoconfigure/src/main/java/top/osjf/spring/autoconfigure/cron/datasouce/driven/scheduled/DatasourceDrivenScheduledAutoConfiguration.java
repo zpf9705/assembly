@@ -65,7 +65,7 @@ public class DatasourceDrivenScheduledAutoConfiguration {
     @ConditionalOnMissingBean(DataSourceConfigLoader.class)
     @ConditionalOnBean(javax.sql.DataSource.class)
     @ConditionalOnProperty
-            (prefix = "spring.schedule.cron.scheduled-driven.config-loader.javax-datasource", name = "query-config-qql")
+            (prefix = "spring.schedule.cron.scheduled-driven.config-loader.javax-datasource", name = "query-config-sql")
     public DataSourceConfigLoader dataSourceConfigLoader(javax.sql.DataSource dataSource,
                                                          CronDatasourceDrivenProperties properties) {
         CronDatasourceDrivenProperties.ConfigLoader.JavaxDatasource javaxDatasource
