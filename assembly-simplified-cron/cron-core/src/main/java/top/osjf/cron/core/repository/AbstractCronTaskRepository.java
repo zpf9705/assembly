@@ -585,8 +585,9 @@ public abstract class AbstractCronTaskRepository
     @Override
     public LongTimedExecutor longTimed(String... tags) {
 
-        Assert.state(MeterRegistryDetector.isPresent(null),
-                "Micrometer MeterRegistry is required, please introduce micrometer-core dependency.");
+        if (!MeterRegistryDetector.isPresent(null)) {
+            return new LoggerLongTimedExecutor(tags);
+        }
 
         Optional<LongTaskTimer> timer
                 = MeterRegistryDelegation.longTaskTimer(TASK_BODY_EXECUTION_TIMER_KEY,
