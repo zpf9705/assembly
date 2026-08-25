@@ -73,7 +73,7 @@ public abstract class AbstractCronTaskRepositoryMBean
         MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
         String name = "top.osjf.cron:type=CronTaskRepositoryMetrics,name=" + ObjectName.quote(getName());
         mbeanObjectName = new ObjectName(name);
-        StandardMBean standardMBean = new StandardMBean(this,  CronTaskRepositoryMBean.class);
+        StandardMBean standardMBean = new CronTaskRepositoryStandardMBean(this);
         if (!mBeanServer.isRegistered(mbeanObjectName)) {
             mBeanServer.registerMBean(standardMBean, mbeanObjectName);
         }

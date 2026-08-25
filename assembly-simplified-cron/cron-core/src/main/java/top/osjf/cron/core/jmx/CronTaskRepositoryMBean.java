@@ -17,6 +17,10 @@
 
 package top.osjf.cron.core.jmx;
 
+import javax.management.MBeanAttributeInfo;
+import javax.management.NotCompliantMBeanException;
+import javax.management.StandardMBean;
+
 /**
  * Standard JMX MBean interface for cron task repository runtime statistics.
  *
@@ -137,4 +141,79 @@ public interface CronTaskRepositoryMBean {
      * @return current registered listener amount
      */
     long getRegisteredTaskListenerCurrent();
+
+    /**
+     * Custom {@link StandardMBean} implementation for {@link CronTaskRepositoryMBean}
+     * that provides human-readable English descriptions for all exposed attributes.
+     *
+     * <p>This class enhances the JMX management interface by overriding the
+     * {@link #getDescription(MBeanAttributeInfo)} method to return descriptive
+     * English labels for each metric, making it easier for operators to understand
+     * the meaning of each attribute when monitoring through JConsole or similar tools.
+     */
+    class CronTaskRepositoryStandardMBean extends StandardMBean {
+
+        /**
+         * Constructs a new {@code CronTaskRepositoryStandardMBean} with the given
+         * MBean implementation.
+         *
+         * @param mBean the MBean implementation instance
+         * @throws NotCompliantMBeanException if the MBean does not comply with
+         *         the JMX standard bean specification
+         */
+        public CronTaskRepositoryStandardMBean(CronTaskRepositoryMBean mBean)
+                throws NotCompliantMBeanException {
+            super(mBean, CronTaskRepositoryMBean.class);
+        }
+
+        /**
+         * Returns a human-readable English description for the specified MBean attribute.
+         *
+         * <p>This method overrides the default behavior to provide descriptive
+         * labels for all attributes defined in {@link CronTaskRepositoryMBean}.
+         * Unrecognized attribute names fall back to the default description.
+         *
+         * @param info the attribute metadata
+         * @return an English description string for the attribute
+         */
+        @Override
+        protected String getDescription(MBeanAttributeInfo info) {
+            String name = info.getName();
+            switch (name) {
+                // Cumulative statistics
+                case "RegisterTaskTotal":
+                    return "Total number of task registration operations";
+                case "RegisterTimeoutTotal":
+                    return "Total number of tasks registered with running-timeout configuration";
+                case "TaskTimeoutTotal":
+                    return "Total number of task execution timeout events";
+                case "RegisterRuntimesTotal":
+                    return "Total number of limited-run-times task registrations";
+                case "RegisterTimeoutRuntimesTotal":
+                    return "Total number of limited-run-times with timeout task registrations";
+                case "UpdateTaskTotal":
+                    return "Total number of task update operations";
+                case "RemoveTaskTotal":
+                    return "Total number of task remove operations";
+                case "TerminateTaskTotal":
+                    return "Total number of task terminate operations";
+                case "AddListenerTotal":
+                    return "Total number of add-listener operations";
+                case "RemoveListenerTotal":
+                    return "Total number of remove-listener operations";
+                // Real-time snapshot statistics
+                case "RegisteredTaskCurrent":
+                    return "Current number of registered tasks";
+                case "RegisteredRunTimesTaskCurrent":
+                    return "Current number of limited-run-times tasks";
+                case "RunningTaskCurrent":
+                    return "Current number of running tasks";
+                case "RegisteredTaskListenerCurrent":
+                    return "Current number of registered listeners";
+                // Default super call
+                default:
+                    return super.getDescription(info);
+            }
+        }
+    }
 }
