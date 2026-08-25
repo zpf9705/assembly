@@ -25,6 +25,7 @@ import top.osjf.commons.util.Assert;
 import top.osjf.commons.util.compat.ArrayUtils;
 import top.osjf.cron.core.exception.*;
 import top.osjf.cron.core.micrometer.MeterRegistryDelegation;
+import top.osjf.cron.core.micrometer.MeterRegistryDetector;
 import top.osjf.cron.core.micrometer.SystemPropertiesTags;
 
 import java.lang.reflect.Method;
@@ -583,6 +584,9 @@ public abstract class AbstractCronTaskRepository
      */
     @Override
     public LongTimedExecutor longTimed(String... tags) {
+
+        Assert.state(MeterRegistryDetector.isPresent(null),
+                "Micrometer MeterRegistry is required, please introduce micrometer-core dependency.");
 
         Optional<LongTaskTimer> timer
                 = MeterRegistryDelegation.longTaskTimer(TASK_BODY_EXECUTION_TIMER_KEY,
