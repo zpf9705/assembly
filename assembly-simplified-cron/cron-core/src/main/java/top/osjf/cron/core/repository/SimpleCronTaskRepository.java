@@ -27,6 +27,7 @@ import top.osjf.commons.lang.Nullable;
 import top.osjf.cron.core.exception.CronExpressionInvalidException;
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
+import top.osjf.cron.core.jmx.AbstractCronTaskRepositoryMBean;
 import top.osjf.cron.core.listener.CronListenerCollector;
 import top.osjf.cron.core.listener.ListenerContext;
 import top.osjf.cron.core.listener.ListenerExecuteSupport;
@@ -62,7 +63,7 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.4
  */
-public class SimpleCronTaskRepository extends AbstractCronTaskRepository {
+public class SimpleCronTaskRepository extends AbstractCronTaskRepositoryMBean {
 
     private final ScheduledExecutorService scheduledExecutorService;
 

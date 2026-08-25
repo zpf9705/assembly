@@ -25,7 +25,10 @@ import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.scheduling.support.ScheduledMethodRunnable;
 import top.osjf.commons.lang.NotNull;
 import top.osjf.commons.lang.Nullable;
-import top.osjf.cron.core.repository.*;
+import top.osjf.cron.core.jmx.AbstractCronTaskRepositoryMBean;
+import top.osjf.cron.core.repository.AnnotationMethodRegistrar;
+import top.osjf.cron.core.repository.CronMethodRunnable;
+import top.osjf.cron.core.repository.CronTask;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -55,7 +58,7 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.3
  */
-public abstract class ListenableTaskScheduler extends AbstractCronTaskRepository implements TaskScheduler {
+public abstract class ListenableTaskScheduler extends AbstractCronTaskRepositoryMBean implements TaskScheduler {
 
     /**
      * The underlying Spring TaskScheduler that is being wrapped.

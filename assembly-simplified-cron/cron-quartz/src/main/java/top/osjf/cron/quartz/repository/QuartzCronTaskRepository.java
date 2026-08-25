@@ -27,6 +27,7 @@ import top.osjf.commons.util.Assert;
 import top.osjf.commons.util.StringUtils;
 import top.osjf.cron.core.exception.CronExpressionInvalidException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
+import top.osjf.cron.core.jmx.AbstractCronTaskRepositoryMBean;
 import top.osjf.cron.core.lifecycle.InitializeProperties;
 import top.osjf.cron.core.listener.CronListenerCollector;
 import top.osjf.cron.core.repository.*;
@@ -51,7 +52,7 @@ import static org.quartz.impl.StdSchedulerFactory.PROP_JOB_STORE_CLASS;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class QuartzCronTaskRepository extends AbstractCronTaskRepository implements Supplier<ListenerManager> {
+public class QuartzCronTaskRepository extends AbstractCronTaskRepositoryMBean implements Supplier<ListenerManager> {
 
     /**
      * The thread count property name.

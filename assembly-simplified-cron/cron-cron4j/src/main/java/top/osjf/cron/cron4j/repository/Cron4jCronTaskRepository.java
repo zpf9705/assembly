@@ -23,6 +23,7 @@ import top.osjf.commons.util.Assert;
 import top.osjf.commons.util.StringUtils;
 import top.osjf.cron.core.exception.CronExpressionInvalidException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
+import top.osjf.cron.core.jmx.AbstractCronTaskRepositoryMBean;
 import top.osjf.cron.core.lifecycle.InitializeProperties;
 import top.osjf.cron.core.listener.CronListenerCollector;
 import top.osjf.cron.core.repository.*;
@@ -43,7 +44,7 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class Cron4jCronTaskRepository extends AbstractCronTaskRepository {
+public class Cron4jCronTaskRepository extends AbstractCronTaskRepositoryMBean {
 
     /**
      * The {@link #daemon} property name of cron4j.

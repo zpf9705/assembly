@@ -24,6 +24,7 @@ import top.osjf.cron.core.repository.*;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
+import javax.management.StandardMBean;
 import java.lang.management.ManagementFactory;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -72,8 +73,9 @@ public abstract class AbstractCronTaskRepositoryMBean
         MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
         String name = "top.osjf.cron:type=CronTaskRepositoryMetrics,name=" + ObjectName.quote(getName());
         mbeanObjectName = new ObjectName(name);
+        StandardMBean standardMBean = new StandardMBean(this,  CronTaskRepositoryMBean.class);
         if (!mBeanServer.isRegistered(mbeanObjectName)) {
-            mBeanServer.registerMBean(this, mbeanObjectName);
+            mBeanServer.registerMBean(standardMBean, mbeanObjectName);
         }
     }
 
