@@ -22,9 +22,11 @@ import org.slf4j.LoggerFactory;
 import top.osjf.commons.lang.Nullable;
 import top.osjf.commons.util.Assert;
 import top.osjf.cron.core.micrometer.MeterRegistryDelegation;
+import top.osjf.cron.core.micrometer.MeterRegistryDetector;
 
 import java.util.UUID;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static top.osjf.cron.core.micrometer.RepositoryMicrometerConstants.TIMEOUT_COUNTER_KEY;
 
@@ -39,6 +41,9 @@ import static top.osjf.cron.core.micrometer.RepositoryMicrometerConstants.TIMEOU
 public class TimeoutMonitoringRunnable implements Runnable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TimeoutMonitoringRunnable.class);
+
+    /** Counter for the total number of task timeout events.*/
+    static final AtomicLong taskTimeoutTotal = new AtomicLong();
 
     /** the real {@link Runnable}.*/
     private final Runnable real;
@@ -143,6 +148,14 @@ public class TimeoutMonitoringRunnable implements Runnable {
     }
 
     /**
+     * Gets the total count of task timeout events.
+     * @return the accumulated number of tasks that have timed out
+     */
+    public static long getTaskTimeoutTotal() {
+        return taskTimeoutTotal.get();
+    }
+
+    /**
      * Monitor task execution time and handle related exceptions.
      * @param future the input {@link Future}.
      */
@@ -154,7 +167,9 @@ public class TimeoutMonitoringRunnable implements Runnable {
             LOGGER.warn("Task {} has exceeded the predefined timeout configuration of {} ms. " +
                     "The system will trigger the {} fallback policy automatically.", taskId,
                     timeout.getTimeUnit().toMillis(timeout.getTimeout()), timeout.getPolicy());
-            MeterRegistryDelegation.counter(TIMEOUT_COUNTER_KEY).increment();
+            taskTimeoutTotal.incrementAndGet();
+            if (MeterRegistryDetector.isPresent(null))
+                MeterRegistryDelegation.counter(TIMEOUT_COUNTER_KEY).increment();
             handlerTimeoutPolicy(future);
         }
         catch (Exception ex) {
