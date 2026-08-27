@@ -67,7 +67,8 @@ public class AnnotationMethodRegistrar {
         this.targetMethod = method;
         CronMethodRunnable runnable = new CronMethodRunnable(target, method);
         Expression expression = method.getAnnotation(Expression.class);
-        Assert.notNull(expression, "Missing annotation on method " + method.getName());
+        Assert.notNull(expression,
+                "Missing annotation top.osjf.cron.core.repository.Expression on method " + method.getName());
         this.cronTask = new CronTask(expression.value(), runnable);
     }
 
