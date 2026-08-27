@@ -29,12 +29,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
 
 /**
  * Runnable standard interface for cron scheduled HTTP callback tasks.
@@ -87,6 +83,7 @@ public interface HttpUrlRunnable extends Runnable {
 
             Logger cLogger = requestEntity.getLogger();
             Logger logger = cLogger != null ? cLogger : DefaultHttpUrlRunnable.logger;
+            Optional<ResponseCallback> callbackOptional = Optional.ofNullable(requestEntity.getResponseCallback());
 
             HttpURLConnection connection = null;
             BufferedReader reader = null;
@@ -143,11 +140,10 @@ public interface HttpUrlRunnable extends Runnable {
                     }
                 }
 
-                Consumer<ResponseEntity> responseConsumer = requestEntity.getResponseConsumer();
-                if (responseConsumer != null) {
-                    // Execute custom response callback processing logic
-                    responseConsumer
-                            .accept(new ResponseEntity(responseHeaders, responseSb.toString(), responseCode));
+                if (callbackOptional.isPresent()) {
+                    // Execute custom response callback request successfully processing logic
+                    callbackOptional.get()
+                            .onSuccess(new ResponseEntity(responseHeaders, responseSb.toString(), responseCode));
                 }
                 else {
                     logger.info("[DefaultHttpUrlRunnable] Request completed, url=[{}], method=[{}], code=[{}], " +
@@ -155,9 +151,15 @@ public interface HttpUrlRunnable extends Runnable {
                             responseCode, responseSb);
                 }
             }
-            catch (IOException ex) {
-                logger.error("[DefaultHttpUrlRunnable] Request failed, url=[{}], method=[{}], message=[{}]",
-                        requestEntity.getUrl(), requestEntity.getMethod(), ex.getMessage(), ex);
+            catch (Throwable ex) {
+                if (callbackOptional.isPresent()) {
+                    // Execute custom response callback request failed processing logic
+                    callbackOptional.get().onFailure(ex);
+                }
+                else {
+                    logger.error("[DefaultHttpUrlRunnable] Request failed, url=[{}], method=[{}], message=[{}]",
+                            requestEntity.getUrl(), requestEntity.getMethod(), ex.getMessage(), ex);
+                }
             }
             finally {
                 // Close all resources
@@ -203,8 +205,8 @@ public interface HttpUrlRunnable extends Runnable {
         @Nullable private final String requestBody;
         /** Request and response content encoding */
         private final Charset charset;
-        /** Response callback consumer */
-        @Nullable private final Consumer<ResponseEntity> responseConsumer;
+        /** Response callback */
+        @Nullable private final ResponseCallback responseCallback;
         /** Custom logger. */
         @Nullable private final Logger logger;
 
@@ -220,7 +222,7 @@ public interface HttpUrlRunnable extends Runnable {
             this.headers = Collections.unmodifiableMap(new HashMap<>(builder.headers));
             this.requestBody = builder.requestBody;
             this.charset = builder.charset;
-            this.responseConsumer = builder.responseConsumer;
+            this.responseCallback = builder.responseCallback;
             this.logger = builder.logger;
         }
 
@@ -282,12 +284,12 @@ public interface HttpUrlRunnable extends Runnable {
         }
 
         /**
-         * Get response consumer.
+         * Get response callback.
          * @return response consumer
          */
         @Nullable
-        public Consumer<ResponseEntity> getResponseConsumer() {
-            return responseConsumer;
+        public ResponseCallback getResponseCallback() {
+            return responseCallback;
         }
 
         /**
@@ -319,7 +321,7 @@ public interface HttpUrlRunnable extends Runnable {
             private final Map<String, String> headers = new HashMap<>();
             @Nullable private String requestBody;
             private Charset charset = StandardCharsets.UTF_8;
-            @Nullable private Consumer<ResponseEntity> responseConsumer;
+            @Nullable private ResponseCallback responseCallback;
             @Nullable private Logger logger;
 
             /** Mark whether {@link #build()} has been executed */
@@ -447,13 +449,13 @@ public interface HttpUrlRunnable extends Runnable {
             /**
              * Set a consumer for post-processing the HTTP response result.
              *
-             * @param responseConsumer the responseConsumer response callback consumer.
+             * @param responseCallback the response callback.
              * @return this builder
              * @throws IllegalStateException if builder already built
              */
-            public Builder responseConsumer(@Nullable Consumer<ResponseEntity> responseConsumer) {
+            public Builder responseCallback(@Nullable ResponseCallback responseCallback) {
                 checkBuildFlag();
-                this.responseConsumer = responseConsumer;
+                this.responseCallback = responseCallback;
                 return this;
             }
 
@@ -549,5 +551,23 @@ public interface HttpUrlRunnable extends Runnable {
         public int getStatusCode() {
             return statusCode;
         }
+    }
+
+    /**
+     * Callback interface for HTTP request result.
+     */
+    interface ResponseCallback {
+
+        /**
+         * Called when the HTTP request completes successfully.
+         * @param response response entity containing status code, headers and response body
+         */
+        void onSuccess(ResponseEntity response);
+
+        /**
+         * Called when the request fails for any reason.
+         * @param ex throwable representing the failure cause
+         */
+        void onFailure(Throwable ex);
     }
 }
