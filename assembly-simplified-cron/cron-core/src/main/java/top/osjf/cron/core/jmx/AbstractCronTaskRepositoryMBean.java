@@ -173,8 +173,9 @@ public abstract class AbstractCronTaskRepositoryMBean
      */
     @Override
     public void removeAll() throws CronInternalException {
+        long registeredTaskCurrent = getRegisteredTaskCurrent();
         super.removeAll();
-        removeTaskTotal.addAndGet(getRegisteredTaskCurrent());
+        removeTaskTotal.addAndGet(registeredTaskCurrent);
     }
 
     /**
@@ -191,8 +192,9 @@ public abstract class AbstractCronTaskRepositoryMBean
      */
     @Override
     public void terminateAll() throws CronInternalException {
+        long runningTaskCurrent = getRunningTaskCurrent();
         super.terminateAll();
-        removeTaskTotal.addAndGet(getRunningTaskCurrent());
+        removeTaskTotal.addAndGet(runningTaskCurrent);
     }
 
     /**
