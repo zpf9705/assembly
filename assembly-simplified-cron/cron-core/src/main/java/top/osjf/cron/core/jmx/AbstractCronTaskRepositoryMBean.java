@@ -98,6 +98,7 @@ public abstract class AbstractCronTaskRepositoryMBean
         catch (Exception ex) {
              logger.error("Unregister CronTaskRepository MBean failed, module={}", getName(), ex);
         }
+        mbeanObjectName = null;
     }
 
     /**
