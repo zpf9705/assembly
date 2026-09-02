@@ -42,7 +42,7 @@ import javax.management.StandardMBean;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
  */
-public interface CronTaskRepositoryMBean {
+public interface CronTaskRepositoryMBean extends CronTaskAbstractRepositoryMBean {
 
     /**
      * Gets total count of task registration invocations.
@@ -180,6 +180,23 @@ public interface CronTaskRepositoryMBean {
         protected String getDescription(MBeanAttributeInfo info) {
             String name = info.getName();
             switch (name) {
+                // Resource library information statistics
+                case "Type":
+                    return "The type of operation resource library";
+                case "Name":
+                    return "The name of the operation resource library";
+                case "Version":
+                    return "The version of the resource repository";
+                case "SourceType":
+                    return "The type of the underlying implementation of the operation resource library";
+                case "SourceVersion":
+                    return "The version of the underlying implementation of the operation resource library";
+                case "SupportConcurrentExecution":
+                    return "A Boolean type marker indicating whether concurrent scheduling is supported";
+                case "IDGeneratorType":
+                    return "The type of {@link top.osjf.cron.core.repository.IDGenerator} for custom settings";
+                case "Properties":
+                    return "A summary of key configuration attributes in the resource library";
                 // Cumulative statistics
                 case "RegisterTaskTotal":
                     return "Total number of task registration operations";
