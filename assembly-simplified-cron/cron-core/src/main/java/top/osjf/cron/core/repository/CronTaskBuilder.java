@@ -246,6 +246,7 @@ public class CronTaskBuilder implements CronTaskRepository.Builder {
      *
      * @throws IllegalStateException Current CronTaskBuilder instance can only call build() once.
      */
+    @Override
     public String build() {
 
         Assert.state(built.compareAndSet(false, true),
