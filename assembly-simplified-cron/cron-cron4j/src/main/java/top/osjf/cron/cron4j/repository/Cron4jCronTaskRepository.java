@@ -208,6 +208,24 @@ public class Cron4jCronTaskRepository extends AbstractCronTaskRepositoryMBean {
      * {@inheritDoc}
      */
     @Override
+    @NotNull
+    public String getSourceType() {
+        return Scheduler.class.getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @NotNull
+    public String getSourceVersion() {
+        return super.getVersion();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public boolean isSupportedExpression(@NotNull String expression) {
         return SchedulingPattern.validate(expression);
     }

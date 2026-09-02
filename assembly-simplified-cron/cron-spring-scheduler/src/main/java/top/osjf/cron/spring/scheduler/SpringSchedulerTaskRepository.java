@@ -137,6 +137,24 @@ public class SpringSchedulerTaskRepository
      * {@inheritDoc}
      */
     @Override
+    @NotNull
+    public String getSourceType() {
+        return TaskScheduler.class.getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @NotNull
+    public String getSourceVersion() {
+        return "5.3.12";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public boolean isSupportedExpression(@NotNull String expression) {
         return CronExpression.isValidExpression(expression);
     }

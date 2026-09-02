@@ -482,6 +482,24 @@ public class SimpleCronTaskRepository extends AbstractCronTaskRepositoryMBean {
      * {@inheritDoc}
      */
     @Override
+    @NotNull
+    public String getSourceType() {
+        return ScheduledExecutorService.class.getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @NotNull
+    public String getSourceVersion() {
+        return "JDK-1.8";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void checkSupportedExpression(String expression) throws CronExpressionInvalidException {
         try {
             cronParser.parse(expression);

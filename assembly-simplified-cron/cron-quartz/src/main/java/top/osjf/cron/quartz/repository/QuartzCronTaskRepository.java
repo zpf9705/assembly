@@ -217,6 +217,24 @@ public class QuartzCronTaskRepository extends AbstractCronTaskRepositoryMBean im
      * {@inheritDoc}
      */
     @Override
+    @NotNull
+    public String getSourceType() {
+        return Scheduler.class.getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @NotNull
+    public String getSourceVersion() {
+        return "2.3.2";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void checkSupportedExpression(@NotNull String expression) throws CronExpressionInvalidException {
         try {
             new CronExpression(expression);

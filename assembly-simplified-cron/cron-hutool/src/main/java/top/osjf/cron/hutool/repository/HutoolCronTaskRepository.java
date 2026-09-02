@@ -241,6 +241,24 @@ public class HutoolCronTaskRepository extends AbstractCronTaskRepositoryMBean {
      * {@inheritDoc}
      */
     @Override
+    @NotNull
+    public String getSourceType() {
+        return Scheduler.class.getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @NotNull
+    public String getSourceVersion() {
+        return "5.8.5";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void checkSupportedExpression(@NotNull String expression) throws CronExpressionInvalidException {
         try {
             PatternParser.parse(expression);
