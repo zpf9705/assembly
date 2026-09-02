@@ -19,6 +19,7 @@ package top.osjf.cron.core.jmx;
 
 import top.osjf.commons.lang.Nullable;
 import top.osjf.cron.core.exception.CronInternalException;
+import top.osjf.cron.core.lifecycle.InitializeProperties;
 import top.osjf.cron.core.listener.CronListener;
 import top.osjf.cron.core.repository.*;
 
@@ -71,7 +72,7 @@ public abstract class AbstractCronTaskRepositoryMBean
     public void initialize() throws Exception {
         super.initialize();
         MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
-        String name = "top.osjf.cron:type=CronTaskRepositoryMetrics,name=" + ObjectName.quote(getName());
+        String name = "top.osjf.cron:type=CronTaskRepositoryMetrics";
         mbeanObjectName = new ObjectName(name);
         StandardMBean standardMBean = new CronTaskRepositoryStandardMBean(this);
         if (!mBeanServer.isRegistered(mbeanObjectName)) {
@@ -428,6 +429,40 @@ public abstract class AbstractCronTaskRepositoryMBean
         boolean result = super.removeListener(listenerName);
         removeListenerTotal.incrementAndGet();
         return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getType() {
+        return getClass().getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getVersion() {
+        return "3.0.2";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getIDGeneratorType() {
+        IDGenerator idGenerator = getIDGenerator();
+        return idGenerator != null ? idGenerator.getClass().getName() : "";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getProperties() {
+        InitializeProperties initializeProperties = getInitializeProperties();
+        return initializeProperties != null ? initializeProperties.toString() : "{}";
     }
 
     /**
