@@ -154,7 +154,7 @@ public interface HttpUrlRunnable extends Runnable {
             catch (Throwable ex) {
                 if (callbackOptional.isPresent()) {
                     // Execute custom response callback request failed processing logic
-                    callbackOptional.get().onFailure(ex);
+                    callbackOptional.get().onFailure(requestEntity, ex);
                 }
                 else {
                     logger.error("[DefaultHttpUrlRunnable] Request failed, url=[{}], method=[{}], message=[{}]",
@@ -566,8 +566,9 @@ public interface HttpUrlRunnable extends Runnable {
 
         /**
          * Called when the request fails for any reason.
+         * @param requestEntity the given request entity.
          * @param ex throwable representing the failure cause
          */
-        void onFailure(Throwable ex);
+        void onFailure(HttpRequestEntity requestEntity, Throwable ex);
     }
 }
