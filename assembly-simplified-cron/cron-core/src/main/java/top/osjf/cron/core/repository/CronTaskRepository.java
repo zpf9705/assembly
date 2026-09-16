@@ -109,7 +109,7 @@ import static top.osjf.cron.core.repository.CronTaskRepositoryLoader.byDefaultLo
  */
 @ThreadSafe
 public interface CronTaskRepository extends Repository, RunTimesRegistrarRepository, RunTimeoutRegistrarRepository,
-        ListableRepository, CronListenerRepository, LifecycleRepository, Wrapper, Nameable {
+        ListableRepository, CronListenerRepository, LifecycleRepository, Wrapper, Nameable, SourceVersion {
 
     /**
      * Check whether the current scheduling framework repository supports parsing the given cron
