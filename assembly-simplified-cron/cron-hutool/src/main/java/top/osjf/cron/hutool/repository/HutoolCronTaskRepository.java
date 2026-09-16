@@ -31,7 +31,6 @@ import top.osjf.commons.util.StringUtils;
 import top.osjf.cron.core.exception.CronExpressionInvalidException;
 import top.osjf.cron.core.exception.CronInternalException;
 import top.osjf.cron.core.exception.UnsupportedTaskBodyException;
-import top.osjf.cron.core.jmx.AbstractCronTaskRepositoryMBean;
 import top.osjf.cron.core.lifecycle.InitializeProperties;
 import top.osjf.cron.core.listener.CronListenerCollector;
 import top.osjf.cron.core.repository.*;
@@ -53,7 +52,7 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 1.0.0
  */
-public class HutoolCronTaskRepository extends AbstractCronTaskRepositoryMBean {
+public class HutoolCronTaskRepository extends AbstractCronTaskRepository {
 
     /**
      * The {@link #daemon} property name of hutool.
