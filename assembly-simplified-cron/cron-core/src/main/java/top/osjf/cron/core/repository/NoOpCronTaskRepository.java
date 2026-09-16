@@ -210,6 +210,22 @@ public class NoOpCronTaskRepository extends AbstractCronTaskRepository {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getSourceType() {
+        return "No Source Type";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getSourceVersion() {
+        return "No Source Version";
+    }
+
     @Override
     public String toString() {
         return " Non operational cronTaskRepository implementation class. ";
