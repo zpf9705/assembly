@@ -33,6 +33,21 @@ import java.lang.management.ManagementFactory;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
+ * {@link CronTaskRepository} decorator that exposes cron‑task metrics via JMX MBean.
+ *
+ * <p>This class extends {@link DelegatingCronTaskRepository}, it wraps an underlying
+ * {@link CronTaskRepository} and collects operation counters for task registration,
+ * update, removal, termination and listener‑related events. All raw business logic
+ * is delegated to the target repository.
+ *
+ * <p>On {@link #initialize()}, this instance will self‑register as an MBean into the
+ * platform {@link MBeanServer}, making all collected metrics observable through JMX tools.
+ * MBean will be unregistered on {@link #stop()}.
+ *
+ * <p>Metrics include cumulative counters (total registered/updated/removed tasks etc.)
+ * and instant snapshot values (current running tasks, current registered tasks, etc.),
+ * which are exposed by implementing {@link CronTaskRepositoryMBean}.
+ *
  * @author <a href="mailto:929160069@qq.com">zhangpengfei</a>
  * @since 3.0.2
  */
