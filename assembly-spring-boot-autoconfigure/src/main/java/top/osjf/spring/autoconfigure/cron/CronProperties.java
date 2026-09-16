@@ -81,6 +81,12 @@ public class CronProperties {
     private boolean autoStartup = true;
 
     /**
+     * Switch to enable monitoring indicator collection, not enabled by default.
+     * @since 3.0.2
+     */
+    private boolean metricsEnable = false;
+
+    /**
      * Get the configuration of the specified {@link ClientType}.
      * @param clientType the input {@link ClientType}.
      * @return the {@link InitializeProperties} created by {@link ClientType}.
@@ -149,6 +155,14 @@ public class CronProperties {
 
     public void setAutoStartup(boolean autoStartup) {
         this.autoStartup = autoStartup;
+    }
+
+    public boolean isMetricsEnable() {
+        return metricsEnable;
+    }
+
+    public void setMetricsEnable(boolean metricsEnable) {
+        this.metricsEnable = metricsEnable;
     }
 
     /**

@@ -25,6 +25,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCusto
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -44,6 +45,7 @@ import top.osjf.cron.core.repository.CronTaskRepository;
 @ConditionalOnClass({MeterRegistry.class, CountedAspect.class,
         TimedAspect.class, ProceedingJoinPoint.class, MeterRegistryCustomizer.class})
 @ConditionalOnBean({ MeterRegistry.class })
+@ConditionalOnProperty(prefix = "spring.schedule.cron", name = "metrics-enable", havingValue = "true")
 class CronTaskMicrometerConfiguration {
 
     @Bean

@@ -20,6 +20,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.LazyInitializationExcludeFilter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -61,6 +63,13 @@ public class CronTaskAutoConfiguration {
                                                                   ObjectProvider<CronTaskRepository> cronTaskRepositories,
                                                                   ObjectProvider<IDGenerator> idGenerators) {
         return new CronClientValidator(cronProperties, cronTaskRepositories, idGenerators);
+    }
+
+    @Bean
+    @ConditionalOnMissingClass("io.micrometer.core.instrument.MeterRegistry")
+    @ConditionalOnProperty(prefix = "spring.schedule.cron", name = "metrics-enable", havingValue = "true")
+    public CronJmxMetricsBeanPostProcessor cronJmxMetricsBeanPostProcessor() {
+        return new CronJmxMetricsBeanPostProcessor();
     }
 
     /**
